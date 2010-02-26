@@ -1,7 +1,8 @@
-package org.inconsequential.appengine;
+package org.grails.incosequential.appengine;
 
 import com.google.appengine.api.datastore.*;
-import org.inconsequential.appengine.testsupport.AppEngineDatastoreTestCase;
+import org.grails.inconsequential.appengine.AppEngineDatastore;
+import org.grails.incosequential.appengine.testsupport.AppEngineDatastoreTestCase;
 
 import java.util.HashMap;
 import java.util.List;

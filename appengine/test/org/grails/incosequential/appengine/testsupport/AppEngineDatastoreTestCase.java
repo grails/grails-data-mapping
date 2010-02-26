@@ -1,4 +1,4 @@
-package org.inconsequential.appengine.testsupport;
+package org.grails.incosequential.appengine.testsupport;
 
 import com.google.appengine.api.datastore.dev.LocalDatastoreService;
 import com.google.appengine.tools.development.ApiProxyLocalImpl;

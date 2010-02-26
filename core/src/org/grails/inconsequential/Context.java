@@ -1,4 +1,4 @@
-package org.inconsequential;
+package org.grails.inconsequential;
 
 /**
  * The context can hold information about

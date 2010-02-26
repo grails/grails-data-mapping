@@ -1,9 +1,9 @@
-package org.inconsequential.appengine;
+package org.grails.inconsequential.appengine;
 
 import com.google.appengine.api.datastore.*;
-import org.inconsequential.Connection;
-import org.inconsequential.Context;
-import org.inconsequential.Datastore;
+import org.grails.inconsequential.Connection;
+import org.grails.inconsequential.Context;
+import org.grails.inconsequential.Datastore;
 
 import java.util.*;
 

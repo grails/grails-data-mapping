@@ -1,6 +1,6 @@
-package org.inconsequential.appengine;
+package org.grails.inconsequential.appengine;
 
-import org.inconsequential.Connection;
+import org.grails.inconsequential.Connection;
 
 import java.util.Map;
 

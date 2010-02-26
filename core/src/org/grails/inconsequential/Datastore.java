@@ -1,4 +1,4 @@
-package org.inconsequential;
+package org.grails.inconsequential;
 
 import java.util.List;
 import java.util.Map;
