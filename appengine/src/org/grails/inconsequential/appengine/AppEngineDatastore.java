@@ -1,16 +1,15 @@
 package org.grails.inconsequential.appengine;
 
 import com.google.appengine.api.datastore.*;
-import org.grails.inconsequential.Connection;
-import org.grails.inconsequential.Context;
-import org.grails.inconsequential.Datastore;
+import org.grails.inconsequential.*;
+import org.grails.inconsequential.Key;
 
 import java.util.*;
 
 /**
  * @author Guillaume Laforge
  */
-public class AppEngineDatastore implements Datastore {
+public class AppEngineDatastore implements Datastore<com.google.appengine.api.datastore.Key> {
 
     private DatastoreService service = DatastoreServiceFactory.getDatastoreService();
 
@@ -18,7 +17,7 @@ public class AppEngineDatastore implements Datastore {
         return new AppEngineConnection(connectionDetails);
     }
 
-    public Object store(Context ctxt, String table, Map object) {
+    public org.grails.inconsequential.Key store(Context ctxt, String table, Map object) {
         Entity entity = new Entity(table);
         Set keySet = object.keySet();
         for (Object aKeySet : keySet) {
@@ -26,29 +25,29 @@ public class AppEngineDatastore implements Datastore {
             Object value = object.get(propertyName);
             entity.setProperty(propertyName, value);
         }
-        return service.put(entity);
+        return new AppEngineKey(service.put(entity));
     }
 
-    public Map<String, Object> retrieve(Context ctxt, Object key) {
+    public Map<String, Object> retrieve(Context ctxt, Key<com.google.appengine.api.datastore.Key> key) {
         try {
-            Entity entity = service.get(objectToKey(key));
+            Entity entity = service.get(key.getNativeKey());
             return entity.getProperties();
         } catch (EntityNotFoundException e) {
             return null;
         }
     }
 
-    public List<Map<String, Object>> retrieve(Context ctxt, Object... keys) {
-        List<Key> keysList = new ArrayList<Key>();
-        for (Object key : keys) {
-            keysList.add(objectToKey(key));
+    public List<Map<String, Object>> retrieve(Context ctxt, Key<com.google.appengine.api.datastore.Key>... keys) {
+        List<com.google.appengine.api.datastore.Key> keysList = new ArrayList<com.google.appengine.api.datastore.Key>();
+        for (Key<com.google.appengine.api.datastore.Key> key : keys) {
+            keysList.add(key.getNativeKey());
         }
 
         List<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
 
-        Map<Key, Entity> keyEntityMap = service.get(keysList);
-        Set<Key> keySet = keyEntityMap.keySet();
-        for (Key aKeySet : keySet) {
+        Map<com.google.appengine.api.datastore.Key, Entity> keyEntityMap = service.get(keysList);
+        Set<com.google.appengine.api.datastore.Key> keySet = keyEntityMap.keySet();
+        for (com.google.appengine.api.datastore.Key aKeySet : keySet) {
             Entity value = keyEntityMap.get(aKeySet);
             results.add(value.getProperties());
         }
@@ -56,16 +55,12 @@ public class AppEngineDatastore implements Datastore {
         return results;
     }
 
-    public void delete(Context ctxt, Object... keys) {
-        List<Key> keysList = new ArrayList<Key>();
-        for (Object key : keys) {
-            keysList.add(objectToKey(key));
+    public void delete(Context ctxt, Key<com.google.appengine.api.datastore.Key>... keys) {
+        List<com.google.appengine.api.datastore.Key> keysList = new ArrayList<com.google.appengine.api.datastore.Key>();
+        for (Key<com.google.appengine.api.datastore.Key> key : keys) {
+            keysList.add(key.getNativeKey());
         }
+        
         service.delete(keysList);
     }
-
-    private static Key objectToKey(Object obj) {
-        return obj instanceof Key ? (Key)obj : KeyFactory.stringToKey(obj.toString());
-    }
-
 }

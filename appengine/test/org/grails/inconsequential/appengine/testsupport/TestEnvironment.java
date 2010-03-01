@@ -1,4 +1,4 @@
-package org.grails.incosequential.appengine.testsupport;
+package org.grails.inconsequential.appengine.testsupport;
 
 
 import com.google.apphosting.api.ApiProxy;
