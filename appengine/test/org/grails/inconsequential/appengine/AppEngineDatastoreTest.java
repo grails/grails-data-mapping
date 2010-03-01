@@ -44,7 +44,7 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
     public void testStoreAndRetreiveOneEntity() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
 
-        Key key = (Key) engineDatastore.store(null, "persons", personOne);
+        Key key = engineDatastore.store(null, "persons", personOne);
 
         Map<String, Object> result = engineDatastore.retrieve(null, key);
         assertEquals("Guillaume", result.get("firstname"));
@@ -54,8 +54,8 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
     public void testStoreAndRetreiveTwoEntities() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
 
-        Key keyGuillaume = (Key) engineDatastore.store(null, "persons", personOne);
-        Key keyJarJar = (Key) engineDatastore.store(null, "persons", personTwo);
+        Key keyGuillaume = engineDatastore.store(null, "persons", personOne);
+        Key keyJarJar = engineDatastore.store(null, "persons", personTwo);
 
         List<Map<String, Object>> result = engineDatastore.retrieve(null, keyGuillaume, keyJarJar);
         assertEquals(2, result.size());
@@ -64,7 +64,7 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
     public void testStoreAndDelete() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
 
-        Key keyGuillaume = (Key) engineDatastore.store(null, "persons", personOne);
+        Key keyGuillaume = engineDatastore.store(null, "persons", personOne);
 
         Map<String, Object> result = engineDatastore.retrieve(null, keyGuillaume);
         assertNotNull(result);
