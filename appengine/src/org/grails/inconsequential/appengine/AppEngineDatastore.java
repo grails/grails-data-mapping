@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * @author Guillaume Laforge
  */
-public class AppEngineDatastore implements Datastore<com.google.appengine.api.datastore.Key> {
+public class AppEngineDatastore implements KeyValueDatastore<com.google.appengine.api.datastore.Key> {
 
     private DatastoreService service = DatastoreServiceFactory.getDatastoreService();
 
