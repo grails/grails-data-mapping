@@ -1,7 +1,9 @@
 package org.grails.inconsequential.appengine;
 
 import com.google.appengine.api.datastore.*;
+import org.grails.inconsequential.*;
 import org.grails.inconsequential.Key;
+import org.grails.inconsequential.Transaction;
 import org.grails.inconsequential.appengine.testsupport.AppEngineDatastoreTestCase;
 
 import java.util.HashMap;
@@ -73,5 +75,42 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
 
         Map<String, Object> resultAfterDeletion = engineDatastore.retrieve(null, keyGuillaume);
         assertNull(resultAfterDeletion);
+    }
+
+    public void testTransactionCommit() {
+        AppEngineDatastore engineDatastore = new AppEngineDatastore();
+        Connection connection = engineDatastore.connect(new HashMap<String, String>());
+        Context context = connection.createContext();
+
+        // start a transaction
+        Transaction transaction = context.beginTransaction();
+
+        // add a new person in the store
+        Key keyGuillaume = engineDatastore.store(context, "persons", personOne);
+
+        // commit the transaction
+        transaction.commit();
+
+        Map<String, Object> result = engineDatastore.retrieve(context, keyGuillaume);
+        // if the transaction was committed successfully, we should find a result in the store
+        assertNotNull(result);
+    }
+
+    public void testTransactionRollback() {
+        AppEngineDatastore engineDatastore = new AppEngineDatastore();
+        Connection connection = engineDatastore.connect(new HashMap<String, String>());
+        Context context = connection.createContext();
+
+        Transaction transaction = context.beginTransaction();
+
+        // add a new person in the store
+        Key keyGuillaume = engineDatastore.store(context, "persons", personOne);
+
+        transaction.rollback();
+
+        Map<String, Object> result = engineDatastore.retrieve(context, keyGuillaume);
+        // as the transaction was rollbacked, we shouldn't find a result in the store
+        assertNull(result);
+
     }
 }

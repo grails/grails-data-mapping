@@ -5,12 +5,7 @@ package org.grails.inconsequential;
  *
  * @author Guillaume Laforge
  */
-public interface Transaction {
-
-    /**
-     * Begin a new transaction.
-     */
-    void begin();
+public interface Transaction<T> {
 
     /**
      * Commit the transaction.
@@ -21,4 +16,9 @@ public interface Transaction {
      * Rollback the transaction.
      */
     void rollback();
+
+    /**
+     * @return the native transaction object.
+     */
+    T getNativeTransaction();
 }

@@ -23,4 +23,11 @@ public interface Connection {
      * Disconnects from the datastore.
      */
     void disconnect();
+
+    /**
+     * Create a context of execution.
+     *
+     * @return an instance of Context.
+     */
+    Context createContext();
 }

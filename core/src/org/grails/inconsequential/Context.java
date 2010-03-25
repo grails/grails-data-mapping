@@ -40,4 +40,6 @@ public abstract class Context {
     public void setTransaction(Transaction transaction) {
         this.transaction = transaction;
     }
+
+    public abstract Transaction beginTransaction();
 }

@@ -1,6 +1,7 @@
 package org.grails.inconsequential.appengine;
 
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.datastore.Transaction;
 import org.grails.inconsequential.*;
 import org.grails.inconsequential.Key;
 
