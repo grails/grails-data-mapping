@@ -1,0 +1,15 @@
+subprojects {
+    apply id: 'java'
+    apply id: 'eclipse'
+
+    repositories {
+       mavenCentral()
+    }
+
+    dependencies {
+        testCompile 'junit:junit:4.7'
+    }
+
+    version = '0.1'
+	archivesBaseName = 'grails-nosql'
+}

@@ -1,0 +1,8 @@
+jar.appendix = 'gae'
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+    }
+}

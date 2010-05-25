@@ -1,0 +1,17 @@
+repositories {
+	mavenRepo urls:'http://maven-gae-plugin.googlecode.com/svn/repository/'
+}
+dependencies {
+	compile project(":core")
+	compile "com.google.appengine:appengine-api-1.0-sdk:1.3.4"
+	compile "com.google.appengine:appengine-api-stubs:1.3.4"		
+}
+
+jar.appendix = 'gae'
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+    }
+}
