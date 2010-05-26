@@ -1,8 +1,1 @@
-jar.appendix = 'gae'
-sourceSets {
-    main {
-        java {
-            srcDir 'src'
-        }
-    }
-}
+jar.appendix = 'core'

@@ -14,8 +14,8 @@
  */
 package org.grails.inconsequential.reflect;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -32,7 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 1.1
  */
 public class ClassPropertyFetcher {
-    private static final Log LOG = LogFactory.getLog(ClassPropertyFetcher.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ClassPropertyFetcher.class);
     
 	private final Class clazz;
 	final Map<String, PropertyFetcher> staticFetchers = new HashMap<String, PropertyFetcher>();
