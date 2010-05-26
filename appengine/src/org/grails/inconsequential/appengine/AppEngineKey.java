@@ -1,11 +1,11 @@
 package org.grails.inconsequential.appengine;
 
-import org.grails.inconsequential.Key;
+import org.grails.inconsequential.core.Key;
 
 /**
  * @author Guillaume Laforge
  */
-public class AppEngineKey implements Key {
+public class AppEngineKey implements Key<com.google.appengine.api.datastore.Key> {
 
     private com.google.appengine.api.datastore.Key nativeKey;
 

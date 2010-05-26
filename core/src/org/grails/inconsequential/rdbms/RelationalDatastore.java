@@ -1,4 +1,6 @@
-package org.grails.inconsequential;
+package org.grails.inconsequential.rdbms;
+
+import org.grails.inconsequential.core.Datastore;
 
 /**
  * @author Guillaume Laforge

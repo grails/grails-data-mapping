@@ -1,4 +1,4 @@
-package org.grails.inconsequential;
+package org.grails.inconsequential.tx;
 
 /**
  * Class giving the ability to start, commit and rollback a transaction.

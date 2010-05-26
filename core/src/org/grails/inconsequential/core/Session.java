@@ -1,4 +1,4 @@
-package org.grails.inconsequential;
+package org.grails.inconsequential.core;
 
 /**
  * @author Guillaume Laforge

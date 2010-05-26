@@ -1,10 +1,10 @@
 package org.grails.inconsequential.appengine;
 
 import com.google.appengine.api.datastore.*;
-import org.grails.inconsequential.*;
-import org.grails.inconsequential.Key;
-import org.grails.inconsequential.Transaction;
+import org.grails.inconsequential.core.Key;
 import org.grails.inconsequential.appengine.testsupport.AppEngineDatastoreTestCase;
+import org.grails.inconsequential.core.*;
+import org.grails.inconsequential.tx.Transaction;
 
 import java.util.HashMap;
 import java.util.List;
@@ -101,7 +101,7 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
         Connection connection = engineDatastore.connect(new HashMap<String, String>());
         Context context = connection.createContext();
 
-        Transaction transaction = context.beginTransaction();
+        org.grails.inconsequential.tx.Transaction transaction = context.beginTransaction();
 
         // add a new person in the store
         Key keyGuillaume = engineDatastore.store(context, "persons", personOne);

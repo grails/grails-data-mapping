@@ -1,4 +1,8 @@
-package org.grails.inconsequential;
+package org.grails.inconsequential.kv;
+
+import org.grails.inconsequential.core.Context;
+import org.grails.inconsequential.core.Datastore;
+import org.grails.inconsequential.core.Key;
 
 import java.util.List;
 import java.util.Map;

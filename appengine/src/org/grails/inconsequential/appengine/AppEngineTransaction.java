@@ -1,11 +1,9 @@
 package org.grails.inconsequential.appengine;
 
-import org.grails.inconsequential.Transaction;
-
 /**
  * @author Guillaume Laforge
  */
-public class AppEngineTransaction implements Transaction<com.google.appengine.api.datastore.Transaction> {
+public class AppEngineTransaction implements org.grails.inconsequential.tx.Transaction<com.google.appengine.api.datastore.Transaction> {
     private com.google.appengine.api.datastore.Transaction transaction;
 
     public AppEngineTransaction(com.google.appengine.api.datastore.Transaction transaction) {

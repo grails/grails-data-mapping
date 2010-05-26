@@ -1,8 +1,8 @@
 package org.grails.inconsequential.appengine;
 
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import org.grails.inconsequential.Context;
-import org.grails.inconsequential.Transaction;
+import org.grails.inconsequential.core.Context;
+import org.grails.inconsequential.tx.Transaction;
 
 /**
  * A context of access and execution for Google App Engine's datastore.

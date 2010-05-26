@@ -1,4 +1,6 @@
-package org.grails.inconsequential;
+package org.grails.inconsequential.core;
+
+import org.grails.inconsequential.tx.Transaction;
 
 /**
  * The context can hold information about
