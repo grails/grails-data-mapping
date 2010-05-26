@@ -204,7 +204,24 @@
   <component name="libraryTable">
     <library name="SLF4J">
       <CLASSES>
-        <root url="jar://$GRADLE_CACHE$/org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.5.8.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/org.slf4j/slf4j-api/jars/slf4j-api-1.5.8.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/org.slf4j/slf4j-simple/jars/slf4j-simple-1.5.8.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Groovy">
+      <CLASSES>
+        <root url="jar://$GRADLE_CACHE$/org.codehaus.groovy/groovy/jars/groovy-1.7.2.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/asm/asm/jars/asm-3.2.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/antlr/antlr/jars/antlr-2.7.7.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="JUnit">
+      <CLASSES>
+        <root url="jar://$GRADLE_CACHE$/junit/junit/jars/junit-4.8.1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
