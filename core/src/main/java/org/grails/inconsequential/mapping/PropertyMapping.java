@@ -7,7 +7,7 @@ package org.grails.inconsequential.mapping;
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface PropertyMapping {
+public interface PropertyMapping<T> {
 
     /**
      * Retrieves the ClassMapping instance of the owning class
@@ -15,4 +15,11 @@ public interface PropertyMapping {
      * @return The ClassMapping instance
      */
     ClassMapping getClassMapping();
+
+    /**
+     * Returns the mapped form of the property such as a Column, a Key/Value pair, attribute etc.
+     * @return The mapped representation
+     */
+    T getMappedForm();
+
 }

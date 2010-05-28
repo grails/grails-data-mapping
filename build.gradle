@@ -10,7 +10,7 @@ subprojects {
         groovy group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.2'
         compile "org.slf4j:slf4j-api:1.5.8"
         compile "org.slf4j:slf4j-simple:1.5.8"
-        testCompile 'junit:junit:4.7'
+        testCompile 'junit:junit:4.8.1'
     }
 
     version = '0.1'

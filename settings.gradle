@@ -1,1 +1,1 @@
-include "core", "appengine"
+include "core", "appengine", "redis", 'grails-adapter'

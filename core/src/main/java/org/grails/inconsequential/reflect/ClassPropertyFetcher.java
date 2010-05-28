@@ -25,11 +25,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Reads the properties of a class in an optimized manner avoiding
+ * exceptions 
+ *
  * @author Graeme Rocher
- * @since 1.1
+ * @since 1.0
  */
 public class ClassPropertyFetcher {
     private static final Logger LOG = LoggerFactory.getLogger(ClassPropertyFetcher.class);
@@ -39,12 +41,9 @@ public class ClassPropertyFetcher {
 	final Map<String, PropertyFetcher> instanceFetchers = new HashMap<String, PropertyFetcher>();
 	private final ReferenceInstanceCallback callback;
 	private PropertyDescriptor[] propertyDescriptors;
+    private Map<String, PropertyDescriptor> propertyDescriptorsByName = new HashMap<String, PropertyDescriptor>();
 
-	private static Map<Class, ClassPropertyFetcher> cachedClassPropertyFetchers = new ConcurrentHashMap<Class, ClassPropertyFetcher>();
-
-	public static void clearClassPropertyFetcherCache() {
-		cachedClassPropertyFetchers.clear();
-	}
+	private static Map<Class, ClassPropertyFetcher> cachedClassPropertyFetchers = new WeakHashMap<Class, ClassPropertyFetcher>();
 
 	public static ClassPropertyFetcher forClass(final Class c) {
 		ClassPropertyFetcher cpf = cachedClassPropertyFetchers.get(c);
@@ -98,24 +97,28 @@ public class ClassPropertyFetcher {
         try {
             this.propertyDescriptors = Introspector.getBeanInfo(clazz).getPropertyDescriptors();
         } catch (IntrospectionException e) {
-            // handle
+            // ignore
         }
-        for (PropertyDescriptor desc : propertyDescriptors) {
-			Method readMethod = desc.getReadMethod();
-			if (readMethod != null) {
-				boolean staticReadMethod = Modifier.isStatic(readMethod
-						.getModifiers());
-				if (staticReadMethod) {
-					staticFetchers.put(desc.getName(),
-							new GetterPropertyFetcher(readMethod,
-									staticReadMethod));
-				} else {
-					instanceFetchers.put(desc.getName(),
-							new GetterPropertyFetcher(readMethod,
-									staticReadMethod));
-				}
-			}
-		}
+        if(propertyDescriptors!= null) {
+
+            for (PropertyDescriptor desc : propertyDescriptors) {
+                propertyDescriptorsByName.put(desc.getName(),desc);
+                Method readMethod = desc.getReadMethod();
+                if (readMethod != null) {
+                    boolean staticReadMethod = Modifier.isStatic(readMethod
+                            .getModifiers());
+                    if (staticReadMethod) {
+                        staticFetchers.put(desc.getName(),
+                                new GetterPropertyFetcher(readMethod,
+                                        staticReadMethod));
+                    } else {
+                        instanceFetchers.put(desc.getName(),
+                                new GetterPropertyFetcher(readMethod,
+                                        staticReadMethod));
+                    }
+                }
+            }
+        }
 	}
 
     private void processMethod(Method method) {
@@ -246,7 +249,11 @@ public class ClassPropertyFetcher {
 		return null;
 	}
 
-	public static interface ReferenceInstanceCallback {
+    public PropertyDescriptor getPropertyDescriptor(String name) {
+        return propertyDescriptorsByName.get(name);
+    }
+
+    public static interface ReferenceInstanceCallback {
 		public Object getReferenceInstance();
 	}
 

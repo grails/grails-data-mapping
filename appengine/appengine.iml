@@ -18,7 +18,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="nosql" />
+    <orderEntry type="module" module-name="core" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>

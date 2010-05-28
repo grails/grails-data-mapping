@@ -1,5 +1,7 @@
 package org.grails.inconsequential.mapping;
 
+import org.grails.inconsequential.mapping.lifecycle.Initializable;
+
 import java.util.List;
 
 /**
@@ -9,7 +11,7 @@ import java.util.List;
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface PersistentEntity {
+public interface PersistentEntity extends Initializable {
 
     /**
      * The entity name including any package prefix
@@ -17,6 +19,13 @@ public interface PersistentEntity {
      * @return The entity name
      */
     String getName();
+
+    /**
+     * Returns the identity of the instance
+     *
+     * @return The identity
+     */
+    PersistentProperty getIdentity();
 
     /**
      * A list of properties to be persisted
@@ -31,4 +40,9 @@ public interface PersistentEntity {
      * @return The PersistentProperty or null if it doesn't exist
      */
     PersistentProperty getPropertyByName(String name);
+
+    /**
+     * @return The underlying Java class for this entity
+     */
+    Class getJavaClass();
 }

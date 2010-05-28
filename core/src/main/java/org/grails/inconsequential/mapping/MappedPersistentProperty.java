@@ -8,7 +8,7 @@ package org.grails.inconsequential.mapping;
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface MappedPersistentProperty extends PersistentProperty{
+public interface MappedPersistentProperty<T> extends PersistentProperty{
 
     /**
      * Specifies the mapping between this property and an external form
@@ -16,7 +16,7 @@ public interface MappedPersistentProperty extends PersistentProperty{
      *
      * @return The PropertyMapping instance
      */
-    PropertyMapping getMapping();
+    PropertyMapping<T> getMapping();
 
 
 }

@@ -1,0 +1,8 @@
+Grails Inconsequential Adapter
+------------------------------
+
+This project is designed to adapt the Grails conventions
+to the inconsequential API.
+
+A MappingContext is created that simply delegates to an
+underlying GrailsApplication instance.

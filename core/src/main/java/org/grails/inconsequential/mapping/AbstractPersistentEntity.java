@@ -14,7 +14,11 @@
  */
 package org.grails.inconsequential.mapping;
 
+import org.grails.inconsequential.mapping.lifecycle.Initializable;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Abstract implementation to be subclasses on a per datastore basis
@@ -22,23 +26,58 @@ import java.util.List;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class AbstractPersistentEntity implements PersistentEntity{
+public abstract class AbstractPersistentEntity implements PersistentEntity, Initializable{
     protected Class javaClass;
+    protected List<PersistentProperty> persistentProperties;
+    protected Map<String, PersistentProperty> propertiesByName = new HashMap<String,PersistentProperty>();
+    protected MappingContext context;
+    protected PersistentProperty identity;
 
-    public AbstractPersistentEntity(Class javaClass) {
+    public AbstractPersistentEntity(Class javaClass, MappingContext context) {
         if(javaClass == null) throw new IllegalArgumentException("The argument [javaClass] cannot be null");
         this.javaClass = javaClass;
+        this.context = context;
+    }
+
+    public void initialize() {
+        this.identity = context.getMappingSyntaxStrategy().getIdentity(javaClass, context);
+        this.persistentProperties = context.getMappingSyntaxStrategy().getPersistentProperties(javaClass, context);
+        for (PersistentProperty persistentProperty : persistentProperties) {
+            propertiesByName.put(persistentProperty.getName(), persistentProperty);
+        }
     }
 
     public String getName() {
         return javaClass.getName();
     }
 
+    public PersistentProperty getIdentity() {
+        return this.identity;
+    }
+
+    public Class getJavaClass() {
+        return this.javaClass;
+    }
+
     public List<PersistentProperty> getPersistentProperties() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return persistentProperties;
     }
 
     public PersistentProperty getPropertyByName(String name) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return propertiesByName.get(name);
+    }
+
+    @Override
+    public int hashCode() {
+        return javaClass.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == null || !(o instanceof PersistentEntity)) return false;
+        if(this == o) return true;
+
+        PersistentEntity other = (PersistentEntity) o;
+        return javaClass.equals(other.getJavaClass());
     }
 }
