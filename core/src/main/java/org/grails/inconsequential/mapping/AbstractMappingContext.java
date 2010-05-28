@@ -32,9 +32,10 @@ public abstract class AbstractMappingContext implements MappingContext {
 
     public final PersistentEntity addPersistentEntity(Class javaClass) {
         PersistentEntity entity = createPersistentEntity(javaClass);
-        entity.initialize();
+
         persistentEntities.remove(entity); persistentEntities.add(entity);
         persistentEntitiesByName.put(entity.getName(), entity);
+        entity.initialize();
         return entity;
     }
 
