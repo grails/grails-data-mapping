@@ -17,16 +17,33 @@ package org.grails.inconsequential.mapping.syntax;
 import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import org.grails.inconsequential.mapping.*;
+import static org.grails.inconsequential.mapping.syntax.GormProperties.*;
 import org.grails.inconsequential.reflect.ClassPropertyFetcher;
 
 import javax.persistence.Entity;
 import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * <p>This implementation of the MappingSyntaxStrategy interface
- * will interpret GORM-style syntax for defining entities and associations</p>
+ * will interpret GORM-style syntax for defining entities and associations.
+ * </p>
+ *
+ * <p>Example in Groovy code:</p>
+ *
+ * <pre>
+ *  <code>
+ *      class Author {
+ *          String name
+ *          static hasMany = [books:Book]
+ *      }
+ *      class Book {
+ *         String title
+ *         static belongsTo = [author:Author]
+        }
+ *  </code>
+ *
+ * </pre>
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -85,9 +102,64 @@ public class GormMappingSyntaxStrategy implements MappingSyntaxStrategy {
         return getPersistentProperties(javaClass, context, null);
     }
 
-    public List<PersistentProperty> getPersistentProperties(Class javaClass, MappingContext context, ClassMapping mapping) {
+    public List<PersistentProperty> getPersistentProperties(Class javaClass, MappingContext context, ClassMapping classMapping) {
+        PersistentEntity entity = getPersistentEntity(javaClass, context, classMapping);
+
+        final ArrayList<PersistentProperty> persistentProperties = new ArrayList<PersistentProperty>();
+
+        if(entity != null) {
+            ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
+
+            Collection tmp = cpf.getStaticPropertyValue(BELONGS_TO, Collection.class);
+            // owners are the classes that own this class
+            Set owners = tmp != null ? new HashSet(tmp) : Collections.emptySet();
+            // hasMany associations for defining one-to-many and many-to-many
+            Map hasManyMap = getAssociationMap(cpf);
+            // mappedBy for defining by which property an association is mapped
+            Map mappedByMap = cpf.getStaticPropertyValue(MAPPED_BY, Map.class);
+            if(mappedByMap == null) mappedByMap = Collections.emptyMap();
+            // hasOne for declaring a one-to-one association with the foreign key in the child
+            Map hasOneMap = cpf.getStaticPropertyValue(HAS_ONE, Map.class);
+            if(hasOneMap == null) hasOneMap = Collections.emptyMap();
+
+            
+            
+        }
+
         // TODO: Migrate logic from DefaultGrailsDomainClass to here to GORM syntax is portable outside of Grails
-        return new ArrayList<PersistentProperty>();
+        return persistentProperties;
+    }
+
+    /**
+     * Retrieves the association map
+     * @param cpf The ClassPropertyFetcher instance
+     * @return The association map
+     */
+    protected Map getAssociationMap(ClassPropertyFetcher cpf) {
+        Map relationshipMap = cpf.getStaticPropertyValue(HAS_MANY, Map.class);
+        if(relationshipMap == null)
+            relationshipMap = new HashMap();
+
+        Class theClass = cpf.getJavaClass();
+        while(theClass != Object.class) {
+            theClass = theClass.getSuperclass();
+            ClassPropertyFetcher propertyFetcher = ClassPropertyFetcher.forClass(theClass);
+            Map superRelationshipMap = propertyFetcher.getStaticPropertyValue(HAS_MANY, Map.class);
+            if(superRelationshipMap != null && !superRelationshipMap.equals(relationshipMap)) {
+                relationshipMap.putAll(superRelationshipMap);
+            }
+        }
+        return relationshipMap;
+    }
+
+
+    private PersistentEntity getPersistentEntity(Class javaClass, MappingContext context, ClassMapping classMapping) {
+        PersistentEntity entity;
+        if(classMapping != null)
+            entity = classMapping.getEntity();
+        else
+            entity = context.getPersistentEntity(javaClass.getName());
+        return entity;
     }
 
     /**
