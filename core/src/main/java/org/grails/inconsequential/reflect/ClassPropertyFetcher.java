@@ -64,6 +64,13 @@ public class ClassPropertyFetcher {
 		init();
 	}
 
+    /**
+     * @return The Java that this ClassPropertyFetcher was constructor for
+     */
+    public Class getJavaClass() {
+          return this.clazz;
+    }
+
 	public Object getReference() {
 		if(callback != null)
 			return this.callback.getReferenceInstance();
