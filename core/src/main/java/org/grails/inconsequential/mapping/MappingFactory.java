@@ -39,7 +39,7 @@ import java.beans.PropertyDescriptor;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class MappingFactory<T,R> {
+public abstract class MappingFactory<R,T> {
 
     /**
      * Creates the mapped form of a persistent entity

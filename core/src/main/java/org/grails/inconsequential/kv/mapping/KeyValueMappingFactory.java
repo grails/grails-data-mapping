@@ -22,7 +22,7 @@ import org.grails.inconsequential.mapping.PersistentProperty;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class KeyValueMappingFactory extends MappingFactory<KeyMapping,KeyValueMapping> {
+public class KeyValueMappingFactory extends MappingFactory<Family, KeyValue> {
 
     protected String keyspace;
 
@@ -31,12 +31,12 @@ public class KeyValueMappingFactory extends MappingFactory<KeyMapping,KeyValueMa
     }
 
     @Override
-    public KeyValueMapping createMappedForm(PersistentEntity entity) {
-        return new KeyValueMapping(keyspace, entity.getName());
+    public Family createMappedForm(PersistentEntity entity) {
+        return new Family(keyspace, entity.getName());
     }
 
     @Override
-    public KeyMapping createMappedForm(PersistentProperty mpp) {
-        return new KeyMapping(mpp.getName());
+    public KeyValue createMappedForm(PersistentProperty mpp) {
+        return new KeyValue(mpp.getName());
     }
 }

@@ -1,5 +1,7 @@
 package org.grails.inconsequential.core;
 
+import org.grails.inconsequential.mapping.MappingContext;
+
 import java.util.Map;
 
 /**
@@ -11,6 +13,8 @@ import java.util.Map;
  * </ul>
  *
  * @author Guillaume Laforge
+ * @author Graeme Rocher
+ *
  */
 public interface Datastore {
 
@@ -23,4 +27,11 @@ public interface Datastore {
      */
     public Connection connect(Map<String, String> connectionDetails);
 
+
+    /**
+     * Obtains the MappingContext object
+     *
+     * @return The MappingContext object
+     */
+    MappingContext getMappingContext();
 }

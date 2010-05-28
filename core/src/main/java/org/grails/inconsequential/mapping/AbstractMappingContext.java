@@ -25,7 +25,7 @@ import java.util.Map;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class AbstractMappingContext<T,R> implements MappingContext {
+public abstract class AbstractMappingContext implements MappingContext {
 
     protected List<PersistentEntity> persistentEntities = new ArrayList<PersistentEntity>();
     protected Map<String,PersistentEntity>  persistentEntitiesByName = new HashMap<String,PersistentEntity>();

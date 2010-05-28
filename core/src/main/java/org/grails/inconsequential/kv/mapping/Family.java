@@ -15,15 +15,23 @@
 package org.grails.inconsequential.kv.mapping;
 
 /**
+ * <p>A Family is a grouping of KeyValue pairs and is typically composed
+ * of a keyspace and the family name.</p>
+ *
+ * <p>For example in Cassandra a Family relates to a ColumnFamily or in BigTable
+ * a Family relates to a an Entity kind.</p>
+ *
+ * <p>Other more simplistic key/value stores may just use prefixes on keys for the family</p>
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
-public class KeyValueMapping  {
+public class Family {
     
     private String keyspace;
     private String family;
 
-    public KeyValueMapping(String keyspace, String family) {
+    public Family(String keyspace, String family) {
         this.keyspace = keyspace;
         this.family = family;
     }

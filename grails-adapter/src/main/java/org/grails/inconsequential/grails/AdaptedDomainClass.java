@@ -66,4 +66,12 @@ public class AdaptedDomainClass implements MappedPersistentEntity {
     public PersistentProperty getPropertyByName(String name) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public Class getJavaClass() {
+        return this.domainClass.getClazz();
+    }
+
+    public void initialize() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

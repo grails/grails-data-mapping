@@ -4,6 +4,10 @@ import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.datastore.Key;
 import org.grails.inconsequential.core.*;
 import org.grails.inconsequential.kv.KeyValueDatastore;
+import org.grails.inconsequential.kv.mapping.Family;
+import org.grails.inconsequential.kv.mapping.KeyValue;
+import org.grails.inconsequential.kv.mapping.KeyValueMappingContext;
+import org.grails.inconsequential.mapping.MappingContext;
 
 import java.util.*;
 
@@ -12,10 +16,17 @@ import java.util.*;
  */
 public class AppEngineDatastore implements KeyValueDatastore<Key> {
 
-    private DatastoreService service = DatastoreServiceFactory.getDatastoreService();
+    
+    protected DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
+    // hard coded value of "gae" used for the keyspace since GAE manages spaces automatically
+    protected MappingContext<Family, KeyValue> mappingContext = new KeyValueMappingContext("gae");
 
     public Connection connect(Map<String, String> connectionDetails) {
         return new AppEngineConnection(connectionDetails);
+    }
+
+    public MappingContext<Family, KeyValue> getMappingContext() {
+        return mappingContext;
     }
 
     public org.grails.inconsequential.core.Key<com.google.appengine.api.datastore.Key> store(Context ctxt, String table, Map object) {
@@ -26,12 +37,12 @@ public class AppEngineDatastore implements KeyValueDatastore<Key> {
             Object value = object.get(propertyName);
             entity.setProperty(propertyName, value);
         }
-        return new AppEngineKey(service.put(entity));
+        return new AppEngineKey(datastoreService.put(entity));
     }
 
     public Map<String, Object> retrieve(Context ctxt, org.grails.inconsequential.core.Key<Key> key) {
         try {
-            Entity entity = service.get(key.getNativeKey());
+            Entity entity = datastoreService.get(key.getNativeKey());
             return entity.getProperties();
         } catch (EntityNotFoundException e) {
             return null;
@@ -46,7 +57,7 @@ public class AppEngineDatastore implements KeyValueDatastore<Key> {
 
         List<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
 
-        Map<com.google.appengine.api.datastore.Key, Entity> keyEntityMap = service.get(keysList);
+        Map<com.google.appengine.api.datastore.Key, Entity> keyEntityMap = datastoreService.get(keysList);
         Set<com.google.appengine.api.datastore.Key> keySet = keyEntityMap.keySet();
         for (com.google.appengine.api.datastore.Key aKeySet : keySet) {
             Entity value = keyEntityMap.get(aKeySet);
@@ -62,6 +73,6 @@ public class AppEngineDatastore implements KeyValueDatastore<Key> {
             keysList.add(key.getNativeKey());
         }
         
-        service.delete(keysList);
+        datastoreService.delete(keysList);
     }
 }

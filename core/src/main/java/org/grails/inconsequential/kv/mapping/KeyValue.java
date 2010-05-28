@@ -15,14 +15,16 @@
 package org.grails.inconsequential.kv.mapping;
 
 /**
+ * <p>A KeyValue is a used to define the key used for a particular value</p>
+ * 
  * @author Graeme Rocher
  * @since 1.0
  */
-public class KeyMapping {
+public class KeyValue {
 
     private String key;
 
-    public KeyMapping(String key) {
+    public KeyValue(String key) {
         this.key = key;
     }
 

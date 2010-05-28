@@ -26,8 +26,8 @@ import org.grails.inconsequential.mapping.syntax.GormMappingSyntaxStrategy;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class KeyValueMappingContext extends AbstractMappingContext<KeyMapping, KeyValueMapping> {
-    protected MappingFactory<KeyMapping, KeyValueMapping> mappingFactory;
+public class KeyValueMappingContext extends AbstractMappingContext {
+    protected MappingFactory<Family, KeyValue> mappingFactory;
     private MappingSyntaxStrategy syntaxStrategy;
 
     /**
@@ -43,7 +43,7 @@ public class KeyValueMappingContext extends AbstractMappingContext<KeyMapping, K
         return syntaxStrategy;
     }
 
-    public MappingFactory<KeyMapping, KeyValueMapping> getMappingFactory() {
+    public MappingFactory<Family, KeyValue> getMappingFactory() {
         return this.mappingFactory;
     }
 

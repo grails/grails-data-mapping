@@ -15,7 +15,6 @@
 package org.grails.inconsequential.kv.mapping;
 
 import org.grails.inconsequential.mapping.*;
-import org.grails.inconsequential.mapping.types.Identity;
 
 /**
  * @author Graeme Rocher
