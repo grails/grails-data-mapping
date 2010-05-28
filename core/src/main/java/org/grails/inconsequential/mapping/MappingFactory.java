@@ -18,6 +18,16 @@ import org.grails.inconsequential.mapping.types.Identity;
 import org.grails.inconsequential.mapping.types.Simple;
 
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URI;
+import java.net.URL;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.*;
 
 /**
  * <p>An abstract factory for creating persistent property instances.</p>
@@ -40,6 +50,65 @@ import java.beans.PropertyDescriptor;
  * @since 1.0
  */
 public abstract class MappingFactory<R,T> {
+    public static final Set<String> SIMPLE_TYPES;
+
+    static {
+        Set<String> basics = new HashSet<String>();
+        basics.add(boolean.class.getName());
+        basics.add(long.class.getName());
+        basics.add(short.class.getName());
+        basics.add(int.class.getName());
+        basics.add(byte.class.getName());
+        basics.add(float.class.getName());
+        basics.add(double.class.getName());
+        basics.add(char.class.getName());
+        basics.add(Boolean.class.getName());
+        basics.add(Long.class.getName());
+        basics.add(Short.class.getName());
+        basics.add(Integer.class.getName());
+        basics.add(Byte.class.getName());
+        basics.add(Float.class.getName());
+        basics.add(Double.class.getName());
+        basics.add(Character.class.getName());
+        basics.add(String.class.getName());
+        basics.add(java.util.Date.class.getName());
+        basics.add(Time.class.getName());
+        basics.add(Timestamp.class.getName());
+        basics.add(java.sql.Date.class.getName());
+        basics.add(BigDecimal.class.getName());
+        basics.add(BigInteger.class.getName());
+        basics.add(Locale.class.getName());
+        basics.add(Calendar.class.getName());
+        basics.add(GregorianCalendar.class.getName());
+        basics.add(java.util.Currency.class.getName());
+        basics.add(TimeZone.class.getName());
+        basics.add(Object.class.getName());
+        basics.add(Class.class.getName());
+        basics.add(byte[].class.getName());
+        basics.add(Byte[].class.getName());
+        basics.add(char[].class.getName());
+        basics.add(Character[].class.getName());
+        basics.add(Blob.class.getName());
+        basics.add(Clob.class.getName());
+        basics.add(Serializable.class.getName());
+        basics.add(URI.class.getName());
+        basics.add(URL.class.getName());
+
+        SIMPLE_TYPES = Collections.unmodifiableSet(basics);
+    }
+
+
+    public MappingFactory() {
+        super();
+    }
+
+    public static boolean isSimpleType(Class propType) {
+        if(propType == null) return false;
+        if (propType.isArray()) {
+            return isSimpleType(propType.getComponentType());
+        }
+        return SIMPLE_TYPES.contains(propType.getName());
+    }
 
     /**
      * Creates the mapped form of a persistent entity
