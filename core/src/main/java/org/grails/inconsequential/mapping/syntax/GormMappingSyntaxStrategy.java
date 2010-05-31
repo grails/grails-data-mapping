@@ -18,6 +18,8 @@ import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import org.grails.inconsequential.mapping.*;
 import static org.grails.inconsequential.mapping.syntax.GormProperties.*;
+
+import org.grails.inconsequential.mapping.types.Simple;
 import org.grails.inconsequential.reflect.ClassPropertyFetcher;
 
 import javax.persistence.Entity;
@@ -52,6 +54,9 @@ public class GormMappingSyntaxStrategy implements MappingSyntaxStrategy {
     private static final String IDENTITY_PROPERTY = "id";
     private static final String VERSION_PROPERTY = "version";
     private MappingFactory propertyFactory;
+    private static final Set EXCLUDED_PROPERTIES = new HashSet() {{
+        add("class"); add("metaClass");
+    }};
 
     public GormMappingSyntaxStrategy(MappingFactory propertyFactory) {
         super();
@@ -113,6 +118,12 @@ public class GormMappingSyntaxStrategy implements MappingSyntaxStrategy {
             Collection tmp = cpf.getStaticPropertyValue(BELONGS_TO, Collection.class);
             // owners are the classes that own this class
             Set owners = tmp != null ? new HashSet(tmp) : Collections.emptySet();
+            Collection embedded = cpf.getStaticPropertyValue(EMBEDDED, Collection.class);
+            if(embedded == null) embedded = Collections.emptyList();
+
+            Collection transients = cpf.getStaticPropertyValue(TRANSIENT, Collection.class);
+            if(transients == null) transients = Collections.emptyList();
+
             // hasMany associations for defining one-to-many and many-to-many
             Map hasManyMap = getAssociationMap(cpf);
             // mappedBy for defining by which property an association is mapped
@@ -122,12 +133,44 @@ public class GormMappingSyntaxStrategy implements MappingSyntaxStrategy {
             Map hasOneMap = cpf.getStaticPropertyValue(HAS_ONE, Map.class);
             if(hasOneMap == null) hasOneMap = Collections.emptyMap();
 
-            
-            
-        }
+            PropertyDescriptor[] descriptors = cpf.getPropertyDescriptors();
 
-        // TODO: Migrate logic from DefaultGrailsDomainClass to here to GORM syntax is portable outside of Grails
+            for (PropertyDescriptor descriptor : descriptors) {
+                final String propertyName = descriptor.getName();
+                if(isExcludedProperty(propertyName, classMapping, transients)) continue;
+                Class currentPropType = descriptor.getPropertyType();
+                PersistentProperty prop;
+                // establish if the property is a one-to-many
+                // if it is a Set and there are relationships defined
+                // and it is defined as persistent
+                if (Collection.class.isAssignableFrom(currentPropType) || Map.class.isAssignableFrom(currentPropType)) {
+//                    TODO: Implement mapping of collection types
+//                    establishRelationshipForCollection(descriptor, entity, context);
+                }
+                // otherwise if the type is a domain class establish relationship
+                else if (isPersistentEntity(currentPropType)) {
+//                      TODO: Implement mapping of association types
+//                    establishDomainClassRelationship(descriptor, entity, context);
+                }
+                else {
+                    if (embedded.contains(propertyName)) {
+                        // TODO: Implement mapping of embedded types
+    //                    establishDomainClassRelationship(descriptor, entity, context);
+                    }
+                    else if(MappingFactory.isSimpleType(descriptor.getPropertyType())) {
+                        persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
+                    }
+                }
+
+            }
+        }
         return persistentProperties;
+    }
+
+    private boolean isExcludedProperty(String propertyName, ClassMapping classMapping, Collection transients) {
+        IdentityMapping id = classMapping != null ? classMapping.getIdentifier() : null;
+        if(id != null && id.getIdentifierName()[0].equals(propertyName)) return true;
+        else return id == null && propertyName.equals(IDENTITY_PROPERTY) || EXCLUDED_PROPERTIES.contains(propertyName) || transients.contains(propertyName);
     }
 
     /**

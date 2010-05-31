@@ -33,13 +33,27 @@ class GormMappingSyntaxTests {
     assert id.name == 'id'
   }
 
+  @Test
+  void testGetSimplePersistentProperties() {
+    def context = new TestMappingContext()
+    context.addPersistentEntity(TestEntity)
+    def strategy = context.mappingSyntaxStrategy
+    def props = strategy.getPersistentProperties(TestEntity,context)
+    assert props.size() == 2
+
+  }
   @Entity
   class JavaEntity {
 
   }
-  class TestEntity {
-    Long id
-    Long version
-  }
-
 }
+class TestEntity {
+  Long id
+  Long version
+
+  String name
+  String bar
+
+  static transients = ['bar']
+}
+
