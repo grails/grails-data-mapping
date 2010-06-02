@@ -14,6 +14,7 @@
  */
 package org.grails.inconsequential.mapping;
 
+import org.grails.inconsequential.core.EntityCreationException;
 import org.grails.inconsequential.mapping.lifecycle.Initializable;
 
 import java.util.HashMap;
@@ -54,7 +55,17 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
             }
         };
     }
-    
+
+    public Object newInstance() {
+        try {
+            return getJavaClass().newInstance();
+        } catch (InstantiationException e) {
+            throw new EntityCreationException("Unable to create entity of type ["+getJavaClass()+"]: " + e.getMessage(),e);
+        } catch (IllegalAccessException e) {
+            throw new EntityCreationException("Unable to create entity of type ["+getJavaClass()+"]: " + e.getMessage(),e);
+        }
+    }
+
     public String getName() {
         return javaClass.getName();
     }

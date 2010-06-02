@@ -61,5 +61,10 @@ public interface PersistentEntity extends Initializable {
      * @return The ClassMapping instance
      */
     ClassMapping getMapping();
-    
+
+    /**
+     * Constructs a new instance
+     * @return The new instnace
+     */
+    Object newInstance();
 }

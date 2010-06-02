@@ -14,9 +14,7 @@
  */
 package org.grails.inconsequential.appengine.engine;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.*;
 import org.grails.inconsequential.appengine.AppEngineKey;
 import org.grails.inconsequential.core.Key;
 import org.grails.inconsequential.engine.EntityAccess;
@@ -29,6 +27,9 @@ import org.grails.inconsequential.mapping.types.Simple;
 import java.util.List;
 
 /**
+ * Implementation of the {@link org.grails.inconsequential.engine.EntityPersister} abstract
+ * class for AppEngine  
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
@@ -42,17 +43,47 @@ public class AppEngineEntityPersister extends EntityPersister {
 
     @Override
     protected Object retrieveEntity(MappingContext context, PersistentEntity persistentEntity, Key key) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        ClassMapping<Family> cm = persistentEntity.getMapping();
+        String table = getTable(persistentEntity, cm);
+
+        Object nativeKey = key.getNativeKey();
+        if(nativeKey instanceof Long) {
+            nativeKey = KeyFactory.createKey(table,(Long)nativeKey);
+        }
+        else if(!(nativeKey instanceof com.google.appengine.api.datastore.Key)) {
+            nativeKey = KeyFactory.createKey(table,nativeKey.toString());
+        }
+        try {
+            Entity e = this.datastoreService.get((com.google.appengine.api.datastore.Key) nativeKey);
+
+            Object obj = persistentEntity.newInstance();
+            EntityAccess ea = new EntityAccess(obj);
+
+            final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
+            for (PersistentProperty prop : props) {
+                if(prop instanceof Simple) {
+                    PropertyMapping<KeyValue> pm = prop.getMapping();
+                    String propKey;
+                    if(pm.getMappedForm()!=null) {
+                        propKey = pm.getMappedForm().getKey();
+                    }
+                    else {
+                        propKey = prop.getName();
+                    }
+                    ea.setProperty(prop.getName(), e.getProperty(propKey) );
+                }
+            }
+            return obj;
+        } catch (EntityNotFoundException e1) {
+            // ignore will return null
+        }
+        return null;
     }
 
     @Override
     protected Key persistEntity(MappingContext context, PersistentEntity persistentEntity, EntityAccess entityAccess) {
         ClassMapping<Family> cm = persistentEntity.getMapping();
-        String table = null;
-        if(cm.getMappedForm() != null) {
-            table = cm.getMappedForm().getFamily();
-        }
-        if(table == null) table = persistentEntity.getJavaClass().getName();
+        String table = getTable(persistentEntity, cm);
 
         Entity e = new Entity(table);
         final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
@@ -60,7 +91,7 @@ public class AppEngineEntityPersister extends EntityPersister {
             if(prop instanceof Simple) {
                 PropertyMapping<KeyValue> pm = prop.getMapping();
                 String key = null;
-                if(pm != null && pm.getMappedForm() != null) {
+                if(pm.getMappedForm() != null) {
                     key = pm.getMappedForm().getKey();
                 }
                 if(key == null) key = prop.getName();
@@ -72,6 +103,15 @@ public class AppEngineEntityPersister extends EntityPersister {
         String id = cm.getIdentifier().getIdentifierName()[0];
         entityAccess.setProperty(id, k);
         return new AppEngineKey(k);
+    }
+
+    private String getTable(PersistentEntity persistentEntity, ClassMapping<Family> cm) {
+        String table = null;
+        if(cm.getMappedForm() != null) {
+            table = cm.getMappedForm().getFamily();
+        }
+        if(table == null) table = persistentEntity.getJavaClass().getName();
+        return table;
     }
 
     @Override
