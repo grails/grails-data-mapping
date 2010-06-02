@@ -17,6 +17,8 @@ package org.grails.inconsequential.engine;
 import org.apache.commons.beanutils.BeanMap;
 
 /**
+ * Class used to access properties of an entity. Also responsible for
+ * any conversion from source to target types.
  * 
  * @author Graeme Rocher
  * @since 1.0
