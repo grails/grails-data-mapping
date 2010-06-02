@@ -17,8 +17,9 @@ package org.grails.inconsequential.grails;
 import org.codehaus.groovy.grails.commons.GrailsDomainClass;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.grails.inconsequential.mapping.ClassMapping;
-import org.grails.inconsequential.mapping.MappedPersistentEntity;
+import org.grails.inconsequential.mapping.PersistentEntity;
 import org.grails.inconsequential.mapping.PersistentProperty;
+import org.grails.inconsequential.reflect.ReflectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.List;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class AdaptedDomainClass implements MappedPersistentEntity {
+public class AdaptedDomainClass implements PersistentEntity {
     protected GrailsDomainClass domainClass;
     protected List<PersistentProperty> persistentProperties = new ArrayList<PersistentProperty>();
 
@@ -51,6 +52,10 @@ public class AdaptedDomainClass implements MappedPersistentEntity {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public Object newInstance() {
+        return ReflectionUtils.instantiate(getJavaClass());
+    }
+
     public String getName() {
         return domainClass.getFullName();
     }
@@ -69,6 +74,10 @@ public class AdaptedDomainClass implements MappedPersistentEntity {
 
     public Class getJavaClass() {
         return this.domainClass.getClazz();
+    }
+
+    public boolean isInstance(Object obj) {
+        return getJavaClass().isInstance(obj);
     }
 
     public void initialize() {
