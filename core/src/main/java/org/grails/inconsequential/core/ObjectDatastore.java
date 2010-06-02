@@ -44,7 +44,7 @@ public interface ObjectDatastore<T> extends Datastore {
      * @param key The key
      * @return
      */
-    Object retrieve(DatastoreContext ctx, Class type, Key key);
+    Object retrieve(DatastoreContext ctx, Class type, Key<T> key);
 
     /**
      * Deletes one or many objects

@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class AbstractObjectDatastore implements ObjectDatastore {
+public abstract class AbstractObjectDatastore<T> implements ObjectDatastore<T> {
     protected Map<Class,Persister> persisters = new ConcurrentHashMap<Class,Persister>();
 
     public AbstractObjectDatastore() {
@@ -52,7 +52,7 @@ public abstract class AbstractObjectDatastore implements ObjectDatastore {
     protected abstract Persister createPersister(Class cls, MappingContext mappingContext);
 
 
-    public Key persist(DatastoreContext ctx, Object o) {
+    public Key<T> persist(DatastoreContext ctx, Object o) {
         if(o == null) throw new IllegalArgumentException("Cannot persist null object");
         Persister persister = getPersister(o);
         if(persister != null) {
@@ -61,7 +61,7 @@ public abstract class AbstractObjectDatastore implements ObjectDatastore {
         throw new CannotPersistException("Object ["+o+"] cannot be persisted. It is not a known persistent type.");
     }
 
-    public Object retrieve(DatastoreContext ctx, Class type, Key key) {
+    public Object retrieve(DatastoreContext ctx, Class type, Key<T> key) {
         if(key == null || type == null) return null;
         Persister persister = getPersister(type);
         if(persister != null) {
