@@ -14,12 +14,14 @@ class EntityPersisterTests extends AppEngineDatastoreTestCase {
 
   void testPersistObject() {
     AppEngineDatastore ds = new AppEngineDatastore()
+
+    def conn = ds.connect(null)
+
     ds.getMappingContext().addPersistentEntity(TestEntity)
 
     TestEntity t = new TestEntity()
     t.name = "bob"
-    def conn = ds.connect(null)
-    def ctx = new AppEngineContext(conn, ds.mappingContext)
+    def ctx = conn.createContext()
     ds.persist(ctx, t)
 
     assert t.id != null

@@ -29,7 +29,7 @@ public class AppEngineDatastore extends AbstractObjectDatastore implements KeyVa
     protected MappingContext<Family, KeyValue> mappingContext = new KeyValueMappingContext("gae");
 
     public Connection connect(Map<String, String> connectionDetails) {
-        return new AppEngineConnection(connectionDetails);
+        return new AppEngineConnection(connectionDetails, mappingContext);
     }
 
     public MappingContext<Family, KeyValue> getMappingContext() {
