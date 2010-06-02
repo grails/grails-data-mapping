@@ -1,4 +1,11 @@
+repositories {
+  add(new org.apache.ivy.plugins.resolver.URLResolver()) {
+    name = 'jredis'
+    addArtifactPattern 'http://github.com/downloads/alphazero/[organisation]/[module]-[revision].jar'
+  }
+}
 dependencies {
   compile project(":core")
+  compile 'jredis:jredis:1.0-rc1'
 }
 jar.appendix = 'redis'
