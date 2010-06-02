@@ -256,6 +256,20 @@
         <root url="file://$GRAILS_HOME$/src/java" />
       </SOURCES>
     </library>
+    <library name="BeanUtils">
+      <CLASSES>
+        <root url="jar://$GRADLE_CACHE$/commons-beanutils/commons-beanutils/jars/commons-beanutils-1.8.0.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Commons Collections">
+      <CLASSES>
+        <root url="jar://$GRADLE_CACHE$/commons-collections/commons-collections/jars/commons-collections-3.2.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
   </component>
 </project>
 

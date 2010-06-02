@@ -14,7 +14,7 @@
  */
 package org.grails.inconsequential.mapping.types;
 
-import org.grails.inconsequential.mapping.AbstractMappedPersistentProperty;
+import org.grails.inconsequential.mapping.AbstractPersistentProperty;
 import org.grails.inconsequential.mapping.MappingContext;
 import org.grails.inconsequential.mapping.PersistentEntity;
 
@@ -26,7 +26,7 @@ import java.beans.PropertyDescriptor;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class Identity<T> extends AbstractMappedPersistentProperty<T> {
+public abstract class Identity<T> extends AbstractPersistentProperty {
     public Identity(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
     }

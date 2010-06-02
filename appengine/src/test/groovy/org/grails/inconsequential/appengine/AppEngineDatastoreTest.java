@@ -80,7 +80,7 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
     public void testTransactionCommit() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
         Connection connection = engineDatastore.connect(new HashMap<String, String>());
-        Context context = connection.createContext();
+        DatastoreContext context = connection.createContext();
 
         // start a transaction
         Transaction transaction = context.beginTransaction();
@@ -99,7 +99,7 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
     public void testTransactionRollback() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
         Connection connection = engineDatastore.connect(new HashMap<String, String>());
-        Context context = connection.createContext();
+        DatastoreContext context = connection.createContext();
 
         org.grails.inconsequential.tx.Transaction transaction = context.beginTransaction();
 

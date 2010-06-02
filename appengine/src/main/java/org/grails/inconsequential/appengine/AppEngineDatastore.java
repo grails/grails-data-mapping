@@ -2,19 +2,26 @@ package org.grails.inconsequential.appengine;
 
 import com.google.appengine.api.datastore.*;
 import com.google.appengine.api.datastore.Key;
+import org.grails.inconsequential.appengine.engine.AppEngineEntityPersister;
 import org.grails.inconsequential.core.*;
+import org.grails.inconsequential.engine.Persister;
 import org.grails.inconsequential.kv.KeyValueDatastore;
 import org.grails.inconsequential.kv.mapping.Family;
 import org.grails.inconsequential.kv.mapping.KeyValue;
 import org.grails.inconsequential.kv.mapping.KeyValueMappingContext;
 import org.grails.inconsequential.mapping.MappingContext;
+import org.grails.inconsequential.mapping.PersistentEntity;
 
 import java.util.*;
 
 /**
+ *
+ * @author Graeme Rocher
  * @author Guillaume Laforge
+ * 
+ * @since 1.0
  */
-public class AppEngineDatastore implements KeyValueDatastore<Key> {
+public class AppEngineDatastore extends AbstractObjectDatastore implements KeyValueDatastore<Key> {
 
     
     protected DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
@@ -29,7 +36,7 @@ public class AppEngineDatastore implements KeyValueDatastore<Key> {
         return mappingContext;
     }
 
-    public org.grails.inconsequential.core.Key<com.google.appengine.api.datastore.Key> store(Context ctxt, String table, Map object) {
+    public org.grails.inconsequential.core.Key<com.google.appengine.api.datastore.Key> store(DatastoreContext ctxt, String table, Map object) {
         Entity entity = new Entity(table);
         Set keySet = object.keySet();
         for (Object aKeySet : keySet) {
@@ -40,7 +47,7 @@ public class AppEngineDatastore implements KeyValueDatastore<Key> {
         return new AppEngineKey(datastoreService.put(entity));
     }
 
-    public Map<String, Object> retrieve(Context ctxt, org.grails.inconsequential.core.Key<Key> key) {
+    public Map<String, Object> retrieve(DatastoreContext ctxt, org.grails.inconsequential.core.Key<Key> key) {
         try {
             Entity entity = datastoreService.get(key.getNativeKey());
             return entity.getProperties();
@@ -49,7 +56,7 @@ public class AppEngineDatastore implements KeyValueDatastore<Key> {
         }
     }
 
-    public List<Map<String, Object>> retrieve(Context ctxt, org.grails.inconsequential.core.Key<Key>... keys) {
+    public List<Map<String, Object>> retrieve(DatastoreContext ctxt, org.grails.inconsequential.core.Key<Key>... keys) {
         List<com.google.appengine.api.datastore.Key> keysList = new ArrayList<com.google.appengine.api.datastore.Key>();
         for (org.grails.inconsequential.core.Key<com.google.appengine.api.datastore.Key> key : keys) {
             keysList.add(key.getNativeKey());
@@ -67,12 +74,21 @@ public class AppEngineDatastore implements KeyValueDatastore<Key> {
         return results;
     }
 
-    public void delete(Context ctxt, org.grails.inconsequential.core.Key<Key>... keys) {
+    public void delete(DatastoreContext ctxt, org.grails.inconsequential.core.Key<Key>... keys) {
         List<com.google.appengine.api.datastore.Key> keysList = new ArrayList<com.google.appengine.api.datastore.Key>();
         for (org.grails.inconsequential.core.Key<Key> key : keys) {
             keysList.add(key.getNativeKey());
         }
         
         datastoreService.delete(keysList);
+    }
+
+    @Override
+    protected Persister createPersister(Class cls, MappingContext mappingContext) {
+        PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
+        if(entity != null) {
+            return new AppEngineEntityPersister(entity, datastoreService);
+        }
+        return null;
     }
 }

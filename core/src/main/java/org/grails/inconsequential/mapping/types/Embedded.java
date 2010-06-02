@@ -14,7 +14,6 @@
  */
 package org.grails.inconsequential.mapping.types;
 
-import org.grails.inconsequential.mapping.AbstractMappedPersistentProperty;
 import org.grails.inconsequential.mapping.MappingContext;
 import org.grails.inconsequential.mapping.PersistentEntity;
 

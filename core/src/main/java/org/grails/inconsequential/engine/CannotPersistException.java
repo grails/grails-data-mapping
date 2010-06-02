@@ -12,20 +12,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.inconsequential.core;
+package org.grails.inconsequential.engine;
 
 /**
- * Represents a key used to retrieveEntity an instance from a data store
- *
- * @author Guillaume Laforge
+ * Thrown when an object cannot be persisted
+ * 
  * @author Graeme Rocher
+ * @since 1.0
  */
-public interface Key<T> {
-    /**
-     * The native key. Data store dependent. Could be a Long or a data store
-     * specific object
-     *
-     * @return The native key
-     */
-    T getNativeKey();
+public class CannotPersistException extends RuntimeException {
+
+    public CannotPersistException(String s) {
+        super(s);
+    }
 }

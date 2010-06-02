@@ -29,5 +29,5 @@ public interface Connection {
      *
      * @return an instance of Context.
      */
-    Context createContext();
+    DatastoreContext createContext();
 }

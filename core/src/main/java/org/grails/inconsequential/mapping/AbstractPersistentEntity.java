@@ -26,7 +26,7 @@ import java.util.Map;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class AbstractPersistentEntity implements PersistentEntity, Initializable{
+public abstract class AbstractPersistentEntity<T> implements PersistentEntity, Initializable{
     protected Class javaClass;
     protected List<PersistentProperty> persistentProperties;
     protected Map<String, PersistentProperty> propertiesByName = new HashMap<String,PersistentProperty>();
@@ -47,6 +47,14 @@ public abstract class AbstractPersistentEntity implements PersistentEntity, Init
         }
     }
 
+    public ClassMapping<T> getMapping() {
+        return new AbstractClassMapping<T>(this, context) {
+            public T getMappedForm() {
+                return null;
+            }
+        };
+    }
+    
     public String getName() {
         return javaClass.getName();
     }
@@ -57,6 +65,10 @@ public abstract class AbstractPersistentEntity implements PersistentEntity, Init
 
     public Class getJavaClass() {
         return this.javaClass;
+    }
+
+    public boolean isInstance(Object obj) {
+        return getJavaClass().isInstance(obj);
     }
 
     public List<PersistentProperty> getPersistentProperties() {

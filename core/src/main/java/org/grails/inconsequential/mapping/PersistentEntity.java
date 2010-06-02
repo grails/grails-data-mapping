@@ -45,4 +45,21 @@ public interface PersistentEntity extends Initializable {
      * @return The underlying Java class for this entity
      */
     Class getJavaClass();
+
+    /**
+     * Tests whether the given instance is an instance of this persistent entity
+     *
+     * @param obj The object
+     * @return True if it is
+     */
+    boolean isInstance(Object obj);
+
+    /**
+     * Defines the mapping between this persistent entity
+     * and an external form
+     *
+     * @return The ClassMapping instance
+     */
+    ClassMapping getMapping();
+    
 }

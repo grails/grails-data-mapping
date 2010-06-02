@@ -134,12 +134,8 @@ public abstract class MappingFactory<R,T> {
      */
     public Identity<T> createIdentity(PersistentEntity owner, MappingContext context, PropertyDescriptor pd) {
         return new Identity<T>(owner, context, pd) {
-            @Override
             public PropertyMapping<T> getMapping() {
-                if(owner instanceof MappedPersistentEntity) {
-                    return createPropertyMapping(this, owner);
-                }
-                return null;
+               return createPropertyMapping(this, owner);
             }
         };
     }
@@ -154,20 +150,16 @@ public abstract class MappingFactory<R,T> {
      */
     public Simple<T> createSimple(PersistentEntity owner, MappingContext context, PropertyDescriptor pd) {
         return new Simple<T>(owner, context, pd) {
-            @Override
             public PropertyMapping<T> getMapping() {
-                if(owner instanceof MappedPersistentEntity) {
-                    return createPropertyMapping(this, owner);
-                }
-                return null;
+                return createPropertyMapping(this, owner);
             }
         };
     }
 
-    protected PropertyMapping<T> createPropertyMapping(final MappedPersistentProperty<T> property, final PersistentEntity owner) {
+    protected PropertyMapping<T> createPropertyMapping(final PersistentProperty<T> property, final PersistentEntity owner) {
         return new PropertyMapping<T>() {
             public ClassMapping getClassMapping() {
-                return ((MappedPersistentEntity) owner).getMapping();
+                return owner.getMapping();
             }
             public T getMappedForm() {
                 return createMappedForm(property);

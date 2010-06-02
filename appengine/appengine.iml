@@ -3,8 +3,8 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/groovy" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -20,14 +20,20 @@
     </orderEntry>
     <orderEntry type="module" module-name="core" />
     <orderEntry type="module-library">
-      <library>
+      <library name="AppEngine">
         <CLASSES>
+          <root url="jar://$GRADLE_CACHE$/com.google.appengine/appengine-api-stubs/jars/appengine-api-stubs-1.3.4.jar!/" />
           <root url="jar://$GRADLE_CACHE$/com.google.appengine/appengine-api-1.0-sdk/jars/appengine-api-1.0-sdk-1.3.4.jar!/" />
+          <root url="jar://$GRADLE_CACHE$/com.google.appengine/appengine-tools-api/jars/appengine-tools-api-1.3.4.jar!/" />
+          <root url="jar://$GRADLE_CACHE$/com.google.appengine/appengine-testing/jars/appengine-testing-1.3.4.jar!/" />
+          <root url="jar://$GRADLE_CACHE$/com.google.appengine/appengine-local-runtime/jars/appengine-local-runtime-1.3.4.jar!/" />
+          <root url="jar://$GRADLE_CACHE$/com.google.appengine/appengine-api-labs/jars/appengine-api-labs-1.3.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Groovy" level="project" />
   </component>
 </module>
 

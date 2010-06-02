@@ -1,7 +1,7 @@
 package org.grails.inconsequential.appengine;
 
 import org.grails.inconsequential.core.Connection;
-import org.grails.inconsequential.core.Context;
+import org.grails.inconsequential.core.DatastoreContext;
 
 import java.util.Map;
 
@@ -40,7 +40,7 @@ public class AppEngineConnection implements Connection {
         // No-op, always connected to the datastore.
     }
 
-    public Context createContext() {
+    public DatastoreContext createContext() {
         AppEngineContext engineContext = new AppEngineContext(this);
         return engineContext;
     }

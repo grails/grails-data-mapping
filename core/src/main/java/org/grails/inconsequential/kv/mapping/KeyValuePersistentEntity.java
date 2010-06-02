@@ -20,7 +20,7 @@ import org.grails.inconsequential.mapping.*;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class KeyValuePersistentEntity<KeyValueMapping> extends AbstractMappedPersistentEntity{
+public class KeyValuePersistentEntity<KeyValueMapping> extends AbstractPersistentEntity{
     public KeyValuePersistentEntity(Class javaClass, MappingContext context) {
         super(javaClass, context);
     }

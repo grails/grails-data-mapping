@@ -17,14 +17,13 @@ package org.grails.inconsequential.mapping.syntax;
 import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import org.grails.inconsequential.mapping.*;
-import static org.grails.inconsequential.mapping.syntax.GormProperties.*;
-
-import org.grails.inconsequential.mapping.types.Simple;
 import org.grails.inconsequential.reflect.ClassPropertyFetcher;
 
 import javax.persistence.Entity;
 import java.beans.PropertyDescriptor;
 import java.util.*;
+
+import static org.grails.inconsequential.mapping.syntax.GormProperties.*;
 
 /**
  * <p>This implementation of the MappingSyntaxStrategy interface
@@ -211,37 +210,24 @@ public class GormMappingSyntaxStrategy implements MappingSyntaxStrategy {
     public PersistentProperty getIdentity(Class javaClass, MappingContext context) {
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(javaClass);
         PersistentEntity entity = context.getPersistentEntity(javaClass.getName());
-        if(entity instanceof MappedPersistentEntity) {
-            ClassMapping mapping = ((MappedPersistentEntity) entity).getMapping();
+        ClassMapping mapping = entity.getMapping();
 
-            IdentityMapping id = mapping.getIdentifier();
-            final String[] names = id.getIdentifierName();
-            if(names.length==1) {
-                final PropertyDescriptor pd = cpf.getPropertyDescriptor(names[0]);
-
-                if(pd != null) {
-                    return propertyFactory.createIdentity(entity, context, pd);
-                }
-                else {
-                    throw new IllegalMappingException("Mapped identifier ["+names[0]+"] for class ["+javaClass.getName()+"] is not a valid property");
-                }
-
-            }
-            else {
-                // TODO: Support composite / natural identifiers
-                throw new UnsupportedOperationException("Mapping of composite identifiers currently not supported");
-            }
-        }
-        else {
-            final PropertyDescriptor pd = cpf.getPropertyDescriptor(IDENTITY_PROPERTY);
+        IdentityMapping id = mapping.getIdentifier();
+        final String[] names = id.getIdentifierName();
+        if(names.length==1) {
+            final PropertyDescriptor pd = cpf.getPropertyDescriptor(names[0]);
 
             if(pd != null) {
                 return propertyFactory.createIdentity(entity, context, pd);
             }
             else {
-                throw new IllegalMappingException("Persistent class ["+javaClass.getName()+"] does not have an 'id' property nor does it specify an alternative property to use as an identifier. Either create an 'id' property or specified which property is the 'id' via the mapping.");
+                throw new IllegalMappingException("Mapped identifier ["+names[0]+"] for class ["+javaClass.getName()+"] is not a valid property");
             }
 
+        }
+        else {
+            // TODO: Support composite / natural identifiers
+            throw new UnsupportedOperationException("Mapping of composite identifiers currently not supported");
         }
     }
 

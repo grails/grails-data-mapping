@@ -12,20 +12,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.inconsequential.core;
+package org.grails.inconsequential.engine;
+
+import org.apache.commons.beanutils.BeanMap;
 
 /**
- * Represents a key used to retrieveEntity an instance from a data store
- *
- * @author Guillaume Laforge
+ * 
  * @author Graeme Rocher
+ * @since 1.0
  */
-public interface Key<T> {
-    /**
-     * The native key. Data store dependent. Could be a Long or a data store
-     * specific object
-     *
-     * @return The native key
-     */
-    T getNativeKey();
+public class EntityAccess {
+
+    protected Object entity;
+    protected BeanMap beanMap;
+
+    public EntityAccess(Object entity) {
+        this.entity = entity;
+        this.beanMap = new BeanMap(entity);
+    }
+
+    public Object getEntity() {
+        return entity;
+    }
+
+    public Object getProperty(String name) {
+        return beanMap.get(name);
+    }
+
+    public Object setProperty(String name, Object value) {
+        return beanMap.put(name, value);
+    }
 }
