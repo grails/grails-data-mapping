@@ -24,10 +24,17 @@ class EntityPersisterTests extends AppEngineDatastoreTestCase {
 
     assert t.id != null
 
-    t = ds.retrieve(ctx, TestEntity, new AppEngineKey(t.id))
+    def key = new AppEngineKey(t.id)
+    t = ds.retrieve(ctx, TestEntity, key)
 
     assert t != null
     assert "bob"  == t.name
+
+    ds.delete(ctx, key)
+
+    t = ds.retrieve(ctx, TestEntity, key)
+
+    assert t == null
 
   }
 }
