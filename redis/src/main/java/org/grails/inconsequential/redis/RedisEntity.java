@@ -26,7 +26,7 @@ import java.beans.Introspector;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisEntity extends KeyValuePersistentEntity implements MappedPersistentEntity {
+public class RedisEntity extends KeyValuePersistentEntity implements PersistentEntity {
     public RedisEntity(Class javaClass, MappingContext context) {
         super(javaClass, context);
     }
