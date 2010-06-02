@@ -22,9 +22,13 @@ import org.grails.inconsequential.kv.mapping.KeyValue;
 import org.grails.inconsequential.mapping.*;
 import org.grails.inconsequential.mapping.types.Simple;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Abstract implementation of the EntityPersister abstract class
+ * for key/value style stores
+ * 
  * @author Graeme Rocher
  * @since 1.0
  */
@@ -44,7 +48,29 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
     }
 
     @Override
-    protected Object retrieveEntity(MappingContext context, PersistentEntity persistentEntity, Key key) {
+    protected final void deleteEntities(MappingContext context, PersistentEntity persistentEntity, Object... objects) {
+        if(objects != null) {
+            List<K> keys = new ArrayList<K>();
+            final ClassMapping cm = persistentEntity.getMapping();
+            final String family = getFamily(persistentEntity, cm);
+            for (Object object : objects) {
+               EntityAccess access = new EntityAccess(object);
+               String idName = getIdentifierName(cm);
+               final Object idValue = access.getProperty(idName);
+               if(idValue != null) {
+                   K key = inferNativeKey(family, idValue);
+                   keys.add(key);
+               }
+            }
+            if(!keys.isEmpty()) {
+                deleteEntries(keys);
+            }
+        }
+    }
+
+
+    @Override
+    protected final Object retrieveEntity(MappingContext context, PersistentEntity persistentEntity, Key key) {
         ClassMapping<Family> cm = persistentEntity.getMapping();
         String family = getFamily(persistentEntity, cm);
 
@@ -74,7 +100,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
     }
 
     @Override
-    protected Key persistEntity(MappingContext context, PersistentEntity persistentEntity, EntityAccess entityAccess) {
+    protected final Key persistEntity(MappingContext context, PersistentEntity persistentEntity, EntityAccess entityAccess) {
         ClassMapping<Family> cm = persistentEntity.getMapping();
         String family = getFamily(persistentEntity, cm);
 
@@ -100,26 +126,49 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
     }
 
 
-
-    protected abstract Key createDatastoreKey(K k);
-
     protected String getIdentifierName(ClassMapping cm) {
         return cm.getIdentifier().getIdentifierName()[0];
     }
 
-    protected abstract void setEntryValue(T nativeEntry, String propKey, Object propValue);
+    /**
+     * Creates a Inconsequential key to wrap the native key
+     * @param key The native key
+     * @return The Inconsequential key
+     */
+    protected abstract Key createDatastoreKey(K key);
 
+    /**
+     * Used to establish the native key to use from the identifier defined by the object
+     * @param family The family
+     * @param identifier The identifier specified by the object
+     * @return The native key which may just be a cast from the identifier parameter to K
+     */
+    protected abstract K inferNativeKey(String family, Object identifier);
 
+    /**
+     * Creates a new entry for the given family.
+     *
+     * @param family The family
+     * @return An entry such as a BigTable Entity, ColumnFamily etc.
+     */
     protected abstract T createNewEntry(String family);
 
     /**
      * Reads a value for the given key from the native entry
      *
      * @param nativeEntry The native entry. Could be a ColumnFamily, a BigTable entity, a Map etc.
-     * @param propKey The property key
+     * @param get The property key
      * @return The value
      */
-    protected abstract Object getEntryValue(T nativeEntry, String propKey);
+    protected abstract Object getEntryValue(T nativeEntry, String get);
+
+    /**
+     * Sets a value on an entry
+     * @param nativeEntry The native entry such as a BigTable Entity, ColumnFamily etc.
+     * @param key The key
+     * @param value The value
+     */
+    protected abstract void setEntryValue(T nativeEntry, String key, Object value);
 
     /**
      * Reads the native form of a Key/value datastore entry. This could be
@@ -138,4 +187,11 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
      * @return The native key
      */
     protected abstract K storeEntry(T nativeEntry);
+
+    /**
+     * Deletes one or many entries for the given list of Keys
+     *
+     * @param keys The keys
+     */
+    protected abstract void deleteEntries(List<K> keys);
 }

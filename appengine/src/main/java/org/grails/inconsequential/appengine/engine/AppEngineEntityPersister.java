@@ -20,13 +20,9 @@ import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 import org.grails.inconsequential.appengine.AppEngineKey;
 import org.grails.inconsequential.core.Key;
-import org.grails.inconsequential.engine.EntityAccess;
 import org.grails.inconsequential.kv.engine.AbstractKeyValueEntityPesister;
-import org.grails.inconsequential.mapping.ClassMapping;
-import org.grails.inconsequential.mapping.MappingContext;
 import org.grails.inconsequential.mapping.PersistentEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,13 +51,13 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     }
 
     @Override
-    protected void setEntryValue(Entity nativeEntry, String propKey, Object propValue) {
-        nativeEntry.setProperty(propKey, propValue);
+    protected void setEntryValue(Entity nativeEntry, String propKey, Object value) {
+        nativeEntry.setProperty(propKey, value);
     }
 
     @Override
     protected Entity retrieveEntry(String family, Key key) {
-        com.google.appengine.api.datastore.Key nativeKey = inferNativeKey(key.getNativeKey(), family);
+        com.google.appengine.api.datastore.Key nativeKey = inferNativeKey(family, key.getNativeKey());
         try {
             return datastoreService.get(nativeKey);
         } catch (EntityNotFoundException e) {
@@ -79,35 +75,19 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
         return this.datastoreService.put(nativeEntry);
     }
 
-    private com.google.appengine.api.datastore.Key inferNativeKey(Object nativeKey, String table) {
-        if(nativeKey instanceof Long) {
-            nativeKey = KeyFactory.createKey(table,(Long)nativeKey);
+    @Override
+    protected com.google.appengine.api.datastore.Key inferNativeKey(String family, Object identifier) {
+        if(identifier instanceof Long) {
+            identifier = KeyFactory.createKey(family,(Long) identifier);
         }
-        else if(!(nativeKey instanceof com.google.appengine.api.datastore.Key)) {
-            nativeKey = KeyFactory.createKey(table,nativeKey.toString());
+        else if(!(identifier instanceof com.google.appengine.api.datastore.Key)) {
+            identifier = KeyFactory.createKey(family, identifier.toString());
         }
-        return (com.google.appengine.api.datastore.Key) nativeKey;
+        return (com.google.appengine.api.datastore.Key) identifier;
     }
 
-
     @Override
-    protected void deleteEntities(MappingContext context, PersistentEntity persistentEntity, Object... objects) {
-        if(objects != null) {
-            List<com.google.appengine.api.datastore.Key> keys = new ArrayList<com.google.appengine.api.datastore.Key>();
-            final ClassMapping cm = persistentEntity.getMapping();
-            final String family = getFamily(persistentEntity, cm);
-            for (Object object : objects) {
-               EntityAccess access = new EntityAccess(object);
-               String idName = getIdentifierName(cm);
-               final Object idValue = access.getProperty(idName);
-               if(idValue != null) {
-                   com.google.appengine.api.datastore.Key key = inferNativeKey(idValue, family);
-                   keys.add(key);
-               }
-            }
-            if(!keys.isEmpty()) {
-                this.datastoreService.delete(keys.toArray(new com.google.appengine.api.datastore.Key[keys.size()]));
-            }
-        }
+    protected void deleteEntries(List<com.google.appengine.api.datastore.Key> keys) {
+        this.datastoreService.delete(keys.toArray(new com.google.appengine.api.datastore.Key[keys.size()]));
     }
 }
