@@ -81,5 +81,11 @@ public abstract class AbstractObjectDatastoreConnection<T> implements ObjectData
         }
     }
 
-    
+    /**
+     * Performs clear up. Subclasses should always call into this super
+     * implementation.
+     */
+    public void disconnect() {
+        AbstractDatastore.clearCurrentConnection();
+    }
 }

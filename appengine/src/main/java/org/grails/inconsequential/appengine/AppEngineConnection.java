@@ -2,6 +2,7 @@ package org.grails.inconsequential.appengine;
 
 import com.google.appengine.api.datastore.*;
 import org.grails.inconsequential.appengine.engine.AppEngineEntityPersister;
+import org.grails.inconsequential.core.AbstractDatastore;
 import org.grails.inconsequential.core.AbstractObjectDatastoreConnection;
 import org.grails.inconsequential.engine.Persister;
 import org.grails.inconsequential.kv.KeyValueDatastoreConnection;
@@ -101,10 +102,6 @@ public class AppEngineConnection extends AbstractObjectDatastoreConnection imple
      */
     public boolean isConnected() {
         return true;
-    }
-
-    public void disconnect() {
-        // No-op, always connected to the datastore.
     }
 
     /**

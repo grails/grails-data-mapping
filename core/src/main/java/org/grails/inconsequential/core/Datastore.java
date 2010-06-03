@@ -27,6 +27,13 @@ public interface Datastore {
      */
     public Connection connect(Map<String, String> connectionDetails);
 
+    /**
+     * Obtains the current connection (if any)
+     * @return The current thread bound connection
+     *
+     * @throws ConnectionNotFoundException Thrown if the {@link #connect(java.util.Map)} method has not yet been called
+     */
+    public Connection getCurrentConnection() throws ConnectionNotFoundException;
 
     /**
      * Obtains the MappingContext object

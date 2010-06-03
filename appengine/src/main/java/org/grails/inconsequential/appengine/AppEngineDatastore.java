@@ -18,17 +18,17 @@ import java.util.*;
  * 
  * @since 1.0
  */
-public class AppEngineDatastore implements Datastore {
+public class AppEngineDatastore extends AbstractDatastore {
 
     
     // hard coded value of "gae" used for the keyspace since GAE manages spaces automatically
-    protected MappingContext<Family, KeyValue> mappingContext = new KeyValueMappingContext("gae");
-
-    public Connection connect(Map<String, String> connectionDetails) {
-        return new AppEngineConnection(connectionDetails, mappingContext);
+    public AppEngineDatastore() {
+        super(new KeyValueMappingContext("gae"));
     }
 
-    public MappingContext<Family, KeyValue> getMappingContext() {
-        return mappingContext;
+    @Override
+    protected Connection createConnection(Map<String, String> connectionDetails) {
+        return new AppEngineConnection(connectionDetails, getMappingContext());
     }
+
 }
