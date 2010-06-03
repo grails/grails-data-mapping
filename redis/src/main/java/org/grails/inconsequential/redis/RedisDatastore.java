@@ -48,7 +48,7 @@ public class RedisDatastore extends AbstractObjectDatastoreConnection<String> {
     }
 
     public void disconnect() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        super.disconnect();
     }
 
     public Transaction beginTransaction() {
