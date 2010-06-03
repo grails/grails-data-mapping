@@ -17,6 +17,7 @@ package org.grails.inconsequential.redis;
 import org.grails.inconsequential.core.*;
 import org.grails.inconsequential.engine.Persister;
 import org.grails.inconsequential.mapping.MappingContext;
+import org.grails.inconsequential.tx.Transaction;
 
 import java.util.Map;
 
@@ -24,7 +25,7 @@ import java.util.Map;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisDatastore extends AbstractObjectDatastore<String> {
+public class RedisDatastore extends AbstractObjectDatastoreConnection<String> {
     public Connection connect(Map<String, String> connectionDetails) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -38,4 +39,19 @@ public class RedisDatastore extends AbstractObjectDatastore<String> {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public Map<String, String> getDetails() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public boolean isConnected() {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void disconnect() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Transaction beginTransaction() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

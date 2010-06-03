@@ -1,5 +1,7 @@
 package org.grails.inconsequential.core;
 
+import org.grails.inconsequential.tx.Transaction;
+
 import java.util.Map;
 
 /**
@@ -25,9 +27,8 @@ public interface Connection {
     void disconnect();
 
     /**
-     * Create a context of execution.
-     *
-     * @return an instance of Context.
+     * Starts a transaction
+     * @return The transaction
      */
-    DatastoreContext createContext();
+    Transaction beginTransaction();
 }

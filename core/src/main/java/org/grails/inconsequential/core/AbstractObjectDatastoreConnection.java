@@ -17,7 +17,6 @@ package org.grails.inconsequential.core;
 import org.grails.inconsequential.engine.CannotPersistException;
 import org.grails.inconsequential.engine.Persister;
 import org.grails.inconsequential.mapping.MappingContext;
-import org.grails.inconsequential.mapping.PersistentEntity;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,10 +29,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class AbstractObjectDatastore<T> implements ObjectDatastore<T> {
+public abstract class AbstractObjectDatastoreConnection<T> implements ObjectDatastoreConnection<T> {
     protected Map<Class,Persister> persisters = new ConcurrentHashMap<Class,Persister>();
 
-    public AbstractObjectDatastore() {
+    public AbstractObjectDatastoreConnection() {
         super();    
     }
 
@@ -52,30 +51,30 @@ public abstract class AbstractObjectDatastore<T> implements ObjectDatastore<T> {
     protected abstract Persister createPersister(Class cls, MappingContext mappingContext);
 
 
-    public Key<T> persist(DatastoreContext ctx, Object o) {
+    public Key<T> persist(Object o) {
         if(o == null) throw new IllegalArgumentException("Cannot persist null object");
         Persister persister = getPersister(o);
         if(persister != null) {
-            return persister.persist(ctx.getMappingContext(), o);
+            return persister.persist(getMappingContext(), o);
         }
         throw new CannotPersistException("Object ["+o+"] cannot be persisted. It is not a known persistent type.");
     }
 
-    public Object retrieve(DatastoreContext ctx, Class type, Key<T> key) {
+    public Object retrieve(Class type, Key<T> key) {
         if(key == null || type == null) return null;
         Persister persister = getPersister(type);
         if(persister != null) {
-            return persister.retrieve(ctx.getMappingContext(), key);
+            return persister.retrieve(getMappingContext(), key);
         }
         throw new CannotPersistException("Cannot retrieveEntity object with key ["+key+"]. The class ["+type+"] is not a known persistent type.");
     }
 
-    public void delete(DatastoreContext ctx, Object... objects) {
+    public void delete(Object... objects) {
         if(objects != null) {
             for (Object object : objects) {
                 if(object != null) {
                     Persister p = getPersister(object);
-                    p.delete(ctx.getMappingContext(), objects);
+                    p.delete(getMappingContext(), objects);
                     break;
                 }
             }

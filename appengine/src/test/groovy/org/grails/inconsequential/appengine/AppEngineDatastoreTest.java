@@ -4,6 +4,7 @@ import com.google.appengine.api.datastore.*;
 import org.grails.inconsequential.core.Key;
 import org.grails.inconsequential.appengine.testsupport.AppEngineDatastoreTestCase;
 import org.grails.inconsequential.core.*;
+import org.grails.inconsequential.kv.KeyValueDatastoreConnection;
 import org.grails.inconsequential.tx.Transaction;
 
 import java.util.HashMap;
@@ -35,9 +36,9 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
 
     public void testStore() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
-
-        engineDatastore.store(null, "persons", personOne);
-        engineDatastore.store(null, "persons", personTwo);
+        KeyValueDatastoreConnection conn = (KeyValueDatastoreConnection) engineDatastore.connect(null);
+        conn.store("persons", personOne);
+        conn.store("persons", personTwo);
 
         List<Entity> results = service.prepare(new Query("persons")).asList(FetchOptions.Builder.withLimit(100));
         assertEquals(2, results.size());
@@ -46,69 +47,72 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
     public void testStoreAndRetreiveOneEntity() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
 
-        Key key = engineDatastore.store(null, "persons", personOne);
+        KeyValueDatastoreConnection conn = (KeyValueDatastoreConnection) engineDatastore.connect(null);
 
-        Map<String, Object> result = engineDatastore.retrieve(null, key);
+        Key key = conn.store("persons", personOne);
+
+        Map<String, Object> result = conn.retrieve(key);
         assertEquals("Guillaume", result.get("firstname"));
         assertEquals("Laforge", result.get("lastname"));
     }
 
     public void testStoreAndRetreiveTwoEntities() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
+        KeyValueDatastoreConnection conn = (KeyValueDatastoreConnection) engineDatastore.connect(null);
 
-        Key keyGuillaume = engineDatastore.store(null, "persons", personOne);
-        Key keyJarJar = engineDatastore.store(null, "persons", personTwo);
+        Key keyGuillaume = conn.store("persons", personOne);
+        Key keyJarJar = conn.store("persons", personTwo);
 
-        List<Map<String, Object>> result = engineDatastore.retrieve(null, keyGuillaume, keyJarJar);
+        List<Map<String, Object>> result = conn.retrieve(keyGuillaume, keyJarJar);
         assertEquals(2, result.size());
     }
 
     public void testStoreAndDelete() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
 
-        Key keyGuillaume = engineDatastore.store(null, "persons", personOne);
+        KeyValueDatastoreConnection conn = (KeyValueDatastoreConnection) engineDatastore.connect(null);
 
-        Map<String, Object> result = engineDatastore.retrieve(null, keyGuillaume);
+        Key keyGuillaume = conn.store("persons", personOne);
+
+        Map<String, Object> result = conn.retrieve(keyGuillaume);
         assertNotNull(result);
 
-        engineDatastore.delete(null, keyGuillaume);
+        conn.delete(keyGuillaume);
 
-        Map<String, Object> resultAfterDeletion = engineDatastore.retrieve(null, keyGuillaume);
+        Map<String, Object> resultAfterDeletion = conn.retrieve(keyGuillaume);
         assertNull(resultAfterDeletion);
     }
 
     public void testTransactionCommit() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
-        Connection connection = engineDatastore.connect(new HashMap<String, String>());
-        DatastoreContext context = connection.createContext();
+        KeyValueDatastoreConnection connection = (KeyValueDatastoreConnection) engineDatastore.connect(new HashMap<String, String>());
 
         // start a transaction
-        Transaction transaction = context.beginTransaction();
+        Transaction transaction = connection.beginTransaction();
 
         // add a new person in the store
-        Key keyGuillaume = engineDatastore.store(context, "persons", personOne);
+        Key keyGuillaume = connection.store("persons", personOne);
 
         // commit the transaction
         transaction.commit();
 
-        Map<String, Object> result = engineDatastore.retrieve(context, keyGuillaume);
+        Map<String, Object> result = connection.retrieve(keyGuillaume);
         // if the transaction was committed successfully, we should find a result in the store
         assertNotNull(result);
     }
 
     public void testTransactionRollback() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
-        Connection connection = engineDatastore.connect(new HashMap<String, String>());
-        DatastoreContext context = connection.createContext();
+        KeyValueDatastoreConnection connection = (KeyValueDatastoreConnection) engineDatastore.connect(new HashMap<String, String>());
 
-        org.grails.inconsequential.tx.Transaction transaction = context.beginTransaction();
+        org.grails.inconsequential.tx.Transaction transaction = connection.beginTransaction();
 
         // add a new person in the store
-        Key keyGuillaume = engineDatastore.store(context, "persons", personOne);
+        Key keyGuillaume = connection.store("persons", personOne);
 
         transaction.rollback();
 
-        Map<String, Object> result = engineDatastore.retrieve(context, keyGuillaume);
+        Map<String, Object> result = connection.retrieve(keyGuillaume);
         // as the transaction was rollbacked, we shouldn't find a result in the store
         assertNull(result);
 
