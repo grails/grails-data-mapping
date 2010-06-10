@@ -97,7 +97,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
             Long id = jredisClient.incr(family + ".next_id");
             String key = family + ":" + id;
             
-            jredisClient.ping().hmset(key,nativeEntry);
+            jredisClient.hmset(key,nativeEntry);
             return id;
         } catch (RedisException e) {
             throw new DataAccessResourceFailureException("Exception occurred persisting entry ["+family+"]: " + e.getMessage(),e);
