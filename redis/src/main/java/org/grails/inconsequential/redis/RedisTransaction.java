@@ -16,5 +16,39 @@ package org.grails.inconsequential.redis;
 
 import org.grails.inconsequential.tx.Transaction;
 import org.jredis.JRedis;
+import org.jredis.RedisException;
+import org.springframework.transaction.TransactionSystemException;
 
+/**
+ * Represents a Redis transaction
+ *
+ * @author Graeme Rocher
+ * @since 1.0
+ */
+public class RedisTransaction implements Transaction<JRedis> {
+    private JRedis jredis;
 
+    public RedisTransaction(JRedis jredis) {
+        this.jredis = jredis;
+    }
+
+    public void commit() {
+        try {
+            jredis.exec();
+        } catch (RedisException e) {
+            throw new TransactionSystemException("Cannot exec Redis transaction: " + e.getMessage(),e);
+        }
+    }
+
+    public void rollback() {
+        try {
+            jredis.discard();
+        } catch (RedisException e) {
+            throw new TransactionSystemException("Cannot rollback Redis transaction: " + e.getMessage(),e);
+        }
+    }
+
+    public org.jredis.JRedis getNativeTransaction() {
+        return jredis;
+    }
+}
