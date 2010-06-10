@@ -56,7 +56,7 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     }
 
     @Override
-    protected Entity retrieveEntry(String family, Key key) {
+    protected Entity retrieveEntry(PersistentEntity persistentEntity, String family, Key key) {
         com.google.appengine.api.datastore.Key nativeKey = inferNativeKey(family, key.getNativeKey());
         try {
             return datastoreService.get(nativeKey);
@@ -71,7 +71,7 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     }
 
     @Override
-    protected com.google.appengine.api.datastore.Key storeEntry(Entity nativeEntry) {
+    protected com.google.appengine.api.datastore.Key storeEntry(PersistentEntity persistentEntity, Entity nativeEntry) {
         return this.datastoreService.put(nativeEntry);
     }
 
@@ -87,7 +87,7 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     }
 
     @Override
-    protected void deleteEntries(List<com.google.appengine.api.datastore.Key> keys) {
+    protected void deleteEntries(String family, List<com.google.appengine.api.datastore.Key> keys) {
         this.datastoreService.delete(keys.toArray(new com.google.appengine.api.datastore.Key[keys.size()]));
     }
 }

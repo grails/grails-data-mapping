@@ -27,8 +27,6 @@ import java.util.Set;
  * @since 1.0
  */
 public class AppEngineConnection extends AbstractObjectDatastoreConnection implements KeyValueDatastoreConnection<com.google.appengine.api.datastore.Key> {
-    private Map<String, String> connectionDetails;
-    protected MappingContext<Family, KeyValue> mappingContext;
     protected DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
     private AppEngineTransaction transaction;
 
@@ -39,8 +37,7 @@ public class AppEngineConnection extends AbstractObjectDatastoreConnection imple
      * @param mappingContext The Mapping Context
      */
     public AppEngineConnection(Map<String, String> connectionDetails, MappingContext<Family, KeyValue> mappingContext) {
-        this.connectionDetails = connectionDetails;
-        this.mappingContext = mappingContext;
+        super(connectionDetails, mappingContext);
     }
 
     public org.grails.inconsequential.core.Key<com.google.appengine.api.datastore.Key> store(String table, Map object) {
@@ -91,13 +88,6 @@ public class AppEngineConnection extends AbstractObjectDatastoreConnection imple
     }
 
     /**
-     * @return the specific connection details
-     */
-    public Map<String, String> getDetails() {
-        return connectionDetails;
-    }
-
-    /**
      * @return always true, always connected to the Google App Engine datastore
      */
     public boolean isConnected() {
@@ -122,9 +112,5 @@ public class AppEngineConnection extends AbstractObjectDatastoreConnection imple
             return new AppEngineEntityPersister(entity, datastoreService);
         }
         return null;
-    }
-
-    public MappingContext getMappingContext() {
-        return mappingContext;
     }
 }

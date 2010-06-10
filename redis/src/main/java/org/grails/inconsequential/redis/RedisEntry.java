@@ -14,31 +14,31 @@
  */
 package org.grails.inconsequential.redis;
 
-import org.grails.inconsequential.core.AbstractDatastore;
-import org.grails.inconsequential.core.Connection;
-import org.grails.inconsequential.kv.mapping.KeyValueMappingContext;
-import org.grails.inconsequential.mapping.MappingContext;
-
-import java.util.Map;
+import java.util.HashMap;
 
 /**
- * A Datastore implementation for the Redis key/value datastore
+ *
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisDatastore extends AbstractDatastore {
+public class RedisEntry extends HashMap {
 
-    public RedisDatastore(MappingContext mappingContext) {
-        super(mappingContext);
+    protected String family;
+
+    public RedisEntry(String family) {
+        this.family = family;
     }
 
-    public RedisDatastore() {
-        super(new KeyValueMappingContext(""));
+    public String getFamily() {
+        return family;
     }
 
     @Override
-    protected Connection createConnection(Map<String, String> connectionDetails) {
-        return new RedisDatastoreConnection(connectionDetails, getMappingContext());
+    public Object get(Object o) {
+        final Object val = super.get(o);
+        if(val instanceof byte[])
+            return val;
+        return val.toString().getBytes();    
     }
 }

@@ -67,4 +67,10 @@ public interface PersistentEntity extends Initializable {
      * @return The new instnace
      */
     Object newInstance();
+
+    /**
+     * A list of property names that a persistent
+     * @return A List of strings
+     */
+    List<String> getPersistentPropertyNames();
 }

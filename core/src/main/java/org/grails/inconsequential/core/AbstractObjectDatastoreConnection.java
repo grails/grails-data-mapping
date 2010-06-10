@@ -31,9 +31,22 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public abstract class AbstractObjectDatastoreConnection<T> implements ObjectDatastoreConnection<T> {
     protected Map<Class,Persister> persisters = new ConcurrentHashMap<Class,Persister>();
+    private MappingContext mappingContext;
+    private Map<String, String> connectionDetails;
 
-    public AbstractObjectDatastoreConnection() {
-        super();    
+
+    public AbstractObjectDatastoreConnection(Map<String, String> connectionDetails, MappingContext mappingContext) {
+        super();
+        this.mappingContext = mappingContext;
+        this.connectionDetails = connectionDetails;
+    }
+
+    public Map<String, String> getDetails() {
+        return connectionDetails;
+    }
+
+    public MappingContext getMappingContext() {
+        return this.mappingContext;
     }
 
     protected final Persister getPersister(Object o) {

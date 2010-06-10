@@ -17,6 +17,7 @@ package org.grails.inconsequential.mapping;
 import org.grails.inconsequential.core.EntityCreationException;
 import org.grails.inconsequential.mapping.lifecycle.Initializable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
     protected Map<String, PersistentProperty> propertiesByName = new HashMap<String,PersistentProperty>();
     protected MappingContext context;
     protected PersistentProperty identity;
+    protected List<String> persistentPropertyNames;
 
     public AbstractPersistentEntity(Class javaClass, MappingContext context) {
         if(javaClass == null) throw new IllegalArgumentException("The argument [javaClass] cannot be null");
@@ -43,9 +45,17 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
     public void initialize() {
         this.identity = context.getMappingSyntaxStrategy().getIdentity(javaClass, context);
         this.persistentProperties = context.getMappingSyntaxStrategy().getPersistentProperties(javaClass, context);
+        persistentPropertyNames = new ArrayList<String>();
+        for (PersistentProperty persistentProperty : persistentProperties) {
+            persistentPropertyNames.add(persistentProperty.getName());
+        }
         for (PersistentProperty persistentProperty : persistentProperties) {
             propertiesByName.put(persistentProperty.getName(), persistentProperty);
         }
+    }
+
+    public List<String> getPersistentPropertyNames() {
+        return this.persistentPropertyNames;
     }
 
     public ClassMapping<T> getMapping() {

@@ -63,7 +63,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                }
             }
             if(!keys.isEmpty()) {
-                deleteEntries(keys);
+                deleteEntries(family, keys);
             }
         }
     }
@@ -74,7 +74,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
         ClassMapping<Family> cm = persistentEntity.getMapping();
         String family = getFamily(persistentEntity, cm);
 
-        T nativeEntry = retrieveEntry(family, key);
+        T nativeEntry = retrieveEntry(persistentEntity, family, key);
         if(nativeEntry != null) {
             Object obj = persistentEntity.newInstance();
             EntityAccess ea = new EntityAccess(obj);
@@ -119,7 +119,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
             }
         }
 
-        K k = storeEntry(e);
+        K k = storeEntry(persistentEntity, e);
         String id = getIdentifierName(cm);
         entityAccess.setProperty(id, k);
         return createDatastoreKey(k);
@@ -143,7 +143,9 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
      * @param identifier The identifier specified by the object
      * @return The native key which may just be a cast from the identifier parameter to K
      */
-    protected abstract K inferNativeKey(String family, Object identifier);
+    protected K inferNativeKey(String family, Object identifier) {
+        return (K) identifier;
+    }
 
     /**
      * Creates a new entry for the given family.
@@ -174,24 +176,25 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
      * Reads the native form of a Key/value datastore entry. This could be
      * a ColumnFamily, a BigTable Entity, a Map etc.
      *
-     * @param family The family
-     * @param key The key
-     * @return The native form
+     * @param persistentEntity
+     *@param family The family
+     * @param key The key   @return The native form
      */
-    protected abstract T retrieveEntry(String family, Key key);
+    protected abstract T retrieveEntry(PersistentEntity persistentEntity, String family, Key key);
 
     /**
      * Stores the native form of a Key/value datastore to the actual data store
      *
-     * @param nativeEntry The native form. Could be a a ColumnFamily, BigTable Entity etc.
-     * @return The native key
+     * @param persistentEntity
+     *@param nativeEntry The native form. Could be a a ColumnFamily, BigTable Entity etc.  @return The native key
      */
-    protected abstract K storeEntry(T nativeEntry);
+    protected abstract K storeEntry(PersistentEntity persistentEntity, T nativeEntry);
 
     /**
      * Deletes one or many entries for the given list of Keys
      *
+     * @param family
      * @param keys The keys
      */
-    protected abstract void deleteEntries(List<K> keys);
+    protected abstract void deleteEntries(String family, List<K> keys);
 }

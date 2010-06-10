@@ -3,9 +3,12 @@ repositories {
     name = 'jredis'
     addArtifactPattern 'http://github.com/downloads/alphazero/[organisation]/[module]-[revision].jar'
   }
+
+  flatDir dirs: 'lib'
 }
 dependencies {
   compile project(":core")
-  compile 'jredis:jredis:1.0-rc1'
+//  compile 'jredis:jredis:1.0-rc1'
+  compile 'jredis:jredis-core-all:a.0-SNAPSHOT-jar-with-dependencies'
 }
 jar.appendix = 'redis'

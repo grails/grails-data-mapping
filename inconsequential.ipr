@@ -200,6 +200,7 @@
       <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-adapter/grails-adapter.iml" filepath="$PROJECT_DIR$/grails-adapter/grails-adapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/redis/redis.iml" filepath="$PROJECT_DIR$/redis/redis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dynamic/runtime-dynamic.iml" filepath="$PROJECT_DIR$/dynamic/runtime-dynamic.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
@@ -266,6 +267,20 @@
     <library name="Commons Collections">
       <CLASSES>
         <root url="jar://$GRADLE_CACHE$/commons-collections/commons-collections/jars/commons-collections-3.2.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Spring Transaction">
+      <CLASSES>
+        <root url="jar://$GRADLE_CACHE$/org.springframework/spring-tx/jars/spring-tx-3.0.2.RELEASE.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Spring Core">
+      <CLASSES>
+        <root url="jar://$GRADLE_CACHE$/org.springframework/spring-core/jars/spring-core-3.0.2.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
