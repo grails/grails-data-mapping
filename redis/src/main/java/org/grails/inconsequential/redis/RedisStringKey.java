@@ -12,24 +12,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.inconsequential.redis.template;
+package org.grails.inconsequential.redis;
+
+import org.grails.inconsequential.core.Key;
 
 /**
- * 
- *
- *
  * @author Graeme Rocher
- * @since 1.0
+ * @since 1.1
  */
-public class RedisTemplate {
+public class RedisStringKey implements Key<String> {
+    private String key;
 
-    public static final byte[] 	CRLF = {(byte) 13, (byte)10};
-    public static final byte[] 	SPACE = {(byte) 32};
-    
-
-    public Long incr(String id) {
-       return null;
+    public RedisStringKey(String key) {
+        this.key = key;
     }
 
-
+    public String getNativeKey() {
+        return key;
+    }
 }
