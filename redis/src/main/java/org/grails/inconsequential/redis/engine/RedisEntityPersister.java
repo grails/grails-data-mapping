@@ -73,7 +73,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
 
         try {
             final List<byte[]> values = jredisClient.hmget(hashKey, props.toArray(new String[props.size()]));
-            if(values == null || values.size() ==0) return null;
+            if(entityDoesntExistForValues(values)) return null;
             RedisEntry entry = new RedisEntry(family);
             for (int i = 0; i < props.size(); i++) {
                   entry.put(props.get(i), values.get(i));
@@ -82,6 +82,12 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
         } catch (RedisException e) {
             throw new DataRetrievalFailureException("Unable to read entry for key ["+hashKey+"]", e);
         }
+    }
+
+    private boolean entityDoesntExistForValues(List<byte[]> values) {
+        if(values == null) return true;
+        if(values.size() == 0 || (values.size() == 1 && values.get(0) == null) ) return true;
+        return false;
     }
 
     @Override

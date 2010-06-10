@@ -87,7 +87,9 @@ public abstract class AbstractObjectDatastoreConnection<T> implements ObjectData
             for (Object object : objects) {
                 if(object != null) {
                     Persister p = getPersister(object);
-                    p.delete(getMappingContext(), objects);
+                    if(p != null) {
+                        p.delete(getMappingContext(), objects);
+                    }                   
                     break;
                 }
             }

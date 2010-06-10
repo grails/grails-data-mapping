@@ -36,9 +36,15 @@ public class RedisEntry extends HashMap {
 
     @Override
     public Object get(Object o) {
+
         final Object val = super.get(o);
-        if(val instanceof byte[])
-            return val;
-        return val.toString().getBytes();    
+        if(val != null) {
+            if(val instanceof byte[])
+                return val;
+            return val.toString().getBytes();
+        }
+        else {
+            return null;
+        }
     }
 }

@@ -77,7 +77,10 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
         T nativeEntry = retrieveEntry(persistentEntity, family, key);
         if(nativeEntry != null) {
             Object obj = persistentEntity.newInstance();
+
             EntityAccess ea = new EntityAccess(obj);
+            String idName = getIdentifierName(persistentEntity.getMapping());
+            ea.setProperty(idName, key.getNativeKey());
 
             final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
             for (PersistentProperty prop : props) {
