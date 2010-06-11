@@ -4,7 +4,7 @@ repositories {
     addArtifactPattern 'http://github.com/downloads/alphazero/[organisation]/[module]-[revision].jar'
   }
 
-  flatDir dirs: 'lib'
+  flatDir dirs: ['lib', 'redis/lib']
 }
 dependencies {
   compile project(":core")

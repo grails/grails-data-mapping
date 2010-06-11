@@ -4,15 +4,14 @@ subprojects {
 
     repositories {
        mavenCentral()
-       mavenRepo urls:"http://repository.springsource.com/maven/bundles/release"
     }
 
     dependencies {
         groovy group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.2'
 
-        compile "org.springframework:org.springframework.core:3.0.2.RELEASE"
-        compile "org.springframework:org.springframework.beans:3.0.2.RELEASE"
-        compile "org.springframework:org.springframework.transaction:3.0.2.RELEASE"
+        compile "org.springframework:spring-core:3.0.2.RELEASE"
+        compile "org.springframework:spring-beans:3.0.2.RELEASE"
+        compile "org.springframework:spring-tx:3.0.2.RELEASE"
         compile "org.slf4j:slf4j-api:1.5.8"
         compile "org.slf4j:slf4j-simple:1.5.8"
         testCompile 'junit:junit:4.8.1'

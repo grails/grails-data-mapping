@@ -197,6 +197,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/appengine/appengine.iml" filepath="$PROJECT_DIR$/appengine/appengine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cassandra/cassandra.iml" filepath="$PROJECT_DIR$/cassandra/cassandra.iml" />
       <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-adapter/grails-adapter.iml" filepath="$PROJECT_DIR$/grails-adapter/grails-adapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/redis/redis.iml" filepath="$PROJECT_DIR$/redis/redis.iml" />
@@ -281,6 +282,13 @@
     <library name="Spring Core">
       <CLASSES>
         <root url="jar://$GRADLE_CACHE$/org.springframework/spring-core/jars/spring-core-3.0.2.RELEASE.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Spring Beans">
+      <CLASSES>
+        <root url="jar://$GRADLE_CACHE$/org.springframework/org.springframework.beans/jars/org.springframework.beans-3.0.2.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
