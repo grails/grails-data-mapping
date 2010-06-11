@@ -1,0 +1,9 @@
+repositories {
+    mavenRepo name:'mavenLocal',
+              urls:new File( System.getProperty("user.home" ), ".m2/repository" ).toURL().toString() 
+}
+dependencies {
+  compile project(":core")
+  compile 'me.prettyprint:hector:0.6.0-15'
+}
+jar.appendix = 'cassandra'
