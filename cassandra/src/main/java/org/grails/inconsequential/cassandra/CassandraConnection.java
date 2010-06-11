@@ -14,11 +14,18 @@
  */
 package org.grails.inconsequential.cassandra;
 
+import me.prettyprint.cassandra.service.CassandraClient;
+import me.prettyprint.cassandra.service.CassandraClientPool;
+import org.grails.inconsequential.cassandra.engine.CassandraEntityPersister;
 import org.grails.inconsequential.core.AbstractDatastore;
 import org.grails.inconsequential.core.AbstractObjectDatastoreConnection;
 import org.grails.inconsequential.engine.Persister;
+import org.grails.inconsequential.kv.mapping.KeyValueMappingContext;
 import org.grails.inconsequential.mapping.MappingContext;
+import org.grails.inconsequential.mapping.PersistentEntity;
 import org.grails.inconsequential.tx.Transaction;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.transaction.TransactionSystemException;
 
 import java.util.Map;
 import java.util.UUID;
@@ -28,21 +35,41 @@ import java.util.UUID;
  * @since 1.0
  */
 public class CassandraConnection extends AbstractObjectDatastoreConnection<UUID> {
+    private CassandraClient cassandraClient;
+    private CassandraClientPool connectionPool;
+    private static final String KEYSPACE = "keyspace";
 
-    public CassandraConnection(Map<String, String> connectionDetails, MappingContext mappingContext) {
-        super(connectionDetails, mappingContext);
+    public CassandraConnection(Map<String, String> connectionDetails, CassandraClientPool connectionPool, CassandraClient client) {
+        super(connectionDetails, new KeyValueMappingContext(connectionDetails.get(KEYSPACE)));
+        this.connectionPool = connectionPool;
+        this.cassandraClient = client;
     }
 
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+      PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
+      if(entity != null) {
+          return new CassandraEntityPersister(entity, cassandraClient);
+      }
+      return null;
     }
 
     public boolean isConnected() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return !cassandraClient.isReleased();
+    }
+
+    @Override
+    public void disconnect() {
+        try {
+            connectionPool.releaseClient(cassandraClient);
+        } catch (Exception e) {
+            throw new DataAccessResourceFailureException("Failed to release Cassandra client connection: " + e.getMessage(), e);
+        } finally {
+            super.disconnect();
+        }
     }
 
     public Transaction beginTransaction() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        throw new TransactionSystemException("Transactions are not supported by Cassandra");
     }
 }

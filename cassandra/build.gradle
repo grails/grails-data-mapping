@@ -1,9 +1,17 @@
 repositories {
     mavenRepo name:'mavenLocal',
-              urls:new File( System.getProperty("user.home" ), ".m2/repository" ).toURL().toString() 
+              urls:new File( System.getProperty("user.home" ), ".m2/repository" ).toURL().toString()
+    mavenRepo urls:'http://eaio.com/maven2'
 }
 dependencies {
   compile project(":core")
+  compile 'com.eaio.uuid:uuid:3.2'
   compile 'me.prettyprint:hector:0.6.0-15'
+  compile 'org.apache.cassandra:cassandra:0.6.0'
+  compile 'org.apache.cassandra:cassandra-javautils:1.0.0'
+  compile 'libthrift:libthrift:917130'
+  runtime 'org.cliffc.high_scale_lib:high-scale-lib:1.0.0'
+  runtime 'com.reardencommerce:clhm-production:1.0.0'
+  runtime 'commons-lang:commons-lang:2.4'
 }
 jar.appendix = 'cassandra'

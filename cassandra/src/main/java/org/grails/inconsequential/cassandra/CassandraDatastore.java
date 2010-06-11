@@ -14,9 +14,13 @@
  */
 package org.grails.inconsequential.cassandra;
 
+import me.prettyprint.cassandra.service.CassandraClient;
+import me.prettyprint.cassandra.service.CassandraClientPool;
+import me.prettyprint.cassandra.service.CassandraClientPoolFactory;
 import org.grails.inconsequential.core.AbstractDatastore;
 import org.grails.inconsequential.core.Connection;
 import org.grails.inconsequential.mapping.MappingContext;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 import java.util.Map;
 
@@ -25,13 +29,21 @@ import java.util.Map;
  * @since 1.0
  */
 public class CassandraDatastore extends AbstractDatastore {
+    private CassandraClientPool connectionPool;
 
     public CassandraDatastore(MappingContext mappingContext) {
         super(mappingContext);
+        this.connectionPool = CassandraClientPoolFactory.INSTANCE.get();
     }
 
     @Override
     protected Connection createConnection(Map<String, String> connectionDetails) {
-        return new CassandraConnection(connectionDetails, getMappingContext());
+        final CassandraClient client;
+        try {
+            client = connectionPool.borrowClient();
+            return new CassandraConnection(connectionDetails, connectionPool, client);
+        } catch (Exception e) {
+            throw new DataAccessResourceFailureException("Failed to obtain Cassandra client connection: " + e.getMessage(), e);
+        }
     }
 }

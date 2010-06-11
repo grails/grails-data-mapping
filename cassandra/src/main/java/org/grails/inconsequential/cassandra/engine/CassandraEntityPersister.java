@@ -14,6 +14,9 @@
  */
 package org.grails.inconsequential.cassandra.engine;
 
+import me.prettyprint.cassandra.service.CassandraClient;
+import org.apache.thrift.TBase;
+import org.grails.inconsequential.cassandra.CassandraKey;
 import org.grails.inconsequential.core.Key;
 import org.grails.inconsequential.kv.engine.AbstractKeyValueEntityPesister;
 import org.grails.inconsequential.mapping.PersistentEntity;
@@ -22,45 +25,49 @@ import java.util.List;
 
 /**
  * @author Graeme Rocher
- * @since 1.1
+ * @since 1.0
  */
-public class CassandraEntityPersister extends AbstractKeyValueEntityPesister {
-    public CassandraEntityPersister(PersistentEntity entity) {
+public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<TBase, Object> {
+    private CassandraClient cassandraClient;
+
+    public CassandraEntityPersister(PersistentEntity entity, CassandraClient cassandraClient) {
         super(entity);
+        this.cassandraClient = cassandraClient;
     }
+
 
     @Override
     protected Key createDatastoreKey(Object key) {
+        return new CassandraKey(key);
+    }
+
+    @Override
+    protected TBase createNewEntry(String family) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    protected Object createNewEntry(String family) {
+    protected Object getEntryValue(TBase nativeEntry, String get) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    protected Object getEntryValue(Object nativeEntry, String get) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected void setEntryValue(Object nativeEntry, String key, Object value) {
+    protected void setEntryValue(TBase nativeEntry, String key, Object value) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    protected Object retrieveEntry(PersistentEntity persistentEntity, String family, Key key) {
+    protected TBase retrieveEntry(PersistentEntity persistentEntity, String family, Key key) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    protected Object storeEntry(PersistentEntity persistentEntity, Object nativeEntry) {
+    protected Object storeEntry(PersistentEntity persistentEntity, TBase nativeEntry) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    protected void deleteEntries(String family, List keys) {
+    protected void deleteEntries(String family, List<Object> keys) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

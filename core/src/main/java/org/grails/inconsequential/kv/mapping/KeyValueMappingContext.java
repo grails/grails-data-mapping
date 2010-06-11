@@ -36,6 +36,7 @@ public class KeyValueMappingContext extends AbstractMappingContext {
      * @param keyspace The keyspace, this is typically the application name
      */
     public KeyValueMappingContext(String keyspace) {
+        if(keyspace == null) throw new IllegalArgumentException("Argument [keyspace] cannot be null");
         this.mappingFactory = new KeyValueMappingFactory(keyspace);
         this.syntaxStrategy = new GormMappingSyntaxStrategy(mappingFactory);
     }
