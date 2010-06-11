@@ -109,6 +109,7 @@
       <ColumnFamily Name="Standard2"
                     CompareWith="UTF8Type"
                     KeysCached="100%"/>
+      <ColumnFamily Name="org.grails.inconsequential.cassandra.TestEntity" CompareWith="TimeUUIDType" />
       <ColumnFamily Name="StandardByUUID1" CompareWith="TimeUUIDType" />
       <ColumnFamily Name="Super1"
                     ColumnType="Super"

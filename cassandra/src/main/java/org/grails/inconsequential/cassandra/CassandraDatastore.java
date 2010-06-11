@@ -19,6 +19,7 @@ import me.prettyprint.cassandra.service.CassandraClientPool;
 import me.prettyprint.cassandra.service.CassandraClientPoolFactory;
 import org.grails.inconsequential.core.AbstractDatastore;
 import org.grails.inconsequential.core.Connection;
+import org.grails.inconsequential.kv.mapping.KeyValueMappingContext;
 import org.grails.inconsequential.mapping.MappingContext;
 import org.springframework.dao.DataAccessResourceFailureException;
 
@@ -29,6 +30,7 @@ import java.util.Map;
  * @since 1.0
  */
 public class CassandraDatastore extends AbstractDatastore {
+    public static final String DEFAULT_KEYSPACE = "Keyspace1";
     private CassandraClientPool connectionPool;
 
     public CassandraDatastore(MappingContext mappingContext) {
@@ -36,12 +38,16 @@ public class CassandraDatastore extends AbstractDatastore {
         this.connectionPool = CassandraClientPoolFactory.INSTANCE.get();
     }
 
+    public CassandraDatastore() {
+        this(new KeyValueMappingContext(DEFAULT_KEYSPACE));
+    }
+
     @Override
     protected Connection createConnection(Map<String, String> connectionDetails) {
         final CassandraClient client;
         try {
-            client = connectionPool.borrowClient();
-            return new CassandraConnection(connectionDetails, connectionPool, client);
+            client = connectionPool.borrowClient("localhost", 9160);
+            return new CassandraConnection(connectionDetails,getMappingContext(), connectionPool, client);
         } catch (Exception e) {
             throw new DataAccessResourceFailureException("Failed to obtain Cassandra client connection: " + e.getMessage(), e);
         }

@@ -37,10 +37,9 @@ import java.util.UUID;
 public class CassandraConnection extends AbstractObjectDatastoreConnection<UUID> {
     private CassandraClient cassandraClient;
     private CassandraClientPool connectionPool;
-    private static final String KEYSPACE = "keyspace";
 
-    public CassandraConnection(Map<String, String> connectionDetails, CassandraClientPool connectionPool, CassandraClient client) {
-        super(connectionDetails, new KeyValueMappingContext(connectionDetails.get(KEYSPACE)));
+    public CassandraConnection(Map<String, String> connectionDetails, MappingContext context, CassandraClientPool connectionPool, CassandraClient client) {
+        super(connectionDetails, context);
         this.connectionPool = connectionPool;
         this.cassandraClient = client;
     }

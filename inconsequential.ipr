@@ -307,6 +307,13 @@
       <JAVADOC />
       <SOURCES />
     </library>
+    <library name="Commons Pool">
+      <CLASSES>
+        <root url="jar://$GRADLE_CACHE$/commons-pool/commons-pool/jars/commons-pool-1.5.3.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
   </component>
 </project>
 

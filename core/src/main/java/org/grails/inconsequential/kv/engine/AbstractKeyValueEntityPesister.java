@@ -47,6 +47,16 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
         return table;
     }
 
+    protected String getKeyspace(ClassMapping<Family> cm, String defaultValue) {
+        String keyspace = null;
+        if(cm.getMappedForm() != null) {
+            keyspace = cm.getMappedForm().getKeyspace();
+        }
+        if(keyspace == null) keyspace = defaultValue;
+        return keyspace;
+    }
+
+
     @Override
     protected final void deleteEntities(MappingContext context, PersistentEntity persistentEntity, Object... objects) {
         if(objects != null) {
@@ -162,10 +172,10 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
      * Reads a value for the given key from the native entry
      *
      * @param nativeEntry The native entry. Could be a ColumnFamily, a BigTable entity, a Map etc.
-     * @param get The property key
+     * @param property The property key
      * @return The value
      */
-    protected abstract Object getEntryValue(T nativeEntry, String get);
+    protected abstract Object getEntryValue(T nativeEntry, String property);
 
     /**
      * Sets a value on an entry

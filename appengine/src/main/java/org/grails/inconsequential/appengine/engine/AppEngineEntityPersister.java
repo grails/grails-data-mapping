@@ -46,8 +46,8 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     }
 
     @Override
-    protected Object getEntryValue(Entity nativeEntry, String propKey) {
-        return nativeEntry.getProperty(propKey);
+    protected Object getEntryValue(Entity nativeEntry, String property) {
+        return nativeEntry.getProperty(property);
     }
 
     @Override

@@ -53,8 +53,8 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     @Override
-    protected Object getEntryValue(RedisEntry nativeEntry, String field) {
-        return nativeEntry.get(field);
+    protected Object getEntryValue(RedisEntry nativeEntry, String property) {
+        return nativeEntry.get(property);
     }
 
     @Override
