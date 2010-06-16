@@ -56,6 +56,10 @@ public class AdaptedDomainClass implements PersistentEntity {
         return ReflectionUtils.instantiate(getJavaClass());
     }
 
+    public List<String> getPersistentPropertyNames() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public String getName() {
         return domainClass.getFullName();
     }
