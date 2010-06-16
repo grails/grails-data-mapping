@@ -167,6 +167,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
 
     @Override
     protected void deleteEntries(String family, List<Object> keys) {
+
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

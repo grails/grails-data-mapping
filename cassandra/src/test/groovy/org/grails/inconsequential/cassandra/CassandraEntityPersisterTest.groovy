@@ -20,7 +20,7 @@ class CassandraEntityPersisterTest extends AbstractCassandraTest {
 
      assert t == null
 
-     t = new TestEntity(name:"Bob")
+     t = new TestEntity(name:"Bob", age:45)
 
      conn.persist(t)
 
@@ -30,9 +30,13 @@ class CassandraEntityPersisterTest extends AbstractCassandraTest {
 
      assert t != null
      assert "Bob" == t.name
+     assert 45 == t.age
+     assert t.id != null
+     
   }
 }
 class TestEntity {
   UUID id
   String name
+  int age
 }

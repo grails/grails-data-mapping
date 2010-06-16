@@ -222,6 +222,7 @@
       <CLASSES>
         <root url="jar://$GRADLE_CACHE$/org.slf4j/slf4j-api/jars/slf4j-api-1.5.8.jar!/" />
         <root url="jar://$GRADLE_CACHE$/org.slf4j/slf4j-simple/jars/slf4j-simple-1.5.8.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.5.8.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />

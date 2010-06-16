@@ -14,7 +14,10 @@
  */
 package org.grails.inconsequential.engine;
 
-import org.apache.commons.beanutils.BeanMap;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.core.convert.ConversionService;
+
 
 /**
  * Class used to access properties of an entity. Also responsible for
@@ -26,22 +29,26 @@ import org.apache.commons.beanutils.BeanMap;
 public class EntityAccess {
 
     protected Object entity;
-    protected BeanMap beanMap;
+    private BeanWrapper beanWrapper;
 
     public EntityAccess(Object entity) {
         this.entity = entity;
-        this.beanMap = new BeanMap(entity);
+        this.beanWrapper = new BeanWrapperImpl(entity);
     }
 
     public Object getEntity() {
         return entity;
     }
 
-    public Object getProperty(String name) {
-        return beanMap.get(name);
+    public void setConversionService(ConversionService conversionService) {
+        this.beanWrapper.setConversionService(conversionService);
     }
 
-    public Object setProperty(String name, Object value) {
-        return beanMap.put(name, value);
+    public Object getProperty(String name) {
+        return beanWrapper.getPropertyValue(name);
+    }
+
+    public void setProperty(String name, Object value) {
+        beanWrapper.setPropertyValue(name, value);
     }
 }
