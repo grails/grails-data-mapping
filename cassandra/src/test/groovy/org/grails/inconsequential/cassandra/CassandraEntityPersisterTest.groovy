@@ -19,6 +19,17 @@ class CassandraEntityPersisterTest extends AbstractCassandraTest {
      def t = conn.retrieve(TestEntity, new CassandraKey(UUIDUtil.getTimeUUID()))
 
      assert t == null
+
+     t = new TestEntity(name:"Bob")
+
+     conn.persist(t)
+
+     assert t.id != null
+
+     t = conn.retrieve(TestEntity, new CassandraKey(t.id))
+
+     assert t != null
+     assert "Bob" == t.name
   }
 }
 class TestEntity {

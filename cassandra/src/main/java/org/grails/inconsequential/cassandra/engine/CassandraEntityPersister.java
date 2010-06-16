@@ -14,6 +14,7 @@
  */
 package org.grails.inconsequential.cassandra.engine;
 
+import me.prettyprint.cassandra.service.BatchMutation;
 import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.Keyspace;
 import org.apache.cassandra.thrift.*;
@@ -34,9 +35,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import static me.prettyprint.cassandra.utils.StringUtils.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Graeme Rocher
@@ -69,7 +68,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
 
     @Override
     protected void setEntryValue(KeyValueEntry nativeEntry, String key, Object value) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        nativeEntry.put(key, bytes(value.toString()));
     }
 
     @Override
@@ -86,24 +85,29 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
             throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
         }
 
-        ColumnPath cp = new ColumnPath(family);
         final UUID uuid = (UUID) key.getNativeKey();
-        cp.setColumn(UUIDUtil.asByteArray(uuid));
+        ColumnParent parent = new ColumnParent();
+        parent.setColumn_family(family);
 
-        final Map<String,Column> result;
-        final List<String> props = persistentEntity.getPersistentPropertyNames();
+
+        final List<SuperColumn> result;
         try {
-            result = keyspace.multigetColumn(props, cp);
+            SlicePredicate predicate = new SlicePredicate();
+            predicate.setSlice_range(new SliceRange(new byte[0], new byte[0], false, 1));
+            result = keyspace.getSuperSlice(uuid.toString(), parent, predicate);
         } catch (InvalidRequestException e) {
-            throw new DataIntegrityViolationException("Cannot retrieve values ["+props+"] for ColumnPath ["+family+"]: " + e.getMessage(), e);
+            throw new DataIntegrityViolationException("Cannot retrieve SuperColumn for uuid ["+uuid+"] for ColumnPath ["+family+"]: " + e.getMessage(), e);
         } catch (Exception e) {
             throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
         }
         KeyValueEntry entry = new KeyValueEntry(family);
-        for (String property : result.keySet()) {
-            Column c = result.get(property);
-            if(c != null) {
-                entry.put(property, c.getValue());
+
+        for (SuperColumn sc : result) {
+
+            if(sc != null) {
+                for (Column column : sc.getColumns()) {
+                    entry.put(string(column.getName()), string(column.getValue()));
+                }
             }
         }
         if(entry.isEmpty()) return null;
@@ -111,23 +115,54 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
             return entry;
     }
 
+    private ColumnPath createColumnPath(String family, UUID uuid) {
+        ColumnPath cp = new ColumnPath(family);
+
+        cp.setSuper_column(UUIDUtil.asByteArray(uuid));
+        return cp;
+    }
+
     @Override
     protected Object storeEntry(PersistentEntity persistentEntity, KeyValueEntry nativeEntry) {
         final String keyspaceName = getKeyspace(getPersistentEntity().getMapping(), CassandraDatastore.DEFAULT_KEYSPACE);
 
+        UUID uuid = UUIDUtil.getTimeUUID();
         try {
             final Keyspace keyspace = cassandraClient.getKeyspace(keyspaceName);
 
-            UUID uuid = UUIDUtil.getTimeUUID();
+            String family = getFamily(persistentEntity, getPersistentEntity().getMapping());
 
+            final long time = System.currentTimeMillis() * 1000;
+            SuperColumn sc = new SuperColumn();
 
+            sc.setName(UUIDUtil.asByteArray(uuid));
+            for (String prop : nativeEntry.keySet()) {
+                Column c = new Column();
+                c.setName( bytes(prop) );
+                c.setValue((byte[])nativeEntry.get(prop));
+                c.setTimestamp(time);
+                sc.addToColumns(c);
+            }
+
+            Map<String, List<SuperColumn>> insertMap = new HashMap<String, List<SuperColumn>>();
+            List<SuperColumn> superColumns = new ArrayList<SuperColumn>();
+            superColumns.add(sc);
+            insertMap.put(family, superColumns);
+
+            keyspace.batchInsert(uuid.toString(), null,insertMap);
+            return uuid;
 
         } catch (NotFoundException e) {
             throw new InvalidDataAccessResourceUsageException("Cassandra Keyspace ["+keyspaceName+"] not found: " + e.getMessage(),e);
         } catch (TException e) {
             throw new DataAccessResourceFailureException("Exception occurred ");
+        } catch (UnavailableException e) {
+            throw new DataAccessResourceFailureException("Cassandra Unavailable Exception: " + e.getMessage(),e);
+        } catch (InvalidRequestException e) {
+            throw new DataIntegrityViolationException("Cannot write values "+nativeEntry.keySet()+" for id ["+uuid+"]: " + e.getMessage(), e);
+        } catch (TimedOutException e) {
+            throw new DataAccessResourceFailureException("Cassandra Unavailable Exception: " + e.getMessage(),e);
         }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

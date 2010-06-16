@@ -20,7 +20,7 @@ import java.util.HashMap;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class KeyValueEntry extends HashMap {
+public class KeyValueEntry extends HashMap<String, Object> {
 
     private String family;
 
