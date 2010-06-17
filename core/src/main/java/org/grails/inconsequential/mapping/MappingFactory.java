@@ -14,8 +14,7 @@
  */
 package org.grails.inconsequential.mapping;
 
-import org.grails.inconsequential.mapping.types.Identity;
-import org.grails.inconsequential.mapping.types.Simple;
+import org.grails.inconsequential.mapping.types.*;
 
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
@@ -167,5 +166,38 @@ public abstract class MappingFactory<R,T> {
         };
     }
 
+    public ToOne createOneToOne(PersistentEntity entity, MappingContext context, PropertyDescriptor property) {
+        return new OneToOne<T>(entity, context, property) {
+            public PropertyMapping getMapping() {
+                return createPropertyMapping(this, owner);
+            }
+        };
+    }
+
+    public ToOne createManyToOne(PersistentEntity entity, MappingContext context, PropertyDescriptor property) {
+        return new ManyToOne<T>(entity, context, property) {
+            public PropertyMapping getMapping() {
+                return createPropertyMapping(this, owner);
+            }
+        };
+
+    }
+
+    public OneToMany createOneToMany(PersistentEntity entity, MappingContext context, PropertyDescriptor property) {
+        return new OneToMany<T>(entity, context, property) {
+            public PropertyMapping getMapping() {
+                return createPropertyMapping(this, owner);
+            }
+        };
+
+    }
+
+    public ManyToMany createManyToMany(PersistentEntity entity, MappingContext context, PropertyDescriptor property) {
+        return new ManyToMany<T>(entity, context, property) {
+            public PropertyMapping getMapping() {
+                return createPropertyMapping(this, owner);
+            }
+        };
+    }
 }
 

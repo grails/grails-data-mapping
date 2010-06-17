@@ -50,4 +50,8 @@ public abstract class AbstractPersistentProperty implements PersistentProperty {
     public Class getType() {
         return type;
     }
+
+    public PersistentEntity getOwner() {
+        return owner;
+    }
 }

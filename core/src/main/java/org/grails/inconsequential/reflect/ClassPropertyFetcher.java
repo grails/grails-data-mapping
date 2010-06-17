@@ -42,6 +42,7 @@ public class ClassPropertyFetcher {
 	private final ReferenceInstanceCallback callback;
 	private PropertyDescriptor[] propertyDescriptors;
     private Map<String, PropertyDescriptor> propertyDescriptorsByName = new HashMap<String, PropertyDescriptor>();
+    private Map<Class, List<PropertyDescriptor>> typeToPropertyMap = new HashMap<Class, List<PropertyDescriptor>>();
 
 	private static Map<Class, ClassPropertyFetcher> cachedClassPropertyFetchers = new WeakHashMap<Class, ClassPropertyFetcher>();
 
@@ -110,6 +111,14 @@ public class ClassPropertyFetcher {
 
             for (PropertyDescriptor desc : propertyDescriptors) {
                 propertyDescriptorsByName.put(desc.getName(),desc);
+                final Class<?> propertyType = desc.getPropertyType();
+                List<PropertyDescriptor> pds = typeToPropertyMap.get(propertyType);
+                if(pds == null) {
+                    pds = new ArrayList<PropertyDescriptor>();
+                    typeToPropertyMap.put(propertyType, pds);
+                }
+                pds.add(desc);
+
                 Method readMethod = desc.getReadMethod();
                 if (readMethod != null) {
                     boolean staticReadMethod = Modifier.isStatic(readMethod
@@ -258,6 +267,16 @@ public class ClassPropertyFetcher {
 
     public PropertyDescriptor getPropertyDescriptor(String name) {
         return propertyDescriptorsByName.get(name);
+    }
+
+    public List<PropertyDescriptor> getPropertiesOfType(Class javaClass) {
+        final List<PropertyDescriptor> propertyDescriptorList = typeToPropertyMap.get(javaClass);
+        if(propertyDescriptorList == null) return Collections.emptyList();
+        return propertyDescriptorList;
+    }
+
+    public List<PropertyDescriptor> getPropertiesAssignableToType(Class<Collection> collectionClass) {
+        return null;  //To change body of created methods use File | Settings | File Templates.
     }
 
     public static interface ReferenceInstanceCallback {

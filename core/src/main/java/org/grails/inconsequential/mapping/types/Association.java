@@ -14,9 +14,7 @@
  */
 package org.grails.inconsequential.mapping.types;
 
-import org.grails.inconsequential.mapping.AbstractPersistentProperty;
-import org.grails.inconsequential.mapping.MappingContext;
-import org.grails.inconsequential.mapping.PersistentEntity;
+import org.grails.inconsequential.mapping.*;
 
 import java.beans.PropertyDescriptor;
 
@@ -27,11 +25,46 @@ import java.beans.PropertyDescriptor;
  * @since 1.0
  */
 public abstract class Association<T> extends AbstractPersistentProperty {
+    private PersistentEntity associatedEntity;
+    private String referencedPropertyName;
+
     public Association(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
     }
 
     public Association(PersistentEntity owner, MappingContext context, String name, Class type) {
         super(owner, context, name, type);
+    }
+
+    public boolean isBidirectional() {
+        return getInverseSide() != null;
+    }
+
+    public Association getInverseSide() {
+        final PersistentProperty associatedProperty = associatedEntity.getPropertyByName(referencedPropertyName);
+        if(associatedProperty == null) return null;
+        if(associatedProperty instanceof Association) {
+            return (Association) associatedProperty;
+        }
+        else {
+            throw new IllegalMappingException("The inverse side ["+associatedEntity.getName()+"." + associatedProperty.getName() +"] of the association ["+getOwner().getName()+"." + this.getName() +"] is not valid. Associations can only map to other entities and collection types.");
+        }
+
+    }
+
+    public void setAssociatedEntity(PersistentEntity associatedEntity) {
+        this.associatedEntity = associatedEntity;
+    }
+
+    public PersistentEntity getAssociatedEntity() {
+        return associatedEntity;
+    }
+
+    public void setReferencedPropertyName(String referencedPropertyName) {
+        this.referencedPropertyName = referencedPropertyName;
+    }
+
+    public String getReferencedPropertyName() {
+        return referencedPropertyName;
     }
 }

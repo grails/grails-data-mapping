@@ -3,8 +3,11 @@ package org.grails.inconsequential.mapping;
 import java.util.List;
 
 /**
- * This interface defines a strategy for reading how
- * persistent properties are defined in a persistent entity
+ * <p>This interface defines a strategy for reading how
+ * persistent properties are defined in a persistent entity.</p>
+ *
+ * <p>Subclasses can implement this interface in order to provide
+ * a different mechanism for mapping entities such as annotations or XML.</p>
  *
  * @author Graeme Rocher
  * @since 1.0

@@ -17,6 +17,7 @@ package org.grails.inconsequential.mapping;
 import org.grails.inconsequential.core.EntityCreationException;
 import org.grails.inconsequential.mapping.lifecycle.Initializable;
 
+import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,11 +36,13 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
     protected MappingContext context;
     protected PersistentProperty identity;
     protected List<String> persistentPropertyNames;
+    private String decapitalizedName;
 
     public AbstractPersistentEntity(Class javaClass, MappingContext context) {
         if(javaClass == null) throw new IllegalArgumentException("The argument [javaClass] cannot be null");
         this.javaClass = javaClass;
         this.context = context;
+        this.decapitalizedName = Introspector.decapitalize(javaClass.getName());
     }
 
     public void initialize() {
@@ -52,6 +55,10 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
         for (PersistentProperty persistentProperty : persistentProperties) {
             propertiesByName.put(persistentProperty.getName(), persistentProperty);
         }
+    }
+
+    public String getDecapitalizedName() {
+        return this.decapitalizedName;
     }
 
     public List<String> getPersistentPropertyNames() {

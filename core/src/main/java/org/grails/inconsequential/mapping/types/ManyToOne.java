@@ -25,7 +25,7 @@ import java.beans.PropertyDescriptor;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class ManyToOne<T> extends Association<T> {
+public abstract class ManyToOne<T> extends ToOne<T> {
     public ManyToOne(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
     }
@@ -33,4 +33,5 @@ public abstract class ManyToOne<T> extends Association<T> {
     public ManyToOne(PersistentEntity owner, MappingContext context, String name, Class type) {
         super(owner, context, name, type);
     }
+
 }

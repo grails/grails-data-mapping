@@ -19,13 +19,18 @@ public interface PersistentProperty<T> {
     Class getType();
 
     /**
-       * Specifies the mapping between this property and an external form
-       * such as a column, key/value pair etc.
-       *
-       * @return The PropertyMapping instance
-       */
-      PropertyMapping<T> getMapping();
+    * Specifies the mapping between this property and an external form
+    * such as a column, key/value pair etc.
+    *
+    * @return The PropertyMapping instance
+    */
+    PropertyMapping<T> getMapping();
 
-    
+    /**
+     * Obtains the owner of this persistent property
+     *
+     * @return The owner
+     */
+    PersistentEntity getOwner();
 
 }

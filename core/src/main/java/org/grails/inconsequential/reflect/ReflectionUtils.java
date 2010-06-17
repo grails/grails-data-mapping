@@ -14,13 +14,18 @@
  */
 package org.grails.inconsequential.reflect;
 
+import org.springframework.beans.BeanUtils;
+
+import java.beans.PropertyDescriptor;
 import java.lang.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Provides methods to help with reflective operations
@@ -155,4 +160,38 @@ public class ReflectionUtils {
             throw new InstantiationException(e.getClass().getName() + " error creating instance of class ["+e.getMessage()+"]: " + e.getMessage(), e);
         }
     }
+
+    /**
+     * Retrieves all the properties of the given class for the given type
+     *
+     * @param clazz The class to retrieve the properties from
+     * @param propertyType The type of the properties you wish to retrieve
+     *
+     * @return An array of PropertyDescriptor instances
+     */
+    public static PropertyDescriptor[] getPropertiesOfType(Class<?> clazz, Class<?> propertyType) {
+        if (clazz == null || propertyType == null) {
+            return new PropertyDescriptor[0];
+        }
+
+        Set<PropertyDescriptor> properties = new HashSet<PropertyDescriptor>();
+        try {
+            for (PropertyDescriptor descriptor : BeanUtils.getPropertyDescriptors(clazz)) {
+                Class<?> currentPropertyType = descriptor.getPropertyType();
+                if (isTypeInstanceOfPropertyType(propertyType, currentPropertyType)) {
+                    properties.add(descriptor);
+                }
+            }
+        }
+        catch (Exception e) {
+            // if there are any errors in instantiating just return null for the moment
+            return new PropertyDescriptor[0];
+        }
+        return properties.toArray(new PropertyDescriptor[properties.size()]);
+    }
+    
+    private static boolean isTypeInstanceOfPropertyType(Class<?> type, Class<?> propertyType) {
+        return propertyType.isAssignableFrom(type) && !propertyType.equals(Object.class);
+    }
+
 }

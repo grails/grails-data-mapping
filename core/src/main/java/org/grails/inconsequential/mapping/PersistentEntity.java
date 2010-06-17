@@ -73,4 +73,9 @@ public interface PersistentEntity extends Initializable {
      * @return A List of strings
      */
     List<String> getPersistentPropertyNames();
+
+    /**
+     * @return Returns the name of the class decapitalized form
+     */
+    String getDecapitalizedName();
 }

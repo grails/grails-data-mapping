@@ -1,4 +1,4 @@
-/* Copyright 2004-2005 the original author or authors.
+/* Copyright (C) 2010 SpringSource
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,28 @@ import org.grails.inconsequential.mapping.PersistentEntity;
 import java.beans.PropertyDescriptor;
 
 /**
- * Models a one-to-one association
- * 
  * @author Graeme Rocher
- * @since 1.0
+ * @since 1.1
  */
-public abstract class OneToOne<T> extends ToOne<T> {
-    public OneToOne(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
+public abstract class ToOne<T> extends Association<T> {
+    
+    private boolean foreignKeyInChild;
+
+    public ToOne(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
     }
 
-    public OneToOne(PersistentEntity owner, MappingContext context, String name, Class type) {
+    public ToOne(PersistentEntity owner, MappingContext context, String name, Class type) {
         super(owner, context, name, type);
     }
+
+    public void setForeignKeyInChild(boolean foreignKeyInChild) {
+        this.foreignKeyInChild = foreignKeyInChild;
+    }
+
+    public boolean isForeignKeyInChild() {
+        return foreignKeyInChild;
+    }
+
+
 }
