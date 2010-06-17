@@ -16,6 +16,7 @@ package org.grails.inconsequential.grails;
 
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.grails.inconsequential.mapping.ClassMapping;
+import org.grails.inconsequential.mapping.PersistentEntity;
 import org.grails.inconsequential.mapping.PersistentProperty;
 import org.grails.inconsequential.mapping.PropertyMapping;
 
@@ -53,5 +54,9 @@ public class AdaptedDomainClassProperty implements PersistentProperty {
                 return null; 
             }
         };
+    }
+
+    public PersistentEntity getOwner() {
+        return null;
     }
 }
