@@ -68,7 +68,9 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
 
     @Override
     protected void setEntryValue(KeyValueEntry nativeEntry, String key, Object value) {
-        nativeEntry.put(key, bytes(value.toString()));
+        if(value != null) {
+            nativeEntry.put(key, bytes(value.toString()));
+        }
     }
 
     @Override
@@ -115,20 +117,12 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
             return entry;
     }
 
-    private ColumnPath createColumnPath(String family, UUID uuid) {
-        ColumnPath cp = new ColumnPath(family);
-
-        cp.setSuper_column(UUIDUtil.asByteArray(uuid));
-        return cp;
-    }
-
     @Override
     protected Object storeEntry(PersistentEntity persistentEntity, KeyValueEntry nativeEntry) {
-        final String keyspaceName = getKeyspace(getPersistentEntity().getMapping(), CassandraDatastore.DEFAULT_KEYSPACE);
 
         UUID uuid = UUIDUtil.getTimeUUID();
         try {
-            final Keyspace keyspace = cassandraClient.getKeyspace(keyspaceName);
+            final Keyspace keyspace = getKeyspace();
 
             String family = getFamily(persistentEntity, getPersistentEntity().getMapping());
 
@@ -152,10 +146,8 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
             keyspace.batchInsert(uuid.toString(), null,insertMap);
             return uuid;
 
-        } catch (NotFoundException e) {
-            throw new InvalidDataAccessResourceUsageException("Cassandra Keyspace ["+keyspaceName+"] not found: " + e.getMessage(),e);
         } catch (TException e) {
-            throw new DataAccessResourceFailureException("Exception occurred ");
+            throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
         } catch (UnavailableException e) {
             throw new DataAccessResourceFailureException("Cassandra Unavailable Exception: " + e.getMessage(),e);
         } catch (InvalidRequestException e) {
@@ -169,5 +161,18 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
     protected void deleteEntries(String family, List<Object> keys) {
 
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    private Keyspace getKeyspace() {
+        Keyspace keyspace;
+        final String keyspaceName = getKeyspace(getPersistentEntity().getMapping(), CassandraDatastore.DEFAULT_KEYSPACE);
+        try {
+            keyspace = cassandraClient.getKeyspace(keyspaceName);
+        } catch (NotFoundException e) {
+            throw new InvalidDataAccessResourceUsageException("Cassandra Keyspace ["+keyspaceName+"] not found: " + e.getMessage(),e);
+        } catch (TException e) {
+            throw new DataAccessResourceFailureException("Exception occurred looking up Keyspace ["+keyspaceName+"]: " + e.getMessage(),e);
+        }
+        return keyspace;
     }
 }

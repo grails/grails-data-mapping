@@ -1,1 +1,1 @@
-include "core", "appengine", "redis", "cassandra",'grails-adapter'
+include "core", "appengine", "redis", "cassandra",'runtime-dynamic'

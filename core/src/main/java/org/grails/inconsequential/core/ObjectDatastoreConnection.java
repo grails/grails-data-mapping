@@ -34,6 +34,14 @@ public interface ObjectDatastoreConnection<T> extends Connection {
      * @return The MappingContext
      */
     MappingContext getMappingContext();
+
+    /**
+     * Creates a key that wraps a native key
+     * @param nativeKey the native key
+     * @return The key
+     */
+    Key<T> createKey(T nativeKey);
+
     /**
      * Stores and object and returns its key
      *

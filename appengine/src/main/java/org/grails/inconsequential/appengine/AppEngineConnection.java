@@ -1,9 +1,9 @@
 package org.grails.inconsequential.appengine;
 
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.datastore.Key;
 import org.grails.inconsequential.appengine.engine.AppEngineEntityPersister;
-import org.grails.inconsequential.core.AbstractDatastore;
-import org.grails.inconsequential.core.AbstractObjectDatastoreConnection;
+import org.grails.inconsequential.core.*;
 import org.grails.inconsequential.engine.Persister;
 import org.grails.inconsequential.kv.KeyValueDatastoreConnection;
 import org.grails.inconsequential.kv.mapping.Family;
@@ -26,7 +26,7 @@ import java.util.Set;
  *
  * @since 1.0
  */
-public class AppEngineConnection extends AbstractObjectDatastoreConnection implements KeyValueDatastoreConnection<com.google.appengine.api.datastore.Key> {
+public class AppEngineConnection extends AbstractObjectDatastoreConnection<com.google.appengine.api.datastore.Key> implements KeyValueDatastoreConnection<com.google.appengine.api.datastore.Key> {
     protected DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
     private AppEngineTransaction transaction;
 
@@ -38,6 +38,10 @@ public class AppEngineConnection extends AbstractObjectDatastoreConnection imple
      */
     public AppEngineConnection(Map<String, String> connectionDetails, MappingContext<Family, KeyValue> mappingContext) {
         super(connectionDetails, mappingContext);
+    }
+
+    public org.grails.inconsequential.core.Key<Key> createKey(Key nativeKey) {
+        return new AppEngineKey(nativeKey);
     }
 
     public org.grails.inconsequential.core.Key<com.google.appengine.api.datastore.Key> store(String table, Map object) {
@@ -113,4 +117,6 @@ public class AppEngineConnection extends AbstractObjectDatastoreConnection imple
         }
         return null;
     }
+
+
 }

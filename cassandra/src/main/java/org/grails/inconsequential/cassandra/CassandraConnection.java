@@ -19,6 +19,7 @@ import me.prettyprint.cassandra.service.CassandraClientPool;
 import org.grails.inconsequential.cassandra.engine.CassandraEntityPersister;
 import org.grails.inconsequential.core.AbstractDatastore;
 import org.grails.inconsequential.core.AbstractObjectDatastoreConnection;
+import org.grails.inconsequential.core.Key;
 import org.grails.inconsequential.engine.Persister;
 import org.grails.inconsequential.kv.mapping.KeyValueMappingContext;
 import org.grails.inconsequential.mapping.MappingContext;
@@ -34,7 +35,7 @@ import java.util.UUID;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class CassandraConnection extends AbstractObjectDatastoreConnection<UUID> {
+public class CassandraConnection extends AbstractObjectDatastoreConnection {
     private CassandraClient cassandraClient;
     private CassandraClientPool connectionPool;
 
@@ -70,5 +71,9 @@ public class CassandraConnection extends AbstractObjectDatastoreConnection<UUID>
 
     public Transaction beginTransaction() {
         throw new TransactionSystemException("Transactions are not supported by Cassandra");
+    }
+
+    public Key createKey(Object nativeKey) {
+        return new CassandraKey(nativeKey);
     }
 }

@@ -15,6 +15,7 @@
 package org.grails.inconsequential.redis;
 
 import org.grails.inconsequential.core.AbstractObjectDatastoreConnection;
+import org.grails.inconsequential.core.Key;
 import org.grails.inconsequential.engine.Persister;
 import org.grails.inconsequential.mapping.MappingContext;
 import org.grails.inconsequential.mapping.PersistentEntity;
@@ -34,7 +35,7 @@ import java.util.*;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisDatastoreConnection extends AbstractObjectDatastoreConnection<String> implements Map {
+public class RedisDatastoreConnection extends AbstractObjectDatastoreConnection<Long> implements Map {
 
     private JRedis jredisClient;
 
@@ -189,5 +190,9 @@ public class RedisDatastoreConnection extends AbstractObjectDatastoreConnection<
 
     public Set entrySet() {
         throw new UnsupportedOperationException("Method entrySet() is not supported");
+    }
+
+    public Key<Long> createKey(Long nativeKey) {
+        return new RedisKey(nativeKey);
     }
 }

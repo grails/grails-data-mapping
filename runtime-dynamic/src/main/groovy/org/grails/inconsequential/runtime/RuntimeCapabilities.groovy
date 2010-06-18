@@ -16,6 +16,7 @@ class RuntimeCapabilities {
   }
 
   void enhance() {
+    def datastore = this.datastore
     def mappingContext = datastore.mappingContext
     if(mappingContext) {
       for(PersistentEntity e in mappingContext.persistentEntities) {
@@ -24,18 +25,18 @@ class RuntimeCapabilities {
           javaClass.metaClass {
               save {->
                 ObjectDatastoreConnection connection = datastore.currentConnection
-                connection.persist(this)
+                connection.persist(delegate)
               }
 
               delete {->
                 ObjectDatastoreConnection connection = datastore.currentConnection
-                connection.delete this
+                connection.delete delegate
               }
 
               'static' {
                   get { Serializable id ->
                     ObjectDatastoreConnection connection = datastore.currentConnection
-                    connection.retrieve(javaClass, id)
+                    connection.retrieve(javaClass, connection.createKey(id))
                   }
 
                   deleteAll { Object[] objs ->
