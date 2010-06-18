@@ -24,6 +24,7 @@ import org.grails.inconsequential.kv.engine.AbstractKeyValueEntityPesister;
 import org.grails.inconsequential.mapping.PersistentEntity;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of the {@link org.grails.inconsequential.engine.EntityPersister} abstract
@@ -82,7 +83,12 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     @Override
     protected void updateEntry(PersistentEntity persistentEntity, com.google.appengine.api.datastore.Key key, Entity entry) {
         if(entry != null) {
-            datastoreService.put(entry);
+            Entity existing = getEntity(key);
+            final Map<String,Object> props = entry.getProperties();
+            for (String name : props.keySet()) {
+                existing.setProperty(name, props.get(name));
+            }
+            datastoreService.put(existing);
         }
     }
 

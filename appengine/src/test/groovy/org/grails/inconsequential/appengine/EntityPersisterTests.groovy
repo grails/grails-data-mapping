@@ -42,8 +42,7 @@ class EntityPersisterTests extends AppEngineDatastoreTestCase {
     assert t != null
     assert t.id == t2.id
     assert "bob"  == t2.name
-//    TODO: Updates seem to be failing on update. Fix me.
-//    assert 55  == t2.age
+    assert 55  == t2.age
 
 
     conn.delete(key)
