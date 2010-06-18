@@ -20,7 +20,9 @@ import org.grails.inconsequential.engine.EntityPersister;
 import org.grails.inconsequential.kv.mapping.Family;
 import org.grails.inconsequential.kv.mapping.KeyValue;
 import org.grails.inconsequential.mapping.*;
+import org.grails.inconsequential.mapping.types.OneToOne;
 import org.grails.inconsequential.mapping.types.Simple;
+import org.grails.inconsequential.mapping.types.ToOne;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,12 +132,35 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                 final Object propValue = entityAccess.getProperty(prop.getName());
                 setEntryValue(e, key, propValue);
             }
+            else if(prop instanceof ToOne) {
+                ToOne association = (ToOne) prop;
+                if(association.isOwningSide()) {
+                    if(!association.isForeignKeyInChild()) {
+                       // TODO: Store association id
+                       // setEntryValue(e, association.getName(),);
+                    }
+                }
+            }
         }
 
-        K k = storeEntry(persistentEntity, e);
-        String id = getIdentifierName(cm);
-        entityAccess.setProperty(id, k);
+        K k = readObjectIdentifier(entityAccess, cm);
+        if(k == null) {
+            k = storeEntry(persistentEntity, e);
+            String id = getIdentifierName(cm);
+            entityAccess.setProperty(id, k);
+        }
+        else {
+            updateEntry(persistentEntity, k, e);
+        }
+
         return createDatastoreKey(k);
+    }
+
+
+
+    protected K readObjectIdentifier(EntityAccess entityAccess, ClassMapping<Family> cm) {
+        String propertyName = getIdentifierName(cm);
+        return (K) entityAccess.getProperty(propertyName);
     }
 
 
@@ -204,9 +229,18 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
     protected abstract K storeEntry(PersistentEntity persistentEntity, T nativeEntry);
 
     /**
+     * Updates an existing entry to the actual datastore
+     *
+     * @param persistentEntity The PersistentEntity
+     * @param key The key of the object to update
+     * @param entry The entry
+     */
+    protected abstract void updateEntry(PersistentEntity persistentEntity, K key, T entry);
+
+    /**
      * Deletes one or many entries for the given list of Keys
      *
-     * @param family
+     * @param family The family
      * @param keys The keys
      */
     protected abstract void deleteEntries(String family, List<K> keys);

@@ -90,13 +90,24 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
         return false;
     }
 
+
+    @Override
+    protected void updateEntry(PersistentEntity persistentEntity, Long key, RedisEntry nativeEntry) {
+        String family = getFamily(persistentEntity, persistentEntity.getMapping());
+        performInsertion(family, key, nativeEntry);
+    }
+
     @Override
     protected Long storeEntry(PersistentEntity persistentEntity, RedisEntry nativeEntry) {
         final String family = nativeEntry.getFamily();
+        Long id = generateIdentifier(family);
+        return performInsertion(family, id, nativeEntry);
+    }
+
+    private Long performInsertion(String family, Long id, RedisEntry nativeEntry) {
         try {
-            Long id = jredisClient.incr(family + ".next_id");
             String key = family + ":" + id;
-            
+
             jredisClient.hmset(key,nativeEntry);
             return id;
         } catch (RedisException e) {
@@ -105,6 +116,16 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
         catch (Exception e) {
             throw new DataAccessResourceFailureException("Exception occurred persisting entry ["+family+"]: " + e.getMessage(),e);
         }
+    }
+
+    protected Long generateIdentifier(String family) {
+        Long id = null;
+        try {
+            id = jredisClient.incr(family + ".next_id");
+        } catch (RedisException e) {
+            throw new DataAccessResourceFailureException("Exception occured generating identifier for entity ["+family+"]",e );
+        }
+        return id;
     }
 
     @Override

@@ -32,8 +32,17 @@ class CassandraEntityPersisterTest extends AbstractCassandraTest {
      assert "Bob" == t.name
      assert 45 == t.age
      assert t.id != null
-     
+
+
+     t.age = 55
+     conn.persist(t)
+
+     t = conn.retrieve(TestEntity, new CassandraKey(t.id))
+
+     assert 55 == t.age
+
   }
+
 }
 class TestEntity {
   UUID id

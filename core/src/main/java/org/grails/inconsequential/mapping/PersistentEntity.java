@@ -1,6 +1,7 @@
 package org.grails.inconsequential.mapping;
 
 import org.grails.inconsequential.mapping.lifecycle.Initializable;
+import org.grails.inconsequential.mapping.types.Association;
 
 import java.util.List;
 
@@ -32,6 +33,14 @@ public interface PersistentEntity extends Initializable {
      * @return A list of PersistentProperty instances
      */
     List<PersistentProperty> getPersistentProperties();
+
+    /**
+     * A list of the associations for this entity. This is typically
+     * a subset of the list returned by {@link #getPersistentProperties()}
+     *
+     * @return A list of associations
+     */
+    List <Association> getAssociations();
 
     /**
      * Obtains a PersistentProperty instance by name

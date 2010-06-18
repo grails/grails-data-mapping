@@ -16,6 +16,7 @@ package org.grails.inconsequential.mapping;
 
 import org.grails.inconsequential.core.EntityCreationException;
 import org.grails.inconsequential.mapping.lifecycle.Initializable;
+import org.grails.inconsequential.mapping.types.Association;
 
 import java.beans.Introspector;
 import java.util.*;
@@ -29,6 +30,7 @@ import java.util.*;
 public abstract class AbstractPersistentEntity<T> implements PersistentEntity, Initializable{
     protected Class javaClass;
     protected List<PersistentProperty> persistentProperties;
+    protected List<Association> associations;
     protected Map<String, PersistentProperty> propertiesByName = new HashMap<String,PersistentProperty>();
     protected MappingContext context;
     protected PersistentProperty identity;
@@ -48,8 +50,12 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
         this.owners = context.getMappingSyntaxStrategy().getOwningEntities(javaClass, context);
         this.persistentProperties = context.getMappingSyntaxStrategy().getPersistentProperties(javaClass, context);
         persistentPropertyNames = new ArrayList<String>();
+        associations = new ArrayList();
         for (PersistentProperty persistentProperty : persistentProperties) {
             persistentPropertyNames.add(persistentProperty.getName());
+            if(persistentProperty instanceof Association) {
+                associations.add((Association) persistentProperty);
+            }
         }
         for (PersistentProperty persistentProperty : persistentProperties) {
             propertiesByName.put(persistentProperty.getName(), persistentProperty);
@@ -104,6 +110,10 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
 
     public List<PersistentProperty> getPersistentProperties() {
         return persistentProperties;
+    }
+
+    public List<Association> getAssociations() {
+        return associations;
     }
 
     public PersistentProperty getPropertyByName(String name) {

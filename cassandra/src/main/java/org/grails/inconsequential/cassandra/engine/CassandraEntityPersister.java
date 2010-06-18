@@ -35,6 +35,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import static me.prettyprint.cassandra.utils.StringUtils.*;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -88,6 +89,19 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
         }
 
         final UUID uuid = (UUID) key.getNativeKey();
+        SuperColumn sc = getSuperColumn(keyspace, family, uuid);
+        KeyValueEntry entry = new KeyValueEntry(family);
+        if(sc != null) {
+            for (Column column : sc.getColumns()) {
+                entry.put(string(column.getName()), string(column.getValue()));
+            }
+        }
+        if(entry.isEmpty()) return null;
+        else
+            return entry;
+    }
+
+    private SuperColumn getSuperColumn(Keyspace keyspace, String family, Serializable id) {
         ColumnParent parent = new ColumnParent();
         parent.setColumn_family(family);
 
@@ -96,64 +110,74 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
         try {
             SlicePredicate predicate = new SlicePredicate();
             predicate.setSlice_range(new SliceRange(new byte[0], new byte[0], false, 1));
-            result = keyspace.getSuperSlice(uuid.toString(), parent, predicate);
+            result = keyspace.getSuperSlice(id.toString(), parent, predicate);
         } catch (InvalidRequestException e) {
-            throw new DataIntegrityViolationException("Cannot retrieve SuperColumn for uuid ["+uuid+"] for ColumnPath ["+family+"]: " + e.getMessage(), e);
+            throw new DataIntegrityViolationException("Cannot retrieve SuperColumn for uuid ["+ id +"] for ColumnPath ["+family+"]: " + e.getMessage(), e);
         } catch (Exception e) {
             throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
         }
-        KeyValueEntry entry = new KeyValueEntry(family);
+        return !result.isEmpty() ? result.get(0) : null;
+    }
 
-        for (SuperColumn sc : result) {
+    @Override
+    protected void updateEntry(PersistentEntity persistentEntity, Object id, KeyValueEntry entry) {
+        Keyspace keyspace = getKeyspace();
+        final String family = getFamily(persistentEntity, persistentEntity.getMapping());
+        SuperColumn sc = getSuperColumn(keyspace, family, (Serializable)id);
+        if(sc != null) {
+            updateSuperColumn(sc, entry);
 
-            if(sc != null) {
-                for (Column column : sc.getColumns()) {
-                    entry.put(string(column.getName()), string(column.getValue()));
-                }
-            }
+            Map<String, List<SuperColumn>> insertMap = createInsertMap(family, sc);
+
+            performInsertion(keyspace,id.toString(),insertMap, entry);
         }
-        if(entry.isEmpty()) return null;
-        else
-            return entry;
     }
 
     @Override
     protected Object storeEntry(PersistentEntity persistentEntity, KeyValueEntry nativeEntry) {
 
         UUID uuid = UUIDUtil.getTimeUUID();
+        final Keyspace keyspace = getKeyspace();
+        String family = getFamily(persistentEntity, getPersistentEntity().getMapping());
+        SuperColumn sc = new SuperColumn();
+        sc.setName(UUIDUtil.asByteArray(uuid));
+        updateSuperColumn(sc, nativeEntry);
+        Map<String, List<SuperColumn>> insertMap = createInsertMap(family, sc);
+        performInsertion(keyspace, uuid.toString(), insertMap, nativeEntry);
+        return uuid;
+    }
+
+    private void performInsertion(Keyspace keyspace, String key, Map<String, List<SuperColumn>> insertMap, KeyValueEntry nativeEntry) {
         try {
-            final Keyspace keyspace = getKeyspace();
-
-            String family = getFamily(persistentEntity, getPersistentEntity().getMapping());
-
-            final long time = System.currentTimeMillis() * 1000;
-            SuperColumn sc = new SuperColumn();
-
-            sc.setName(UUIDUtil.asByteArray(uuid));
-            for (String prop : nativeEntry.keySet()) {
-                Column c = new Column();
-                c.setName( bytes(prop) );
-                c.setValue((byte[])nativeEntry.get(prop));
-                c.setTimestamp(time);
-                sc.addToColumns(c);
-            }
-
-            Map<String, List<SuperColumn>> insertMap = new HashMap<String, List<SuperColumn>>();
-            List<SuperColumn> superColumns = new ArrayList<SuperColumn>();
-            superColumns.add(sc);
-            insertMap.put(family, superColumns);
-
-            keyspace.batchInsert(uuid.toString(), null,insertMap);
-            return uuid;
+            keyspace.batchInsert(key, null,insertMap);
 
         } catch (TException e) {
-            throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
+            throw new DataAccessResourceFailureException("Exception occurred performing insertion of entry ["+nativeEntry+"]: " + e.getMessage(),e);
         } catch (UnavailableException e) {
             throw new DataAccessResourceFailureException("Cassandra Unavailable Exception: " + e.getMessage(),e);
         } catch (InvalidRequestException e) {
-            throw new DataIntegrityViolationException("Cannot write values "+nativeEntry.keySet()+" for id ["+uuid+"]: " + e.getMessage(), e);
+            throw new DataIntegrityViolationException("Cannot write values "+nativeEntry.keySet()+" for key ["+key+"]: " + e.getMessage(), e);
         } catch (TimedOutException e) {
             throw new DataAccessResourceFailureException("Cassandra Unavailable Exception: " + e.getMessage(),e);
+        }
+    }
+
+    private Map<String, List<SuperColumn>> createInsertMap(String family, SuperColumn sc) {
+        Map<String, List<SuperColumn>> insertMap = new HashMap<String, List<SuperColumn>>();
+        List<SuperColumn> superColumns = new ArrayList<SuperColumn>();
+        superColumns.add(sc);
+        insertMap.put(family, superColumns);
+        return insertMap;
+    }
+
+    private void updateSuperColumn(SuperColumn sc, KeyValueEntry nativeEntry) {
+        final long time = System.currentTimeMillis() * 1000;
+        for (String prop : nativeEntry.keySet()) {
+            Column c = new Column();
+            c.setName( bytes(prop) );
+            c.setValue((byte[])nativeEntry.get(prop));
+            c.setTimestamp(time);
+            sc.addToColumns(c);
         }
     }
 
