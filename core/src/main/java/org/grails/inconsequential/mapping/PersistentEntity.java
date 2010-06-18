@@ -78,4 +78,13 @@ public interface PersistentEntity extends Initializable {
      * @return Returns the name of the class decapitalized form
      */
     String getDecapitalizedName();
+
+    /**
+     * Returns whether the specified entity asserts ownership over this
+     * entity
+     *
+     * @param owner The owning entity
+     * @return True if it does own this entity
+     */
+    boolean isOwningEntity(PersistentEntity owner);
 }

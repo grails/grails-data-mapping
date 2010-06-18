@@ -69,6 +69,8 @@ class GormMappingSyntaxTests {
     assert toOne.associatedEntity == context.getPersistentEntity(SecondEntity.name)
     assert toOne.referencedPropertyName == null
     assert toOne.bidirectional == false
+    assert toOne.owningSide == true
+
   }
 
   @Test
@@ -85,6 +87,7 @@ class GormMappingSyntaxTests {
     Association oneToMany = publisher.getPropertyByName("authors")
     assert oneToMany != null
     assert !oneToMany.bidirectional
+    assert !oneToMany.owningSide
     assert (oneToMany instanceof OneToMany)
   }
 
@@ -104,6 +107,7 @@ class GormMappingSyntaxTests {
     assert authorAssociation != null
     assert (authorAssociation instanceof ManyToOne)
     assert authorAssociation.bidirectional
+    assert !authorAssociation.owningSide
 
     Association inverse = authorAssociation.inverseSide
     assert inverse != null
@@ -113,6 +117,7 @@ class GormMappingSyntaxTests {
     assert inverse.inverseSide != null
     assert inverse.bidirectional
     assert (inverse instanceof OneToMany)
+    assert inverse.owningSide
   }
 
 

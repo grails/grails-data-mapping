@@ -27,6 +27,7 @@ import java.beans.PropertyDescriptor;
 public abstract class Association<T> extends AbstractPersistentProperty {
     private PersistentEntity associatedEntity;
     private String referencedPropertyName;
+    private boolean owningSide;
 
     public Association(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
@@ -50,6 +51,20 @@ public abstract class Association<T> extends AbstractPersistentProperty {
             throw new IllegalMappingException("The inverse side ["+associatedEntity.getName()+"." + associatedProperty.getName() +"] of the association ["+getOwner().getName()+"." + this.getName() +"] is not valid. Associations can only map to other entities and collection types.");
         }
 
+    }
+
+    /**
+     * Returns whether this side owns the relationship. This controls
+     * the default cascading behavior if none is specified
+     *
+     * @return True if this property is the owning side
+     */
+    public boolean isOwningSide() {
+        return owningSide;
+    }
+
+    public void setOwningSide(boolean owningSide) {
+        this.owningSide = owningSide;
     }
 
     public void setAssociatedEntity(PersistentEntity associatedEntity) {

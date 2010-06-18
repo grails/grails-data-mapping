@@ -18,7 +18,7 @@ import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 import org.grails.inconsequential.mapping.*;
 import org.grails.inconsequential.mapping.types.Association;
-import org.grails.inconsequential.mapping.types.OneToMany;
+import org.grails.inconsequential.mapping.types.OneToOne;
 import org.grails.inconsequential.mapping.types.ToOne;
 import org.grails.inconsequential.reflect.ClassPropertyFetcher;
 import org.grails.inconsequential.reflect.ReflectionUtils;
@@ -122,7 +122,6 @@ public class GormMappingSyntaxStrategy implements MappingSyntaxStrategy {
 
             Collection tmp = cpf.getStaticPropertyValue(BELONGS_TO, Collection.class);
             // owners are the classes that own this class
-            Set owners = tmp != null ? new HashSet(tmp) : Collections.emptySet();
             Collection embedded = cpf.getStaticPropertyValue(EMBEDDED, Collection.class);
             if(embedded == null) embedded = Collections.emptyList();
 
@@ -138,6 +137,8 @@ public class GormMappingSyntaxStrategy implements MappingSyntaxStrategy {
             Map hasOneMap = cpf.getStaticPropertyValue(HAS_ONE, Map.class);
             if(hasOneMap == null) hasOneMap = Collections.emptyMap();
 
+
+
             PropertyDescriptor[] descriptors = cpf.getPropertyDescriptors();
 
             for (PropertyDescriptor descriptor : descriptors) {
@@ -149,7 +150,11 @@ public class GormMappingSyntaxStrategy implements MappingSyntaxStrategy {
                 // if it is a Set and there are relationships defined
                 // and it is defined as persistent
                 if (isCollectionType(currentPropType)) {
-                    persistentProperties.add(establishRelationshipForCollection(descriptor, entity, context, hasManyMap, mappedByMap));
+                    final Association association = establishRelationshipForCollection(descriptor, entity, context, hasManyMap, mappedByMap);
+                    if(association != null) {
+                        configureOwningSide(association);
+                        persistentProperties.add(association);
+                    }
                 }
                 else if (embedded.contains(propertyName)) {
                     // TODO: Implement mapping of embedded types
@@ -157,15 +162,66 @@ public class GormMappingSyntaxStrategy implements MappingSyntaxStrategy {
                 }
                 // otherwise if the type is a domain class establish relationship
                 else if (isPersistentEntity(currentPropType)) {
-                    persistentProperties.add( establishDomainClassRelationship(entity, descriptor, context, hasOneMap) );
+                    final ToOne association = establishDomainClassRelationship(entity, descriptor, context, hasOneMap);
+                    if(association != null) {
+                        configureOwningSide(association);
+                        persistentProperties.add(association);
+                    }
                 }
                 else if(MappingFactory.isSimpleType(descriptor.getPropertyType())) {
-                        persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
+                    persistentProperties.add( propertyFactory.createSimple(entity, context, descriptor) );
                 }
 
             }
         }
         return persistentProperties;
+    }
+
+    private void configureOwningSide(Association association) {
+        if(association.isBidirectional()) {
+            if(association.getAssociatedEntity().isOwningEntity(association.getOwner())) {
+                association.setOwningSide(true);
+            }
+        }
+        else {
+            if(association instanceof OneToOne) {
+                association.setOwningSide(true);
+            } else {
+               if(association.getAssociatedEntity().isOwningEntity(association.getOwner())) {
+                   association.setOwningSide(true);
+               }
+               else {
+                   association.setOwningSide(false);
+               }
+            }
+        }
+    }
+
+    /**
+     * Evaluates the belongsTo property to find out who owns who
+     */
+    @SuppressWarnings("unchecked")
+    private Set establishRelationshipOwners(ClassPropertyFetcher cpf) {
+        Set owners = null;
+        Class<?> belongsTo = cpf.getStaticPropertyValue(BELONGS_TO, Class.class);
+        if (belongsTo == null) {
+            List ownersProp = cpf.getStaticPropertyValue(BELONGS_TO, List.class);
+            if (ownersProp != null) {
+                owners = new HashSet(ownersProp);
+            }
+            else {
+                Map ownersMap = cpf.getStaticPropertyValue(BELONGS_TO, Map.class);
+                if (ownersMap!=null) {
+                    owners = new HashSet(ownersMap.values());
+                }
+            }
+        }
+        else {
+            owners = new HashSet();
+            owners.add(belongsTo);
+        }
+        if(owners == null) owners = Collections.emptySet();
+        return owners;
     }
 
     private Association establishRelationshipForCollection(PropertyDescriptor property, PersistentEntity entity, MappingContext context, Map<String, Class> hasManyMap, Map mappedByMap) {
@@ -493,6 +549,10 @@ public class GormMappingSyntaxStrategy implements MappingSyntaxStrategy {
         else
             entity = context.getPersistentEntity(javaClass.getName());
         return entity;
+    }
+
+    public Set getOwningEntities(Class javaClass, MappingContext context) {
+        return establishRelationshipOwners(ClassPropertyFetcher.forClass(javaClass));
     }
 
     /**

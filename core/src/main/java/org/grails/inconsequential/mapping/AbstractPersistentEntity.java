@@ -18,10 +18,7 @@ import org.grails.inconsequential.core.EntityCreationException;
 import org.grails.inconsequential.mapping.lifecycle.Initializable;
 
 import java.beans.Introspector;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Abstract implementation to be subclasses on a per datastore basis
@@ -37,6 +34,7 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
     protected PersistentProperty identity;
     protected List<String> persistentPropertyNames;
     private String decapitalizedName;
+    protected Set owners;
 
     public AbstractPersistentEntity(Class javaClass, MappingContext context) {
         if(javaClass == null) throw new IllegalArgumentException("The argument [javaClass] cannot be null");
@@ -47,6 +45,7 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
 
     public void initialize() {
         this.identity = context.getMappingSyntaxStrategy().getIdentity(javaClass, context);
+        this.owners = context.getMappingSyntaxStrategy().getOwningEntities(javaClass, context);
         this.persistentProperties = context.getMappingSyntaxStrategy().getPersistentProperties(javaClass, context);
         persistentPropertyNames = new ArrayList<String>();
         for (PersistentProperty persistentProperty : persistentProperties) {
@@ -55,6 +54,10 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
         for (PersistentProperty persistentProperty : persistentProperties) {
             propertiesByName.put(persistentProperty.getName(), persistentProperty);
         }
+    }
+
+    public boolean isOwningEntity(PersistentEntity owner) {
+        return owner != null && owners.contains(owner.getJavaClass());
     }
 
     public String getDecapitalizedName() {

@@ -1,6 +1,7 @@
 package org.grails.inconsequential.mapping;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>This interface defines a strategy for reading how
@@ -55,4 +56,15 @@ public interface MappingSyntaxStrategy {
      * @param classMapping The ClassMapping instance
      */
     IdentityMapping getDefaultIdentityMapping(ClassMapping classMapping);
+
+    /**
+     * Returns a set of entities that "own" the given entity. Ownership
+     * dictates default cascade strategies. So if entity A owns entity B
+     * then saves, updates and deletes will cascade from A to B
+     *
+     * @param javaClass The Java class
+     * @param context The MappingContext
+     * @return A Set of owning classes
+     */
+    Set getOwningEntities(Class javaClass, MappingContext context);
 }
