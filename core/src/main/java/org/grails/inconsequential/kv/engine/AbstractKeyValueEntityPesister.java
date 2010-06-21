@@ -15,14 +15,18 @@
 package org.grails.inconsequential.kv.engine;
 
 import org.grails.inconsequential.core.Key;
+import org.grails.inconsequential.core.ObjectDatastoreConnection;
 import org.grails.inconsequential.engine.EntityAccess;
 import org.grails.inconsequential.engine.EntityPersister;
+import org.grails.inconsequential.engine.Persister;
 import org.grails.inconsequential.kv.mapping.Family;
 import org.grails.inconsequential.kv.mapping.KeyValue;
 import org.grails.inconsequential.mapping.*;
+import org.grails.inconsequential.mapping.types.Cascade;
 import org.grails.inconsequential.mapping.types.OneToOne;
 import org.grails.inconsequential.mapping.types.Simple;
 import org.grails.inconsequential.mapping.types.ToOne;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +39,11 @@ import java.util.List;
  * @since 1.0
  */
 public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersister {
-    public AbstractKeyValueEntityPesister(PersistentEntity entity) {
+    private ObjectDatastoreConnection connection;
+
+    public AbstractKeyValueEntityPesister(PersistentEntity entity, ObjectDatastoreConnection connection) {
         super(entity);
+        this.connection = connection;
     }
 
 
@@ -96,16 +103,25 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
 
             final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
             for (PersistentProperty prop : props) {
+                PropertyMapping<KeyValue> pm = prop.getMapping();
+                String propKey;
+                if(pm.getMappedForm()!=null) {
+                    propKey = pm.getMappedForm().getKey();
+                }
+                else {
+                    propKey = prop.getName();
+                }
                 if(prop instanceof Simple) {
-                    PropertyMapping<KeyValue> pm = prop.getMapping();
-                    String propKey;
-                    if(pm.getMappedForm()!=null) {
-                        propKey = pm.getMappedForm().getKey();
-                    }
-                    else {
-                        propKey = prop.getName();
-                    }
                     ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propKey) );
+                }
+                else if(prop instanceof ToOne) {
+                    Key associationKey = createDatastoreKey((K) getEntryValue(nativeEntry, propKey));
+                    Persister persister = connection.getPersister(prop.getType());
+                    if(persister == null) {
+                        throw new InvalidDataAccessApiUsageException("Cannot retrieve association ["+persistentEntity.getName()+"."+prop.getName()+"]. Class ["+prop.getType()+"] is not persistent type.");
+                    }
+
+                    ea.setProperty(prop.getName(), persister.retrieve(context, associationKey));
                 }
             }
             return obj;
@@ -134,10 +150,23 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
             }
             else if(prop instanceof ToOne) {
                 ToOne association = (ToOne) prop;
-                if(association.isOwningSide()) {
+                if(association.doesCascade(Cascade.SAVE)) {
+
                     if(!association.isForeignKeyInChild()) {
-                       // TODO: Store association id
-                       // setEntryValue(e, association.getName(),);
+
+                        final Object associatedObject = entityAccess.getProperty(prop.getName());
+                        if(associatedObject != null) {
+
+                            Persister persister = connection.getPersister(associatedObject);
+                            if(persister == null) {
+                                throw new InvalidDataAccessApiUsageException("Cannot persist association ["+persistentEntity.getName()+"."+prop.getName()+"]. Object ["+associatedObject+"] is not persistable.");
+                            }
+                            Key associationId = persister.persist(context, associatedObject);
+                            setEntryValue(e, association.getName(), associationId.getNativeKey());
+                        }
+                        else {
+                            // TODO: throw exception if not nullable
+                        }
                     }
                 }
             }

@@ -17,6 +17,9 @@ package org.grails.inconsequential.mapping.types;
 import org.grails.inconsequential.mapping.*;
 
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Models an association between one class and another
@@ -25,9 +28,19 @@ import java.beans.PropertyDescriptor;
  * @since 1.0
  */
 public abstract class Association<T> extends AbstractPersistentProperty {
+
+    public static final List<Cascade> DEFAULT_OWNER_CASCADE = new ArrayList<Cascade>() {{
+        add(Cascade.ALL);
+    }};
+
+    public static final List<Cascade> DEFAULT_CHILD_CASCADE = new ArrayList<Cascade>() {{
+        add(Cascade.SAVE);
+    }};
+
     private PersistentEntity associatedEntity;
     private String referencedPropertyName;
     private boolean owningSide;
+    private List<Cascade> cascadeOperations = new ArrayList<Cascade>();
 
     public Association(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
@@ -51,6 +64,31 @@ public abstract class Association<T> extends AbstractPersistentProperty {
             throw new IllegalMappingException("The inverse side ["+associatedEntity.getName()+"." + associatedProperty.getName() +"] of the association ["+getOwner().getName()+"." + this.getName() +"] is not valid. Associations can only map to other entities and collection types.");
         }
 
+    }
+
+    /**
+     * Returns true if the this association cascade for the given cascade operation
+     *
+     * @param cascadeOperation The cascadeOperation
+     * @return True if it does
+     */
+    public boolean doesCascade(Cascade cascadeOperation) {
+        List<Cascade> cascades = getCascadeOperations();
+        return cascadeOperation != null && (cascades.contains(Cascade.ALL) || cascades.contains(cascadeOperation));
+    }
+
+    protected List<Cascade> getCascadeOperations() {
+        List<Cascade> cascades;
+        if(cascadeOperations.isEmpty()) {
+            if(isOwningSide()) cascades = DEFAULT_OWNER_CASCADE;
+            else {
+                cascades = DEFAULT_CHILD_CASCADE;
+            }
+        }
+        else {
+            cascades = this.cascadeOperations;
+        }
+        return cascades;
     }
 
     /**

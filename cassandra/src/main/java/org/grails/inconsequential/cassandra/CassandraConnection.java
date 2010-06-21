@@ -49,7 +49,7 @@ public class CassandraConnection extends AbstractObjectDatastoreConnection {
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
       PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
       if(entity != null) {
-          return new CassandraEntityPersister(entity, cassandraClient);
+          return new CassandraEntityPersister(entity,this, cassandraClient);
       }
       return null;
     }

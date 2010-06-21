@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
 import javax.persistence.Entity;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 import static org.grails.inconsequential.mapping.syntax.GormProperties.*;
@@ -86,6 +87,11 @@ public class GormMappingSyntaxStrategy implements MappingSyntaxStrategy {
         if(Enum.class.isAssignableFrom(clazz)) return false;
         if(clazz.getAnnotation(Entity.class)!=null) {
             return true;
+        }
+        final Annotation[] annotations = clazz.getAnnotations();
+        // this is done so we don't need a statically typed reference to the Grails annotation
+        for (Annotation annotation : annotations) {
+            if(annotation.toString().equals("@grails.persistence.Entity()")) return true;
         }
         Class testClass = clazz;
         boolean result = false;

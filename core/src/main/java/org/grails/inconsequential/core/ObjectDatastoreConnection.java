@@ -65,4 +65,11 @@ public interface ObjectDatastoreConnection<T> extends Connection {
      * @param objects The objects to delete
      */
     void delete(Object... objects);
+
+    /**
+     * Obtains a persister for the given object
+     * @param o The object
+     * @return A Persister or null
+     */
+    Persister getPersister(Object o);
 }

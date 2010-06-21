@@ -55,7 +55,7 @@ public class RedisDatastoreConnection extends AbstractObjectDatastoreConnection<
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
       PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
       if(entity != null) {
-          return new RedisEntityPersister(entity, jredisClient);
+          return new RedisEntityPersister(entity,this, jredisClient);
       }
       return null;
 

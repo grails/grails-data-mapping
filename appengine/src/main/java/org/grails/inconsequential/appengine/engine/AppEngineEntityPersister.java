@@ -18,6 +18,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
+import org.grails.inconsequential.appengine.AppEngineConnection;
 import org.grails.inconsequential.appengine.AppEngineKey;
 import org.grails.inconsequential.core.Key;
 import org.grails.inconsequential.kv.engine.AbstractKeyValueEntityPesister;
@@ -36,8 +37,8 @@ import java.util.Map;
 public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Entity, com.google.appengine.api.datastore.Key> {
     protected DatastoreService datastoreService;
 
-    public AppEngineEntityPersister(PersistentEntity entity, DatastoreService datastoreService) {
-        super(entity);
+    public AppEngineEntityPersister(PersistentEntity entity, AppEngineConnection conn, DatastoreService datastoreService) {
+        super(entity, conn);
         this.datastoreService = datastoreService;
     }
 

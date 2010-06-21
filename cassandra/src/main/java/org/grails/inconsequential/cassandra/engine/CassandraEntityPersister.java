@@ -20,10 +20,12 @@ import me.prettyprint.cassandra.service.Keyspace;
 import org.apache.cassandra.thrift.*;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
+import org.grails.inconsequential.cassandra.CassandraConnection;
 import org.grails.inconsequential.cassandra.CassandraDatastore;
 import org.grails.inconsequential.cassandra.CassandraKey;
 import org.grails.inconsequential.cassandra.uuid.UUIDUtil;
 import org.grails.inconsequential.core.Key;
+import org.grails.inconsequential.core.ObjectDatastoreConnection;
 import org.grails.inconsequential.kv.engine.AbstractKeyValueEntityPesister;
 import org.grails.inconsequential.kv.engine.KeyValueEntry;
 import org.grails.inconsequential.kv.mapping.Family;
@@ -46,8 +48,8 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
     private CassandraClient cassandraClient;
 
 
-    public CassandraEntityPersister(PersistentEntity entity, CassandraClient cassandraClient) {
-        super(entity);
+    public CassandraEntityPersister(PersistentEntity entity, CassandraConnection conn, CassandraClient cassandraClient) {
+        super(entity,conn);
         this.cassandraClient = cassandraClient;
     }
 
@@ -88,8 +90,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
             throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
         }
 
-        final UUID uuid = (UUID) key.getNativeKey();
-        SuperColumn sc = getSuperColumn(keyspace, family, uuid);
+        SuperColumn sc = getSuperColumn(keyspace, family, (Serializable) key.getNativeKey());
         KeyValueEntry entry = new KeyValueEntry(family);
         if(sc != null) {
             for (Column column : sc.getColumns()) {

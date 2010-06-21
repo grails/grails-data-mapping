@@ -49,7 +49,7 @@ public abstract class AbstractObjectDatastoreConnection<T> implements ObjectData
         return this.mappingContext;
     }
 
-    protected final Persister getPersister(Object o) {
+    public final Persister getPersister(Object o) {
         if(o == null) return null;
         Class cls = o instanceof Class ? (Class) o : o.getClass();
         Persister p = this.persisters.get(cls);

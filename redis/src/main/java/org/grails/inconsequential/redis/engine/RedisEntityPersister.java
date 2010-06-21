@@ -15,8 +15,10 @@
 package org.grails.inconsequential.redis.engine;
 
 import org.grails.inconsequential.core.Key;
+import org.grails.inconsequential.core.ObjectDatastoreConnection;
 import org.grails.inconsequential.kv.engine.AbstractKeyValueEntityPesister;
 import org.grails.inconsequential.mapping.PersistentEntity;
+import org.grails.inconsequential.redis.RedisDatastoreConnection;
 import org.grails.inconsequential.redis.RedisEntry;
 import org.grails.inconsequential.redis.RedisKey;
 import org.jredis.JRedis;
@@ -37,8 +39,8 @@ import java.util.List;
 public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEntry, Long> {
     private JRedis jredisClient;
 
-    public RedisEntityPersister(PersistentEntity entity, JRedis jredisClient) {
-        super(entity);
+    public RedisEntityPersister(PersistentEntity entity, RedisDatastoreConnection conn, JRedis jredisClient) {
+        super(entity, conn);
         this.jredisClient = jredisClient;
     }
 

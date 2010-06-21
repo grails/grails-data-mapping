@@ -19,6 +19,7 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.grails.inconsequential.mapping.ClassMapping;
 import org.grails.inconsequential.mapping.PersistentEntity;
 import org.grails.inconsequential.mapping.PersistentProperty;
+import org.grails.inconsequential.mapping.types.Association;
 import org.grails.inconsequential.reflect.ReflectionUtils;
 
 import java.util.ArrayList;
@@ -77,6 +78,10 @@ public class AdaptedDomainClass implements PersistentEntity {
     }
 
     public List<PersistentProperty> getPersistentProperties() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public List<Association> getAssociations() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

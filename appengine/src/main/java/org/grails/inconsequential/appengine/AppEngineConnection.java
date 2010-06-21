@@ -113,7 +113,7 @@ public class AppEngineConnection extends AbstractObjectDatastoreConnection<com.g
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
       PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
         if(entity != null) {
-            return new AppEngineEntityPersister(entity, datastoreService);
+            return new AppEngineEntityPersister(entity,this, datastoreService);
         }
         return null;
     }
