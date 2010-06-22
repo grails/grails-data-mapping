@@ -301,14 +301,18 @@
         <root url="jar://$GRADLE_CACHE$/org.springframework/spring-core/jars/spring-core-3.0.2.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="jar://$SPRING_HOME$/src/org.springframework.core-sources-3.0.2.RELEASE.jar!/" />
+      </SOURCES>
     </library>
     <library name="Spring Beans">
       <CLASSES>
         <root url="jar://$GRADLE_CACHE$/org.springframework/org.springframework.beans/jars/org.springframework.beans-3.0.2.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="jar://$SPRING_HOME$/src/org.springframework.beans-sources-3.0.2.RELEASE.jar!/" />
+      </SOURCES>
     </library>
     <library name="Log4j">
       <CLASSES>

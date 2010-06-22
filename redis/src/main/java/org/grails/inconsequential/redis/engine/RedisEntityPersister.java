@@ -15,7 +15,6 @@
 package org.grails.inconsequential.redis.engine;
 
 import org.grails.inconsequential.core.Key;
-import org.grails.inconsequential.core.ObjectDatastoreConnection;
 import org.grails.inconsequential.kv.engine.AbstractKeyValueEntityPesister;
 import org.grails.inconsequential.mapping.PersistentEntity;
 import org.grails.inconsequential.redis.RedisDatastoreConnection;
@@ -26,7 +25,6 @@ import org.jredis.RedisException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataRetrievalFailureException;
 
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,8 +43,8 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     @Override
-    protected Key createDatastoreKey(Long key) {
-        return new RedisKey(key);
+    protected Key createDatastoreKey(Object key) {        
+        return new RedisKey(typeConverter.convertIfNecessary(key, Long.class));
     }
 
     @Override

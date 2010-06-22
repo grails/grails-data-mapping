@@ -17,11 +17,9 @@ package org.grails.inconsequential.cassandra;
 import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.CassandraClientPool;
 import org.grails.inconsequential.cassandra.engine.CassandraEntityPersister;
-import org.grails.inconsequential.core.AbstractDatastore;
 import org.grails.inconsequential.core.AbstractObjectDatastoreConnection;
 import org.grails.inconsequential.core.Key;
 import org.grails.inconsequential.engine.Persister;
-import org.grails.inconsequential.kv.mapping.KeyValueMappingContext;
 import org.grails.inconsequential.mapping.MappingContext;
 import org.grails.inconsequential.mapping.PersistentEntity;
 import org.grails.inconsequential.tx.Transaction;
@@ -29,7 +27,6 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.TransactionSystemException;
 
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author Graeme Rocher

@@ -23,11 +23,15 @@ import org.grails.inconsequential.kv.mapping.Family;
 import org.grails.inconsequential.kv.mapping.KeyValue;
 import org.grails.inconsequential.mapping.*;
 import org.grails.inconsequential.mapping.types.Cascade;
-import org.grails.inconsequential.mapping.types.OneToOne;
 import org.grails.inconsequential.mapping.types.Simple;
 import org.grails.inconsequential.mapping.types.ToOne;
+import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,11 +43,39 @@ import java.util.List;
  * @since 1.0
  */
 public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersister {
-    private ObjectDatastoreConnection connection;
+    protected SimpleTypeConverter typeConverter;
+    protected ObjectDatastoreConnection connection;
 
     public AbstractKeyValueEntityPesister(PersistentEntity entity, ObjectDatastoreConnection connection) {
         super(entity);
         this.connection = connection;
+        this.typeConverter = new SimpleTypeConverter();
+        GenericConversionService conversionService = new GenericConversionService();
+        conversionService.addConverter(new Converter<byte[], Long>() {
+            public Long convert(byte[] source) {
+                try {
+                    String value = new String(source, "UTF-8");
+                    return Long.valueOf(value);
+                } catch (UnsupportedEncodingException e) {
+                    return 0L;
+                }
+            }
+        });
+        conversionService.addConverter(new Converter<byte[], String>() {
+            public String convert(byte[] source) {
+                try {
+                    return new String(source, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    return null;
+                }
+            }
+        });
+        this.typeConverter.setConversionService(conversionService);
+
+    }
+
+    public void setConversionService(ConversionService conversionService) {
+        typeConverter.setConversionService(conversionService);
     }
 
 
@@ -74,6 +106,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
             final String family = getFamily(persistentEntity, cm);
             for (Object object : objects) {
                EntityAccess access = new EntityAccess(object);
+               access.setConversionService(typeConverter.getConversionService());
                String idName = getIdentifierName(cm);
                final Object idValue = access.getProperty(idName);
                if(idValue != null) {
@@ -98,6 +131,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
             Object obj = persistentEntity.newInstance();
 
             EntityAccess ea = new EntityAccess(obj);
+            ea.setConversionService(typeConverter.getConversionService());
             String idName = getIdentifierName(persistentEntity.getMapping());
             ea.setProperty(idName, key.getNativeKey());
 
@@ -115,7 +149,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                     ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propKey) );
                 }
                 else if(prop instanceof ToOne) {
-                    Key associationKey = createDatastoreKey((K) getEntryValue(nativeEntry, propKey));
+                    Key associationKey = createDatastoreKey(getEntryValue(nativeEntry, propKey));
                     Persister persister = connection.getPersister(prop.getType());
                     if(persister == null) {
                         throw new InvalidDataAccessApiUsageException("Cannot retrieve association ["+persistentEntity.getName()+"."+prop.getName()+"]. Class ["+prop.getType()+"] is not persistent type.");
@@ -202,7 +236,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
      * @param key The native key
      * @return The Inconsequential key
      */
-    protected abstract Key createDatastoreKey(K key);
+    protected abstract Key createDatastoreKey(Object key);
 
     /**
      * Used to establish the native key to use from the identifier defined by the object

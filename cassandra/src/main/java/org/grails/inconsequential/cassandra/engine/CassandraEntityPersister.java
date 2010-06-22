@@ -14,31 +14,28 @@
  */
 package org.grails.inconsequential.cassandra.engine;
 
-import me.prettyprint.cassandra.service.BatchMutation;
 import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.Keyspace;
 import org.apache.cassandra.thrift.*;
-import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.grails.inconsequential.cassandra.CassandraConnection;
 import org.grails.inconsequential.cassandra.CassandraDatastore;
 import org.grails.inconsequential.cassandra.CassandraKey;
 import org.grails.inconsequential.cassandra.uuid.UUIDUtil;
 import org.grails.inconsequential.core.Key;
-import org.grails.inconsequential.core.ObjectDatastoreConnection;
 import org.grails.inconsequential.kv.engine.AbstractKeyValueEntityPesister;
 import org.grails.inconsequential.kv.engine.KeyValueEntry;
-import org.grails.inconsequential.kv.mapping.Family;
-import org.grails.inconsequential.kv.mapping.KeyValuePersistentEntity;
 import org.grails.inconsequential.mapping.ClassMapping;
 import org.grails.inconsequential.mapping.PersistentEntity;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
-import static me.prettyprint.cassandra.utils.StringUtils.*;
 
 import java.io.Serializable;
 import java.util.*;
+
+import static me.prettyprint.cassandra.utils.StringUtils.bytes;
+import static me.prettyprint.cassandra.utils.StringUtils.string;
 
 /**
  * @author Graeme Rocher
