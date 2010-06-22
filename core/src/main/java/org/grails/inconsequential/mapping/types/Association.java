@@ -41,6 +41,7 @@ public abstract class Association<T> extends AbstractPersistentProperty {
     private String referencedPropertyName;
     private boolean owningSide;
     private List<Cascade> cascadeOperations = new ArrayList<Cascade>();
+    private Fetch fetchStrategy = Fetch.LAZY;
 
     public Association(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
@@ -48,6 +49,14 @@ public abstract class Association<T> extends AbstractPersistentProperty {
 
     public Association(PersistentEntity owner, MappingContext context, String name, Class type) {
         super(owner, context, name, type);
+    }
+
+    public Fetch getFetchStrategy() {
+        return fetchStrategy;
+    }
+
+    public void setFetchStrategy(Fetch fetchStrategy) {
+        this.fetchStrategy = fetchStrategy;
     }
 
     public boolean isBidirectional() {
