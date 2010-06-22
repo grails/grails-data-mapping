@@ -1,15 +1,17 @@
 package org.grails.inconsequential.appengine;
 
 import com.google.appengine.api.datastore.*;
-import org.grails.inconsequential.core.Key;
 import org.grails.inconsequential.appengine.testsupport.AppEngineDatastoreTestCase;
-import org.grails.inconsequential.core.*;
+import org.grails.inconsequential.core.Key;
 import org.grails.inconsequential.kv.KeyValueDatastoreConnection;
 import org.grails.inconsequential.tx.Transaction;
+import org.junit.Before;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Guillaume Laforge
@@ -21,9 +23,8 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
     private Map<String, String> personOne;
     private Map<String, String> personTwo;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void fixtureData() throws Exception {
 
         personOne = new HashMap<String, String>();
         personOne.put("firstname", "Guillaume");

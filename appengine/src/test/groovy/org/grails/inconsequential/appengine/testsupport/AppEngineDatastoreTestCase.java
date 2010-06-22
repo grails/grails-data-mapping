@@ -5,8 +5,8 @@ import com.google.appengine.tools.development.ApiProxyLocal;
 import com.google.appengine.tools.development.ApiProxyLocalFactory;
 import com.google.appengine.tools.development.LocalServerEnvironment;
 import com.google.apphosting.api.ApiProxy;
-
-import junit.framework.TestCase;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 import java.io.File;
 
@@ -16,11 +16,10 @@ import java.io.File;
  *
  * @author Guillaume Laforge
  */
-public abstract class AppEngineDatastoreTestCase extends TestCase {
+public abstract class AppEngineDatastoreTestCase  {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeClass
+    public static void setUp() throws Exception {
         ApiProxy.setEnvironmentForCurrentThread(new TestEnvironment());
         ApiProxyLocalFactory factory = new ApiProxyLocalFactory();
         ApiProxyLocal proxyLocal = factory.create(new LocalServerEnvironment() {
@@ -44,14 +43,13 @@ public abstract class AppEngineDatastoreTestCase extends TestCase {
         ApiProxy.setDelegate(proxyLocal);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterClass
+    public static void tearDown() throws Exception {
         ApiProxyLocal proxy = (ApiProxyLocal) ApiProxy.getDelegate();
         LocalDatastoreService datastoreService = (LocalDatastoreService) proxy.getService(LocalDatastoreService.PACKAGE);
         datastoreService.clearProfiles();
         // not strictly necessary to null these out but there's no harm either
         ApiProxy.setDelegate(null);
         ApiProxy.setEnvironmentForCurrentThread(null);
-        super.tearDown();
     }
 }

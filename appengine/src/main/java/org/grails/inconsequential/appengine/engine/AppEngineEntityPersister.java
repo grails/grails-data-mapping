@@ -23,6 +23,8 @@ import org.grails.inconsequential.appengine.AppEngineKey;
 import org.grails.inconsequential.core.Key;
 import org.grails.inconsequential.kv.engine.AbstractKeyValueEntityPesister;
 import org.grails.inconsequential.mapping.PersistentEntity;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.support.GenericConversionService;
 
 import java.util.List;
 import java.util.Map;
@@ -36,15 +38,32 @@ import java.util.Map;
  */
 public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Entity, com.google.appengine.api.datastore.Key> {
     protected DatastoreService datastoreService;
+    protected String entityFamily;
 
-    public AppEngineEntityPersister(PersistentEntity entity, AppEngineConnection conn, DatastoreService datastoreService) {
+    public AppEngineEntityPersister(final PersistentEntity entity, AppEngineConnection conn, DatastoreService datastoreService) {
         super(entity, conn);
         this.datastoreService = datastoreService;
+        this.entityFamily = getFamily(entity, entity.getMapping());
+        GenericConversionService conversionService = (GenericConversionService) typeConverter.getConversionService();
+
+        conversionService.addConverter(new Converter<Object, com.google.appengine.api.datastore.Key>() {
+            public com.google.appengine.api.datastore.Key convert(Object source) {
+                if(source instanceof com.google.appengine.api.datastore.Key) {
+                     return (com.google.appengine.api.datastore.Key)source;
+                }
+                else if(source instanceof Long) {
+                    return KeyFactory.createKey(entityFamily, (Long) source);
+                }
+                else {
+                    return KeyFactory.createKey(entityFamily,source.toString());
+                }
+            }
+        });
     }
 
     @Override
-    protected Key createDatastoreKey(com.google.appengine.api.datastore.Key key) {
-        return new AppEngineKey(key);
+    protected Key createDatastoreKey(Object key) {
+        return new AppEngineKey(typeConverter.convertIfNecessary(key, com.google.appengine.api.datastore.Key.class));
     }
 
     @Override
