@@ -133,4 +133,9 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
         PersistentEntity other = (PersistentEntity) o;
         return javaClass.equals(other.getJavaClass());
     }
+
+    @Override
+    public String toString() {
+        return javaClass.getName();
+    }
 }

@@ -14,8 +14,10 @@
  */
 package org.grails.inconsequential.engine;
 
-import org.grails.inconsequential.core.Key;
 import org.grails.inconsequential.mapping.MappingContext;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * A Persister is responsible for persisting and retrieving an object.
@@ -39,7 +41,17 @@ public interface Persister {
      * @param obj The object
      * @return A generated Key
      */
-    Key persist(MappingContext context, Object obj);
+    Serializable persist(MappingContext context, Object obj);
+
+    /**
+     * Persists a number of objects at the same time and
+     * returns their keys in the order specified by the objs parameter
+     *
+     * @param context The context
+     * @param objs The objects
+     * @return A list of keys
+     */
+    List<Serializable> persist(MappingContext context, Object... objs);
 
     /**
      * Retrieves an object for the given context and Key
@@ -49,7 +61,7 @@ public interface Persister {
      * 
      * @return The object in question
      */
-    Object retrieve(MappingContext context, Key key);
+    Object retrieve(MappingContext context, Serializable key);
 
     /**
      * Deletes one or many objects
@@ -57,4 +69,13 @@ public interface Persister {
      * @param objects The objects to delete. Must all be of the same type or an exception will be thrown.
      */
     void delete(MappingContext context, Object... objects);
+
+    /**
+     * Batch retrieve several objects in one go
+     *
+     * @param context The context
+     * @param keys The keys
+     * @return The objects in a list in the same order as the specified keys
+     */
+    List<Object> retrieveAll(MappingContext context, List<Serializable> keys);
 }

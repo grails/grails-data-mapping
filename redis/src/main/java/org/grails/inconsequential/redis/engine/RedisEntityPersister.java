@@ -14,17 +14,18 @@
  */
 package org.grails.inconsequential.redis.engine;
 
-import org.grails.inconsequential.core.Key;
+import org.grails.inconsequential.engine.Indexer;
 import org.grails.inconsequential.kv.engine.AbstractKeyValueEntityPesister;
 import org.grails.inconsequential.mapping.PersistentEntity;
+import org.grails.inconsequential.mapping.types.Association;
 import org.grails.inconsequential.redis.RedisDatastoreConnection;
 import org.grails.inconsequential.redis.RedisEntry;
-import org.grails.inconsequential.redis.RedisKey;
 import org.jredis.JRedis;
 import org.jredis.RedisException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataRetrievalFailureException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,15 +37,16 @@ import java.util.List;
  */
 public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEntry, Long> {
     private JRedis jredisClient;
+    private RedisAssociationIndexer indexer;
 
-    public RedisEntityPersister(PersistentEntity entity, RedisDatastoreConnection conn, JRedis jredisClient) {
+    public RedisEntityPersister(PersistentEntity entity, RedisDatastoreConnection conn, final JRedis jredisClient) {
         super(entity, conn);
         this.jredisClient = jredisClient;
     }
 
-    @Override
-    protected Key createDatastoreKey(Object key) {        
-        return new RedisKey(typeConverter.convertIfNecessary(key, Long.class));
+
+    private Long getLong(Object key) {
+        return typeConverter.convertIfNecessary(key, Long.class);
     }
 
     @Override
@@ -66,8 +68,8 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     @Override
-    protected RedisEntry retrieveEntry(PersistentEntity persistentEntity, String family, Key key) {
-        String hashKey = family + ":" + key.getNativeKey();
+    protected RedisEntry retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
+        String hashKey = family + ":" + key;
 
         List<String> props = persistentEntity.getPersistentPropertyNames();
 
@@ -86,8 +88,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
 
     private boolean entityDoesntExistForValues(List<byte[]> values) {
         if(values == null) return true;
-        if(values.size() == 0 || (values.size() == 1 && values.get(0) == null) ) return true;
-        return false;
+        return values.size() == 0 || (values.size() == 1 && values.get(0) == null);
     }
 
 
@@ -139,5 +140,10 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
         } catch (RedisException e) {
             throw new DataAccessResourceFailureException("Exception deleting persistent entries ["+actualKeys+"]: " + e.getMessage(),e);
         }
+    }
+
+    @Override
+    protected Indexer getAssociationIndexer(Association oneToMany) {
+        return new RedisAssociationIndexer(jredisClient, typeConverter, oneToMany);
     }
 }

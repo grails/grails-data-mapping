@@ -19,13 +19,14 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
 import org.grails.inconsequential.appengine.AppEngineConnection;
-import org.grails.inconsequential.appengine.AppEngineKey;
-import org.grails.inconsequential.core.Key;
+import org.grails.inconsequential.engine.Indexer;
 import org.grails.inconsequential.kv.engine.AbstractKeyValueEntityPesister;
 import org.grails.inconsequential.mapping.PersistentEntity;
+import org.grails.inconsequential.mapping.types.Association;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.GenericConversionService;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -62,11 +63,6 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     }
 
     @Override
-    protected Key createDatastoreKey(Object key) {
-        return new AppEngineKey(typeConverter.convertIfNecessary(key, com.google.appengine.api.datastore.Key.class));
-    }
-
-    @Override
     protected Object getEntryValue(Entity nativeEntry, String property) {
         return nativeEntry.getProperty(property);
     }
@@ -77,8 +73,8 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     }
 
     @Override
-    protected Entity retrieveEntry(PersistentEntity persistentEntity, String family, Key key) {
-        com.google.appengine.api.datastore.Key nativeKey = inferNativeKey(family, key.getNativeKey());
+    protected Entity retrieveEntry(PersistentEntity persistentEntity, String family, Serializable nativekey) {
+        com.google.appengine.api.datastore.Key nativeKey = inferNativeKey(family, nativekey);
         return getEntity(nativeKey);
     }
 
@@ -110,6 +106,11 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
             }
             datastoreService.put(existing);
         }
+    }
+
+    @Override
+    protected Indexer getAssociationIndexer(Association association) {
+        return null;  // TODO: Support one-to-many associations in GAE
     }
 
     @Override

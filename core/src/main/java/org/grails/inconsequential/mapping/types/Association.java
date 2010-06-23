@@ -18,7 +18,6 @@ import org.grails.inconsequential.mapping.*;
 
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,7 +40,7 @@ public abstract class Association<T> extends AbstractPersistentProperty {
     private String referencedPropertyName;
     private boolean owningSide;
     private List<Cascade> cascadeOperations = new ArrayList<Cascade>();
-    private Fetch fetchStrategy = Fetch.LAZY;
+    private Fetch fetchStrategy = Fetch.EAGER;
 
     public Association(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);

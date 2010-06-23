@@ -54,4 +54,9 @@ public abstract class AbstractPersistentProperty implements PersistentProperty {
     public PersistentEntity getOwner() {
         return owner;
     }
+
+    @Override
+    public String toString() {
+        return getName() + ":" + getType().getName();
+    }
 }

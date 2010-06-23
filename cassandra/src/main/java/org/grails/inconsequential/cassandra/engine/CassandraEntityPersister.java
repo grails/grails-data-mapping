@@ -20,13 +20,13 @@ import org.apache.cassandra.thrift.*;
 import org.apache.thrift.TException;
 import org.grails.inconsequential.cassandra.CassandraConnection;
 import org.grails.inconsequential.cassandra.CassandraDatastore;
-import org.grails.inconsequential.cassandra.CassandraKey;
 import org.grails.inconsequential.cassandra.uuid.UUIDUtil;
-import org.grails.inconsequential.core.Key;
+import org.grails.inconsequential.engine.Indexer;
 import org.grails.inconsequential.kv.engine.AbstractKeyValueEntityPesister;
 import org.grails.inconsequential.kv.engine.KeyValueEntry;
 import org.grails.inconsequential.mapping.ClassMapping;
 import org.grails.inconsequential.mapping.PersistentEntity;
+import org.grails.inconsequential.mapping.types.Association;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -52,8 +52,8 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
 
 
     @Override
-    protected Key createDatastoreKey(Object key) {
-        return new CassandraKey(key);
+    protected Indexer getAssociationIndexer(Association association) {
+        return null;  // TODO: Support one-to-many associations in Cassandra
     }
 
     @Override
@@ -74,7 +74,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
     }
 
     @Override
-    protected KeyValueEntry retrieveEntry(PersistentEntity persistentEntity, String family, Key key) {
+    protected KeyValueEntry retrieveEntry(PersistentEntity persistentEntity, String family, Serializable nativeKey) {
         final ClassMapping cm = getPersistentEntity().getMapping();
         final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
 
@@ -87,7 +87,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
             throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
         }
 
-        SuperColumn sc = getSuperColumn(keyspace, family, (Serializable) key.getNativeKey());
+        SuperColumn sc = getSuperColumn(keyspace, family, nativeKey);
         KeyValueEntry entry = new KeyValueEntry(family);
         if(sc != null) {
             for (Column column : sc.getColumns()) {

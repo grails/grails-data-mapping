@@ -14,9 +14,11 @@
  */
 package org.grails.inconsequential.engine;
 
-import org.grails.inconsequential.core.Key;
 import org.grails.inconsequential.mapping.MappingContext;
 import org.grails.inconsequential.mapping.PersistentEntity;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * A Persister specified to PersistentEntity instances
@@ -39,14 +41,26 @@ public abstract class EntityPersister implements Persister {
         return persistentEntity.getJavaClass();
     }
 
-    public final Key persist(MappingContext context, Object obj) {
+    public final Serializable persist(MappingContext context, Object obj) {
         if(!persistentEntity.isInstance(obj)) throw new IllegalArgumentException("Object ["+obj+"] is not an instance supported by the persister for class ["+getType().getName()+"]");
 
         return persistEntity(context, getPersistentEntity(), new EntityAccess(obj));
     }
 
-    public final Object retrieve(MappingContext context, Key key) {
-        if(key == null || key.getNativeKey() == null) return null;
+    public List<Serializable> persist(MappingContext context, Object... objs) {
+        return persistEntities(context, getPersistentEntity(), objs);
+    }
+
+    public List<Object> retrieveAll(MappingContext context, List<Serializable> keys) {
+        return retrieveAllEntities(context, getPersistentEntity(), keys);
+    }
+
+    protected abstract List<Object> retrieveAllEntities(MappingContext context, PersistentEntity persistentEntity, List<Serializable> keys);
+
+    protected abstract List<Serializable> persistEntities(MappingContext context, PersistentEntity persistentEntity, Object... objs);
+
+    public final Object retrieve(MappingContext context, Serializable key) {
+        if(key == null) return null;
         return retrieveEntity(context, getPersistentEntity(), key);
     }
 
@@ -58,7 +72,7 @@ public abstract class EntityPersister implements Persister {
      * @param key The key
      * @return The object or null if it doesn't exist
      */
-    protected abstract Object retrieveEntity(MappingContext context, PersistentEntity persistentEntity, Key key);
+    protected abstract Object retrieveEntity(MappingContext context, PersistentEntity persistentEntity, Serializable key);
 
     /**
      * Persist the given persistent entity
@@ -68,7 +82,7 @@ public abstract class EntityPersister implements Persister {
      * @param entityAccess An object that allows easy access to the entities properties
      * @return The generated key
      */
-    protected abstract Key persistEntity(MappingContext context, PersistentEntity persistentEntity, EntityAccess entityAccess);
+    protected abstract Serializable persistEntity(MappingContext context, PersistentEntity persistentEntity, EntityAccess entityAccess);
 
     public final void delete(MappingContext context, Object... objects) {
         if(objects != null && objects.length > 0) {

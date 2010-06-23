@@ -17,7 +17,9 @@ package org.grails.inconsequential.core;
 import org.grails.inconsequential.engine.CannotPersistException;
 import org.grails.inconsequential.engine.Persister;
 import org.grails.inconsequential.mapping.MappingContext;
+import org.grails.inconsequential.mapping.PersistentEntity;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,7 +53,16 @@ public abstract class AbstractObjectDatastoreConnection<T> implements ObjectData
 
     public final Persister getPersister(Object o) {
         if(o == null) return null;
-        Class cls = o instanceof Class ? (Class) o : o.getClass();
+        Class cls;
+        if(o instanceof Class) {
+           cls = (Class) o;
+        }
+        else if(o instanceof PersistentEntity) {
+            cls = ((PersistentEntity)o).getJavaClass();
+        }
+        else {
+           cls = o.getClass();
+        }
         Persister p = this.persisters.get(cls);
         if(p == null) {
             p = createPersister(cls, getMappingContext());
@@ -68,7 +79,8 @@ public abstract class AbstractObjectDatastoreConnection<T> implements ObjectData
         if(o == null) throw new IllegalArgumentException("Cannot persist null object");
         Persister persister = getPersister(o);
         if(persister != null) {
-            return persister.persist(getMappingContext(), o);
+            final Serializable nativeKey = persister.persist(getMappingContext(), o);
+            return createKey((T) nativeKey);
         }
         throw new CannotPersistException("Object ["+o+"] cannot be persisted. It is not a known persistent type.");
     }
@@ -77,7 +89,7 @@ public abstract class AbstractObjectDatastoreConnection<T> implements ObjectData
         if(key == null || type == null) return null;
         Persister persister = getPersister(type);
         if(persister != null) {
-            return persister.retrieve(getMappingContext(), key);
+            return persister.retrieve(getMappingContext(), (Serializable) key.getNativeKey());
         }
         throw new CannotPersistException("Cannot retrieveEntity object with key ["+key+"]. The class ["+type+"] is not a known persistent type.");
     }
