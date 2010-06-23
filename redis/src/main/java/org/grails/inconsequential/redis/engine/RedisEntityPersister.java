@@ -69,7 +69,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
 
     @Override
     protected RedisEntry retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
-        String hashKey = family + ":" + key;
+        String hashKey = family + ":" + getLong(key);
 
         List<String> props = persistentEntity.getPersistentPropertyNames();
 
