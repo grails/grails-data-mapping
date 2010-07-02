@@ -14,12 +14,15 @@
  */
 package org.springframework.datastore.core;
 
-import org.springframework.datastore.engine.CannotPersistException;
+import org.springframework.datastore.engine.NonPersistentTypeException;
 import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -81,7 +84,7 @@ public abstract class AbstractSession implements Session {
         if(persister != null) {
             return persister.persist(getMappingContext(), o);
         }
-        throw new CannotPersistException("Object ["+o+"] cannot be persisted. It is not a known persistent type.");
+        throw new NonPersistentTypeException("Object ["+o+"] cannot be persisted. It is not a known persistent type.");
     }
 
     public Object retrieve(Class type, Serializable key) {
@@ -90,10 +93,17 @@ public abstract class AbstractSession implements Session {
         if(persister != null) {
             return persister.retrieve(getMappingContext(), key);
         }
-        throw new CannotPersistException("Cannot retrieveEntity object with key ["+key+"]. The class ["+type+"] is not a known persistent type.");
+        throw new NonPersistentTypeException("Cannot retrieve object with key ["+key+"]. The class ["+type+"] is not a known persistent type.");
     }
 
-    public void delete(Object... objects) {
+    public void delete(Object obj) {
+        if(obj != null) {
+            Persister p = getPersister(obj);
+            p.delete(getMappingContext(), obj);
+        }
+    }
+
+    public void delete(Iterable objects) {
         if(objects != null) {
             for (Object object : objects) {
                 if(object != null) {
@@ -113,5 +123,34 @@ public abstract class AbstractSession implements Session {
      */
     public void disconnect() {
         AbstractDatastore.clearCurrentConnection();
+    }
+
+    public List<Serializable> persist(Iterable objects) {
+        if(objects != null) {
+
+            final Iterator i = objects.iterator();
+            if(i.hasNext()) {
+                // peek at the first object to get the persister
+                final Object obj = i.next();
+                final Persister p = getPersister(obj);
+                if(p != null) {
+                    return p.persist(getMappingContext(), objects);
+                }
+                else {
+                    throw new NonPersistentTypeException("Cannot persist objects. The class ["+obj.getClass()+"] is not a known persistent type.");
+                }
+            }
+
+        }
+        return Collections.emptyList();
+    }
+
+    public List retrieveAll(Class type, Iterable<Serializable> keys) {
+        Persister p = getPersister(type);
+
+        if(p != null) {
+            return p.retrieveAll(getMappingContext(), keys);
+        }
+        throw new NonPersistentTypeException("Cannot retrieve objects with keys ["+keys+"]. The class ["+type+"] is not a known persistent type.");
     }
 }

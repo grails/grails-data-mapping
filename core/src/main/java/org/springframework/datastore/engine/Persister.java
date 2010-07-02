@@ -51,7 +51,7 @@ public interface Persister {
      * @param objs The objects
      * @return A list of keys
      */
-    List<Serializable> persist(MappingContext context, Object... objs);
+    List<Serializable> persist(MappingContext context, Iterable objs);
 
     /**
      * Retrieves an object for the given context and Key
@@ -68,7 +68,7 @@ public interface Persister {
      * @param context The context
      * @param objects The objects to delete. Must all be of the same type or an exception will be thrown.
      */
-    void delete(MappingContext context, Object... objects);
+    void delete(MappingContext context, Iterable objects);
 
     /**
      * Batch retrieve several objects in one go
@@ -77,5 +77,12 @@ public interface Persister {
      * @param keys The keys
      * @return The objects in a list in the same order as the specified keys
      */
-    List<Object> retrieveAll(MappingContext context, List<Serializable> keys);
+    List<Object> retrieveAll(MappingContext context, Iterable<Serializable> keys);
+
+    /**
+     * Deletes a single object
+     * @param mappingContext The MappingContext
+     * @param obj The object
+     */
+    void delete(MappingContext mappingContext, Object obj);
 }

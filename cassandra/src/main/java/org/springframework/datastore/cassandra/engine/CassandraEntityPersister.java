@@ -18,8 +18,11 @@ import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.Keyspace;
 import org.apache.cassandra.thrift.*;
 import org.apache.thrift.TException;
-import org.springframework.datastore.cassandra.CassandraSession;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.cassandra.CassandraDatastore;
+import org.springframework.datastore.cassandra.CassandraSession;
 import org.springframework.datastore.cassandra.uuid.UUIDUtil;
 import org.springframework.datastore.engine.Indexer;
 import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
@@ -27,9 +30,6 @@ import org.springframework.datastore.keyvalue.engine.KeyValueEntry;
 import org.springframework.datastore.mapping.ClassMapping;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.types.Association;
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
 
 import java.io.Serializable;
 import java.util.*;
@@ -51,6 +51,11 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
         this.cassandraClient = cassandraClient;
     }
 
+
+    @Override
+    protected void deleteEntry(String family, Object key) {
+        // TODO: Implement deletion of entities
+    }
 
     @Override
     protected Indexer getAssociationIndexer(Association association) {
@@ -133,6 +138,11 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
     }
 
     @Override
+    protected void deleteEntries(String family, List<Object> keys) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     protected Object storeEntry(PersistentEntity persistentEntity, KeyValueEntry nativeEntry) {
 
         UUID uuid = UUIDUtil.getTimeUUID();
@@ -180,11 +190,6 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
         }
     }
 
-    @Override
-    protected void deleteEntries(String family, List<Object> keys) {
-
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
 
     private Keyspace getKeyspace() {
         Keyspace keyspace;
@@ -202,4 +207,5 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
     private String getKeyspaceName() {
         return getKeyspace(getPersistentEntity().getMapping(), CassandraDatastore.DEFAULT_KEYSPACE);
     }
+
 }

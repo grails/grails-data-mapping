@@ -20,9 +20,9 @@ package org.springframework.datastore.engine;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class CannotPersistException extends RuntimeException {
+public class NonPersistentTypeException extends RuntimeException {
 
-    public CannotPersistException(String s) {
+    public NonPersistentTypeException(String s) {
         super(s);
     }
 }

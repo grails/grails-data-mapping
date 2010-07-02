@@ -1,10 +1,10 @@
 package org.springframework.datastore.core;
 
-import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.tx.Transaction;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,6 +54,14 @@ public interface Session {
     Serializable persist(Object o);
 
     /**
+     * Persists several objects returning their identifiers in the order specified by the Iterable
+     *
+     * @param objects The Objects
+     * @return The identifiers
+     */
+    List<Serializable> persist(Iterable objects);
+
+    /**
      * Retrieves an individual object
      *
      * @param type The ty
@@ -67,12 +75,19 @@ public interface Session {
      *
      * @param objects The objects to delete
      */
-    void delete(Object... objects);
+    void delete(Iterable objects);
 
     /**
-     * Obtains a persister for the given object
-     * @param o The object
-     * @return A Persister or null
+     * Deletes a single object
+     * @param obj The object to delete
      */
-    Persister getPersister(Object o);    
+    void delete(Object obj);
+
+    /**
+     * Retrieves several objects for the specified keys
+     * @param type The type
+     * @param keys The keys
+     * @return A list of objects
+     */
+    List retrieveAll(Class type, Iterable<Serializable> keys);
 }

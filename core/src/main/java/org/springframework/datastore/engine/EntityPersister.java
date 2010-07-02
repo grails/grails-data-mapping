@@ -47,17 +47,17 @@ public abstract class EntityPersister implements Persister {
         return persistEntity(context, getPersistentEntity(), new EntityAccess(obj));
     }
 
-    public List<Serializable> persist(MappingContext context, Object... objs) {
+    public List<Serializable> persist(MappingContext context, Iterable objs) {
         return persistEntities(context, getPersistentEntity(), objs);
     }
 
-    public List<Object> retrieveAll(MappingContext context, List<Serializable> keys) {
+    public List<Object> retrieveAll(MappingContext context, Iterable<Serializable> keys) {
         return retrieveAllEntities(context, getPersistentEntity(), keys);
     }
 
-    protected abstract List<Object> retrieveAllEntities(MappingContext context, PersistentEntity persistentEntity, List<Serializable> keys);
+    protected abstract List<Object> retrieveAllEntities(MappingContext context, PersistentEntity persistentEntity, Iterable<Serializable> keys);
 
-    protected abstract List<Serializable> persistEntities(MappingContext context, PersistentEntity persistentEntity, Object... objs);
+    protected abstract List<Serializable> persistEntities(MappingContext context, PersistentEntity persistentEntity, Iterable objs);
 
     public final Object retrieve(MappingContext context, Serializable key) {
         if(key == null) return null;
@@ -84,12 +84,20 @@ public abstract class EntityPersister implements Persister {
      */
     protected abstract Serializable persistEntity(MappingContext context, PersistentEntity persistentEntity, EntityAccess entityAccess);
 
-    public final void delete(MappingContext context, Object... objects) {
-        if(objects != null && objects.length > 0) {
+    public final void delete(MappingContext context, Iterable objects) {
+        if(objects != null) {
             deleteEntities(context, getPersistentEntity(), objects);
         }
     }
 
-    protected abstract void deleteEntities(MappingContext context, PersistentEntity persistentEntity, Object... objects);
+    public void delete(MappingContext mappingContext, Object obj) {
+        if(obj != null) {
+            deleteEntity(mappingContext, getPersistentEntity(), obj);
+        }
+    }
+
+    protected abstract void deleteEntity(MappingContext mappingContext, PersistentEntity persistentEntity, Object obj);
+
+    protected abstract void deleteEntities(MappingContext context, PersistentEntity persistentEntity, Iterable objects);
 }
 

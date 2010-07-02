@@ -14,10 +14,7 @@
  */
 package org.springframework.datastore.appengine.engine;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.Entity;
-import com.google.appengine.api.datastore.EntityNotFoundException;
-import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.*;
 import org.springframework.datastore.appengine.AppEngineSession;
 import org.springframework.datastore.engine.Indexer;
 import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
@@ -106,6 +103,11 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
             }
             datastoreService.put(existing);
         }
+    }
+
+    @Override
+    protected void deleteEntry(String family, Key key) {
+        datastoreService.delete(key);
     }
 
     @Override

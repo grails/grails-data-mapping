@@ -143,6 +143,16 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     @Override
+    protected void deleteEntry(String family, Long key) {
+        final String actualKey = family + ":" + key;
+        try {
+            jredisClient.del(actualKey);
+        } catch (RedisException e) {
+            throw new DataAccessResourceFailureException("Exception deleting persistent entry ["+actualKey+"]: " + e.getMessage(),e);
+        }
+    }
+
+    @Override
     protected Indexer getAssociationIndexer(Association oneToMany) {
         return new RedisAssociationIndexer(jredisClient, typeConverter, oneToMany);
     }

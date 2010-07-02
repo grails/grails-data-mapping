@@ -18,12 +18,10 @@ import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.GenericConversionService;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.datastore.core.Session;
 import org.springframework.datastore.engine.EntityAccess;
 import org.springframework.datastore.engine.EntityPersister;
 import org.springframework.datastore.engine.Indexer;
-import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.keyvalue.mapping.Family;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.*;
@@ -45,10 +43,14 @@ import java.util.List;
 public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersister {
     protected SimpleTypeConverter typeConverter;
     protected Session session;
+    protected String entityFamily;
+    protected ClassMapping classMapping;
 
     public AbstractKeyValueEntityPesister(PersistentEntity entity, Session session) {
         super(entity);
         this.session = session;
+        classMapping = entity.getMapping();        
+        entityFamily = getFamily(entity, classMapping);
         this.typeConverter = new SimpleTypeConverter();
         GenericConversionService conversionService = new GenericConversionService();
         conversionService.addConverter(new Converter<byte[], Long>() {
@@ -102,40 +104,62 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
 
 
     @Override
-    protected final void deleteEntities(MappingContext context, PersistentEntity persistentEntity, Object... objects) {
-        if(objects != null) {
-            List<K> keys = new ArrayList<K>();
-            final ClassMapping cm = persistentEntity.getMapping();
-            final String family = getFamily(persistentEntity, cm);
-            for (Object object : objects) {
-               EntityAccess access = new EntityAccess(object);
-               access.setConversionService(typeConverter.getConversionService());
-               String idName = getIdentifierName(cm);
-               final Object idValue = access.getProperty(idName);
-               if(idValue != null) {
-                   K key = inferNativeKey(family, idValue);
-                   keys.add(key);
-               }
-            }
-            if(!keys.isEmpty()) {
-                deleteEntries(family, keys);
+    protected void deleteEntity(MappingContext mappingContext, PersistentEntity persistentEntity, Object obj) {
+        if(obj != null) {
+
+            K key = readIdentifierFromObject(obj);
+            if(key != null) {
+                deleteEntry(entityFamily, key);
             }
         }
+    }
+
+    /**
+     * Deletes a single entry
+     *
+     * @param family The family
+     * @param key The key
+     */
+    protected abstract void deleteEntry(String family, K key);
+
+    @Override
+    protected final void deleteEntities(MappingContext context, PersistentEntity persistentEntity, Iterable objects) {
+        if(objects != null) {
+            List<K> keys = new ArrayList<K>();
+            for (Object object : objects) {
+               K key = readIdentifierFromObject(object);
+               if(key != null)
+                    keys.add(key);
+            }
+            if(!keys.isEmpty()) {
+                deleteEntries(entityFamily, keys);
+            }
+        }
+    }
+
+    private K readIdentifierFromObject(Object object) {
+        EntityAccess access = new EntityAccess(object);
+        access.setConversionService(typeConverter.getConversionService());
+        String idName = getIdentifierName(classMapping);
+        final Object idValue = access.getProperty(idName);
+        K key = null;
+        if(idValue != null) {
+            key = inferNativeKey(entityFamily, idValue);
+        }
+        return key;
     }
 
 
     @Override
     protected final Object retrieveEntity(MappingContext context, PersistentEntity persistentEntity, Serializable nativeKey) {
-        ClassMapping<Family> cm = persistentEntity.getMapping();
-        String family = getFamily(persistentEntity, cm);
 
-        T nativeEntry = retrieveEntry(persistentEntity, family, nativeKey);
+        T nativeEntry = retrieveEntry(persistentEntity, entityFamily, nativeKey);
         if(nativeEntry != null) {
             Object obj = persistentEntity.newInstance();
 
             EntityAccess ea = new EntityAccess(obj);
             ea.setConversionService(typeConverter.getConversionService());
-            String idName = getIdentifierName(persistentEntity.getMapping());
+            String idName = getIdentifierName(classMapping);
             ea.setProperty(idName, nativeKey);
 
             final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
@@ -153,12 +177,8 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                 }
                 else if(prop instanceof ToOne) {
                     Serializable associationKey = (Serializable) getEntryValue(nativeEntry, propKey);
-                    Persister persister = session.getPersister(prop.getType());
-                    if(persister == null) {
-                        throw new InvalidDataAccessApiUsageException("Cannot retrieve association ["+persistentEntity.getName()+"."+prop.getName()+"]. Class ["+prop.getType()+"] is not persistent type.");
-                    }
 
-                    ea.setProperty(prop.getName(), persister.retrieve(context, associationKey));
+                    ea.setProperty(prop.getName(), session.retrieve(prop.getType(), associationKey));
                 }
                 else if(prop instanceof OneToMany) {
                     Association association = (Association) prop;
@@ -169,8 +189,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                         Indexer indexer = getAssociationIndexer(association);
                         if(indexer != null) {
                             List keys = indexer.query(nativeKey);
-                            Persister persister = session.getPersister(association.getAssociatedEntity());
-                            ea.setProperty( association.getName(), persister.retrieveAll(context, keys));
+                            ea.setProperty( association.getName(), session.retrieveAll(association.getAssociatedEntity().getJavaClass(), keys));
                         }
                     }
 
@@ -185,7 +204,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
     @Override
     protected final Serializable persistEntity(MappingContext context, PersistentEntity persistentEntity, EntityAccess entityAccess) {
         ClassMapping<Family> cm = persistentEntity.getMapping();
-        String family = getFamily(persistentEntity, cm);
+        String family = entityFamily;
 
         T e = createNewEntry(family);
         final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
@@ -212,12 +231,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
 
                         final Object associatedObject = entityAccess.getProperty(prop.getName());
                         if(associatedObject != null) {
-
-                            Persister persister = session.getPersister(associatedObject);
-                            if(persister == null) {
-                                throw new InvalidDataAccessApiUsageException("Cannot persist association ["+persistentEntity.getName()+"."+prop.getName()+"]. Object ["+associatedObject+"] is not persistable.");
-                            }
-                            Serializable associationId = persister.persist(context, associatedObject);
+                            Serializable associationId = session.persist(associatedObject);
                             setEntryValue(e, association.getName(), associationId);
                         }
                         else {
@@ -246,12 +260,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                 if(propValue instanceof Collection) {
                     Collection associatedObjects = (Collection) propValue;
 
-                    Persister persister = session.getPersister(oneToMany.getAssociatedEntity());
-                    if(persister == null) {
-                        throw new InvalidDataAccessApiUsageException("Cannot persist association ["+persistentEntity.getName()+"."+oneToMany.getName()+"]. Object ["+oneToMany.getAssociatedEntity().getName()+"] is not persistable.");
-                    }
-
-                    List<Serializable> keys = persister.persist(context, associatedObjects.toArray());
+                    List<Serializable> keys = session.persist(associatedObjects);
 
                     final Indexer indexer = getAssociationIndexer(oneToMany);
                     if(indexer != null) {
@@ -295,7 +304,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
      * @return A list of keys
      */
     @Override
-    protected List<Serializable> persistEntities(MappingContext context, PersistentEntity persistentEntity, Object... objs) {
+    protected List<Serializable> persistEntities(MappingContext context, PersistentEntity persistentEntity, Iterable objs) {
         List<Serializable> keys = new ArrayList<Serializable>();
         for (Object obj : objs) {
             keys.add( persist(context,obj) );
@@ -313,7 +322,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
      * @return A list of entities
      */
     @Override
-    protected List<Object> retrieveAllEntities(MappingContext context, PersistentEntity persistentEntity, List<Serializable> keys) {
+    protected List<Object> retrieveAllEntities(MappingContext context, PersistentEntity persistentEntity, Iterable<Serializable> keys) {
         List<Object> results = new ArrayList<Object>();
         for (Serializable key : keys) {
             results.add( retrieveEntity(context, persistentEntity, key));
