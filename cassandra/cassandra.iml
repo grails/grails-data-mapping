@@ -46,6 +46,7 @@
     <orderEntry type="library" name="Log4j" level="project" />
     <orderEntry type="library" name="Commons Lang" level="project" />
     <orderEntry type="library" name="Commons Pool" level="project" />
+    <orderEntry type="library" name="Spring Beans" level="project" />
   </component>
 </module>
 

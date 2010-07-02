@@ -127,6 +127,22 @@
                 CompareWith="TimeUUIDType"
                 CompareSubcolumnsWith="BytesType"/>
 
+        <ColumnFamily
+                Name="org.grails.inconsequential.cassandra.Book"
+                ColumnType="Super"
+                CompareWith="TimeUUIDType"
+                CompareSubcolumnsWith="BytesType"/>
+
+        <ColumnFamily
+                Name="org.grails.inconsequential.cassandra.Author"
+                ColumnType="Super"
+                CompareWith="TimeUUIDType"
+                CompareSubcolumnsWith="BytesType"/>
+
+        <ColumnFamily
+                Name="org.grails.inconsequential.cassandra.AuthorBooks"
+                CompareWith="BytesType" />        
+
       <ColumnFamily Name="StandardByUUID1" CompareWith="TimeUUIDType" />
       <ColumnFamily Name="Super1"
                     ColumnType="Super"

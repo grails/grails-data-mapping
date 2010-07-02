@@ -59,6 +59,9 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                 } catch (UnsupportedEncodingException e) {
                     return 0L;
                 }
+                catch(NumberFormatException e) {
+                    return 0L;
+                }
             }
         });
         conversionService.addConverter(new Converter<byte[], String>() {

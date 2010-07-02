@@ -43,6 +43,7 @@ import static me.prettyprint.cassandra.utils.StringUtils.string;
  */
 public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<KeyValueEntry, Object> {
     private CassandraClient cassandraClient;
+    private static final byte[] ZERO_LENGTH_BYTE_ARRAY = new byte[0];
 
 
     public CassandraEntityPersister(PersistentEntity entity, CassandraConnection conn, CassandraClient cassandraClient) {
@@ -53,7 +54,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
 
     @Override
     protected Indexer getAssociationIndexer(Association association) {
-        return null;  // TODO: Support one-to-many associations in Cassandra
+        return new CassandraAssociationIndexer(cassandraClient, association, getKeyspaceName());
     }
 
     @Override
@@ -107,7 +108,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
         final List<SuperColumn> result;
         try {
             SlicePredicate predicate = new SlicePredicate();
-            predicate.setSlice_range(new SliceRange(new byte[0], new byte[0], false, 1));
+            predicate.setSlice_range(new SliceRange(ZERO_LENGTH_BYTE_ARRAY, ZERO_LENGTH_BYTE_ARRAY, false, 1));
             result = keyspace.getSuperSlice(id.toString(), parent, predicate);
         } catch (InvalidRequestException e) {
             throw new DataIntegrityViolationException("Cannot retrieve SuperColumn for uuid ["+ id +"] for ColumnPath ["+family+"]: " + e.getMessage(), e);
@@ -187,7 +188,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
 
     private Keyspace getKeyspace() {
         Keyspace keyspace;
-        final String keyspaceName = getKeyspace(getPersistentEntity().getMapping(), CassandraDatastore.DEFAULT_KEYSPACE);
+        final String keyspaceName = getKeyspaceName();
         try {
             keyspace = cassandraClient.getKeyspace(keyspaceName);
         } catch (NotFoundException e) {
@@ -196,5 +197,9 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
             throw new DataAccessResourceFailureException("Exception occurred looking up Keyspace ["+keyspaceName+"]: " + e.getMessage(),e);
         }
         return keyspace;
+    }
+
+    private String getKeyspaceName() {
+        return getKeyspace(getPersistentEntity().getMapping(), CassandraDatastore.DEFAULT_KEYSPACE);
     }
 }
