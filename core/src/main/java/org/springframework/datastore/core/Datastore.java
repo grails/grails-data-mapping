@@ -22,18 +22,18 @@ public interface Datastore {
      * Connects to a datastore using information from a Map,
      * such as a user / password pair, the URL of the datastore, etc. 
      *
-     * @param connectionDetails The Map containing the connection details
-     * @return the connection created using the provided connection details
+     * @param connectionDetails The Map containing the session details
+     * @return the session created using the provided session details
      */
-    public Connection connect(Map<String, String> connectionDetails);
+    public Session connect(Map<String, String> connectionDetails);
 
     /**
-     * Obtains the current connection (if any)
-     * @return The current thread bound connection
+     * Obtains the current session (if any)
+     * @return The current thread bound session
      *
      * @throws ConnectionNotFoundException Thrown if the {@link #connect(java.util.Map)} method has not yet been called
      */
-    public Connection getCurrentConnection() throws ConnectionNotFoundException;
+    public Session getCurrentSession() throws ConnectionNotFoundException;
 
     /**
      * Obtains the MappingContext object

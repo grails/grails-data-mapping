@@ -17,8 +17,7 @@ package org.springframework.datastore.cassandra;
 import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.CassandraClientPool;
 import org.springframework.datastore.cassandra.engine.CassandraEntityPersister;
-import org.springframework.datastore.core.AbstractObjectDatastoreConnection;
-import org.springframework.datastore.core.Key;
+import org.springframework.datastore.core.AbstractSession;
 import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
@@ -32,11 +31,11 @@ import java.util.Map;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class CassandraConnection extends AbstractObjectDatastoreConnection {
+public class CassandraSession extends AbstractSession {
     private CassandraClient cassandraClient;
     private CassandraClientPool connectionPool;
 
-    public CassandraConnection(Map<String, String> connectionDetails, MappingContext context, CassandraClientPool connectionPool, CassandraClient client) {
+    public CassandraSession(Map<String, String> connectionDetails, MappingContext context, CassandraClientPool connectionPool, CassandraClient client) {
         super(connectionDetails, context);
         this.connectionPool = connectionPool;
         this.cassandraClient = client;
@@ -60,7 +59,7 @@ public class CassandraConnection extends AbstractObjectDatastoreConnection {
         try {
             connectionPool.releaseClient(cassandraClient);
         } catch (Exception e) {
-            throw new DataAccessResourceFailureException("Failed to release Cassandra client connection: " + e.getMessage(), e);
+            throw new DataAccessResourceFailureException("Failed to release Cassandra client session: " + e.getMessage(), e);
         } finally {
             super.disconnect();
         }
@@ -70,7 +69,4 @@ public class CassandraConnection extends AbstractObjectDatastoreConnection {
         throw new TransactionSystemException("Transactions are not supported by Cassandra");
     }
 
-    public Key createKey(Object nativeKey) {
-        return new CassandraKey(nativeKey);
-    }
 }

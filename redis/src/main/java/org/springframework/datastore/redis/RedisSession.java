@@ -14,8 +14,7 @@
  */
 package org.springframework.datastore.redis;
 
-import org.springframework.datastore.core.AbstractObjectDatastoreConnection;
-import org.springframework.datastore.core.Key;
+import org.springframework.datastore.core.AbstractSession;
 import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
@@ -34,11 +33,11 @@ import java.util.*;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisDatastoreConnection extends AbstractObjectDatastoreConnection<Long> implements Map {
+public class RedisSession extends AbstractSession implements Map {
 
     private JRedis jredisClient;
 
-    public RedisDatastoreConnection(Map<String, String> connectionDetails, MappingContext mappingContext) {
+    public RedisSession(Map<String, String> connectionDetails, MappingContext mappingContext) {
         super(connectionDetails, mappingContext);
         int timeout = 30000; // msecs
         ConnectionSpec connSpec = DefaultConnectionSpec.newSpec();
@@ -191,7 +190,4 @@ public class RedisDatastoreConnection extends AbstractObjectDatastoreConnection<
         throw new UnsupportedOperationException("Method entrySet() is not supported");
     }
 
-    public Key<Long> createKey(Long nativeKey) {
-        return new RedisKey(nativeKey);
-    }
 }

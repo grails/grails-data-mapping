@@ -2,9 +2,9 @@ package org.springframework.datastore.appengine
 
 import com.google.appengine.api.datastore.Key
 import grails.persistence.Entity
-import org.springframework.datastore.appengine.testsupport.AppEngineDatastoreTestCase
-import org.springframework.datastore.core.ObjectDatastoreConnection
 import org.junit.Test
+import org.springframework.datastore.appengine.testsupport.AppEngineDatastoreTestCase
+import org.springframework.datastore.core.Session
 
 /**
  * @author Graeme Rocher
@@ -15,7 +15,7 @@ class OneToOneAssociationTests extends AppEngineDatastoreTestCase {
   void testPersistOneToOneAssociation() {
     def ds = new AppEngineDatastore()
     ds.mappingContext.addPersistentEntity(Person)
-    ObjectDatastoreConnection conn = ds.connect(null)
+    Session conn = ds.connect(null)
 
 
     def p = new Person(name:"Bob")
@@ -23,7 +23,7 @@ class OneToOneAssociationTests extends AppEngineDatastoreTestCase {
 
     conn.persist(p)
 
-    p = conn.retrieve(Person, new AppEngineKey(p.id))
+    p = conn.retrieve(Person, p.id)
 
     assert p != null
     assert "Bob" == p.name

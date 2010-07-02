@@ -1,8 +1,8 @@
 package org.springframework.datastore.redis
 
-import org.springframework.datastore.core.ObjectDatastoreConnection
-import org.junit.Test
 import grails.persistence.Entity
+import org.junit.Test
+import org.springframework.datastore.core.Session
 
 /**
  * @author Graeme Rocher
@@ -13,7 +13,7 @@ class OneToOneAssociationTests {
   void testPersistOneToOneAssociation() {
     def ds = new RedisDatastore()
     ds.mappingContext.addPersistentEntity(Person)
-    ObjectDatastoreConnection conn = ds.connect(null)
+    Session conn = ds.connect(null)
 
 
     def p = new Person(name:"Bob")
@@ -21,7 +21,7 @@ class OneToOneAssociationTests {
 
     conn.persist(p)
 
-    p = conn.retrieve(Person, new RedisKey(p.id))
+    p = conn.retrieve(Person, p.id)
 
     assert p != null
     assert "Bob" == p.name

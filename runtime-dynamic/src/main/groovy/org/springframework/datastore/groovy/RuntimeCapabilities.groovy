@@ -1,8 +1,8 @@
 package org.springframework.datastore.groovy
 
-import org.springframework.datastore.mapping.PersistentEntity
 import org.springframework.datastore.core.Datastore
-import org.springframework.datastore.core.ObjectDatastoreConnection
+import org.springframework.datastore.core.Session
+import org.springframework.datastore.mapping.PersistentEntity
 
 /**
  * @author Graeme Rocher
@@ -24,23 +24,23 @@ class RuntimeCapabilities {
 
           javaClass.metaClass {
               save {->
-                ObjectDatastoreConnection connection = datastore.currentConnection
+                Session connection = datastore.currentSession
                 connection.persist(delegate)
               }
 
               delete {->
-                ObjectDatastoreConnection connection = datastore.currentConnection
+                Session connection = datastore.currentSession
                 connection.delete delegate
               }
 
               'static' {
                   get { Serializable id ->
-                    ObjectDatastoreConnection connection = datastore.currentConnection
-                    connection.retrieve(javaClass, connection.createKey(id))
+                    Session connection = datastore.currentSession
+                    connection.retrieve(javaClass, id)
                   }
 
                   deleteAll { Object[] objs ->
-                    ObjectDatastoreConnection connection = datastore.currentConnection
+                    Session connection = datastore.currentSession
                     connection.delete objs
                   }
               }

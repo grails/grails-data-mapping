@@ -1,7 +1,7 @@
 package org.springframework.datastore.appengine;
 
 import org.springframework.datastore.core.AbstractDatastore;
-import org.springframework.datastore.core.Connection;
+import org.springframework.datastore.core.Session;
 import org.springframework.datastore.keyvalue.mapping.KeyValueMappingContext;
 
 import java.util.Map;
@@ -22,8 +22,8 @@ public class AppEngineDatastore extends AbstractDatastore {
     }
 
     @Override
-    protected Connection createConnection(Map<String, String> connectionDetails) {
-        return new AppEngineConnection(connectionDetails, getMappingContext());
+    protected Session createConnection(Map<String, String> connectionDetails) {
+        return new AppEngineSession(connectionDetails, getMappingContext());
     }
 
 }

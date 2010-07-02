@@ -1,7 +1,7 @@
 package org.springframework.datastore.redis
 
-import org.springframework.datastore.core.ObjectDatastoreConnection
 import org.junit.Test
+import org.springframework.datastore.core.Session
 
 /**
  * @author Graeme Rocher
@@ -13,7 +13,7 @@ class RedisEntityPesisterTests {
   void testPersistObject() {
     RedisDatastore ds = new RedisDatastore()
 
-    ObjectDatastoreConnection conn = ds.connect(null)
+    Session conn = ds.connect(null)
 
     try {
       conn.clear()
@@ -27,7 +27,7 @@ class RedisEntityPesisterTests {
 
       assert t.id != null
 
-      def key = new RedisKey(t.id)
+      def key = t.id
       t = conn.retrieve(TestEntity, key)
 
       assert t != null
@@ -53,7 +53,7 @@ class RedisEntityPesisterTests {
     def ds = new RedisDatastore()
     ds.getMappingContext().addPersistentEntity(TestEntity)
 
-    ObjectDatastoreConnection conn = ds.connect(null)
+    Session conn = ds.connect(null)
     conn.clear()
 
     assert 0 == conn.size()

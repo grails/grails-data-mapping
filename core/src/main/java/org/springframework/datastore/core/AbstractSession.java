@@ -31,13 +31,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class AbstractObjectDatastoreConnection<T> implements ObjectDatastoreConnection<T> {
+public abstract class AbstractSession implements Session {
     protected Map<Class,Persister> persisters = new ConcurrentHashMap<Class,Persister>();
     private MappingContext mappingContext;
     private Map<String, String> connectionDetails;
 
 
-    public AbstractObjectDatastoreConnection(Map<String, String> connectionDetails, MappingContext mappingContext) {
+    public AbstractSession(Map<String, String> connectionDetails, MappingContext mappingContext) {
         super();
         this.mappingContext = mappingContext;
         this.connectionDetails = connectionDetails;
@@ -75,21 +75,20 @@ public abstract class AbstractObjectDatastoreConnection<T> implements ObjectData
     protected abstract Persister createPersister(Class cls, MappingContext mappingContext);
 
 
-    public Key<T> persist(Object o) {
+    public Serializable persist(Object o) {
         if(o == null) throw new IllegalArgumentException("Cannot persist null object");
         Persister persister = getPersister(o);
         if(persister != null) {
-            final Serializable nativeKey = persister.persist(getMappingContext(), o);
-            return createKey((T) nativeKey);
+            return persister.persist(getMappingContext(), o);
         }
         throw new CannotPersistException("Object ["+o+"] cannot be persisted. It is not a known persistent type.");
     }
 
-    public Object retrieve(Class type, Key<T> key) {
+    public Object retrieve(Class type, Serializable key) {
         if(key == null || type == null) return null;
         Persister persister = getPersister(type);
         if(persister != null) {
-            return persister.retrieve(getMappingContext(), (Serializable) key.getNativeKey());
+            return persister.retrieve(getMappingContext(), key);
         }
         throw new CannotPersistException("Cannot retrieveEntity object with key ["+key+"]. The class ["+type+"] is not a known persistent type.");
     }

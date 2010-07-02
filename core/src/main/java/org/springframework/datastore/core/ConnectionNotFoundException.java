@@ -15,7 +15,7 @@
 package org.springframework.datastore.core;
 
 /**
- * Thrown when a connection cannot be located
+ * Thrown when a session cannot be located
  *
  * @author Graeme Rocher
  * @since 1.0

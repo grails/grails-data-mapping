@@ -18,7 +18,7 @@ import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.datastore.KeyFactory;
-import org.springframework.datastore.appengine.AppEngineConnection;
+import org.springframework.datastore.appengine.AppEngineSession;
 import org.springframework.datastore.engine.Indexer;
 import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
 import org.springframework.datastore.mapping.PersistentEntity;
@@ -41,7 +41,7 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     protected DatastoreService datastoreService;
     protected String entityFamily;
 
-    public AppEngineEntityPersister(final PersistentEntity entity, AppEngineConnection conn, DatastoreService datastoreService) {
+    public AppEngineEntityPersister(final PersistentEntity entity, AppEngineSession conn, DatastoreService datastoreService) {
         super(entity, conn);
         this.datastoreService = datastoreService;
         this.entityFamily = getFamily(entity, entity.getMapping());

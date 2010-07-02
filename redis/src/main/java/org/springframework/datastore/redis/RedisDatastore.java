@@ -15,7 +15,7 @@
 package org.springframework.datastore.redis;
 
 import org.springframework.datastore.core.AbstractDatastore;
-import org.springframework.datastore.core.Connection;
+import org.springframework.datastore.core.Session;
 import org.springframework.datastore.keyvalue.mapping.KeyValueMappingContext;
 import org.springframework.datastore.mapping.MappingContext;
 
@@ -38,7 +38,7 @@ public class RedisDatastore extends AbstractDatastore {
     }
 
     @Override
-    protected Connection createConnection(Map<String, String> connectionDetails) {
-        return new RedisDatastoreConnection(connectionDetails, getMappingContext());
+    protected Session createConnection(Map<String, String> connectionDetails) {
+        return new RedisSession(connectionDetails, getMappingContext());
     }
 }

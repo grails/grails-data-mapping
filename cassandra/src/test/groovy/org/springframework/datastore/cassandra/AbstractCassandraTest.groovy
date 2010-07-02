@@ -47,7 +47,7 @@ class AbstractCassandraTest {
   }
 
    /**
-     * Gets a connection to the localhost client
+     * Gets a session to the localhost client
      *
      * @return
      * @throws TTransportException

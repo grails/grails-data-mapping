@@ -14,7 +14,12 @@
  */
 package org.springframework.datastore.keyvalue.engine;
 
-import org.springframework.datastore.core.ObjectDatastoreConnection;
+import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.support.GenericConversionService;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.datastore.core.Session;
 import org.springframework.datastore.engine.EntityAccess;
 import org.springframework.datastore.engine.EntityPersister;
 import org.springframework.datastore.engine.Indexer;
@@ -23,11 +28,6 @@ import org.springframework.datastore.keyvalue.mapping.Family;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.*;
 import org.springframework.datastore.mapping.types.*;
-import org.springframework.beans.SimpleTypeConverter;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.support.GenericConversionService;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -44,11 +44,11 @@ import java.util.List;
  */
 public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersister {
     protected SimpleTypeConverter typeConverter;
-    protected ObjectDatastoreConnection connection;
+    protected Session session;
 
-    public AbstractKeyValueEntityPesister(PersistentEntity entity, ObjectDatastoreConnection connection) {
+    public AbstractKeyValueEntityPesister(PersistentEntity entity, Session session) {
         super(entity);
-        this.connection = connection;
+        this.session = session;
         this.typeConverter = new SimpleTypeConverter();
         GenericConversionService conversionService = new GenericConversionService();
         conversionService.addConverter(new Converter<byte[], Long>() {
@@ -153,7 +153,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                 }
                 else if(prop instanceof ToOne) {
                     Serializable associationKey = (Serializable) getEntryValue(nativeEntry, propKey);
-                    Persister persister = connection.getPersister(prop.getType());
+                    Persister persister = session.getPersister(prop.getType());
                     if(persister == null) {
                         throw new InvalidDataAccessApiUsageException("Cannot retrieve association ["+persistentEntity.getName()+"."+prop.getName()+"]. Class ["+prop.getType()+"] is not persistent type.");
                     }
@@ -169,7 +169,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                         Indexer indexer = getAssociationIndexer(association);
                         if(indexer != null) {
                             List keys = indexer.query(nativeKey);
-                            Persister persister = connection.getPersister(association.getAssociatedEntity());
+                            Persister persister = session.getPersister(association.getAssociatedEntity());
                             ea.setProperty( association.getName(), persister.retrieveAll(context, keys));
                         }
                     }
@@ -213,7 +213,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                         final Object associatedObject = entityAccess.getProperty(prop.getName());
                         if(associatedObject != null) {
 
-                            Persister persister = connection.getPersister(associatedObject);
+                            Persister persister = session.getPersister(associatedObject);
                             if(persister == null) {
                                 throw new InvalidDataAccessApiUsageException("Cannot persist association ["+persistentEntity.getName()+"."+prop.getName()+"]. Object ["+associatedObject+"] is not persistable.");
                             }
@@ -246,7 +246,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                 if(propValue instanceof Collection) {
                     Collection associatedObjects = (Collection) propValue;
 
-                    Persister persister = connection.getPersister(oneToMany.getAssociatedEntity());
+                    Persister persister = session.getPersister(oneToMany.getAssociatedEntity());
                     if(persister == null) {
                         throw new InvalidDataAccessApiUsageException("Cannot persist association ["+persistentEntity.getName()+"."+oneToMany.getName()+"]. Object ["+oneToMany.getAssociatedEntity().getName()+"] is not persistable.");
                     }

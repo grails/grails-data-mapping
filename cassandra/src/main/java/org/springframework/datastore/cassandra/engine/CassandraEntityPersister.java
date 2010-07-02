@@ -18,7 +18,7 @@ import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.Keyspace;
 import org.apache.cassandra.thrift.*;
 import org.apache.thrift.TException;
-import org.springframework.datastore.cassandra.CassandraConnection;
+import org.springframework.datastore.cassandra.CassandraSession;
 import org.springframework.datastore.cassandra.CassandraDatastore;
 import org.springframework.datastore.cassandra.uuid.UUIDUtil;
 import org.springframework.datastore.engine.Indexer;
@@ -46,7 +46,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
     private static final byte[] ZERO_LENGTH_BYTE_ARRAY = new byte[0];
 
 
-    public CassandraEntityPersister(PersistentEntity entity, CassandraConnection conn, CassandraClient cassandraClient) {
+    public CassandraEntityPersister(PersistentEntity entity, CassandraSession conn, CassandraClient cassandraClient) {
         super(entity,conn);
         this.cassandraClient = cassandraClient;
     }

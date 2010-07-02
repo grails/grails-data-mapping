@@ -1,8 +1,8 @@
 package org.springframework.datastore.cassandra
 
-import org.junit.Test
-import org.springframework.datastore.core.ObjectDatastoreConnection
 import grails.persistence.Entity
+import org.junit.Test
+import org.springframework.datastore.core.Session
 
 /**
  * @author Graeme Rocher
@@ -14,7 +14,7 @@ class OneToOneAssociationTests extends AbstractCassandraTest{
   void testPersistOneToOneAssociation() {
     def ds = new CassandraDatastore()
     ds.mappingContext.addPersistentEntity(Person)
-    ObjectDatastoreConnection conn = ds.connect(null)
+    Session conn = ds.connect(null)
 
 
     def p = new Person(name:"Bob")
@@ -22,7 +22,7 @@ class OneToOneAssociationTests extends AbstractCassandraTest{
 
     conn.persist(p)
 
-    p = conn.retrieve(Person, new CassandraKey(p.id))
+    p = conn.retrieve(Person, p.id)
 
     assert p != null
     assert "Bob" == p.name

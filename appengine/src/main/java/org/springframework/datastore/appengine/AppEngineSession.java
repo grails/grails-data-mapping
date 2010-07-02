@@ -2,47 +2,41 @@ package org.springframework.datastore.appengine;
 
 import com.google.appengine.api.datastore.*;
 import org.springframework.datastore.appengine.engine.AppEngineEntityPersister;
-import org.springframework.datastore.core.AbstractObjectDatastoreConnection;
+import org.springframework.datastore.core.AbstractSession;
 import org.springframework.datastore.engine.Persister;
-import org.springframework.datastore.keyvalue.KeyValueDatastoreConnection;
+import org.springframework.datastore.keyvalue.KeyValueSession;
 import org.springframework.datastore.keyvalue.mapping.Family;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.tx.Transaction;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
- * Google App Engine connection to the datastore
+ * Google App Engine session to the datastore
  *
  * @author Graeme Rocher
  * @author Guillaume Laforge
  *
  * @since 1.0
  */
-public class AppEngineConnection extends AbstractObjectDatastoreConnection<com.google.appengine.api.datastore.Key> implements KeyValueDatastoreConnection<com.google.appengine.api.datastore.Key> {
+public class AppEngineSession extends AbstractSession implements KeyValueSession<Key> {
     protected DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
     private AppEngineTransaction transaction;
 
     /**
-     * Create a new Google App Engine connection to the datastore.
+     * Create a new Google App Engine session to the datastore.
      *
-     * @param connectionDetails the connection details
+     * @param connectionDetails the session details
      * @param mappingContext The Mapping Context
      */
-    public AppEngineConnection(Map<String, String> connectionDetails, MappingContext<Family, KeyValue> mappingContext) {
+    public AppEngineSession(Map<String, String> connectionDetails, MappingContext<Family, KeyValue> mappingContext) {
         super(connectionDetails, mappingContext);
     }
 
-    public org.springframework.datastore.core.Key<Key> createKey(Key nativeKey) {
-        return new AppEngineKey(nativeKey);
-    }
 
-    public org.springframework.datastore.core.Key<com.google.appengine.api.datastore.Key> store(String table, Map object) {
+    public Key store(String table, Map object) {
         Entity entity = new Entity(table);
         Set keySet = object.keySet();
         for (Object aKeySet : keySet) {
@@ -50,23 +44,21 @@ public class AppEngineConnection extends AbstractObjectDatastoreConnection<com.g
             Object value = object.get(propertyName);
             entity.setProperty(propertyName, value);
         }
-        return new AppEngineKey(datastoreService.put(entity));
+        return datastoreService.put(entity);
     }
 
-    public Map<String, Object> retrieve(org.springframework.datastore.core.Key<Key> key) {
+    public Map<String, Object> retrieve(Key key) {
         try {
-            Entity entity = datastoreService.get(key.getNativeKey());
+            Entity entity = datastoreService.get(key);
             return entity.getProperties();
         } catch (EntityNotFoundException e) {
             return null;
         }
     }
 
-    public List<Map<String, Object>> retrieve(org.springframework.datastore.core.Key<Key>... keys) {
+    public List<Map<String, Object>> retrieve(Key... keys) {
         List<com.google.appengine.api.datastore.Key> keysList = new ArrayList<Key>();
-        for (org.springframework.datastore.core.Key<com.google.appengine.api.datastore.Key> key : keys) {
-            keysList.add(key.getNativeKey());
-        }
+        keysList.addAll(Arrays.asList(keys));
 
         List<Map<String, Object>> results = new ArrayList<Map<String, Object>>();
 
@@ -80,13 +72,8 @@ public class AppEngineConnection extends AbstractObjectDatastoreConnection<com.g
         return results;
     }
 
-    public void delete(org.springframework.datastore.core.Key<Key>... keys) {
-        List<com.google.appengine.api.datastore.Key> keysList = new ArrayList<com.google.appengine.api.datastore.Key>();
-        for (org.springframework.datastore.core.Key<Key> key : keys) {
-            keysList.add(key.getNativeKey());
-        }
-
-        datastoreService.delete(keysList);
+    public void delete(Key... keys) {
+        datastoreService.delete(Arrays.asList(keys));
     }
 
     /**

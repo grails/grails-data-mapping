@@ -1,9 +1,8 @@
 package org.springframework.datastore.appengine
 
 import com.google.appengine.api.datastore.Key
-import org.springframework.datastore.core.DatastoreContext
-import org.springframework.datastore.core.ObjectDatastoreConnection
 import org.springframework.datastore.appengine.testsupport.AppEngineDatastoreTestCase
+import org.springframework.datastore.core.Session
 
 /**
  * @author Graeme Rocher
@@ -16,7 +15,7 @@ class EntityPersisterTests extends AppEngineDatastoreTestCase {
   void testPersistObject() {
     AppEngineDatastore ds = new AppEngineDatastore()
 
-    ObjectDatastoreConnection conn = ds.connect(null)
+    Session conn = ds.connect(null)
 
     ds.getMappingContext().addPersistentEntity(TestEntity)
 
@@ -27,7 +26,7 @@ class EntityPersisterTests extends AppEngineDatastoreTestCase {
 
     assert t.id != null
 
-    def key = new AppEngineKey(t.id)
+    def key = t.id
     t = conn.retrieve(TestEntity, key)
 
     assert t != null

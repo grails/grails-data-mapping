@@ -1,9 +1,10 @@
 package org.springframework.datastore.cassandra
 
-import org.junit.Test
 
-import org.springframework.datastore.core.ObjectDatastoreConnection
-import org.springframework.datastore.cassandra.uuid.UUIDUtil;
+import org.junit.Test
+import org.springframework.datastore.cassandra.uuid.UUIDUtil
+import org.springframework.datastore.core.Session
+
 /**
  * @author Graeme Rocher
  * @since 1.1
@@ -14,9 +15,9 @@ class CassandraEntityPersisterTest extends AbstractCassandraTest {
   void testReadWrite() {
      def ds = new CassandraDatastore()
      ds.mappingContext.addPersistentEntity(TestEntity)
-     ObjectDatastoreConnection conn = ds.connect(null)
+     Session conn = ds.connect(null)
 
-     def t = conn.retrieve(TestEntity, new CassandraKey(UUIDUtil.getTimeUUID()))
+     def t = conn.retrieve(TestEntity, UUIDUtil.getTimeUUID())
 
      assert t == null
 
@@ -26,7 +27,7 @@ class CassandraEntityPersisterTest extends AbstractCassandraTest {
 
      assert t.id != null
 
-     t = conn.retrieve(TestEntity, new CassandraKey(t.id))
+     t = conn.retrieve(TestEntity, t.id)
 
      assert t != null
      assert "Bob" == t.name
@@ -37,7 +38,7 @@ class CassandraEntityPersisterTest extends AbstractCassandraTest {
      t.age = 55
      conn.persist(t)
 
-     t = conn.retrieve(TestEntity, new CassandraKey(t.id))
+     t = conn.retrieve(TestEntity, t.id)
 
      assert 55 == t.age
 

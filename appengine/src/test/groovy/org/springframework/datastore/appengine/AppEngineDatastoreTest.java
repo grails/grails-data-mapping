@@ -2,8 +2,7 @@ package org.springframework.datastore.appengine;
 
 import com.google.appengine.api.datastore.*;
 import org.springframework.datastore.appengine.testsupport.AppEngineDatastoreTestCase;
-import org.springframework.datastore.core.Key;
-import org.springframework.datastore.keyvalue.KeyValueDatastoreConnection;
+import org.springframework.datastore.keyvalue.KeyValueSession;
 import org.springframework.datastore.tx.Transaction;
 import org.junit.Before;
 
@@ -37,7 +36,7 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
 
     public void testStore() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
-        KeyValueDatastoreConnection conn = (KeyValueDatastoreConnection) engineDatastore.connect(null);
+        KeyValueSession conn = (KeyValueSession) engineDatastore.connect(null);
         conn.store("persons", personOne);
         conn.store("persons", personTwo);
 
@@ -48,9 +47,9 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
     public void testStoreAndRetreiveOneEntity() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
 
-        KeyValueDatastoreConnection conn = (KeyValueDatastoreConnection) engineDatastore.connect(null);
+        KeyValueSession conn = (KeyValueSession) engineDatastore.connect(null);
 
-        Key key = conn.store("persons", personOne);
+        Key key = (Key) conn.store("persons", personOne);
 
         Map<String, Object> result = conn.retrieve(key);
         assertEquals("Guillaume", result.get("firstname"));
@@ -59,10 +58,10 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
 
     public void testStoreAndRetreiveTwoEntities() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
-        KeyValueDatastoreConnection conn = (KeyValueDatastoreConnection) engineDatastore.connect(null);
+        KeyValueSession conn = (KeyValueSession) engineDatastore.connect(null);
 
-        Key keyGuillaume = conn.store("persons", personOne);
-        Key keyJarJar = conn.store("persons", personTwo);
+        Key keyGuillaume = (Key) conn.store("persons", personOne);
+        Key keyJarJar = (Key) conn.store("persons", personTwo);
 
         List<Map<String, Object>> result = conn.retrieve(keyGuillaume, keyJarJar);
         assertEquals(2, result.size());
@@ -71,9 +70,9 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
     public void testStoreAndDelete() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
 
-        KeyValueDatastoreConnection conn = (KeyValueDatastoreConnection) engineDatastore.connect(null);
+        KeyValueSession conn = (KeyValueSession) engineDatastore.connect(null);
 
-        Key keyGuillaume = conn.store("persons", personOne);
+        Key keyGuillaume = (Key) conn.store("persons", personOne);
 
         Map<String, Object> result = conn.retrieve(keyGuillaume);
         assertNotNull(result);
@@ -86,13 +85,13 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
 
     public void testTransactionCommit() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
-        KeyValueDatastoreConnection connection = (KeyValueDatastoreConnection) engineDatastore.connect(new HashMap<String, String>());
+        KeyValueSession connection = (KeyValueSession) engineDatastore.connect(new HashMap<String, String>());
 
         // start a transaction
         Transaction transaction = connection.beginTransaction();
 
         // add a new person in the store
-        Key keyGuillaume = connection.store("persons", personOne);
+        Key keyGuillaume = (Key) connection.store("persons", personOne);
 
         // commit the transaction
         transaction.commit();
@@ -104,12 +103,12 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
 
     public void testTransactionRollback() {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
-        KeyValueDatastoreConnection connection = (KeyValueDatastoreConnection) engineDatastore.connect(new HashMap<String, String>());
+        KeyValueSession connection = (KeyValueSession) engineDatastore.connect(new HashMap<String, String>());
 
         org.springframework.datastore.tx.Transaction transaction = connection.beginTransaction();
 
         // add a new person in the store
-        Key keyGuillaume = connection.store("persons", personOne);
+        Key keyGuillaume = (Key) connection.store("persons", personOne);
 
         transaction.rollback();
 

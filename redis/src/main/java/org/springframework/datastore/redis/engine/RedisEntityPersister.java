@@ -18,7 +18,7 @@ import org.springframework.datastore.engine.Indexer;
 import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.types.Association;
-import org.springframework.datastore.redis.RedisDatastoreConnection;
+import org.springframework.datastore.redis.RedisSession;
 import org.springframework.datastore.redis.RedisEntry;
 import org.jredis.JRedis;
 import org.jredis.RedisException;
@@ -39,7 +39,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     private JRedis jredisClient;
     private RedisAssociationIndexer indexer;
 
-    public RedisEntityPersister(PersistentEntity entity, RedisDatastoreConnection conn, final JRedis jredisClient) {
+    public RedisEntityPersister(PersistentEntity entity, RedisSession conn, final JRedis jredisClient) {
         super(entity, conn);
         this.jredisClient = jredisClient;
     }

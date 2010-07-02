@@ -27,7 +27,7 @@ import java.util.Map;
 public abstract class AbstractDatastore implements Datastore {
 
     MappingContext mappingContext;
-    private static ThreadLocal<Connection> currentConnectionThreadLocal = new InheritableThreadLocal<Connection>();
+    private static ThreadLocal<Session> currentConnectionThreadLocal = new InheritableThreadLocal<Session>();
 
     public AbstractDatastore(MappingContext mappingContext) {
         this.mappingContext = mappingContext;
@@ -36,8 +36,8 @@ public abstract class AbstractDatastore implements Datastore {
     public AbstractDatastore() {
     }
 
-    public final Connection connect(Map<String, String> connectionDetails) {
-        final Connection connection = createConnection(connectionDetails);
+    public final Session connect(Map<String, String> connectionDetails) {
+        final Session connection = createConnection(connectionDetails);
         if(connection != null) {
             currentConnectionThreadLocal.set(connection);
         }
@@ -45,17 +45,17 @@ public abstract class AbstractDatastore implements Datastore {
     }
 
     /**
-     * Creates the native connection
+     * Creates the native session
      *
-     * @param connectionDetails The connection details
-     * @return The connection object
+     * @param connectionDetails The session details
+     * @return The session object
      */
-    protected abstract Connection createConnection(Map<String, String> connectionDetails);
+    protected abstract Session createConnection(Map<String, String> connectionDetails);
 
-    public final Connection getCurrentConnection() throws ConnectionNotFoundException {
-        final Connection connection = currentConnectionThreadLocal.get();
+    public final Session getCurrentSession() throws ConnectionNotFoundException {
+        final Session connection = currentConnectionThreadLocal.get();
         if(connection == null) {
-            throw new ConnectionNotFoundException("Not datastore connection found. Call Datastore.connect(..) before calling Datastore.getCurrentConnection()");
+            throw new ConnectionNotFoundException("Not datastore session found. Call Datastore.connect(..) before calling Datastore.getCurrentSession()");
         }
         return connection;
     }
@@ -65,8 +65,8 @@ public abstract class AbstractDatastore implements Datastore {
     }
 
     /**
-     * Clears the thread bound connection, should be called by the
-     * {@link Connection#disconnect()}
+     * Clears the thread bound session, should be called by the
+     * {@link Session#disconnect()}
      */
     public static void clearCurrentConnection() {
         currentConnectionThreadLocal.set(null);
