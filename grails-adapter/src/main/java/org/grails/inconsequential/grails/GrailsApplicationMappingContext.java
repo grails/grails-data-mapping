@@ -15,10 +15,10 @@
 package org.grails.inconsequential.grails;
 
 import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.grails.inconsequential.mapping.MappingContext;
-import org.grails.inconsequential.mapping.MappingFactory;
-import org.grails.inconsequential.mapping.MappingSyntaxStrategy;
-import org.grails.inconsequential.mapping.PersistentEntity;
+import org.springframework.datastore.mapping.MappingContext;
+import org.springframework.datastore.mapping.MappingFactory;
+import org.springframework.datastore.mapping.MappingSyntaxStrategy;
+import org.springframework.datastore.mapping.PersistentEntity;
 
 import java.util.List;
 

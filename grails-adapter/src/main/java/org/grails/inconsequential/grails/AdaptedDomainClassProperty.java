@@ -15,10 +15,10 @@
 package org.grails.inconsequential.grails;
 
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
-import org.grails.inconsequential.mapping.ClassMapping;
-import org.grails.inconsequential.mapping.PersistentEntity;
-import org.grails.inconsequential.mapping.PersistentProperty;
-import org.grails.inconsequential.mapping.PropertyMapping;
+import org.springframework.datastore.mapping.ClassMapping;
+import org.springframework.datastore.mapping.PersistentEntity;
+import org.springframework.datastore.mapping.PersistentProperty;
+import org.springframework.datastore.mapping.PropertyMapping;
 
 /**
  * Adapts the GrailsDomainClassProperty interface to the Inconsequential
