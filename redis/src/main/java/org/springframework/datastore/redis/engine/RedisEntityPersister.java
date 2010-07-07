@@ -156,7 +156,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
 
     @Override
     protected PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new RedisPropertyValueIndexer(jredisClient, property);
     }
 
     @Override

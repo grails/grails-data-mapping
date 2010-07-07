@@ -264,6 +264,18 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
             updateEntry(persistentEntity, k, e);
         }
 
+        // Here we manually create indices for any indexed properties so that queries work
+        for (PersistentProperty persistentProperty : toIndex.keySet()) {
+            Object value = toIndex.get(persistentProperty);
+
+            final PropertyValueIndexer indexer = getPropertyIndexer(persistentProperty);
+            if(indexer != null) {
+                indexer.index(value, k);
+            }
+        }
+
+
+        // now cascade onto one-to-many associations
         for (OneToMany oneToMany : oneToManys) {
             if(oneToMany.doesCascade(Cascade.SAVE)) {
                 Object propValue = entityAccess.getProperty(oneToMany.getName());
@@ -282,15 +294,6 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
 
         }
 
-        // Here we manually create indices for any indexed properties so that queries work
-        for (PersistentProperty persistentProperty : toIndex.keySet()) {
-            Object value = toIndex.get(persistentProperty);
-
-            final PropertyValueIndexer indexer = getPropertyIndexer(persistentProperty);
-            if(indexer != null) {
-                indexer.index(value, k);
-            }
-        }
 
         return (Serializable) k;
     }

@@ -14,12 +14,13 @@
  */
 package org.springframework.datastore.redis.engine;
 
-import org.springframework.datastore.engine.AssociationIndexer;
-import org.springframework.datastore.mapping.types.Association;
 import org.jredis.JRedis;
 import org.jredis.RedisException;
 import org.springframework.beans.SimpleTypeConverter;
-import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.datastore.engine.AssociationIndexer;
+import org.springframework.datastore.mapping.types.Association;
+import org.springframework.datastore.redis.util.RedisCallback;
+import org.springframework.datastore.redis.util.RedisTemplate;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,28 +33,29 @@ import java.util.List;
  * @since 1.0
  */
 public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
-    private JRedis jredis;
+    private RedisTemplate template;
     private SimpleTypeConverter typeConverter;
     private Association association;
 
     public RedisAssociationIndexer(JRedis jredis, SimpleTypeConverter typeConverter, Association association) {
-        this.jredis = jredis;
+        this.template = new RedisTemplate(jredis);
         this.typeConverter = typeConverter;
         this.association = association;
     }
 
-    public void index(Long primaryKey, List<Long> foreignKeys) {
-        String redisKey = createRedisKey(primaryKey);
-        List storedKeys = queryInternal(redisKey);
-        for (Long foreignKey : foreignKeys) {
-            if(!storedKeys.contains(foreignKey)) {
-                try {
-                    jredis.sadd(redisKey, foreignKey);
-                } catch (RedisException e) {
-                    throw new DataAccessResourceFailureException("Exception occurred executing Redis command SADD: " + e.getMessage(),e);
+    public void index(Long primaryKey, final List<Long> foreignKeys) {
+        final String redisKey = createRedisKey(primaryKey);
+        final List storedKeys = queryInternal(redisKey);
+        template.execute(new RedisCallback(){
+            public Object doInRedis(JRedis jredis) throws RedisException {
+                for (Long foreignKey : foreignKeys) {
+                    if(!storedKeys.contains(foreignKey)) {
+                            jredis.sadd(redisKey, foreignKey);
+                    }
                 }
+                return null;
             }
-        }
+        });
     }
 
     private String createRedisKey(Long primaryKey) {
@@ -65,22 +67,24 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
         return queryInternal(redisKey);
     }
 
-    private List<Long> queryInternal(String redisKey) {
-        try {
-            final List<byte[]> results = jredis.smembers(redisKey);
-            if(!results.isEmpty()) {
-                List<Long> foreignKeys = new ArrayList<Long>(results.size());
-                for (byte[] result : results) {
-                    foreignKeys.add(getLong(result));
+    private List<Long> queryInternal(final String redisKey) {
+        return (List<Long>) template.execute(new RedisCallback() {
+
+            public Object doInRedis(JRedis jredis) throws RedisException {
+                final List<byte[]> results = jredis.smembers(redisKey);
+                if(!results.isEmpty()) {
+                    List<Long> foreignKeys = new ArrayList<Long>(results.size());
+                    for (byte[] result : results) {
+                        foreignKeys.add(getLong(result));
+                    }
+                    return foreignKeys;
                 }
-                return foreignKeys;
+                else {
+                    return Collections.emptyList();
+                }
+
             }
-            else {
-                return Collections.emptyList();
-            }
-        } catch (RedisException e) {
-            throw new DataAccessResourceFailureException("Exception occurred executing Redis command SMEMBERS: " + e.getMessage(),e);
-        }
+        });
     }
 
     private Long getLong(Object key) {
