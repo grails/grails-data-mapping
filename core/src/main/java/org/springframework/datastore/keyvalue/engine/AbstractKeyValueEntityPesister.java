@@ -18,6 +18,7 @@ import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.GenericConversionService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.core.Session;
 import org.springframework.datastore.engine.EntityAccess;
 import org.springframework.datastore.engine.EntityPersister;
@@ -235,7 +236,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                             setEntryValue(e, association.getName(), associationId);
                         }
                         else {
-                            // TODO: throw exception if not nullable
+                            throw new DataIntegrityViolationException("Cannot save object ["+entityAccess.getEntity()+"] of type ["+persistentEntity+"]. The association ["+association+"] is cannot be null.");
                         }
                     }
                 }

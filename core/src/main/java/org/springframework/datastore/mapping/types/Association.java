@@ -128,4 +128,9 @@ public abstract class Association<T> extends AbstractPersistentProperty {
     public String getReferencedPropertyName() {
         return referencedPropertyName;
     }
+
+    @Override
+    public String toString() {
+        return getOwner().getName() + "->" + getName();
+    }
 }
