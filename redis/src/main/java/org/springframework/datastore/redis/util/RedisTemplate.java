@@ -28,7 +28,7 @@ import org.springframework.dao.DataAccessException;
 public class RedisTemplate {
 
     JRedis jredis;
-
+    
     public RedisTemplate(JRedis jredis) {
         this.jredis = jredis;
     }
@@ -39,5 +39,9 @@ public class RedisTemplate {
         } catch (RedisException e) {
             throw new DataAccessException("Exception occured executing Redis command: " + e.getMessage(), e) {};
         }
+    }
+
+    public JRedis getJRedis() {
+        return jredis;
     }
 }

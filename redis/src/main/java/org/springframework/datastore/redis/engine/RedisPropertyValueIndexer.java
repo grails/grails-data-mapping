@@ -42,7 +42,7 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     public void index(final Object value, final Long primaryKey) {
         template.execute(new RedisCallback(){
             public Object doInRedis(JRedis jredis) throws RedisException {
-                jredis.sadd(createRedisKey(value), primaryKey);
+                jredis.rpush(createRedisKey(value), primaryKey);
                 return null;
             }
         });

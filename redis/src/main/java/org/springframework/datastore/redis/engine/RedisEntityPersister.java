@@ -14,18 +14,18 @@
  */
 package org.springframework.datastore.redis.engine;
 
+import org.jredis.JRedis;
+import org.jredis.RedisException;
 import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.mapping.types.Association;
-import org.springframework.datastore.redis.RedisSession;
 import org.springframework.datastore.redis.RedisEntry;
-import org.jredis.JRedis;
-import org.jredis.RedisException;
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.datastore.redis.RedisSession;
+import org.springframework.datastore.redis.util.RedisCallback;
+import org.springframework.datastore.redis.util.RedisTemplate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,12 +38,12 @@ import java.util.List;
  * @since 1.0
  */
 public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEntry, Long> {
-    private JRedis jredisClient;
     private RedisAssociationIndexer indexer;
+    private RedisTemplate redisTemplate;
 
     public RedisEntityPersister(PersistentEntity entity, RedisSession conn, final JRedis jredisClient) {
         super(entity, conn);
-        this.jredisClient = jredisClient;
+        this.redisTemplate = new RedisTemplate(jredisClient);
     }
 
 
@@ -70,27 +70,25 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     @Override
-    protected RedisEntry retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
-        String hashKey = family + ":" + getLong(key);
+    protected RedisEntry retrieveEntry(PersistentEntity persistentEntity, final String family, Serializable key) {
+        final String hashKey = family + ":" + getLong(key);
 
-        List<String> props = persistentEntity.getPersistentPropertyNames();
-
-        try {
-            final List<byte[]> values = jredisClient.hmget(hashKey, props.toArray(new String[props.size()]));
-            if(entityDoesntExistForValues(values)) return null;
-            RedisEntry entry = new RedisEntry(family);
-            for (int i = 0; i < props.size(); i++) {
-                  entry.put(props.get(i), values.get(i));
+        final List<String> props = persistentEntity.getPersistentPropertyNames();
+        return (RedisEntry) redisTemplate.execute(new RedisCallback() {
+            public Object doInRedis(JRedis jredis) throws RedisException {
+                final List<byte[]> values = jredis.hmget(hashKey, props.toArray(new String[props.size()]));
+                if(entityDoesntExistForValues(values)) return null;
+                RedisEntry entry = new RedisEntry(family);
+                for (int i = 0; i < props.size(); i++) {
+                      entry.put(props.get(i), values.get(i));
+                }
+                return entry;
             }
-            return entry;
-        } catch (RedisException e) {
-            throw new DataRetrievalFailureException("Unable to read entry for key ["+hashKey+"]", e);
-        }
+        });
     }
 
     private boolean entityDoesntExistForValues(List<byte[]> values) {
-        if(values == null) return true;
-        return values.size() == 0 || (values.size() == 1 && values.get(0) == null);
+        return values == null || values.size() == 0 || (values.size() == 1 && values.get(0) == null);
     }
 
 
@@ -107,60 +105,67 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
         return performInsertion(family, id, nativeEntry);
     }
 
-    private Long performInsertion(String family, Long id, RedisEntry nativeEntry) {
-        try {
-            String key = family + ":" + id;
+    private Long performInsertion(final String family, final Long id, final RedisEntry nativeEntry) {
+        return (Long) redisTemplate.execute(new RedisCallback() {
+            public Object doInRedis(JRedis jredis) throws RedisException {
+               String key = family + ":" + id;
+               jredis.hmset(key,nativeEntry);
 
-            jredisClient.hmset(key,nativeEntry);
-            return id;
-        } catch (RedisException e) {
-            throw new DataAccessResourceFailureException("Exception occurred persisting entry ["+family+"]: " + e.getMessage(),e);
-        }
-        catch (Exception e) {
-            throw new DataAccessResourceFailureException("Exception occurred persisting entry ["+family+"]: " + e.getMessage(),e);
-        }
+               // keep a record of all inserted entities for querying later
+               jredis.rpush(getAllEntityIndex(family), id);
+               return id;
+            }
+        });
     }
 
-    protected Long generateIdentifier(String family) {
-        Long id = null;
-        try {
-            id = jredisClient.incr(family + ".next_id");
-        } catch (RedisException e) {
-            throw new DataAccessResourceFailureException("Exception occured generating identifier for entity ["+family+"]",e );
-        }
-        return id;
+    private String getAllEntityIndex(String family) {
+        return family + ".all";
     }
 
-    @Override
-    protected void deleteEntries(String family, List<Long> keys) {
-        List<String> actualKeys = new ArrayList<String>();
-        for (Long key : keys) {
-            actualKeys.add(family + ":" + key);
-        }
-        try {
-            jredisClient.del(actualKeys.toArray(new String[actualKeys.size()]));
-        } catch (RedisException e) {
-            throw new DataAccessResourceFailureException("Exception deleting persistent entries ["+actualKeys+"]: " + e.getMessage(),e);
-        }
+    protected Long generateIdentifier(final String family) {
+        return (Long) redisTemplate.execute(new RedisCallback(){
+            public Object doInRedis(JRedis jredis) throws RedisException {
+                return jredis.incr(family + ".next_id");
+            }
+        });
     }
 
     @Override
-    protected void deleteEntry(String family, Long key) {
+    protected void deleteEntries(final String family, final List<Long> keys) {
+        redisTemplate.execute(new RedisCallback(){
+            public Object doInRedis(JRedis jredis) throws RedisException {
+                final List<String> actualKeys = new ArrayList<String>();
+                for (Long key : keys) {
+                    actualKeys.add(family + ":" + key);
+                    jredis.lrem(getAllEntityIndex(family), key, 0);
+                }
+
+                jredis.del(actualKeys.toArray(new String[actualKeys.size()]));
+
+                return null;
+            }
+        });
+    }
+
+    @Override
+    protected void deleteEntry(final String family, final Long key) {
         final String actualKey = family + ":" + key;
-        try {
-            jredisClient.del(actualKey);
-        } catch (RedisException e) {
-            throw new DataAccessResourceFailureException("Exception deleting persistent entry ["+actualKey+"]: " + e.getMessage(),e);
-        }
+        redisTemplate.execute(new RedisCallback(){
+            public Object doInRedis(JRedis jredis) throws RedisException {
+                jredis.lrem(getAllEntityIndex(family), key, 0);
+                jredis.del(actualKey);
+                return null;
+            }
+        });
     }
 
     @Override
     protected PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-        return new RedisPropertyValueIndexer(jredisClient, property);
+        return new RedisPropertyValueIndexer(redisTemplate.getJRedis(), property);
     }
 
     @Override
     protected AssociationIndexer getAssociationIndexer(Association oneToMany) {
-        return new RedisAssociationIndexer(jredisClient, typeConverter, oneToMany);
+        return new RedisAssociationIndexer(redisTemplate.getJRedis(), typeConverter, oneToMany);
     }
 }
