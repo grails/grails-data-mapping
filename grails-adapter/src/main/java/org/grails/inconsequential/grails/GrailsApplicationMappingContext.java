@@ -17,7 +17,7 @@ package org.grails.inconsequential.grails;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.MappingFactory;
-import org.springframework.datastore.mapping.MappingSyntaxStrategy;
+import org.springframework.datastore.mapping.MappingConfigurationStrategy;
 import org.springframework.datastore.mapping.PersistentEntity;
 
 import java.util.List;
@@ -44,7 +44,7 @@ public class GrailsApplicationMappingContext implements MappingContext {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public MappingSyntaxStrategy getMappingSyntaxStrategy() {
+    public MappingConfigurationStrategy getMappingSyntaxStrategy() {
         throw new UnsupportedOperationException("Method getMappingSyntaxStrategy() not supported");
     }
 

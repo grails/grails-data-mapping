@@ -14,11 +14,12 @@
  */
 package org.springframework.datastore.keyvalue.mapping;
 
+import org.springframework.datastore.keyvalue.mapping.config.GormKeyValueMappingFactory;
 import org.springframework.datastore.mapping.AbstractMappingContext;
 import org.springframework.datastore.mapping.MappingFactory;
-import org.springframework.datastore.mapping.MappingSyntaxStrategy;
+import org.springframework.datastore.mapping.MappingConfigurationStrategy;
 import org.springframework.datastore.mapping.PersistentEntity;
-import org.springframework.datastore.mapping.syntax.GormMappingSyntaxStrategy;
+import org.springframework.datastore.mapping.config.GormMappingConfigurationStrategy;
 
 /**
  * A MappingContext used to map objects to a Key/Value store
@@ -28,7 +29,7 @@ import org.springframework.datastore.mapping.syntax.GormMappingSyntaxStrategy;
  */
 public class KeyValueMappingContext extends AbstractMappingContext {
     protected MappingFactory<Family, KeyValue> mappingFactory;
-    private MappingSyntaxStrategy syntaxStrategy;
+    private MappingConfigurationStrategy syntaxStrategy;
 
     /**
      * Constructs a context using the given keyspace
@@ -37,10 +38,12 @@ public class KeyValueMappingContext extends AbstractMappingContext {
      */
     public KeyValueMappingContext(String keyspace) {
         if(keyspace == null) throw new IllegalArgumentException("Argument [keyspace] cannot be null");
-        this.mappingFactory = new KeyValueMappingFactory(keyspace);
-        this.syntaxStrategy = new GormMappingSyntaxStrategy(mappingFactory);
+
+        // TODO: Need to abstract the construction of these to support JPA syntax etc.
+        this.mappingFactory = new GormKeyValueMappingFactory(keyspace);
+        this.syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
     }
-    public MappingSyntaxStrategy getMappingSyntaxStrategy() {
+    public MappingConfigurationStrategy getMappingSyntaxStrategy() {
         return syntaxStrategy;
     }
 

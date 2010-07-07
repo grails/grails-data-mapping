@@ -23,6 +23,10 @@ package org.springframework.datastore.keyvalue.mapping;
 public class KeyValue {
 
     private String key;
+    private boolean indexed = false;
+
+    public KeyValue() {
+    }
 
     public KeyValue(String key) {
         this.key = key;
@@ -30,5 +34,24 @@ public class KeyValue {
 
     public String getKey() {
         return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    /**
+     * @return Whether this property is indexed
+     */
+    public boolean isIndexed() {
+        return indexed;
+    }
+
+    /**
+     * Whether this property is indexed
+     * @param indexed Sets whether to index the property or not
+     */
+    public void setIndexed(boolean indexed) {
+        this.indexed = indexed;
     }
 }

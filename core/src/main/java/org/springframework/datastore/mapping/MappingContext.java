@@ -63,7 +63,7 @@ public interface MappingContext<T,R> {
      *
      * @return The SyntaxReader
      */
-    MappingSyntaxStrategy getMappingSyntaxStrategy();
+    MappingConfigurationStrategy getMappingSyntaxStrategy();
 
     /**
      * Obtains the MappingFactory instance

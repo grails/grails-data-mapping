@@ -31,6 +31,9 @@ public class Family {
     private String keyspace;
     private String family;
 
+    public Family() {
+    }
+
     public Family(String keyspace, String family) {
         this.keyspace = keyspace;
         this.family = family;
@@ -42,5 +45,13 @@ public class Family {
 
     public String getFamily() {
         return family;
+    }
+
+    public void setKeyspace(String keyspace) {
+        this.keyspace = keyspace;
+    }
+
+    public void setFamily(String family) {
+        this.family = family;
     }
 }

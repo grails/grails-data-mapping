@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.datastore.mapping.syntax;
+package org.springframework.datastore.mapping.config;
 
 import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
@@ -30,10 +30,10 @@ import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.util.*;
 
-import static org.springframework.datastore.mapping.syntax.GormProperties.*;
+import static org.springframework.datastore.mapping.config.GormProperties.*;
 
 /**
- * <p>This implementation of the MappingSyntaxStrategy interface
+ * <p>This implementation of the MappingConfigurationStrategy interface
  * will interpret GORM-style syntax for defining entities and associations.
  * </p>
  *
@@ -56,7 +56,7 @@ import static org.springframework.datastore.mapping.syntax.GormProperties.*;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class GormMappingSyntaxStrategy implements MappingSyntaxStrategy {
+public class GormMappingConfigurationStrategy implements MappingConfigurationStrategy {
     private static final String IDENTITY_PROPERTY = "id";
     private static final String VERSION_PROPERTY = "version";
     private MappingFactory propertyFactory;
@@ -64,7 +64,7 @@ public class GormMappingSyntaxStrategy implements MappingSyntaxStrategy {
         add("class"); add("metaClass");
     }};
 
-    public GormMappingSyntaxStrategy(MappingFactory propertyFactory) {
+    public GormMappingConfigurationStrategy(MappingFactory propertyFactory) {
         super();
         this.propertyFactory = propertyFactory;
     }
@@ -562,7 +562,7 @@ public class GormMappingSyntaxStrategy implements MappingSyntaxStrategy {
     }
 
     /**
-     * @see org.springframework.datastore.mapping.MappingSyntaxStrategy#getIdentity(Class, org.springframework.datastore.mapping.MappingContext)
+     * @see org.springframework.datastore.mapping.MappingConfigurationStrategy#getIdentity(Class, org.springframework.datastore.mapping.MappingContext)
      */
     public PersistentProperty getIdentity(Class javaClass, MappingContext context) {
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(javaClass);

@@ -13,7 +13,7 @@ import java.util.Set;
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface MappingSyntaxStrategy {
+public interface MappingConfigurationStrategy {
 
     /**
      * Tests whether the given class is a persistent entity

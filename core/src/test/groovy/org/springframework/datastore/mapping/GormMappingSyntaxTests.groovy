@@ -1,7 +1,7 @@
 package org.springframework.datastore.mapping
 
 import org.junit.Test
-import org.springframework.datastore.mapping.syntax.GormMappingSyntaxStrategy
+import org.springframework.datastore.mapping.config.GormMappingConfigurationStrategy
 import javax.persistence.Entity
 import org.springframework.datastore.mapping.types.OneToOne
 import org.springframework.datastore.mapping.types.ManyToOne
@@ -17,7 +17,7 @@ class GormMappingSyntaxTests {
   @Test
   void testIsEntity() {
 
-    def strategy = new GormMappingSyntaxStrategy(new TestMappedPropertyFactory())
+    def strategy = new GormMappingConfigurationStrategy(new TestMappedPropertyFactory())
 
     assert strategy.isPersistentEntity(TestEntity)
     assert strategy.isPersistentEntity(JavaEntity)
