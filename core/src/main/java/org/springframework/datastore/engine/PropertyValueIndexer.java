@@ -17,28 +17,28 @@ package org.springframework.datastore.engine;
 import java.util.List;
 
 /**
- * Responsible for creating indices used in queries
+ * Responsible for creating indices for property values used in queries
+ *
+ * This interface is designed for usage in datastores that don't automatically
+ * create indices and require the application to create the indices manually
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface Indexer<K, T> {
-
-    
+public interface PropertyValueIndexer<K> {
 
     /**
-     * Creates an index queryable via the primary key
+     * Creates an index for the given value to the specified key
      *
-     * @param primaryKey The primary key
-     * @param foreignKeys The foreign keys
+     * @param value The value
+     * @param primaryKey The key
      */
-    void index( K primaryKey, List<T> foreignKeys);
+    void index(Object value, K primaryKey);
 
     /**
-     * Queries the given primary key and returns the foreign keys
+     * Queries the given value and returns the keys
      *
-     * @param primaryKey The primary key
-     * @return The foreign keys
+     * @return The primary keys
      */
-    List<T> query(K primaryKey);
+    List<K> query(Object value);
 }

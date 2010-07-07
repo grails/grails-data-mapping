@@ -24,11 +24,13 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.cassandra.CassandraDatastore;
 import org.springframework.datastore.cassandra.CassandraSession;
 import org.springframework.datastore.cassandra.uuid.UUIDUtil;
-import org.springframework.datastore.engine.Indexer;
+import org.springframework.datastore.engine.AssociationIndexer;
+import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
 import org.springframework.datastore.keyvalue.engine.KeyValueEntry;
 import org.springframework.datastore.mapping.ClassMapping;
 import org.springframework.datastore.mapping.PersistentEntity;
+import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.mapping.types.Association;
 
 import java.io.Serializable;
@@ -58,8 +60,13 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
     }
 
     @Override
-    protected Indexer getAssociationIndexer(Association association) {
+    protected AssociationIndexer getAssociationIndexer(Association association) {
         return new CassandraAssociationIndexer(cassandraClient, association, getKeyspaceName());
+    }
+
+    @Override
+    protected PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

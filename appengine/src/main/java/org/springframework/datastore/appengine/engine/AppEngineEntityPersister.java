@@ -16,9 +16,11 @@ package org.springframework.datastore.appengine.engine;
 
 import com.google.appengine.api.datastore.*;
 import org.springframework.datastore.appengine.AppEngineSession;
-import org.springframework.datastore.engine.Indexer;
+import org.springframework.datastore.engine.AssociationIndexer;
+import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
 import org.springframework.datastore.mapping.PersistentEntity;
+import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.mapping.types.Association;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.GenericConversionService;
@@ -111,8 +113,13 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     }
 
     @Override
-    protected Indexer getAssociationIndexer(Association association) {
+    protected AssociationIndexer getAssociationIndexer(Association association) {
         return null;  // TODO: Support one-to-many associations in GAE
+    }
+
+    @Override
+    protected PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

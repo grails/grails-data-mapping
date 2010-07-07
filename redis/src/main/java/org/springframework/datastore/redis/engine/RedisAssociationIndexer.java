@@ -14,7 +14,7 @@
  */
 package org.springframework.datastore.redis.engine;
 
-import org.springframework.datastore.engine.Indexer;
+import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.types.Association;
 import org.jredis.JRedis;
 import org.jredis.RedisException;
@@ -31,7 +31,7 @@ import java.util.List;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisAssociationIndexer implements Indexer<Long, Long> {
+public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
     private JRedis jredis;
     private SimpleTypeConverter typeConverter;
     private Association association;

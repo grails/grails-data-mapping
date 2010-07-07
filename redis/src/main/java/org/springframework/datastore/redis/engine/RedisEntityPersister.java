@@ -14,9 +14,11 @@
  */
 package org.springframework.datastore.redis.engine;
 
-import org.springframework.datastore.engine.Indexer;
+import org.springframework.datastore.engine.AssociationIndexer;
+import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
 import org.springframework.datastore.mapping.PersistentEntity;
+import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.mapping.types.Association;
 import org.springframework.datastore.redis.RedisSession;
 import org.springframework.datastore.redis.RedisEntry;
@@ -153,7 +155,12 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     @Override
-    protected Indexer getAssociationIndexer(Association oneToMany) {
+    protected PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected AssociationIndexer getAssociationIndexer(Association oneToMany) {
         return new RedisAssociationIndexer(jredisClient, typeConverter, oneToMany);
     }
 }

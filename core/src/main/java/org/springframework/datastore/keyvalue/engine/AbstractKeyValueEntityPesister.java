@@ -20,9 +20,10 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.core.Session;
+import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.engine.EntityAccess;
 import org.springframework.datastore.engine.EntityPersister;
-import org.springframework.datastore.engine.Indexer;
+import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.mapping.Family;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.*;
@@ -30,9 +31,7 @@ import org.springframework.datastore.mapping.types.*;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Abstract implementation of the EntityPersister abstract class
@@ -187,7 +186,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                         // TODO: Handle lazy fetching
                     }
                     else {
-                        Indexer indexer = getAssociationIndexer(association);
+                        AssociationIndexer indexer = getAssociationIndexer(association);
                         if(indexer != null) {
                             List keys = indexer.query(nativeKey);
                             ea.setProperty( association.getName(), session.retrieveAll(association.getAssociatedEntity().getJavaClass(), keys));
@@ -210,16 +209,23 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
         T e = createNewEntry(family);
         final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
         List<OneToMany> oneToManys = new ArrayList<OneToMany>();
+        Map<PersistentProperty, Object> toIndex = new HashMap<PersistentProperty, Object>();
         for (PersistentProperty prop : props) {
+            PropertyMapping<KeyValue> pm = prop.getMapping();
+            final KeyValue keyValue = pm.getMappedForm();
+            String key = null;
+            if(keyValue != null) {
+                key = keyValue.getKey();
+            }
+            final boolean indexed = keyValue != null && keyValue.isIndexed();
+            if(key == null) key = prop.getName();
             if(prop instanceof Simple) {
-                PropertyMapping<KeyValue> pm = prop.getMapping();
-                String key = null;
-                if(pm.getMappedForm() != null) {
-                    key = pm.getMappedForm().getKey();
-                }
-                if(key == null) key = prop.getName();
                 final Object propValue = entityAccess.getProperty(prop.getName());
                 setEntryValue(e, key, propValue);
+                if(indexed) {
+                    toIndex.put(prop, propValue);
+                }
+
             }
             else if(prop instanceof OneToMany) {
                 oneToManys.add((OneToMany) prop);
@@ -233,7 +239,11 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                         final Object associatedObject = entityAccess.getProperty(prop.getName());
                         if(associatedObject != null) {
                             Serializable associationId = session.persist(associatedObject);
-                            setEntryValue(e, association.getName(), associationId);
+                            setEntryValue(e, key, associationId);
+                            if(indexed) {
+                                toIndex.put(prop, associationId);
+                            }
+
                         }
                         else {
                             throw new DataIntegrityViolationException("Cannot save object ["+entityAccess.getEntity()+"] of type ["+persistentEntity+"]. The association ["+association+"] is cannot be null.");
@@ -263,7 +273,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
 
                     List<Serializable> keys = session.persist(associatedObjects);
 
-                    final Indexer indexer = getAssociationIndexer(oneToMany);
+                    final AssociationIndexer indexer = getAssociationIndexer(oneToMany);
                     if(indexer != null) {
                         indexer.index(k, keys);
                     }
@@ -272,8 +282,27 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
 
         }
 
+        // Here we manually create indices for any indexed properties so that queries work
+        for (PersistentProperty persistentProperty : toIndex.keySet()) {
+            Object value = toIndex.get(persistentProperty);
+
+            final PropertyValueIndexer indexer = getPropertyIndexer(persistentProperty);
+            if(indexer != null) {
+                indexer.index(value, k);
+            }
+        }
+
         return (Serializable) k;
     }
+
+
+    /**
+     * Obtains an indexer for a particular property
+     *
+     * @param property The property to index
+     * @return The indexer
+     */
+    protected abstract PropertyValueIndexer getPropertyIndexer(PersistentProperty property);
 
 
     /**
@@ -282,7 +311,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
      * @param association The association
      * @return An indexer
      */
-    protected abstract Indexer getAssociationIndexer(Association association);
+    protected abstract AssociationIndexer getAssociationIndexer(Association association);
 
 
     protected K readObjectIdentifier(EntityAccess entityAccess, ClassMapping<Family> cm) {

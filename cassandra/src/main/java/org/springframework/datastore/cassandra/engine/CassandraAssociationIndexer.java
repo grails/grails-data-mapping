@@ -20,7 +20,7 @@ import org.apache.cassandra.thrift.*;
 import org.apache.thrift.TException;
 import org.springframework.datastore.cassandra.util.HectorCallback;
 import org.springframework.datastore.cassandra.util.HectorTemplate;
-import org.springframework.datastore.engine.Indexer;
+import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.types.Association;
 import org.springframework.datastore.reflect.NameUtils;
 
@@ -31,12 +31,12 @@ import static me.prettyprint.cassandra.utils.StringUtils.bytes;
 import static me.prettyprint.cassandra.utils.StringUtils.string;
 
 /**
- * Indexer for Cassandra one-to-many associations
+ * AssociationIndexer for Cassandra one-to-many associations
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-public class CassandraAssociationIndexer implements Indexer<Serializable, Serializable> {
+public class CassandraAssociationIndexer implements AssociationIndexer<Serializable, Serializable> {
 
     private static final byte[] ZERO_LENGTH_BYTE_ARRAY = new byte[0];
 
