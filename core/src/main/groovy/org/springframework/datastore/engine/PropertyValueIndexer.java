@@ -38,7 +38,19 @@ public interface PropertyValueIndexer<K> {
     /**
      * Queries the given value and returns the keys
      *
+     * @param value The value to query by
+     *
      * @return The primary keys
      */
     List<K> query(Object value);
+
+/**
+     * Queries the given value and returns the keys
+     *
+     * @param value The value to query by
+     * @param offset The offset position to start from
+     * @param max The maximum number of records
+     * @return The primary keys
+     */
+    List<K> query(Object value, int offset, int max);
 }

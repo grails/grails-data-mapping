@@ -15,6 +15,7 @@
 package org.springframework.datastore.engine;
 
 import org.springframework.datastore.mapping.MappingContext;
+import org.springframework.datastore.query.Query;
 
 import java.io.Serializable;
 import java.util.List;
@@ -85,4 +86,12 @@ public interface Persister {
      * @param obj The object
      */
     void delete(MappingContext mappingContext, Object obj);
+
+
+    /**
+     * Creates a query for the entity
+     *
+     * @return The Query object
+     */
+    Query createQuery();
 }

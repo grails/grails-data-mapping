@@ -15,7 +15,7 @@
 package org.springframework.datastore.keyvalue.mapping.config;
 
 import groovy.lang.Closure;
-import org.springframework.datastore.groovy.config.MappingConfigurationBuilder;
+import org.springframework.datastore.config.groovy.MappingConfigurationBuilder;
 import org.springframework.datastore.keyvalue.mapping.Family;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.keyvalue.mapping.KeyValueMappingFactory;

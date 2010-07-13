@@ -27,8 +27,10 @@ import java.util.List;
  */
 public abstract class Query {
 
-    PersistentEntity entity;
-    private List<Criterion> criteria = new ArrayList<Criterion>();
+    protected PersistentEntity entity;
+    protected List<Criterion> criteria = new ArrayList<Criterion>();
+    protected int max = -1;
+    protected int offset = 0;
 
     protected Query(PersistentEntity entity) {
         this.entity = entity;
@@ -36,6 +38,14 @@ public abstract class Query {
 
     public PersistentEntity getEntity() {
         return entity;
+    }
+
+    public void setMax(int max) {
+        this.max = max;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
     /**

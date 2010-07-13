@@ -1,4 +1,4 @@
-package org.springframework.datastore.groovy.config
+package org.springframework.datastore.config.groovy
 
 /**
  * @author Graeme Rocher

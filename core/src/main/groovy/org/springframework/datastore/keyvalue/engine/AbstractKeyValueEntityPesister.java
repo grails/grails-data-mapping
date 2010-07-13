@@ -83,6 +83,13 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
         typeConverter.setConversionService(conversionService);
     }
 
+    public String getEntityFamily() {
+        return entityFamily;
+    }
+
+    public ClassMapping getClassMapping() {
+        return classMapping;
+    }
 
     protected String getFamily(PersistentEntity persistentEntity, ClassMapping<Family> cm) {
         String table = null;
