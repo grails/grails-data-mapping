@@ -16,14 +16,17 @@ package org.springframework.datastore.redis.engine;
 
 import org.jredis.JRedis;
 import org.jredis.RedisException;
+import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.mapping.types.Association;
+import org.springframework.datastore.query.Query;
 import org.springframework.datastore.redis.RedisEntry;
 import org.springframework.datastore.redis.RedisSession;
+import org.springframework.datastore.redis.query.RedisQuery;
 import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
@@ -110,22 +113,22 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
             public Object doInRedis(JRedis jredis) throws RedisException {
                String key = family + ":" + id;
                jredis.hmset(key,nativeEntry);
-
-               // keep a record of all inserted entities for querying later
-               jredis.rpush(getAllEntityIndex(family), id);
                return id;
             }
         });
     }
 
-    private String getAllEntityIndex(String family) {
-        return family + ".all";
+    public String getAllEntityIndex() {
+        return getEntityFamily() + ".all";
     }
 
     protected Long generateIdentifier(final String family) {
         return (Long) redisTemplate.execute(new RedisCallback(){
             public Object doInRedis(JRedis jredis) throws RedisException {
-                return jredis.incr(family + ".next_id");
+                final long id = jredis.incr(family + ".next_id");
+                // keep a record of all inserted entities for querying later
+                jredis.rpush(getAllEntityIndex(), id);
+                return id;
             }
         });
     }
@@ -137,7 +140,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
                 final List<String> actualKeys = new ArrayList<String>();
                 for (Long key : keys) {
                     actualKeys.add(family + ":" + key);
-                    jredis.lrem(getAllEntityIndex(family), key, 0);
+                    jredis.lrem(getAllEntityIndex(), key, 0);
                 }
 
                 jredis.del(actualKeys.toArray(new String[actualKeys.size()]));
@@ -152,7 +155,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
         final String actualKey = family + ":" + key;
         redisTemplate.execute(new RedisCallback(){
             public Object doInRedis(JRedis jredis) throws RedisException {
-                jredis.lrem(getAllEntityIndex(family), key, 0);
+                jredis.lrem(getAllEntityIndex(), key, 0);
                 jredis.del(actualKey);
                 return null;
             }
@@ -161,11 +164,23 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
 
     @Override
     protected PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-        return new RedisPropertyValueIndexer(redisTemplate.getJRedis(), property);
+        return new RedisPropertyValueIndexer(redisTemplate.getJRedis(),typeConverter, property);
     }
 
     @Override
     protected AssociationIndexer getAssociationIndexer(Association oneToMany) {
         return new RedisAssociationIndexer(redisTemplate.getJRedis(), typeConverter, oneToMany);
+    }
+
+    public Query createQuery() {
+        return new RedisQuery(getPersistentEntity(), this);
+    }
+
+    public RedisTemplate getRedisTemplate() {
+        return this.redisTemplate;
+    }
+
+    public SimpleTypeConverter getTypeConverter() {
+        return typeConverter;
     }
 }

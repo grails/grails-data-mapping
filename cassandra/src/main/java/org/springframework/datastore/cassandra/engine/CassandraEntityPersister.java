@@ -32,6 +32,7 @@ import org.springframework.datastore.mapping.ClassMapping;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.mapping.types.Association;
+import org.springframework.datastore.query.Query;
 
 import java.io.Serializable;
 import java.util.*;
@@ -215,4 +216,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
         return getKeyspace(getPersistentEntity().getMapping(), CassandraDatastore.DEFAULT_KEYSPACE);
     }
 
+    public Query createQuery() {
+        return null;  // TODO: Implement querying for Cassandra
+    }
 }

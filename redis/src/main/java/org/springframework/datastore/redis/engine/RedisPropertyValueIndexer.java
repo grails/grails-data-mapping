@@ -16,8 +16,10 @@ package org.springframework.datastore.redis.engine;
 
 import org.jredis.JRedis;
 import org.jredis.RedisException;
+import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.mapping.PersistentProperty;
+import org.springframework.datastore.redis.query.RedisQueryUtils;
 import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
@@ -33,10 +35,12 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
 
     private RedisTemplate template;
     private PersistentProperty property;
+    private SimpleTypeConverter typeConverter;
 
-    public RedisPropertyValueIndexer(JRedis jredis, PersistentProperty property) {
+    public RedisPropertyValueIndexer(JRedis jredis, SimpleTypeConverter typeConverter, PersistentProperty property) {
         this.template = new RedisTemplate(jredis);
         this.property = property;
+        this.typeConverter = typeConverter;
     }
 
     public void index(final Object value, final Long primaryKey) {
@@ -52,11 +56,19 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
         return property.getOwner().getName()+ ":" + property.getName() + ":" + value;
     }
 
-    public List<Long> query(Object value) {
-        return (List<Long>) template.execute(new RedisCallback(){
+    public List<Long> query(final Object value) {
+        return query(value, 0, -1);
+    }
+
+    public List<Long> query(final Object value, final int offset, final int max) {
+        return (List<Long>) template.execute(new RedisCallback() {
+
             public Object doInRedis(JRedis jredis) throws RedisException {
-                return null;  // TODO: Querying of the index
+                String redisKey = createRedisKey(value);
+                final List<byte[]> results = jredis.lrange(redisKey, offset, max);
+                return RedisQueryUtils.transformRedisResults(typeConverter, results);
             }
         });
     }
+
 }

@@ -19,11 +19,10 @@ import org.jredis.RedisException;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.types.Association;
+import org.springframework.datastore.redis.query.RedisQueryUtils;
 import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -72,23 +71,9 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
 
             public Object doInRedis(JRedis jredis) throws RedisException {
                 final List<byte[]> results = jredis.smembers(redisKey);
-                if(!results.isEmpty()) {
-                    List<Long> foreignKeys = new ArrayList<Long>(results.size());
-                    for (byte[] result : results) {
-                        foreignKeys.add(getLong(result));
-                    }
-                    return foreignKeys;
-                }
-                else {
-                    return Collections.emptyList();
-                }
-
+                return RedisQueryUtils.transformRedisResults(typeConverter, results);
             }
         });
-    }
-
-    private Long getLong(Object key) {
-        return typeConverter.convertIfNecessary(key, Long.class);
     }
 
 }

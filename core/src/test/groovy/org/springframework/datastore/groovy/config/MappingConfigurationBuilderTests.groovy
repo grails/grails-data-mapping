@@ -3,6 +3,7 @@ package org.springframework.datastore.groovy.config
 import org.junit.Test
 import org.springframework.datastore.keyvalue.mapping.Family
 import org.springframework.datastore.keyvalue.mapping.KeyValue
+import org.springframework.datastore.config.groovy.MappingConfigurationBuilder
 
 /**
  * @author Graeme Rocher

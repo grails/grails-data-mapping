@@ -15,6 +15,8 @@
 package org.springframework.datastore.appengine.engine;
 
 import com.google.appengine.api.datastore.*;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.datastore.appengine.AppEngineSession;
 import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.engine.PropertyValueIndexer;
@@ -22,8 +24,6 @@ import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesis
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.mapping.types.Association;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.support.GenericConversionService;
 
 import java.io.Serializable;
 import java.util.List;
@@ -136,5 +136,9 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     @Override
     protected void deleteEntries(String family, List<com.google.appengine.api.datastore.Key> keys) {
         this.datastoreService.delete(keys.toArray(new com.google.appengine.api.datastore.Key[keys.size()]));
+    }
+
+    public org.springframework.datastore.query.Query createQuery() {
+        return null;  // TODO: Implement querying for GAE
     }
 }
