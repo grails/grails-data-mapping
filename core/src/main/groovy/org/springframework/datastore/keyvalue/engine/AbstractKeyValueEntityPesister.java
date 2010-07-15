@@ -46,8 +46,8 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
     protected String entityFamily;
     protected ClassMapping classMapping;
 
-    public AbstractKeyValueEntityPesister(PersistentEntity entity, Session session) {
-        super(entity);
+    public AbstractKeyValueEntityPesister(MappingContext context, PersistentEntity entity, Session session) {
+        super(context, entity);
         this.session = session;
         classMapping = entity.getMapping();        
         entityFamily = getFamily(entity, classMapping);
@@ -111,7 +111,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
 
 
     @Override
-    protected void deleteEntity(MappingContext mappingContext, PersistentEntity persistentEntity, Object obj) {
+    protected void deleteEntity(PersistentEntity persistentEntity, Object obj) {
         if(obj != null) {
 
             K key = readIdentifierFromObject(obj);
@@ -130,7 +130,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
     protected abstract void deleteEntry(String family, K key);
 
     @Override
-    protected final void deleteEntities(MappingContext context, PersistentEntity persistentEntity, Iterable objects) {
+    protected final void deleteEntities(PersistentEntity persistentEntity, Iterable objects) {
         if(objects != null) {
             List<K> keys = new ArrayList<K>();
             for (Object object : objects) {
@@ -158,7 +158,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
 
 
     @Override
-    protected final Object retrieveEntity(MappingContext context, PersistentEntity persistentEntity, Serializable nativeKey) {
+    protected final Object retrieveEntity(PersistentEntity persistentEntity, Serializable nativeKey) {
 
         T nativeEntry = retrieveEntry(persistentEntity, entityFamily, nativeKey);
         if(nativeEntry != null) {
@@ -209,7 +209,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
     }
 
     @Override
-    protected final Serializable persistEntity(MappingContext context, PersistentEntity persistentEntity, EntityAccess entityAccess) {
+    protected final Serializable persistEntity(PersistentEntity persistentEntity, EntityAccess entityAccess) {
         ClassMapping<Family> cm = persistentEntity.getMapping();
         String family = entityFamily;
 
@@ -312,7 +312,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
      * @param property The property to index
      * @return The indexer
      */
-    protected abstract PropertyValueIndexer getPropertyIndexer(PersistentProperty property);
+    public abstract PropertyValueIndexer getPropertyIndexer(PersistentProperty property);
 
 
     /**
@@ -321,7 +321,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
      * @param association The association
      * @return An indexer
      */
-    protected abstract AssociationIndexer getAssociationIndexer(Association association);
+    public abstract AssociationIndexer getAssociationIndexer(Association association);
 
 
     protected K readObjectIdentifier(EntityAccess entityAccess, ClassMapping<Family> cm) {
@@ -338,16 +338,15 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
      * This is a rather simplistic and unoptimized implementation. Subclasses can override to provide
      * batch insert capabilities to optimize the insertion of multiple entities in one go
      * 
-     * @param context The MappingContext
      * @param persistentEntity The persistent entity
      * @param objs The objext to persist
      * @return A list of keys
      */
     @Override
-    protected List<Serializable> persistEntities(MappingContext context, PersistentEntity persistentEntity, Iterable objs) {
+    protected List<Serializable> persistEntities(PersistentEntity persistentEntity, Iterable objs) {
         List<Serializable> keys = new ArrayList<Serializable>();
         for (Object obj : objs) {
-            keys.add( persist(context,obj) );
+            keys.add( persist(obj) );
         }
         return keys;
     }
@@ -356,16 +355,15 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
      * Simplistic default implementation of retrieveAllEntities that iterates over each key and retrieves the entities 
      * one-by-one. Data stores that support batch retrieval can optimize this to retrieve all entities in one go.
      * 
-     * @param context The context
-     * @param persistentEntity The persist entity 
+     * @param persistentEntity The persist entity
      * @param keys The keys
      * @return A list of entities
      */
     @Override
-    protected List<Object> retrieveAllEntities(MappingContext context, PersistentEntity persistentEntity, Iterable<Serializable> keys) {
+    protected List<Object> retrieveAllEntities(PersistentEntity persistentEntity, Iterable<Serializable> keys) {
         List<Object> results = new ArrayList<Object>();
         for (Serializable key : keys) {
-            results.add( retrieveEntity(context, persistentEntity, key));
+            results.add( retrieveEntity(persistentEntity, key));
         }
         return results;
     }
@@ -410,17 +408,20 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
      * Reads the native form of a Key/value datastore entry. This could be
      * a ColumnFamily, a BigTable Entity, a Map etc.
      *
-     * @param persistentEntity
-     *@param family The family
-     * @param key The key   @return The native form
+     * @param persistentEntity The persistent entity
+     * @param family The family
+     * @param key The key
+     * @return The native form
      */
     protected abstract T retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key);
 
     /**
      * Stores the native form of a Key/value datastore to the actual data store
      *
-     * @param persistentEntity
-     *@param nativeEntry The native form. Could be a a ColumnFamily, BigTable Entity etc.  @return The native key
+     * @param persistentEntity The persistent entity
+     * @param nativeEntry The native form. Could be a a ColumnFamily, BigTable Entity etc.
+     *
+     * @return The native key
      */
     protected abstract K storeEntry(PersistentEntity persistentEntity, T nativeEntry);
 

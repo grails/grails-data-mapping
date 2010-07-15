@@ -21,6 +21,7 @@ import org.springframework.datastore.appengine.AppEngineSession;
 import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
+import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.mapping.types.Association;
@@ -40,8 +41,8 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     protected DatastoreService datastoreService;
     protected String entityFamily;
 
-    public AppEngineEntityPersister(final PersistentEntity entity, AppEngineSession conn, DatastoreService datastoreService) {
-        super(entity, conn);
+    public AppEngineEntityPersister(MappingContext context, final PersistentEntity entity, AppEngineSession conn, DatastoreService datastoreService) {
+        super(context, entity, conn);
         this.datastoreService = datastoreService;
         this.entityFamily = getFamily(entity, entity.getMapping());
         GenericConversionService conversionService = (GenericConversionService) typeConverter.getConversionService();
@@ -113,13 +114,14 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     }
 
     @Override
-    protected AssociationIndexer getAssociationIndexer(Association association) {
+    public AssociationIndexer getAssociationIndexer(Association association) {
         return null;  // TODO: Support one-to-many associations in GAE
     }
 
     @Override
-    protected PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
+        // TODO: GAE natively supports creating indices so not sure implementing this will be useful
+        return null;
     }
 
     @Override

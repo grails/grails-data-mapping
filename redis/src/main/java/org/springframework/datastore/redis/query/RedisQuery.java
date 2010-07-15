@@ -46,8 +46,10 @@ public class RedisQuery extends Query {
         if(criteria == null || criteria.isEmpty()) {
             return (List) redisTemplate.execute(new RedisCallback() {
                 public Object doInRedis(JRedis jredis) throws RedisException {
-                    final List<byte[]> results = jredis.lrange(entityPersister.getAllEntityIndex(), offset, max);
-                    return RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
+                    final List<byte[]> results = jredis.lrange(entityPersister.getAllEntityIndex(), offset, max > 0 ? max -1 : max);
+                    final List<Long> identifiers = RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
+
+                    return entityPersister.retrieveAll((Iterable)identifiers);
                 }
             });
         }

@@ -49,7 +49,12 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
             public Object doInRedis(JRedis jredis) throws RedisException {
                 for (Long foreignKey : foreignKeys) {
                     if(!storedKeys.contains(foreignKey)) {
+                        if(association.isList()) {
+                            jredis.lpush(redisKey, foreignKey);
+                        }
+                        else {
                             jredis.sadd(redisKey, foreignKey);
+                        }
                     }
                 }
                 return null;
@@ -70,8 +75,15 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
         return (List<Long>) template.execute(new RedisCallback() {
 
             public Object doInRedis(JRedis jredis) throws RedisException {
-                final List<byte[]> results = jredis.smembers(redisKey);
-                return RedisQueryUtils.transformRedisResults(typeConverter, results);
+                List<byte[]> results;
+                if(association.isList()) {
+                    results = jredis.lrange(redisKey, 0, -1);
+                }
+                else {
+                    results = jredis.smembers(redisKey);
+                }
+                final List<Long> identifiers = RedisQueryUtils.transformRedisResults(typeConverter, results);
+                return identifiers;
             }
         });
     }

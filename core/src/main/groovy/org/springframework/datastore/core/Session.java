@@ -1,6 +1,7 @@
 package org.springframework.datastore.core;
 
 import org.springframework.datastore.mapping.MappingContext;
+import org.springframework.datastore.query.Query;
 import org.springframework.datastore.tx.Transaction;
 
 import java.io.Serializable;
@@ -15,7 +16,7 @@ import java.util.Map;
  *
  * @since 1.0
  */
-public interface Session {
+public interface Session<T> {
 
     /**
      * @return the session details as map of parameter / value String pairs
@@ -89,5 +90,19 @@ public interface Session {
      * @param keys The keys
      * @return A list of objects
      */
-    List retrieveAll(Class type, Iterable<Serializable> keys);
+    List retrieveAll(Class type, Iterable keys);
+
+
+    /**
+     * Creates a query instance for the give type
+     *
+     * @param type The type
+     * @return The query
+     */
+    Query createQuery(Class type);
+
+    /**
+     * @return The native interface to the datastore
+     */
+    T getNativeInterface();
 }

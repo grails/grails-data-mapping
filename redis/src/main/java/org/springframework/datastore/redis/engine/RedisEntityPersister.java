@@ -20,6 +20,7 @@ import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
+import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.mapping.types.Association;
@@ -44,8 +45,8 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     private RedisAssociationIndexer indexer;
     private RedisTemplate redisTemplate;
 
-    public RedisEntityPersister(PersistentEntity entity, RedisSession conn, final JRedis jredisClient) {
-        super(entity, conn);
+    public RedisEntityPersister(MappingContext context, PersistentEntity entity, RedisSession conn, final JRedis jredisClient) {
+        super(context, entity, conn);
         this.redisTemplate = new RedisTemplate(jredisClient);
     }
 
@@ -163,12 +164,12 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     @Override
-    protected PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
+    public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
         return new RedisPropertyValueIndexer(redisTemplate.getJRedis(),typeConverter, property);
     }
 
     @Override
-    protected AssociationIndexer getAssociationIndexer(Association oneToMany) {
+    public AssociationIndexer getAssociationIndexer(Association oneToMany) {
         return new RedisAssociationIndexer(redisTemplate.getJRedis(), typeConverter, oneToMany);
     }
 

@@ -21,7 +21,7 @@ import java.util.*;
  *
  * @since 1.0
  */
-public class AppEngineSession extends AbstractSession implements KeyValueSession<Key> {
+public class AppEngineSession extends AbstractSession<DatastoreService> implements KeyValueSession<Key> {
     protected DatastoreService datastoreService = DatastoreServiceFactory.getDatastoreService();
     private AppEngineTransaction transaction;
 
@@ -94,11 +94,15 @@ public class AppEngineSession extends AbstractSession implements KeyValueSession
         return engineTransaction;
     }
 
+    public DatastoreService getNativeInterface() {
+        return this.datastoreService;
+    }
+
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
       PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
         if(entity != null) {
-            return new AppEngineEntityPersister(entity,this, datastoreService);
+            return new AppEngineEntityPersister(mappingContext, entity,this, datastoreService);
         }
         return null;
     }

@@ -18,6 +18,7 @@ import org.springframework.datastore.engine.NonPersistentTypeException;
 import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
+import org.springframework.datastore.query.Query;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -34,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class AbstractSession implements Session {
+public abstract class AbstractSession<T> implements Session {
     protected Map<Class,Persister> persisters = new ConcurrentHashMap<Class,Persister>();
     private MappingContext mappingContext;
     private Map<String, String> connectionDetails;
@@ -82,7 +83,7 @@ public abstract class AbstractSession implements Session {
         if(o == null) throw new IllegalArgumentException("Cannot persist null object");
         Persister persister = getPersister(o);
         if(persister != null) {
-            return persister.persist(getMappingContext(), o);
+            return persister.persist(o);
         }
         throw new NonPersistentTypeException("Object ["+o+"] cannot be persisted. It is not a known persistent type.");
     }
@@ -91,7 +92,7 @@ public abstract class AbstractSession implements Session {
         if(key == null || type == null) return null;
         Persister persister = getPersister(type);
         if(persister != null) {
-            return persister.retrieve(getMappingContext(), key);
+            return persister.retrieve(key);
         }
         throw new NonPersistentTypeException("Cannot retrieve object with key ["+key+"]. The class ["+type+"] is not a known persistent type.");
     }
@@ -99,7 +100,7 @@ public abstract class AbstractSession implements Session {
     public void delete(Object obj) {
         if(obj != null) {
             Persister p = getPersister(obj);
-            p.delete(getMappingContext(), obj);
+            p.delete(obj);
         }
     }
 
@@ -109,7 +110,7 @@ public abstract class AbstractSession implements Session {
                 if(object != null) {
                     Persister p = getPersister(object);
                     if(p != null) {
-                        p.delete(getMappingContext(), objects);
+                        p.delete(objects);
                     }                   
                     break;
                 }
@@ -134,7 +135,7 @@ public abstract class AbstractSession implements Session {
                 final Object obj = i.next();
                 final Persister p = getPersister(obj);
                 if(p != null) {
-                    return p.persist(getMappingContext(), objects);
+                    return p.persist(objects);
                 }
                 else {
                     throw new NonPersistentTypeException("Cannot persist objects. The class ["+obj.getClass()+"] is not a known persistent type.");
@@ -145,12 +146,20 @@ public abstract class AbstractSession implements Session {
         return Collections.emptyList();
     }
 
-    public List retrieveAll(Class type, Iterable<Serializable> keys) {
+    public List retrieveAll(Class type, Iterable keys) {
         Persister p = getPersister(type);
 
         if(p != null) {
-            return p.retrieveAll(getMappingContext(), keys);
+            return p.retrieveAll(keys);
         }
         throw new NonPersistentTypeException("Cannot retrieve objects with keys ["+keys+"]. The class ["+type+"] is not a known persistent type.");
+    }
+
+    public Query createQuery(Class type) {
+        Persister p = getPersister(type);
+        if(p!= null) {
+            return p.createQuery();
+        }
+        throw new NonPersistentTypeException("Cannot create query. The class ["+type+"] is not a known persistent type.");
     }
 }

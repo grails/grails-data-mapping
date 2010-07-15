@@ -29,6 +29,7 @@ import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
 import org.springframework.datastore.keyvalue.engine.KeyValueEntry;
 import org.springframework.datastore.mapping.ClassMapping;
+import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.mapping.types.Association;
@@ -49,8 +50,8 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
     private static final byte[] ZERO_LENGTH_BYTE_ARRAY = new byte[0];
 
 
-    public CassandraEntityPersister(PersistentEntity entity, CassandraSession conn, CassandraClient cassandraClient) {
-        super(entity,conn);
+    public CassandraEntityPersister(MappingContext context, PersistentEntity entity, CassandraSession conn, CassandraClient cassandraClient) {
+        super(context, entity,conn);
         this.cassandraClient = cassandraClient;
     }
 
@@ -61,13 +62,13 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
     }
 
     @Override
-    protected AssociationIndexer getAssociationIndexer(Association association) {
+    public AssociationIndexer getAssociationIndexer(Association association) {
         return new CassandraAssociationIndexer(cassandraClient, association, getKeyspaceName());
     }
 
     @Override
-    protected PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
+        return null;  // TODO: Support querying in cassandra
     }
 
     @Override

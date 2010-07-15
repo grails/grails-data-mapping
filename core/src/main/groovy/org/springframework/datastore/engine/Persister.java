@@ -14,7 +14,6 @@
  */
 package org.springframework.datastore.engine;
 
-import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.query.Query;
 
 import java.io.Serializable;
@@ -38,54 +37,48 @@ public interface Persister {
     /**
      * Persist an object using the given mapping context
      *
-     * @param context The MappingContext
      * @param obj The object
      * @return A generated Key
      */
-    Serializable persist(MappingContext context, Object obj);
+    Serializable persist(Object obj);
 
     /**
      * Persists a number of objects at the same time and
      * returns their keys in the order specified by the objs parameter
      *
-     * @param context The context
      * @param objs The objects
      * @return A list of keys
      */
-    List<Serializable> persist(MappingContext context, Iterable objs);
+    List<Serializable> persist(Iterable objs);
 
     /**
      * Retrieves an object for the given context and Key
      *
-     * @param context The context
      * @param key The key
      * 
      * @return The object in question
      */
-    Object retrieve(MappingContext context, Serializable key);
+    Object retrieve(Serializable key);
 
     /**
      * Deletes one or many objects
-     * @param context The context
      * @param objects The objects to delete. Must all be of the same type or an exception will be thrown.
      */
-    void delete(MappingContext context, Iterable objects);
+    void delete(Iterable objects);
 
     /**
      * Batch retrieve several objects in one go
      *
-     * @param context The context
      * @param keys The keys
      * @return The objects in a list in the same order as the specified keys
      */
-    List<Object> retrieveAll(MappingContext context, Iterable<Serializable> keys);
+    List<Object> retrieveAll(Iterable<Serializable> keys);
 
     /**
      * Deletes a single object
-     * @param mappingContext The MappingContext
      * @param obj The object
      */
-    void delete(MappingContext mappingContext, Object obj);
+    void delete(Object obj);
 
 
     /**

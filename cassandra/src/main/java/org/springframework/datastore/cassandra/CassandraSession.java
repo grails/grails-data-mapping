@@ -31,7 +31,7 @@ import java.util.Map;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class CassandraSession extends AbstractSession {
+public class CassandraSession extends AbstractSession<CassandraClient> {
     private CassandraClient cassandraClient;
     private CassandraClientPool connectionPool;
 
@@ -45,7 +45,7 @@ public class CassandraSession extends AbstractSession {
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
       PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
       if(entity != null) {
-          return new CassandraEntityPersister(entity,this, cassandraClient);
+          return new CassandraEntityPersister(mappingContext, entity,this, cassandraClient);
       }
       return null;
     }
@@ -67,6 +67,10 @@ public class CassandraSession extends AbstractSession {
 
     public Transaction beginTransaction() {
         throw new TransactionSystemException("Transactions are not supported by Cassandra");
+    }
+
+    public CassandraClient getNativeInterface() {
+        return cassandraClient;
     }
 
 }

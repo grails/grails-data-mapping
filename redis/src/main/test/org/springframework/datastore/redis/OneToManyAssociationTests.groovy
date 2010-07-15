@@ -18,7 +18,7 @@ class OneToManyAssociationTests {
     Session conn = ds.connect(null)
 
     def a = new Author(name:"Stephen King")
-    a.books = [ new Book(title:"The Stand"), new Book(title:"It")] as Set
+    a.books = [ new Book(title:"The Stand"), new Book(title:"It")]
 
     conn.persist(a)
 
@@ -41,7 +41,7 @@ class OneToManyAssociationTests {
 class Author {
   Long id
   String name
-  Set books
+  List books
   static hasMany = [books:Book]
 }
 @Entity

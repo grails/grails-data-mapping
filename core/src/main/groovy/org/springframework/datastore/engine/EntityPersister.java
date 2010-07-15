@@ -28,11 +28,23 @@ import java.util.List;
  */
 public abstract class EntityPersister implements Persister {
     private PersistentEntity persistentEntity;
+    private MappingContext mappingContext;
 
-    public EntityPersister(PersistentEntity entity) {
+    public EntityPersister(MappingContext mappingContext, PersistentEntity entity) {
         this.persistentEntity = entity;
+        this.mappingContext = mappingContext;
     }
 
+    /**
+     * @return The MappingContext instance
+     */
+    public MappingContext getMappingContext() {
+        return mappingContext;
+    }
+
+    /**
+     * @return The PersistentEntity instance
+     */
     public PersistentEntity getPersistentEntity() {
         return persistentEntity;
     }
@@ -41,63 +53,67 @@ public abstract class EntityPersister implements Persister {
         return persistentEntity.getJavaClass();
     }
 
-    public final Serializable persist(MappingContext context, Object obj) {
+    /**
+     * Persists an object returning the identifier
+     *
+     * @param obj The object to persist
+     * @return The identifer
+     */
+    public final Serializable persist(Object obj) {
         if(!persistentEntity.isInstance(obj)) throw new IllegalArgumentException("Object ["+obj+"] is not an instance supported by the persister for class ["+getType().getName()+"]");
 
-        return persistEntity(context, getPersistentEntity(), new EntityAccess(obj));
+        return persistEntity(getPersistentEntity(), new EntityAccess(obj));
     }
 
-    public List<Serializable> persist(MappingContext context, Iterable objs) {
-        return persistEntities(context, getPersistentEntity(), objs);
+    public List<Serializable> persist(Iterable objs) {
+        return persistEntities(getPersistentEntity(), objs);
     }
 
-    public List<Object> retrieveAll(MappingContext context, Iterable<Serializable> keys) {
-        return retrieveAllEntities(context, getPersistentEntity(), keys);
+    public List<Object> retrieveAll(Iterable<Serializable> keys) {
+        return retrieveAllEntities(getPersistentEntity(), keys);
     }
 
-    protected abstract List<Object> retrieveAllEntities(MappingContext context, PersistentEntity persistentEntity, Iterable<Serializable> keys);
+    protected abstract List<Object> retrieveAllEntities(PersistentEntity persistentEntity, Iterable<Serializable> keys);
 
-    protected abstract List<Serializable> persistEntities(MappingContext context, PersistentEntity persistentEntity, Iterable objs);
+    protected abstract List<Serializable> persistEntities(PersistentEntity persistentEntity, Iterable objs);
 
-    public final Object retrieve(MappingContext context, Serializable key) {
+    public final Object retrieve(Serializable key) {
         if(key == null) return null;
-        return retrieveEntity(context, getPersistentEntity(), key);
+        return retrieveEntity(getPersistentEntity(), key);
     }
 
     /**
-     * Retrieve a PersistentEntity for the given context and key
+     * Retrieve a PersistentEntity for the given mappingContext and key
      *
-     * @param context The context
      * @param persistentEntity The entity
      * @param key The key
      * @return The object or null if it doesn't exist
      */
-    protected abstract Object retrieveEntity(MappingContext context, PersistentEntity persistentEntity, Serializable key);
+    protected abstract Object retrieveEntity(PersistentEntity persistentEntity, Serializable key);
 
     /**
      * Persist the given persistent entity
      *
-     * @param context The context
      * @param persistentEntity The PersistentEntity
      * @param entityAccess An object that allows easy access to the entities properties
      * @return The generated key
      */
-    protected abstract Serializable persistEntity(MappingContext context, PersistentEntity persistentEntity, EntityAccess entityAccess);
+    protected abstract Serializable persistEntity(PersistentEntity persistentEntity, EntityAccess entityAccess);
 
-    public final void delete(MappingContext context, Iterable objects) {
+    public final void delete(Iterable objects) {
         if(objects != null) {
-            deleteEntities(context, getPersistentEntity(), objects);
+            deleteEntities(getPersistentEntity(), objects);
         }
     }
 
-    public void delete(MappingContext mappingContext, Object obj) {
+    public void delete(Object obj) {
         if(obj != null) {
-            deleteEntity(mappingContext, getPersistentEntity(), obj);
+            deleteEntity(getPersistentEntity(), obj);
         }
     }
 
-    protected abstract void deleteEntity(MappingContext mappingContext, PersistentEntity persistentEntity, Object obj);
+    protected abstract void deleteEntity(PersistentEntity persistentEntity, Object obj);
 
-    protected abstract void deleteEntities(MappingContext context, PersistentEntity persistentEntity, Iterable objects);
+    protected abstract void deleteEntities(PersistentEntity persistentEntity, Iterable objects);
 }
 

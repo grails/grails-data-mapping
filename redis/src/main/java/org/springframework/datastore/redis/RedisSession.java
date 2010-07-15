@@ -33,7 +33,7 @@ import java.util.*;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisSession extends AbstractSession implements Map {
+public class RedisSession extends AbstractSession<JRedis> implements Map {
 
     private JRedis jredisClient;
 
@@ -53,7 +53,10 @@ public class RedisSession extends AbstractSession implements Map {
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
       PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
       if(entity != null) {
-          return new RedisEntityPersister(entity,this, jredisClient);
+          return new RedisEntityPersister(mappingContext,
+                                            entity,
+                                            this,
+                                            jredisClient);
       }
       return null;
 
@@ -80,6 +83,10 @@ public class RedisSession extends AbstractSession implements Map {
             throw new CannotCreateTransactionException("Failed to create Redis transaction: " + e.getMessage(),e );
         }
 
+    }
+
+    public JRedis getNativeInterface() {
+        return jredisClient;
     }
 
     public int size() {

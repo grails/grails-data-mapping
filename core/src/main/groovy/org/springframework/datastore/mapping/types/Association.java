@@ -133,4 +133,8 @@ public abstract class Association<T> extends AbstractPersistentProperty {
     public String toString() {
         return getOwner().getName() + "->" + getName();
     }
+
+    public boolean isList() {
+        return List.class.isAssignableFrom(getType());
+    }
 }
