@@ -82,8 +82,7 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
                 else {
                     results = jredis.smembers(redisKey);
                 }
-                final List<Long> identifiers = RedisQueryUtils.transformRedisResults(typeConverter, results);
-                return identifiers;
+                return RedisQueryUtils.transformRedisResults(typeConverter, results);
             }
         });
     }

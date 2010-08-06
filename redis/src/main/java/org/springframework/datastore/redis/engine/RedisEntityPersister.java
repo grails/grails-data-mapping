@@ -128,7 +128,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
             public Object doInRedis(JRedis jredis) throws RedisException {
                 final long id = jredis.incr(family + ".next_id");
                 // keep a record of all inserted entities for querying later
-                jredis.rpush(getAllEntityIndex(), id);
+                jredis.sadd(getAllEntityIndex(), id);
                 return id;
             }
         });
@@ -141,7 +141,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
                 final List<String> actualKeys = new ArrayList<String>();
                 for (Long key : keys) {
                     actualKeys.add(family + ":" + key);
-                    jredis.lrem(getAllEntityIndex(), key, 0);
+                    jredis.srem(getAllEntityIndex(), key);
                 }
 
                 jredis.del(actualKeys.toArray(new String[actualKeys.size()]));
