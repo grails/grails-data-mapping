@@ -14,6 +14,7 @@
  */
 package org.springframework.datastore.cassandra.util;
 
+import me.prettyprint.cassandra.model.HectorException;
 import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.Keyspace;
 import org.apache.cassandra.thrift.InvalidRequestException;
@@ -46,24 +47,19 @@ public class HectorTemplate {
         final Keyspace ks;
         try {
             ks = cassandraClient.getKeyspace(keyspace);
-        } catch (NotFoundException e) {
-            throw new DataIntegrityViolationException("Cannot obtain keyspace for name ["+keyspace+"]. Is the keyspace configured in Cassandra's storage-conf.xml? Message: " + e.getMessage(), e);
-        } catch (TException e) {
-            throw new DataAccessResourceFailureException("Unable to connect to Cassandra: " + e.getMessage(), e);
+
+        }
+        catch (HectorException e) {
+              throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
         }
         try {
             return callable.doInHector(ks);
-        } catch (TException e) {
-            throw new DataAccessResourceFailureException("Unable to connect to Cassandra using keyspace ["+keyspace+"]: " + e.getMessage(), e);
-        } catch (TimedOutException e) {
-            throw new DataRetrievalFailureException("Timeout reading data from Cassandra using keyspace ["+keyspace+"]: " + e.getMessage(), e);
-        } catch (InvalidRequestException e) {
-            throw new DataIntegrityViolationException("Invalid request for keyspace ["+keyspace+"]: " + e.getMessage(), e);
-        } catch (UnavailableException e) {
-            throw new DataAccessResourceFailureException("Unable to connect to Cassandra using keyspace ["+keyspace+"]: " + e.getMessage(), e);
-        } catch (NotFoundException e) {
-            throw new DataIntegrityViolationException("Cannot obtain keyspace for name ["+keyspace+"]. Is the keyspace configured in Cassandra's storage-conf.xml? Message: " + e.getMessage(), e);
         }
+        catch (HectorException e) {
+              throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
+        }
+
+
 
     }
 }
