@@ -12,39 +12,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.datastore.engine;
-
-import org.springframework.datastore.mapping.PersistentEntity;
-
-import java.util.List;
+package org.springframework.datastore.collection;
 
 /**
- * Responsible for creating indices for associations used in queries
+ * A lazy loaded collection
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface AssociationIndexer<K, T> {
-
-
+public interface PersistentCollection {
 
     /**
-     * Creates an index queryable via the primary key
-     *
-     * @param primaryKey The primary key
-     * @param foreignKeys The foreign keys
+     * Check whether the collection has been loaded
+     * @return True if the collection has been initialized
      */
-    void index( K primaryKey, List<T> foreignKeys);
-
+    public boolean isInitialized();
 
     /**
-     * Queries the given primary key and returns the foreign keys
-     *
-     * @param primaryKey The primary key
-     * @return The foreign keys
+     * Initializes the collection if it hasn't already been initialized
      */
-    List<T> query(K primaryKey);
-
-    
-    PersistentEntity getIndexedEntity();
+    public void initialize();
 }

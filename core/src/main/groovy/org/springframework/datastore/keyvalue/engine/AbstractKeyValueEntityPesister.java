@@ -19,6 +19,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.datastore.collection.PersistentList;
 import org.springframework.datastore.core.Session;
 import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.engine.EntityAccess;
@@ -189,11 +190,14 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                 }
                 else if(prop instanceof OneToMany) {
                     Association association = (Association) prop;
-                    if(association.getFetchStrategy() == Fetch.LAZY) {
-                        // TODO: Handle lazy fetching
+                    PropertyMapping<KeyValue> associationPropertyMapping = association.getMapping();
+
+                    boolean isLazy = isLazyAssociation(associationPropertyMapping);
+                    AssociationIndexer indexer = getAssociationIndexer(association);
+                    if(isLazy) {
+                        ea.setProperty(association.getName(), new PersistentList(nativeKey, session, indexer));
                     }
                     else {
-                        AssociationIndexer indexer = getAssociationIndexer(association);
                         if(indexer != null) {
                             List keys = indexer.query(nativeKey);
                             ea.setProperty( association.getName(), session.retrieveAll(association.getAssociatedEntity().getJavaClass(), keys));
@@ -206,6 +210,16 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
         }
 
         return null;
+    }
+
+    private boolean isLazyAssociation(PropertyMapping<KeyValue> associationPropertyMapping) {
+        if(associationPropertyMapping != null) {
+            KeyValue kv = associationPropertyMapping.getMappedForm();
+            if(kv.getFetchStrategy() != Fetch.LAZY) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
