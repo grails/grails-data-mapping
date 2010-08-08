@@ -14,6 +14,7 @@
  */
 package org.springframework.datastore.cassandra.engine;
 
+import me.prettyprint.cassandra.model.HectorException;
 import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.Keyspace;
 import org.apache.cassandra.thrift.*;
@@ -94,11 +95,10 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
         final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
 
         final Keyspace keyspace;
+
         try {
             keyspace = cassandraClient.getKeyspace(keyspaceName);
-        } catch (NotFoundException e) {
-            throw new InvalidDataAccessResourceUsageException("Cassandra Keyspace ["+keyspaceName+"] not found: " + e.getMessage(),e);
-        } catch (TException e) {
+        } catch (HectorException e) {
             throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
         }
 
@@ -124,11 +124,10 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
             SlicePredicate predicate = new SlicePredicate();
             predicate.setSlice_range(new SliceRange(ZERO_LENGTH_BYTE_ARRAY, ZERO_LENGTH_BYTE_ARRAY, false, 1));
             result = keyspace.getSuperSlice(id.toString(), parent, predicate);
-        } catch (InvalidRequestException e) {
-            throw new DataIntegrityViolationException("Cannot retrieve SuperColumn for uuid ["+ id +"] for ColumnPath ["+family+"]: " + e.getMessage(), e);
-        } catch (Exception e) {
+        } catch (HectorException e) {
             throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
         }
+
         return !result.isEmpty() ? result.get(0) : null;
     }
 
@@ -169,15 +168,10 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
         try {
             keyspace.batchInsert(key, null,insertMap);
 
-        } catch (TException e) {
-            throw new DataAccessResourceFailureException("Exception occurred performing insertion of entry ["+nativeEntry+"]: " + e.getMessage(),e);
-        } catch (UnavailableException e) {
-            throw new DataAccessResourceFailureException("Cassandra Unavailable Exception: " + e.getMessage(),e);
-        } catch (InvalidRequestException e) {
-            throw new DataIntegrityViolationException("Cannot write values "+nativeEntry.keySet()+" for key ["+key+"]: " + e.getMessage(), e);
-        } catch (TimedOutException e) {
-            throw new DataAccessResourceFailureException("Cassandra Unavailable Exception: " + e.getMessage(),e);
+        } catch (HectorException e) {
+            throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
         }
+
     }
 
     private Map<String, List<SuperColumn>> createInsertMap(String family, SuperColumn sc) {
@@ -205,11 +199,10 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
         final String keyspaceName = getKeyspaceName();
         try {
             keyspace = cassandraClient.getKeyspace(keyspaceName);
-        } catch (NotFoundException e) {
-            throw new InvalidDataAccessResourceUsageException("Cassandra Keyspace ["+keyspaceName+"] not found: " + e.getMessage(),e);
-        } catch (TException e) {
-            throw new DataAccessResourceFailureException("Exception occurred looking up Keyspace ["+keyspaceName+"]: " + e.getMessage(),e);
+        } catch (HectorException e) {
+            throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
         }
+
         return keyspace;
     }
 

@@ -21,6 +21,7 @@ import org.apache.thrift.TException;
 import org.springframework.datastore.cassandra.util.HectorCallback;
 import org.springframework.datastore.cassandra.util.HectorTemplate;
 import org.springframework.datastore.engine.AssociationIndexer;
+import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.types.Association;
 import org.springframework.datastore.reflect.NameUtils;
 
@@ -62,7 +63,7 @@ public class CassandraAssociationIndexer implements AssociationIndexer<Serializa
         HectorTemplate ht = new HectorTemplate(cassandraClient);
         ht.execute(keyspace, new HectorCallback(){
 
-            public Object doInHector(Keyspace keyspace) throws TException, TimedOutException, InvalidRequestException, UnavailableException {
+            public Object doInHector(Keyspace keyspace)  {
                 Map<String, List<Column>> cfmap = new HashMap<String, List<Column>>();
                 final long time = System.currentTimeMillis() * 1000;
 
@@ -82,7 +83,7 @@ public class CassandraAssociationIndexer implements AssociationIndexer<Serializa
     public List<Serializable> query(final Serializable primaryKey) {
         HectorTemplate ht = new HectorTemplate(cassandraClient);
         return (List<Serializable>) ht.execute(keyspace, new HectorCallback() {
-            public Object doInHector(Keyspace keyspace) throws TException, TimedOutException, InvalidRequestException, UnavailableException, NotFoundException {
+            public Object doInHector(Keyspace keyspace)  {
                 SlicePredicate predicate = new SlicePredicate();
                 predicate.setSlice_range(new SliceRange(ZERO_LENGTH_BYTE_ARRAY,ZERO_LENGTH_BYTE_ARRAY, false, Integer.MAX_VALUE));
                 ColumnParent cp = new ColumnParent();
@@ -104,5 +105,9 @@ public class CassandraAssociationIndexer implements AssociationIndexer<Serializa
             }
         });
 
+    }
+
+    public PersistentEntity getIndexedEntity() {
+        return association.getAssociatedEntity();
     }
 }

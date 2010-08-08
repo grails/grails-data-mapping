@@ -30,7 +30,18 @@ public abstract class Query {
     protected PersistentEntity entity;
     protected List<Criterion> criteria = new ArrayList<Criterion>();
     protected int max = -1;
-    protected int offset = 0;
+    protected int offset = -1;
+    protected Order order = null;
+
+
+    /**
+     * The ordering of results
+     *
+     * TODO: Ordering by property name
+     */
+    public enum Order {
+        ASC, DESC
+    }
 
     protected Query(PersistentEntity entity) {
         this.entity = entity;
@@ -46,6 +57,10 @@ public abstract class Query {
 
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     /**

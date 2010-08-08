@@ -16,6 +16,7 @@ package org.springframework.datastore.redis.query;
 
 import org.jredis.JRedis;
 import org.jredis.RedisException;
+import org.jredis.Sort;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.query.Query;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
@@ -46,7 +47,15 @@ public class RedisQuery extends Query {
         if(criteria == null || criteria.isEmpty()) {
             return (List) redisTemplate.execute(new RedisCallback() {
                 public Object doInRedis(JRedis jredis) throws RedisException {
-                    final List<byte[]> results = jredis.lrange(entityPersister.getAllEntityIndex(), offset, max > 0 ? max -1 : max);
+                    List<byte[]> results;
+                    if(offset > -1 || max > -1) {
+                        Sort sort = jredis.sort(entityPersister.getAllEntityIndex()).LIMIT(offset, max);
+                        results = sort.exec();
+                    }
+                    else {
+                        results = jredis.smembers(entityPersister.getAllEntityIndex());
+                    }
+
                     final List<Long> identifiers = RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
 
                     return entityPersister.retrieveAll((Iterable)identifiers);

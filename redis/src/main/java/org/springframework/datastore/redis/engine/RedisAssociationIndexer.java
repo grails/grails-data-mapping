@@ -18,6 +18,7 @@ import org.jredis.JRedis;
 import org.jredis.RedisException;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.datastore.engine.AssociationIndexer;
+import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.types.Association;
 import org.springframework.datastore.redis.query.RedisQueryUtils;
 import org.springframework.datastore.redis.util.RedisCallback;
@@ -71,6 +72,10 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
         return queryInternal(redisKey);
     }
 
+    public PersistentEntity getIndexedEntity() {
+        return association.getAssociatedEntity();
+    }
+
     private List<Long> queryInternal(final String redisKey) {
         return (List<Long>) template.execute(new RedisCallback() {
 
@@ -82,8 +87,7 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
                 else {
                     results = jredis.smembers(redisKey);
                 }
-                final List<Long> identifiers = RedisQueryUtils.transformRedisResults(typeConverter, results);
-                return identifiers;
+                return RedisQueryUtils.transformRedisResults(typeConverter, results);
             }
         });
     }

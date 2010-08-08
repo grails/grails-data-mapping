@@ -14,6 +14,7 @@
  */
 package org.springframework.datastore.cassandra.util;
 
+import me.prettyprint.cassandra.model.HectorException;
 import me.prettyprint.cassandra.service.Keyspace;
 import org.apache.cassandra.thrift.InvalidRequestException;
 import org.apache.cassandra.thrift.NotFoundException;
@@ -31,5 +32,5 @@ public interface HectorCallback {
 
 
     
-    public Object doInHector(Keyspace keyspace) throws TException, TimedOutException, InvalidRequestException, UnavailableException, NotFoundException;
+    public Object doInHector(Keyspace keyspace) throws HectorException;
 }

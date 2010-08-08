@@ -307,7 +307,7 @@
     </library>
     <library name="Spring Beans">
       <CLASSES>
-        <root url="jar://$GRADLE_CACHE$/org.springframework/org.springframework.beans/jars/org.springframework.beans-3.0.2.RELEASE.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/org.springframework/spring-beans/jars/spring-beans-3.0.2.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>

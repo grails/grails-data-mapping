@@ -16,6 +16,7 @@ package org.springframework.datastore.redis.engine;
 
 import org.jredis.JRedis;
 import org.jredis.RedisException;
+import org.jredis.Sort;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.mapping.PersistentProperty;
@@ -46,7 +47,7 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     public void index(final Object value, final Long primaryKey) {
         template.execute(new RedisCallback(){
             public Object doInRedis(JRedis jredis) throws RedisException {
-                jredis.rpush(createRedisKey(value), primaryKey);
+                jredis.sadd(createRedisKey(value), primaryKey);
                 return null;
             }
         });
@@ -65,7 +66,15 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
 
             public Object doInRedis(JRedis jredis) throws RedisException {
                 String redisKey = createRedisKey(value);
-                final List<byte[]> results = jredis.lrange(redisKey, offset, max);
+                final List<byte[]> results;
+                if(offset > 0 || max > 0) {
+                    Sort sort = jredis.sort(redisKey).LIMIT(offset, max);
+                    results = sort.exec();
+                }
+                else {
+                    results = jredis.smembers(redisKey);
+                }
+
                 return RedisQueryUtils.transformRedisResults(typeConverter, results);
             }
         });
