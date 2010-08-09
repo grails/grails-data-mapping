@@ -62,6 +62,11 @@ public class RedisQuery extends Query {
                 }
             });
         }
+        else {
+            if(criteria.size() == 1) {
+                Criterion c = criteria.get(0);
+            }
+        }
         return Collections.emptyList();
     }
 }

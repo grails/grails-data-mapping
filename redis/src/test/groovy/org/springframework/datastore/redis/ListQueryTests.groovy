@@ -36,7 +36,7 @@ class ListQueryTests {
     assert "The Stand" == results[0].title
     assert "It" == results[1].title
 
-    q.max = 1
+    q.max 1
 
     results = q.list()
 

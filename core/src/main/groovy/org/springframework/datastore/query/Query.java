@@ -15,6 +15,7 @@
 package org.springframework.datastore.query;
 
 import org.springframework.datastore.mapping.PersistentEntity;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,16 +52,29 @@ public abstract class Query {
         return entity;
     }
 
-    public void setMax(int max) {
+    /**
+     * Defines the maximum number of results to return
+     * @param max The max results
+     * @return This query instance
+     */
+    public Query max(int max) {
         this.max = max;
+        return this;
     }
 
-    public void setOffset(int offset) {
+    /**
+     * Defines the offset (the first result index) of the query
+     * @param offset The offset
+     * @return This query instance
+     */
+    public Query offset(int offset) {
         this.offset = offset;
+        return this;
     }
 
-    public void setOrder(Order order) {
+    public Query order(Order order) {
         this.order = order;
+        return this;
     }
 
     /**
@@ -71,9 +85,38 @@ public abstract class Query {
      * @return This query instance
      */
     public Query eq(String property, Object value) {
-        criteria.add(new Equals(this, property, value));
+        criteria.add(Restrictions.eq(property, value));
         return this;
     }
+
+    /**
+     * Creates a conjunction using two specified criterion
+     *
+     * @param a The left hand side
+     * @param b The right hand side
+     * @return This query instance
+     */
+    public Query and( Criterion a, Criterion b) {
+        Assert.notNull(a, "Left hand side of AND cannot be null");
+        Assert.notNull(b, "Right hand side of AND cannot be null");
+        criteria.add(Restrictions.and(a, b));
+        return this;
+    }
+
+    /**
+     * Creates a disjunction using two specified criterion
+     *
+     * @param a The left hand side
+     * @param b The right hand side
+     * @return This query instance
+     */
+    public Query or( Criterion a, Criterion b) {
+        Assert.notNull(a, "Left hand side of AND cannot be null");
+        Assert.notNull(b, "Right hand side of AND cannot be null");
+        criteria.add(Restrictions.or(a, b));
+        return this;
+    }
+
 
     /**
      * Executes the query returning zero or many results as a list
@@ -97,30 +140,63 @@ public abstract class Query {
     /**
      * A criterion is used to restrict the results of a query
      */
-    public abstract class Criterion {
+    public static abstract class Criterion {
 
-        private Query query;
-
-        protected Criterion(Query query) {
-            this.query = query;
-        }
-
-        public Query getQuery() {
-            return query;
-        }
     }
 
     /**
-     * A criterion that reststricts the results based on equality
+     * A criterion that restricts the results based on equality
      */
-    public class Equals extends Criterion {
+    public static class Equals extends Criterion {
         private String name;
         private Object value;
 
-        protected Equals(Query query, String name, Object value) {
-            super(query);
+        protected Equals(String name, Object value) {
             this.name = name;
             this.value = value;
         }
     }
+
+    /**
+     * A Criterion used to combine to criterion in a logical AND
+     */
+    public static class Conjunction extends Criterion {
+        private Criterion left;
+        private Criterion right;
+
+        protected Conjunction(Criterion left, Criterion right) {
+            this.left = left;
+            this.right = right;
+        }
+
+        public Criterion getLeftSide() {
+            return left;
+        }
+
+        public Criterion getRightSide() {
+            return right;
+        }
+    }
+
+    /**
+     * A Criterion used to combine to criterion in a logical OR
+     */
+    public static class Disjunction extends Criterion {
+        private Criterion left;
+        private Criterion right;
+
+        protected Disjunction(Criterion left, Criterion right) {
+            this.left = left;
+            this.right = right;
+        }
+
+        public Criterion getLeftSide() {
+            return left;
+        }
+
+        public Criterion getRightSide() {
+            return right;
+        }
+    }
+
 }
