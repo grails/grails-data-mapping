@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class AbstractSession<T> implements Session {
+public abstract class AbstractSession<N> implements Session {
     protected Map<Class,Persister> persisters = new ConcurrentHashMap<Class,Persister>();
     private MappingContext mappingContext;
     private Map<String, String> connectionDetails;

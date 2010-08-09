@@ -310,9 +310,7 @@
         <root url="jar://$GRADLE_CACHE$/org.springframework/spring-beans/jars/spring-beans-3.0.2.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES>
-        <root url="jar://$SPRING_HOME$/src/org.springframework.beans-sources-3.0.2.RELEASE.jar!/" />
-      </SOURCES>
+      <SOURCES />
     </library>
     <library name="Log4j">
       <CLASSES>
@@ -345,6 +343,23 @@
     <library name="Spring Web">
       <CLASSES>
         <root url="jar://$GRADLE_CACHE$/org.springframework/spring-web/jars/spring-web-3.0.2.RELEASE.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Spring AOP">
+      <CLASSES>
+        <root url="jar://$GRADLE_CACHE$/org.springframework/spring-aop/jars/spring-aop-3.0.2.RELEASE.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/aopalliance/aopalliance/jars/aopalliance-1.0.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$SPRING_HOME$/src/org.springframework.aop-sources-3.0.3.RELEASE.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="CGLib">
+      <CLASSES>
+        <root url="jar://$GRADLE_CACHE$/cglib/cglib-nodep/jars/cglib-nodep-2.2.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />

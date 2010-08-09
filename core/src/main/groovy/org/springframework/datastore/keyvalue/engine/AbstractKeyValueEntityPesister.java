@@ -14,12 +14,15 @@
  */
 package org.springframework.datastore.keyvalue.engine;
 
+import org.springframework.aop.TargetSource;
+import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.collection.PersistentList;
+import org.springframework.datastore.collection.PersistentSet;
 import org.springframework.datastore.core.Session;
 import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.engine.EntityAccess;
@@ -29,6 +32,7 @@ import org.springframework.datastore.keyvalue.mapping.Family;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.*;
 import org.springframework.datastore.mapping.types.*;
+import org.springframework.datastore.proxy.LazyLoadingTargetSource;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -185,8 +189,19 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                 }
                 else if(prop instanceof ToOne) {
                     Serializable associationKey = (Serializable) getEntryValue(nativeEntry, propKey);
+                    PropertyMapping<KeyValue> associationPropertyMapping = prop.getMapping();
+                    boolean isLazy = isLazyAssociation(associationPropertyMapping);
 
-                    ea.setProperty(prop.getName(), session.retrieve(prop.getType(), associationKey));
+                    if(isLazy) {
+                        TargetSource ts = new LazyLoadingTargetSource(session, prop.getType(), associationKey);
+                        ProxyFactory proxyFactory = new ProxyFactory();
+                        proxyFactory.setTargetSource(ts);
+                        proxyFactory.setProxyTargetClass(true);
+                        ea.setProperty(prop.getName(), proxyFactory.getProxy());
+                    }
+                    else {
+                        ea.setProperty(prop.getName(), session.retrieve(prop.getType(), associationKey));
+                    }
                 }
                 else if(prop instanceof OneToMany) {
                     Association association = (Association) prop;
@@ -195,7 +210,12 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
                     boolean isLazy = isLazyAssociation(associationPropertyMapping);
                     AssociationIndexer indexer = getAssociationIndexer(association);
                     if(isLazy) {
-                        ea.setProperty(association.getName(), new PersistentList(nativeKey, session, indexer));
+                        if(List.class.isAssignableFrom(association.getType())) {
+                            ea.setProperty(association.getName(), new PersistentList(nativeKey, session, indexer));
+                        }
+                        else if(Set.class.isAssignableFrom(association.getType())) {
+                            ea.setProperty(association.getName(), new PersistentSet(nativeKey, session, indexer));
+                        }
                     }
                     else {
                         if(indexer != null) {

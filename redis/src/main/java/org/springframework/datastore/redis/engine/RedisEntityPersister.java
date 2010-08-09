@@ -156,7 +156,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
         final String actualKey = family + ":" + key;
         redisTemplate.execute(new RedisCallback(){
             public Object doInRedis(JRedis jredis) throws RedisException {
-                jredis.lrem(getAllEntityIndex(), key, 0);
+                jredis.srem(getAllEntityIndex(), key);
                 jredis.del(actualKey);
                 return null;
             }

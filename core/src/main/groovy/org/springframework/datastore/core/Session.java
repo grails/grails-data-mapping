@@ -16,7 +16,7 @@ import java.util.Map;
  *
  * @since 1.0
  */
-public interface Session<T> {
+public interface Session<N> {
 
     /**
      * @return the session details as map of parameter / value String pairs
@@ -69,7 +69,7 @@ public interface Session<T> {
      * @param key The key
      * @return The object
      */
-    Object retrieve(Class type, Serializable key);
+    <T> T retrieve(Class<T> type, Serializable key);
 
     /**
      * Deletes one or many objects
@@ -104,5 +104,5 @@ public interface Session<T> {
     /**
      * @return The native interface to the datastore
      */
-    T getNativeInterface();
+    N getNativeInterface();
 }
