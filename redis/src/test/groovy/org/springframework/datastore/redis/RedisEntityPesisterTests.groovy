@@ -7,7 +7,7 @@ import org.springframework.datastore.core.Session
  * @author Graeme Rocher
  * @since 1.1
  */
-class RedisEntityPesisterTests {
+class RedisEntityPesisterTests extends GroovyTestCase {
 
   @Test
   void testPersistObject() {
@@ -48,7 +48,7 @@ class RedisEntityPesisterTests {
 
   @Test
   void testTransactions() {
-
+    if(notYetImplemented()) return
     // doesn't work right now
     def ds = new RedisDatastore()
     ds.getMappingContext().addPersistentEntity(TestEntity)
