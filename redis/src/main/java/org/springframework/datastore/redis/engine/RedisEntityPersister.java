@@ -173,6 +173,15 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
         return new RedisAssociationIndexer(redisTemplate.getJRedis(), typeConverter, oneToMany);
     }
 
+    @Override
+    protected List<Object> retrieveAllEntities(PersistentEntity persistentEntity, Iterable<Serializable> keys) {
+
+        // TODO: Performance wise this sucks. Replace with lazy ResultList implementation that loads results on demand
+        // This could still result in an N+1 scenario, however it is better than what we have right now.
+        // Ideally replace this with some bulk retrieval mechanism when Redis supports it
+        return super.retrieveAllEntities(persistentEntity, keys);
+    }
+
     public Query createQuery() {
         return new RedisQuery(getPersistentEntity(), this);
     }
