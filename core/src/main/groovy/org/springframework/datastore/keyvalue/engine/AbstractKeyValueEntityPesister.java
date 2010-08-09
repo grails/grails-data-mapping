@@ -24,10 +24,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.collection.PersistentList;
 import org.springframework.datastore.collection.PersistentSet;
 import org.springframework.datastore.core.Session;
-import org.springframework.datastore.engine.AssociationIndexer;
-import org.springframework.datastore.engine.EntityAccess;
-import org.springframework.datastore.engine.EntityPersister;
-import org.springframework.datastore.engine.PropertyValueIndexer;
+import org.springframework.datastore.engine.*;
 import org.springframework.datastore.keyvalue.mapping.Family;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.*;
@@ -118,6 +115,9 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
     @Override
     protected void deleteEntity(PersistentEntity persistentEntity, Object obj) {
         if(obj != null) {
+            for (EntityInterceptor interceptor : interceptors) {
+                if(!interceptor.beforeDelete(obj)) return;
+            }
 
             K key = readIdentifierFromObject(obj);
             if(key != null) {
@@ -248,6 +248,18 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
         String family = entityFamily;
 
         T e = createNewEntry(family);
+        K k = readObjectIdentifier(entityAccess, cm);
+        boolean isUpdate = k != null;
+
+        for (EntityInterceptor interceptor : interceptors) {
+            if(isUpdate) {
+                if(!interceptor.beforeUpdate(entityAccess.getEntity())) return (Serializable) k;
+            }
+            else {
+                if(!interceptor.beforeInsert(entityAccess.getEntity())) return null;
+            }
+        }
+
         final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
         List<OneToMany> oneToManys = new ArrayList<OneToMany>();
         Map<PersistentProperty, Object> toIndex = new HashMap<PersistentProperty, Object>();
@@ -295,7 +307,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
             }
         }
 
-        K k = readObjectIdentifier(entityAccess, cm);
+
         if(k == null) {
             k = storeEntry(persistentEntity, e);
             String id = getIdentifierName(cm);

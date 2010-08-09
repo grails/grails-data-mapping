@@ -14,6 +14,8 @@
  */
 package org.springframework.datastore.core;
 
+import org.springframework.datastore.engine.EntityInterceptor;
+import org.springframework.datastore.engine.EntityInterceptorAware;
 import org.springframework.datastore.engine.NonPersistentTypeException;
 import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.mapping.MappingContext;
@@ -21,10 +23,7 @@ import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.query.Query;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -39,12 +38,22 @@ public abstract class AbstractSession<N> implements Session {
     protected Map<Class,Persister> persisters = new ConcurrentHashMap<Class,Persister>();
     private MappingContext mappingContext;
     private Map<String, String> connectionDetails;
-
+    protected List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
 
     public AbstractSession(Map<String, String> connectionDetails, MappingContext mappingContext) {
         super();
         this.mappingContext = mappingContext;
         this.connectionDetails = connectionDetails;
+    }
+
+    public void addEntityInterceptor(EntityInterceptor interceptor) {
+        if(interceptor != null) {
+            this.interceptors.add(interceptor);
+        }
+    }
+
+    public void setEntityInterceptors(List<EntityInterceptor> interceptors) {
+        if(interceptors!=null) this.interceptors = interceptors;
     }
 
     public Map<String, String> getDetails() {
@@ -70,6 +79,9 @@ public abstract class AbstractSession<N> implements Session {
         Persister p = this.persisters.get(cls);
         if(p == null) {
             p = createPersister(cls, getMappingContext());
+            if(p instanceof EntityInterceptorAware) {
+                ((EntityInterceptorAware)p).setEntityInterceptors(interceptors);
+            }
             if(p != null)
                 this.persisters.put(cls, p);
         }

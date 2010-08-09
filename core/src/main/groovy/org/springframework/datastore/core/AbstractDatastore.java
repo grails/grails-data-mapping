@@ -14,8 +14,12 @@
  */
 package org.springframework.datastore.core;
 
+import org.springframework.datastore.engine.EntityInterceptor;
+import org.springframework.datastore.engine.EntityInterceptorAware;
 import org.springframework.datastore.mapping.MappingContext;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,13 +28,24 @@ import java.util.Map;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class AbstractDatastore implements Datastore {
+public abstract class AbstractDatastore implements Datastore, EntityInterceptorAware {
 
     MappingContext mappingContext;
     private static ThreadLocal<Session> currentConnectionThreadLocal = new InheritableThreadLocal<Session>();
+    protected List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
 
     public AbstractDatastore(MappingContext mappingContext) {
         this.mappingContext = mappingContext;
+    }
+
+    public void addEntityInterceptor(EntityInterceptor interceptor) {
+        if(interceptor != null) {
+            this.interceptors.add(interceptor);
+        }
+    }
+
+    public void setEntityInterceptors(List<EntityInterceptor> interceptors) {
+        if(interceptors!=null) this.interceptors = interceptors;
     }
 
     public AbstractDatastore() {

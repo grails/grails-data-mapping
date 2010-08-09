@@ -18,6 +18,7 @@ import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,13 +27,24 @@ import java.util.List;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class EntityPersister implements Persister {
+public abstract class EntityPersister implements Persister, EntityInterceptorAware {
     private PersistentEntity persistentEntity;
     private MappingContext mappingContext;
+    protected List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
 
     public EntityPersister(MappingContext mappingContext, PersistentEntity entity) {
         this.persistentEntity = entity;
         this.mappingContext = mappingContext;
+    }
+
+    public void addEntityInterceptor(EntityInterceptor interceptor) {
+        if(interceptor != null) {
+            this.interceptors.add(interceptor);
+        }
+    }
+
+    public void setEntityInterceptors(List<EntityInterceptor> interceptors) {
+        if(interceptors!=null) this.interceptors = interceptors;
     }
 
     /**

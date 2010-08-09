@@ -1,5 +1,6 @@
 package org.springframework.datastore.core;
 
+import org.springframework.datastore.engine.EntityInterceptorAware;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.query.Query;
 import org.springframework.datastore.tx.Transaction;
@@ -16,7 +17,7 @@ import java.util.Map;
  *
  * @since 1.0
  */
-public interface Session<N> {
+public interface Session<N> extends EntityInterceptorAware {
 
     /**
      * @return the session details as map of parameter / value String pairs
