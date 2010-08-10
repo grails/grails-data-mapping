@@ -31,7 +31,7 @@ public abstract class Query {
     protected PersistentEntity entity;
     protected List<Criterion> criteria = new ArrayList<Criterion>();
     protected int max = -1;
-    protected int offset = -1;
+    protected int offset = 0;
     protected Order order = null;
 
 

@@ -52,7 +52,7 @@ public class RedisQuery extends Query {
             return (List) redisTemplate.execute(new RedisCallback() {
                 public Object doInRedis(JRedis jredis) throws RedisException {
                     List<byte[]> results;
-                    if(offset > -1 || max > -1) {
+                    if(offset > 0 || max > -1) {
                         Sort sort = jredis.sort(entityPersister.getAllEntityIndex()).LIMIT(offset, max);
                         results = sort.exec();
                     }
