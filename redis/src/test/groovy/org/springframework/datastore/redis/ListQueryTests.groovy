@@ -69,6 +69,15 @@ class ListQueryTests {
     assert 1 == results.size()
     assert "It" == results[0].title
 
+    q = session.createQuery(Book)
+
+    q.eq("title", "The Stand")
+
+    results = q.list()
+
+    assert 1 == results.size()
+    assert "The Stand" == results[0].title
+
   }
 }
 
