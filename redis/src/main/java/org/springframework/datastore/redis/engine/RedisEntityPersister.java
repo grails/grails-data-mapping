@@ -183,7 +183,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     public Query createQuery() {
-        return new RedisQuery(getPersistentEntity(), this);
+        return new RedisQuery(session, getPersistentEntity(), this);
     }
 
     public RedisTemplate getRedisTemplate() {

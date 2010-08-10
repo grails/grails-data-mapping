@@ -18,12 +18,15 @@ import org.jredis.JRedis;
 import org.jredis.RedisException;
 import org.jredis.Sort;
 import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.dao.DataAccessException;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.redis.query.RedisQueryUtils;
 import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -45,16 +48,22 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     }
 
     public void index(final Object value, final Long primaryKey) {
-        template.execute(new RedisCallback(){
-            public Object doInRedis(JRedis jredis) throws RedisException {
-                jredis.sadd(createRedisKey(value), primaryKey);
-                return null;
-            }
-        });
+        if(value != null) {
+            template.execute(new RedisCallback(){
+                public Object doInRedis(JRedis jredis) throws RedisException {
+                    jredis.sadd(createRedisKey(value), primaryKey);
+                    return null;
+                }
+            });
+        }
     }
 
     private String createRedisKey(Object value) {
-        return property.getOwner().getName()+ ":" + property.getName() + ":" + value;
+        try {
+            return property.getOwner().getName()+ ":" + property.getName() + ":" + URLEncoder.encode(value.toString(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new DataAccessException("Cannot encoding Redis key: " + e.getMessage(), e){};
+        }
     }
 
     public List<Long> query(final Object value) {

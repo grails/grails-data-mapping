@@ -14,6 +14,7 @@
  */
 package org.springframework.datastore.query;
 
+import org.springframework.datastore.core.Session;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.util.Assert;
 
@@ -33,6 +34,7 @@ public abstract class Query {
     protected int max = -1;
     protected int offset = 0;
     protected Order order = null;
+    private Session session;
 
 
     /**
@@ -44,8 +46,13 @@ public abstract class Query {
         ASC, DESC
     }
 
-    protected Query(PersistentEntity entity) {
+    protected Query(Session session, PersistentEntity entity) {
         this.entity = entity;
+        this.session = session;
+    }
+
+    public Session getSession() {
+        return session;
     }
 
     public PersistentEntity getEntity() {

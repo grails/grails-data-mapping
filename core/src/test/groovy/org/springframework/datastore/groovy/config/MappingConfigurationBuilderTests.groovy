@@ -23,7 +23,7 @@ class MappingConfigurationBuilderTests {
        family "foo"
        keyspace "bar"
 
-       test2 key:"two", indexed:true
+       test2 key:"two", index:true
     }
 
     callable.delegate = builder
@@ -35,6 +35,6 @@ class MappingConfigurationBuilderTests {
     assert "bar" == f.keyspace
     KeyValue kv = builder.properties.test2
     assert 'two', kv.key
-    assert kv.indexed
+    assert kv.index
   }
 }

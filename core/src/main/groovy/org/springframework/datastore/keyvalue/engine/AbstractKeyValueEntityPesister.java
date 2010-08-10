@@ -18,8 +18,6 @@ import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.collection.PersistentList;
 import org.springframework.datastore.collection.PersistentSet;
@@ -33,7 +31,6 @@ import org.springframework.datastore.mapping.types.*;
 import org.springframework.datastore.proxy.LazyLoadingTargetSource;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -154,11 +151,11 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
             final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
             for (PersistentProperty prop : props) {
                 PropertyMapping<KeyValue> pm = prop.getMapping();
-                String propKey;
+                String propKey = null;
                 if(pm.getMappedForm()!=null) {
                     propKey = pm.getMappedForm().getKey();
                 }
-                else {
+                if(propKey == null) {
                     propKey = prop.getName();
                 }
                 if(prop instanceof Simple) {
@@ -247,7 +244,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
             if(keyValue != null) {
                 key = keyValue.getKey();
             }
-            final boolean indexed = keyValue != null && keyValue.isIndexed();
+            final boolean indexed = keyValue != null && keyValue.isIndex();
             if(key == null) key = prop.getName();
             if(prop instanceof Simple) {
                 final Object propValue = entityAccess.getProperty(prop.getName());

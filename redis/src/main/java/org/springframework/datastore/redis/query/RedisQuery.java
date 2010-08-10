@@ -18,6 +18,7 @@ import org.jredis.JRedis;
 import org.jredis.RedisException;
 import org.jredis.Sort;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.datastore.core.Session;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.PersistentEntity;
@@ -40,8 +41,8 @@ public class RedisQuery extends Query {
     private RedisTemplate redisTemplate;
     private RedisEntityPersister entityPersister;
 
-    public RedisQuery(PersistentEntity persistentEntity, RedisEntityPersister entityPersister) {
-        super(persistentEntity);
+    public RedisQuery(Session session, PersistentEntity persistentEntity, RedisEntityPersister entityPersister) {
+        super(session, persistentEntity);
         this.redisTemplate = entityPersister.getRedisTemplate();
         this.entityPersister = entityPersister;
     }
@@ -62,7 +63,7 @@ public class RedisQuery extends Query {
 
                     final List<Long> identifiers = RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
 
-                    return entityPersister.retrieveAll((Iterable)identifiers);
+                    return new RedisEntityResultList(getSession(), getEntity(), identifiers);
                 }
             });
         }
@@ -73,9 +74,11 @@ public class RedisQuery extends Query {
                     Equals eq = (Equals) c;
                     PersistentProperty property = getEntity().getPropertyByName(eq.getName());
                     KeyValue kv = (KeyValue) property.getMapping().getMappedForm();
-                    if(kv.isIndexed()) {
+                    if(kv.isIndex()) {
                         PropertyValueIndexer indexer = entityPersister.getPropertyIndexer(property);
                         List identifiers = indexer.query(eq.getValue(), offset, max);
+
+                        return new RedisEntityResultList(getSession(), getEntity(), identifiers);
                     }
                     else {
                         throw new DataIntegrityViolationException("Cannot query on class ["+getEntity()+"] on property ["+property+"]. The property is not indexed!");

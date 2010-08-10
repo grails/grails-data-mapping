@@ -48,4 +48,8 @@ class Author {
 class Book {
   Long id
   String title
+
+  static mapping = {
+    title index:true
+  }
 }

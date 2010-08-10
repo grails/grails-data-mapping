@@ -43,5 +43,32 @@ class ListQueryTests {
     assert 1 == results.size()
     assert "The Stand" == results[0].title
   }
+
+  @Test
+  void testSimpleQuery() {
+    def ds = new RedisDatastore()
+    ds.mappingContext.addPersistentEntity(Author)
+    Session<JRedis> session = ds.connect(null)
+    session.getNativeInterface().flushall()
+
+    def a = new Author(name:"Stephen King")
+    a.books = [
+            new Book(title:"The Stand"),
+            new Book(title:"It")
+    ]
+
+    session.persist(a)
+
+
+    Query q = session.createQuery(Book)
+
+    q.eq("title", "It")
+
+    def results = q.list()
+
+    assert 1 == results.size()
+    assert "It" == results[0].title
+
+  }
 }
 

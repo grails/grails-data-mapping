@@ -25,7 +25,7 @@ import org.springframework.datastore.mapping.types.Fetch;
 public class KeyValue {
 
     private String key;
-    private boolean indexed = false;
+    private boolean index = false;
     private Fetch fetchStrategy = Fetch.LAZY;
 
     public KeyValue() {
@@ -44,18 +44,18 @@ public class KeyValue {
     }
 
     /**
-     * @return Whether this property is indexed
+     * @return Whether this property is index
      */
-    public boolean isIndexed() {
-        return indexed;
+    public boolean isIndex() {
+        return index;
     }
 
     /**
-     * Whether this property is indexed
-     * @param indexed Sets whether to index the property or not
+     * Whether this property is index
+     * @param index Sets whether to index the property or not
      */
-    public void setIndexed(boolean indexed) {
-        this.indexed = indexed;
+    public void setIndex(boolean index) {
+        this.index = index;
     }
 
     public Fetch getFetchStrategy() {
