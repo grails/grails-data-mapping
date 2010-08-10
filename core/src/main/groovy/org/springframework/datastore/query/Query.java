@@ -155,6 +155,14 @@ public abstract class Query {
             this.name = name;
             this.value = value;
         }
+
+        public String getName() {
+            return name;
+        }
+
+        public Object getValue() {
+            return value;
+        }
     }
 
     /**

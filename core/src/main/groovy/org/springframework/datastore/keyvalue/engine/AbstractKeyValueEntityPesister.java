@@ -25,6 +25,7 @@ import org.springframework.datastore.collection.PersistentList;
 import org.springframework.datastore.collection.PersistentSet;
 import org.springframework.datastore.core.Session;
 import org.springframework.datastore.engine.*;
+import org.springframework.datastore.keyvalue.convert.ByteArrayAwareTypeConverter;
 import org.springframework.datastore.keyvalue.mapping.Family;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.*;
@@ -53,31 +54,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
         this.session = session;
         classMapping = entity.getMapping();        
         entityFamily = getFamily(entity, classMapping);
-        this.typeConverter = new SimpleTypeConverter();
-        GenericConversionService conversionService = new GenericConversionService();
-        conversionService.addConverter(new Converter<byte[], Long>() {
-            public Long convert(byte[] source) {
-                try {
-                    String value = new String(source, "UTF-8");
-                    return Long.valueOf(value);
-                } catch (UnsupportedEncodingException e) {
-                    return 0L;
-                }
-                catch(NumberFormatException e) {
-                    return 0L;
-                }
-            }
-        });
-        conversionService.addConverter(new Converter<byte[], String>() {
-            public String convert(byte[] source) {
-                try {
-                    return new String(source, "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    return null;
-                }
-            }
-        });
-        this.typeConverter.setConversionService(conversionService);
+        this.typeConverter = new ByteArrayAwareTypeConverter();
 
     }
 

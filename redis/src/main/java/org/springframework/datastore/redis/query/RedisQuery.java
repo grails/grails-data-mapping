@@ -17,7 +17,11 @@ package org.springframework.datastore.redis.query;
 import org.jredis.JRedis;
 import org.jredis.RedisException;
 import org.jredis.Sort;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.datastore.engine.PropertyValueIndexer;
+import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.PersistentEntity;
+import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.query.Query;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
 import org.springframework.datastore.redis.util.RedisCallback;
@@ -65,6 +69,18 @@ public class RedisQuery extends Query {
         else {
             if(criteria.size() == 1) {
                 Criterion c = criteria.get(0);
+                if(c instanceof Equals) {
+                    Equals eq = (Equals) c;
+                    PersistentProperty property = getEntity().getPropertyByName(eq.getName());
+                    KeyValue kv = (KeyValue) property.getMapping().getMappedForm();
+                    if(kv.isIndexed()) {
+                        PropertyValueIndexer indexer = entityPersister.getPropertyIndexer(property);
+                        List identifiers = indexer.query(eq.getValue(), offset, max);
+                    }
+                    else {
+                        throw new DataIntegrityViolationException("Cannot query on class ["+getEntity()+"] on property ["+property+"]. The property is not indexed!");
+                    }
+                }
             }
         }
         return Collections.emptyList();
