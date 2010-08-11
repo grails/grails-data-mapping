@@ -1,22 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" readonly="true" id="be89379f-fd5d-4dca-9d83-b5ea01f03fe4" name="Default" comment="moved tests to the right place so they're executed as part of the the gradle test run (requires running redis instance)">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/query/Query.java" afterPath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/query/Query.java" />
+    <list default="true" readonly="true" id="be89379f-fd5d-4dca-9d83-b5ea01f03fe4" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormEnhancer.groovy" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/test/groovy/org/grails/datastore/gorm/GormEnhancerTests.groovy" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/inconsequential.iws" afterPath="$PROJECT_DIR$/inconsequential.iws" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisIterator.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisSet.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/engine/AbstractKeyValueEntityPesister.java" afterPath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/engine/AbstractKeyValueEntityPesister.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/collection/RedisSetTests.groovy" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisList.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/AbstractRedisCollection.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/redis/lib/jredis-core-all-a.0-SNAPSHOT-jar-with-dependencies.jar" afterPath="$PROJECT_DIR$/redis/lib/jredis-core-all-a.0-SNAPSHOT-jar-with-dependencies.jar" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/util/RedisTemplate.java" afterPath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/util/RedisTemplate.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/query/RedisQuery.java" afterPath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/query/RedisQuery.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/convert/ByteArrayAwareTypeConverter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/settings.gradle" afterPath="$PROJECT_DIR$/settings.gradle" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime-dynamic/src/test/groovy/org/springframework/datastore/groovy/SimplePersistenceMethodsTests.groovy" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/runtime-dynamic/build.gradle" afterPath="$PROJECT_DIR$/grails-datastore-gorm/build.gradle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cassandra/src/test/resources/cassandra-conf/log4j.properties" afterPath="$PROJECT_DIR$/cassandra/src/test/resources/cassandra-conf/log4j.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.gradle" afterPath="$PROJECT_DIR$/build.gradle" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime-dynamic/runtime-dynamic.iml" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormInstanceApi.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/inconsequential.ipr" afterPath="$PROJECT_DIR$/inconsequential.ipr" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/grails-datastore-gorm/grails-datastore-gorm.iml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/runtime-dynamic/src/test/resources/cassandra-conf/log4j.properties" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/test/resources/cassandra-conf/log4j.properties" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/core/src/test/groovy/org/springframework/datastore/groovy/config/MappingConfigurationBuilderTests.groovy" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormStaticApi.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/runtime-dynamic/src/test/resources/cassandra-conf/storage-conf.xml" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/test/resources/cassandra-conf/storage-conf.xml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/runtime-dynamic/src/main/groovy/org/springframework/datastore/groovy/RuntimeCapabilities.groovy" afterPath="" />
     </list>
-    <ignored path="$USER_HOME_GRAILS$/" />
     <ignored path="$USER_HOME_GRIFFON$/" />
+    <ignored path="$USER_HOME_GRAILS$/" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,6 +116,84 @@
         <option name="CONDITION" value="" />
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/query/RedisEntityResultList.java" line="43" class="org.springframework.datastore.redis.query.RedisEntityResultList" package="org.springframework.datastore.redis.query">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/engine/AbstractKeyValueEntityPesister.java" line="141" class="org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister" package="org.springframework.datastore.keyvalue.engine">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/engine/AbstractKeyValueEntityPesister.java" line="161" class="org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister" package="org.springframework.datastore.keyvalue.engine">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisList.java" line="50" class="org.springframework.datastore.redis.collection.RedisList" package="org.springframework.datastore.redis.collection">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisList.java" line="84" class="org.springframework.datastore.redis.collection.RedisList" package="org.springframework.datastore.redis.collection">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
+      <breakpoint url="file://$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisValue.java" line="41" class="org.springframework.datastore.redis.collection.RedisValue" package="org.springframework.datastore.redis.collection">
+        <option name="ENABLED" value="true" />
+        <option name="LOG_ENABLED" value="false" />
+        <option name="LOG_EXPRESSION_ENABLED" value="false" />
+        <option name="SUSPEND_POLICY" value="SuspendAll" />
+        <option name="COUNT_FILTER_ENABLED" value="false" />
+        <option name="COUNT_FILTER" value="0" />
+        <option name="CONDITION_ENABLED" value="false" />
+        <option name="CLASS_FILTERS_ENABLED" value="false" />
+        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
+        <option name="CONDITION" value="" />
+        <option name="LOG_MESSAGE" value="" />
+      </breakpoint>
     </line_breakpoints>
     <breakpoint_any>
       <breakpoint>
@@ -152,7 +235,62 @@
   </component>
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="GormEnhancer.groovy" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormEnhancer.groovy">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="14" column="0" selection-start="598" selection-end="598" vertical-scroll-proportion="0.025335321">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GormInstanceApi.groovy" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormInstanceApi.groovy">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GormEnhancerTests.groovy" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/grails-datastore-gorm/src/test/groovy/org/grails/datastore/gorm/GormEnhancerTests.groovy">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="23" column="28" selection-start="610" selection-end="610" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AbstractDatastore.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/AbstractDatastore.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="77" column="20" selection-start="2734" selection-end="2734" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MappingContext.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/MappingContext.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="34" column="17" selection-start="1335" selection-end="1335" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GormStaticApi.groovy" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormStaticApi.groovy">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="597" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -166,22 +304,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/engine/EntityInterceptorAware.java" />
-        <option value="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/engine/EntityPersister.java" />
-        <option value="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/AbstractDatastore.java" />
-        <option value="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/Session.java" />
-        <option value="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/AbstractSession.java" />
-        <option value="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/query/Query.java" />
-        <option value="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/query/QueryException.java" />
-        <option value="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/query/RedisQuery.java" />
-        <option value="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/convert/ByteArrayAwareTypeConverter.java" />
-        <option value="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/engine/AbstractKeyValueEntityPesister.java" />
-        <option value="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/AbstractRedisCollection.java" />
-        <option value="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisList.java" />
+        <option value="$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/collection/RedisMapTests.groovy" />
         <option value="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisSet.java" />
+        <option value="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/engine/RedisPropertyValueIndexer.java" />
+        <option value="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisCollection.java" />
+        <option value="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisList.java" />
+        <option value="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/engine/RedisAssociationIndexer.java" />
+        <option value="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/AbstractRedisCollection.java" />
         <option value="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/util/RedisTemplate.java" />
-        <option value="$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/collection/RedisSetTests.groovy" />
-        <option value="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisIterator.java" />
+        <option value="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/query/RedisEntityResultList.java" />
+        <option value="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/engine/RedisEntityPersister.java" />
+        <option value="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/query/RedisQuery.java" />
+        <option value="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/AbstractDatastore.java" />
+        <option value="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormStaticApi.groovy" />
+        <option value="$PROJECT_DIR$/grails-datastore-gorm/src/test/groovy/org/grails/datastore/gorm/GormEnhancerTests.groovy" />
+        <option value="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormInstanceApi.groovy" />
+        <option value="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormEnhancer.groovy" />
       </list>
     </option>
   </component>
@@ -664,85 +802,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="redis" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="org.springframework.datastore.redis" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="util" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="inconsequential" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="redis" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="org.springframework.datastore.redis" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="query" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="inconsequential" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="redis" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="org.springframework.datastore.redis" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="engine" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="inconsequential" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="redis" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="org.springframework.datastore.redis" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="collection" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="inconsequential" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="inconsequential" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="core" />
+              <option name="myItemId" value="grails-datastore-gorm" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -752,11 +812,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="core" />
+              <option name="myItemId" value="grails-datastore-gorm" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="org.springframework.datastore" />
+              <option name="myItemId" value="org.grails.datastore.gorm" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -766,16 +826,16 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="core" />
+              <option name="myItemId" value="grails-datastore-gorm" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="org.springframework.datastore" />
+              <option name="myItemId" value="org.grails.datastore.gorm" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="query" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+              <option name="myItemId" value="GormEnhancerTests.groovy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -784,16 +844,14 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="core" />
+              <option name="myItemId" value="grails-adapter" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
             </PATH_ELEMENT>
+          </PATH>
+          <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="org.springframework.datastore" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="keyvalue" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+              <option name="myItemId" value="inconsequential" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -816,66 +874,12 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="options.searchVisible" value="true" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="dynamic.classpath" value="false" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
-  <component name="RunManager" selected="JUnit.RedisSetTests.testIterator">
-    <configuration default="false" name="RedisEntityPesisterTests" type="JUnit" factoryName="JUnit" temporary="true">
-      <extension name="coverage" enabled="false" merge="false">
-        <pattern>
-          <option name="PATTERN" value="org.springframework.datastore.redis.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <module name="redis" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="org.springframework.datastore.redis" />
-      <option name="MAIN_CLASS_NAME" value="org.springframework.datastore.redis.RedisEntityPesisterTests" />
-      <option name="METHOD_NAME" />
-      <option name="TEST_OBJECT" value="class" />
-      <option name="VM_PARAMETERS" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
-    <configuration default="false" name="ListQueryTests.testListQuery" type="JUnit" factoryName="JUnit" temporary="true">
-      <extension name="coverage" enabled="false" merge="false">
-        <pattern>
-          <option name="PATTERN" value="org.springframework.datastore.redis.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <module name="redis" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="org.springframework.datastore.redis" />
-      <option name="MAIN_CLASS_NAME" value="org.springframework.datastore.redis.ListQueryTests" />
-      <option name="METHOD_NAME" value="testListQuery" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Run" />
-      <method />
-    </configuration>
-    <configuration default="false" name="RedisSetTests.testSize" type="JUnit" factoryName="JUnit" temporary="true">
+  <component name="RunManager" selected="JUnit.GormEnhancerTests.testCRUD">
+    <configuration default="false" name="RedisListTests.testIndex" type="JUnit" factoryName="JUnit" temporary="true">
       <extension name="coverage" enabled="false" merge="false">
         <pattern>
           <option name="PATTERN" value="org.springframework.datastore.redis.collection.*" />
@@ -886,7 +890,40 @@
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <option name="PACKAGE_NAME" value="org.springframework.datastore.redis.collection" />
-      <option name="MAIN_CLASS_NAME" value="org.springframework.datastore.redis.collection.RedisSetTests" />
+      <option name="MAIN_CLASS_NAME" value="org.springframework.datastore.redis.collection.RedisListTests" />
+      <option name="METHOD_NAME" value="testIndex" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="65305" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="RedisMapTests.testSize" type="JUnit" factoryName="JUnit" temporary="true">
+      <extension name="coverage" enabled="false" merge="false">
+        <pattern>
+          <option name="PATTERN" value="org.springframework.datastore.redis.collection.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="redis" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="org.springframework.datastore.redis.collection" />
+      <option name="MAIN_CLASS_NAME" value="org.springframework.datastore.redis.collection.RedisMapTests" />
       <option name="METHOD_NAME" value="testSize" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" />
@@ -902,20 +939,20 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
-    <configuration default="false" name="RedisSetTests.testContains" type="JUnit" factoryName="JUnit" temporary="true">
+    <configuration default="false" name="ListQueryTests" type="JUnit" factoryName="JUnit" temporary="true">
       <extension name="coverage" enabled="false" merge="false">
         <pattern>
-          <option name="PATTERN" value="org.springframework.datastore.redis.collection.*" />
+          <option name="PATTERN" value="org.springframework.datastore.redis.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
       <module name="redis" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="org.springframework.datastore.redis.collection" />
-      <option name="MAIN_CLASS_NAME" value="org.springframework.datastore.redis.collection.RedisSetTests" />
-      <option name="METHOD_NAME" value="testContains" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="PACKAGE_NAME" value="org.springframework.datastore.redis" />
+      <option name="MAIN_CLASS_NAME" value="org.springframework.datastore.redis.ListQueryTests" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
       <option name="VM_PARAMETERS" />
       <option name="PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -929,19 +966,46 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
-    <configuration default="false" name="RedisSetTests.testIterator" type="JUnit" factoryName="JUnit" temporary="true">
+    <configuration default="false" name="OneToManyAssociationTests" type="JUnit" factoryName="JUnit" temporary="true">
       <extension name="coverage" enabled="false" merge="false">
         <pattern>
-          <option name="PATTERN" value="org.springframework.datastore.redis.collection.*" />
+          <option name="PATTERN" value="org.springframework.datastore.redis.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
       <module name="redis" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="org.springframework.datastore.redis.collection" />
-      <option name="MAIN_CLASS_NAME" value="org.springframework.datastore.redis.collection.RedisSetTests" />
-      <option name="METHOD_NAME" value="testIterator" />
+      <option name="PACKAGE_NAME" value="org.springframework.datastore.redis" />
+      <option name="MAIN_CLASS_NAME" value="org.springframework.datastore.redis.OneToManyAssociationTests" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="GormEnhancerTests.testCRUD" type="JUnit" factoryName="JUnit" temporary="true">
+      <extension name="coverage" enabled="false" merge="false">
+        <pattern>
+          <option name="PATTERN" value="org.grails.datastore.gorm.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="grails-datastore-gorm" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="org.grails.datastore.gorm" />
+      <option name="MAIN_CLASS_NAME" value="org.grails.datastore.gorm.GormEnhancerTests" />
+      <option name="METHOD_NAME" value="testCRUD" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" />
       <option name="PARAMETERS" />
@@ -965,6 +1029,14 @@
       <method>
         <option name="AntTarget" enabled="false" />
         <option name="BuildArtifacts" enabled="false" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
+    <configuration default="true" type="FlexUnitRunConfigurationType" factoryName="FlexUnit">
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
         <option name="Maven.BeforeRunTask" enabled="false" />
       </method>
     </configuration>
@@ -1032,11 +1104,11 @@
       </method>
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="JUnit.RedisEntityPesisterTests" />
-      <item index="1" class="java.lang.String" itemvalue="JUnit.ListQueryTests.testListQuery" />
-      <item index="2" class="java.lang.String" itemvalue="JUnit.RedisSetTests.testSize" />
-      <item index="3" class="java.lang.String" itemvalue="JUnit.RedisSetTests.testContains" />
-      <item index="4" class="java.lang.String" itemvalue="JUnit.RedisSetTests.testIterator" />
+      <item index="0" class="java.lang.String" itemvalue="JUnit.RedisListTests.testIndex" />
+      <item index="1" class="java.lang.String" itemvalue="JUnit.RedisMapTests.testSize" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.ListQueryTests" />
+      <item index="3" class="java.lang.String" itemvalue="JUnit.OneToManyAssociationTests" />
+      <item index="4" class="java.lang.String" itemvalue="JUnit.GormEnhancerTests.testCRUD" />
     </list>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
@@ -1063,16 +1135,17 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
+      <changelist id="be89379f-fd5d-4dca-9d83-b5ea01f03fe4" name="Default" comment="" />
       <created>1281091029207</created>
       <updated>1281091029207</updated>
     </task>
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="53" y="22" width="1867" height="1174" extended-state="0" />
-    <editor active="false" />
+    <frame x="56" y="22" width="1864" height="1174" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32922202" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32922202" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32922202" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -1082,9 +1155,9 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24958768" sideWeight="0.66413665" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24944934" sideWeight="0.66413665" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24958768" sideWeight="0.66413665" order="4" side_tool="false" content_ui="combo" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24944934" sideWeight="0.66413665" order="4" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32922202" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -1105,7 +1178,7 @@
     <option name="ENABLE_BACKGROUND_PROCESSES" value="false" />
     <option name="CHANGED_ON_SERVER_INTERVAL" value="60" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added the notion of entity interceptors so that a validation layer can be plugged in layer" />
+    <option name="LAST_COMMIT_MESSAGE" value="Renamed createConnection method to createSession" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1127,6 +1200,12 @@
     <MESSAGE value="Fleshed out the querying API further" />
     <MESSAGE value="Added TODO item to lazy loading results for Redis" />
     <MESSAGE value="Added the notion of entity interceptors so that a validation layer can be plugged in layer" />
+    <MESSAGE value="More progress on Redis querying. Created a RedisSet and RedisList type to ease working with Redis collections. Need to know fit these into a RedisResultList type to make queries more efficient" />
+    <MESSAGE value="fix for failing test" />
+    <MESSAGE value="Simple queries working with Redis! Now for more complex queries (conjunctions/disjunctions etc.)" />
+    <MESSAGE value="improved the test a bit" />
+    <MESSAGE value="a lot of refactoring work to minimize dependency on JRedis, new RedisMap implementation to make it easy to work with redis hashes etc." />
+    <MESSAGE value="Renamed createConnection method to createSession" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1136,127 +1215,115 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/engine/RedisEntityPersister.java">
+    <entry file="jar://$GRADLE_CACHE$/cglib/cglib-nodep/jars/cglib-nodep-2.2.jar!/net/sf/cglib/proxy/Enhancer.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="15" selection-start="2135" selection-end="2135" vertical-scroll-proportion="0.20426829">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/query/Query.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="22" selection-start="933" selection-end="933" vertical-scroll-proportion="-3.7630403">
+        <state line="5" column="20" selection-start="163" selection-end="163" vertical-scroll-proportion="0.10759494">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar:///System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/src.jar!/src/java/util/Set.java">
+    <entry file="jar://$SPRING_HOME$/src/org.springframework.aop-sources-3.0.3.RELEASE.jar!/org/springframework/aop/framework/Cglib2AopProxy.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="293" column="12" selection-start="13528" selection-end="13528" vertical-scroll-proportion="0.6020864">
+        <state line="226" column="20" selection-start="8490" selection-end="8490" vertical-scroll-proportion="0.64329267">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/convert/ByteArrayAwareTypeConverter.java">
+    <entry file="file://$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/engine/AbstractKeyValueEntityPesister.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="48" selection-start="345" selection-end="345" vertical-scroll-proportion="0.22801788">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/query/RedisQueryUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="47" selection-start="970" selection-end="970" vertical-scroll-proportion="0.3546945">
+        <state line="170" column="24" selection-start="6453" selection-end="6453" vertical-scroll-proportion="1.1097561">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar:///System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/src.jar!/src/java/util/ListIterator.java">
+    <entry file="jar://$SPRING_HOME$/src/org.springframework.aop-sources-3.0.3.RELEASE.jar!/org/springframework/aop/framework/ProxyFactory.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="17" selection-start="1540" selection-end="1540" vertical-scroll-proportion="-2.2682564">
+        <state line="34" column="20" selection-start="1137" selection-end="1137" vertical-scroll-proportion="0.40536514">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/collection/RedisSetTests.groovy">
+    <entry file="jar://$SPRING_HOME$/src/org.springframework.aop-sources-3.0.3.RELEASE.jar!/org/springframework/aop/framework/ProxyCreatorSupport.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="61" column="35" selection-start="1112" selection-end="1121" vertical-scroll-proportion="0.50384027">
+        <state line="99" column="42" selection-start="3053" selection-end="3053" vertical-scroll-proportion="0.3919523">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisList.java">
+    <entry file="jar://$SPRING_HOME$/src/org.springframework.aop-sources-3.0.3.RELEASE.jar!/org/springframework/aop/framework/DefaultAopProxyFactory.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="47" selection-start="1171" selection-end="1171" vertical-scroll-proportion="0.15668203">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state line="48" column="56" selection-start="1664" selection-end="1664" vertical-scroll-proportion="0.13859911">
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisSet.java">
+    <entry file="file://$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/Datastore.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="41" column="27" selection-start="1322" selection-end="1322" vertical-scroll-proportion="0.50384027">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state line="18" column="17" selection-start="499" selection-end="499" vertical-scroll-proportion="0.3323398">
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisIterator.java">
+    <entry file="file://$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/Session.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="80" column="34" selection-start="2000" selection-end="2000" vertical-scroll-proportion="0.6661699">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state line="19" column="17" selection-start="520" selection-end="520" vertical-scroll-proportion="-0.008941878">
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/LazyLoadedOneToOneTests.java">
+    <entry file="jar://$GRADLE_CACHE$/org.codehaus.groovy/groovy/jars/groovy-1.7.2.jar!/org/codehaus/groovy/runtime/DefaultGroovyMethods.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="37" selection-start="345" selection-end="345" vertical-scroll-proportion="0.22801788">
+        <state line="35" column="35" selection-start="1761" selection-end="1761" vertical-scroll-proportion="0.3322785">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/RedisDatastore.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="41" column="28" selection-start="1393" selection-end="1393" vertical-scroll-proportion="0.58271235">
+        <state line="35" column="11" selection-start="1198" selection-end="1198" vertical-scroll-proportion="0.43070045">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/RedisSession.java">
+    <entry file="file://$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/MappingContext.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="0" selection-start="1658" selection-end="1903" vertical-scroll-proportion="0.47540984">
+        <state line="34" column="17" selection-start="1335" selection-end="1335" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar:///System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/src.jar!/src/java/util/List.java">
+    <entry file="file://$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/AbstractDatastore.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="427" column="6" selection-start="19719" selection-end="19719" vertical-scroll-proportion="0.66169894">
+        <state line="77" column="20" selection-start="2734" selection-end="2734" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/util/RedisTemplate.java">
+    <entry file="file://$PROJECT_DIR$/grails-datastore-gorm/src/test/groovy/org/grails/datastore/gorm/GormEnhancerTests.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="71" column="23" selection-start="2226" selection-end="2226" vertical-scroll-proportion="0.5394933">
+        <state line="23" column="28" selection-start="610" selection-end="610" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/AbstractRedisCollection.java">
+    <entry file="file://$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormStaticApi.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="22" selection-start="281" selection-end="281" vertical-scroll-proportion="0.30402383">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state line="0" column="0" selection-start="0" selection-end="597" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormInstanceApi.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormEnhancer.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="0" selection-start="598" selection-end="598" vertical-scroll-proportion="0.025335321">
+          <folding />
         </state>
       </provider>
     </entry>

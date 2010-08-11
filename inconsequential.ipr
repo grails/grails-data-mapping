@@ -201,6 +201,7 @@
       <module fileurl="file://$PROJECT_DIR$/cassandra/cassandra.iml" filepath="$PROJECT_DIR$/cassandra/cassandra.iml" />
       <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-adapter/grails-adapter.iml" filepath="$PROJECT_DIR$/grails-adapter/grails-adapter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm/grails-datastore-gorm.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm/grails-datastore-gorm.iml" />
       <module fileurl="file://$PROJECT_DIR$/redis/redis.iml" filepath="$PROJECT_DIR$/redis/redis.iml" />
       <module fileurl="file://$PROJECT_DIR$/dynamic/runtime-dynamic.iml" filepath="$PROJECT_DIR$/dynamic/runtime-dynamic.iml" />
     </modules>
