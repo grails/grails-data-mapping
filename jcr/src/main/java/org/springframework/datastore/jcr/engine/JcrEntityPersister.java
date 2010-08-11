@@ -1,91 +1,74 @@
 package org.springframework.datastore.jcr.engine;
 
+import org.apache.derby.iapi.services.classfile.ClassMember;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.core.Session;
 import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.engine.PropertyValueIndexer;
+import org.springframework.datastore.jcr.uuid.UUIDUtil;
 import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
-import org.springframework.datastore.keyvalue.engine.KeyValueEntry;
+import org.springframework.datastore.mapping.ClassMapping;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.mapping.types.Association;
+import org.springframework.datastore.node.AbstractNodeEnityPersister;
 import org.springframework.datastore.query.Query;
-import org.springmodules.jcr.JcrSessionFactory;
+import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
 
-import java.io.Serializable;
-import java.util.List;
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+
 
 /**
  * @author Erawat Chamanont
  * @since 1.0
  */
-public class JcrEntityPersister extends AbstractKeyValueEntityPesister<KeyValueEntry, Object> {
-    private JcrSessionFactory factory;
+public class JcrEntityPersister extends AbstractNodeEnityPersister {//extends AbstractKeyValueEntityPesister<Node, String> {
     private JcrTemplate jcrTemplate;
 
     public JcrEntityPersister(MappingContext context, PersistentEntity entity, Session session) {
         super(context, entity, session);
     }
 
-    public JcrEntityPersister(MappingContext context, PersistentEntity entity,Session session, JcrSessionFactory factory){
+    public JcrEntityPersister(MappingContext context, PersistentEntity entity,Session session, JcrTemplate jcrTemplate){
         super(context, entity, session);
-        this.factory = factory;
-        jcrTemplate = new JcrTemplate(factory);
+        this.jcrTemplate = jcrTemplate;
+        this.jcrTemplate.setAllowCreate(true);
     }
 
-
-    @Override
-    protected void deleteEntry(String family, Object key) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public AssociationIndexer getAssociationIndexer(Association association) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected KeyValueEntry createNewEntry(String family) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected Object getEntryValue(KeyValueEntry nativeEntry, String property) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected void setEntryValue(KeyValueEntry nativeEntry, String key, Object value) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected KeyValueEntry retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected Object storeEntry(PersistentEntity persistentEntity, KeyValueEntry nativeEntry) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected void updateEntry(PersistentEntity persistentEntity, Object key, KeyValueEntry entry) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    protected void deleteEntries(String family, List<Object> keys) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+   /* @Override
+    protected String storeEntry(final PersistentEntity persistentEntity, Node nativeEntry) {
+       final UUID uuid = UUIDUtil.getTimeUUID();
+       return (String)jcrTemplate.execute(new JcrCallback() {
+            public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
+                Node rootNode = session.getRootNode();
+                Node entity = rootNode.addNode(persistentEntity.getName());
+                entity.addMixin("mix:referenceable");
+                entity.addMixin("mix:versionable");
+                entity.addMixin("mix:lockable");
+                for(PersistentProperty property : persistentEntity.getPersistentProperties()){
+                    try{
+                        if(property.getName().equals("id")){
+                            entity.setProperty("id",uuid.toString());
+                        }else{
+                            entity.setProperty(property.getName(), persistentEntity.getJavaClass().getDeclaredField(property.getName()).toString());
+                            System.out.println(persistentEntity.getJavaClass().getDeclaredField(property.getName()).toString());
+                        }
+                    }catch(NoSuchFieldException e){
+                        throw new DataAccessResourceFailureException("Exception occurred mapping Fields to Node: " + e.getMessage(),e);
+                    }
+                }
+                session.save();
+                return entity.getUUID();
+            }
+        });
+    }*/
+    
 
     public Query createQuery() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;  
     }
 }

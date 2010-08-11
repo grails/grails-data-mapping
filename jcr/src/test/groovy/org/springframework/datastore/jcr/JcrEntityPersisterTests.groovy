@@ -1,7 +1,7 @@
 package org.springframework.datastore.jcr
 
 import org.junit.Test
-import org.springframework.datastore.core.Session
+import org.junit.Ignore
 
 /**
  * @author Erawat Chamanont
@@ -9,7 +9,7 @@ import org.springframework.datastore.core.Session
  */
 class JcrEntityPersisterTests extends AbstractJcrTest {
 
-  @Test
+  @Ignore
   void testConnection(){
     //Session conn = ds.connect(connectionDetails)
     assert null != conn;
@@ -24,12 +24,23 @@ class JcrEntityPersisterTests extends AbstractJcrTest {
 
   @Test
   void testPersist(){
-
+    ds.mappingContext.addPersistentEntity(TestEntity); //Why it needed?
+    def t = new TestEntity(title:"foo",body:"bar");
+    conn.persist(t);
+    assert null != t.id;
+    println t.id;
+   
   }
+
+
 }
 
 class TestEntity{
+   String version
+   String path
+   //String UUID  should be in id - transform needed
+
    UUID id
-   String name
-   int age
+   String title
+   String body
 }

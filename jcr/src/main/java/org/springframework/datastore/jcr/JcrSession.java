@@ -1,5 +1,6 @@
 package org.springframework.datastore.jcr;
 
+import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.TransientRepository;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.core.AbstractSession;
@@ -16,7 +17,6 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -44,18 +44,18 @@ public class JcrSession extends AbstractSession<Repository> {
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
         PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
         if(entity != null) {
-          return new JcrEntityPersister(mappingContext, entity,this, jcrSessionFactory);
+          return new JcrEntityPersister(mappingContext, entity, this, new JcrTemplate(jcrSessionFactory));
         }
         return null;
     }
 
-    @Override //TODO: Fix the method - Session still alive after calling logout()
+    @Override
     public void disconnect(){
-         try {
-             jcrSessionFactory.getSession().logout();
-        } catch (Exception e) {
-            throw new DataAccessResourceFailureException("Failed to destroy JCR session: " + e.getMessage(), e);
-        } finally {
+        try{
+            ((RepositoryImpl) repository).shutdown();;
+        }catch (Exception e) {
+           throw new DataAccessResourceFailureException("Failed to disconnect JCR Repository: " + e.getMessage(), e);
+        }finally {
             super.disconnect();
         }
     }

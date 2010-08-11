@@ -3,6 +3,8 @@ package org.springframework.datastore.jcr;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.datastore.core.AbstractDatastore;
 import org.springframework.datastore.core.Session;
+import org.springframework.datastore.keyvalue.mapping.KeyValueMappingContext;
+import org.springframework.datastore.mapping.MappingContext;
 
 import java.util.Map;
 
@@ -12,7 +14,13 @@ import java.util.Map;
  */
 public class JcrDatastore  extends AbstractDatastore {
 
-    public JcrDatastore(){}
+    public JcrDatastore(MappingContext mappingContext) {
+        super(mappingContext);
+    }
+    //Why this really needs to implement? 
+    public JcrDatastore(){
+        super(new KeyValueMappingContext(""));              
+    }
 
     @Override
     protected Session createConnection(Map<String, String> connectionDetails) {
