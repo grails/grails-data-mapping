@@ -23,9 +23,10 @@ public class JcrDatastore  extends AbstractDatastore {
     }
 
     @Override
-    protected Session createConnection(Map<String, String> connectionDetails) {
+    protected Session createSession(Map<String, String> connectionDetails) {
         System.setProperty("org.apache.jackrabbit.repository.conf", connectionDetails.get("configuration"));
         System.setProperty("org.apache.jackrabbit.repository.home", connectionDetails.get("homeDir"));
         return new JcrSession(connectionDetails, getMappingContext());  
     }
+
 }

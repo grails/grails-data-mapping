@@ -1,25 +1,11 @@
 package org.springframework.datastore.jcr.engine;
 
-import org.apache.derby.iapi.services.classfile.ClassMember;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.core.Session;
-import org.springframework.datastore.engine.AssociationIndexer;
-import org.springframework.datastore.engine.PropertyValueIndexer;
-import org.springframework.datastore.jcr.uuid.UUIDUtil;
-import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
-import org.springframework.datastore.mapping.ClassMapping;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
-import org.springframework.datastore.mapping.PersistentProperty;
-import org.springframework.datastore.mapping.types.Association;
 import org.springframework.datastore.node.AbstractNodeEnityPersister;
 import org.springframework.datastore.query.Query;
-import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
-
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
 
 
 /**

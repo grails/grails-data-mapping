@@ -2,8 +2,7 @@ package org.springframework.datastore.jcr
 
 import org.junit.BeforeClass
 import javax.jcr.Repository
-import org.springmodules.jcr.RepositoryFactoryBean
-import org.apache.jackrabbit.core.TransientRepository
+
 import javax.jcr.Session
 import javax.jcr.SimpleCredentials
 import org.junit.After
