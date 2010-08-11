@@ -38,7 +38,7 @@ public class RedisDatastore extends AbstractDatastore {
     }
 
     @Override
-    protected Session createConnection(Map<String, String> connectionDetails) {
+    protected Session createSession(Map<String, String> connectionDetails) {
         return new RedisSession(connectionDetails, getMappingContext());
     }
 }

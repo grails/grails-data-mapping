@@ -43,7 +43,7 @@ public class CassandraDatastore extends AbstractDatastore {
     }
 
     @Override
-    protected Session createConnection(Map<String, String> connectionDetails) {
+    protected Session createSession(Map<String, String> connectionDetails) {
         final CassandraClient client;
         try {
             client = connectionPool.borrowClient("localhost", 9160);

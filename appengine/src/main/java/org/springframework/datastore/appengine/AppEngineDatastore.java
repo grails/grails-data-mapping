@@ -22,7 +22,7 @@ public class AppEngineDatastore extends AbstractDatastore {
     }
 
     @Override
-    protected Session createConnection(Map<String, String> connectionDetails) {
+    protected Session createSession(Map<String, String> connectionDetails) {
         return new AppEngineSession(connectionDetails, getMappingContext());
     }
 

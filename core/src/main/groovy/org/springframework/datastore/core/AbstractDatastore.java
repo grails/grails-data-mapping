@@ -52,7 +52,7 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
     }
 
     public final Session connect(Map<String, String> connectionDetails) {
-        final Session connection = createConnection(connectionDetails);
+        final Session connection = createSession(connectionDetails);
         if(connection != null) {
             currentConnectionThreadLocal.set(connection);
         }
@@ -65,7 +65,7 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
      * @param connectionDetails The session details
      * @return The session object
      */
-    protected abstract Session createConnection(Map<String, String> connectionDetails);
+    protected abstract Session createSession(Map<String, String> connectionDetails);
 
     public final Session getCurrentSession() throws ConnectionNotFoundException {
         final Session connection = currentConnectionThreadLocal.get();
