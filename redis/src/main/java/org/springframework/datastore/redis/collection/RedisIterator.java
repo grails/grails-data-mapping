@@ -53,37 +53,4 @@ public class RedisIterator implements Iterator {
             return super.toString();
     }
 
-    public static class RedisValue {
-        private byte[] value;
-        private TypeConverter converter;
-
-        public RedisValue(byte[] bytes, TypeConverter converter) {
-            this.value = bytes;
-            this.converter = converter;
-        }
-
-        public byte[] getBytes() {
-            return value;
-        }
-
-        public String plus(String str) {
-            return toString()+ str;
-        }
-
-        public Long plus(Long n) {
-            return toLong() + n;
-        }
-
-        public Long plus(Integer n) {
-            return toLong() + n;
-        }
-
-        public Long toLong() {
-            return converter.convertIfNecessary(value, Long.class);
-        }
-        @Override
-        public String toString() {
-            return converter.convertIfNecessary(value, String.class);
-        }
-    }
 }

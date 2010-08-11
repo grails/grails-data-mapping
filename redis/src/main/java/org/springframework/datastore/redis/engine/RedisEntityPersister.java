@@ -15,7 +15,6 @@
 package org.springframework.datastore.redis.engine;
 
 import org.jredis.JRedis;
-import org.jredis.RedisException;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.engine.PropertyValueIndexer;
@@ -27,13 +26,15 @@ import org.springframework.datastore.mapping.types.Association;
 import org.springframework.datastore.query.Query;
 import org.springframework.datastore.redis.RedisEntry;
 import org.springframework.datastore.redis.RedisSession;
+import org.springframework.datastore.redis.collection.RedisCollection;
+import org.springframework.datastore.redis.collection.RedisSet;
 import org.springframework.datastore.redis.query.RedisQuery;
-import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An {@link org.springframework.datastore.engine.EntityPersister} for the Redis NoSQL datastore
@@ -44,10 +45,12 @@ import java.util.List;
 public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEntry, Long> {
     private RedisAssociationIndexer indexer;
     private RedisTemplate redisTemplate;
+    private RedisCollection allEntityIndex;
 
     public RedisEntityPersister(MappingContext context, PersistentEntity entity, RedisSession conn, final JRedis jredisClient) {
         super(context, entity, conn);
         this.redisTemplate = new RedisTemplate(jredisClient);
+        allEntityIndex = new RedisSet(redisTemplate, getEntityFamily() + ".all");
     }
 
 
@@ -78,17 +81,13 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
         final String hashKey = family + ":" + getLong(key);
 
         final List<String> props = persistentEntity.getPersistentPropertyNames();
-        return (RedisEntry) redisTemplate.execute(new RedisCallback() {
-            public Object doInRedis(JRedis jredis) throws RedisException {
-                final List<byte[]> values = jredis.hmget(hashKey, props.toArray(new String[props.size()]));
-                if(entityDoesntExistForValues(values)) return null;
-                RedisEntry entry = new RedisEntry(family);
-                for (int i = 0; i < props.size(); i++) {
-                      entry.put(props.get(i), values.get(i));
-                }
-                return entry;
-            }
-        });
+        final List<byte[]> values = redisTemplate.hmget(hashKey, props.toArray(new String[props.size()]));
+        if(entityDoesntExistForValues(values)) return null;
+        RedisEntry entry = new RedisEntry(family);
+        for (int i = 0; i < props.size(); i++) {
+              entry.put(props.get(i), values.get(i));
+        }
+        return entry;
     }
 
     private boolean entityDoesntExistForValues(List<byte[]> values) {
@@ -110,67 +109,48 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     private Long performInsertion(final String family, final Long id, final RedisEntry nativeEntry) {
-        return (Long) redisTemplate.execute(new RedisCallback() {
-            public Object doInRedis(JRedis jredis) throws RedisException {
-               String key = family + ":" + id;
-               jredis.hmset(key,nativeEntry);
-               return id;
-            }
-        });
+        String key = family + ":" + id;
+        redisTemplate.hmset(key,nativeEntry);
+        return id;
+
     }
 
-    public String getAllEntityIndex() {
-        return getEntityFamily() + ".all";
+    public RedisCollection getAllEntityIndex() {
+        return this.allEntityIndex;
     }
 
     protected Long generateIdentifier(final String family) {
-        return (Long) redisTemplate.execute(new RedisCallback(){
-            public Object doInRedis(JRedis jredis) throws RedisException {
-                final long id = jredis.incr(family + ".next_id");
-                // keep a record of all inserted entities for querying later
-                jredis.sadd(getAllEntityIndex(), id);
-                return id;
-            }
-        });
+        long id = redisTemplate.incr(family + ".next_id");
+        getAllEntityIndex().add(id);
+        return id;
     }
 
     @Override
     protected void deleteEntries(final String family, final List<Long> keys) {
-        redisTemplate.execute(new RedisCallback(){
-            public Object doInRedis(JRedis jredis) throws RedisException {
-                final List<String> actualKeys = new ArrayList<String>();
-                for (Long key : keys) {
-                    actualKeys.add(family + ":" + key);
-                    jredis.srem(getAllEntityIndex(), key);
-                }
+        final List<String> actualKeys = new ArrayList<String>();
+        for (Long key : keys) {
+            actualKeys.add(family + ":" + key);
+            getAllEntityIndex().remove(key);
+        }
 
-                jredis.del(actualKeys.toArray(new String[actualKeys.size()]));
-
-                return null;
-            }
-        });
+        redisTemplate.del(actualKeys.toArray(new String[actualKeys.size()]));
     }
 
     @Override
     protected void deleteEntry(final String family, final Long key) {
         final String actualKey = family + ":" + key;
-        redisTemplate.execute(new RedisCallback(){
-            public Object doInRedis(JRedis jredis) throws RedisException {
-                jredis.srem(getAllEntityIndex(), key);
-                jredis.del(actualKey);
-                return null;
-            }
-        });
+        getAllEntityIndex().remove(key);
+        redisTemplate.del(actualKey);
     }
 
     @Override
     public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-        return new RedisPropertyValueIndexer(redisTemplate.getJRedis(),typeConverter, property);
+        return new RedisPropertyValueIndexer(redisTemplate,typeConverter, property);
     }
 
     @Override
     public AssociationIndexer getAssociationIndexer(Association oneToMany) {
-        return new RedisAssociationIndexer(redisTemplate.getJRedis(), typeConverter, oneToMany);
+        return new RedisAssociationIndexer(redisTemplate, typeConverter, oneToMany);
     }
 
     @Override

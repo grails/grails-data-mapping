@@ -14,12 +14,11 @@
  */
 package org.springframework.datastore.redis.collection;
 
+import org.springframework.beans.TypeConverter;
+import org.springframework.datastore.keyvalue.convert.ByteArrayAwareTypeConverter;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 /**
  * Creates a list that is backed onto a Redis list
@@ -28,17 +27,18 @@ import java.util.ListIterator;
  * @since 1.0
  * 
  */
-public class RedisList extends AbstractRedisCollection implements List {
-    public RedisList(RedisTemplate redisTemplate, String redisKey) {
-        super(redisTemplate, redisKey);
-    }
+public class RedisList extends AbstractList implements List, RedisCollection {
+    private RedisTemplate redisTemplate;
+    private String redisKey;
+    private TypeConverter converter = new ByteArrayAwareTypeConverter();
 
-    public boolean addAll(int index, Collection c) {
-        throw new UnsupportedOperationException("Method addAll(index, collection) not implemented");
+    public RedisList(RedisTemplate redisTemplate, String redisKey) {
+        this.redisTemplate = redisTemplate;
+        this.redisKey = redisKey;
     }
 
     public Object get(int index) {
-        return redisTemplate.lindex(redisKey, index);
+        return new RedisValue(redisTemplate.lindex(redisKey, index), converter);
     }
 
     public Object set(int index, Object element) {
@@ -48,33 +48,21 @@ public class RedisList extends AbstractRedisCollection implements List {
     }
 
     public void add(int index, Object element) {
-        throw new UnsupportedOperationException("Method add(index, element) not implemented");
+        if(index == 0) {
+            redisTemplate.lpush(redisKey, element);
+        }
+        else if(index == size()) {
+            redisTemplate.rpush(redisKey, element);
+        }
+        else {
+            throw new UnsupportedOperationException("Redis lists only support adding elements at the beginning or end of a list");
+        }
     }
 
     public Object remove(int index) {
         Object o = get(index);
         remove(o);
         return o;
-    }
-
-    public int indexOf(Object o) {
-        throw new UnsupportedOperationException("Method indexOf(Object) not implemented");
-    }
-
-    public int lastIndexOf(Object o) {
-        throw new UnsupportedOperationException("Method lastIndexOf(Object) not implemented");
-    }
-
-    public ListIterator listIterator() {
-        throw new UnsupportedOperationException("Method listIterator() not implemented");
-    }
-
-    public ListIterator listIterator(int index) {
-        throw new UnsupportedOperationException("Method listIterator() not implemented");
-    }
-
-    public List subList(int fromIndex, int toIndex) {
-        throw new UnsupportedOperationException("Method subList(fromIndex, toIndex) not implemented");
     }
 
     public int size() {
@@ -100,5 +88,13 @@ public class RedisList extends AbstractRedisCollection implements List {
 
     public boolean remove(Object o) {
         return redisTemplate.lrem(redisKey, o, 0);
+    }
+
+    public List<byte[]> members() {
+        return redisTemplate.lrange(redisKey, 0, -1);
+    }
+
+    public List<byte[]> members(int offset, int max) {
+        return redisTemplate.lrange(redisKey, offset, max);
     }
 }

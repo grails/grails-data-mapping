@@ -14,11 +14,16 @@
  */
 package org.springframework.datastore.redis.collection;
 
+import org.jredis.JRedis;
+import org.jredis.RedisException;
+import org.jredis.Sort;
+import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -51,4 +56,16 @@ public class RedisSet extends AbstractRedisCollection implements Set {
     }
 
 
+    public List<byte[]> members() {
+        return redisTemplate.smembers(redisKey);  
+    }
+
+    public List<byte[]> members(final int offset, final int max) {
+        return (List<byte[]>) redisTemplate.execute(new RedisCallback() {
+            public Object doInRedis(JRedis jredis) throws RedisException {
+                Sort sort = jredis.sort(redisKey).LIMIT(offset, max);
+                return sort.exec();
+            }
+        });
+    }
 }

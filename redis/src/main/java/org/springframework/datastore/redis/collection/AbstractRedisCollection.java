@@ -10,7 +10,7 @@ import java.util.Iterator;
  *
  * @author Graeme Rocher
  */
-abstract public class AbstractRedisCollection<E> implements Collection<E> {
+abstract public class AbstractRedisCollection implements Collection, RedisCollection {
     protected RedisTemplate redisTemplate;
     protected String redisKey;
 
@@ -32,23 +32,23 @@ abstract public class AbstractRedisCollection<E> implements Collection<E> {
         return new Object[0];
     }
 
-    public boolean containsAll(Collection<?> c) {
+    public boolean containsAll(Collection c) {
         for (Object o : c) {
             if(!contains(o)) return false;
         }
         return true;
     }
 
-    public boolean addAll(Collection<? extends E> c) {
+    public boolean addAll(Collection c) {
         boolean changed  = false;
-        for (E e : c) {
+        for (Object e : c) {
             boolean elChange = add(e);
             if(elChange && !changed) changed = true;
         }
         return changed;
     }
 
-    public boolean retainAll(Collection<?> c) {
+    public boolean retainAll(Collection c) {
         Iterator i = iterator();
         boolean changed = false;
         while (i.hasNext()) {
@@ -61,7 +61,7 @@ abstract public class AbstractRedisCollection<E> implements Collection<E> {
         return changed;
     }
 
-    public boolean removeAll(Collection<?> c) {
+    public boolean removeAll(Collection c) {
         boolean changed  = false;
         for (Object e : c) {
             boolean elChange = remove(e);

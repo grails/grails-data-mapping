@@ -14,14 +14,14 @@
  */
 package org.springframework.datastore.redis.engine;
 
-import org.jredis.JRedis;
-import org.jredis.RedisException;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.types.Association;
+import org.springframework.datastore.redis.collection.RedisCollection;
+import org.springframework.datastore.redis.collection.RedisList;
+import org.springframework.datastore.redis.collection.RedisSet;
 import org.springframework.datastore.redis.query.RedisQueryUtils;
-import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
 import java.util.List;
@@ -37,30 +37,22 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
     private SimpleTypeConverter typeConverter;
     private Association association;
 
-    public RedisAssociationIndexer(JRedis jredis, SimpleTypeConverter typeConverter, Association association) {
-        this.template = new RedisTemplate(jredis);
+    public RedisAssociationIndexer(RedisTemplate template, SimpleTypeConverter typeConverter, Association association) {
+        this.template = template;
         this.typeConverter = typeConverter;
         this.association = association;
     }
 
     public void index(Long primaryKey, final List<Long> foreignKeys) {
         final String redisKey = createRedisKey(primaryKey);
-        final List storedKeys = queryInternal(redisKey);
-        template.execute(new RedisCallback(){
-            public Object doInRedis(JRedis jredis) throws RedisException {
-                for (Long foreignKey : foreignKeys) {
-                    if(!storedKeys.contains(foreignKey)) {
-                        if(association.isList()) {
-                            jredis.lpush(redisKey, foreignKey);
-                        }
-                        else {
-                            jredis.sadd(redisKey, foreignKey);
-                        }
-                    }
-                }
-                return null;
+        RedisCollection col = createRedisCollection(redisKey);
+        final List storedKeys = queryRedisCollection(col);
+
+        for (Long foreignKey : foreignKeys) {
+            if(!storedKeys.contains(foreignKey)) {
+                col.add(foreignKey);
             }
-        });
+        }
     }
 
     private String createRedisKey(Long primaryKey) {
@@ -77,19 +69,25 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
     }
 
     private List<Long> queryInternal(final String redisKey) {
-        return (List<Long>) template.execute(new RedisCallback() {
+        RedisCollection col = createRedisCollection(redisKey);
+        return queryRedisCollection(col);
+    }
 
-            public Object doInRedis(JRedis jredis) throws RedisException {
-                List<byte[]> results;
-                if(association.isList()) {
-                    results = jredis.lrange(redisKey, 0, -1);
-                }
-                else {
-                    results = jredis.smembers(redisKey);
-                }
-                return RedisQueryUtils.transformRedisResults(typeConverter, results);
-            }
-        });
+    private List<Long> queryRedisCollection(RedisCollection col) {
+        List<byte[]> results;
+        results = col.members();
+        return RedisQueryUtils.transformRedisResults(typeConverter, results);
+    }
+
+    private RedisCollection createRedisCollection(String redisKey) {
+        RedisCollection col;
+        if(association.isList()) {
+            col = new RedisList(template, redisKey);
+        }
+        else {
+            col = new RedisSet(template, redisKey);
+        }
+        return col;
     }
 
 }

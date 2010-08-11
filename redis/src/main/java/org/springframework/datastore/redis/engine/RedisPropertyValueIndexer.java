@@ -14,20 +14,18 @@
  */
 package org.springframework.datastore.redis.engine;
 
-import org.jredis.JRedis;
-import org.jredis.RedisException;
-import org.jredis.Sort;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.mapping.PersistentProperty;
+import org.springframework.datastore.redis.collection.RedisSet;
 import org.springframework.datastore.redis.query.RedisQueryUtils;
-import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Indexes property values for querying later
@@ -41,20 +39,18 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     private PersistentProperty property;
     private SimpleTypeConverter typeConverter;
 
-    public RedisPropertyValueIndexer(JRedis jredis, SimpleTypeConverter typeConverter, PersistentProperty property) {
-        this.template = new RedisTemplate(jredis);
+
+    public RedisPropertyValueIndexer(RedisTemplate template, SimpleTypeConverter typeConverter, PersistentProperty property) {
+        this.template = template;
         this.property = property;
         this.typeConverter = typeConverter;
+
     }
 
     public void index(final Object value, final Long primaryKey) {
         if(value != null) {
-            template.execute(new RedisCallback(){
-                public Object doInRedis(JRedis jredis) throws RedisException {
-                    jredis.sadd(createRedisKey(value), primaryKey);
-                    return null;
-                }
-            });
+            Set set = new RedisSet(template, createRedisKey(value));
+            set.add(primaryKey);
         }
     }
 
@@ -71,22 +67,17 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     }
 
     public List<Long> query(final Object value, final int offset, final int max) {
-        return (List<Long>) template.execute(new RedisCallback() {
+        String redisKey = createRedisKey(value);
 
-            public Object doInRedis(JRedis jredis) throws RedisException {
-                String redisKey = createRedisKey(value);
-                final List<byte[]> results;
-                if(offset > 0 || max > 0) {
-                    Sort sort = jredis.sort(redisKey).LIMIT(offset, max);
-                    results = sort.exec();
-                }
-                else {
-                    results = jredis.smembers(redisKey);
-                }
-
-                return RedisQueryUtils.transformRedisResults(typeConverter, results);
-            }
-        });
+        RedisSet set = new RedisSet(template, redisKey);
+        final List<byte[]> results;
+        if(offset > 0 || max > 0) {
+            results = set.members(offset, max);
+        }
+        else {
+            results = set.members();
+        }
+        return RedisQueryUtils.transformRedisResults(typeConverter, results);
     }
 
 }

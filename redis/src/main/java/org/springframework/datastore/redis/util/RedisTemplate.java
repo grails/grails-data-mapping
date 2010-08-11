@@ -17,9 +17,11 @@ package org.springframework.datastore.redis.util;
 import org.jredis.JRedis;
 import org.jredis.RedisException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.datastore.redis.RedisEntry;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A Spring-style template for querying Redis and translating
@@ -226,4 +228,107 @@ public class RedisTemplate {
         }
     }
 
+    public void lpush(String redisKey, Object o) {
+      try {
+            if(o instanceof Number) {
+                jredis.lpush(redisKey, (Number)o);
+            }
+            else if(o instanceof String) {
+                jredis.lpush(redisKey,(String)o);
+            }
+            else if(o instanceof byte[]) {
+                jredis.lpush(redisKey,(byte[])o);
+            }
+            else if(o instanceof Serializable) {
+                jredis.lpush(redisKey,(Serializable)o);
+            }
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [lpush]: " + e.getMessage(), e) {};
+        }
+    }
+
+    public byte[] hget(String redisKey, String entryKey) {
+        try {
+            return jredis.hget(redisKey,entryKey);
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [hget]: " + e.getMessage(), e) {};
+        }
+    }
+
+    public long hlen(String redisKey) {
+        try {
+            return jredis.hlen(redisKey);
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [hlen]: " + e.getMessage(), e) {};
+        }
+    }
+
+    public boolean hset(String redisKey, String key, Object o) {
+      try {
+            if(o instanceof Number) {
+                return jredis.hset(redisKey, key, (Number)o);
+            }
+            else if(o instanceof String) {
+                return jredis.hset(redisKey,key, (String)o);
+            }
+            else if(o instanceof byte[]) {
+                return jredis.hset(redisKey,key, (byte[])o);
+            }
+            else if(o instanceof Serializable) {
+                return jredis.hset(redisKey,key, (Serializable)o);
+            }
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [hset]: " + e.getMessage(), e) {};
+        }
+        return false;
+    }
+
+    public boolean hdel(String redisKey, String entryKey) {
+        try {
+            return jredis.hdel(redisKey, entryKey);
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [hdel]: " + e.getMessage(), e) {};
+        }
+    }
+
+    public Map<String, byte[]> hgetall(String redisKey) {
+        try {
+            return jredis.hgetall(redisKey);
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [hgetall]: " + e.getMessage(), e) {};
+        }
+    }
+
+    public List<byte[]> hmget(String hashKey, String[] fields) {
+        try {
+            return jredis.hmget(hashKey, fields);
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [hmget]: " + e.getMessage(), e) {};
+        }
+    }
+
+    public void hmset(String key, Map nativeEntry) {
+        try {
+            jredis.hmset(key, nativeEntry);
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [hmset]: " + e.getMessage(), e) {};
+        }
+
+    }
+
+    public long incr(String key) {
+        try {
+            return jredis.incr(key);
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [incr]: " + e.getMessage(), e) {};
+        }
+    }
+
+    public long del(String... redisKey) {
+        try {
+           return jredis.del(redisKey);
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [del]: " + e.getMessage(), e) {};
+        }
+    }
 }

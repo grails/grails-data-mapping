@@ -14,9 +14,6 @@
  */
 package org.springframework.datastore.redis.query;
 
-import org.jredis.JRedis;
-import org.jredis.RedisException;
-import org.jredis.Sort;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.core.Session;
 import org.springframework.datastore.engine.PropertyValueIndexer;
@@ -24,9 +21,8 @@ import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.query.Query;
+import org.springframework.datastore.redis.collection.RedisCollection;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
-import org.springframework.datastore.redis.util.RedisCallback;
-import org.springframework.datastore.redis.util.RedisTemplate;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,34 +34,28 @@ import java.util.List;
  * @since 1.0
  */
 public class RedisQuery extends Query {
-    private RedisTemplate redisTemplate;
     private RedisEntityPersister entityPersister;
 
     public RedisQuery(Session session, PersistentEntity persistentEntity, RedisEntityPersister entityPersister) {
         super(session, persistentEntity);
-        this.redisTemplate = entityPersister.getRedisTemplate();
         this.entityPersister = entityPersister;
     }
 
     @Override
     protected List executeQuery(PersistentEntity entity, List<Criterion> criteria) {
         if(criteria == null || criteria.isEmpty()) {
-            return (List) redisTemplate.execute(new RedisCallback() {
-                public Object doInRedis(JRedis jredis) throws RedisException {
-                    List<byte[]> results;
-                    if(offset > 0 || max > -1) {
-                        Sort sort = jredis.sort(entityPersister.getAllEntityIndex()).LIMIT(offset, max);
-                        results = sort.exec();
-                    }
-                    else {
-                        results = jredis.smembers(entityPersister.getAllEntityIndex());
-                    }
+            List<byte[]> results;
+            RedisCollection col = entityPersister.getAllEntityIndex();
+            if(offset > 0 || max > -1) {
+                results = col.members(offset, max);
+            }
+            else {
+                results = col.members();
+            }
 
-                    final List<Long> identifiers = RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
+            final List<Long> identifiers = RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
 
-                    return new RedisEntityResultList(getSession(), getEntity(), identifiers);
-                }
-            });
+            return new RedisEntityResultList(getSession(), getEntity(), identifiers);
         }
         else {
             if(criteria.size() == 1) {

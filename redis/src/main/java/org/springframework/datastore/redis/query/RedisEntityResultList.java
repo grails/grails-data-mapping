@@ -19,8 +19,6 @@ import org.springframework.datastore.core.Session;
 import org.springframework.datastore.mapping.PersistentEntity;
 
 import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,7 +30,6 @@ public class RedisEntityResultList extends AbstractList{
 
     Session session;
     private List<Long> identifiers;
-    private List<Object> entities = new ArrayList();
     private PersistentEntity entity;
 
     public RedisEntityResultList(Session session, PersistentEntity entity, List<Long> identifiers) {
