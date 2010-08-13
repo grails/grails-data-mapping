@@ -101,6 +101,17 @@ class GormEnhancerTests {
     assert "Bob" == bob.name
     
   }
+
+  @Test
+  void testConjunction() {
+    def age = 40
+    ["Bob", "Fred", "Barney"].each { new TestEntity(name:it, age: age++).save() }
+
+    assert 3 == TestEntity.list().size()
+
+    assert TestEntity.findByNameAndAge("Bob", 40)
+    assert !TestEntity.findByNameAndAge("Bob", 41)
+  }
 }
 
 class TestEntity {
