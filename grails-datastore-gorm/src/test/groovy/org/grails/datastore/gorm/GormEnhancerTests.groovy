@@ -4,6 +4,8 @@ import org.junit.Test
 import org.springframework.datastore.redis.RedisDatastore
 import org.springframework.datastore.keyvalue.mapping.KeyValueMappingContext
 import org.springframework.datastore.core.Session
+import org.junit.Before
+import org.junit.After
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,10 +16,26 @@ import org.springframework.datastore.core.Session
  */
 class GormEnhancerTests {
 
+  Session con
+  @Before
+  void setupRedis() {
+    def redis = new RedisDatastore()
+    redis.mappingContext.addPersistentEntity(TestEntity)
+
+    new GormEnhancer(redis).enhance()
+
+    con = redis.connect(null)
+    con.getNativeInterface().flushdb()
+  }
+
+  @After
+  void disconnect() {
+    con.disconnect()
+  }
+
+
   @Test
   void testCRUD() {
-    Session con = setupRedis()
-
     def t = TestEntity.get(1)
 
     assert !t
@@ -36,21 +54,8 @@ class GormEnhancerTests {
 
     assert t
     assert "Bob" == t.name
-
-
-    con.disconnect()
   }
 
-  private Session setupRedis() {
-    def redis = new RedisDatastore()
-    redis.mappingContext.addPersistentEntity(TestEntity)
-
-    new GormEnhancer(redis).enhance()
-
-    def con = redis.connect(null)
-    con.getNativeInterface().flushdb()
-    return con
-  }
 
   @Test
   void testDynamicFinder() {
@@ -76,13 +81,35 @@ class GormEnhancerTests {
 
     con.disconnect()
   }
+
+  @Test
+  void testDisjunction() {
+    def age = 40
+    ["Bob", "Fred", "Barney"].each { new TestEntity(name:it, age: age++).save() }
+
+    assert 3 == TestEntity.list().size()
+
+    def results = TestEntity.findAllByNameOrAge("Barney", 40)
+
+    assert 2 == results.size()
+
+    def barney = results.find { it.name == "Barney" }
+    assert barney
+    assert 42 == barney.age
+    def bob = results.find { it.age == 40 }
+    assert bob
+    assert "Bob" == bob.name
+    
+  }
 }
 
 class TestEntity {
   Long id
   String name
+  Integer age
 
   static mapping = {
     name index:true
+    age index:true
   }
 }

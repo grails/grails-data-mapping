@@ -27,6 +27,20 @@ public class ByteArrayAwareTypeConverter extends SimpleTypeConverter{
                 }
             }
         });
+        conversionService.addConverter(new Converter<byte[], Integer>() {
+            public Integer convert(byte[] source) {
+                try {
+                    String value = new String(source, "UTF-8");
+                    return Integer.valueOf(value);
+                } catch (UnsupportedEncodingException e) {
+                    return 0;
+                }
+                catch(NumberFormatException e) {
+                    return 0;
+                }
+            }
+        });
+
         conversionService.addConverter(new Converter<byte[], String>() {
             public String convert(byte[] source) {
                 try {
