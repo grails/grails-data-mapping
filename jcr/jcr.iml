@@ -9,6 +9,14 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="core" />
+    <orderEntry type="library" name="JackRabbit" level="project" />
+    <orderEntry type="library" name="Java Persistence" level="project" />
+    <orderEntry type="library" name="Spring Module JCR" level="project" />
+    <orderEntry type="library" name="JCR" level="project" />
+    <orderEntry type="library" name="JUnit" level="project" />
+    <orderEntry type="library" name="Spring Transaction" level="project" />
+    <orderEntry type="library" name="Spring Core" level="project" />
   </component>
 </module>
 

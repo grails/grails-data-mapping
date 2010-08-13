@@ -2,8 +2,7 @@ package org.springframework.datastore.jcr
 
 import org.junit.BeforeClass
 import javax.jcr.Repository
-import org.springmodules.jcr.RepositoryFactoryBean
-import org.apache.jackrabbit.core.TransientRepository
+
 import javax.jcr.Session
 import javax.jcr.SimpleCredentials
 import org.junit.After
@@ -18,11 +17,11 @@ import org.junit.AfterClass
 class AbstractJcrTest{
 
   protected static def conn = null;
-
+  protected static def ds = null;
   //setup JCR Environments
   @BeforeClass
   public static void setupJCR(){
-    def ds = new JcrDatastore()
+    ds = new JcrDatastore()
     def connectionDetails = [username:"username",
                               password:"password",
                               workspace:"default",
@@ -32,8 +31,8 @@ class AbstractJcrTest{
 
   }
 
-  @AfterClass
+/*  @AfterClass
   public static void tearDown() {
     conn.disconnect();
-  }
+  }*/
 }
