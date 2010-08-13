@@ -30,7 +30,7 @@ import java.util.List;
 public abstract class Query {
 
     protected PersistentEntity entity;
-    protected List<Criterion> criteria = new ArrayList<Criterion>();
+    protected Junction criteria = new Conjunction();
     protected int max = -1;
     protected int offset = 0;
     protected Order order = null;
@@ -60,6 +60,21 @@ public abstract class Query {
     }
 
     /**
+     * Creates a disjunction (OR) query
+     * @return The Junction instance
+     */
+    public Junction disjunction() {
+        Disjunction dis = new Disjunction();
+        if(criteria.isEmpty()) {
+            criteria = dis;
+            return criteria;
+        }
+        else {
+            criteria.add(dis);
+            return dis;
+        }
+    }
+    /**
      * Defines the maximum number of results to return
      * @param max The max results
      * @return This query instance
@@ -79,6 +94,11 @@ public abstract class Query {
         return this;
     }
 
+    /**
+     * Specifies the order of results
+     * @param order The order object
+     * @return The Query instance
+     */
     public Query order(Order order) {
         this.order = order;
         return this;
@@ -142,7 +162,7 @@ public abstract class Query {
      * @param criteria The criteria
      * @return The results
      */
-    protected abstract List executeQuery(PersistentEntity entity, List<Criterion> criteria);
+    protected abstract List executeQuery(PersistentEntity entity, Junction criteria);
 
     /**
      * A criterion is used to restrict the results of a query
@@ -172,46 +192,33 @@ public abstract class Query {
         }
     }
 
+    public static abstract class Junction extends Criterion {
+        private List<Criterion> criteria = new ArrayList<Criterion>();
+
+        public Junction add(Criterion c) {
+            if(c != null)
+                criteria.add(c);
+            return this;
+        }
+
+        public List<Criterion> getCriteria() {
+            return criteria;
+        }
+
+        public boolean isEmpty() {
+            return criteria.isEmpty();
+        }
+    }
     /**
      * A Criterion used to combine to criterion in a logical AND
      */
-    public static class Conjunction extends Criterion {
-        private Criterion left;
-        private Criterion right;
-
-        protected Conjunction(Criterion left, Criterion right) {
-            this.left = left;
-            this.right = right;
-        }
-
-        public Criterion getLeftSide() {
-            return left;
-        }
-
-        public Criterion getRightSide() {
-            return right;
-        }
+    public static class Conjunction extends Junction {
     }
 
     /**
      * A Criterion used to combine to criterion in a logical OR
      */
-    public static class Disjunction extends Criterion {
-        private Criterion left;
-        private Criterion right;
-
-        protected Disjunction(Criterion left, Criterion right) {
-            this.left = left;
-            this.right = right;
-        }
-
-        public Criterion getLeftSide() {
-            return left;
-        }
-
-        public Criterion getRightSide() {
-            return right;
-        }
+    public static class Disjunction extends Junction {
     }
 
 }

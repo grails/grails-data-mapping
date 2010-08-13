@@ -53,4 +53,10 @@ public interface PropertyValueIndexer<K> {
      * @return The primary keys
      */
     List<K> query(Object value, int offset, int max);
+
+    /**
+     * @param value The indexed value
+     * @return The name of the index
+     */
+    String getIndexName(Object value);
 }

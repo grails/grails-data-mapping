@@ -80,4 +80,8 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
         return RedisQueryUtils.transformRedisResults(typeConverter, results);
     }
 
+    public String getIndexName(Object value) {
+        return createRedisKey(value);
+    }
+
 }

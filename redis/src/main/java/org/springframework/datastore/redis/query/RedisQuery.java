@@ -15,15 +15,17 @@
 package org.springframework.datastore.redis.query;
 
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.datastore.core.Session;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.query.Query;
+import org.springframework.datastore.redis.RedisSession;
 import org.springframework.datastore.redis.collection.RedisCollection;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
+import org.springframework.datastore.redis.util.RedisTemplate;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,14 +37,16 @@ import java.util.List;
  */
 public class RedisQuery extends Query {
     private RedisEntityPersister entityPersister;
+    private RedisTemplate template;
 
-    public RedisQuery(Session session, PersistentEntity persistentEntity, RedisEntityPersister entityPersister) {
+    public RedisQuery(RedisSession session, PersistentEntity persistentEntity, RedisEntityPersister entityPersister) {
         super(session, persistentEntity);
         this.entityPersister = entityPersister;
+        template = new RedisTemplate(session.getNativeInterface());
     }
 
     @Override
-    protected List executeQuery(PersistentEntity entity, List<Criterion> criteria) {
+    protected List executeQuery(PersistentEntity entity, Junction criteria) {
         if(criteria == null || criteria.isEmpty()) {
             List<byte[]> results;
             RedisCollection col = entityPersister.getAllEntityIndex();
@@ -58,13 +62,14 @@ public class RedisQuery extends Query {
             return new RedisEntityResultList(getSession(), getEntity(), identifiers);
         }
         else {
-            if(criteria.size() == 1) {
-                Criterion c = criteria.get(0);
+            List<Criterion> criteriaList = criteria.getCriteria();
+            if(criteriaList.size() == 1) {
+                Criterion c = criteriaList.get(0);
                 if(c instanceof Equals) {
                     Equals eq = (Equals) c;
                     PersistentProperty property = getEntity().getPropertyByName(eq.getName());
-                    KeyValue kv = (KeyValue) property.getMapping().getMappedForm();
-                    if(kv.isIndex()) {
+                    boolean indexed = isIndexed(property);
+                    if(indexed) {
                         PropertyValueIndexer indexer = entityPersister.getPropertyIndexer(property);
                         List identifiers = indexer.query(eq.getValue(), offset, max);
 
@@ -75,7 +80,49 @@ public class RedisQuery extends Query {
                     }
                 }
             }
+            else {
+                List<String> indices = getIndexNames(criteria, entityPersister);
+                List<byte[]> results;
+                if(criteria instanceof Conjunction) {
+                   List<String> remainingKeys = indices.subList(1, indices.size());
+                   results = template.sinter(indices.get(0), remainingKeys.toArray(new String[remainingKeys.size()]));
+                }
+                else {
+                    List<String> remainingKeys = indices.subList(1, indices.size());
+                    results = template.sunion(indices.get(0), remainingKeys.toArray(new String[remainingKeys.size()]));
+                }
+                final List<Long> identifiers = RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
+                return new RedisEntityResultList(getSession(), getEntity(), identifiers);
+            }
         }
         return Collections.emptyList();
+    }
+
+    private boolean isIndexed(PersistentProperty property) {
+        KeyValue kv = (KeyValue) property.getMapping().getMappedForm();
+        return kv.isIndex();
+    }
+
+    private List<String> getIndexNames(Junction criteria, RedisEntityPersister entityPersister) {
+
+        List<Criterion> criteriaList = criteria.getCriteria();
+        List<String> indices = new ArrayList<String>();
+        for (Criterion criterion : criteriaList) {
+            if(criterion instanceof Equals) {
+                Equals eq = (Equals) criterion;
+                PersistentProperty prop = getEntity().getPropertyByName(eq.getName());
+                if(prop == null) {
+                    throw new DataIntegrityViolationException("Cannot execute query. Entity ["+getEntity()+"] does not declare a property named ["+eq.getName()+"]");
+                }
+                else if(!isIndexed(prop)) {
+                    throw new DataIntegrityViolationException("Cannot query class ["+getEntity()+"] on property ["+prop+"]. The property is not indexed!");
+                }
+
+                PropertyValueIndexer indexer = entityPersister.getPropertyIndexer(prop);
+                indices.add( indexer.getIndexName(eq.getValue()) );
+            }
+        }
+        
+        return indices;
     }
 }

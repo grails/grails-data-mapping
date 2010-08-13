@@ -4,7 +4,7 @@ import org.jredis.JRedis
 import org.junit.Test
 import org.springframework.datastore.core.Session
 import org.springframework.datastore.query.Query
-
+import static org.springframework.datastore.query.Restrictions.*
 /**
  * @author Graeme Rocher
  * @since 1.1
@@ -21,8 +21,7 @@ class ListQueryTests {
     def a = new Author(name:"Stephen King")
     a.books = [
             new Book(title:"The Stand"),
-            new Book(title:"It")
-    ]
+            new Book(title:"It")]
 
     session.persist(a)
 
@@ -42,6 +41,35 @@ class ListQueryTests {
 
     assert 1 == results.size()
     assert "The Stand" == results[0].title
+  }
+
+  @Test
+  void testDisjunction() {
+    def ds = new RedisDatastore()
+    ds.mappingContext.addPersistentEntity(Author)
+    Session<JRedis> session = ds.connect(null)
+    session.getNativeInterface().flushall()
+
+    def a = new Author(name:"Stephen King")
+    a.books = [
+            new Book(title:"The Stand"),
+            new Book(title:"It")  ,
+            new Book(title:"The Shining")
+    ]
+
+    session.persist(a)
+
+
+    Query q = session.createQuery(Book)
+    q
+     .disjunction()
+     .add( eq( "title", "The Stand" ) )
+     .add( eq( "title", "It" ) )
+
+    def results = q.list()
+
+    assert 2 == results.size()
+
   }
 
   @Test

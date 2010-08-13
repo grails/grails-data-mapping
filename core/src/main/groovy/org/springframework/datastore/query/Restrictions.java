@@ -24,10 +24,10 @@ public class Restrictions {
     }
 
     public static Query.Criterion and(Query.Criterion a, Query.Criterion b) {
-        return new Query.Conjunction(a, b);
+        return new Query.Conjunction().add(a).add(b);
     }
 
     public static Query.Criterion or(Query.Criterion a, Query.Criterion b) {
-        return new Query.Disjunction(a, b);
+        return new Query.Disjunction().add(a).add(b);
     }
 }

@@ -331,4 +331,20 @@ public class RedisTemplate {
             throw new DataAccessException("Exception occured executing Redis command [del]: " + e.getMessage(), e) {};
         }
     }
+
+    public List<byte[]> sinter(String firstKey, String...keys) {
+        try {
+            return jredis.sinter(firstKey, keys);
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [sinter]: " + e.getMessage(), e) {};
+        }
+    }
+
+    public List<byte[]> sunion(String firstKey, String... keys) {
+        try {
+            return jredis.sunion(firstKey, keys);
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [sinter]: " + e.getMessage(), e) {};
+        }
+    }
 }

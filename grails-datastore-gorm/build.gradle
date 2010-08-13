@@ -13,4 +13,4 @@ dependencies {
               'com.reardencommerce:clhm-production:1.0.0',
               'commons-lang:commons-lang:2.4'
 }
-jar.appendix = 'gorm'
+jar.appendix = 'grails-gorm'
