@@ -16,6 +16,9 @@ package org.grails.datastore.gorm
 
 import org.springframework.datastore.core.Datastore
 import org.springframework.datastore.mapping.PersistentEntity
+import org.grails.datastore.gorm.finders.FindByFinder
+import org.grails.datastore.gorm.finders.DynamicFinder
+import org.grails.datastore.gorm.finders.FindAllByFinder
 
 /**
  * Enhances a class with GORM behavior
@@ -49,5 +52,24 @@ class GormEnhancer {
         withSession staticMethods.&withSession
       }
     }
+    def finders = [new FindByFinder(datastore), new FindAllByFinder(datastore)]
+    def mc = cls.metaClass
+    mc.static.methodMissing = {String methodName, args ->
+          def result = null
+          def method = finders.find { DynamicFinder f -> f.isMethodMatch(methodName) }
+          if (method) {
+              // register the method invocation for next time
+              synchronized(this) {
+                  mc.static."$methodName" = {List varArgs ->
+                      method.invoke(cls, methodName, varArgs)
+                  }
+              }
+              result = method.invoke(cls, methodName, args)
+          }
+          else {
+              throw new MissingMethodException(methodName, delegate, args)
+          }
+          result
+     }
   }
 }

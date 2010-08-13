@@ -37,6 +37,7 @@ public abstract class Query {
     private Session session;
 
 
+
     /**
      * The ordering of results
      *
@@ -51,6 +52,10 @@ public abstract class Query {
         this.session = session;
     }
 
+    public void add(Criterion criterion) {
+        criteria.add(criterion);
+    }
+    
     public Session getSession() {
         return session;
     }
