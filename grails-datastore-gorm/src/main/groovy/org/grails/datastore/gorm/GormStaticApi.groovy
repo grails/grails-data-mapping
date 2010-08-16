@@ -38,6 +38,17 @@ class GormStaticApi extends AbstractGormApi {
     datastore.currentSession.retrieve(persistentClass,id)
   }
 
+
+  /**
+   * Counts the number of persisted entities
+   * @return The number of persisted entities
+   */
+  Integer count() {
+    def q = datastore.currentSession.createQuery(persistentClass)
+    q.projections().count()
+    q.singleResult() as Integer
+  }
+
   /**
    * Checks whether an entity exists
    */

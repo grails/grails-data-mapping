@@ -122,6 +122,20 @@ class GormEnhancerTests {
     assert TestEntity.findByNameAndAge("Bob", 40)
     assert !TestEntity.findByNameAndAge("Bob", 41)
   }
+
+  @Test
+  void testCount() {
+    def t = new TestEntity(name:"Bob")
+    t.save()
+
+    assert 1 == TestEntity.count()
+
+    t = new TestEntity(name:"Fred")
+    t.save()
+
+    assert 2 == TestEntity.count()
+
+  }
 }
 
 class TestEntity {
