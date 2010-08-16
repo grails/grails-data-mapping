@@ -19,6 +19,7 @@ import org.springframework.datastore.mapping.PersistentEntity
 import org.grails.datastore.gorm.finders.FindByFinder
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FindAllByFinder
+import org.grails.datastore.gorm.finders.CountByFinder
 
 /**
  * Enhances a class with GORM behavior
@@ -28,11 +29,12 @@ import org.grails.datastore.gorm.finders.FindAllByFinder
 class GormEnhancer {
 
   Datastore datastore
-  List<DynamicFinder> finders = [new FindByFinder(datastore), new FindAllByFinder(datastore)]
+  List<DynamicFinder> finders
 
 
   GormEnhancer(datastore) {
     this.datastore = datastore;
+    this.finders = [new FindByFinder(datastore), new FindAllByFinder(datastore), new CountByFinder(datastore)]
   }
 
   void enhance() {

@@ -113,6 +113,18 @@ class GormEnhancerTests {
   }
 
   @Test
+  void testCountByQuery() {
+
+    def age = 40
+    ["Bob", "Fred", "Barney"].each { new TestEntity(name:it, age: age++).save() }
+
+    assert 3 == TestEntity.list().size()
+
+    assert 2 == TestEntity.countByNameOrAge("Barney", 40)
+    assert 1 == TestEntity.countByNameAndAge("Bob", 40)
+  }
+
+  @Test
   void testConjunction() {
     def age = 40
     ["Bob", "Fred", "Barney"].each { new TestEntity(name:it, age: age++).save() }
