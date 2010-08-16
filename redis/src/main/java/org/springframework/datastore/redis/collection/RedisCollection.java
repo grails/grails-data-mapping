@@ -7,6 +7,13 @@ import java.util.List;
  * Commons interface for Redis collections
  */
 public interface RedisCollection extends Collection {
+
+    /**
+     * They key used by the collection
+     *
+     * @return The redis key
+     */    
+    String getRedisKey();
     
     List<byte[]> members();
 

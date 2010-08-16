@@ -50,6 +50,22 @@ public class RedisTemplate {
         return jredis;
     }
 
+    public void save() {
+        try {
+            jredis.save();
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [save]: " + e.getMessage(), e) {};
+        }
+    }
+
+    public void bgsave() {
+        try {
+            jredis.bgsave();
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [bgsave]: " + e.getMessage(), e) {};
+        }
+    }
+
     public boolean sismember(String redisKey, Object o) {
         try {
             if(o instanceof Number) {
@@ -228,6 +244,26 @@ public class RedisTemplate {
         }
     }
 
+    public void flushall() {
+        try {
+            jredis.flushdb();
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [flushall]: " + e.getMessage(), e) {};
+        }
+    }
+
+    public void select(int index) {
+        throw new UnsupportedOperationException("Method select(index) not implemented");
+    }
+
+    public long dbsize() {
+        try {
+            return jredis.dbsize();
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [dbsize]: " + e.getMessage(), e) {};
+        }
+    }
+
     public void lpush(String redisKey, Object o) {
       try {
             if(o instanceof Number) {
@@ -307,7 +343,7 @@ public class RedisTemplate {
         }
     }
 
-    public void hmset(String key, Map nativeEntry) {
+    public void hmset(String key, Map<String, byte[]> nativeEntry) {
         try {
             jredis.hmset(key, nativeEntry);
         } catch (RedisException e) {
@@ -345,6 +381,22 @@ public class RedisTemplate {
             return jredis.sunion(firstKey, keys);
         } catch (RedisException e) {
             throw new DataAccessException("Exception occured executing Redis command [sinter]: " + e.getMessage(), e) {};
+        }
+    }
+
+    public void sinterstore(String storeKey, String... keys) {
+        try {
+            jredis.sinterstore(storeKey, keys);
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [sinterstore]: " + e.getMessage(), e) {};
+        }
+    }
+
+    public void sunionstore(String storeKey, String... keys) {
+        try {
+            jredis.sunionstore(storeKey, keys);
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [sunionstore]: " + e.getMessage(), e) {};
         }
     }
 }

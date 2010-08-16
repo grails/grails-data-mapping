@@ -90,6 +90,10 @@ public class RedisList extends AbstractList implements List, RedisCollection {
         return redisTemplate.lrem(redisKey, o, 0);
     }
 
+    public String getRedisKey() {
+        return this.redisKey;
+    }
+
     public List<byte[]> members() {
         return redisTemplate.lrange(redisKey, 0, -1);
     }

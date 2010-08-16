@@ -1,6 +1,7 @@
 package org.springframework.datastore.core;
 
 import org.springframework.datastore.engine.EntityInterceptorAware;
+import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.query.Query;
 import org.springframework.datastore.tx.Transaction;
@@ -106,4 +107,6 @@ public interface Session<N> extends EntityInterceptorAware {
      * @return The native interface to the datastore
      */
     N getNativeInterface();
+
+    Persister getPersister(Object o);
 }

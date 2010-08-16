@@ -28,6 +28,13 @@ public interface Datastore {
     public Session connect(Map<String, String> connectionDetails);
 
     /**
+     * Connects to the datastore with the default connection details, normally provided via the datastore implementations constructor
+     *
+     * @return The session created using the default connection details.
+     */
+    public Session connect();
+
+    /**
      * Obtains the current session (if any)
      * @return The current thread bound session
      *

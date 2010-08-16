@@ -36,6 +36,7 @@ public abstract class AbstractMappingContext implements MappingContext {
         persistentEntities.remove(entity); persistentEntities.add(entity);
         persistentEntitiesByName.put(entity.getName(), entity);
         entity.initialize();
+
         return entity;
     }
 

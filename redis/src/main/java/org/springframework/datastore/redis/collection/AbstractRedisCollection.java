@@ -20,6 +20,15 @@ abstract public class AbstractRedisCollection implements Collection, RedisCollec
     }
 
 
+    /**
+     * They key used by the collection
+     *
+     * @return The redis key
+     */
+    public String getRedisKey() {
+        return redisKey;
+    }
+
     public void clear() {
         redisTemplate.del(redisKey);
     }

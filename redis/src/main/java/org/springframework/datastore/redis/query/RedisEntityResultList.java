@@ -41,8 +41,7 @@ public class RedisEntityResultList extends AbstractList{
     @Override
     public Object get(int index) {
         Long identifier = identifiers.get(index);
-        Object entity = session.retrieve(this.entity.getJavaClass(), identifier);
-        return entity;
+        return session.retrieve(this.entity.getJavaClass(), identifier);
     }
 
     @Override

@@ -18,9 +18,7 @@ import org.springframework.datastore.engine.EntityInterceptor;
 import org.springframework.datastore.engine.EntityInterceptorAware;
 import org.springframework.datastore.mapping.MappingContext;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Abstract Datastore implementation that deals with binding the
@@ -30,12 +28,23 @@ import java.util.Map;
  */
 public abstract class AbstractDatastore implements Datastore, EntityInterceptorAware {
 
-    MappingContext mappingContext;
     private static ThreadLocal<Session> currentConnectionThreadLocal = new InheritableThreadLocal<Session>();
+
+    protected MappingContext mappingContext;
+    protected Map<String, String> connectionDetails = Collections.emptyMap();
     protected List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
 
     public AbstractDatastore(MappingContext mappingContext) {
         this.mappingContext = mappingContext;
+    }
+
+    public AbstractDatastore(MappingContext mappingContext, Map<String, String> connectionDetails) {
+        this.mappingContext = mappingContext;
+        this.connectionDetails = connectionDetails;
+    }
+
+    public Session connect() {
+        return connect(this.connectionDetails);
     }
 
     public void addEntityInterceptor(EntityInterceptor interceptor) {

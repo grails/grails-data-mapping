@@ -19,6 +19,7 @@ import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -31,6 +32,7 @@ public abstract class Query {
 
     protected PersistentEntity entity;
     protected Junction criteria = new Conjunction();
+    protected ProjectionList projections = new ProjectionList();
     protected int max = -1;
     protected int offset = 0;
     protected Order order = null;
@@ -50,6 +52,11 @@ public abstract class Query {
     protected Query(Session session, PersistentEntity entity) {
         this.entity = entity;
         this.session = session;
+    }
+
+
+    public ProjectionList projections() {
+        return projections;
     }
 
     public void add(Criterion criterion) {
@@ -160,6 +167,17 @@ public abstract class Query {
     }
 
     /**
+     * Executes the query returning a single result or null
+     * @return The result
+     */
+    public Object singleResult() {
+        max(1);
+        List results = list();
+        if(results.isEmpty()) return null;
+        else return results.get(0);
+    }
+
+    /**
      * Subclasses should implement this to provide the concrete implementation
      * of querying
      *
@@ -226,4 +244,46 @@ public abstract class Query {
     public static class Disjunction extends Junction {
     }
 
+    /**
+     * A projection
+     */
+    public static class Projection {}
+
+    /**
+     * A projection used to obtain the identifier of an object
+     */
+    public static class IdProjection extends Projection {}
+
+    public static class CountProjection extends Projection {}
+
+    /**
+     * A list of projections
+     */
+    public static class ProjectionList {
+
+        private List<Projection> projections = new ArrayList();
+
+        public List<Projection> getProjectionList() {
+            return Collections.unmodifiableList(projections);
+        }
+
+        public ProjectionList add(Projection p) {
+            projections.add(p);
+            return this;
+        }
+
+        public ProjectionList id() {
+            add(Projections.id());
+            return this;
+        }
+
+        public ProjectionList count() {
+            add(Projections.count());
+            return this;
+        }
+
+        public boolean isEmpty() {
+            return projections.isEmpty();
+        }
+    }
 }

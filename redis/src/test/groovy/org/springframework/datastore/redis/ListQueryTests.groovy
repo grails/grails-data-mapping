@@ -15,7 +15,7 @@ class ListQueryTests {
   void testListQuery() {
     def ds = new RedisDatastore()
     ds.mappingContext.addPersistentEntity(Author)
-    Session<JRedis> session = ds.connect(null)
+    Session<JRedis> session = ds.connect()
     session.getNativeInterface().flushall()
 
     def a = new Author(name:"Stephen King")
@@ -73,10 +73,42 @@ class ListQueryTests {
   }
 
   @Test
-  void testSimpleQuery() {
+  void testIdProjection() {
     def ds = new RedisDatastore()
     ds.mappingContext.addPersistentEntity(Author)
     Session<JRedis> session = ds.connect(null)
+    session.getNativeInterface().flushall()
+
+    def a = new Author(name:"Stephen King")
+    a.books = [
+            new Book(title:"The Stand"),
+            new Book(title:"It")  ,
+            new Book(title:"The Shining")
+    ]
+
+    session.persist(a)
+
+
+    Query q = session.createQuery(Book)
+    q
+     .disjunction()
+     .add( eq( "title", "The Stand" ) )
+     .add( eq( "title", "It" ) )
+    q.projections()
+      .id()
+
+
+    def results = q.list()
+
+    assert 2 == results.size()
+    assert results[0] instanceof Long
+  }
+
+  @Test
+  void testSimpleQuery() {
+    def ds = new RedisDatastore()
+    ds.mappingContext.addPersistentEntity(Author)
+    Session<JRedis> session = ds.connect()
     session.getNativeInterface().flushall()
 
     def a = new Author(name:"Stephen King")

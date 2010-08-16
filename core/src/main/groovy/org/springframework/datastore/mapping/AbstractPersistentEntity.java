@@ -60,6 +60,8 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
         for (PersistentProperty persistentProperty : persistentProperties) {
             propertiesByName.put(persistentProperty.getName(), persistentProperty);
         }
+
+        getMapping().getMappedForm(); // initialize mapping
     }
 
     public boolean isOwningEntity(PersistentEntity owner) {

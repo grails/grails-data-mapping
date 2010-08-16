@@ -74,7 +74,7 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
     public final Serializable persist(Object obj) {
         if(!persistentEntity.isInstance(obj)) throw new IllegalArgumentException("Object ["+obj+"] is not an instance supported by the persister for class ["+getType().getName()+"]");
 
-        return persistEntity(getPersistentEntity(), new EntityAccess(obj));
+        return persistEntity(getPersistentEntity(), new EntityAccess(getPersistentEntity(), obj));
     }
 
     public List<Serializable> persist(Iterable objs) {

@@ -17,6 +17,8 @@ package org.springframework.datastore.engine;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.datastore.mapping.ClassMapping;
+import org.springframework.datastore.mapping.PersistentEntity;
 
 
 /**
@@ -30,9 +32,11 @@ public class EntityAccess {
 
     protected Object entity;
     private BeanWrapper beanWrapper;
+    private PersistentEntity persistentEntity;
 
-    public EntityAccess(Object entity) {
+    public EntityAccess(PersistentEntity persistentEntity, Object entity) {
         this.entity = entity;
+        this.persistentEntity = persistentEntity;
         this.beanWrapper = new BeanWrapperImpl(entity);
     }
 
@@ -50,5 +54,20 @@ public class EntityAccess {
 
     public void setProperty(String name, Object value) {
         beanWrapper.setPropertyValue(name, value);
+    }
+
+    public Object getIdentifier() {
+        String idName = getIdentifierName(persistentEntity.getMapping());
+        return getProperty(idName);
+
+    }
+
+    protected String getIdentifierName(ClassMapping cm) {
+        return cm.getIdentifier().getIdentifierName()[0];
+    }
+
+    public String getIdentifierName() {
+        return getIdentifierName(persistentEntity.getMapping());
+        
     }
 }

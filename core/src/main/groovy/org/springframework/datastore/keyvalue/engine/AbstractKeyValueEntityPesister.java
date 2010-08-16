@@ -124,10 +124,9 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
     }
 
     private K readIdentifierFromObject(Object object) {
-        EntityAccess access = new EntityAccess(object);
+        EntityAccess access = new EntityAccess(getPersistentEntity(), object);
         access.setConversionService(typeConverter.getConversionService());
-        String idName = getIdentifierName(classMapping);
-        final Object idValue = access.getProperty(idName);
+        final Object idValue = access.getIdentifier();
         K key = null;
         if(idValue != null) {
             key = inferNativeKey(entityFamily, idValue);
@@ -143,9 +142,9 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
         if(nativeEntry != null) {
             Object obj = persistentEntity.newInstance();
 
-            EntityAccess ea = new EntityAccess(obj);
+            EntityAccess ea = new EntityAccess(persistentEntity, obj);
             ea.setConversionService(typeConverter.getConversionService());
-            String idName = getIdentifierName(classMapping);
+            String idName = ea.getIdentifierName();
             ea.setProperty(idName, nativeKey);
 
             final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
@@ -284,7 +283,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
 
         if(k == null) {
             k = storeEntry(persistentEntity, e);
-            String id = getIdentifierName(cm);
+            String id = entityAccess.getIdentifierName();
             entityAccess.setProperty(id, k);
         }
         else {
@@ -345,8 +344,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
 
 
     protected K readObjectIdentifier(EntityAccess entityAccess, ClassMapping<Family> cm) {
-        String propertyName = getIdentifierName(cm);
-        return (K) entityAccess.getProperty(propertyName);
+        return (K)entityAccess.getIdentifier();
     }
 
 

@@ -45,10 +45,6 @@ public class RedisSession extends AbstractSession<JRedis> implements Map {
         jredisClient = new JRedisService(connSpec,JRedisService.default_connection_count);
     }
 
-    public JRedis getJredisClient() {
-        return jredisClient;
-    }
-
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
       PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
