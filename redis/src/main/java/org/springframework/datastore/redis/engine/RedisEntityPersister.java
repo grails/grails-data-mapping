@@ -70,10 +70,12 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
 
     @Override
     protected void setEntryValue(RedisEntry nativeEntry, String key, Object value) {
-        if(!(value instanceof byte[])) {
-            value = value.toString().getBytes();
+        if(value != null) {
+            if(!(value instanceof byte[])) {
+                value = value.toString().getBytes();
+            }
+            nativeEntry.put(key, value);
         }
-        nativeEntry.put(key, value);
     }
 
     @Override
@@ -91,7 +93,11 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     private boolean entityDoesntExistForValues(List<byte[]> values) {
-        return values == null || values.size() == 0 || (values.size() == 1 && values.get(0) == null);
+        if(values == null || values.size() == 0) return false;
+        for (byte[] value : values) {
+            if(value != null) return false;
+        }
+        return true;
     }
 
 
