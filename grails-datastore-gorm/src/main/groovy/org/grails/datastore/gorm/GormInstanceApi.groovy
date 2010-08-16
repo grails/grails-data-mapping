@@ -21,16 +21,20 @@ import org.springframework.datastore.core.Datastore
  *
  * @author Graeme Rocher
  */
-class GormInstanceApi {
-  Datastore datastore
+class GormInstanceApi extends AbstractGormApi {
 
-  GormInstanceApi(Datastore datastore) {
-    this.datastore = datastore;
+  GormInstanceApi(Class persistentClass, Datastore datastore) {
+    super(persistentClass, datastore)
   }
 
   def save(instance) {
     datastore.currentSession.persist(instance)
     return instance
+  }
+
+  def save(instance, Map params) {
+    datastore.currentSession.persist(instance)
+    return instance    
   }
 
   def delete(instance) {

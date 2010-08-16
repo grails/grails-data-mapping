@@ -13,6 +13,7 @@
     <orderEntry type="module" module-name="core" />
     <orderEntry type="module" module-name="redis" scope="TEST" />
     <orderEntry type="library" name="JUnit" level="project" />
+    <orderEntry type="library" name="Spring Beans" level="project" />
   </component>
 </module>
 

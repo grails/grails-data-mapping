@@ -28,6 +28,7 @@ import org.grails.datastore.gorm.finders.FindAllByFinder
 class GormEnhancer {
 
   Datastore datastore
+  List<DynamicFinder> finders = [new FindByFinder(datastore), new FindAllByFinder(datastore)]
 
 
   GormEnhancer(datastore) {
@@ -41,21 +42,31 @@ class GormEnhancer {
   }
   void enhance(Class cls) {
     def staticMethods = new GormStaticApi(cls,datastore)
-    def instanceMethods = new GormInstanceApi(datastore)
+    def instanceMethods = new GormInstanceApi(cls, datastore)
     cls.metaClass {
-      save {-> instanceMethods.save(delegate) }
-      delete {-> instanceMethods.delete(delegate) }
+      for(method in instanceMethods.methodNames) {
+        Closure methodHandle = instanceMethods.&"$method"
+        if(methodHandle.parameterTypes.size()>0) {
+
+           // use fake object just so we have the right method signature
+           Closure curried = methodHandle.curry(new Object())
+          "$method"(new Closure(this) {
+            def call(Object[] args) {
+              methodHandle(delegate, *args)
+            }
+            Class[] getParameterTypes() { curried.parameterTypes }
+          })
+        }
+      }
       'static' {
-        list staticMethods.&list
-        get staticMethods.&get
-        exists staticMethods.&exists
-        withSession staticMethods.&withSession
+        for(method in staticMethods.methodNames) {
+          "$method"(staticMethods.&"$method")
+        }
       }
     }
-    def finders = [new FindByFinder(datastore), new FindAllByFinder(datastore)]
+
     def mc = cls.metaClass
     mc.static.methodMissing = {String methodName, args ->
-          def result = null
           def method = finders.find { DynamicFinder f -> f.isMethodMatch(methodName) }
           if (method) {
               // register the method invocation for next time
@@ -64,12 +75,11 @@ class GormEnhancer {
                       method.invoke(cls, methodName, varArgs)
                   }
               }
-              result = method.invoke(cls, methodName, args)
+              return method.invoke(cls, methodName, args)
           }
           else {
               throw new MissingMethodException(methodName, delegate, args)
           }
-          result
      }
   }
 }

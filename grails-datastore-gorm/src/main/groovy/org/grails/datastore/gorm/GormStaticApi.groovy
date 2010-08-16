@@ -16,20 +16,19 @@ package org.grails.datastore.gorm
 
 import org.springframework.datastore.core.Datastore
 import org.springframework.datastore.query.Query
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 
 /**
  *  Static methods of the GORM API
  *
  * @author Graeme Rocher
  */
-class GormStaticApi {
+class GormStaticApi extends AbstractGormApi {
 
-  Class persistentClass
-  Datastore datastore
 
   GormStaticApi(Class persistentClass, Datastore datastore) {
-    this.persistentClass = persistentClass;
-    this.datastore = datastore
+    super(persistentClass,datastore)
   }
 
   /**

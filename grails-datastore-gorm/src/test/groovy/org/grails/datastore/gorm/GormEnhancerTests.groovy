@@ -38,7 +38,7 @@ class GormEnhancerTests {
   void testCRUD() {
     def t = TestEntity.get(1)
 
-    assert !t
+    assert t == null
 
     t = new TestEntity(name:"Bob")
     t.save()
@@ -54,6 +54,19 @@ class GormEnhancerTests {
 
     assert t
     assert "Bob" == t.name
+  }
+
+  @Test
+  void testSaveWithMap() {
+    def t = TestEntity.get(1)
+
+    assert t == null
+
+    t = new TestEntity(name:"Bob")
+    t.save(param:"one")
+
+    assert t.id
+
   }
 
 
@@ -77,9 +90,6 @@ class GormEnhancerTests {
 
     assert bob
     assert "Bob" == TestEntity.findByName("Bob").name 
-
-
-    con.disconnect()
   }
 
   @Test
