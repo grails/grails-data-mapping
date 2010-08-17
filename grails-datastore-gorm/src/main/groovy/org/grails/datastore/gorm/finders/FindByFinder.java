@@ -19,6 +19,7 @@ import org.springframework.datastore.core.Session;
 import org.springframework.datastore.query.Query;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import static org.springframework.datastore.query.Restrictions.*;
 /**
@@ -45,6 +46,8 @@ public class FindByFinder extends DynamicFinder{
 
         Query q = currentSession.createQuery(clazz);
 
+        configureQueryWithArguments(clazz, q, remainingArguments);
+
         if(operatorInUse != null && operatorInUse.equals(OPERATOR_OR)) {
             Query.Junction disjunction = q.disjunction();
 
@@ -64,4 +67,5 @@ public class FindByFinder extends DynamicFinder{
         if(!results.isEmpty()) return results.get(0);
         return null;
     }
+
 }

@@ -14,6 +14,8 @@
  */
 package org.springframework.datastore.redis.query;
 
+import org.jredis.JRedis;
+import org.jredis.RedisException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
@@ -24,6 +26,7 @@ import org.springframework.datastore.query.Query;
 import org.springframework.datastore.redis.RedisSession;
 import org.springframework.datastore.redis.collection.RedisCollection;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
+import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
 import java.util.ArrayList;
@@ -50,6 +53,7 @@ public class RedisQuery extends Query {
     protected List executeQuery(PersistentEntity entity, Junction criteria) {
         List<Long> identifiers = null;
         final boolean hasCountProjection = projections().getProjectionList().contains(Projections.count());
+        final boolean shouldPaginate = offset > 0 || max > -1;
         if(criteria.isEmpty()) {
 
             if(hasCountProjection) {
@@ -59,7 +63,7 @@ public class RedisQuery extends Query {
             else {
                 List<byte[]> results;
                 RedisCollection col = entityPersister.getAllEntityIndex();
-                if(offset > 0 || max > -1) {
+                if(shouldPaginate) {
                     results = col.members(offset, max);
                 }
                 else {
@@ -96,22 +100,31 @@ public class RedisQuery extends Query {
                 final String firstKey = indices.get(0);
                 List<byte[]> results;
 
-                if(hasCountProjection) {
-                    String tempKey = indices.toString();
+                if(hasCountProjection || shouldPaginate) {
                     if(criteria instanceof Conjunction) {
-                        final String conjKey = "~" + tempKey.replaceAll("\\s", "-");
+                        final String conjKey = formulateConjunctionKey(indices);
                         template.sinterstore(conjKey, indices.toArray(new String[indices.size()]));
-                        return getSetCountResult(conjKey);
+                        if(hasCountProjection)
+                            return getSetCountResult(conjKey);
+                        else {
+                            results = paginateResults(conjKey);
+                        }
                     }
                     else {
-                        final String disjKey = "~!" + tempKey.replaceAll("\\s", "-");
+                        final String disjKey = formulateDisjunctionKey(indices);
                         template.sunionstore(disjKey, indices.toArray(new String[indices.size()]));
-                        return getSetCountResult(disjKey);
+                        if(hasCountProjection)
+                            return getSetCountResult(disjKey);
+                        else {
+                            results = paginateResults(disjKey);
+                        }
                     }
+                    identifiers = RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
                 }
                 else {
                     List<String> remainingKeys = indices.subList(1, indices.size());
                     final String[] remainingKeyArray = remainingKeys.toArray(new String[remainingKeys.size()]);
+
 
                     if(criteria instanceof Conjunction) {
                         results = template.sinter(firstKey, remainingKeyArray);
@@ -135,6 +148,22 @@ public class RedisQuery extends Query {
         else {
             return Collections.emptyList();
         }
+    }
+
+    private List<byte[]> paginateResults(final String disjKey) {
+        return (List<byte[]>) template.execute(new RedisCallback() {
+            public Object doInRedis(JRedis jredis) throws RedisException {
+                return jredis.sort(disjKey).LIMIT(offset, max).exec();
+            }
+        });
+    }
+
+    private String formulateDisjunctionKey(List<String> indices) {
+        return "~!" + indices.toString().replaceAll("\\s", "-");
+    }
+
+    private String formulateConjunctionKey(List<String> indices) {
+        return "~" + indices.toString().replaceAll("\\s", "-");
     }
 
     private List getSetCountResult(String redisKey) {

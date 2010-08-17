@@ -44,6 +44,7 @@ public class CountByFinder extends DynamicFinder {
         Session currentSession = datastore.getCurrentSession();
 
         Query q = currentSession.createQuery(clazz);
+        configureQueryWithArguments(clazz, q, remainingArguments);
 
         if(operatorInUse != null && operatorInUse.equals(OPERATOR_OR)) {
             Query.Junction disjunction = q.disjunction();

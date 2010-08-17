@@ -15,9 +15,13 @@
 package org.grails.datastore.gorm.finders;
 
 import groovy.lang.MissingMethodException;
+import org.springframework.beans.TypeConverter;
+import org.springframework.datastore.keyvalue.convert.ByteArrayAwareTypeConverter;
+import org.springframework.datastore.query.Query;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,9 +29,22 @@ import java.util.regex.Pattern;
  * Implementation of dynamic finders
  */
 public abstract class DynamicFinder {
+
+    public static final String ARGUMENT_MAX = "max";
+    public static final String ARGUMENT_OFFSET = "offset";
+    public static final String ARGUMENT_ORDER = "order";
+    public static final String ARGUMENT_SORT = "sort";
+    public static final String ORDER_DESC = "desc";
+    public static final String ORDER_ASC = "asc";
+    public static final String ARGUMENT_FETCH = "fetch";
+    public static final String ARGUMENT_IGNORE_CASE = "ignoreCase";
+    public static final String ARGUMENT_CACHE = "cache";
+    public static final String ARGUMENT_LOCK = "lock";
+
     protected Pattern pattern;
     private Pattern[] operatorPatterns;
     private String[] operators;
+    private TypeConverter typeConverter = new ByteArrayAwareTypeConverter();
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
     public DynamicFinder(Pattern pattern, String[] operators) {
@@ -159,4 +176,44 @@ public abstract class DynamicFinder {
 
     protected abstract Object doInvokeInternalWithExpressions(Class clazz, String methodName, Object[] remainingArguments, List<MethodExpression> expressions, String operatorInUse);
 
+    protected void populateArgumentsForCriteria(Class<?> targetClass, Query q, Map argMap) {
+        Integer maxParam = null;
+        Integer offsetParam = null;
+        if (argMap.containsKey(ARGUMENT_MAX)) {
+            maxParam = typeConverter.convertIfNecessary(argMap.get(ARGUMENT_MAX),Integer.class);
+        }
+        if (argMap.containsKey(ARGUMENT_OFFSET)) {
+            offsetParam = typeConverter.convertIfNecessary(argMap.get(ARGUMENT_OFFSET),Integer.class);
+        }
+        String orderParam = (String)argMap.get(ARGUMENT_ORDER);
+
+        final String sort = (String)argMap.get(ARGUMENT_SORT);
+        final String order = ORDER_DESC.equalsIgnoreCase(orderParam) ? ORDER_DESC : ORDER_ASC;
+        final int max = maxParam == null ? -1 : maxParam;
+        final int offset = offsetParam == null ? -1 : offsetParam;
+        if (max > -1) {
+            q.max(max);
+        }
+        if (offset > -1) {
+            q.offset(offset);
+        }
+        if (sort != null) {
+            if (ORDER_DESC.equals(order)) {
+                q.order(Query.Order.DESC);
+            }
+            else {
+                q.order(Query.Order.DESC);
+            }
+        }
+    }
+
+
+    protected void configureQueryWithArguments(Class clazz, Query query, Object[] arguments) {
+        if (arguments.length > 0) {
+            if (arguments[0] instanceof Map<?, ?>) {
+               Map<?, ?> argMap = (Map<?, ?>) arguments[0];
+               populateArgumentsForCriteria(clazz, query, argMap);
+            }
+        }
+    }
 }

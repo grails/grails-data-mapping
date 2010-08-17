@@ -113,6 +113,19 @@ class GormEnhancerTests {
   }
 
   @Test
+  void testFinderWithPagination() {
+    def age = 40
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+
+    assert 4 == TestEntity.list().size()
+    assert 4 == TestEntity.count()
+
+    assert 2 == TestEntity.findAllByNameOrAge("Barney", 40).size()
+    assert 1 == TestEntity.findAllByNameOrAge("Barney", 40, [max:1]).size()
+
+  }
+
+  @Test
   void testCountByQuery() {
 
     def age = 40

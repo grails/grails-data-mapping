@@ -81,6 +81,11 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     @Override
+    public boolean isLocked(Object o) {
+        return super.isLocked(o);    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    @Override
     protected void lockEntry(PersistentEntity persistentEntity, String entityFamily, Serializable id, int timeout) {
         String redisKey = getRedisKey(entityFamily, id);
         final TimeUnit milliUnit = TimeUnit.MILLISECONDS;
