@@ -1,6 +1,9 @@
+repositories {
+  flatDir dirs: ['lib', '../redis/lib', 'redis/lib']
+}
 dependencies {
   compile project(":core")
-  testCompile project(":cassandra")
+  testCompile project(":cassandra"),project(":redis")
   compile group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.2'
 
   testCompile 'com.eaio.uuid:uuid:3.2',
