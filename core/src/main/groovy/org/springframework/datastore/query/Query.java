@@ -19,6 +19,7 @@ import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -129,6 +130,30 @@ public abstract class Query {
     }
 
     /**
+     * Restricts the results by the given properties value
+     *
+     * @param property The name of the property
+     * @param values The values to restrict by
+     * @return This query instance
+     */
+    public Query in(String property, List values) {
+        criteria.add(Restrictions.in(property, values));
+        return this;
+    }
+
+    /**
+     * Restricts the results by the given properties value
+     *
+     * @param property The name of the property
+     * @param expr The expression to restrict by
+     * @return This query instance
+     */
+    public Query like(String property, String expr) {
+        criteria.add(Restrictions.like(property, expr));
+        return this;
+    }
+
+    /**
      * Creates a conjunction using two specified criterion
      *
      * @param a The left hand side
@@ -201,7 +226,7 @@ public abstract class Query {
         private String name;
         private Object value;
 
-        protected Equals(String name, Object value) {
+        public Equals(String name, Object value) {
             this.name = name;
             this.value = value;
         }
@@ -212,6 +237,36 @@ public abstract class Query {
 
         public Object getValue() {
             return value;
+        }
+    }
+
+    /**
+     * Criterion used to restrict the results based on a list of values
+     */
+    public static class In extends Criterion {
+        private String name;
+        private Collection values = Collections.emptyList();
+
+        public In(String name, Collection values) {
+            this.name = name;
+            this.values = values;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Collection getValues() {
+            return Collections.unmodifiableCollection(values);
+        }
+    }
+
+    /**
+     * Criterion used to restrict the results based on a pattern (likeness)
+     */
+    public static class Like extends Equals {
+        public Like(String name, String expression) {
+            super(name, expression);
         }
     }
 

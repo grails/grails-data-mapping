@@ -17,6 +17,8 @@ package org.grails.datastore.gorm.finders;
 import org.springframework.datastore.query.Query;
 import org.springframework.datastore.query.Restrictions;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -48,8 +50,11 @@ public abstract class MethodExpression {
     }
 
     public static MethodExpression create(Class clazz, String expression) {
-        if(expression.endsWith(Equal.class.getName())) {
+        if(expression.endsWith(Equal.class.getSimpleName())) {
             return new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()));
+        }
+        else if(expression.endsWith(InList.class.getSimpleName())) {
+            return new InList(clazz, calcPropertyName(expression, InList.class.getSimpleName()));
         }
         return new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()));  
     }
@@ -78,7 +83,7 @@ public abstract class MethodExpression {
 
         @Override
         public Query.Criterion createCriterion() {
-            return null;  // TODO implement like expressions
+            return Restrictions.like(propertyName, arguments[0].toString());
         }
     }
 
@@ -89,7 +94,15 @@ public abstract class MethodExpression {
 
         @Override
         public Query.Criterion createCriterion() {
-            return null;  // TODO implement in list query capability
+            return Restrictions.in(propertyName, (Collection) arguments[0]);
+        }
+
+        @Override
+        public void setArguments(Object[] arguments) {
+            if(arguments.length == 0 || !(arguments[0] instanceof Collection))
+                throw new IllegalArgumentException("Only a collection of elements is supported in an 'in' query");
+
+            super.setArguments(arguments);
         }
     }
     public static class Equal extends MethodExpression {

@@ -14,13 +14,42 @@
  */
 package org.springframework.datastore.query;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Factory for creating {@link org.springframework.datastore.query.Query.Criterion} instances
  */
 public class Restrictions {
 
+    /**
+     * Restricts the property to be equal to the given value
+     * @param property The property
+     * @param value The value
+     * @return An instance of Query.Equals
+     */
     public static Query.Equals eq(String property, Object value) {
         return new Query.Equals(property, value);
+    }
+
+    /**
+     * Restricts the property to be in the list of given values
+     * @param property The property
+     * @param values The values
+     * @return An instance of Query.In
+     */
+    public static Query.In in(String property, Collection values) {
+        return new Query.In(property, values);
+    }
+
+    /**
+     * Restricts the property match the given String expressions. Expressions use SQL-like % to denote wildcards
+     * @param property The property name
+     * @param expression The expression
+     * @return An instance of Query.Like
+     */
+    public static Query.Like like(String property, String expression) {
+        return new Query.Like(property, expression);
     }
 
     public static Query.Criterion and(Query.Criterion a, Query.Criterion b) {

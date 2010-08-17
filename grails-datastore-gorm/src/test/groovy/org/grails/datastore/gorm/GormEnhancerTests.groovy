@@ -125,6 +125,18 @@ class GormEnhancerTests {
 
   }
 
+
+  @Test
+  void testInQuery() {
+    def age = 40
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+
+    assert 2 == TestEntity.findAllByNameInList(["Fred", "Frank"]).size()
+    assert 1 == TestEntity.findAllByNameInList(["Joe", "Frank"]).size()
+    assert 0 == TestEntity.findAllByNameInList(["Jeff", "Jack"]).size()
+    assert 2 == TestEntity.findAllByNameInListOrName(["Joe", "Frank"], "Bob").size()
+  }
+
   @Test
   void testCountByQuery() {
 

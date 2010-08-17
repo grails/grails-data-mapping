@@ -23,6 +23,7 @@ import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.query.Projections;
 import org.springframework.datastore.query.Query;
+import org.springframework.datastore.query.Restrictions;
 import org.springframework.datastore.redis.RedisSession;
 import org.springframework.datastore.redis.collection.RedisCollection;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
@@ -75,67 +76,19 @@ public class RedisQuery extends Query {
         }
         else {
             List<Criterion> criteriaList = criteria.getCriteria();
-            if(criteriaList.size() == 1) {
-                Criterion c = criteriaList.get(0);
-                if(c instanceof Equals) {
-                    Equals eq = (Equals) c;
-                    PersistentProperty property = getEntity().getPropertyByName(eq.getName());
-                    boolean indexed = isIndexed(property);
-                    if(indexed) {
-                        PropertyValueIndexer indexer = entityPersister.getPropertyIndexer(property);
-                        if(hasCountProjection) {
-                            return getSetCountResult(indexer.getIndexName(eq.getValue()));
-                        }
-                        else {
-                            identifiers = indexer.query(eq.getValue(), offset, max);
-                        }
-                    }
-                    else {
-                        throw new DataIntegrityViolationException("Cannot query on class ["+getEntity()+"] on property ["+property+"]. The property is not indexed!");
-                    }
-                }
+            String finalKey = executeSubQuery(criteria, criteriaList);
+            List<byte[]> results;
+            if(hasCountProjection) {
+                return getSetCountResult(finalKey);
+            }
+            else if(shouldPaginate) {
+                results = paginateResults(finalKey);
             }
             else {
-                List<String> indices = getIndexNames(criteria, entityPersister);
-                final String firstKey = indices.get(0);
-                List<byte[]> results;
-
-                if(hasCountProjection || shouldPaginate) {
-                    if(criteria instanceof Conjunction) {
-                        final String conjKey = formulateConjunctionKey(indices);
-                        template.sinterstore(conjKey, indices.toArray(new String[indices.size()]));
-                        if(hasCountProjection)
-                            return getSetCountResult(conjKey);
-                        else {
-                            results = paginateResults(conjKey);
-                        }
-                    }
-                    else {
-                        final String disjKey = formulateDisjunctionKey(indices);
-                        template.sunionstore(disjKey, indices.toArray(new String[indices.size()]));
-                        if(hasCountProjection)
-                            return getSetCountResult(disjKey);
-                        else {
-                            results = paginateResults(disjKey);
-                        }
-                    }
-                    identifiers = RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
-                }
-                else {
-                    List<String> remainingKeys = indices.subList(1, indices.size());
-                    final String[] remainingKeyArray = remainingKeys.toArray(new String[remainingKeys.size()]);
-
-
-                    if(criteria instanceof Conjunction) {
-                        results = template.sinter(firstKey, remainingKeyArray);
-                    }
-                    else {
-                        results = template.sunion(firstKey, remainingKeyArray);
-                    }
-                    identifiers = RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
-                }
-
+                results = template.smembers(finalKey);
             }
+
+            identifiers = RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
         }
         if(identifiers != null) {
             if(projections().getProjectionList().contains(Projections.ID_PROJECTION)) {
@@ -148,6 +101,24 @@ public class RedisQuery extends Query {
         else {
             return Collections.emptyList();
         }
+    }
+
+    private String executeSubQuery(Junction junction, List<Criterion> criteria) {
+        List<String> indices = getIndexNames(junction, entityPersister);
+        final String[] keyArray = indices.toArray(new String[indices.size()]);
+        String finalKey;
+        if(junction instanceof Conjunction) {
+            finalKey = formulateConjunctionKey(indices);
+            template.sinterstore(finalKey, keyArray);
+        }
+        else {
+            finalKey = formulateDisjunctionKey(indices);
+            template.sunionstore(finalKey, keyArray);
+        }
+
+        // since the keys used for queries are temporary we set Redis to kill them after a while
+        template.expire(finalKey, 300);
+        return finalKey;
     }
 
     private List<byte[]> paginateResults(final String disjKey) {
@@ -183,21 +154,41 @@ public class RedisQuery extends Query {
         List<Criterion> criteriaList = criteria.getCriteria();
         List<String> indices = new ArrayList<String>();
         for (Criterion criterion : criteriaList) {
-            if(criterion instanceof Equals) {
+            if(criterion instanceof Junction) {
+                final Junction junc = (Junction) criterion;
+                indices.add( executeSubQuery(junc, junc.getCriteria()) );
+            }
+            else if(criterion instanceof Equals) {
                 Equals eq = (Equals) criterion;
-                PersistentProperty prop = getEntity().getPropertyByName(eq.getName());
-                if(prop == null) {
-                    throw new DataIntegrityViolationException("Cannot execute query. Entity ["+getEntity()+"] does not declare a property named ["+eq.getName()+"]");
+                final String property = eq.getName();
+                final Object value = eq.getValue();
+                final String indexName = getIndexName(entityPersister, property, value);
+                indices.add(indexName);
+            }
+            else if(criterion instanceof In) {
+                final In in = (In)criterion;
+                final String property = in.getName();
+                Disjunction dis = new Disjunction();
+                for (Object value : in.getValues()) {
+                    dis.add(Restrictions.eq(property, value));                    
                 }
-                else if(!isIndexed(prop)) {
-                    throw new DataIntegrityViolationException("Cannot query class ["+getEntity()+"] on property ["+prop+"]. The property is not indexed!");
-                }
+                indices.add( executeSubQuery(dis, dis.getCriteria()) );
 
-                PropertyValueIndexer indexer = entityPersister.getPropertyIndexer(prop);
-                indices.add( indexer.getIndexName(eq.getValue()) );
             }
         }
-        
         return indices;
+    }
+
+    private String getIndexName(RedisEntityPersister entityPersister, String property, Object value) {
+        PersistentProperty prop = getEntity().getPropertyByName(property);
+        if(prop == null) {
+            throw new DataIntegrityViolationException("Cannot execute query. Entity ["+getEntity()+"] does not declare a property named ["+ property +"]");
+        }
+        else if(!isIndexed(prop)) {
+            throw new DataIntegrityViolationException("Cannot query class ["+getEntity()+"] on property ["+prop+"]. The property is not indexed!");
+        }
+
+        PropertyValueIndexer indexer = entityPersister.getPropertyIndexer(prop);
+        return indexer.getIndexName(value);
     }
 }
