@@ -138,6 +138,17 @@ class GormEnhancerTests {
   }
 
   @Test
+  void testLikeQuery() {
+    def age = 40
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+
+    def results = TestEntity.findAllByNameLike("Fr%")
+
+    assert 2 == results.size()
+    assert results.find { it.name == "Fred" }
+    assert results.find { it.name == "Frank" }
+  }
+  @Test
   void testCountByQuery() {
 
     def age = 40

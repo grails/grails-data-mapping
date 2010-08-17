@@ -56,6 +56,11 @@ public abstract class MethodExpression {
         else if(expression.endsWith(InList.class.getSimpleName())) {
             return new InList(clazz, calcPropertyName(expression, InList.class.getSimpleName()));
         }
+        else if(expression.endsWith(Like.class.getSimpleName())) {
+            return new Like(clazz, calcPropertyName(expression, Like.class.getSimpleName()));
+        }
+
+
         return new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()));  
     }
 

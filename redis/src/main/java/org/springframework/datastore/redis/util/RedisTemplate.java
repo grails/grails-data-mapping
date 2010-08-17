@@ -455,4 +455,12 @@ public class RedisTemplate {
           }
         return null;
     }
+
+    public List<String> keys(String pattern) {
+        try {
+            return jredis.keys(pattern);
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [keys]: " + e.getMessage(), e) {};
+        }
+    }
 }

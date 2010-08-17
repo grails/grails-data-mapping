@@ -27,6 +27,7 @@ import org.springframework.datastore.query.Restrictions;
 import org.springframework.datastore.redis.RedisSession;
 import org.springframework.datastore.redis.collection.RedisCollection;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
+import org.springframework.datastore.redis.engine.RedisPropertyValueIndexer;
 import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
@@ -158,6 +159,11 @@ public class RedisQuery extends Query {
                 final Junction junc = (Junction) criterion;
                 indices.add( executeSubQuery(junc, junc.getCriteria()) );
             }
+            else if(criterion instanceof Like) {
+                Like like = (Like) criterion;
+                String key = executeSubLike(entityPersister, like);
+                indices.add(key);
+            }            
             else if(criterion instanceof Equals) {
                 Equals eq = (Equals) criterion;
                 final String property = eq.getName();
@@ -179,16 +185,37 @@ public class RedisQuery extends Query {
         return indices;
     }
 
+    private String executeSubLike(RedisEntityPersister entityPersister, Like like) {
+        final String property = like.getName();
+        String pattern = like.getPattern();
+        final List<String> keys = resolveMatchingIndices(entityPersister, property, pattern);
+        final String disjKey = formulateDisjunctionKey(keys);
+        template.sunionstore(disjKey, keys.toArray(new String[keys.size()]));
+        template.expire(disjKey, 300);
+        return disjKey;
+    }
+
+    private List<String> resolveMatchingIndices(RedisEntityPersister entityPersister, String property, String pattern) {
+        PersistentProperty prop = getEntity().getPropertyByName(property);
+        assertIndexed(property, prop);
+        RedisPropertyValueIndexer indexer = (RedisPropertyValueIndexer) entityPersister.getPropertyIndexer(prop);
+        return template.keys(indexer.getIndexPattern(pattern));        
+    }
+
     private String getIndexName(RedisEntityPersister entityPersister, String property, Object value) {
         PersistentProperty prop = getEntity().getPropertyByName(property);
+        assertIndexed(property, prop);
+
+        PropertyValueIndexer indexer = entityPersister.getPropertyIndexer(prop);
+        return indexer.getIndexName(value);
+    }
+
+    private void assertIndexed(String property, PersistentProperty prop) {
         if(prop == null) {
             throw new DataIntegrityViolationException("Cannot execute query. Entity ["+getEntity()+"] does not declare a property named ["+ property +"]");
         }
         else if(!isIndexed(prop)) {
             throw new DataIntegrityViolationException("Cannot query class ["+getEntity()+"] on property ["+prop+"]. The property is not indexed!");
         }
-
-        PropertyValueIndexer indexer = entityPersister.getPropertyIndexer(prop);
-        return indexer.getIndexName(value);
     }
 }

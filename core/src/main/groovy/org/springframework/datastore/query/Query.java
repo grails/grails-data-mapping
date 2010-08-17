@@ -268,6 +268,10 @@ public abstract class Query {
         public Like(String name, String expression) {
             super(name, expression);
         }
+
+        public String getPattern() {
+            return getValue().toString();
+        }
     }
 
     public static abstract class Junction extends Criterion {

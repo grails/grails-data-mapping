@@ -55,11 +55,19 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     }
 
     private String createRedisKey(Object value) {
+        return getIndexRoot() + urlEncode(value);
+    }
+
+    private String urlEncode(Object value) {
         try {
-            return property.getOwner().getName()+ ":" + property.getName() + ":" + URLEncoder.encode(value.toString(), "UTF-8");
+            return URLEncoder.encode(value.toString(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new DataAccessException("Cannot encoding Redis key: " + e.getMessage(), e){};
         }
+    }
+
+    private String getIndexRoot() {
+        return property.getOwner().getName()+ ":" + property.getName() + ":";
     }
 
     public List<Long> query(final Object value) {
@@ -82,6 +90,12 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
 
     public String getIndexName(Object value) {
         return createRedisKey(value);
+    }
+
+    public String getIndexPattern(String pattern) {
+        String root = getIndexRoot();
+
+        return root + urlEncode(pattern.replaceAll("%", "*"));
     }
 
 }
