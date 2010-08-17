@@ -25,6 +25,7 @@ import org.springframework.datastore.query.Query;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Abstract implementation of the ObjectDatastore interface that uses
@@ -39,6 +40,7 @@ public abstract class AbstractSession<N> implements Session {
     private MappingContext mappingContext;
     private Map<String, String> connectionDetails;
     protected List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
+    protected ConcurrentLinkedQueue lockedObjects = new ConcurrentLinkedQueue();
 
     public AbstractSession(Map<String, String> connectionDetails, MappingContext mappingContext) {
         super();
@@ -107,6 +109,19 @@ public abstract class AbstractSession<N> implements Session {
             return persister.retrieve(key);
         }
         throw new NonPersistentTypeException("Cannot retrieve object with key ["+key+"]. The class ["+type+"] is not a known persistent type.");
+    }
+
+    public void lock(Object o) {
+        throw new UnsupportedOperationException("Datastore ["+getClass().getName()+"] does not support locking.");
+    }
+
+    public Object lock(Class type, Serializable key) {
+        throw new UnsupportedOperationException("Datastore ["+getClass().getName()+"] does not support locking.");
+    }
+
+    public void unlock(Object o) {
+        if(o != null)
+            lockedObjects.remove(o);
     }
 
     public void delete(Object obj) {

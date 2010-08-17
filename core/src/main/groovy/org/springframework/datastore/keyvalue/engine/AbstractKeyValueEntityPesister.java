@@ -18,6 +18,7 @@ import org.springframework.aop.TargetSource;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.collection.PersistentList;
 import org.springframework.datastore.collection.PersistentSet;
@@ -40,7 +41,7 @@ import java.util.*;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersister {
+public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntityPersister {
     protected SimpleTypeConverter typeConverter;
     protected Session session;
     protected String entityFamily;
@@ -134,75 +135,123 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends EntityPersiste
         return key;
     }
 
+    public final Object lock(Serializable id) throws CannotAcquireLockException {
+        return lock(id, DEFAULT_TIMEOUT);
+    }
+
+    public final Object lock(Serializable id, int timeout) throws CannotAcquireLockException {
+        lockEntry(getPersistentEntity(), entityFamily, id, timeout);
+        return retrieve(id);
+    }
+
+    /**
+     * Subclasses can override to provide locking semantics
+     *
+     * @param persistentEntity The PesistentEntity instnace
+     * @param entityFamily The family
+     * @param id The identifer
+     * @param timeout The lock timeout in seconds
+     */
+    protected void lockEntry(PersistentEntity persistentEntity, String entityFamily, Serializable id, int timeout) {
+        // do nothing,
+    }
+
+    /**
+     * Subclasses can override to provide locking semantics
+     *
+     * @param o The object
+     * @return True if the object is locked
+     */
+    public boolean isLocked(Object o) {
+        return false;
+    }
+
+    public void unlock(Object o) {
+        unlockEntry(getPersistentEntity(), entityFamily, (Serializable) new EntityAccess(getPersistentEntity(), o).getIdentifier());
+    }
+
+    /**
+     * Subclasses to override to provide locking semantics
+     * @param persistentEntity The persistent entity
+     * @param entityFamily The entity family
+     * @param id The identifer
+     */
+    protected void unlockEntry(PersistentEntity persistentEntity, String entityFamily, Serializable id) {
+        // do nothing
+    }
 
     @Override
     protected final Object retrieveEntity(PersistentEntity persistentEntity, Serializable nativeKey) {
 
         T nativeEntry = retrieveEntry(persistentEntity, entityFamily, nativeKey);
         if(nativeEntry != null) {
-            Object obj = persistentEntity.newInstance();
-
-            EntityAccess ea = new EntityAccess(persistentEntity, obj);
-            ea.setConversionService(typeConverter.getConversionService());
-            String idName = ea.getIdentifierName();
-            ea.setProperty(idName, nativeKey);
-
-            final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
-            for (PersistentProperty prop : props) {
-                PropertyMapping<KeyValue> pm = prop.getMapping();
-                String propKey = null;
-                if(pm.getMappedForm()!=null) {
-                    propKey = pm.getMappedForm().getKey();
-                }
-                if(propKey == null) {
-                    propKey = prop.getName();
-                }
-                if(prop instanceof Simple) {
-                    ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propKey) );
-                }
-                else if(prop instanceof ToOne) {
-                    Serializable associationKey = (Serializable) getEntryValue(nativeEntry, propKey);
-                    PropertyMapping<KeyValue> associationPropertyMapping = prop.getMapping();
-                    boolean isLazy = isLazyAssociation(associationPropertyMapping);
-
-                    if(isLazy) {
-                        TargetSource ts = new LazyLoadingTargetSource(session, prop.getType(), associationKey);
-                        ProxyFactory proxyFactory = new ProxyFactory();
-                        proxyFactory.setTargetSource(ts);
-                        proxyFactory.setProxyTargetClass(true);
-                        ea.setProperty(prop.getName(), proxyFactory.getProxy());
-                    }
-                    else {
-                        ea.setProperty(prop.getName(), session.retrieve(prop.getType(), associationKey));
-                    }
-                }
-                else if(prop instanceof OneToMany) {
-                    Association association = (Association) prop;
-                    PropertyMapping<KeyValue> associationPropertyMapping = association.getMapping();
-
-                    boolean isLazy = isLazyAssociation(associationPropertyMapping);
-                    AssociationIndexer indexer = getAssociationIndexer(association);
-                    if(isLazy) {
-                        if(List.class.isAssignableFrom(association.getType())) {
-                            ea.setProperty(association.getName(), new PersistentList(nativeKey, session, indexer));
-                        }
-                        else if(Set.class.isAssignableFrom(association.getType())) {
-                            ea.setProperty(association.getName(), new PersistentSet(nativeKey, session, indexer));
-                        }
-                    }
-                    else {
-                        if(indexer != null) {
-                            List keys = indexer.query(nativeKey);
-                            ea.setProperty( association.getName(), session.retrieveAll(association.getAssociatedEntity().getJavaClass(), keys));
-                        }
-                    }
-
-                }
-            }
-            return obj;
+            return createObjectFromNativeEntry(persistentEntity, nativeKey, nativeEntry);
         }
 
         return null;
+    }
+
+    private Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, T nativeEntry) {
+        Object obj = persistentEntity.newInstance();
+
+        EntityAccess ea = new EntityAccess(persistentEntity, obj);
+        ea.setConversionService(typeConverter.getConversionService());
+        String idName = ea.getIdentifierName();
+        ea.setProperty(idName, nativeKey);
+
+        final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
+        for (PersistentProperty prop : props) {
+            PropertyMapping<KeyValue> pm = prop.getMapping();
+            String propKey = null;
+            if(pm.getMappedForm()!=null) {
+                propKey = pm.getMappedForm().getKey();
+            }
+            if(propKey == null) {
+                propKey = prop.getName();
+            }
+            if(prop instanceof Simple) {
+                ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propKey) );
+            }
+            else if(prop instanceof ToOne) {
+                Serializable associationKey = (Serializable) getEntryValue(nativeEntry, propKey);
+                PropertyMapping<KeyValue> associationPropertyMapping = prop.getMapping();
+                boolean isLazy = isLazyAssociation(associationPropertyMapping);
+
+                if(isLazy) {
+                    TargetSource ts = new LazyLoadingTargetSource(session, prop.getType(), associationKey);
+                    ProxyFactory proxyFactory = new ProxyFactory();
+                    proxyFactory.setTargetSource(ts);
+                    proxyFactory.setProxyTargetClass(true);
+                    ea.setProperty(prop.getName(), proxyFactory.getProxy());
+                }
+                else {
+                    ea.setProperty(prop.getName(), session.retrieve(prop.getType(), associationKey));
+                }
+            }
+            else if(prop instanceof OneToMany) {
+                Association association = (Association) prop;
+                PropertyMapping<KeyValue> associationPropertyMapping = association.getMapping();
+
+                boolean isLazy = isLazyAssociation(associationPropertyMapping);
+                AssociationIndexer indexer = getAssociationIndexer(association);
+                if(isLazy) {
+                    if(List.class.isAssignableFrom(association.getType())) {
+                        ea.setProperty(association.getName(), new PersistentList(nativeKey, session, indexer));
+                    }
+                    else if(Set.class.isAssignableFrom(association.getType())) {
+                        ea.setProperty(association.getName(), new PersistentSet(nativeKey, session, indexer));
+                    }
+                }
+                else {
+                    if(indexer != null) {
+                        List keys = indexer.query(nativeKey);
+                        ea.setProperty( association.getName(), session.retrieveAll(association.getAssociatedEntity().getJavaClass(), keys));
+                    }
+                }
+
+            }
+        }
+        return obj;
     }
 
     private boolean isLazyAssociation(PropertyMapping<KeyValue> associationPropertyMapping) {

@@ -27,9 +27,40 @@ class GormInstanceApi extends AbstractGormApi {
     super(persistentClass, datastore)
   }
 
+  /**
+   * Saves an object the datastore
+   * @param instance The instance
+   * @return Returns the instance
+   */
   def save(instance) {
     datastore.currentSession.persist(instance)
     return instance
+  }
+
+  /**
+   * Upgrades an existing persistence instance to a write lock
+   * @return The instance
+   */
+  def lock(instance) {
+    datastore.currentSession.lock(instance)
+    return instance
+  }
+
+  /**
+   * Locks the instance for updates for the scope of the passed closure
+   *
+   * @param callable The closure
+   * @return The result of the closure
+   */
+  def mutex(instance, Closure callable) {
+    def session = datastore.currentSession
+    try {
+      session.lock(instance)
+      callable?.call()
+    }
+    finally {
+      session.unlock(instance)
+    }
   }
 
   def save(instance, Map params) {
@@ -37,6 +68,10 @@ class GormInstanceApi extends AbstractGormApi {
     return instance    
   }
 
+  /**
+   * Deletes an instance from the datastore
+   * @param instance The instance to delete
+   */
   def delete(instance) {
     datastore.currentSession.delete(instance)
   }

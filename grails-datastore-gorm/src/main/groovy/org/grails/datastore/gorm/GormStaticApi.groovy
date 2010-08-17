@@ -36,6 +36,14 @@ class GormStaticApi extends AbstractGormApi {
     datastore.currentSession.retrieve(persistentClass,id)
   }
 
+  /**
+   * Locks an instance for an update
+   * @param id The identifier
+   * @return The instance
+   */
+  def lock(Serializable id) {
+    datastore.currentSession.lock(persistentClass, id)
+  }
 
   /**
    * Counts the number of persisted entities

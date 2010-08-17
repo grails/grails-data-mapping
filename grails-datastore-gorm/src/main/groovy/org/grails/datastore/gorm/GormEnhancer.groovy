@@ -32,7 +32,7 @@ class GormEnhancer {
   List<DynamicFinder> finders
 
 
-  GormEnhancer(datastore) {
+  GormEnhancer(Datastore datastore) {
     this.datastore = datastore;
     this.finders = [new FindByFinder(datastore), new FindAllByFinder(datastore), new CountByFinder(datastore)]
   }

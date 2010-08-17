@@ -1,13 +1,11 @@
 TODO list
 
-* Support for locking based on http://code.google.com/p/redis/wiki/SetnxCommand
 * Fix memory leak with single-ended proxies
-* Support for simple projections (count, property, distinct, id, max, min, sum)
-* Support for more kinds of queries (like, in etc.)
-* Background indexing on startup
-* Spring PlatformTransactionManager support
-* criteria builder port
-* Plugging in validation
 * Pagination for dynamic finders
 * Querying with sort by property name
 * Redis specific dynamic methods (random entry, flushing, savedb, bgsave etc.)
+* Support for more kinds of queries (like, in etc.)
+* Spring PlatformTransactionManager support
+* criteria builder port
+* Plugging in validation
+* Support for simple projections (property, distinct, max, min, sum)

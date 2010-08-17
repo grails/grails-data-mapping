@@ -399,4 +399,60 @@ public class RedisTemplate {
             throw new DataAccessException("Exception occured executing Redis command [sunionstore]: " + e.getMessage(), e) {};
         }
     }
+
+    public boolean setnx(String redisKey, Object o) {
+        try {
+              if(o instanceof Number) {
+                  return jredis.setnx(redisKey, (Number)o);
+              }
+              else if(o instanceof String) {
+                  return jredis.setnx(redisKey,(String)o);
+              }
+              else if(o instanceof byte[]) {
+                  return jredis.setnx(redisKey,(byte[])o);
+              }
+              else if(o instanceof Serializable) {
+                  return jredis.setnx(redisKey,(Serializable)o);
+              }
+          } catch (RedisException e) {
+              throw new DataAccessException("Exception occured executing Redis command [setnx]: " + e.getMessage(), e) {};
+          }
+        return false;
+    }
+
+    public boolean expire(String key, int timeout) {
+        try {
+            return jredis.expire(key, timeout);
+        } catch (RedisException e) {
+            return false;
+        }
+    }
+
+    public long ttl(String key) {
+        try {
+            return jredis.ttl(key);
+        } catch (RedisException e) {
+            throw new DataAccessException("Exception occured executing Redis command [ttl]: " + e.getMessage(), e) {};
+        }
+    }
+
+    public byte[] getset(String redisKey, Object o) {
+        try {
+              if(o instanceof Number) {
+                  return jredis.getset(redisKey, (Number)o);
+              }
+              else if(o instanceof String) {
+                  return jredis.getset(redisKey,(String)o);
+              }
+              else if(o instanceof byte[]) {
+                  return jredis.getset(redisKey,(byte[])o);
+              }
+              else if(o instanceof Serializable) {
+                  return jredis.getset(redisKey,(Serializable)o);
+              }
+          } catch (RedisException e) {
+              throw new DataAccessException("Exception occured executing Redis command [setnx]: " + e.getMessage(), e) {};
+          }
+        return null;
+    }
 }

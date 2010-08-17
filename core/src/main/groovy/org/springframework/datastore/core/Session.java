@@ -57,6 +57,20 @@ public interface Session<N> extends EntityInterceptorAware {
     Serializable persist(Object o);
 
     /**
+     * Obtains a write lock on the given object
+     *
+     * @param o The object to lock
+     */
+    void lock(Object o);
+
+    /**
+     * Releases a lock, if not called all locked objects should be released by {@link #disconnect()}
+     * 
+     * @param o The object to unlock
+     */
+    void unlock(Object o);
+
+    /**
      * Persists several objects returning their identifiers in the order specified by the Iterable
      *
      * @param objects The Objects
@@ -72,6 +86,15 @@ public interface Session<N> extends EntityInterceptorAware {
      * @return The object
      */
     <T> T retrieve(Class<T> type, Serializable key);
+
+    /**
+     * Retrieves an individual object, using a write lock to prevent loss of updates
+     *
+     * @param type The type
+     * @param key The key
+     * @return The object
+     */
+    <T> T lock(Class<T> type, Serializable key);    
 
     /**
      * Deletes one or many objects

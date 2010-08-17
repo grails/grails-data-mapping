@@ -14,7 +14,9 @@
  */
 package org.springframework.datastore.redis;
 
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.datastore.core.AbstractSession;
+import org.springframework.datastore.engine.LockableEntityPersister;
 import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
@@ -27,6 +29,7 @@ import org.jredis.ri.alphazero.JRedisService;
 import org.jredis.ri.alphazero.connection.DefaultConnectionSpec;
 import org.springframework.transaction.CannotCreateTransactionException;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -65,6 +68,9 @@ public class RedisSession extends AbstractSession<JRedis> implements Map {
     @Override
     public void disconnect() {
         try {
+            for (Object lockedObject : lockedObjects) {
+                unlock(lockedObject);
+            }
             jredisClient.quit();
         } finally {
             super.disconnect();
@@ -79,6 +85,44 @@ public class RedisSession extends AbstractSession<JRedis> implements Map {
             throw new CannotCreateTransactionException("Failed to create Redis transaction: " + e.getMessage(),e );
         }
 
+    }
+
+    @Override
+    public void lock(Object o) {
+        LockableEntityPersister ep = (LockableEntityPersister) getPersister(o);
+        if(ep != null) {
+            Serializable id = ep.getObjectIdentifier(o);
+            if(id != null) {
+                ep.lock(id);
+            }
+        }
+        else {
+            throw new CannotAcquireLockException("Cannot lock object ["+o+"]. It is not a persistent instance!");
+        }
+    }
+
+    @Override
+    public void unlock(Object o) {
+        if(o != null) {
+            LockableEntityPersister ep = (LockableEntityPersister) getPersister(o);
+            if(ep != null) {
+                ep.unlock(o);
+                lockedObjects.remove(o);
+            }
+        }
+    }
+
+    @Override
+    public Object lock(Class type, Serializable key) {
+        LockableEntityPersister ep = (LockableEntityPersister) getPersister(type);
+        if(ep != null) {
+            final Object lockedObject = ep.lock(key);
+            lockedObjects.add(lockedObject);
+            return lockedObject;
+        }
+        else {
+           throw new CannotAcquireLockException("Cannot lock key ["+key+"]. It is not a persistent instance!");
+        }
     }
 
     public JRedis getNativeInterface() {

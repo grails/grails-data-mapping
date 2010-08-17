@@ -16,6 +16,7 @@ package org.springframework.datastore.redis.engine;
 
 import org.jredis.JRedis;
 import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
@@ -35,6 +36,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * An {@link org.springframework.datastore.engine.EntityPersister} for the Redis NoSQL datastore
@@ -79,8 +81,54 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     @Override
+    protected void lockEntry(PersistentEntity persistentEntity, String entityFamily, Serializable id, int timeout) {
+        String redisKey = getRedisKey(entityFamily, id);
+        final TimeUnit milliUnit = TimeUnit.MILLISECONDS;
+        final long waitTime = TimeUnit.SECONDS.toMillis(timeout);
+        final String lockName = lockName(redisKey);
+        int sleepTime = 0;
+        while(true) {
+            if(redisTemplate.setnx(lockName, System.currentTimeMillis()) && redisTemplate.expire(lockName, timeout)) {
+                    break;
+            }
+            else {
+                if(redisTemplate.ttl(lockName) > 0) {
+                    try {
+                        if(sleepTime > waitTime) {
+                            throw new CannotAcquireLockException("Failed to acquire lock on key ["+redisKey+"]. Wait time exceeded timeout.");
+                        }
+                        else {
+                            // wait for previous lock to expire
+                            sleepTime += 500;
+                            milliUnit.sleep(500);
+                        }
+                    } catch (InterruptedException e) {
+                        throw new CannotAcquireLockException("Failed to acquire lock on key ["+redisKey+"]: " + e.getMessage(), e);
+                    }
+                }
+                else {
+                    if(redisTemplate.getset(lockName, System.currentTimeMillis()) != null 
+                            && redisTemplate.expire(lockName, timeout)) break;
+                }
+            }
+
+        }
+    }
+
+    private String lockName(String redisKey) {
+        return redisKey + ".lock";
+    }
+
+    @Override
+    protected void unlockEntry(PersistentEntity persistentEntity, String entityFamily, Serializable id) {
+
+        String redisKey = getRedisKey(entityFamily, id);
+        redisTemplate.del(lockName(redisKey));
+    }
+
+    @Override
     protected RedisEntry retrieveEntry(PersistentEntity persistentEntity, final String family, Serializable key) {
-        final String hashKey = family + ":" + getLong(key);
+        final String hashKey = getRedisKey(family, key);
 
         final List<String> props = persistentEntity.getPersistentPropertyNames();
         final List<byte[]> values = redisTemplate.hmget(hashKey, props.toArray(new String[props.size()]));
@@ -90,6 +138,10 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
               entry.put(props.get(i), values.get(i));
         }
         return entry;
+    }
+
+    private String getRedisKey(String family, Serializable key) {
+        return family + ":" + getLong(key);
     }
 
     private boolean entityDoesntExistForValues(List<byte[]> values) {
