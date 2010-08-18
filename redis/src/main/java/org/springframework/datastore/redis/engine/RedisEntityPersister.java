@@ -203,7 +203,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
 
     @Override
     public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-        return new RedisPropertyValueIndexer(redisTemplate,typeConverter, property);
+        return new RedisPropertyValueIndexer(this, property);
     }
 
     @Override
@@ -230,5 +230,14 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
 
     public SimpleTypeConverter getTypeConverter() {
         return typeConverter;
+    }
+
+
+    public String getEntityBaseKey() {
+        return getFamily(getPersistentEntity(), getPersistentEntity().getMapping());
+    }
+
+    public String getPropertySortKey(PersistentProperty property) {
+        return "~" + getEntityBaseKey() + ":" + property.getName() + ":sorted";
     }
 }

@@ -59,4 +59,17 @@ public class Restrictions {
     public static Query.Criterion or(Query.Criterion a, Query.Criterion b) {
         return new Query.Disjunction().add(a).add(b);
     }
+
+    /**
+     * Restricts the results by the given property value range
+     *
+     * @param property The name of the property
+     * @param start The start of the range
+     * @param end The end of the range
+     * @return This query instance
+     */
+
+    public static Query.Between between(String property, Object start, Object end) {
+        return new Query.Between(property, start, end);
+    }
 }

@@ -130,7 +130,7 @@ public abstract class Query {
     }
 
     /**
-     * Restricts the results by the given properties value
+     * Restricts the results by the given property values
      *
      * @param property The name of the property
      * @param values The values to restrict by
@@ -141,6 +141,19 @@ public abstract class Query {
         return this;
     }
 
+    /**
+     * Restricts the results by the given property value range
+     *
+     * @param property The name of the property
+     * @param start The start of the range
+     * @param end The end of the range
+     * @return This query instance
+     */
+    public Query between(String property, Object start, Object end) {
+        criteria.add(Restrictions.between(property, start, end));
+        return this;
+    }
+    
     /**
      * Restricts the results by the given properties value
      *
@@ -261,6 +274,33 @@ public abstract class Query {
         }
     }
 
+    /**
+     * Criterion used to restrict the result to be between values (range query)
+     */
+    public static class Between extends Criterion {
+        private String property;
+        private Object from; 
+        private Object to;
+
+        public Between(String property, Object from, Object to) {
+            this.property = property;
+            this.from = from;
+            this.to = to;
+        }
+
+        public String getProperty() {
+            return property;
+        }
+
+        public Object getFrom() {
+            return from;
+        }
+
+        public Object getTo() {
+            return to;
+        }
+    }
+    
     /**
      * Criterion used to restrict the results based on a pattern (likeness)
      */

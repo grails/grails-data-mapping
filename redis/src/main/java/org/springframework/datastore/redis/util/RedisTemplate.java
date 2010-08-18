@@ -432,4 +432,38 @@ public class RedisTemplate {
             throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
+
+    public boolean zadd(String key, double rank, Object o) {
+        try {
+            return redis.zadd(key, rank, o.toString());
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+    }
+
+    public int zrank(String key, Object member) {
+        try {
+            return redis.zrank(key, member.toString());
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+
+    }
+
+    public String[] zrange(String key, int fromIndex, int toIndex) {
+        try {
+            return redis.zrange(key, fromIndex, toIndex);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+    }
+
+    public String[] zrangebyscore(String sortKey, double rank1, double rank2) {
+        try {
+            return redis.zrangebyscore(sortKey, rank1, rank2);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+
+    }
 }

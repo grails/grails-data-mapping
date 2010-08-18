@@ -25,6 +25,7 @@ import org.springframework.datastore.redis.collection.RedisSet;
 import org.springframework.datastore.redis.query.RedisQueryUtils;
 import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
+import sma.RedisClient;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -43,50 +44,29 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     private RedisTemplate template;
     private PersistentProperty property;
     private SimpleTypeConverter typeConverter;
+    private RedisEntityPersister entityPersister;
 
 
-    public RedisPropertyValueIndexer(RedisTemplate template, SimpleTypeConverter typeConverter, PersistentProperty property) {
-        this.template = template;
+    public RedisPropertyValueIndexer(RedisEntityPersister redisEntityPersister, PersistentProperty property) {
+        this.template = redisEntityPersister.getRedisTemplate();
+        this.typeConverter = redisEntityPersister.getTypeConverter();
+        this.entityPersister = redisEntityPersister;
         this.property = property;
-        this.typeConverter = typeConverter;
-
-    }
-
-    protected String getFamily(PersistentEntity persistentEntity) {
-        ClassMapping<Family> cm = persistentEntity.getMapping();
-        String table = null;
-        if(cm.getMappedForm() != null) {
-            table = cm.getMappedForm().getFamily();
-        }
-        if(table == null) table = persistentEntity.getJavaClass().getName();
-        return table;
     }
 
 
     public void index(final Object value, final Long primaryKey) {
         if(value != null) {
-            final RedisSet set = new RedisSet(template, createRedisKey(value));
-            set.add(primaryKey);
-
+            template.sadd(createRedisKey(value), primaryKey);
             // for numbers and dates we also create a list index in order to support range queries
             if(value instanceof Number) {
-//               template.execute(new RedisCallback(){
-//                   public Object doInRedis(JRedis jredis) throws RedisException {
-//                       String key = set.getRedisKey();
-//
-//                       String entityKey = getFamily(property.getOwner());
-//                       try {
-//                           jredis.sort(key)
-//                                 .BY(entityKey + ":*->" + property.getName())
-//                                 .STORE(key + ":sorted")
-//                                 .exec();
-//                       } catch (ProviderException e) {
-//                          // TODO: Workaround. JRedis doesn't support the store command properly
-//                       }
-//                       return null;
-//                   }
-//               });
-
+                String propSortKey = entityPersister.getPropertySortKey(property);
+                Number n = (Number) value;
+                template.zadd(propSortKey,n.doubleValue(),primaryKey);
+                // delete any cached indices
+                final String[] toDelete = template.keys(propSortKey + "~*");
+                if(toDelete.length>0)
+                    template.del(toDelete);
             }
             else if(value instanceof Date) {
                 // TODO: Support range queries for dates

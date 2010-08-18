@@ -56,6 +56,9 @@ public abstract class MethodExpression {
         else if(expression.endsWith(InList.class.getSimpleName())) {
             return new InList(clazz, calcPropertyName(expression, InList.class.getSimpleName()));
         }
+        else if(expression.endsWith(Between.class.getSimpleName())) {
+            return new Between(clazz, calcPropertyName(expression, Between.class.getSimpleName()));
+        }
         else if(expression.endsWith(Like.class.getSimpleName())) {
             return new Like(clazz, calcPropertyName(expression, Like.class.getSimpleName()));
         }
@@ -106,6 +109,32 @@ public abstract class MethodExpression {
         public void setArguments(Object[] arguments) {
             if(arguments.length == 0 || !(arguments[0] instanceof Collection))
                 throw new IllegalArgumentException("Only a collection of elements is supported in an 'in' query");
+
+            super.setArguments(arguments);
+        }
+    }
+
+    public static class Between extends MethodExpression {
+        protected Between(Class<?> targetClass, String propertyName) {
+            super(targetClass, propertyName);
+        }
+
+        @Override
+        public Query.Criterion createCriterion() {
+            return Restrictions.between(propertyName, arguments[0], arguments[1]);
+        }
+
+        @Override
+        public int getArgumentsRequired() {
+            return 2;
+        }
+
+        @Override
+        public void setArguments(Object[] arguments) {
+            if(arguments.length < 2 )
+                throw new IllegalArgumentException("A 'between' query requires at least two arguments");
+            if(!(arguments[0] instanceof Number) || !(arguments[0] instanceof Number))
+                throw new IllegalArgumentException("A 'between' query requires that both arguments are numbers");
 
             super.setArguments(arguments);
         }

@@ -168,7 +168,12 @@ public class RedisQuery extends Query {
                 Like like = (Like) criterion;
                 String key = executeSubLike(entityPersister, like);
                 indices.add(key);
-            }            
+            }
+            else if(criterion instanceof Between) {
+                Between between = (Between) criterion;
+                String key = executeSubBetween(entityPersister, between);
+                indices.add(key);
+            }
             else if(criterion instanceof Equals) {
                 Equals eq = (Equals) criterion;
                 final String property = eq.getName();
@@ -188,6 +193,35 @@ public class RedisQuery extends Query {
             }
         }
         return indices;
+    }
+
+    private String executeSubBetween(RedisEntityPersister entityPersister, Between between) {
+        final String property = between.getProperty();
+
+        final PersistentEntity entity = entityPersister.getPersistentEntity();
+        PersistentProperty prop = entity.getPropertyByName(property);
+        if(prop == null) {
+            throw new DataIntegrityViolationException("Cannot execute between query on property ["+property+"] of class ["+entity+"]. Property does not exist.");
+        }
+
+        String sortKey = entityPersister.getPropertySortKey(prop);
+
+        Object from = between.getFrom();
+        Object to = between.getTo();
+
+        // TODO: Seriously optimize this by precaching query in indexer
+        final String key = sortKey + "~between-" + from + "-" + to;
+        if(!template.exists(key)) {
+            String[] results = template.zrangebyscore(sortKey, ((Number)from).doubleValue(), ((Number)to).doubleValue());
+            template.multi();
+            for (String result : results) {
+                template.sadd(key, result);
+            }
+            template.expire(key, 500);
+            template.exec();
+        }
+
+        return key;
     }
 
     private String executeSubLike(RedisEntityPersister entityPersister, Like like) {

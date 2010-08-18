@@ -113,22 +113,18 @@ public abstract class DynamicFinder {
                     int argumentCursor = 0;
                     for (String queryParameter : queryParameters) {
                         MethodExpression currentExpression = MethodExpression.create(clazz, queryParameter);
-                        totalRequiredArguments += currentExpression.argumentsRequired;
+                        final int requiredArgs = currentExpression.getArgumentsRequired();
+                        totalRequiredArguments += requiredArgs;
                         // populate the arguments into the GrailsExpression from the argument list
-                        Object[] currentArguments = new Object[currentExpression.argumentsRequired];
-                        if ((argumentCursor + currentExpression.argumentsRequired) > arguments.length) {
+                        Object[] currentArguments = new Object[requiredArgs];
+                        if ((argumentCursor + requiredArgs) > arguments.length) {
                             throw new MissingMethodException(methodName, clazz, arguments);
                         }
 
-                        for (int k = 0; k < currentExpression.argumentsRequired; k++, argumentCursor++) {
+                        for (int k = 0; k < requiredArgs; k++, argumentCursor++) {
                             currentArguments[k] = arguments[argumentCursor];
                         }
-                        try {
-                            currentExpression.setArguments(currentArguments);
-                        }
-                        catch (IllegalArgumentException iae) {
-                            throw new MissingMethodException(methodName, clazz, arguments);
-                        }
+                        currentExpression.setArguments(currentArguments);
                         // add to list of expressions
                         expressions.add(currentExpression);
                     }
@@ -140,20 +136,16 @@ public abstract class DynamicFinder {
         if (!containsOperator && querySequence != null) {
             MethodExpression solo = MethodExpression.create(clazz,querySequence );
 
-            if (solo.argumentsRequired > arguments.length) {
+            final int requiredArguments = solo.getArgumentsRequired();
+            if (requiredArguments  > arguments.length) {
                 throw new MissingMethodException(methodName,clazz,arguments);
             }
 
-            totalRequiredArguments += solo.argumentsRequired;
-            Object[] soloArgs = new Object[solo.argumentsRequired];
+            totalRequiredArguments += requiredArguments;
+            Object[] soloArgs = new Object[requiredArguments];
 
-            System.arraycopy(arguments, 0, soloArgs, 0, solo.argumentsRequired);
-            try {
-                solo.setArguments(soloArgs);
-            }
-            catch (IllegalArgumentException iae) {
-                throw new MissingMethodException(methodName,clazz,arguments);
-            }
+            System.arraycopy(arguments, 0, soloArgs, 0, requiredArguments);
+            solo.setArguments(soloArgs);
             expressions.add(solo);
         }
 

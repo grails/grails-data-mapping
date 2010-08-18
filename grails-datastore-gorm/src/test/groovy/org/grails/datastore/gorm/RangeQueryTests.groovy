@@ -36,9 +36,22 @@ class RangeQueryTests {
   @Test
   void testBetween() {
     def age = 40
-    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+    ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each { new TestEntity(name:it, age: age--).save() }
 
 
-    
+    def results = TestEntity.findAllByAgeBetween(38, 40)
+
+    assert 3 == results.size()
+
+    results = TestEntity.findAllByAgeBetween(38, 40)
+
+    assert 3 == results.size()
+
+    assert results.find{ it.name == "Bob" }
+    assert results.find{ it.name == "Fred" }
+    assert results.find{ it.name == "Barney" }
+
+    results = TestEntity.findAllByAgeBetweenOrName(38, 40, "Ernie")
+    assert 4 == results.size()
   }
 }
