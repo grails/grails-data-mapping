@@ -44,7 +44,7 @@ public abstract class DynamicFinder {
     protected Pattern pattern;
     private Pattern[] operatorPatterns;
     private String[] operators;
-    private TypeConverter typeConverter = new ByteArrayAwareTypeConverter();
+    private static final TypeConverter typeConverter = new ByteArrayAwareTypeConverter();
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
     public DynamicFinder(Pattern pattern, String[] operators) {
@@ -176,7 +176,7 @@ public abstract class DynamicFinder {
 
     protected abstract Object doInvokeInternalWithExpressions(Class clazz, String methodName, Object[] remainingArguments, List<MethodExpression> expressions, String operatorInUse);
 
-    protected void populateArgumentsForCriteria(Class<?> targetClass, Query q, Map argMap) {
+    public static void populateArgumentsForCriteria(Class<?> targetClass, Query q, Map argMap) {
         Integer maxParam = null;
         Integer offsetParam = null;
         if (argMap.containsKey(ARGUMENT_MAX)) {

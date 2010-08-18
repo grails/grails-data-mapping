@@ -18,16 +18,15 @@ package grails.gorm;
 import groovy.lang.*;
 import org.springframework.beans.TypeConverter;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.type.ClassMetadata;
 import org.springframework.datastore.core.Datastore;
 import org.springframework.datastore.keyvalue.convert.ByteArrayAwareTypeConverter;
 import org.springframework.datastore.mapping.PersistentEntity;
-import org.springframework.datastore.query.Projections;
 import org.springframework.datastore.query.Query;
 import org.springframework.datastore.query.Restrictions;
-import static org.grails.datastore.gorm.finders.DynamicFinder.*;
 
 import java.util.*;
+
+import static org.grails.datastore.gorm.finders.DynamicFinder.*;
 
 /**
  *
@@ -64,7 +63,6 @@ public class CriteriaBuilder extends GroovyObjectSupport {
     private boolean paginationEnabledList;
     private List<Order> orderEntries = new ArrayList<Order>();
     private List<Query.Junction> logicalExpressionStack = new ArrayList<Query.Junction>();
-    private TypeConverter typeConverter = new ByteArrayAwareTypeConverter();
     private MetaObjectProtocol queryMetaClass;
     private Query.ProjectionList projectionList;
     private PersistentEntity persistentEntity;
@@ -77,6 +75,92 @@ public class CriteriaBuilder extends GroovyObjectSupport {
         if(persistentEntity == null) throw new IllegalArgumentException("Class ["+targetClass+"] is not a persistent entity");
         this.targetClass = targetClass;
         this.datastore = datastore;
+
+    }
+
+
+   public Query.ProjectionList id() {
+       if(projectionList != null) {
+           projectionList.id();
+       }
+       return projectionList;
+    }
+
+    public Query.ProjectionList count() {
+        if(projectionList != null) {
+            projectionList.count();
+        }
+        return projectionList;
+
+    }
+
+    /**
+     * A projection that obtains the value of a property of an entity
+     * @param name The name of the property
+     * @return The PropertyProjection instance
+     */
+    public Query.ProjectionList property(String name) {
+        if(projectionList != null) {
+            projectionList.property(name);
+        }
+        return projectionList;
+
+    }
+
+
+    /**
+     * Computes the sum of a property
+     *
+     * @param name The name of the property
+     * @return The PropertyProjection instance
+     */
+    public Query.ProjectionList sum(String name) {
+        if(projectionList != null) {
+            projectionList.sum(name);
+        }
+        return projectionList;
+
+    }
+
+    /**
+     * Computes the min value of a property
+     *
+     * @param name The name of the property
+     * @return The PropertyProjection instance
+     */
+    public Query.ProjectionList min(String name) {
+        if(projectionList != null) {
+            projectionList.min(name);
+        }
+        return projectionList;
+
+    }
+
+    /**
+     * Computes the max value of a property
+     *
+     * @param name The name of the property
+     * @return The PropertyProjection instance
+     */
+    public Query.ProjectionList max(String name) {
+        if(projectionList != null) {
+            projectionList.max(name);
+        }
+        return projectionList;
+
+    }
+
+   /**
+     * Computes the average value of a property
+     *
+     * @param name The name of the property
+     * @return The PropertyProjection instance
+     */
+    public Query.ProjectionList avg(String name) {
+       if(projectionList != null) {
+           projectionList.avg(name);
+       }
+       return projectionList;
 
     }
 
@@ -207,7 +291,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
                     name.equals(IS_EMPTY) ||
                     name.equals(IS_NOT_EMPTY)) {
                 if (!(value instanceof String)) {
-                    new IllegalArgumentException("call to [" + name + "] with value [" +
+                    throw new IllegalArgumentException("call to [" + name + "] with value [" +
                             value + "] requires a String value.");
                 }
                 String propertyName = value.toString();
@@ -236,38 +320,6 @@ public class CriteriaBuilder extends GroovyObjectSupport {
 
         throw new MissingMethodException(name, getClass(), args) ;
 
-    }
-
-
-    protected void populateArgumentsForCriteria(Class<?> targetClass, Query q, Map argMap) {
-        Integer maxParam = null;
-        Integer offsetParam = null;
-        if (argMap.containsKey(ARGUMENT_MAX)) {
-            maxParam = typeConverter.convertIfNecessary(argMap.get(ARGUMENT_MAX),Integer.class);
-        }
-        if (argMap.containsKey(ARGUMENT_OFFSET)) {
-            offsetParam = typeConverter.convertIfNecessary(argMap.get(ARGUMENT_OFFSET),Integer.class);
-        }
-        String orderParam = (String)argMap.get(ARGUMENT_ORDER);
-
-        final String sort = (String)argMap.get(ARGUMENT_SORT);
-        final String order = ORDER_DESC.equalsIgnoreCase(orderParam) ? ORDER_DESC : ORDER_ASC;
-        final int max = maxParam == null ? -1 : maxParam;
-        final int offset = offsetParam == null ? -1 : offsetParam;
-        if (max > -1) {
-            q.max(max);
-        }
-        if (offset > -1) {
-            q.offset(offset);
-        }
-        if (sort != null) {
-            if (ORDER_DESC.equals(order)) {
-                q.order(Query.Order.DESC);
-            }
-            else {
-                q.order(Query.Order.DESC);
-            }
-        }
     }
 
     /**

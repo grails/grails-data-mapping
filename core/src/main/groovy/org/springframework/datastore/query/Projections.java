@@ -41,4 +41,54 @@ public class Projections {
     public static Query.CountProjection count() {
         return COUNT_PROJECTION;
     }
+
+    /**
+     * A projection that obtains the value of a property of an entity
+     * @param name The name of the property
+     * @return The PropertyProjection instance
+     */
+    public static Query.PropertyProjection property(String name) {
+        return new Query.PropertyProjection(name);
+    }
+
+
+    /**
+     * Computes the sum of a property
+     *
+     * @param name The name of the property
+     * @return The PropertyProjection instance
+     */
+    public static Query.SumProjection sum(String name) {
+        return new Query.SumProjection(name);
+    }
+
+    /**
+     * Computes the min value of a property
+     *
+     * @param name The name of the property
+     * @return The PropertyProjection instance
+     */
+    public static Query.MinProjection min(String name) {
+        return new Query.MinProjection(name);
+    }
+
+    /**
+     * Computes the max value of a property
+     *
+     * @param name The name of the property
+     * @return The PropertyProjection instance
+     */
+    public static Query.MaxProjection max(String name) {
+        return new Query.MaxProjection(name);
+    }
+
+   /**
+     * Computes the average value of a property
+     *
+     * @param name The name of the property
+     * @return The PropertyProjection instance
+     */
+    public static Query.AvgProjection avg(String name) {
+        return new Query.AvgProjection(name);
+    }
 }

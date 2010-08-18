@@ -313,7 +313,61 @@ public abstract class Query {
      */
     public static class IdProjection extends Projection {}
 
+    /**
+     * Used to count the results of a query
+     */
     public static class CountProjection extends Projection {}
+
+    /**
+     * A projection that obtains the value of a property of an entity
+     */
+    public static class PropertyProjection extends Projection {
+        private String propertyName;
+
+        protected PropertyProjection(String propertyName) {
+            this.propertyName = propertyName;
+        }
+
+        public String getPropertyName() {
+            return propertyName;
+        }
+    }
+    /**
+     * Computes the average value of a property
+     */
+    public static class AvgProjection extends PropertyProjection {
+        protected AvgProjection(String propertyName) {
+            super(propertyName);
+        }
+    }
+    
+    /**
+     * Computes the max value of a property
+     */
+    public static class MaxProjection extends PropertyProjection {
+        protected MaxProjection(String propertyName) {
+            super(propertyName);
+        }
+    }
+    
+    /**
+     * Computes the min value of a property
+     */
+    public static class MinProjection extends PropertyProjection {
+        protected MinProjection(String propertyName) {
+            super(propertyName);
+        }
+    }
+    
+    /**
+     * Computes the sum of a property
+     */
+    public static class SumProjection extends PropertyProjection {
+        protected SumProjection(String propertyName) {
+            super(propertyName);
+        }
+    }
+    
 
     /**
      * A list of projections
@@ -344,5 +398,60 @@ public abstract class Query {
         public boolean isEmpty() {
             return projections.isEmpty();
         }
+        
+        /**
+         * A projection that obtains the value of a property of an entity
+         * @param name The name of the property
+         * @return The PropertyProjection instance
+         */
+        public ProjectionList property(String name) {
+            add(Projections.property(name));
+            return this;
+        }
+    
+    
+        /**
+         * Computes the sum of a property
+         *
+         * @param name The name of the property
+         * @return The PropertyProjection instance
+         */
+        public ProjectionList sum(String name) {
+            add(Projections.sum(name));
+            return this;
+        }
+    
+        /**
+         * Computes the min value of a property
+         *
+         * @param name The name of the property
+         * @return The PropertyProjection instance
+         */
+        public ProjectionList min(String name) {
+            add(Projections.min(name));
+            return this;
+        }
+    
+        /**
+         * Computes the max value of a property
+         *
+         * @param name The name of the property
+         * @return The PropertyProjection instance
+         */
+        public ProjectionList max(String name) {
+            add(Projections.max(name));
+            return this;
+        }
+    
+       /**
+         * Computes the average value of a property
+         *
+         * @param name The name of the property
+         * @return The PropertyProjection instance
+         */
+        public ProjectionList avg(String name) {
+           add(Projections.avg(name));
+            return this;
+        }        
     }
 }
