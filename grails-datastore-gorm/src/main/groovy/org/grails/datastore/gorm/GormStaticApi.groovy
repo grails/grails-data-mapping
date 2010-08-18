@@ -16,6 +16,7 @@ package org.grails.datastore.gorm
 
 import org.springframework.datastore.core.Datastore
 import org.springframework.datastore.query.Query
+import grails.gorm.CriteriaBuilder
 
 /**
  *  Static methods of the GORM API
@@ -34,6 +35,20 @@ class GormStaticApi extends AbstractGormApi {
    */
   def get(Serializable id) {
     datastore.currentSession.retrieve(persistentClass,id)
+  }
+
+  /**
+   * Creates a criteria builder instance
+   */
+  CriteriaBuilder createCriteria() {
+    return new CriteriaBuilder(persistentClass, datastore)
+  }
+
+  /**
+   * Creates a criteria builder instance
+   */
+  CriteriaBuilder withCriteria(Closure callable) {
+    return new CriteriaBuilder(persistentClass, datastore).list(callable)
   }
 
   /**
