@@ -43,7 +43,7 @@ public class RedisMap extends AbstractMap {
     @Override
     public Set entrySet() {
 
-        final Map<String,byte[]> redisMap = redisTemplate.hgetall(redisKey);
+        final Map<String,String> redisMap = redisTemplate.hgetall(redisKey);
         Set entrySet = new HashSet();
         for (final String key : redisMap.keySet()) {
             entrySet.add(new Map.Entry() {
@@ -52,7 +52,7 @@ public class RedisMap extends AbstractMap {
                 }
 
                 public Object getValue() {
-                    return new RedisValue(redisMap.get(key), converter);
+                    return redisMap.get(key);
                 }
 
                 public Object setValue(Object value) {
@@ -88,8 +88,7 @@ public class RedisMap extends AbstractMap {
     @Override
     public Object get(Object key) {
         if(key != null) {
-            byte[] value = redisTemplate.hget(redisKey, key.toString());
-            return new RedisValue(value, converter);
+            return redisTemplate.hget(redisKey, key.toString());
         }
         return super.get(key);
     }

@@ -15,7 +15,7 @@ public interface RedisCollection extends Collection {
      */    
     String getRedisKey();
     
-    List<byte[]> members();
+    String[] members();
 
-    List<byte[]> members(int offset, int max);
+    String[] members(int offset, int max);
 }

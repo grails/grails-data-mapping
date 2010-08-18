@@ -29,11 +29,11 @@ import java.util.List;
 public class RedisQueryUtils {
 
 
-    public static List<Long> transformRedisResults(SimpleTypeConverter typeConverter, List<byte[]> results) {
+    public static List<Long> transformRedisResults(SimpleTypeConverter typeConverter, String[] results) {
         List<Long> returnResults;
-        if(!results.isEmpty()) {
-            List<Long> foreignKeys = new ArrayList<Long>(results.size());
-            for (byte[] result : results) {
+        if(results.length != 0) {
+            List<Long> foreignKeys = new ArrayList<Long>(results.length);
+            for (String result : results) {
                 foreignKeys.add(getLong(typeConverter, result));
             }
             returnResults=  foreignKeys;

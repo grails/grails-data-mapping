@@ -14,7 +14,6 @@
  */
 package org.springframework.datastore.redis.engine;
 
-import org.jredis.JRedis;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.datastore.engine.AssociationIndexer;
@@ -35,7 +34,6 @@ import org.springframework.datastore.redis.util.RedisTemplate;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -49,9 +47,9 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     private RedisTemplate redisTemplate;
     private RedisCollection allEntityIndex;
 
-    public RedisEntityPersister(MappingContext context, PersistentEntity entity, RedisSession conn, final JRedis jredisClient) {
+    public RedisEntityPersister(MappingContext context, PersistentEntity entity, RedisSession conn, final RedisTemplate template) {
         super(context, entity, conn);
-        this.redisTemplate = new RedisTemplate(jredisClient);
+        this.redisTemplate = template;
         allEntityIndex = new RedisSet(redisTemplate, getEntityFamily() + ".all");
     }
 
@@ -73,10 +71,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     @Override
     protected void setEntryValue(RedisEntry nativeEntry, String key, Object value) {
         if(value != null) {
-            if(!(value instanceof byte[])) {
-                value = value.toString().getBytes();
-            }
-            nativeEntry.put(key, value);
+            nativeEntry.put(key, value.toString());
         }
     }
 
@@ -136,11 +131,11 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
         final String hashKey = getRedisKey(family, key);
 
         final List<String> props = persistentEntity.getPersistentPropertyNames();
-        final List<byte[]> values = redisTemplate.hmget(hashKey, props.toArray(new String[props.size()]));
+        final String[] values = redisTemplate.hmget(hashKey, props.toArray(new String[props.size()]));
         if(entityDoesntExistForValues(values)) return null;
         RedisEntry entry = new RedisEntry(family);
         for (int i = 0; i < props.size(); i++) {
-              entry.put(props.get(i), values.get(i));
+              entry.put(props.get(i), values[i]);
         }
         return entry;
     }
@@ -149,9 +144,9 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
         return family + ":" + getLong(key);
     }
 
-    private boolean entityDoesntExistForValues(List<byte[]> values) {
-        if(values == null || values.size() == 0) return false;
-        for (byte[] value : values) {
+    private boolean entityDoesntExistForValues(String[] values) {
+        if(values == null || values.length == 0) return false;
+        for (String value : values) {
             if(value != null) return false;
         }
         return true;

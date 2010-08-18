@@ -1,10 +1,10 @@
 package org.springframework.datastore.redis
 
 import org.springframework.datastore.query.Query
-import org.jredis.JRedis
 import org.springframework.datastore.core.Session
 import org.junit.Test
 import static org.springframework.datastore.query.Restrictions.*
+import sma.RedisClient
 
 /**
  */
@@ -14,7 +14,7 @@ class CountQueryTests {
   void testDisjunctionAndCount() {
     def ds = new RedisDatastore()
     ds.mappingContext.addPersistentEntity(Author)
-    Session<JRedis> session = ds.connect()
+    Session<RedisClient> session = ds.connect()
     session.getNativeInterface().flushall()
 
     def a = new Author(name:"Stephen King")
@@ -44,7 +44,7 @@ class CountQueryTests {
   void testSimpleQueryAndCount() {
     def ds = new RedisDatastore()
     ds.mappingContext.addPersistentEntity(Author)
-    Session<JRedis> session = ds.connect()
+    Session<RedisClient> session = ds.connect()
     session.getNativeInterface().flushall()
 
     def a = new Author(name:"Stephen King")

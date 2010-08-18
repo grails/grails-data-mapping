@@ -14,24 +14,23 @@ import java.util.List;
  *
  */
 public class RedisIterator implements Iterator {
-    private List<byte[]> values;
+    private String[] values;
     private Collection collection;
     private int index = 0;
     private RedisValue current;
     private TypeConverter converter = new ByteArrayAwareTypeConverter();
 
-    public RedisIterator(List<byte[]> values, Collection col) {
+    public RedisIterator(String[] values, Collection col) {
         this.values = values;
         this.collection = col;
     }
 
     public boolean hasNext() {
-        return index < values.size();
+        return index < values.length;
     }
 
     public Object next() {
-        current = new RedisValue(values.get(index++), converter);
-        return current;
+        return values[index++];
     }
 
     public void remove() {

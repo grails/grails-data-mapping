@@ -74,8 +74,7 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
     }
 
     private List<Long> queryRedisCollection(RedisCollection col) {
-        List<byte[]> results;
-        results = col.members();
+        String[] results = col.members();
         return RedisQueryUtils.transformRedisResults(typeConverter, results);
     }
 

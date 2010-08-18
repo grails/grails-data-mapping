@@ -21,13 +21,10 @@ import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
+import org.springframework.datastore.redis.util.RedisTemplate;
 import org.springframework.datastore.tx.Transaction;
-import org.jredis.JRedis;
-import org.jredis.RedisException;
-import org.jredis.connector.ConnectionSpec;
-import org.jredis.ri.alphazero.JRedisService;
-import org.jredis.ri.alphazero.connection.DefaultConnectionSpec;
 import org.springframework.transaction.CannotCreateTransactionException;
+import sma.RedisClient;
 
 import java.io.Serializable;
 import java.util.*;
@@ -36,16 +33,14 @@ import java.util.*;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisSession extends AbstractSession<JRedis> implements Map {
+public class RedisSession extends AbstractSession<RedisClient> implements Map {
 
-    private JRedis jredisClient;
+    private RedisTemplate redisClient;
 
     public RedisSession(Map<String, String> connectionDetails, MappingContext mappingContext) {
         super(connectionDetails, mappingContext);
         int timeout = 30000; // msecs
-        ConnectionSpec connSpec = DefaultConnectionSpec.newSpec();
-        connSpec.setSocketProperty(ConnectionSpec.SocketProperty.SO_TIMEOUT, timeout);
-        jredisClient = new JRedisService(connSpec,JRedisService.default_connection_count);
+        redisClient = new RedisTemplate( new RedisClient() );
     }
 
     @Override
@@ -55,7 +50,7 @@ public class RedisSession extends AbstractSession<JRedis> implements Map {
           return new RedisEntityPersister(mappingContext,
                                             entity,
                                             this,
-                                            jredisClient);
+                                            redisClient);
       }
       return null;
 
@@ -71,20 +66,15 @@ public class RedisSession extends AbstractSession<JRedis> implements Map {
             for (Object lockedObject : lockedObjects) {
                 unlock(lockedObject);
             }
-            jredisClient.quit();
+            redisClient.close();
         } finally {
             super.disconnect();
         }
     }
 
     public Transaction beginTransaction() {
-        try {
-            jredisClient.multi();
-            return new RedisTransaction(jredisClient);
-        } catch (RedisException e) {
-            throw new CannotCreateTransactionException("Failed to create Redis transaction: " + e.getMessage(),e );
-        }
-
+        redisClient.multi();
+        return new RedisTransaction(redisClient);
     }
 
     @Override
@@ -125,16 +115,12 @@ public class RedisSession extends AbstractSession<JRedis> implements Map {
         }
     }
 
-    public JRedis getNativeInterface() {
-        return jredisClient;
+    public RedisClient getNativeInterface() {
+        return redisClient.getRedisClient();
     }
 
     public int size() {
-        try {
-            return ((Long)jredisClient.dbsize()).intValue();
-        } catch (RedisException e) {
-            return 0;
-        }
+        return redisClient.dbsize();
     }
 
     public boolean isEmpty() {
@@ -143,11 +129,7 @@ public class RedisSession extends AbstractSession<JRedis> implements Map {
 
     public boolean containsKey(Object o) {
         if(o!=null) {
-            try {
-                jredisClient.exists(o.toString());
-            } catch (RedisException e) {
-                return false;
-            }
+            return redisClient.exists(o.toString());
         }
         return false;
     }
@@ -158,75 +140,43 @@ public class RedisSession extends AbstractSession<JRedis> implements Map {
 
     public Object get(Object key) {
         if(key!=null) {
-            try {
-                final byte[] bytes = jredisClient.get(key.toString());
-                if(bytes != null)
-                    return new String(bytes);
-                return null;
-            } catch (RedisException e) {
-                return null;
-            }
+             return redisClient.get(key.toString());
         }
         return null;
     }
 
     public Object put(Object key, Object value) {
         if(key != null) {
-            byte [] oldValue;
-            try {
-                oldValue = jredisClient.getset(key.toString(), value.toString());
-                if(oldValue != null)
-                    return new String(oldValue);
-                return null;
-            } catch (RedisException e) {
-                return null;
-            }
+            return redisClient.getset(key.toString(), value.toString());
         }
         return null;
     }
 
     public Object remove(Object key) {
         if(key != null) {
-            try {
-                return jredisClient.del(key.toString());
-
-            } catch (RedisException e) {
-                return null;
-            }
+            Object current = get(key);
+            redisClient.del(key.toString());
+            return current;
         }
         return null;
     }
 
     public void putAll(Map map) {
-        Map<String, byte[]> putMap = new HashMap<String, byte[]>();
+        Map<String, String> putMap = new HashMap<String, String>();
         for (Object key : map.keySet()) {
             final Object val = map.get(key);
             if(val != null)
-                putMap.put(key.toString(), val.toString().getBytes());
+                putMap.put(key.toString(), val.toString());
         }
-        try {
-            jredisClient.mset(putMap);
-        } catch (RedisException e) {
-            // do nothing
-        }
+        redisClient.mset(putMap);
     }
 
     public void clear() {
-        try {
-            jredisClient.flushdb();
-        } catch (RedisException e) {
-            // do nothing
-        }
+        redisClient.flushdb();
     }
 
     public Set keySet() {
-        final List<String> keys;
-        try {
-            keys = jredisClient.keys("*");
-            return new HashSet(keys);
-        } catch (RedisException e) {
-            return Collections.emptySet();
-        }
+        return new HashSet(Arrays.asList(redisClient.keys("*")));
     }
 
     public Collection values() {

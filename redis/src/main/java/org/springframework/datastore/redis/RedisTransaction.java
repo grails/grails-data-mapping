@@ -14,10 +14,10 @@
  */
 package org.springframework.datastore.redis;
 
+import org.springframework.datastore.redis.util.RedisTemplate;
 import org.springframework.datastore.tx.Transaction;
-import org.jredis.JRedis;
-import org.jredis.RedisException;
 import org.springframework.transaction.TransactionSystemException;
+import sma.RedisClient;
 
 /**
  * Represents a Redis transaction
@@ -25,30 +25,22 @@ import org.springframework.transaction.TransactionSystemException;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisTransaction implements Transaction<JRedis> {
-    private JRedis jredis;
+public class RedisTransaction implements Transaction<RedisTemplate> {
+    private RedisTemplate redisTemplate;
 
-    public RedisTransaction(JRedis jredis) {
-        this.jredis = jredis;
+    public RedisTransaction(RedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
     }
 
     public void commit() {
-        try {
-            jredis.exec();
-        } catch (RedisException e) {
-            throw new TransactionSystemException("Cannot exec Redis transaction: " + e.getMessage(),e);
-        }
+        redisTemplate.exec();
     }
 
     public void rollback() {
-        try {
-            jredis.discard();
-        } catch (RedisException e) {
-            throw new TransactionSystemException("Cannot rollback Redis transaction: " + e.getMessage(),e);
-        }
+        redisTemplate.discard();
     }
 
-    public org.jredis.JRedis getNativeTransaction() {
-        return jredis;
+    public RedisTemplate getNativeTransaction() {
+        return redisTemplate;
     }
 }

@@ -14,13 +14,10 @@
  */
 package org.springframework.datastore.redis.util;
 
-import org.jredis.JRedis;
-import org.jredis.RedisException;
-import org.springframework.dao.DataAccessException;
-import org.springframework.datastore.redis.RedisEntry;
+import org.springframework.dao.DataAccessResourceFailureException;
+import sma.RedisClient;
 
-import java.io.Serializable;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -32,435 +29,407 @@ import java.util.Map;
  */
 public class RedisTemplate {
 
-    JRedis jredis;
+    RedisClient redis;
     
-    public RedisTemplate(JRedis jredis) {
-        this.jredis = jredis;
+    public RedisTemplate(RedisClient jredis) {
+        this.redis = jredis;
     }
 
     public Object execute(RedisCallback callback) {
         try {
-            return callback.doInRedis(jredis);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command: " + e.getMessage(), e) {};
+            return callback.doInRedis(redis);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
-    public JRedis getJRedis() {
-        return jredis;
-    }
 
     public void save() {
         try {
-            jredis.save();
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [save]: " + e.getMessage(), e) {};
+            redis.save();
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
     public void bgsave() {
         try {
-            jredis.bgsave();
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [bgsave]: " + e.getMessage(), e) {};
+            redis.bgsave();
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
     public boolean sismember(String redisKey, Object o) {
         try {
-            if(o instanceof Number) {
-                return jredis.sismember(redisKey, (Number)o);
-            }
-            else if(o instanceof String) {
-                return jredis.sismember(redisKey, (String)o);
-            }
-            else if(o instanceof byte[]) {
-                return jredis.sismember(redisKey, (byte[])o);
-            }
-            else if(o instanceof Serializable) {
-                return jredis.sismember(redisKey, (Serializable)o);
-            }
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [sismember]: " + e.getMessage(), e) {};
+            return redis.sismember(redisKey, o.toString());
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
-        return false;
+
     }
 
 
     public void del(String redisKey) {
-       try {
-            jredis.del(redisKey);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [del]: " + e.getMessage(), e) {};
+        try {
+            redis.del(redisKey);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
-    public long scard(String redisKey) {
+    public int scard(String redisKey) {
         try {
-             return jredis.scard(redisKey);
-         } catch (RedisException e) {
-             throw new DataAccessException("Exception occured executing Redis command [scard]: " + e.getMessage(), e) {};
-         }
-
+            return redis.scard(redisKey);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
     }
 
     public boolean sadd(String redisKey, Object o) {
         try {
-            if(o instanceof Number) {
-                return jredis.sadd(redisKey, (Number)o);
-            }
-            else if(o instanceof String) {
-                return jredis.sadd(redisKey, (String)o);
-            }
-            else if(o instanceof byte[]) {
-                return jredis.sadd(redisKey, (byte[])o);
-            }
-            else if(o instanceof Serializable) {
-                return jredis.sadd(redisKey, (Serializable)o);
-            }
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [sadd]: " + e.getMessage(), e) {};
+            return redis.sadd(redisKey, o.toString());
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
-        return false;
     }
 
     public boolean srem(String redisKey, Object o) {
         try {
-            if(o instanceof Number) {
-                return jredis.srem(redisKey, (Number)o);
-            }
-            else if(o instanceof String) {
-                return jredis.srem(redisKey, (String)o);
-            }
-            else if(o instanceof byte[]) {
-                return jredis.srem(redisKey, (byte[])o);
-            }
-            else if(o instanceof Serializable) {
-                return jredis.srem(redisKey, (Serializable)o);
-            }
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [srem]: " + e.getMessage(), e) {};
+            return redis.srem(redisKey, o.toString());
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
-        return false;
     }
 
-    public List<byte[]> smembers(String redisKey) {
+    public String[] smembers(String redisKey) {
         try {
-            return jredis.smembers(redisKey);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [smembers]: " + e.getMessage(), e) {};
+            return redis.smembers(redisKey);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
     public void lset(String redisKey, int index, Object o) {
         try {
-            if(o instanceof Number) {
-                jredis.lset(redisKey,index, (Number)o);
-            }
-            else if(o instanceof String) {
-                jredis.lset(redisKey,index, (String)o);
-            }
-            else if(o instanceof byte[]) {
-                jredis.lset(redisKey,index, (byte[])o);
-            }
-            else if(o instanceof Serializable) {
-                jredis.lset(redisKey, index,(Serializable)o);
-            }
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [lset]: " + e.getMessage(), e) {};
+            redis.lset(redisKey, index, o.toString());
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
+
     }
 
-    public byte[] lindex(String redisKey, int index) {
+    public String lindex(String redisKey, int index) {
         try {
-            return jredis.lindex(redisKey,index);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [lindex]: " + e.getMessage(), e) {};
+            return redis.lindex(redisKey, index);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
     public long llen(String redisKey) {
         try {
-            return jredis.llen(redisKey);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [llen]: " + e.getMessage(), e) {};
+            return redis.llen(redisKey);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
-    public List<byte[]> lrange(String redisKey, long start, long end) {
+    public String[] lrange(String redisKey, int start, int end) {
         try {
-            return jredis.lrange(redisKey, start, end);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [lrange]: " + e.getMessage(), e) {};
+            return redis.lrange(redisKey, start, end);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
     public void rpush(String redisKey, Object o) {
         try {
-            if(o instanceof Number) {
-                jredis.rpush(redisKey, (Number)o);
-            }
-            else if(o instanceof String) {
-                jredis.rpush(redisKey,(String)o);
-            }
-            else if(o instanceof byte[]) {
-                jredis.rpush(redisKey,(byte[])o);
-            }
-            else if(o instanceof Serializable) {
-                jredis.rpush(redisKey,(Serializable)o);
-            }
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [rpush]: " + e.getMessage(), e) {};
+            redis.rpush(redisKey, o.toString());
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
-
     }
 
-    public boolean lrem(String redisKey, Object o, int count) {
+    public int lrem(String redisKey, Object o, int count) {
         try {
-             if(o instanceof Number) {
-                 return jredis.lrem(redisKey, (Number)o, count) > 0;
-             }
-             else if(o instanceof String) {
-                 return jredis.lrem(redisKey,(String)o, count ) > 0;
-             }
-             else if(o instanceof byte[]) {
-                 return jredis.lrem(redisKey,(byte[])o, count) > 0;
-             }
-             else if(o instanceof Serializable) {
-                 return jredis.lrem(redisKey,(Serializable)o, count) > 0;
-             }
-         } catch (RedisException e) {
-             throw new DataAccessException("Exception occured executing Redis command [rpush]: " + e.getMessage(), e) {};
-         }
-
-        return false;
+            return redis.lrem(redisKey, count, o.toString());
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
     }
 
     public void flushdb() {
         try {
-            jredis.flushdb();
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [flushdb]: " + e.getMessage(), e) {};
+            redis.flushdb();
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
+
     }
 
     public void flushall() {
         try {
-            jredis.flushdb();
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [flushall]: " + e.getMessage(), e) {};
+            redis.flushall();
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
+
     }
 
     public void select(int index) {
-        throw new UnsupportedOperationException("Method select(index) not implemented");
+        try {
+            redis.selectdb(index);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+
     }
 
-    public long dbsize() {
+    public int dbsize() {
         try {
-            return jredis.dbsize();
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [dbsize]: " + e.getMessage(), e) {};
+            return redis.dbsize();
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
     public void lpush(String redisKey, Object o) {
-      try {
-            if(o instanceof Number) {
-                jredis.lpush(redisKey, (Number)o);
-            }
-            else if(o instanceof String) {
-                jredis.lpush(redisKey,(String)o);
-            }
-            else if(o instanceof byte[]) {
-                jredis.lpush(redisKey,(byte[])o);
-            }
-            else if(o instanceof Serializable) {
-                jredis.lpush(redisKey,(Serializable)o);
-            }
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [lpush]: " + e.getMessage(), e) {};
+        try {
+            redis.lpush(redisKey, o.toString());
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
+
     }
 
-    public byte[] hget(String redisKey, String entryKey) {
+    public String hget(String redisKey, String entryKey) {
         try {
-            return jredis.hget(redisKey,entryKey);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [hget]: " + e.getMessage(), e) {};
+            return redis.hget(redisKey, entryKey);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
     public long hlen(String redisKey) {
         try {
-            return jredis.hlen(redisKey);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [hlen]: " + e.getMessage(), e) {};
+            return redis.hlen(redisKey);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
     public boolean hset(String redisKey, String key, Object o) {
-      try {
-            if(o instanceof Number) {
-                return jredis.hset(redisKey, key, (Number)o);
-            }
-            else if(o instanceof String) {
-                return jredis.hset(redisKey,key, (String)o);
-            }
-            else if(o instanceof byte[]) {
-                return jredis.hset(redisKey,key, (byte[])o);
-            }
-            else if(o instanceof Serializable) {
-                return jredis.hset(redisKey,key, (Serializable)o);
-            }
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [hset]: " + e.getMessage(), e) {};
+        try {
+            return redis.hset(redisKey, key, o.toString());
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
-        return false;
     }
 
     public boolean hdel(String redisKey, String entryKey) {
         try {
-            return jredis.hdel(redisKey, entryKey);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [hdel]: " + e.getMessage(), e) {};
+            return redis.hdel(redisKey, entryKey);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
-    public Map<String, byte[]> hgetall(String redisKey) {
+    public Map<String, String> hgetall(String redisKey) {
+        String[] result;
         try {
-            return jredis.hgetall(redisKey);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [hgetall]: " + e.getMessage(), e) {};
+            result = redis.hgetall(redisKey);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
+
+        Map map = new HashMap();
+        if(result.length>1) {
+
+            for (int i = 0; i < result.length; i = i + 2) {
+                map.put(result[i], result[i+1]);
+
+            }
+        }
+        return map;
     }
 
-    public List<byte[]> hmget(String hashKey, String[] fields) {
+    public String[] hmget(String hashKey, String[] fields) {
         try {
-            return jredis.hmget(hashKey, fields);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [hmget]: " + e.getMessage(), e) {};
+            return redis.hmget(hashKey, fields);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
+
     }
 
-    public void hmset(String key, Map<String, byte[]> nativeEntry) {
+    public void hmset(String key, Map<String, String> nativeEntry) {
         try {
-            jredis.hmset(key, nativeEntry);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [hmset]: " + e.getMessage(), e) {};
+            redis.hmset(key, nativeEntry);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
-
     }
 
     public long incr(String key) {
         try {
-            return jredis.incr(key);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [incr]: " + e.getMessage(), e) {};
+            return redis.incr(key);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
     public long del(String... redisKey) {
         try {
-           return jredis.del(redisKey);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [del]: " + e.getMessage(), e) {};
+            return redis.del(redisKey);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
-    public List<byte[]> sinter(String firstKey, String...keys) {
+    public String[] sinter(String...keys) {
         try {
-            return jredis.sinter(firstKey, keys);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [sinter]: " + e.getMessage(), e) {};
+            return redis.sinter(keys);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
-    public List<byte[]> sunion(String firstKey, String... keys) {
+    public String[] sunion(String... keys) {
         try {
-            return jredis.sunion(firstKey, keys);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [sinter]: " + e.getMessage(), e) {};
+            return redis.sunion(keys);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
     public void sinterstore(String storeKey, String... keys) {
         try {
-            jredis.sinterstore(storeKey, keys);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [sinterstore]: " + e.getMessage(), e) {};
+            redis.sinterstore(storeKey, keys);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
+
     }
 
     public void sunionstore(String storeKey, String... keys) {
         try {
-            jredis.sunionstore(storeKey, keys);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [sunionstore]: " + e.getMessage(), e) {};
+            redis.sunionstore(storeKey, keys);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
+
     }
 
     public boolean setnx(String redisKey, Object o) {
         try {
-              if(o instanceof Number) {
-                  return jredis.setnx(redisKey, (Number)o);
-              }
-              else if(o instanceof String) {
-                  return jredis.setnx(redisKey,(String)o);
-              }
-              else if(o instanceof byte[]) {
-                  return jredis.setnx(redisKey,(byte[])o);
-              }
-              else if(o instanceof Serializable) {
-                  return jredis.setnx(redisKey,(Serializable)o);
-              }
-          } catch (RedisException e) {
-              throw new DataAccessException("Exception occured executing Redis command [setnx]: " + e.getMessage(), e) {};
-          }
-        return false;
+            return redis.setnx(redisKey, o.toString());
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+
     }
 
     public boolean expire(String key, int timeout) {
         try {
-            return jredis.expire(key, timeout);
-        } catch (RedisException e) {
-            return false;
+            return redis.expire(key,timeout);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
     public long ttl(String key) {
         try {
-            return jredis.ttl(key);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [ttl]: " + e.getMessage(), e) {};
+            return redis.ttl(key);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 
-    public byte[] getset(String redisKey, Object o) {
+    public String getset(String redisKey, Object o) {
         try {
-              if(o instanceof Number) {
-                  return jredis.getset(redisKey, (Number)o);
-              }
-              else if(o instanceof String) {
-                  return jredis.getset(redisKey,(String)o);
-              }
-              else if(o instanceof byte[]) {
-                  return jredis.getset(redisKey,(byte[])o);
-              }
-              else if(o instanceof Serializable) {
-                  return jredis.getset(redisKey,(Serializable)o);
-              }
-          } catch (RedisException e) {
-              throw new DataAccessException("Exception occured executing Redis command [setnx]: " + e.getMessage(), e) {};
-          }
-        return null;
+            return redis.getset(redisKey, o.toString());
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+
     }
 
-    public List<String> keys(String pattern) {
+    public String[] keys(String pattern) {
         try {
-            return jredis.keys(pattern);
-        } catch (RedisException e) {
-            throw new DataAccessException("Exception occured executing Redis command [keys]: " + e.getMessage(), e) {};
+            return redis.keys(pattern);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+    }
+
+    public void close() {
+        try {
+            redis.close();
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+
+    }
+
+    public void multi() {
+        try {
+            redis.multi();
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+
+    }
+
+    public RedisClient getRedisClient() {
+            return this.redis;
+    }
+
+    public boolean exists(String key) {
+        try {
+            return redis.exists(key);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+
+    }
+
+    public String get(String key) {
+        try {
+            return redis.get(key);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+
+    }
+
+    public void mset(Map<String, String> map) {
+        String[] keysAndValues = new String[map.size()*2];
+        int index = 0;
+        for (String key : map.keySet()) {
+            keysAndValues[index++] = key;
+            keysAndValues[index++] = map.get(key);
+        }
+        try {
+            redis.mset(keysAndValues);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+    }
+
+    public Object[] exec() {
+        try {
+            return redis.exec();
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+    }
+
+    public void discard() {
+        try {
+            redis.discard();
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
 }

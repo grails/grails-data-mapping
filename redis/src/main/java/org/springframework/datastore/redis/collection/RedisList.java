@@ -38,7 +38,7 @@ public class RedisList extends AbstractList implements List, RedisCollection {
     }
 
     public Object get(int index) {
-        return new RedisValue(redisTemplate.lindex(redisKey, index), converter);
+        return redisTemplate.lindex(redisKey, index);
     }
 
     public Object set(int index, Object element) {
@@ -70,14 +70,14 @@ public class RedisList extends AbstractList implements List, RedisCollection {
     }
 
     public boolean contains(Object o) {
-        return elements().contains(o);
+        return Arrays.asList(elements()).contains(o);
     }
 
     public Iterator iterator() {
         return new RedisIterator(elements(), this);
     }
 
-    private List<byte[]> elements() {
+    private String[] elements() {
         return redisTemplate.lrange(redisKey, 0, -1);
     }
 
@@ -87,18 +87,18 @@ public class RedisList extends AbstractList implements List, RedisCollection {
     }
 
     public boolean remove(Object o) {
-        return redisTemplate.lrem(redisKey, o, 0);
+        return redisTemplate.lrem(redisKey, o, 0) != 0;
     }
 
     public String getRedisKey() {
         return this.redisKey;
     }
 
-    public List<byte[]> members() {
+    public String[] members() {
         return redisTemplate.lrange(redisKey, 0, -1);
     }
 
-    public List<byte[]> members(int offset, int max) {
+    public String[] members(int offset, int max) {
         return redisTemplate.lrange(redisKey, offset, max);
     }
 }

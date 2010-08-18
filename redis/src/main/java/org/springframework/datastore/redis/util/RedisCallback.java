@@ -14,8 +14,7 @@
  */
 package org.springframework.datastore.redis.util;
 
-import org.jredis.JRedis;
-import org.jredis.RedisException;
+import sma.RedisClient;
 
 /**
  * @author Graeme Rocher
@@ -25,10 +24,9 @@ public interface RedisCallback {
 
     /**
      * Executes redis logic whilst handling exce
-     * @param jredis The jredis instance
+     * @param redis The RedisClient instance
      * @return The result of the calling jredis
      *
-     * @throws org.jredis.RedisException When an error occurs invoking a Redis command
      */
-    public Object doInRedis(JRedis jredis) throws RedisException;
+    public Object doInRedis(RedisClient redis) ;
 }

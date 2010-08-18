@@ -14,21 +14,19 @@
     <orderEntry type="library" name="Groovy" level="project" />
     <orderEntry type="library" name="JUnit" level="project" />
     <orderEntry type="library" name="SLF4J" level="project" />
-    <orderEntry type="module-library">
-      <library name="JRedis">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/jredis-core-all-a.0-SNAPSHOT-jar-with-dependencies.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/../../../../nosql/redis/jredis/core/ri/src/main/java" />
-        </SOURCES>
-      </library>
-    </orderEntry>
     <orderEntry type="library" name="Spring Transaction" level="project" />
     <orderEntry type="library" name="Spring Core" level="project" />
     <orderEntry type="library" name="Spring Beans" level="project" />
     <orderEntry type="library" name="Spring AOP" level="project" />
+    <orderEntry type="module-library">
+      <library name="Redis Java Client">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/java-redis-client-0.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 

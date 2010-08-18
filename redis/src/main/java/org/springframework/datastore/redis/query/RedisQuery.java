@@ -14,8 +14,6 @@
  */
 package org.springframework.datastore.redis.query;
 
-import org.jredis.JRedis;
-import org.jredis.RedisException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
@@ -30,8 +28,10 @@ import org.springframework.datastore.redis.engine.RedisEntityPersister;
 import org.springframework.datastore.redis.engine.RedisPropertyValueIndexer;
 import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
+import sma.RedisClient;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -63,7 +63,7 @@ public class RedisQuery extends Query {
                 return getSetCountResult(redisKey);
             }
             else {
-                List<byte[]> results;
+                String[] results;
                 RedisCollection col = entityPersister.getAllEntityIndex();
                 if(shouldPaginate) {
                     results = col.members(offset, max);
@@ -78,7 +78,7 @@ public class RedisQuery extends Query {
         else {
             List<Criterion> criteriaList = criteria.getCriteria();
             String finalKey = executeSubQuery(criteria, criteriaList);
-            List<byte[]> results;
+            String[] results;
             if(hasCountProjection) {
                 return getSetCountResult(finalKey);
             }
@@ -122,16 +122,21 @@ public class RedisQuery extends Query {
         return finalKey;
     }
 
-    private List<byte[]> paginateResults(final String disjKey) {
-        return (List<byte[]>) template.execute(new RedisCallback() {
-            public Object doInRedis(JRedis jredis) throws RedisException {
-                return jredis.sort(disjKey).LIMIT(offset, max).exec();
+    private String[] paginateResults(final String disjKey) {
+        return (String[]) template.execute(new RedisCallback() {
+            public Object doInRedis(RedisClient redis) {
+                return redis.sort(disjKey, RedisClient.SortParam.limit(offset, max));
             }
         });
     }
 
-    private String formulateDisjunctionKey(List<String> indices) {
-        return "~!" + indices.toString().replaceAll("\\s", "-");
+    private String formulateDisjunctionKey(String[] indices) {
+        final List<String> indicesList = Arrays.asList(indices);
+        return formulateDisjunctionKey(indicesList);
+    }
+
+    private String formulateDisjunctionKey(List<String> indicesList) {
+        return "~!" + indicesList.toString().replaceAll("\\s", "-");
     }
 
     private String formulateConjunctionKey(List<String> indices) {
@@ -188,14 +193,14 @@ public class RedisQuery extends Query {
     private String executeSubLike(RedisEntityPersister entityPersister, Like like) {
         final String property = like.getName();
         String pattern = like.getPattern();
-        final List<String> keys = resolveMatchingIndices(entityPersister, property, pattern);
+        final String[] keys = resolveMatchingIndices(entityPersister, property, pattern);
         final String disjKey = formulateDisjunctionKey(keys);
-        template.sunionstore(disjKey, keys.toArray(new String[keys.size()]));
+        template.sunionstore(disjKey, keys);
         template.expire(disjKey, 300);
         return disjKey;
     }
 
-    private List<String> resolveMatchingIndices(RedisEntityPersister entityPersister, String property, String pattern) {
+    private String[] resolveMatchingIndices(RedisEntityPersister entityPersister, String property, String pattern) {
         PersistentProperty prop = getEntity().getPropertyByName(property);
         assertIndexed(property, prop);
         RedisPropertyValueIndexer indexer = (RedisPropertyValueIndexer) entityPersister.getPropertyIndexer(prop);
