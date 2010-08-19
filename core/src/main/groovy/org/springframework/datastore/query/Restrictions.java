@@ -66,10 +66,50 @@ public class Restrictions {
      * @param property The name of the property
      * @param start The start of the range
      * @param end The end of the range
-     * @return This query instance
+     * @return The Between instance
      */
 
     public static Query.Between between(String property, Object start, Object end) {
         return new Query.Between(property, start, end);
+    }
+
+    /**
+     * Used to restrict a value to be greater than the given value
+     * @param property The property
+     * @param value The value
+     * @return The GreaterThan instance
+     */
+    public static Query.GreaterThan gt(String property, Object value) {
+        return new Query.GreaterThan(property, value);
+    }
+
+    /**
+     * Used to restrict a value to be less than the given value
+     * @param property The property
+     * @param value The value
+     * @return The LessThan instance
+     */
+    public static Query.LessThan lt(String property, Object value) {
+        return new Query.LessThan(property, value);
+    }
+
+  /**
+     * Used to restrict a value to be greater than or equal to the given value
+     * @param property The property
+     * @param value The value
+     * @return The LessThan instance
+     */
+    public static Query.GreaterThanEquals gte(String property, Object value) {
+        return new Query.GreaterThanEquals(property, value);
+    }
+
+  /**
+     * Used to restrict a value to be less than or equal to the given value
+     * @param property The property
+     * @param value The value
+     * @return The LessThan instance
+     */
+    public static Query.LessThanEquals lte(String property, Object value) {
+        return new Query.LessThanEquals(property, value);
     }
 }

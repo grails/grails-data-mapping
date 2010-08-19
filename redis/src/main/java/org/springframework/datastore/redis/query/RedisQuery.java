@@ -15,6 +15,7 @@
 package org.springframework.datastore.redis.query;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.PersistentEntity;
@@ -30,10 +31,7 @@ import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
 import sma.RedisClient;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * A Query implementation for Redis
@@ -106,6 +104,9 @@ public class RedisQuery extends Query {
 
     private String executeSubQuery(Junction junction, List<Criterion> criteria) {
         List<String> indices = getIndexNames(junction, entityPersister);
+        if(indices.isEmpty()) {
+            throw new DataRetrievalFailureException("Unsupported Redis query");
+        }
         final String[] keyArray = indices.toArray(new String[indices.size()]);
         String finalKey;
         if(junction instanceof Conjunction) {
@@ -155,64 +156,143 @@ public class RedisQuery extends Query {
         return kv.isIndex();
     }
 
+
+    private final Map<Class, CriterionHandler> criterionHandlers = new HashMap() {{
+       put(Like.class,  new CriterionHandler<Like>() {
+           public void handle(RedisEntityPersister entityPersister, List<String> indices, Like criterion) {
+               String key = executeSubLike(entityPersister, criterion);
+               indices.add(key);
+           }
+       });
+       put(Between.class,  new CriterionHandler<Between>() {
+           public void handle(RedisEntityPersister entityPersister, List<String> indices, Between criterion) {
+               String key = executeSubBetween(entityPersister, criterion);
+               indices.add(key);
+           }
+       });
+//       put(GreaterThan.class,  new CriterionHandler<GreaterThan>() {
+//           public void handle(RedisEntityPersister entityPersister, List<String> indices, GreaterThan criterion) {
+////               String key = executeGreaterThan(entityPersister, criterion);
+////               indices.add(key);
+//           }
+//       });
+       put(GreaterThanEquals.class,  new CriterionHandler<GreaterThanEquals>() {
+           public void handle(RedisEntityPersister entityPersister, List<String> indices, GreaterThanEquals criterion) {
+               String key = executeGreaterThanEquals(entityPersister, criterion);
+               indices.add(key);
+           }
+       });
+       put(LessThanEquals.class,  new CriterionHandler<LessThanEquals>() {
+           public void handle(RedisEntityPersister entityPersister, List<String> indices, LessThanEquals criterion) {
+               String key = executeLessThanEquals(entityPersister, criterion);
+               indices.add(key);
+           }
+       });
+       put(Equals.class,  new CriterionHandler<Equals>() {
+           public void handle(RedisEntityPersister entityPersister, List<String> indices, Equals criterion) {
+               final String property = criterion.getProperty();
+               final Object value = criterion.getValue();
+               final String indexName = getIndexName(entityPersister, property, value);
+               indices.add(indexName);
+           }
+       });
+       put(In.class,  new CriterionHandler<In>() {
+           public void handle(RedisEntityPersister entityPersister, List<String> indices, In criterion) {
+               final String property = criterion.getName();
+               Disjunction dis = new Disjunction();
+               for (Object value : criterion.getValues()) {
+                   dis.add(Restrictions.eq(property, value));
+               }
+               indices.add( executeSubQuery(dis, dis.getCriteria()) );
+
+           }
+       });
+       put(Junction.class,  new CriterionHandler<Junction>() {
+           public void handle(RedisEntityPersister entityPersister, List<String> indices, Junction criterion) {
+               indices.add( executeSubQuery(criterion, criterion.getCriteria()) );
+           }
+       });
+    }};
+
+
+
+    private static interface CriterionHandler<T> {
+        void handle(RedisEntityPersister entityPersister, List<String> indices, T criterion);
+    }
+
     private List<String> getIndexNames(Junction criteria, RedisEntityPersister entityPersister) {
 
         List<Criterion> criteriaList = criteria.getCriteria();
         List<String> indices = new ArrayList<String>();
         for (Criterion criterion : criteriaList) {
-            if(criterion instanceof Junction) {
-                final Junction junc = (Junction) criterion;
-                indices.add( executeSubQuery(junc, junc.getCriteria()) );
+            CriterionHandler handler = criterionHandlers.get(criterion.getClass());
+            if(handler != null) {
+                handler.handle(entityPersister, indices, criterion);
             }
-            else if(criterion instanceof Like) {
-                Like like = (Like) criterion;
-                String key = executeSubLike(entityPersister, like);
-                indices.add(key);
-            }
-            else if(criterion instanceof Between) {
-                Between between = (Between) criterion;
-                String key = executeSubBetween(entityPersister, between);
-                indices.add(key);
-            }
-            else if(criterion instanceof Equals) {
-                Equals eq = (Equals) criterion;
-                final String property = eq.getName();
-                final Object value = eq.getValue();
-                final String indexName = getIndexName(entityPersister, property, value);
-                indices.add(indexName);
-            }
-            else if(criterion instanceof In) {
-                final In in = (In)criterion;
-                final String property = in.getName();
-                Disjunction dis = new Disjunction();
-                for (Object value : in.getValues()) {
-                    dis.add(Restrictions.eq(property, value));                    
-                }
-                indices.add( executeSubQuery(dis, dis.getCriteria()) );
 
-            }
         }
         return indices;
     }
 
-    private String executeSubBetween(RedisEntityPersister entityPersister, Between between) {
-        final String property = between.getProperty();
 
-        final PersistentEntity entity = entityPersister.getPersistentEntity();
-        PersistentProperty prop = entity.getPropertyByName(property);
-        if(prop == null) {
-            throw new DataIntegrityViolationException("Cannot execute between query on property ["+property+"] of class ["+entity+"]. Property does not exist.");
-        }
+    protected String executeLessThanEquals(RedisEntityPersister entityPersister, LessThanEquals criterion) {
+
+        final String property = criterion.getProperty();
+        PersistentProperty prop = getAndValidateProperty(entityPersister, property);
+
+        return executeBetweenInternal(entityPersister, prop, 0, criterion.getValue(), false, true);
+    }
+
+    protected String executeGreaterThanEquals(RedisEntityPersister entityPersister, GreaterThanEquals criterion) {
+        final String property = criterion.getProperty();
+        PersistentProperty prop = getAndValidateProperty(entityPersister, property);
 
         String sortKey = entityPersister.getPropertySortKey(prop);
+        String maxKey = sortKey + "~max-score";
 
-        Object from = between.getFrom();
-        Object to = between.getTo();
+        Object max = template.get(maxKey);
+        if(max == null) {
+            String[] results = template.zrevrange(sortKey, 0, 0);
+            if(results.length > 0) {
+                max = template.zscore(sortKey, results[0]);
+            }
+            else max = -1;
 
-        // TODO: Seriously optimize this by precaching query in indexer
-        final String key = sortKey + "~between-" + from + "-" + to;
+            template.setex(maxKey, max, 500);
+        }
+
+        return executeBetweenInternal(entityPersister, prop, criterion.getValue(), max, false, true);
+    }
+
+    protected String executeSubBetween(RedisEntityPersister entityPersister, Between between) {
+        final String property = between.getProperty();
+
+        PersistentProperty prop = getAndValidateProperty(entityPersister, property);
+
+
+        Object fromObject = between.getFrom();
+        Object toObject = between.getTo();
+
+
+        return executeBetweenInternal(entityPersister, prop, fromObject, toObject, false, true);
+    }
+
+    private String executeBetweenInternal(RedisEntityPersister entityPersister, PersistentProperty prop, Object fromObject, Object toObject, boolean includeFrom, boolean includeTo) {
+        String sortKey = entityPersister.getPropertySortKey(prop);
+        if(!(fromObject instanceof Number)) {
+            fromObject = entityPersister.getTypeConverter().convertIfNecessary(fromObject, Double.class);
+        }
+        if(!(toObject instanceof Number)) {
+            toObject = entityPersister.getTypeConverter().convertIfNecessary(toObject, Double.class);
+        }
+
+        final double from = ((Number) fromObject).doubleValue();
+        final double to = ((Number) toObject).doubleValue();
+
+        final String key = sortKey + "~between-" + from + "-" + from;
         if(!template.exists(key)) {
-            String[] results = template.zrangebyscore(sortKey, ((Number)from).doubleValue(), ((Number)to).doubleValue());
+            String[] results;
+            results = template.zrangebyscore(sortKey, from, to);
             template.multi();
             for (String result : results) {
                 template.sadd(key, result);
@@ -220,12 +300,20 @@ public class RedisQuery extends Query {
             template.expire(key, 500);
             template.exec();
         }
-
         return key;
     }
 
+    private PersistentProperty getAndValidateProperty(RedisEntityPersister entityPersister, String property) {
+        final PersistentEntity entity = entityPersister.getPersistentEntity();
+        PersistentProperty prop = entity.getPropertyByName(property);
+        if(prop == null) {
+            throw new DataIntegrityViolationException("Cannot execute between query on property ["+property+"] of class ["+entity+"]. Property does not exist.");
+        }
+        return prop;
+    }
+
     private String executeSubLike(RedisEntityPersister entityPersister, Like like) {
-        final String property = like.getName();
+        final String property = like.getProperty();
         String pattern = like.getPattern();
         final String[] keys = resolveMatchingIndices(entityPersister, property, pattern);
         final String disjKey = formulateDisjunctionKey(keys);

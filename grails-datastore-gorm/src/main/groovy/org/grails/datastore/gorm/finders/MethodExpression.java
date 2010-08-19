@@ -16,6 +16,7 @@ package org.grails.datastore.gorm.finders;
 
 import org.springframework.datastore.query.Query;
 import org.springframework.datastore.query.Restrictions;
+import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -62,6 +63,18 @@ public abstract class MethodExpression {
         else if(expression.endsWith(Like.class.getSimpleName())) {
             return new Like(clazz, calcPropertyName(expression, Like.class.getSimpleName()));
         }
+        else if(expression.endsWith(GreaterThan.class.getSimpleName())) {
+            return new GreaterThan(clazz, calcPropertyName(expression, GreaterThan.class.getSimpleName()));
+        }
+        else if(expression.endsWith(LessThan.class.getSimpleName())) {
+            return new LessThan(clazz, calcPropertyName(expression, LessThan.class.getSimpleName()));
+        }
+        else if(expression.endsWith(GreaterThanEquals.class.getSimpleName())) {
+            return new GreaterThanEquals(clazz, calcPropertyName(expression, GreaterThanEquals.class.getSimpleName()));
+        }
+        else if(expression.endsWith(LessThanEquals.class.getSimpleName())) {
+            return new LessThanEquals(clazz, calcPropertyName(expression, LessThanEquals.class.getSimpleName()));
+        }
 
 
         return new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()));  
@@ -80,9 +93,57 @@ public abstract class MethodExpression {
             int i = propName.lastIndexOf(NOT);
             propName = propName.substring(0, i);
         }
-        return propName.substring(0,1).toLowerCase(Locale.ENGLISH) + propName.substring(1);
+        if(StringUtils.hasLength(propName))
+            return propName.substring(0,1).toLowerCase(Locale.ENGLISH) + propName.substring(1);
+        else
+            throw new IllegalArgumentException("No property name specified in clause: " + clause);
     }
-    
+
+    public static class GreaterThan extends MethodExpression {
+        protected GreaterThan(Class<?> targetClass, String propertyName) {
+            super(targetClass, propertyName);
+        }
+
+        @Override
+        public Query.Criterion createCriterion() {
+            return Restrictions.gt(propertyName, arguments[0]);
+        }
+    }
+
+
+    public static class GreaterThanEquals extends MethodExpression {
+        protected GreaterThanEquals(Class<?> targetClass, String propertyName) {
+            super(targetClass, propertyName);
+        }
+
+        @Override
+        public Query.Criterion createCriterion() {
+            return Restrictions.gte(propertyName, arguments[0]);
+        }
+    }
+
+    public static class LessThan extends MethodExpression {
+        protected LessThan(Class<?> targetClass, String propertyName) {
+            super(targetClass, propertyName);
+        }
+
+        @Override
+        public Query.Criterion createCriterion() {
+            return Restrictions.lt(propertyName, arguments[0]);
+        }
+    }
+
+    public static class LessThanEquals extends MethodExpression {
+        protected LessThanEquals(Class<?> targetClass, String propertyName) {
+            super(targetClass, propertyName);
+        }
+
+        @Override
+        public Query.Criterion createCriterion() {
+            return Restrictions.lte(propertyName, arguments[0]);
+        }
+    }
+
 
     public static class Like extends MethodExpression {
         protected Like(Class<?> targetClass, String propertyName) {

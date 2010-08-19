@@ -128,6 +128,54 @@ public abstract class Query {
         criteria.add(Restrictions.eq(property, value));
         return this;
     }
+    
+    /**
+     * Used to restrict a value to be greater than the given value
+     *
+     * @param property The name of the property
+     * @param value The value to restrict by
+     * @return This query instance
+     */
+    public Query gt(String property, Object value) {
+        criteria.add(Restrictions.gt(property, value));
+        return this;
+    }    
+    
+    /**
+     * Used to restrict a value to be greater than or equal to the given value
+     *
+     * @param property The name of the property
+     * @param value The value to restrict by
+     * @return This query instance
+     */
+    public Query gte(String property, Object value) {
+        criteria.add(Restrictions.gte(property, value));
+        return this;
+    } 
+    
+    /**
+     * Used to restrict a value to be less than or equal to the given value
+     *
+     * @param property The name of the property
+     * @param value The value to restrict by
+     * @return This query instance
+     */
+    public Query lte(String property, Object value) {
+        criteria.add(Restrictions.lte(property, value));
+        return this;
+    }     
+    
+    /**
+     * Used to restrict a value to be less than the given value
+     *
+     * @param property The name of the property
+     * @param value The value to restrict by
+     * @return This query instance
+     */
+    public Query lt(String property, Object value) {
+        criteria.add(Restrictions.lt(property, value));
+        return this;
+    }    
 
     /**
      * Restricts the results by the given property values
@@ -233,23 +281,32 @@ public abstract class Query {
     }
 
     /**
-     * A criterion that restricts the results based on equality
+     * Criterion that applies to a property
      */
-    public static class Equals extends Criterion {
+    public static class PropertyCriterion extends Criterion {
         private String name;
         private Object value;
 
-        public Equals(String name, Object value) {
+        public PropertyCriterion(String name, Object value) {
             this.name = name;
             this.value = value;
         }
 
-        public String getName() {
+        public String getProperty() {
             return name;
         }
 
         public Object getValue() {
             return value;
+        }        
+    }
+    /**
+     * A criterion that restricts the results based on equality
+     */
+    public static class Equals extends PropertyCriterion {
+
+        public Equals(String name, Object value) {
+            super(name, value);
         }
     }
 
@@ -274,6 +331,41 @@ public abstract class Query {
         }
     }
 
+    /**
+     * Used to restrict a value to be greater than the given value
+     */
+    public static class GreaterThan extends PropertyCriterion {
+        public GreaterThan(String name, Object value) {
+            super(name, value);
+        }
+    }
+
+    /**
+     * Used to restrict a value to be greater than or equal to the given value
+     */
+    public static class GreaterThanEquals extends PropertyCriterion {
+        public GreaterThanEquals(String name, Object value) {
+            super(name, value);
+        }
+    }
+    
+    /**
+     * Used to restrict a value to be less than the given value
+     */
+    public static class LessThan extends PropertyCriterion {
+        public LessThan(String name, Object value) {
+            super(name, value);
+        }
+    }    
+    
+    /**
+     * Used to restrict a value to be less than the given value
+     */
+    public static class LessThanEquals extends PropertyCriterion {
+        public LessThanEquals(String name, Object value) {
+            super(name, value);
+        }
+    }    
     /**
      * Criterion used to restrict the result to be between values (range query)
      */
@@ -304,7 +396,7 @@ public abstract class Query {
     /**
      * Criterion used to restrict the results based on a pattern (likeness)
      */
-    public static class Like extends Equals {
+    public static class Like extends PropertyCriterion {
         public Like(String name, String expression) {
             super(name, expression);
         }
@@ -494,4 +586,6 @@ public abstract class Query {
             return this;
         }        
     }
+
+
 }

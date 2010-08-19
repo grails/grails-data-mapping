@@ -54,4 +54,28 @@ class RangeQueryTests {
     results = TestEntity.findAllByAgeBetweenOrName(38, 40, "Ernie")
     assert 4 == results.size()
   }
+
+
+  @Test
+  void testGreaterThanEqualsAndLessThanEquals() {
+    def age = 40
+    ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each { new TestEntity(name:it, age: age--).save() }
+
+
+    def results = TestEntity.findAllByAgeGreaterThanEquals(38)
+    assert 3 == results.size()
+    assert results.find { it.age == 38 }
+    assert results.find { it.age == 39 }
+    assert results.find { it.age == 40 }
+
+
+
+    results = TestEntity.findAllByAgeLessThanEquals(38)
+    results.each { println it.age }
+    assert 4 == results.size()
+    assert results.find { it.age == 38 }
+    assert results.find { it.age == 37 }
+    assert results.find { it.age == 36 }
+    assert results.find { it.age == 35 }
+  }
 }
