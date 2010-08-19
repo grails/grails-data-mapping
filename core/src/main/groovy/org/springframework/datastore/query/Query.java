@@ -36,7 +36,7 @@ public abstract class Query {
     protected ProjectionList projections = new ProjectionList();
     protected int max = -1;
     protected int offset = 0;
-    protected Order order = null;
+    protected List<Order> orderBy = new ArrayList<Order>();
     private Session session;
 
 
@@ -44,10 +44,39 @@ public abstract class Query {
     /**
      * The ordering of results
      *
-     * TODO: Ordering by property name
      */
-    public enum Order {
-        ASC, DESC
+    public static class Order {
+        private Direction direction = Direction.ASC;
+        private String property;
+
+        public Order(String property) {
+            this.property = property;
+        }
+
+        public Order(String property, Direction direction) {
+            this.direction = direction;
+            this.property = property;
+        }
+
+        public Direction getDirection() {
+            return direction;
+        }
+
+        public String getProperty() {
+            return property;
+        }
+
+        public static Order desc(String property) {
+            return new Order(property, Direction.DESC);
+        }
+        
+        public static Order asc(String property) {
+            return new Order(property, Direction.ASC);
+        }        
+
+        public static enum Direction {
+            ASC, DESC
+        }
     }
 
     protected Query(Session session, PersistentEntity entity) {
@@ -113,8 +142,17 @@ public abstract class Query {
      * @return The Query instance
      */
     public Query order(Order order) {
-        this.order = order;
+        if(order != null)
+            this.orderBy.add(order);
         return this;
+    }
+
+    /**
+     * Gets the Order entries for this query
+     * @return The order entries
+     */
+    public List<Order> getOrderBy() {
+        return orderBy;
     }
 
     /**

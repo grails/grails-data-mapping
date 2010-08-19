@@ -17,6 +17,7 @@ package org.grails.datastore.gorm
 import org.springframework.datastore.core.Datastore
 import org.springframework.datastore.query.Query
 import grails.gorm.CriteriaBuilder
+import org.grails.datastore.gorm.finders.DynamicFinder
 
 /**
  *  Static methods of the GORM API
@@ -85,11 +86,7 @@ class GormStaticApi extends AbstractGormApi {
    */
   List list(Map params) {
     Query q = datastore.currentSession.createQuery(persistentClass)
-    q.offset safeInt(params, "offset", 0)
-    def max = safeInt(params, "max", -1)
-    if(max)
-      q.max max
-
+    DynamicFinder.populateArgumentsForCriteria(persistentClass, q, params)
     q.list()
   }
 

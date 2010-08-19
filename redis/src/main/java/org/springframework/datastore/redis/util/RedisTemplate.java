@@ -499,4 +499,12 @@ public class RedisTemplate {
         }
 
     }
+
+    public String[] sort(String key, RedisClient.SortParam... params) {
+        try {
+            return redis.sort(key, params);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+    }
 }

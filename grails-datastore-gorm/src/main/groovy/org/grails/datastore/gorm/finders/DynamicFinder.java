@@ -191,10 +191,10 @@ public abstract class DynamicFinder {
         }
         if (sort != null) {
             if (ORDER_DESC.equals(order)) {
-                q.order(Query.Order.DESC);
+                q.order(Query.Order.desc(sort));
             }
             else {
-                q.order(Query.Order.DESC);
+                q.order(Query.Order.asc(sort));
             }
         }
     }

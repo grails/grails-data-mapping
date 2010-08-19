@@ -17,7 +17,6 @@ package grails.gorm;
 
 import groovy.lang.*;
 import org.springframework.beans.TypeConverter;
-import org.springframework.core.annotation.Order;
 import org.springframework.datastore.core.Datastore;
 import org.springframework.datastore.keyvalue.convert.ByteArrayAwareTypeConverter;
 import org.springframework.datastore.mapping.PersistentEntity;
@@ -35,6 +34,9 @@ import static org.grails.datastore.gorm.finders.DynamicFinder.*;
  * @author Graeme Rocher
  */
 public class CriteriaBuilder extends GroovyObjectSupport {
+
+    public static final String ORDER_DESCENDING = "desc";
+    public static final String ORDER_ASCENDING = "asc";
 
     public static final String AND = "and"; // builder
     public static final String NOT = "not";// builder
@@ -61,7 +63,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
     private boolean uniqueResult = false;
     private boolean count = false;
     private boolean paginationEnabledList;
-    private List<Order> orderEntries = new ArrayList<Order>();
+    private List<Query.Order> orderEntries = new ArrayList<Query.Order>();
     private List<Query.Junction> logicalExpressionStack = new ArrayList<Query.Junction>();
     private MetaObjectProtocol queryMetaClass;
     private Query.ProjectionList projectionList;
@@ -205,7 +207,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
             // Check for pagination params
             if (name.equals(LIST_CALL) && args.length == 2) {
                 paginationEnabledList = true;
-                orderEntries = new ArrayList<Order>();
+                orderEntries = new ArrayList<Query.Order>();
                 invokeClosureNode(args[1]);
             }
             else {
@@ -336,6 +338,42 @@ public class CriteriaBuilder extends GroovyObjectSupport {
         return addToCriteria(Restrictions.eq(propertyName, propertyValue));
     }
 
+    /**
+     * Restricts the results by the given property value range (inclusive)
+     *
+     * @param propertyName The property name
+     *
+     * @param start The start of the range
+     * @param finish The end of the range
+     * @return A Criterion instance
+     */
+    @SuppressWarnings("rawtypes")
+    public Query.Criterion between(String propertyName, Object start, Object finish) {
+        validatePropertyName(propertyName, "between");
+        return addToCriteria(Restrictions.between(propertyName, start, finish));
+    }
+
+  /**
+     * Used to restrict a value to be greater than or equal to the given value
+     * @param property The property
+     * @param value The value
+     * @return The Criterion instance
+     */
+    public Query.Criterion gte(String property, Object value) {
+        validatePropertyName(property, "gte");
+        return addToCriteria(Restrictions.gte(property, value));
+    }
+
+  /**
+     * Used to restrict a value to be less than or equal to the given value
+     * @param property The property
+     * @param value The value
+     * @return The Criterion instance
+     */
+    public Query.Criterion lte(String property, Object value) {
+        validatePropertyName(property, "lte");
+        return addToCriteria(Restrictions.lte(property, value));
+    }
 
     /**
      * Creates an "equals" Criterion based on the specified property name and value.
@@ -408,7 +446,47 @@ public class CriteriaBuilder extends GroovyObjectSupport {
 
 
 
+    /**
+     * Orders by the specified property name (defaults to ascending)
+     *
+     * @param propertyName The property name to order by
+     * @return A Order instance
+     */
+    public Object order(String propertyName) {
+        Query.Order o = Query.Order.asc(propertyName);
+        if (paginationEnabledList) {
+            orderEntries.add(o);
+        }
+        else {
+            query.order(o);
+        }
+        return o;
+    }
 
+    /**
+     * Orders by the specified property name and direction
+     *
+     * @param propertyName The property name to order by
+     * @param direction Either "asc" for ascending or "desc" for descending
+     *
+     * @return A Order instance
+     */
+    public Object order(String propertyName, String direction) {
+        Query.Order o;
+        if (direction.equals(ORDER_DESCENDING)) {
+            o = Query.Order.desc(propertyName);
+        }
+        else {
+            o = Query.Order.asc(propertyName);
+        }
+        if (paginationEnabledList) {
+            orderEntries.add(o);
+        }
+        else {
+            query.order(o);
+        }
+        return o;
+    }
     private void validatePropertyName(String propertyName, String methodName) {
         if(propertyName == null) {
             throw new IllegalArgumentException("Cannot use ["+methodName+"] restriction with null property name");

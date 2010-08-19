@@ -87,4 +87,30 @@ class CriteriaBuilderTests {
     assert "Bob" == result.name
 
   }
+
+  @Test
+  void testOrder() {
+    def age = 40
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+
+
+    def criteria = TestEntity.createCriteria()
+
+    def results = criteria.list {
+       like('name', 'B%')
+       order "age"
+    }
+
+    assert "Bob" == results[0].name
+    assert "Barney" == results[1].name
+
+    results = criteria.list {
+       like('name', 'B%')
+       order "age", "desc"
+    }
+
+    assert "Barney" == results[0].name
+    assert "Bob" == results[1].name
+
+  }
 }

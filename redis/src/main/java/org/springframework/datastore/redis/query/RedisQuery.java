@@ -53,7 +53,7 @@ public class RedisQuery extends Query {
     protected List executeQuery(PersistentEntity entity, Junction criteria) {
         List<Long> identifiers = null;
         final boolean hasCountProjection = projections().getProjectionList().contains(Projections.count());
-        final boolean shouldPaginate = offset > 0 || max > -1;
+        final boolean shouldPaginate = offset > 0 || max > -1 || !orderBy.isEmpty() ;
         if(criteria.isEmpty()) {
 
             if(hasCountProjection) {
@@ -64,7 +64,7 @@ public class RedisQuery extends Query {
                 String[] results;
                 RedisCollection col = entityPersister.getAllEntityIndex();
                 if(shouldPaginate) {
-                    results = col.members(offset, max);
+                    results = paginateResults(col.getRedisKey());
                 }
                 else {
                     results = col.members();
@@ -123,12 +123,28 @@ public class RedisQuery extends Query {
         return finalKey;
     }
 
-    private String[] paginateResults(final String disjKey) {
-        return (String[]) template.execute(new RedisCallback() {
-            public Object doInRedis(RedisClient redis) {
-                return redis.sort(disjKey, RedisClient.SortParam.limit(offset, max));
+    private String[] paginateResults(final String key) {
+        List<RedisClient.SortParam> params = new ArrayList<RedisClient.SortParam>();
+        if(!orderBy.isEmpty()) {
+            Order o = orderBy.get(0); // Redis doesn't really allow multiple orderings
+            String orderBy = entityPersister.getEntityBaseKey() + ":*->" + o.getProperty();
+            final RedisClient.SortParam byParam = RedisClient.SortParam.by(orderBy);
+            params.add(byParam);
+            RedisClient.SortParam direction;
+            if(o.getDirection() == Order.Direction.DESC) {
+               direction = RedisClient.SortParam.desc();
             }
-        });
+            else {
+               direction = RedisClient.SortParam.asc();
+            }
+            params.add(direction);
+
+        }
+        if(offset > 0 || max > -1) {
+            params.add( RedisClient.SortParam.limit(offset, max) );
+        }
+        return template.sort(key, params.toArray(new RedisClient.SortParam[params.size()]));
+
     }
 
     private String formulateDisjunctionKey(String[] indices) {

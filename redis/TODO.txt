@@ -3,8 +3,8 @@ TODO list
 * Fix memory leak with single-ended proxies
 * Querying by association
 * Loading proxies
-* Querying with sort by property name
 * Support for simple projections (property, distinct, max, min, sum)
 * Redis specific dynamic methods (random entry, flushing, savedb, bgsave etc.)
 * Spring PlatformTransactionManager support
 * Plugging in validation
+* Connection pooling for RedisClient
