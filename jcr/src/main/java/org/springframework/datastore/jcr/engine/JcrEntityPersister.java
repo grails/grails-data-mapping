@@ -6,7 +6,7 @@ import org.springframework.datastore.core.Session;
 import org.springframework.datastore.jcr.util.JcrConstants;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
-import org.springframework.datastore.node.engine.AbstractNodeEnityPersister;
+import org.springframework.datastore.node.engine.AbstractNodeEntityPersister;
 import org.springframework.datastore.query.Query;
 import org.springmodules.jcr.JcrCallback;
 import org.springmodules.jcr.JcrTemplate;
@@ -14,7 +14,7 @@ import org.springmodules.jcr.JcrTemplate;
 import javax.jcr.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.List;
 
@@ -25,7 +25,7 @@ import java.util.List;
  * @author Erawat Chamanont
  * @since 1.0
  */
-public class JcrEntityPersister extends AbstractNodeEnityPersister<Node, String> {
+public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String> {
 
     private static final Logger log = Logger.getLogger(JcrEntityPersister.class);
 
@@ -99,6 +99,8 @@ public class JcrEntityPersister extends AbstractNodeEnityPersister<Node, String>
         }
     }
 
+
+   
 }
 
 

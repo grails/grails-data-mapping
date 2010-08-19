@@ -23,11 +23,11 @@ import java.util.*;
  * @author Erawat Chamanont
  * @since 1.0
  */
-public abstract class AbstractNodeEnityPersister<T, K> extends EntityPersister {
+public abstract class AbstractNodeEntityPersister<T, K> extends EntityPersister {
     protected Session session;
     protected ClassMapping classMapping;
 
-    public AbstractNodeEnityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
+    public AbstractNodeEntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
         super(mappingContext, entity);
         this.session = session;
         this.classMapping = entity.getMapping();
@@ -35,6 +35,11 @@ public abstract class AbstractNodeEnityPersister<T, K> extends EntityPersister {
 
     public ClassMapping getClassMapping() {
         return classMapping;
+    }
+
+     @Override
+    protected List<Object> retrieveAllEntities(PersistentEntity persistentEntity, Serializable[] keys) {
+        return null;  //TODO.
     }
 
     @Override
