@@ -151,4 +151,21 @@ class CriteriaBuilderTests {
     assert 40 == results[1]
     assert [43, 40] == results
   }
+
+  @Test
+  void testPropertyProjection() {
+    def age = 40
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+
+
+    def criteria = TestEntity.createCriteria()
+
+    def results = criteria.list {
+      projections {
+        property "age"
+      }
+    }
+
+    assert [40, 41, 42, 43] == results
+  }
 }

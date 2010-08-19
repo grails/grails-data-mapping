@@ -67,9 +67,10 @@ public class RedisQuery extends Query {
         }
         else {
             List projectionResults = new ArrayList();
-            String postSortAndPaginationKey = storeSortedKey(finalKey);
+            String postSortAndPaginationKey = null;
             for (Projection projection : projectionList.getProjectionList()) {
                 if(projection instanceof CountProjection) {
+                    if(postSortAndPaginationKey == null) postSortAndPaginationKey = storeSortedKey(finalKey);
                     projectionResults.add(getCountResult(postSortAndPaginationKey));
                 }
                 else if(projection instanceof MaxProjection) {
@@ -85,12 +86,35 @@ public class RedisQuery extends Query {
                     if(!shouldSortOrPaginate()) {
                         projectionResults.add(getMinValueFromSortedSet(sortKey));
                     }
-
                 }
-                else if(projection instanceof IdProjection) {
-                    idProjection = (IdProjection) projection;
+                else {
+                    final String projectionType = projection.getClass().getSimpleName();
+                    if(projection instanceof SumProjection) {
+                        return unsupportedProjection(projectionType);
+                    }
+                    else if(projection instanceof AvgProjection) {
+                        return unsupportedProjection(projectionType);
+                    }
+                    else if(projection instanceof PropertyProjection) {
+                        PropertyProjection propertyProjection = (PropertyProjection) projection;
+                        final PersistentProperty validProperty = getValidProperty(propertyProjection);
+                        if(postSortAndPaginationKey == null) postSortAndPaginationKey = storeSortedKey(finalKey);
+
+                        String entityKey = entityPersister.getEntityBaseKey();
+                        final String[] values = template.sort(postSortAndPaginationKey, RedisClient.SortParam.get(entityKey + ":*->" + validProperty.getName()));
+                        List resultList = new ArrayList();
+                        for (String value : values) {
+                            resultList.add(entityPersister.getTypeConverter().convertIfNecessary(value, validProperty.getType()));
+                        }
+                        return resultList;
+                        
+                    }
+                    else if(projection instanceof IdProjection) {
+                        idProjection = (IdProjection) projection;
+                    }
                 }
             }
+
             if(!projectionResults.isEmpty()) return projectionResults;
             else {
                 results = paginateResults(finalKey);
@@ -113,7 +137,16 @@ public class RedisQuery extends Query {
         }
     }
 
+    private List unsupportedProjection(String projectionType) {
+        throw new InvalidDataAccessResourceUsageException("Cannot use ["+ projectionType +"] projection. ["+projectionType+"] projections are not currently supported." );
+    }
+
     private String getValidSortKey(PropertyProjection projection) {
+        PersistentProperty prop = getValidProperty(projection);
+        return entityPersister.getPropertySortKey(prop);
+    }
+
+    private PersistentProperty getValidProperty(PropertyProjection projection) {
         final String propName = projection.getPropertyName();
         PersistentProperty prop = entityPersister.getPersistentEntity().getPropertyByName(propName);
         if(prop == null) {
@@ -122,7 +155,7 @@ public class RedisQuery extends Query {
         else if(!isIndexed(prop)) {
             throw new InvalidDataAccessResourceUsageException("Cannot use ["+projection.getClass().getSimpleName()+"] projection on non-indexed property: " + propName);
         }
-        return entityPersister.getPropertySortKey(prop);
+        return prop;
     }
 
     private String storeSortedKey(String finalKey) {
