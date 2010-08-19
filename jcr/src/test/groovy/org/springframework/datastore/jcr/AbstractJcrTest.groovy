@@ -28,11 +28,10 @@ class AbstractJcrTest{
                               configuration:"classpath:repository.xml",
                               homeDir:"/temp/repo"];
     conn = ds.connect(connectionDetails)
-
   }
 
-/*  @AfterClass
+ @AfterClass
   public static void tearDown() {
     conn.disconnect();
-  }*/
+  }
 }

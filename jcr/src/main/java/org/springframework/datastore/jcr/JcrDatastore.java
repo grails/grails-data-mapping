@@ -1,10 +1,9 @@
 package org.springframework.datastore.jcr;
 
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.datastore.core.AbstractDatastore;
 import org.springframework.datastore.core.Session;
-import org.springframework.datastore.keyvalue.mapping.KeyValueMappingContext;
 import org.springframework.datastore.mapping.MappingContext;
+import org.springframework.datastore.node.mapping.NodeMappingContext;
 
 import java.util.Map;
 
@@ -17,9 +16,8 @@ public class JcrDatastore  extends AbstractDatastore {
     public JcrDatastore(MappingContext mappingContext) {
         super(mappingContext);
     }
-    //Why this really needs to implement? 
     public JcrDatastore(){
-        super(new KeyValueMappingContext(""));              
+        super(new NodeMappingContext());
     }
 
     @Override

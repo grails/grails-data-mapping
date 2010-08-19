@@ -1,6 +1,5 @@
 package org.springframework.datastore.jcr;
 
-import org.apache.jackrabbit.core.RepositoryImpl;
 import org.apache.jackrabbit.core.TransientRepository;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.core.AbstractSession;
@@ -12,6 +11,7 @@ import org.springframework.datastore.tx.Transaction;
 import org.springframework.transaction.TransactionSystemException;
 import org.springmodules.jcr.JcrSessionFactory;
 import org.springmodules.jcr.JcrTemplate;
+import org.springmodules.jcr.support.OpenSessionInViewInterceptor;
 
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -24,8 +24,10 @@ import java.util.Map;
  * @since 1.0
  */
 public class JcrSession extends AbstractSession<Repository> {
+
     private Repository repository;
     private JcrSessionFactory jcrSessionFactory;
+    private OpenSessionInViewInterceptor interceptor;
 
     public JcrSession(Map<String, String> connectionDetails, MappingContext mappingContext) {
         super(connectionDetails, mappingContext);
@@ -35,6 +37,9 @@ public class JcrSession extends AbstractSession<Repository> {
                                                                   new SimpleCredentials(connectionDetails.get("username"), connectionDetails.get("password").toCharArray()));
 
             jcrSessionFactory.afterPropertiesSet();
+            interceptor = new OpenSessionInViewInterceptor();
+            interceptor.setSessionFactory(jcrSessionFactory);
+            interceptor.preHandle(null, null, null);
         } catch (Exception e) {
             throw new DataAccessResourceFailureException("Cannot connect to repository: " + e.getMessage(), e);              
         }
@@ -51,8 +56,9 @@ public class JcrSession extends AbstractSession<Repository> {
 
     @Override
     public void disconnect(){
-        try{
-            ((RepositoryImpl) repository).shutdown();;
+        try{ 
+            //interceptor.afterCompletion(null, null, null, null);
+            ((TransientRepository)jcrSessionFactory.getRepository()).shutdown();
         }catch (Exception e) {
            throw new DataAccessResourceFailureException("Failed to disconnect JCR Repository: " + e.getMessage(), e);
         }finally {
