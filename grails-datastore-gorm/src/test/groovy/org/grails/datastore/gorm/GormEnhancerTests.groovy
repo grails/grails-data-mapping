@@ -203,6 +203,11 @@ class GormEnhancerTests {
     assert 2 == TestEntity.count()
 
   }
+
+  @Test(expected=UnsupportedOperationException.class)
+  void testStringBasedQuery() {
+      TestEntity.find("from TestEntity")
+  }
 }
 
 class TestEntity {

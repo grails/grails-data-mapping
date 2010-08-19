@@ -169,33 +169,36 @@ public abstract class DynamicFinder {
     protected abstract Object doInvokeInternalWithExpressions(Class clazz, String methodName, Object[] remainingArguments, List<MethodExpression> expressions, String operatorInUse);
 
     public static void populateArgumentsForCriteria(Class<?> targetClass, Query q, Map argMap) {
-        Integer maxParam = null;
-        Integer offsetParam = null;
-        if (argMap.containsKey(ARGUMENT_MAX)) {
-            maxParam = typeConverter.convertIfNecessary(argMap.get(ARGUMENT_MAX),Integer.class);
-        }
-        if (argMap.containsKey(ARGUMENT_OFFSET)) {
-            offsetParam = typeConverter.convertIfNecessary(argMap.get(ARGUMENT_OFFSET),Integer.class);
-        }
-        String orderParam = (String)argMap.get(ARGUMENT_ORDER);
+        if(argMap != null) {
+            Integer maxParam = null;
+            Integer offsetParam = null;
+            if (argMap.containsKey(ARGUMENT_MAX)) {
+                maxParam = typeConverter.convertIfNecessary(argMap.get(ARGUMENT_MAX),Integer.class);
+            }
+            if (argMap.containsKey(ARGUMENT_OFFSET)) {
+                offsetParam = typeConverter.convertIfNecessary(argMap.get(ARGUMENT_OFFSET),Integer.class);
+            }
+            String orderParam = (String)argMap.get(ARGUMENT_ORDER);
 
-        final String sort = (String)argMap.get(ARGUMENT_SORT);
-        final String order = ORDER_DESC.equalsIgnoreCase(orderParam) ? ORDER_DESC : ORDER_ASC;
-        final int max = maxParam == null ? -1 : maxParam;
-        final int offset = offsetParam == null ? -1 : offsetParam;
-        if (max > -1) {
-            q.max(max);
-        }
-        if (offset > -1) {
-            q.offset(offset);
-        }
-        if (sort != null) {
-            if (ORDER_DESC.equals(order)) {
-                q.order(Query.Order.desc(sort));
+            final String sort = (String)argMap.get(ARGUMENT_SORT);
+            final String order = ORDER_DESC.equalsIgnoreCase(orderParam) ? ORDER_DESC : ORDER_ASC;
+            final int max = maxParam == null ? -1 : maxParam;
+            final int offset = offsetParam == null ? -1 : offsetParam;
+            if (max > -1) {
+                q.max(max);
             }
-            else {
-                q.order(Query.Order.asc(sort));
+            if (offset > -1) {
+                q.offset(offset);
             }
+            if (sort != null) {
+                if (ORDER_DESC.equals(order)) {
+                    q.order(Query.Order.desc(sort));
+                }
+                else {
+                    q.order(Query.Order.asc(sort));
+                }
+            }
+            
         }
     }
 

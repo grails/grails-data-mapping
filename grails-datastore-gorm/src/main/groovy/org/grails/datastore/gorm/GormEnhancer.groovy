@@ -62,7 +62,7 @@ class GormEnhancer {
       }
       'static' {
         for(method in staticMethods.methodNames) {
-          "$method"(staticMethods.&"$method")
+          delegate."$method" = staticMethods.&"$method"
         }
       }
     }
