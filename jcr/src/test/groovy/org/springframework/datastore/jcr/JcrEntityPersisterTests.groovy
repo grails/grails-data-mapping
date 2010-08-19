@@ -31,7 +31,14 @@ class JcrEntityPersisterTests extends AbstractJcrTest {
     def t = new TestEntity(title: "foo", body: "bar");
     conn.persist(t);
     assert null != t.id;
-    println t.id;
+
+     t = conn.retrieve(TestEntity, t.id)
+
+     assert t != null
+     assert "foo" == t.title
+     assert "bar" == t.body
+     assert null != t.id
+        
   } 
 
 }
