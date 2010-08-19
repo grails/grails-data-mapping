@@ -41,6 +41,18 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
         return null;
     }
 
+
+
+    @Override
+    protected Node retrieveEntry(PersistentEntity persistentEntity, final Serializable key) {
+        return (Node) jcrTemplate.execute(new JcrCallback() {
+            public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
+                return session.getNodeByUUID(getString(key));
+            }
+        });
+
+    }
+
     @Override
     protected String storeEntry(PersistentEntity persistentEntity, Node nativeEntry) {
         final PersistentEntity entity = persistentEntity;
@@ -68,15 +80,47 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
         });
     }
 
+    
+
     @Override
     protected void updateEntry(PersistentEntity persistentEntity, String id, Node entry) {
         //TODO. Implement updateEntry method 
     }
 
     @Override
+    protected Object getEntryValue(Node nativeEntry, String property) {
+        try {
+            Property prop = nativeEntry.getProperty(property);
+            switch(prop.getType()){
+                case PropertyType.STRING:
+                    return prop.getString();
+                case PropertyType.BINARY:
+                    return prop.getString();
+                case PropertyType.DATE:
+                    return prop.getString();
+                case PropertyType.DOUBLE:
+                    return prop.getString();
+                case PropertyType.LONG:
+                    return prop.getString();
+                case PropertyType.BOOLEAN:
+                    return prop.getString();
+                case PropertyType.NAME:
+                    return prop.getString();
+                case PropertyType.PATH:
+                    return prop.getString();
+                case PropertyType.REFERENCE:
+                    return prop.getString();
+                default:return null;
+            }
+        } catch (RepositoryException e) {
+            throw new DataAccessResourceFailureException("Exception occurred cannot getProperty from Node: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     protected void setEntryValue(Node nativeEntry, String propertyName, Object value) {
         if (value != null) {
-            log.debug("propertyName : " + propertyName + " value object: " + value.toString());
+            log.info("propertyName : " + propertyName + " value object: " + value.toString());
             try {
                 if (value instanceof Boolean) {
                     nativeEntry.setProperty(propertyName, (Boolean) value);
@@ -99,6 +143,10 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
         }
     }
 
+
+    private String getString(Object key) {
+        return typeConverter.convertIfNecessary(key, String.class);
+    }
 
    
 }
