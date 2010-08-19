@@ -117,6 +117,13 @@ public interface Session<N> extends EntityInterceptorAware {
      */
     List retrieveAll(Class type, Iterable keys);
 
+    /**
+     * Retrieves several objects for the specified keys
+     * @param type The type
+     * @param keys The keys
+     * @return A list of objects
+     */
+    List retrieveAll(Class type, Serializable...keys);
 
     /**
      * Creates a query instance for the give type

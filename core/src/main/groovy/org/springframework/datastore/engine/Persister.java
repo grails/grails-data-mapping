@@ -87,4 +87,12 @@ public interface Persister {
      * @return The Query object
      */
     Query createQuery();
+
+    /**
+     * Batch retrieve several objects in one go
+     *
+     * @param keys The keys
+     * @return The objects in a list in the same order as the specified keys
+     */
+    List<Object> retrieveAll(Serializable[] keys);
 }

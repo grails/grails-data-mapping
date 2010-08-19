@@ -93,6 +93,12 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
         return retrieveAllEntities(getPersistentEntity(), keys);
     }
 
+    public List<Object> retrieveAll(Serializable[] keys) {
+        return retrieveAllEntities(getPersistentEntity(), keys);
+    }
+
+    protected abstract List<Object> retrieveAllEntities(PersistentEntity persistentEntity, Serializable[] keys);
+
     protected abstract List<Object> retrieveAllEntities(PersistentEntity persistentEntity, Iterable<Serializable> keys);
 
     protected abstract List<Serializable> persistEntities(PersistentEntity persistentEntity, Iterable objs);

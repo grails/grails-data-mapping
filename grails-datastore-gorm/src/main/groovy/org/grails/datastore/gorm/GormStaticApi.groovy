@@ -39,16 +39,25 @@ class GormStaticApi extends AbstractGormApi {
   }
 
   /**
+   * Retrieve all the objects for the given identifiers
+   * @param ids The identifiers to operate against
+   * @return A list of identifiers
+   */
+  List getAll(Serializable... ids) {
+    datastore.currentSession.retrieveAll(persistentClass, ids)
+  }
+
+  /**
    * Creates a criteria builder instance
    */
-  CriteriaBuilder createCriteria() {
+  def createCriteria() {
     return new CriteriaBuilder(persistentClass, datastore)
   }
 
   /**
    * Creates a criteria builder instance
    */
-  CriteriaBuilder withCriteria(Closure callable) {
+  def withCriteria(Closure callable) {
     return new CriteriaBuilder(persistentClass, datastore).list(callable)
   }
 
@@ -90,18 +99,130 @@ class GormStaticApi extends AbstractGormApi {
     q.list()
   }
 
+  /**
+   * Finds all results matching all of the given conditions. Eg. Book.findAllWhere(author:"Stephen King", title:"The Stand")
+   *
+   * @param queryMap The map of conditions
+   * @return A list of results
+   */
+  List findAllWhere(Map queryMap) {
+    Query q = datastore.currentSession.createQuery(persistentClass)
+    if(queryMap) {
+      for(entry in queryMap) {
+        q.eq(entry.key, entry.value)
+      }
+    }
+    q.list()
+  }
+
+  /**
+   * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
+   *
+   * @param queryMap The map of conditions
+   * @return A single result
+   */
+  def findWhere(Map queryMap) {
+    Query q = datastore.currentSession.createQuery(persistentClass)
+    if(queryMap) {
+      for(entry in queryMap) {
+        q.eq(entry.key, entry.value)
+      }
+    }
+    q.singleResult()
+  }
+
+  /**
+   * Execute a closure whose first argument is a reference to the current session
+   * @param callable The callable closure
+   * @return The result of the closure
+   */
   def withSession(Closure callable) {
     callable.call(datastore.currentSession)
   }
 
-  private safeInt(params, name, defaultValue) {
-    def value = params?.get(name)
-    if(value) {
-      try {
-        return Integer.parseInt(value)
-      } catch (NumberFormatException e) {
-      }
-    }
-    return defaultValue
+  // TODO: In the first version no support will exist for String-based queries
+  def executeQuery(String query) {
+    unsupported("executeQuery")
   }
+
+  def executeQuery(String query, Map args) {
+    unsupported("executeQuery")
+  }
+
+  def executeQuery(String query, Map params, Map args) {
+    unsupported("executeQuery")
+  }
+
+  def executeQuery(String query, Collection params) {
+    unsupported("executeQuery")
+  }
+
+  def executeQuery(String query, Collection params, Map args) {
+    unsupported("executeQuery")
+  }
+
+  def executeUpdate(String query) {
+    unsupported("executeUpdate")
+  }
+
+  def executeUpdate(String query, Map args) {
+    unsupported("executeUpdate")
+  }
+
+  def executeUpdate(String query, Map params, Map args) {
+    unsupported("executeUpdate")
+  }
+
+  def executeUpdate(String query, Collection params) {
+    unsupported("executeUpdate")
+  }
+
+  def executeUpdate(String query, Collection params, Map args) {
+    unsupported("executeUpdate")
+  }
+
+  def find(String query) {
+    unsupported("find")
+  }
+
+  def find(String query, Map args) {
+    unsupported("find")
+  }
+
+  def find(String query, Map params, Map args) {
+    unsupported("find")
+  }
+
+  def find(String query, Collection params) {
+    unsupported("find")
+  }
+
+  def find(String query, Collection params, Map args) {
+    unsupported("find")
+  }
+
+  def findAll(String query) {
+    unsupported("findAll")
+  }
+
+  def findAll(String query, Map args) {
+    unsupported("findAll")
+  }
+
+  def findAll(String query, Map params, Map args) {
+    unsupported("findAll")
+  }
+
+  def findAll(String query, Collection params) {
+    unsupported("find")
+  }
+
+  def findAll(String query, Collection params, Map args) {
+    unsupported("findAll")
+  }
+
+  private unsupported(method) {
+    throw new UnsupportedOperationException("String-based queries like [$method] are currently not supported in this implementation of GORM. Use criteria instead.")
+  }
+
 }

@@ -63,11 +63,44 @@ class GormInstanceApi extends AbstractGormApi {
     }
   }
 
+  /**
+   * Saves an object with the given parameters
+   * @param instance The instance
+   * @param params The parameters
+   * @return The instance
+   */
   def save(instance, Map params) {
     datastore.currentSession.persist(instance)
     return instance    
   }
 
+  /**
+   * Returns the objects identifier
+   */
+  def ident(instance) {
+     instance[persistentEntity.getIdentity().name] 
+  }
+
+  /**
+   * Attaches an instance to an existing session. Requries a session-based model
+   * @param instance The instance
+   * @return
+   */
+  def attach(instance) {
+    throw new UnsupportedOperationException("Method attach() not supported by GORM implementation")
+  }
+
+  /**
+   * No concept of session-based model so defaults to true 
+   */
+  boolean isAttached(instance) { true }
+
+  /**
+   * Discards any pending changes. Requires a session-based model.
+   */
+  def discard(instance) {
+    throw new UnsupportedOperationException("Method discard() not supported by GORM implementation")
+  }
   /**
    * Deletes an instance from the datastore
    * @param instance The instance to delete

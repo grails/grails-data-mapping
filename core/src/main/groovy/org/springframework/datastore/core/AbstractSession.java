@@ -182,6 +182,15 @@ public abstract class AbstractSession<N> implements Session {
         throw new NonPersistentTypeException("Cannot retrieve objects with keys ["+keys+"]. The class ["+type+"] is not a known persistent type.");
     }
 
+    public List retrieveAll(Class type, Serializable... keys) {
+        Persister p = getPersister(type);
+
+        if(p != null) {
+            return p.retrieveAll(keys);
+        }
+        throw new NonPersistentTypeException("Cannot retrieve objects with keys ["+keys+"]. The class ["+type+"] is not a known persistent type.");
+    }
+
     public Query createQuery(Class type) {
         Persister p = getPersister(type);
         if(p!= null) {

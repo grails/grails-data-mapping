@@ -435,6 +435,22 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         return results;
     }
 
+    /**
+     * Simplistic default implementation of retrieveAllEntities that iterates over each key and retrieves the entities
+     * one-by-one. Data stores that support batch retrieval can optimize this to retrieve all entities in one go.
+     *
+     * @param persistentEntity The persist entity
+     * @param keys The keys
+     * @return A list of entities
+     */    
+    @Override
+    protected List<Object> retrieveAllEntities(PersistentEntity persistentEntity, Serializable[] keys) {
+        List<Object> results = new ArrayList<Object>();
+        for (Serializable key : keys) {
+            results.add( retrieveEntity(persistentEntity, key));
+        }
+        return results;
+    }
 
     /**
      * Used to establish the native key to use from the identifier defined by the object
