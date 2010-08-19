@@ -113,4 +113,42 @@ class CriteriaBuilderTests {
     assert "Bob" == results[1].name
 
   }
+
+
+  @Test
+  void testMinProjection() {
+    def age = 40
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+
+
+    def criteria = TestEntity.createCriteria()
+
+    def result = criteria.get {
+      projections {
+        min "age"
+      }
+    }
+
+    assert 40 == result
+
+    result = criteria.get {
+      projections {
+        max "age"
+      }
+    }
+
+    assert 43 == result
+
+    def results = criteria.list {
+      projections {
+        max "age"
+        min "age"
+      }
+    }
+
+    assert 2 == results.size()
+    assert 43 == results[0]
+    assert 40 == results[1]
+    assert [43, 40] == results
+  }
 }

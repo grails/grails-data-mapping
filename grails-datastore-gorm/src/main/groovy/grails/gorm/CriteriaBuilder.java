@@ -202,6 +202,10 @@ public class CriteriaBuilder extends GroovyObjectSupport {
             else if (name.equals(COUNT_CALL)) {
                 count = true;
             }
+            else {
+                uniqueResult = false;
+                count = false;
+            }
 
 
             // Check for pagination params

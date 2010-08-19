@@ -295,7 +295,6 @@ public abstract class Query {
      * @return The result
      */
     public Object singleResult() {
-        max(1);
         List results = list();
         if(results.isEmpty()) return null;
         else return results.get(0);

@@ -507,4 +507,13 @@ public class RedisTemplate {
             throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
     }
+
+    public void sortstore(String key, String destKey, RedisClient.SortParam... params) {
+        try {
+            redis.sortstore(key, destKey, params);
+        } catch (RedisClient.RuntimeIOException e) {
+            throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+
+    }
 }

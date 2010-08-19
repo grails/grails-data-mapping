@@ -14,20 +14,17 @@
  */
 package org.springframework.datastore.redis.query;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
-import org.springframework.datastore.query.Projections;
 import org.springframework.datastore.query.Query;
 import org.springframework.datastore.query.Restrictions;
 import org.springframework.datastore.redis.RedisSession;
-import org.springframework.datastore.redis.collection.RedisCollection;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
 import org.springframework.datastore.redis.engine.RedisPropertyValueIndexer;
-import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
 import sma.RedisClient;
 
@@ -51,46 +48,60 @@ public class RedisQuery extends Query {
 
     @Override
     protected List executeQuery(PersistentEntity entity, Junction criteria) {
-        List<Long> identifiers = null;
-        final boolean hasCountProjection = projections().getProjectionList().contains(Projections.count());
-        final boolean shouldPaginate = offset > 0 || max > -1 || !orderBy.isEmpty() ;
-        if(criteria.isEmpty()) {
-
-            if(hasCountProjection) {
-                final String redisKey = entityPersister.getAllEntityIndex().getRedisKey();
-                return getSetCountResult(redisKey);
-            }
-            else {
-                String[] results;
-                RedisCollection col = entityPersister.getAllEntityIndex();
-                if(shouldPaginate) {
-                    results = paginateResults(col.getRedisKey());
-                }
-                else {
-                    results = col.members();
-                }
-
-                identifiers = RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
-            }
+        List<Long> identifiers;
+        final ProjectionList projectionList = projections();
+        String finalKey;
+        if(criteria.isEmpty())  {
+            finalKey = entityPersister.getAllEntityIndex().getRedisKey();
         }
         else {
             List<Criterion> criteriaList = criteria.getCriteria();
-            String finalKey = executeSubQuery(criteria, criteriaList);
-            String[] results;
-            if(hasCountProjection) {
-                return getSetCountResult(finalKey);
+            finalKey = executeSubQuery(criteria, criteriaList);
+        }
+
+
+        String[] results;
+        IdProjection idProjection = null;
+        if(projectionList.isEmpty()) {
+            results = paginateResults(finalKey);
+        }
+        else {
+            List projectionResults = new ArrayList();
+            String postSortAndPaginationKey = storeSortedKey(finalKey);
+            for (Projection projection : projectionList.getProjectionList()) {
+                if(projection instanceof CountProjection) {
+                    projectionResults.add(getCountResult(postSortAndPaginationKey));
+                }
+                else if(projection instanceof MaxProjection) {
+                    MaxProjection max = (MaxProjection) projection;
+                    final String sortKey = getValidSortKey(max);
+                    if(!shouldSortOrPaginate()) {
+                        projectionResults.add(getMaxValueFromSortedSet(sortKey));
+                    }
+                }
+                else if(projection instanceof MinProjection) {
+                    MinProjection min = (MinProjection) projection;
+                    final String sortKey = getValidSortKey(min);
+                    if(!shouldSortOrPaginate()) {
+                        projectionResults.add(getMinValueFromSortedSet(sortKey));
+                    }
+
+                }
+                else if(projection instanceof IdProjection) {
+                    idProjection = (IdProjection) projection;
+                }
             }
-            else if(shouldPaginate) {
+            if(!projectionResults.isEmpty()) return projectionResults;
+            else {
                 results = paginateResults(finalKey);
             }
-            else {
-                results = template.smembers(finalKey);
-            }
-
-            identifiers = RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
         }
+
+
+
+        identifiers = RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
         if(identifiers != null) {
-            if(projections().getProjectionList().contains(Projections.ID_PROJECTION)) {
+            if(idProjection != null) {
                 return identifiers;
             }
             else {
@@ -100,6 +111,43 @@ public class RedisQuery extends Query {
         else {
             return Collections.emptyList();
         }
+    }
+
+    private String getValidSortKey(PropertyProjection projection) {
+        final String propName = projection.getPropertyName();
+        PersistentProperty prop = entityPersister.getPersistentEntity().getPropertyByName(propName);
+        if(prop == null) {
+            throw new InvalidDataAccessResourceUsageException("Cannot use ["+projection.getClass().getSimpleName()+"] projection on non-existent property: " + propName);
+        }
+        else if(!isIndexed(prop)) {
+            throw new InvalidDataAccessResourceUsageException("Cannot use ["+projection.getClass().getSimpleName()+"] projection on non-indexed property: " + propName);
+        }
+        return entityPersister.getPropertySortKey(prop);
+    }
+
+    private String storeSortedKey(String finalKey) {
+        if(shouldSortOrPaginate()) {
+           StringBuilder builder = new StringBuilder();
+            builder.append('~')
+                   .append(finalKey)
+                   .append('-')
+                   .append(offset)
+                   .append('-')
+                   .append(max)
+                   .append('-');
+
+           if(!orderBy.isEmpty()) {
+               final Order order = orderBy.get(0);
+               builder.append(order.getProperty())
+                      .append('-')
+                      .append(order.getDirection());
+           }
+
+           String sortKey = builder.toString();
+           template.sortstore(finalKey, sortKey, getSortAndPaginationParams());
+           return sortKey;
+        }
+        return finalKey;
     }
 
     private String executeSubQuery(Junction junction, List<Criterion> criteria) {
@@ -124,6 +172,19 @@ public class RedisQuery extends Query {
     }
 
     private String[] paginateResults(final String key) {
+        final boolean shouldSort = shouldSortOrPaginate();
+
+        if(shouldSort)
+            return template.sort(key, getSortAndPaginationParams());
+        else
+            return template.smembers(key);
+    }
+
+    private boolean shouldSortOrPaginate() {
+        return offset > 0 || max > -1 || !orderBy.isEmpty();
+    }
+
+    private RedisClient.SortParam[] getSortAndPaginationParams() {
         List<RedisClient.SortParam> params = new ArrayList<RedisClient.SortParam>();
         if(!orderBy.isEmpty()) {
             Order o = orderBy.get(0); // Redis doesn't really allow multiple orderings
@@ -143,8 +204,7 @@ public class RedisQuery extends Query {
         if(offset > 0 || max > -1) {
             params.add( RedisClient.SortParam.limit(offset, max) );
         }
-        return template.sort(key, params.toArray(new RedisClient.SortParam[params.size()]));
-
+        return params.toArray(new RedisClient.SortParam[params.size()]);
     }
 
     private String formulateDisjunctionKey(String[] indices) {
@@ -160,11 +220,13 @@ public class RedisQuery extends Query {
         return "~" + indices.toString().replaceAll("\\s", "-");
     }
 
-    private List getSetCountResult(String redisKey) {
-        final long count = template.scard(redisKey);
-        List result = new ArrayList();
-        result.add(count);
-        return result;
+    private long getCountResult(String redisKey) {
+        if(shouldSortOrPaginate()) {
+            return template.llen(redisKey);
+        }
+        else {
+            return  template.scard(redisKey);
+        }
     }
 
     private boolean isIndexed(PersistentProperty property) {
@@ -186,12 +248,6 @@ public class RedisQuery extends Query {
                indices.add(key);
            }
        });
-//       put(GreaterThan.class,  new CriterionHandler<GreaterThan>() {
-//           public void handle(RedisEntityPersister entityPersister, List<String> indices, GreaterThan criterion) {
-////               String key = executeGreaterThan(entityPersister, criterion);
-////               indices.add(key);
-//           }
-//       });
        put(GreaterThanEquals.class,  new CriterionHandler<GreaterThanEquals>() {
            public void handle(RedisEntityPersister entityPersister, List<String> indices, GreaterThanEquals criterion) {
                String key = executeGreaterThanEquals(entityPersister, criterion);
@@ -264,6 +320,12 @@ public class RedisQuery extends Query {
         PersistentProperty prop = getAndValidateProperty(entityPersister, property);
 
         String sortKey = entityPersister.getPropertySortKey(prop);
+        Object max = getMaxValueFromSortedSet(sortKey);
+
+        return executeBetweenInternal(entityPersister, prop, criterion.getValue(), max, false, true);
+    }
+
+    private Object getMaxValueFromSortedSet(String sortKey) {
         String maxKey = sortKey + "~max-score";
 
         Object max = template.get(maxKey);
@@ -276,8 +338,23 @@ public class RedisQuery extends Query {
 
             template.setex(maxKey, max, 500);
         }
+        return entityPersister.getTypeConverter().convertIfNecessary(max, Double.class);
+    }
 
-        return executeBetweenInternal(entityPersister, prop, criterion.getValue(), max, false, true);
+    private Object getMinValueFromSortedSet(String sortKey) {
+        String minKey = sortKey + "~min-score";
+
+        Object min = template.get(minKey);
+        if(min == null) {
+            String[] results = template.zrange(sortKey, 0, 0);
+            if(results.length > 0) {
+                min = template.zscore(sortKey, results[0]);
+            }
+            else min = -1;
+
+            template.setex(minKey, min, 500);
+        }
+        return entityPersister.getTypeConverter().convertIfNecessary(min, Double.class);
     }
 
     protected String executeSubBetween(RedisEntityPersister entityPersister, Between between) {
@@ -323,7 +400,7 @@ public class RedisQuery extends Query {
         final PersistentEntity entity = entityPersister.getPersistentEntity();
         PersistentProperty prop = entity.getPropertyByName(property);
         if(prop == null) {
-            throw new DataIntegrityViolationException("Cannot execute between query on property ["+property+"] of class ["+entity+"]. Property does not exist.");
+            throw new InvalidDataAccessResourceUsageException("Cannot execute between query on property ["+property+"] of class ["+entity+"]. Property does not exist.");
         }
         return prop;
     }
@@ -355,10 +432,10 @@ public class RedisQuery extends Query {
 
     private void assertIndexed(String property, PersistentProperty prop) {
         if(prop == null) {
-            throw new DataIntegrityViolationException("Cannot execute query. Entity ["+getEntity()+"] does not declare a property named ["+ property +"]");
+            throw new InvalidDataAccessResourceUsageException("Cannot execute query. Entity ["+getEntity()+"] does not declare a property named ["+ property +"]");
         }
         else if(!isIndexed(prop)) {
-            throw new DataIntegrityViolationException("Cannot query class ["+getEntity()+"] on property ["+prop+"]. The property is not indexed!");
+            throw new InvalidDataAccessResourceUsageException("Cannot query class ["+getEntity()+"] on property ["+prop+"]. The property is not indexed!");
         }
     }
 }

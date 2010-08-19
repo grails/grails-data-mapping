@@ -205,8 +205,13 @@ class GormEnhancerTests {
   }
 
   @Test(expected=UnsupportedOperationException.class)
-  void testStringBasedQuery() {
+  void testStringBasedFindQuery() {
       TestEntity.find("from TestEntity")
+  }
+
+  @Test(expected=UnsupportedOperationException.class)
+  void testStringBasedFindAllQuery() {
+      TestEntity.findAll("from TestEntity")
   }
 }
 
