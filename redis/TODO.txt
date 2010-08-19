@@ -6,4 +6,4 @@ TODO list
 * Redis specific dynamic methods (random entry, flushing, savedb, bgsave etc.)
 * Spring PlatformTransactionManager support
 * Plugging in validation
-* Connection pooling for RedisClient
+* Connection pooling for RedisClient                                                                                                    

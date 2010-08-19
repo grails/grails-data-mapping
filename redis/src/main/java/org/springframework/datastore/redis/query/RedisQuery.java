@@ -103,11 +103,22 @@ public class RedisQuery extends Query {
                         String entityKey = entityPersister.getEntityBaseKey();
                         final String[] values = template.sort(postSortAndPaginationKey, RedisClient.SortParam.get(entityKey + ":*->" + validProperty.getName()));
                         List resultList = new ArrayList();
-                        for (String value : values) {
-                            resultList.add(entityPersister.getTypeConverter().convertIfNecessary(value, validProperty.getType()));
+                        Class type = validProperty.getType();
+                        final PersistentEntity associatedEntity = getSession().getMappingContext().getPersistentEntity(type.getName());
+                        final boolean isEntityType = associatedEntity != null;
+                        if(isEntityType) {
+                            type = Long.class;
                         }
-                        return resultList;
-                        
+                        for (String value : values) {
+                            resultList.add(entityPersister.getTypeConverter().convertIfNecessary(value, type));
+                        }
+                        if(isEntityType) {
+                            return new RedisEntityResultList(getSession(),associatedEntity, resultList );
+                        }
+                        else {
+                            return resultList;
+                        }
+
                     }
                     else if(projection instanceof IdProjection) {
                         idProjection = (IdProjection) projection;

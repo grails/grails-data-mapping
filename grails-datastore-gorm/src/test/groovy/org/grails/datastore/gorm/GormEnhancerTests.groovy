@@ -6,6 +6,7 @@ import org.springframework.datastore.keyvalue.mapping.KeyValueMappingContext
 import org.springframework.datastore.core.Session
 import org.junit.Before
 import org.junit.After
+import grails.persistence.Entity
 
 /**
  * Created by IntelliJ IDEA.
@@ -215,13 +216,23 @@ class GormEnhancerTests {
   }
 }
 
+@Entity
 class TestEntity {
   Long id
   String name
   Integer age
 
+  ChildEntity child
+
   static mapping = {
     name index:true
     age index:true
+    child index:true
   }
+}
+@Entity
+class ChildEntity {
+  Long id
+  String name
+  static belongsTo = [TestEntity]
 }

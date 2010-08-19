@@ -70,4 +70,11 @@ public interface MappingContext<T,R> {
      * @return The mapping factory instance
      */
     MappingFactory<T,R> getMappingFactory();
+
+    /**
+     * Returns whether the specified class is a persistent entity
+     * @param type The type to check
+     * @return True if it is
+     */
+    boolean isPersistentEntity(Class type);
 }

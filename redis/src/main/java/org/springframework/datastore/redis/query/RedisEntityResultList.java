@@ -19,6 +19,7 @@ import org.springframework.datastore.core.Session;
 import org.springframework.datastore.mapping.PersistentEntity;
 
 import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,18 +31,25 @@ public class RedisEntityResultList extends AbstractList{
 
     Session session;
     private List<Long> identifiers;
+    private Object[] objects;
     private PersistentEntity entity;
 
     public RedisEntityResultList(Session session, PersistentEntity entity, List<Long> identifiers) {
         this.session = session;
         this.identifiers = identifiers;
+        this.objects = new Object[identifiers.size()];
         this.entity = entity;
     }
 
     @Override
     public Object get(int index) {
-        Long identifier = identifiers.get(index);
-        return session.retrieve(this.entity.getJavaClass(), identifier);
+        Object result = objects[index];
+        if(result == null) {
+            Long identifier = identifiers.get(index);
+            result = session.retrieve(this.entity.getJavaClass(), identifier);
+            objects[index] = result;
+        }
+        return result;
     }
 
     @Override

@@ -21,6 +21,7 @@ class CriteriaBuilderTests {
   void setupRedis() {
     def redis = new RedisDatastore()
     redis.mappingContext.addPersistentEntity(TestEntity)
+    redis.mappingContext.addPersistentEntity(ChildEntity)
 
     new GormEnhancer(redis).enhance()
 
@@ -167,5 +168,28 @@ class CriteriaBuilderTests {
     }
 
     assert [40, 41, 42, 43] == results
+  }
+
+  @Test
+  void testPropertyProjectionOnEntity() {
+    def age = 40
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
+
+    assert 4 == ChildEntity.count()
+
+
+    def criteria = TestEntity.createCriteria()
+
+    def results = criteria.list {
+      projections {
+        property "child"
+      }
+    }
+
+    assert results.find { it.name = "Bob Child"}
+    assert results.find { it.name = "Fred Child"}
+    assert results.find { it.name = "Barney Child"}
+    assert results.find { it.name = "Frank Child"}
+
   }
 }
