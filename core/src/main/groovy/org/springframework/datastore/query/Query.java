@@ -14,7 +14,9 @@
  */
 package org.springframework.datastore.query;
 
+import org.springframework.datastore.core.AbstractDatastore;
 import org.springframework.datastore.core.Session;
+import org.springframework.datastore.engine.EntityPersister;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.util.Assert;
 
@@ -163,6 +165,11 @@ public abstract class Query {
      * @return This query instance
      */
     public Query eq(String property, Object value) {
+        // use the object id as the value if its a persistent entity
+        if(session.getMappingContext().isPersistentEntity(value)) {
+           EntityPersister ep = (EntityPersister) session.getPersister(value);
+           value = ep.getObjectIdentifier(value);
+        }
         criteria.add(Restrictions.eq(property, value));
         return this;
     }
@@ -447,8 +454,18 @@ public abstract class Query {
         private List<Criterion> criteria = new ArrayList<Criterion>();
 
         public Junction add(Criterion c) {
-            if(c != null)
+            if(c != null) {
+                if(c instanceof Equals) {
+                    final Equals eq = (Equals) c;
+                    Object value = eq.getValue();
+                    Session session = AbstractDatastore.retrieveSession();
+                    if(session.getMappingContext().isPersistentEntity(value)) {
+                        EntityPersister ep = (EntityPersister) session.getPersister(value);
+                        c = new Equals(eq.getProperty(), ep.getObjectIdentifier(value));
+                    }
+                }
                 criteria.add(c);
+            }
             return this;
         }
 

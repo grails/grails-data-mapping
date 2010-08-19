@@ -234,5 +234,9 @@ class TestEntity {
 class ChildEntity {
   Long id
   String name
+
+  static mapping = {
+    name index:true
+  }
   static belongsTo = [TestEntity]
 }

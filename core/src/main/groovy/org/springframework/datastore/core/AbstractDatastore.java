@@ -84,6 +84,19 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
         return connection;
     }
 
+    /**
+     * Static way to retrieve the session
+     * @return The session instance
+     * @throws ConnectionNotFoundException If no session has been created
+     */
+    public static Session retrieveSession() throws ConnectionNotFoundException {
+        final Session connection = currentConnectionThreadLocal.get();
+        if(connection == null) {
+            throw new ConnectionNotFoundException("Not datastore session found. Call Datastore.connect(..) before calling Datastore.getCurrentSession()");
+        }
+        return connection;
+    }
+
     public MappingContext getMappingContext() {
         return mappingContext;
     }

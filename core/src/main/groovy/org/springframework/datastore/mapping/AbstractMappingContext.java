@@ -50,6 +50,10 @@ public abstract class AbstractMappingContext implements MappingContext {
         return type != null && getPersistentEntity(type.getName()) != null;
     }
 
+    public boolean isPersistentEntity(Object value) {
+        return value != null && isPersistentEntity(value.getClass());
+    }
+
     public PersistentEntity getPersistentEntity(String name) {
         return persistentEntitiesByName.get(name);
     }

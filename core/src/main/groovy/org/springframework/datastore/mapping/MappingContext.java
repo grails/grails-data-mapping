@@ -77,4 +77,11 @@ public interface MappingContext<T,R> {
      * @return True if it is
      */
     boolean isPersistentEntity(Class type);
+
+    /**
+     * Returns whether the specified value is a persistent entity
+     * @param value The value to check
+     * @return True if it is
+     */
+    boolean isPersistentEntity(Object value);
 }
