@@ -28,7 +28,7 @@ import java.util.*;
  * @since 1.0
  */
 public abstract class AbstractNodeEntityPersister<T, K> extends EntityPersister {
-    protected SimpleTypeConverter typeConverter;         
+    protected SimpleTypeConverter typeConverter;
     protected Session session;
     protected ClassMapping classMapping;
 
@@ -36,14 +36,14 @@ public abstract class AbstractNodeEntityPersister<T, K> extends EntityPersister 
         super(mappingContext, entity);
         this.session = session;
         this.classMapping = entity.getMapping();
-        this.typeConverter = new ByteArrayAwareTypeConverter();         
+        this.typeConverter = new ByteArrayAwareTypeConverter();
     }
 
     public ClassMapping getClassMapping() {
         return classMapping;
     }
 
-     @Override
+    @Override
     protected List<Object> retrieveAllEntities(PersistentEntity persistentEntity, Serializable[] keys) {
         return null;  //TODO.
     }
@@ -59,15 +59,15 @@ public abstract class AbstractNodeEntityPersister<T, K> extends EntityPersister 
     }
 
     @Override
-    protected Object retrieveEntity(PersistentEntity persistentEntity, Serializable nativeKey) {        
+    protected Object retrieveEntity(PersistentEntity persistentEntity, Serializable nativeKey) {
         T nativeEntry = retrieveEntry(persistentEntity, nativeKey);
-        if(nativeEntry != null) {
+        if (nativeEntry != null) {
             return createObjectFromNativeEntry(persistentEntity, nativeKey, nativeEntry);
         }
         return null;
     }
 
-     private Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, T nativeEntry) {
+    private Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, T nativeEntry) {
         Object obj = persistentEntity.newInstance();
 
         EntityAccess ea = new EntityAccess(persistentEntity, obj);
@@ -79,14 +79,14 @@ public abstract class AbstractNodeEntityPersister<T, K> extends EntityPersister 
         for (PersistentProperty prop : props) {
             PropertyMapping<NodeProperty> pm = prop.getMapping();
             String propName = null;
-            if(pm.getMappedForm()!=null) {
+            if (pm.getMappedForm() != null) {
                 propName = pm.getMappedForm().getAttributeName();
             }
-            if(propName == null) {
+            if (propName == null) {
                 propName = prop.getName();
             }
-            if(prop instanceof Simple) {
-                ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propName) );
+            if (prop instanceof Simple) {
+                ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propName));
             }
             //TODO: to handle these relational behavior OneToOne, OneToManny, ManyToMany sto map with NodeType entity such as JCR Node etc.
         }
@@ -98,10 +98,9 @@ public abstract class AbstractNodeEntityPersister<T, K> extends EntityPersister 
         ClassMapping<Node> cm = persistentEntity.getMapping();
         //passing simple name to to create new entity e.g TestEntity instead of org.springframework.datastore.jcr.test.TestEntity
         T e = createNewEntry(persistentEntity.getJavaClass().getSimpleName());
-        
+
         K k = readObjectIdentifier(entityAccess, cm);
         boolean isUpdate = k != null;
-
         for (EntityInterceptor interceptor : interceptors) {
             if (isUpdate) {
                 if (!interceptor.beforeUpdate(entityAccess.getEntity())) return (Serializable) k;
@@ -130,7 +129,7 @@ public abstract class AbstractNodeEntityPersister<T, K> extends EntityPersister 
                 if (indexed) {
                     toIndex.put(prop, propValue);
                 }
-            //TODO: to handle these relational behavior to map with NodeType entity such as JCR Node etc.
+                //TODO: to handle these relational behavior to map with NodeType entity such as JCR Node etc.
             } else if (prop instanceof OneToMany) {
                 oneToManys.add((OneToMany) prop);
             } else if (prop instanceof ToOne) {
@@ -173,40 +172,75 @@ public abstract class AbstractNodeEntityPersister<T, K> extends EntityPersister 
     }
 
 
-
     @Override
     protected void deleteEntity(PersistentEntity persistentEntity, Object obj) {
-        //TODO Implement deleteEntity
-
+        if (obj != null) {
+            for (EntityInterceptor interceptor : interceptors) {
+                if (!interceptor.beforeDelete(obj)) return;
+            }
+            K key = readIdentifierFromObject(obj);
+            if (key != null) {
+                deleteEntry(key);
+            }
+        } 
     }
+
+    /**
+     * Deletes a single entry
+     *
+     * @param key The identity
+     */
+    protected abstract void deleteEntry(K key);
 
     @Override
     protected void deleteEntities(PersistentEntity persistentEntity, Iterable objects) {
         //TODO Implement deleteEntities
     }
 
+    private K readIdentifierFromObject(Object object) {
+        EntityAccess access = new EntityAccess(getPersistentEntity(), object);
+        access.setConversionService(typeConverter.getConversionService());
+        final Object idValue = access.getIdentifier();
+        K key = null;
+        if (idValue != null) {
+            key = inferNativeKey(idValue);
+        }
+        return key;
+    }
+
+
     public Query createQuery() {
         return null;
     }
 
-       /**
+    /**
+       * Used to establish the native key to use from the identifier defined by the object
+       * @param identifier The identifier specified by the object
+       * @return The native key which may just be a cast from the identifier parameter to K
+       */
+      protected K inferNativeKey(Object identifier) {
+          return (K) identifier;
+      }
+    
+
+    /**
      * Reads a value for the given key from the native entry
      *
      * @param nativeEntry The native entry. Could be a  JCR Node etc.
-     * @param property The property key
+     * @param property    The property key
      * @return The value
      */
     protected abstract Object getEntryValue(T nativeEntry, String property);
 
     /**
-       * Reads the native form of a Node datastore entry. This could be
-       * a JCR Node, a Graph Nodeetc.
-       *
-       * @param persistentEntity The persistent entity
-       * @param key The key
-       * @return The native form
-       */
-      protected abstract T retrieveEntry(PersistentEntity persistentEntity, Serializable key);
+     * Reads the native form of a Node datastore entry. This could be
+     * a JCR Node, a Graph Nodeetc.
+     *
+     * @param persistentEntity The persistent entity
+     * @param key              The key
+     * @return The native form
+     */
+    protected abstract T retrieveEntry(PersistentEntity persistentEntity, Serializable key);
 
 
     /**
