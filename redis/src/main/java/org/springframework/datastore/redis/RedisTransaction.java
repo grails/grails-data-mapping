@@ -40,7 +40,7 @@ public class RedisTransaction implements Transaction<RedisTemplate> {
             throw new IllegalTransactionStateException("Cannot call commit after rollback. Start another transaction first!");
         }
         try {
-            redisTemplate.exec();
+            final Object[] objects = redisTemplate.exec();
             commitCalled = true;
         } catch (Exception e) {
             throw new TransactionSystemException("Exception occurred committing back Redis transaction: " + e.getMessage());

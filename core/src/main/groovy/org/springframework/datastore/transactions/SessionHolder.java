@@ -27,9 +27,18 @@ public class SessionHolder extends ResourceHolderSupport {
 
 
     private Session session;
+    private Transaction transaction;
 
     public SessionHolder(Session session) {
         this.session = session;
+    }
+
+    public Transaction getTransaction() {
+        return transaction;
+    }
+
+    public void setTransaction(Transaction transaction) {
+        this.transaction = transaction;
     }
 
     public Session getSession() {
@@ -51,4 +60,5 @@ public class SessionHolder extends ResourceHolderSupport {
     public boolean containsSession(Session session) {
         return this.session == session;
     }
+
 }

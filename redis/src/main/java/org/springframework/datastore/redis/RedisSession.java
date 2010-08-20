@@ -16,6 +16,7 @@ package org.springframework.datastore.redis;
 
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.datastore.core.AbstractSession;
+import org.springframework.datastore.core.Datastore;
 import org.springframework.datastore.engine.LockableEntityPersister;
 import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.mapping.MappingContext;
@@ -37,8 +38,8 @@ public class RedisSession extends AbstractSession<RedisClient> implements Map {
 
     private RedisTemplate redisClient;
 
-    public RedisSession(Map<String, String> connectionDetails, MappingContext mappingContext) {
-        super(connectionDetails, mappingContext);
+    public RedisSession(Datastore ds, Map<String, String> connectionDetails, MappingContext mappingContext) {
+        super(ds, connectionDetails, mappingContext);
         redisClient = new RedisTemplate( new RedisClient() );
     }
 

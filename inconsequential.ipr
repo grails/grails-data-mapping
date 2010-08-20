@@ -295,7 +295,9 @@
         <root url="jar://$GRADLE_CACHE$/org.springframework/spring-tx/jars/spring-tx-3.0.2.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="jar://$SPRING_HOME$/src/org.springframework.transaction-sources-3.0.3.RELEASE.jar!/" />
+      </SOURCES>
     </library>
     <library name="Spring Core">
       <CLASSES>

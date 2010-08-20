@@ -64,7 +64,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
-        return new RedisSession(connectionDetails, getMappingContext());
+        return new RedisSession(this, connectionDetails, getMappingContext());
     }
 
     public void afterPropertiesSet() throws Exception {

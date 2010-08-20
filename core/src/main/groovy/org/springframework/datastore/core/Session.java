@@ -153,6 +153,11 @@ public interface Session<N> extends EntityInterceptorAware {
      */
     N getNativeInterface();
 
+    /**
+     * The persister for the given object
+     * @param o The object
+     * @return The persister
+     */
     Persister getPersister(Object o);
 
     /**
@@ -160,4 +165,10 @@ public interface Session<N> extends EntityInterceptorAware {
      * @return The Transaction instance
      */
     Transaction getTransaction();
+
+    /**
+     * The Datastore that created this Session
+     * @return The Datastore instance
+     */
+    Datastore getDatastore();
 }

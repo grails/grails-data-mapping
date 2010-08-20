@@ -3,6 +3,7 @@ package org.springframework.datastore.appengine;
 import com.google.appengine.api.datastore.*;
 import org.springframework.datastore.appengine.engine.AppEngineEntityPersister;
 import org.springframework.datastore.core.AbstractSession;
+import org.springframework.datastore.core.Datastore;
 import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.keyvalue.KeyValueSession;
 import org.springframework.datastore.keyvalue.mapping.Family;
@@ -31,8 +32,8 @@ public class AppEngineSession extends AbstractSession<DatastoreService> implemen
      * @param connectionDetails the session details
      * @param mappingContext The Mapping Context
      */
-    public AppEngineSession(Map<String, String> connectionDetails, MappingContext<Family, KeyValue> mappingContext) {
-        super(connectionDetails, mappingContext);
+    public AppEngineSession(Datastore ds,Map<String, String> connectionDetails, MappingContext<Family, KeyValue> mappingContext) {
+        super(ds, connectionDetails, mappingContext);
     }
 
 

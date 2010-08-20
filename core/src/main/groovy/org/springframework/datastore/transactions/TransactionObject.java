@@ -23,7 +23,6 @@ import org.springframework.datastore.core.Session;
  * @since 1.0
  */
 public class TransactionObject {
-    private Transaction transaction;
     private SessionHolder sessionHolder;
 
     private boolean newSessionHolder;
@@ -36,11 +35,11 @@ public class TransactionObject {
     }
 
     public Transaction getTransaction() {
-        return transaction;
+        return getSessionHolder().getTransaction();
     }
 
     public void setTransaction(Transaction transaction) {
-        this.transaction = transaction;
+        getSessionHolder().setTransaction(transaction);
     }
 
     public void setSession(Session session) {

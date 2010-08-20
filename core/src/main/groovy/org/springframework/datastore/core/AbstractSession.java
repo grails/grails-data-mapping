@@ -44,11 +44,17 @@ public abstract class AbstractSession<N> implements Session {
     protected List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
     protected ConcurrentLinkedQueue lockedObjects = new ConcurrentLinkedQueue();
     private Transaction transaction;
+    private Datastore datastore;
 
-    public AbstractSession(Map<String, String> connectionDetails, MappingContext mappingContext) {
+    public AbstractSession(Datastore datastore, Map<String, String> connectionDetails, MappingContext mappingContext) {
         super();
         this.mappingContext = mappingContext;
         this.connectionDetails = connectionDetails;
+        this.datastore = datastore;
+    }
+
+    public Datastore getDatastore() {
+        return datastore;
     }
 
     public void addEntityInterceptor(EntityInterceptor interceptor) {
