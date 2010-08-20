@@ -15,9 +15,10 @@
 package org.springframework.datastore.redis;
 
 import org.springframework.datastore.redis.util.RedisTemplate;
-import org.springframework.datastore.tx.Transaction;
+import org.springframework.datastore.transactions.Transaction;
+import org.springframework.transaction.IllegalTransactionStateException;
 import org.springframework.transaction.TransactionSystemException;
-import sma.RedisClient;
+import org.springframework.transaction.UnexpectedRollbackException;
 
 /**
  * Represents a Redis transaction
@@ -27,17 +28,43 @@ import sma.RedisClient;
  */
 public class RedisTransaction implements Transaction<RedisTemplate> {
     private RedisTemplate redisTemplate;
+    private boolean rollbackCalled;
+    private boolean commitCalled;
 
     public RedisTransaction(RedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
     public void commit() {
-        redisTemplate.exec();
+        if(rollbackCalled) {
+            throw new IllegalTransactionStateException("Cannot call commit after rollback. Start another transaction first!");
+        }
+        try {
+            redisTemplate.exec();
+            commitCalled = true;
+        } catch (Exception e) {
+            throw new TransactionSystemException("Exception occurred committing back Redis transaction: " + e.getMessage());
+        }
+    }
+
+    public boolean isActive() {
+        return !commitCalled && !rollbackCalled;
+    }
+
+    public void setTimeout(int timeout) {
+        throw new UnsupportedOperationException("Transaction timeouts not supported in Redis");
     }
 
     public void rollback() {
-        redisTemplate.discard();
+        if(rollbackCalled) {
+            throw new UnexpectedRollbackException("Cannot rollback Redis transaction. Transaction already rolled back!");
+        }
+        try {
+            redisTemplate.discard();
+            rollbackCalled = true;
+        } catch (Exception e) {
+            throw new TransactionSystemException("Exception occurred rolling back Redis transaction: " + e.getMessage());
+        }
     }
 
     public RedisTemplate getNativeTransaction() {

@@ -22,7 +22,7 @@ import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
 import org.springframework.datastore.redis.util.RedisTemplate;
-import org.springframework.datastore.tx.Transaction;
+import org.springframework.datastore.transactions.Transaction;
 import org.springframework.transaction.CannotCreateTransactionException;
 import sma.RedisClient;
 
@@ -39,7 +39,6 @@ public class RedisSession extends AbstractSession<RedisClient> implements Map {
 
     public RedisSession(Map<String, String> connectionDetails, MappingContext mappingContext) {
         super(connectionDetails, mappingContext);
-        int timeout = 30000; // msecs
         redisClient = new RedisTemplate( new RedisClient() );
     }
 
@@ -72,8 +71,12 @@ public class RedisSession extends AbstractSession<RedisClient> implements Map {
         }
     }
 
-    public Transaction beginTransaction() {
-        redisClient.multi();
+    protected Transaction beginTransactionInternal() {
+        try {
+            redisClient.multi();
+        } catch (Exception e) {
+            throw new CannotCreateTransactionException("Error starting Redis transaction: " + e.getMessage(), e);
+        }
         return new RedisTransaction(redisClient);
     }
 
@@ -128,10 +131,7 @@ public class RedisSession extends AbstractSession<RedisClient> implements Map {
     }
 
     public boolean containsKey(Object o) {
-        if(o!=null) {
-            return redisClient.exists(o.toString());
-        }
-        return false;
+        return o != null && redisClient.exists(o.toString());
     }
 
     public boolean containsValue(Object o) {

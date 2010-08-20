@@ -21,7 +21,7 @@ import org.springframework.datastore.core.AbstractSession;
 import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
-import org.springframework.datastore.tx.Transaction;
+import org.springframework.datastore.transactions.Transaction;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.TransactionSystemException;
 
@@ -65,7 +65,7 @@ public class CassandraSession extends AbstractSession<CassandraClient> {
         }
     }
 
-    public Transaction beginTransaction() {
+    protected Transaction beginTransactionInternal() {
         throw new TransactionSystemException("Transactions are not supported by Cassandra");
     }
 

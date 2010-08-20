@@ -24,6 +24,7 @@
     <orderEntry type="library" name="Spring Beans" level="project" />
     <orderEntry type="library" name="Spring AOP" level="project" />
     <orderEntry type="library" name="CGLib" level="project" />
+    <orderEntry type="library" name="JTA" level="project" />
   </component>
 </module>
 

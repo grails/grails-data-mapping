@@ -1,9 +1,11 @@
 package org.springframework.datastore.appengine;
 
+import com.google.appengine.api.datastore.Transaction;
+
 /**
  * @author Guillaume Laforge
  */
-public class AppEngineTransaction implements org.springframework.datastore.tx.Transaction<com.google.appengine.api.datastore.Transaction> {
+public class AppEngineTransaction implements org.springframework.datastore.transactions.Transaction<Transaction> {
     private com.google.appengine.api.datastore.Transaction transaction;
 
     public AppEngineTransaction(com.google.appengine.api.datastore.Transaction transaction) {
@@ -20,5 +22,13 @@ public class AppEngineTransaction implements org.springframework.datastore.tx.Tr
 
     public com.google.appengine.api.datastore.Transaction getNativeTransaction() {
         return transaction;
+    }
+
+    public boolean isActive() {
+        return transaction.isActive();
+    }
+
+    public void setTimeout(int timeout) {
+        throw new UnsupportedOperationException("Transaction timeouts not supported on AppEngine");
     }
 }

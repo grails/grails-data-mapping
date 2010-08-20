@@ -3,7 +3,7 @@ package org.springframework.datastore.appengine;
 import com.google.appengine.api.datastore.*;
 import org.springframework.datastore.appengine.testsupport.AppEngineDatastoreTestCase;
 import org.springframework.datastore.keyvalue.KeyValueSession;
-import org.springframework.datastore.tx.Transaction;
+import org.springframework.datastore.transactions.Transaction;
 import org.junit.Before;
 
 import java.util.HashMap;
@@ -105,7 +105,7 @@ public class AppEngineDatastoreTest extends AppEngineDatastoreTestCase {
         AppEngineDatastore engineDatastore = new AppEngineDatastore();
         KeyValueSession connection = (KeyValueSession) engineDatastore.connect(new HashMap<String, String>());
 
-        org.springframework.datastore.tx.Transaction transaction = connection.beginTransaction();
+        Transaction transaction = connection.beginTransaction();
 
         // add a new person in the store
         Key keyGuillaume = (Key) connection.store("persons", personOne);

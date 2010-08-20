@@ -9,7 +9,7 @@ import org.springframework.datastore.keyvalue.mapping.Family;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
-import org.springframework.datastore.tx.Transaction;
+import org.springframework.datastore.transactions.Transaction;
 
 import java.util.*;
 
@@ -88,7 +88,7 @@ public class AppEngineSession extends AbstractSession<DatastoreService> implemen
      *
      * @return a started transaction
      */
-    public Transaction beginTransaction() {
+    protected Transaction beginTransactionInternal() {
         AppEngineTransaction engineTransaction = new AppEngineTransaction(DatastoreServiceFactory.getDatastoreService().beginTransaction());
         this.transaction = engineTransaction;
         return engineTransaction;

@@ -2,6 +2,7 @@ dependencies {
 
   compile group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.2'
   compile 'javax.persistence:persistence-api:1.0'
+  compile 'javax.transaction:jta:1.1'
   compile 'commons-beanutils:commons-beanutils:1.8.0'
   compile 'commons-collections:commons-collections:3.2'
 

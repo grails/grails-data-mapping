@@ -21,6 +21,8 @@ import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.query.Query;
+import org.springframework.datastore.transactions.Transaction;
+import org.springframework.transaction.NoTransactionException;
 
 import java.io.Serializable;
 import java.util.*;
@@ -41,6 +43,7 @@ public abstract class AbstractSession<N> implements Session {
     private Map<String, String> connectionDetails;
     protected List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
     protected ConcurrentLinkedQueue lockedObjects = new ConcurrentLinkedQueue();
+    private Transaction transaction;
 
     public AbstractSession(Map<String, String> connectionDetails, MappingContext mappingContext) {
         super();
@@ -197,5 +200,17 @@ public abstract class AbstractSession<N> implements Session {
             return p.createQuery();
         }
         throw new NonPersistentTypeException("Cannot create query. The class ["+type+"] is not a known persistent type.");
+    }
+
+    public final Transaction beginTransaction() {
+        this.transaction = beginTransactionInternal();
+        return this.transaction;
+    }
+
+    protected abstract Transaction beginTransactionInternal();
+
+    public Transaction getTransaction() {
+        if(transaction == null) throw new NoTransactionException("Transaction not started. Call beginTransaction() first");
+        return this.transaction;
     }
 }

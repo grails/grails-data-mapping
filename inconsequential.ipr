@@ -365,6 +365,13 @@
       <JAVADOC />
       <SOURCES />
     </library>
+    <library name="JTA">
+      <CLASSES>
+        <root url="jar://$GRADLE_CACHE$/javax.transaction/jta/jars/jta-1.1.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
   </component>
 </project>
 

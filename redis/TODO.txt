@@ -1,8 +1,12 @@
 TODO list
 
+* Spring PlatformTransactionManager support
+* Connection pooling for RedisClient
+
+* Configuration of host/port/pooling in RedisClient
 * Fix memory leak with single-ended proxies
 * Loading proxies
 * Redis specific dynamic methods (random entry, flushing, savedb, bgsave etc.)
-* Spring PlatformTransactionManager support
+
+* Finish Grails plugin
 * Plugging in validation
-* Connection pooling for RedisClient                                                                                                    
