@@ -20,6 +20,10 @@ import org.grails.datastore.gorm.finders.FindByFinder
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FindAllByFinder
 import org.grails.datastore.gorm.finders.CountByFinder
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.support.TransactionTemplate
+import org.springframework.transaction.support.TransactionCallback
+import org.springframework.transaction.TransactionDefinition
 
 /**
  * Enhances a class with GORM behavior
@@ -29,6 +33,7 @@ import org.grails.datastore.gorm.finders.CountByFinder
 class GormEnhancer {
 
   Datastore datastore
+  PlatformTransactionManager transactionManager
   List<DynamicFinder> finders
 
 
@@ -36,6 +41,14 @@ class GormEnhancer {
     this.datastore = datastore;
     this.finders = [new FindByFinder(datastore), new FindAllByFinder(datastore), new CountByFinder(datastore)]
   }
+
+  GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
+    this.datastore = datastore;
+    this.finders = [new FindByFinder(datastore), new FindAllByFinder(datastore), new CountByFinder(datastore)]
+    this.transactionManager = transactionManager
+  }
+
+
 
   void enhance() {
     for(PersistentEntity e in datastore.mappingContext.persistentEntities) {
@@ -45,6 +58,7 @@ class GormEnhancer {
   void enhance(Class cls) {
     def staticMethods = new GormStaticApi(cls,datastore)
     def instanceMethods = new GormInstanceApi(cls, datastore)
+    def tm = transactionManager
     cls.metaClass {
       for(method in instanceMethods.methodNames) {
         Closure methodHandle = instanceMethods.&"$method"
@@ -63,6 +77,22 @@ class GormEnhancer {
       'static' {
         for(method in staticMethods.methodNames) {
           delegate."$method" = staticMethods.&"$method"
+        }
+
+        if(tm) {
+
+          withTransaction { Closure callable ->
+            if(callable) {
+              def transactionTemplate = new TransactionTemplate(tm)
+              transactionTemplate.execute(callable as TransactionCallback)
+            }
+          }
+          withTransaction { TransactionDefinition definition, Closure callable ->
+            if(callable) {
+              def transactionTemplate = new TransactionTemplate(tm, definition)
+              transactionTemplate.execute(callable as TransactionCallback)
+            }
+          }
         }
       }
     }

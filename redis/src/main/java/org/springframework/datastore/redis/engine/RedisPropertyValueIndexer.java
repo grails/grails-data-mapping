@@ -65,7 +65,7 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
                 template.zadd(propSortKey,n.doubleValue(),primaryKey);
                 // delete any cached indices
                 final String[] toDelete = template.keys(propSortKey + "~*");
-                if(toDelete.length>0)
+                if(toDelete != null && toDelete.length>0)
                     template.del(toDelete);
             }
             else if(value instanceof Date) {

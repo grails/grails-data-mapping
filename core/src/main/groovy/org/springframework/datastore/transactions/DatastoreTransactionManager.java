@@ -79,6 +79,11 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
 						"Could not obtain Datastore-managed Session for Spring-managed transaction", ex);
 			}
 		}
+        else {
+            Session session = getDatastore().connect();
+            txObject.setSession(session);
+        }
+
 
 		return txObject;
     }

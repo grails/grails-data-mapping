@@ -15,6 +15,7 @@
     <orderEntry type="library" name="JUnit" level="project" />
     <orderEntry type="library" name="Spring Beans" level="project" />
     <orderEntry type="library" name="Spring Core" level="project" />
+    <orderEntry type="library" name="Spring Transaction" level="project" />
   </component>
 </module>
 
