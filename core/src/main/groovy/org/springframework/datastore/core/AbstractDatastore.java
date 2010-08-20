@@ -43,6 +43,10 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
         this.connectionDetails = connectionDetails;
     }
 
+    public void setConnectionDetails(Map<String, String> connectionDetails) {
+        this.connectionDetails = connectionDetails;
+    }
+
     public Session connect() {
         return connect(this.connectionDetails);
     }

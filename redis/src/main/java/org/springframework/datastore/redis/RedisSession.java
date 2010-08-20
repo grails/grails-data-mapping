@@ -36,11 +36,34 @@ import java.util.*;
  */
 public class RedisSession extends AbstractSession<RedisClient> implements Map {
 
+    public static final String CONFIG_HOST = "host";
+    public static final String CONFIG_PORT = "port";
+    public static final String LOCALHOST = "localhost";
+
     private RedisTemplate redisClient;
+    public static final String CONFIG_PASSWORD = "password";
 
     public RedisSession(Datastore ds, Map<String, String> connectionDetails, MappingContext mappingContext) {
         super(ds, connectionDetails, mappingContext);
-        redisClient = new RedisTemplate( new RedisClient() );
+        String host = LOCALHOST;
+        if(connectionDetails.containsKey(CONFIG_HOST)) {
+            host = connectionDetails.get(CONFIG_HOST);
+        }
+        int port = RedisClient.DEFAULT_PORT;
+        if(connectionDetails.containsKey(CONFIG_PORT)) {
+            try {
+                port = Integer.parseInt(connectionDetails.get(CONFIG_PORT));
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        }
+        final RedisClient client = new RedisClient(host, port);
+
+
+        redisClient = new RedisTemplate(client);
+        if(connectionDetails.containsKey(CONFIG_PASSWORD)) {
+            redisClient.setPassword(connectionDetails.get(CONFIG_PASSWORD));
+        }
     }
 
     @Override
