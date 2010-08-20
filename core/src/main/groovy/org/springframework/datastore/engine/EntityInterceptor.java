@@ -14,37 +14,43 @@
  */
 package org.springframework.datastore.engine;
 
+import org.springframework.datastore.core.DatastoreAware;
+import org.springframework.datastore.mapping.PersistentEntity;
+
 /**
  * Used to intercept persistent operations
  *
  * @since 1.0
  * @author Graeme Rocher
  */
-public interface EntityInterceptor {
+public interface EntityInterceptor extends DatastoreAware {
 
     /**
      * Called before an entity is inserted
      *
      * @param entity The entity
+     * @param o The object
      * @return False if the operation should be cancelled
      */
-    boolean beforeInsert(Object entity);
+    boolean beforeInsert(PersistentEntity entity, Object o);
 
     /**
      * Called before an entity is updated
      *
      * @param entity The entity
+     * @param o The object
      * @return False if the operation should be cancelled
      */
-    boolean beforeUpdate(Object entity);
+    boolean beforeUpdate(PersistentEntity entity, Object o);
 
     /**
      * Called before an entity is deleted
      *
      * @param entity The entity
+     * @param obj The object
      * @return False if the operation should be cancelled
      */
-    boolean beforeDelete(Object entity);
+    boolean beforeDelete(PersistentEntity entity, Object obj);
 
     // TODO: Add more interception hooks
 

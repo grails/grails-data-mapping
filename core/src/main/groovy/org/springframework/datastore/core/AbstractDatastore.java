@@ -53,6 +53,7 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
 
     public void addEntityInterceptor(EntityInterceptor interceptor) {
         if(interceptor != null) {
+            interceptor.setDatastore(this);
             this.interceptors.add(interceptor);
         }
     }

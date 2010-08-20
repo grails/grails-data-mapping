@@ -91,7 +91,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
     protected void deleteEntity(PersistentEntity persistentEntity, Object obj) {
         if(obj != null) {
             for (EntityInterceptor interceptor : interceptors) {
-                if(!interceptor.beforeDelete(obj)) return;
+                if(!interceptor.beforeDelete(persistentEntity, obj)) return;
             }
 
             K key = readIdentifierFromObject(obj);
@@ -275,10 +275,10 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
         for (EntityInterceptor interceptor : interceptors) {
             if(isUpdate) {
-                if(!interceptor.beforeUpdate(entityAccess.getEntity())) return (Serializable) k;
+                if(!interceptor.beforeUpdate(persistentEntity, entityAccess.getEntity())) return (Serializable) k;
             }
             else {
-                if(!interceptor.beforeInsert(entityAccess.getEntity())) return null;
+                if(!interceptor.beforeInsert(persistentEntity, entityAccess.getEntity())) return null;
             }
         }
 
