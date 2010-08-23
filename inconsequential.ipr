@@ -203,6 +203,7 @@
       <module fileurl="file://$PROJECT_DIR$/grails-adapter/grails-adapter.iml" filepath="$PROJECT_DIR$/grails-adapter/grails-adapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm/grails-datastore-gorm.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm/grails-datastore-gorm.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-redis/grails-datastore-gorm-redis.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-redis/grails-datastore-gorm-redis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-tck/grails-datastore-gorm-tck.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-tck/grails-datastore-gorm-tck.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-test/grails-datastore-gorm-test.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-test/grails-datastore-gorm-test.iml" />
       <module fileurl="file://$PROJECT_DIR$/redis/redis.iml" filepath="$PROJECT_DIR$/redis/redis.iml" />
       <module fileurl="file://$PROJECT_DIR$/dynamic/runtime-dynamic.iml" filepath="$PROJECT_DIR$/dynamic/runtime-dynamic.iml" />
