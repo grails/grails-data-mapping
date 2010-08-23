@@ -48,7 +48,6 @@ public class RedisQuery extends Query {
 
     @Override
     protected List executeQuery(PersistentEntity entity, Junction criteria) {
-        List<Long> identifiers;
         final ProjectionList projectionList = projections();
         String finalKey;
         if(criteria.isEmpty())  {
@@ -107,15 +106,13 @@ public class RedisQuery extends Query {
                         final PersistentEntity associatedEntity = getSession().getMappingContext().getPersistentEntity(type.getName());
                         final boolean isEntityType = associatedEntity != null;
                         if(isEntityType) {
-                            type = Long.class;
-                        }
-                        for (String value : values) {
-                            resultList.add(entityPersister.getTypeConverter().convertIfNecessary(value, type));
-                        }
-                        if(isEntityType) {
-                            return new RedisEntityResultList(getSession(),associatedEntity, resultList );
+                             return new RedisEntityResultList(getSession(),associatedEntity, values );
                         }
                         else {
+                            for (String value : values) {
+                                resultList.add(entityPersister.getTypeConverter().convertIfNecessary(value, type));
+                            }
+
                             return resultList;
                         }
 
@@ -134,13 +131,12 @@ public class RedisQuery extends Query {
 
 
 
-        identifiers = RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
-        if(identifiers != null) {
+        if(results != null) {
             if(idProjection != null) {
-                return identifiers;
+                return RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
             }
             else {
-                return new RedisEntityResultList(getSession(), getEntity(), identifiers);
+                return new RedisEntityResultList(getSession(), getEntity(), results);
             }
         }
         else {

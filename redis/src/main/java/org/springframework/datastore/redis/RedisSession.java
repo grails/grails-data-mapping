@@ -18,9 +18,11 @@ import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.datastore.core.AbstractSession;
 import org.springframework.datastore.core.Datastore;
 import org.springframework.datastore.engine.LockableEntityPersister;
+import org.springframework.datastore.engine.NonPersistentTypeException;
 import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
+import org.springframework.datastore.redis.collection.RedisSet;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
 import org.springframework.datastore.redis.util.RedisTemplate;
 import org.springframework.datastore.transactions.Transaction;
@@ -34,7 +36,7 @@ import java.util.*;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisSession extends AbstractSession<RedisClient> implements Map {
+public class RedisSession extends AbstractSession<RedisClient>  {
 
     public static final String CONFIG_HOST = "host";
     public static final String CONFIG_PORT = "port";
@@ -143,73 +145,40 @@ public class RedisSession extends AbstractSession<RedisClient> implements Map {
         }
     }
 
+    public Object random(Class type) {
+        RedisEntityPersister ep = (RedisEntityPersister) getPersister(type);
+        if(ep != null) {
+            RedisSet set = (RedisSet) ep.getAllEntityIndex();
+            String id = set.random();
+            return ep.retrieve(id);
+        }
+        else {
+            throw new NonPersistentTypeException("The class ["+type+"] is not a known persistent type.");
+        }
+    }
+
+    public Object pop(Class type) {
+        RedisEntityPersister ep = (RedisEntityPersister) getPersister(type);
+        if(ep != null) {
+            RedisSet set = (RedisSet) ep.getAllEntityIndex();
+            String id = set.pop();
+            Object result = null;
+            try {
+                result = ep.retrieve(id);
+                return result;
+            } finally {
+                if(result != null)
+                    delete(result);
+            }
+        }
+        else {
+            throw new NonPersistentTypeException("The class ["+type+"] is not a known persistent type.");
+        }
+    }
+
     public RedisClient getNativeInterface() {
         return redisClient.getRedisClient();
     }
 
-    public int size() {
-        return redisClient.dbsize();
-    }
-
-    public boolean isEmpty() {
-        return size() == 0;
-    }
-
-    public boolean containsKey(Object o) {
-        return o != null && redisClient.exists(o.toString());
-    }
-
-    public boolean containsValue(Object o) {
-        throw new UnsupportedOperationException("Method containsValue(Object) is not supported");
-    }
-
-    public Object get(Object key) {
-        if(key!=null) {
-             return redisClient.get(key.toString());
-        }
-        return null;
-    }
-
-    public Object put(Object key, Object value) {
-        if(key != null) {
-            return redisClient.getset(key.toString(), value.toString());
-        }
-        return null;
-    }
-
-    public Object remove(Object key) {
-        if(key != null) {
-            Object current = get(key);
-            redisClient.del(key.toString());
-            return current;
-        }
-        return null;
-    }
-
-    public void putAll(Map map) {
-        Map<String, String> putMap = new HashMap<String, String>();
-        for (Object key : map.keySet()) {
-            final Object val = map.get(key);
-            if(val != null)
-                putMap.put(key.toString(), val.toString());
-        }
-        redisClient.mset(putMap);
-    }
-
-    public void clear() {
-        redisClient.flushdb();
-    }
-
-    public Set keySet() {
-        return new HashSet(Arrays.asList(redisClient.keys("*")));
-    }
-
-    public Collection values() {
-        throw new UnsupportedOperationException("Method values() is not supported");
-    }
-
-    public Set entrySet() {
-        throw new UnsupportedOperationException("Method entrySet() is not supported");
-    }
 
 }

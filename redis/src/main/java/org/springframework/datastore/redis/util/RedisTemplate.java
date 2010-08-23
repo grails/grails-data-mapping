@@ -141,8 +141,8 @@ public class RedisTemplate {
         });
     }
 
-    public long llen(final String redisKey) {
-        return (Long) execute(new RedisCallback() {
+    public int llen(final String redisKey) {
+        return (Integer) execute(new RedisCallback() {
             public Object doInRedis(RedisClient redis) {
                 return redis.llen(redisKey);
             }
@@ -231,8 +231,8 @@ public class RedisTemplate {
 
     }
 
-    public long hlen(final String redisKey) {
-        return (Long) execute(new RedisCallback() {
+    public int hlen(final String redisKey) {
+        return (Integer) execute(new RedisCallback() {
             public Object doInRedis(RedisClient redis) {
                 return redis.hlen(redisKey);
             }
@@ -300,7 +300,7 @@ public class RedisTemplate {
         });
     }
 
-    public long incr(final String key) {
+    public int incr(final String key) {
         return (Integer)execute(new RedisCallback() {
             public Object doInRedis(RedisClient redis) {
                 return redis.incr(key);
@@ -308,8 +308,8 @@ public class RedisTemplate {
         });
     }
 
-    public long del(final String... redisKey) {
-        return (Long)execute(new RedisCallback() {
+    public int del(final String... redisKey) {
+        return (Integer)execute(new RedisCallback() {
             public Object doInRedis(RedisClient redis) {
                 return redis.del(redisKey);
             }
@@ -369,8 +369,8 @@ public class RedisTemplate {
         });
     }
 
-    public long ttl(final String key) {
-        return (Long)execute(new RedisCallback() {
+    public int ttl(final String key) {
+        return (Integer)execute(new RedisCallback() {
             public Object doInRedis(RedisClient redis) {
                 return redis.ttl(key);
             }
@@ -557,5 +557,21 @@ public class RedisTemplate {
 
     public void setPassword(String pass) {
         this.password = pass;
+    }
+
+    public String srandmember(final String key) {
+        return (String) execute(new RedisCallback() {
+            public Object doInRedis(RedisClient redis) {
+                return redis.srandmember(key);
+            }
+        });
+    }
+
+    public String spop(final String key) {
+        return (String) execute(new RedisCallback() {
+            public Object doInRedis(RedisClient redis) {
+                return redis.spop(key);
+            }
+        });
     }
 }

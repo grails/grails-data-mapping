@@ -66,11 +66,13 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
     }
 
     public final Session connect(Map<String, String> connectionDetails) {
-        final Session connection = createSession(connectionDetails);
-        if(connection != null) {
-            currentConnectionThreadLocal.set(connection);
+        final Session session = createSession(connectionDetails);
+
+        if(session != null) {
+            session.setEntityInterceptors(this.interceptors);
+            currentConnectionThreadLocal.set(session);
         }
-        return connection;
+        return session;
     }
 
     /**

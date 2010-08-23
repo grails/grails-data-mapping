@@ -1,20 +1,5 @@
-repositories {
-  flatDir dirs: ['lib', '../redis/lib', 'redis/lib']
-}
 dependencies {
   compile project(":core")
-  testCompile project(":cassandra"),project(":redis")
   compile group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.2'
-
-  testCompile 'com.eaio.uuid:uuid:3.2',
-              'me.prettyprint:hector:0.6.0-15',
-              'org.apache.cassandra:cassandra:0.6.0',
-              'org.apache.cassandra:cassandra-javautils:1.0.0',
-              'libthrift:libthrift:917130',
-              'org.perf4j:perf4j:0.9.12',
-              'org.cliffc.high_scale_lib:high-scale-lib:1.0.0',
-              'com.reardencommerce:clhm-production:1.0.0',
-              'commons-collections:commons-collections:3.2',
-              'commons-lang:commons-lang:2.4'
 }
 jar.appendix = 'grails-gorm'

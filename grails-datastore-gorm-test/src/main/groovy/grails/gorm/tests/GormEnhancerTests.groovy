@@ -1,38 +1,15 @@
-package org.grails.datastore.gorm
+package grails.gorm.tests
 
 import org.junit.Test
-import org.springframework.datastore.redis.RedisDatastore
-import org.springframework.datastore.keyvalue.mapping.KeyValueMappingContext
-import org.springframework.datastore.core.Session
-import org.junit.Before
-import org.junit.After
-import grails.persistence.Entity
 
 /**
  * Created by IntelliJ IDEA.
  * User: graemerocher
- * Date: Aug 11, 2010
- * Time: 4:47:41 PM
+ * Date: Aug 23, 2010
+ * Time: 1:43:50 PM
  * To change this template use File | Settings | File Templates.
  */
-class GormEnhancerTests {
-
-  Session con
-  @Before
-  void setupRedis() {
-    def redis = new RedisDatastore()
-    redis.mappingContext.addPersistentEntity(TestEntity)
-
-    new GormEnhancer(redis).enhance()
-
-    con = redis.connect(null)
-    con.getNativeInterface().flushdb()
-  }
-
-  @After
-  void disconnect() {
-    con.disconnect()
-  }
+abstract class GormEnhancerTests {
 
 
   @Test
@@ -74,9 +51,6 @@ class GormEnhancerTests {
   @Test
   void testDynamicFinder() {
 
-    Session con = setupRedis()
-
-
     def t = new TestEntity(name:"Bob", child:new ChildEntity(name:"Child"))
     t.save()
 
@@ -90,7 +64,7 @@ class GormEnhancerTests {
     def bob = TestEntity.findByName("Bob")
 
     assert bob
-    assert "Bob" == TestEntity.findByName("Bob").name 
+    assert "Bob" == TestEntity.findByName("Bob").name
   }
 
   @Test
@@ -110,7 +84,7 @@ class GormEnhancerTests {
     def bob = results.find { it.age == 40 }
     assert bob
     assert "Bob" == bob.name
-    
+
   }
 
   @Test
@@ -204,33 +178,9 @@ class GormEnhancerTests {
     assert 2 == TestEntity.count()
 
   }
-
-  @Test(expected=UnsupportedOperationException.class)
-  void testStringBasedFindQuery() {
-      TestEntity.find("from TestEntity")
-  }
-
-  @Test(expected=UnsupportedOperationException.class)
-  void testStringBasedFindAllQuery() {
-      TestEntity.findAll("from TestEntity")
-  }
 }
 
-@Entity
-class TestEntity {
-  Long id
-  String name
-  Integer age
-
-  ChildEntity child
-
-  static mapping = {
-    name index:true
-    age index:true
-    child index:true
-  }
-}
-@Entity
+@grails.persistence.Entity
 class ChildEntity {
   Long id
   String name

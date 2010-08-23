@@ -18,6 +18,7 @@ package org.springframework.datastore.redis.query;
 import org.springframework.datastore.core.Session;
 import org.springframework.datastore.mapping.PersistentEntity;
 
+import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,14 +31,14 @@ import java.util.List;
 public class RedisEntityResultList extends AbstractList{
 
     Session session;
-    private List<Long> identifiers;
+    private Object[] identifiers;
     private Object[] objects;
     private PersistentEntity entity;
 
-    public RedisEntityResultList(Session session, PersistentEntity entity, List<Long> identifiers) {
+    public RedisEntityResultList(Session session, PersistentEntity entity, Object[] identifiers) {
         this.session = session;
         this.identifiers = identifiers;
-        this.objects = new Object[identifiers.size()];
+        this.objects = new Object[identifiers.length];
         this.entity = entity;
     }
 
@@ -45,8 +46,8 @@ public class RedisEntityResultList extends AbstractList{
     public Object get(int index) {
         Object result = objects[index];
         if(result == null) {
-            Long identifier = identifiers.get(index);
-            result = session.retrieve(this.entity.getJavaClass(), identifier);
+            Object identifier = identifiers[index];
+            result = session.retrieve(this.entity.getJavaClass(), (Serializable) identifier);
             objects[index] = result;
         }
         return result;
@@ -54,6 +55,6 @@ public class RedisEntityResultList extends AbstractList{
 
     @Override
     public int size() {
-        return identifiers.size();
+        return identifiers.length;
     }
 }

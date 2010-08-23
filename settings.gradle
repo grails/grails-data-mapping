@@ -1,1 +1,1 @@
-include "core", "appengine", "redis", "cassandra",'grails-datastore-gorm'
+include "core", "appengine", "redis", "cassandra",'grails-datastore-gorm','grails-datastore-gorm-test','grails-datastore-gorm-redis'

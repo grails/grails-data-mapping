@@ -62,4 +62,12 @@ public class RedisSet extends AbstractRedisCollection implements Set {
             }
         });
     }
+
+    public String random() {
+        return redisTemplate.srandmember(redisKey);
+    }
+
+    public String pop() {
+        return redisTemplate.spop(redisKey);
+    }
 }

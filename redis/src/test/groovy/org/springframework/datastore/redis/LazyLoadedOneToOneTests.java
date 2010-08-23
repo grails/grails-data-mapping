@@ -35,9 +35,8 @@ public class LazyLoadedOneToOneTests {
         assertFalse( ep.isInitialized() );
         assertEquals(a.getId(), proxy.getId());
 
-        assertFalse( !ep.isInitialized() );
+        assertFalse( ep.isInitialized() );
         assertEquals("22", a.getNumber());
-        assertTrue( ep.isInitialized() );
     }
 
     @Test

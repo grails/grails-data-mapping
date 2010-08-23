@@ -13,10 +13,10 @@ class RedisEntityPesisterTests extends GroovyTestCase {
   void testPersistObject() {
     RedisDatastore ds = new RedisDatastore()
 
-    Session conn = ds.connect(null)
+    Session conn = ds.connect()
 
     try {
-      conn.clear()
+      conn.nativeInterface.flushdb()
       ds.getMappingContext().addPersistentEntity(TestEntity)
 
 //      assert conn.retrieve(TestEntity, new RedisKey(1)) == null

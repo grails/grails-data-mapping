@@ -51,4 +51,12 @@ public class GrailsApplicationMappingContext implements MappingContext {
     public MappingFactory getMappingFactory() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public boolean isPersistentEntity(Class type) {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public boolean isPersistentEntity(Object value) {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

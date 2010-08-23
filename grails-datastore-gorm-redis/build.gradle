@@ -1,0 +1,10 @@
+repositories {
+  flatDir dirs: ['lib', '../redis/lib', 'redis/lib']
+}
+
+dependencies {
+  compile project(":grails-datastore-gorm"),project(":redis")
+  compile group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.2'
+  testCompile project(":grails-datastore-gorm-test")
+}
+jar.appendix = 'grails-gorm-redis'

@@ -1,36 +1,11 @@
-package org.grails.datastore.gorm
+package grails.gorm.tests
 
 import org.junit.Test
-import org.junit.After
-import org.springframework.datastore.redis.RedisDatastore
-import org.junit.Before
-import org.springframework.datastore.core.Session
 
 /**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: Aug 19, 2010
- * Time: 12:08:49 PM
- * To change this template use File | Settings | File Templates.
+ * Abstract base test for order by queries. Subclasses should do the necessary setup to configure GORM
  */
-class OrderByTests {
-
-  Session con
-  @Before
-  void setupRedis() {
-    def redis = new RedisDatastore()
-    redis.mappingContext.addPersistentEntity(TestEntity)
-
-    new GormEnhancer(redis).enhance()
-
-    con = redis.connect()
-    con.getNativeInterface().flushdb()
-  }
-
-  @After
-  void disconnect() {
-    con.disconnect()
-  }
+abstract class OrderByTests {
 
 
   @Test

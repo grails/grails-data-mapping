@@ -2,7 +2,6 @@ TODO list
 
 * Connection pooling for RedisClient
 
-* Redis specific dynamic methods (random entry, flushing, savedb, bgsave etc.)
 
 * Finish Grails plugin
 * Plugging in validation

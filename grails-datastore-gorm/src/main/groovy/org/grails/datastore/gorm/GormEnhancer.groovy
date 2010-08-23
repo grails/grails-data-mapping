@@ -56,8 +56,8 @@ class GormEnhancer {
     }
   }
   void enhance(Class cls) {
-    def staticMethods = new GormStaticApi(cls,datastore)
-    def instanceMethods = new GormInstanceApi(cls, datastore)
+    def staticMethods = getStaticApi(cls)
+    def instanceMethods = getInstanceApi(cls)
     def tm = transactionManager
     cls.metaClass {
       for(method in instanceMethods.methodNames) {
@@ -113,5 +113,13 @@ class GormEnhancer {
               throw new MissingMethodException(methodName, delegate, args)
           }
      }
+  }
+
+  protected GormStaticApi getStaticApi(Class cls) {
+    return new GormStaticApi(cls, datastore)
+  }
+
+  protected GormInstanceApi getInstanceApi(Class cls) {
+    return new GormInstanceApi(cls, datastore)
   }
 }

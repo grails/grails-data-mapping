@@ -235,7 +235,7 @@ class GormStaticApi extends AbstractGormApi {
     unsupported("findAll")
   }
 
-  private unsupported(method) {
+  def unsupported(method) {
     throw new UnsupportedOperationException("String-based queries like [$method] are currently not supported in this implementation of GORM. Use criteria instead.")
   }
 
