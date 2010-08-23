@@ -19,7 +19,7 @@
     <orderEntry type="library" name="Redis Java Client" level="project" />
     <orderEntry type="library" name="Spring Transaction" level="project" />
     <orderEntry type="library" name="Spring Core" level="project" />
-    <orderEntry type="module" module-name="grails-datastore-gorm-test" />
+    <orderEntry type="module" module-name="grails-datastore-gorm-tck" />
   </component>
 </module>
 

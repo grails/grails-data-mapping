@@ -14,10 +14,6 @@
  */
 package org.springframework.datastore.keyvalue.engine;
 
-import javassist.util.proxy.MethodFilter;
-import javassist.util.proxy.MethodHandler;
-import javassist.util.proxy.ProxyFactory;
-import javassist.util.proxy.ProxyObject;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.CannotAcquireLockException;
@@ -31,12 +27,9 @@ import org.springframework.datastore.keyvalue.mapping.Family;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.*;
 import org.springframework.datastore.mapping.types.*;
-import org.springframework.datastore.reflect.ReflectionUtils;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract implementation of the EntityPersister abstract class
