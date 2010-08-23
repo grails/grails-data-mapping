@@ -43,10 +43,11 @@ public class RedisSession extends AbstractSession<RedisClient> implements Map {
     private RedisTemplate redisClient;
     public static final String CONFIG_PASSWORD = "password";
 
-    public RedisSession(Datastore ds, Map<String, String> connectionDetails, MappingContext mappingContext) {
-        super(ds, connectionDetails, mappingContext);
+    public RedisSession(Datastore ds, Map<String, String> connectionInfo, MappingContext mappingContext) {
+        super(ds, connectionInfo != null ? connectionInfo : Collections.<String, String>emptyMap(), mappingContext);
         String host = LOCALHOST;
-        if(connectionDetails.containsKey(CONFIG_HOST)) {
+
+        if(this.connectionDetails.containsKey(CONFIG_HOST)) {
             host = connectionDetails.get(CONFIG_HOST);
         }
         int port = RedisClient.DEFAULT_PORT;

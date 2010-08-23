@@ -14,11 +14,22 @@
  */
 package org.springframework.datastore.engine;
 
+import javassist.util.proxy.MethodFilter;
+import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
 import org.springframework.dao.CannotAcquireLockException;
+import org.springframework.datastore.core.Session;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
+import org.springframework.datastore.reflect.ReflectionUtils;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Interface for entity persisters that support locking
@@ -30,8 +41,8 @@ public abstract class LockableEntityPersister extends EntityPersister{
 
     public static int DEFAULT_TIMEOUT = 30;
 
-    public LockableEntityPersister(MappingContext mappingContext, PersistentEntity entity) {
-        super(mappingContext, entity);
+    public LockableEntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
+        super(mappingContext, entity, session);
     }
 
     /**
@@ -64,4 +75,5 @@ public abstract class LockableEntityPersister extends EntityPersister{
      * @param o The object to unlock
      */
     public abstract void unlock(Object o);
+
 }

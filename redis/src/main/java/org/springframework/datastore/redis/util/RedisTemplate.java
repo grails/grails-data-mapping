@@ -301,7 +301,7 @@ public class RedisTemplate {
     }
 
     public long incr(final String key) {
-        return (Long)execute(new RedisCallback() {
+        return (Integer)execute(new RedisCallback() {
             public Object doInRedis(RedisClient redis) {
                 return redis.incr(key);
             }

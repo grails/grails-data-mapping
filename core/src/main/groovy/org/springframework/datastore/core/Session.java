@@ -96,11 +96,21 @@ public interface Session<N> extends EntityInterceptorAware {
     /**
      * Retrieves an individual object
      *
-     * @param type The ty
+     * @param type The type
      * @param key The key
      * @return The object
      */
     <T> T retrieve(Class<T> type, Serializable key);
+
+
+    /**
+     * Retrieves a proxy for the given key
+     *
+     * @param type The type
+     * @param key The key
+     * @return The object
+     */
+    <T> T proxy(Class<T> type, Serializable key);
 
     /**
      * Retrieves an individual object, using a write lock to prevent loss of updates

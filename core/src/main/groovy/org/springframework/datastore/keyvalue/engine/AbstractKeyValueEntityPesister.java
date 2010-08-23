@@ -14,8 +14,10 @@
  */
 package org.springframework.datastore.keyvalue.engine;
 
-import org.springframework.aop.TargetSource;
-import org.springframework.aop.framework.ProxyFactory;
+import javassist.util.proxy.MethodFilter;
+import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.CannotAcquireLockException;
@@ -29,10 +31,12 @@ import org.springframework.datastore.keyvalue.mapping.Family;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.*;
 import org.springframework.datastore.mapping.types.*;
-import org.springframework.datastore.proxy.LazyLoadingTargetSource;
+import org.springframework.datastore.reflect.ReflectionUtils;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract implementation of the EntityPersister abstract class
@@ -43,14 +47,12 @@ import java.util.*;
  */
 public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntityPersister {
     protected SimpleTypeConverter typeConverter;
-    protected Session session;
     protected String entityFamily;
     protected ClassMapping classMapping;
 
     public AbstractKeyValueEntityPesister(MappingContext context, PersistentEntity entity, Session session) {
-        super(context, entity);
-        this.session = session;
-        classMapping = entity.getMapping();        
+        super(context, entity, session);
+        classMapping = entity.getMapping();
         entityFamily = getFamily(entity, classMapping);
         this.typeConverter = new ByteArrayAwareTypeConverter();
 
@@ -191,6 +193,10 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         return null;
     }
 
+    public Object proxy(Serializable key) {
+        return getProxyInstance(getPersistentEntity().getJavaClass(), key);
+    }
+
     private Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, T nativeEntry) {
         Object obj = persistentEntity.newInstance();
 
@@ -200,7 +206,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         ea.setProperty(idName, nativeKey);
 
         final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
-        for (PersistentProperty prop : props) {
+        for (final PersistentProperty prop : props) {
             PropertyMapping<KeyValue> pm = prop.getMapping();
             String propKey = null;
             if(pm.getMappedForm()!=null) {
@@ -213,19 +219,20 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
                 ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propKey) );
             }
             else if(prop instanceof ToOne) {
-                Serializable associationKey = (Serializable) getEntryValue(nativeEntry, propKey);
+                Serializable tmp = (Serializable) getEntryValue(nativeEntry, propKey);
+                PersistentEntity associatedEntity = prop.getOwner();
+                final Serializable associationKey = (Serializable) typeConverter.convertIfNecessary(tmp, associatedEntity.getIdentity().getType());
                 PropertyMapping<KeyValue> associationPropertyMapping = prop.getMapping();
                 boolean isLazy = isLazyAssociation(associationPropertyMapping);
 
+                final Class propType = prop.getType();
                 if(isLazy) {
-                    TargetSource ts = new LazyLoadingTargetSource(session, prop.getType(), associationKey);
-                    ProxyFactory proxyFactory = new ProxyFactory();
-                    proxyFactory.setTargetSource(ts);
-                    proxyFactory.setProxyTargetClass(true);
-                    ea.setProperty(prop.getName(), proxyFactory.getProxy());
+                    Class proxyClass = getProxyClass(propType);
+                    Object proxy = createProxiedInstance(propType, proxyClass, associationKey);
+                    ea.setProperty(prop.getName(), proxy);
                 }
                 else {
-                    ea.setProperty(prop.getName(), session.retrieve(prop.getType(), associationKey));
+                    ea.setProperty(prop.getName(), session.retrieve(propType, associationKey));
                 }
             }
             else if(prop instanceof OneToMany) {

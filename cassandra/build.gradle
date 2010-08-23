@@ -13,6 +13,8 @@ dependencies {
   runtime 'org.perf4j:perf4j:0.9.12'
   runtime 'org.cliffc.high_scale_lib:high-scale-lib:1.0.0'
   runtime 'com.reardencommerce:clhm-production:1.0.0'
+  runtime 'commons-collections:commons-collections:3.2'  
   runtime 'commons-lang:commons-lang:2.4'
+
 }
 jar.appendix = 'cassandra'

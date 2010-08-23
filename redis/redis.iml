@@ -29,6 +29,7 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="library" scope="RUNTIME" name="Javassist" level="project" />
   </component>
 </module>
 

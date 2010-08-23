@@ -92,6 +92,10 @@ public abstract class Query {
     }
 
     public void add(Criterion criterion) {
+        if(criterion instanceof Equals) {
+            final Equals eq = (Equals) criterion;
+            eq.setValue(resolveIdIfEntity(eq.getValue()));
+        }
         criteria.add(criterion);
     }
     
@@ -165,15 +169,21 @@ public abstract class Query {
      * @return This query instance
      */
     public Query eq(String property, Object value) {
+        value = resolveIdIfEntity(value);
+
+        criteria.add(Restrictions.eq(property, value));
+        return this;
+    }
+
+    private Object resolveIdIfEntity(Object value) {
         // use the object id as the value if its a persistent entity
         if(session.getMappingContext().isPersistentEntity(value)) {
            EntityPersister ep = (EntityPersister) session.getPersister(value);
            value = ep.getObjectIdentifier(value);
         }
-        criteria.add(Restrictions.eq(property, value));
-        return this;
+        return value;
     }
-    
+
     /**
      * Used to restrict a value to be greater than the given value
      *
@@ -328,8 +338,8 @@ public abstract class Query {
      * Criterion that applies to a property
      */
     public static class PropertyCriterion extends Criterion {
-        private String name;
-        private Object value;
+        protected String name;
+        protected Object value;
 
         public PropertyCriterion(String name, Object value) {
             this.name = name;
@@ -351,6 +361,10 @@ public abstract class Query {
 
         public Equals(String name, Object value) {
             super(name, value);
+        }
+
+        public void setValue(Object value) {
+            this.value = value;
         }
     }
 

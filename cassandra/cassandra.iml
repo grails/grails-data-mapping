@@ -20,6 +20,8 @@
           <root url="jar://$GRADLE_CACHE$/libthrift/libthrift/jars/libthrift-917130.jar!/" />
           <root url="jar://$GRADLE_CACHE$/org.perf4j/perf4j/jars/perf4j-0.9.12.jar!/" />
           <root url="jar://$GRADLE_CACHE$/me.prettyprint/hector/bundles/hector-0.6.0-15.jar!/" />
+          <root url="jar://$GRADLE_CACHE$/com.reardencommerce/clhm-production/jars/clhm-production-1.0.0.jar!/" />
+          <root url="jar://$GRADLE_CACHE$/org.cliffc.high_scale_lib/high-scale-lib/jars/high-scale-lib-1.0.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -45,6 +47,7 @@
     <orderEntry type="library" name="Commons Lang" level="project" />
     <orderEntry type="library" name="Commons Pool" level="project" />
     <orderEntry type="library" name="Spring Beans" level="project" />
+    <orderEntry type="library" name="Commons Collections" level="project" />
   </component>
 </module>
 

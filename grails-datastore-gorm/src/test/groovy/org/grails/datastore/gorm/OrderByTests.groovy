@@ -38,7 +38,7 @@ class OrderByTests {
     def age = 40
 
     ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each {
-      new TestEntity(name:it, age: age++).save()
+      new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
     }
 
 
@@ -62,7 +62,7 @@ class OrderByTests {
     def age = 40
 
     ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each {
-      new TestEntity(name:it, age: age++).save()
+      new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
     }
 
 

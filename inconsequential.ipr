@@ -374,6 +374,13 @@
       <JAVADOC />
       <SOURCES />
     </library>
+    <library name="Javassist">
+      <CLASSES>
+        <root url="jar://$GRADLE_CACHE$/javassist/javassist/jars/javassist-3.11.0.GA.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
   </component>
 </project>
 

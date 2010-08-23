@@ -40,7 +40,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public abstract class AbstractSession<N> implements Session {
     protected Map<Class,Persister> persisters = new ConcurrentHashMap<Class,Persister>();
     private MappingContext mappingContext;
-    private Map<String, String> connectionDetails;
+    protected Map<String, String> connectionDetails;
     protected List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
     protected ConcurrentLinkedQueue lockedObjects = new ConcurrentLinkedQueue();
     private Transaction transaction;
@@ -116,6 +116,15 @@ public abstract class AbstractSession<N> implements Session {
         Persister persister = getPersister(type);
         if(persister != null) {
             return persister.retrieve(key);
+        }
+        throw new NonPersistentTypeException("Cannot retrieve object with key ["+key+"]. The class ["+type+"] is not a known persistent type.");
+    }
+
+    public Object proxy(Class type, Serializable key) {
+        if(key == null || type == null) return null;
+        Persister persister = getPersister(type);
+        if(persister != null) {
+            return persister.proxy(key);
         }
         throw new NonPersistentTypeException("Cannot retrieve object with key ["+key+"]. The class ["+type+"] is not a known persistent type.");
     }

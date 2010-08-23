@@ -12,37 +12,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.datastore.redis;
-
-import java.util.HashMap;
+package org.springframework.datastore.proxy;
 
 /**
- *
- *
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisEntry extends HashMap {
+public interface EntityProxy {
 
-    protected String family;
+    /**
+     * Initializes the proxy if it hasn't been initialized already
+     */
+    void initialize();
 
-    public RedisEntry(String family) {
-        this.family = family;
-    }
 
-    public String getFamily() {
-        return family;
-    }
+    /**
+     * Obtains the target performing initialization if necessary
+     * @return The target
+     */
+    Object getTarget();
 
-    @Override
-    public Object get(Object o) {
-
-        final Object val = super.get(o);
-        if(val != null) {
-            return val;
-        }
-        else {
-            return null;
-        }
-    }
+    /**
+     * Checks whether the proxy has been initialized
+     * @return True if it has
+     */
+    boolean isInitialized();
 }

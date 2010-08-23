@@ -61,6 +61,14 @@ public interface Persister {
     Object retrieve(Serializable key);
 
     /**
+     * Creates a proxy for the given key
+     *
+     * @param key The key
+     * @return The proxy
+     */
+    Object proxy(Serializable key);
+
+    /**
      * Deletes one or many objects
      * @param objects The objects to delete. Must all be of the same type or an exception will be thrown.
      */
@@ -95,4 +103,6 @@ public interface Persister {
      * @return The objects in a list in the same order as the specified keys
      */
     List<Object> retrieveAll(Serializable[] keys);
+
+
 }

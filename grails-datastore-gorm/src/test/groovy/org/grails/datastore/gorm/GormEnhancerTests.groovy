@@ -41,7 +41,7 @@ class GormEnhancerTests {
 
     assert t == null
 
-    t = new TestEntity(name:"Bob")
+    t = new TestEntity(name:"Bob", child:new ChildEntity(name:"Child"))
     t.save()
 
     assert t.id
@@ -63,7 +63,7 @@ class GormEnhancerTests {
 
     assert t == null
 
-    t = new TestEntity(name:"Bob")
+    t = new TestEntity(name:"Bob", child:new ChildEntity(name:"Child"))
     t.save(param:"one")
 
     assert t.id
@@ -77,10 +77,10 @@ class GormEnhancerTests {
     Session con = setupRedis()
 
 
-    def t = new TestEntity(name:"Bob")
+    def t = new TestEntity(name:"Bob", child:new ChildEntity(name:"Child"))
     t.save()
 
-    t = new TestEntity(name:"Fred")
+    t = new TestEntity(name:"Fred", child:new ChildEntity(name:"Child"))
     t.save()
 
     def results = TestEntity.list()
@@ -96,7 +96,7 @@ class GormEnhancerTests {
   @Test
   void testDisjunction() {
     def age = 40
-    ["Bob", "Fred", "Barney"].each { new TestEntity(name:it, age: age++).save() }
+    ["Bob", "Fred", "Barney"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
 
     assert 3 == TestEntity.list().size()
 
@@ -116,7 +116,7 @@ class GormEnhancerTests {
   @Test
   void testGetAll() {
     def age = 40
-    ["Bob", "Fred", "Barney"].each { new TestEntity(name:it, age: age++).save() }
+    ["Bob", "Fred", "Barney"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
 
     assert 2 == TestEntity.getAll(1,2).size()
 
@@ -124,7 +124,7 @@ class GormEnhancerTests {
 
   @Test
   void testIdent() {
-    def t = new TestEntity(name:"Bob")
+    def t = new TestEntity(name:"Bob", child:new ChildEntity(name:"Child"))
     t.save()
 
     assert t.id
@@ -135,7 +135,7 @@ class GormEnhancerTests {
   @Test
   void testFinderWithPagination() {
     def age = 40
-    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
 
     assert 4 == TestEntity.list().size()
     assert 4 == TestEntity.count()
@@ -149,7 +149,7 @@ class GormEnhancerTests {
   @Test
   void testInQuery() {
     def age = 40
-    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
 
     assert 2 == TestEntity.findAllByNameInList(["Fred", "Frank"]).size()
     assert 1 == TestEntity.findAllByNameInList(["Joe", "Frank"]).size()
@@ -160,7 +160,7 @@ class GormEnhancerTests {
   @Test
   void testLikeQuery() {
     def age = 40
-    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
 
     def results = TestEntity.findAllByNameLike("Fr%")
 
@@ -172,7 +172,7 @@ class GormEnhancerTests {
   void testCountByQuery() {
 
     def age = 40
-    ["Bob", "Fred", "Barney"].each { new TestEntity(name:it, age: age++).save() }
+    ["Bob", "Fred", "Barney"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
 
     assert 3 == TestEntity.list().size()
 
@@ -183,7 +183,7 @@ class GormEnhancerTests {
   @Test
   void testConjunction() {
     def age = 40
-    ["Bob", "Fred", "Barney"].each { new TestEntity(name:it, age: age++).save() }
+    ["Bob", "Fred", "Barney"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
 
     assert 3 == TestEntity.list().size()
 
@@ -193,12 +193,12 @@ class GormEnhancerTests {
 
   @Test
   void testCount() {
-    def t = new TestEntity(name:"Bob")
+    def t = new TestEntity(name:"Bob", child:new ChildEntity(name:"Child"))
     t.save()
 
     assert 1 == TestEntity.count()
 
-    t = new TestEntity(name:"Fred")
+    t = new TestEntity(name:"Fred", child:new ChildEntity(name:"Child"))
     t.save()
 
     assert 2 == TestEntity.count()

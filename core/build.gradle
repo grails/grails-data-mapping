@@ -1,10 +1,15 @@
+repositories {
+    mavenRepo urls: "http://repository.jboss.org/maven2"
+}
+
 dependencies {
 
   compile group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.2'
   compile 'javax.persistence:persistence-api:1.0'
+  compile 'javassist:javassist:3.11.0.GA'
   compile 'javax.transaction:jta:1.1'
-  compile 'commons-beanutils:commons-beanutils:1.8.0'
-  compile 'commons-collections:commons-collections:3.2'
+//  compile 'commons-beanutils:commons-beanutils:1.8.0'
+//  compile 'commons-collections:commons-collections:3.2'
 
   // we need the Grails @Entity annotation to test GORM syntax mapping
   testCompile( "commons-lang:commons-lang:2.4" )

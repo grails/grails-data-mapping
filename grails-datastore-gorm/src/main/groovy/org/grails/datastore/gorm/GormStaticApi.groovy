@@ -39,6 +39,20 @@ class GormStaticApi extends AbstractGormApi {
   }
 
   /**
+   * Retrieves and object from the datastore as a proxy. eg. Book.load(1)
+   */
+  def load(Serializable id) {
+    datastore.currentSession.proxy(persistentClass,id)
+  }
+
+  /**
+   * Retrieves and object from the datastore as a proxy. eg. Book.proxy(1)
+   */
+  def proxy(Serializable id) {
+    datastore.currentSession.proxy(persistentClass,id)
+  }
+
+  /**
    * Retrieve all the objects for the given identifiers
    * @param ids The identifiers to operate against
    * @return A list of identifiers

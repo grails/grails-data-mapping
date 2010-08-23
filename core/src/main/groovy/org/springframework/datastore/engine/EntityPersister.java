@@ -14,12 +14,22 @@
  */
 package org.springframework.datastore.engine;
 
+import javassist.util.proxy.MethodFilter;
+import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
+import org.springframework.datastore.core.Session;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
+import org.springframework.datastore.proxy.EntityProxy;
+import org.springframework.datastore.reflect.ReflectionUtils;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A Persister specified to PersistentEntity instances
@@ -31,10 +41,13 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
     private PersistentEntity persistentEntity;
     private MappingContext mappingContext;
     protected List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
+    protected Session session;
+    private static final Map<Class, Class > PROXY_FACTORIES = new ConcurrentHashMap<Class, Class >();
 
-    public EntityPersister(MappingContext mappingContext, PersistentEntity entity) {
+    public EntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
         this.persistentEntity = entity;
         this.mappingContext = mappingContext;
+        this.session = session;
     }
 
     public void addEntityInterceptor(EntityInterceptor interceptor) {
@@ -141,5 +154,81 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
     protected abstract void deleteEntity(PersistentEntity persistentEntity, Object obj);
 
     protected abstract void deleteEntities(PersistentEntity persistentEntity, Iterable objects);
+
+    protected Object createProxiedInstance(final Class cls, Class proxyClass, final Serializable id) {
+        MethodHandler mi = new MethodHandler() {
+            private Object target;
+            public Object invoke(Object proxy, Method method, Method proceed, Object[] args) throws Throwable {
+                if(args.length == 0) {
+                    final String methodName = method.getName();
+                    if(methodName.equals("getId")) {
+                        return id;
+                    }
+                    if(methodName.equals("initialize")) {
+                        initialize();
+                        return null;
+                    }
+                    if(methodName.equals("isInitialized")) {
+                        return target != null;
+                    }
+                    if(methodName.equals("getTarget")) {
+                        initialize();
+                        return null;
+                    }
+                }
+                if(target == null) initialize();
+                return org.springframework.util.ReflectionUtils.invokeMethod(method, target, args);
+            }
+
+            public void initialize() {
+                target = session.retrieve(cls, id);
+            }
+        };
+        Object proxy = ReflectionUtils.instantiate(proxyClass);
+        ((ProxyObject)proxy).setHandler(mi);
+        return proxy;
+    }
+
+    protected Object getProxyInstance(Class type, Serializable id) {
+        Class proxyClass = getProxyClass(type);        
+        return createProxiedInstance(type, proxyClass, id);
+    }
+
+    protected Class getProxyClass(Class type) {
+
+        Class proxyClass = PROXY_FACTORIES.get(type);
+        if(proxyClass == null) {
+            ProxyFactory pf = new ProxyFactory();
+            pf.setSuperclass(type);
+            pf.setInterfaces(new Class[]{ EntityProxy.class });
+            final List excludes = new ArrayList() {{
+                add("getMetaClass");
+                add("metaClass");
+                add("setMetaClass");
+                add("invokeMethod");
+                add("getProperty");
+                add("setProperty");
+                add("$getStaticMetaClass");
+            }};
+            pf.setFilter(new MethodFilter() {
+                public boolean isHandled(Method method) {
+                    final String methodName = method.getName();
+                    if(methodName.indexOf("super$") > -1) {
+                        return false;
+                    }
+                    else if(method.getParameterTypes().length == 0 && (methodName.equals("finalize"))) {
+                        return false;
+                    }
+                    else if(excludes.contains(methodName) || method.isSynthetic() || method.isBridge()) {
+                        return false;
+                    }
+                    return true;
+                }
+            });
+            proxyClass = pf.createClass();
+            PROXY_FACTORIES.put(type, proxyClass);
+        }
+        return proxyClass;
+    }
 }
 

@@ -14,7 +14,7 @@ class OneToOneAssociationTests extends AbstractCassandraTest{
   void testPersistOneToOneAssociation() {
     def ds = new CassandraDatastore()
     ds.mappingContext.addPersistentEntity(Person)
-    Session conn = ds.connect(null)
+    Session conn = ds.connect()
 
 
     def p = new Person(name:"Bob")

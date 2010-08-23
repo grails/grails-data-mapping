@@ -36,7 +36,7 @@ class RangeQueryTests {
   @Test
   void testBetween() {
     def age = 40
-    ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each { new TestEntity(name:it, age: age--).save() }
+    ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each { new TestEntity(name:it, age: age--, child:new ChildEntity(name:"$it Child")).save() }
 
 
     def results = TestEntity.findAllByAgeBetween(38, 40)
@@ -59,7 +59,7 @@ class RangeQueryTests {
   @Test
   void testGreaterThanEqualsAndLessThanEquals() {
     def age = 40
-    ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each { new TestEntity(name:it, age: age--).save() }
+    ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each { new TestEntity(name:it, age: age--, child:new ChildEntity(name:"$it Child")).save() }
 
 
     def results = TestEntity.findAllByAgeGreaterThanEquals(38)

@@ -38,7 +38,7 @@ class CriteriaBuilderTests {
   @Test
   void testListQuery() {
     def age = 40
-    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
 
 
     def criteria = TestEntity.createCriteria()
@@ -60,7 +60,7 @@ class CriteriaBuilderTests {
   @Test
   void testCount() {
     def age = 40
-    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
 
 
     def criteria = TestEntity.createCriteria()
@@ -75,7 +75,7 @@ class CriteriaBuilderTests {
   @Test
   void testSingleResult() {
     def age = 40
-    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
 
 
     def criteria = TestEntity.createCriteria()
@@ -92,7 +92,7 @@ class CriteriaBuilderTests {
   @Test
   void testOrder() {
     def age = 40
-    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
 
 
     def criteria = TestEntity.createCriteria()
@@ -119,7 +119,7 @@ class CriteriaBuilderTests {
   @Test
   void testMinProjection() {
     def age = 40
-    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
 
 
     def criteria = TestEntity.createCriteria()
@@ -156,7 +156,7 @@ class CriteriaBuilderTests {
   @Test
   void testPropertyProjection() {
     def age = 40
-    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++).save() }
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
 
 
     def criteria = TestEntity.createCriteria()

@@ -48,6 +48,7 @@ public abstract class AbstractMappingContext implements MappingContext {
 
     public boolean isPersistentEntity(Class type) {
         return type != null && getPersistentEntity(type.getName()) != null;
+
     }
 
     public boolean isPersistentEntity(Object value) {
@@ -55,6 +56,11 @@ public abstract class AbstractMappingContext implements MappingContext {
     }
 
     public PersistentEntity getPersistentEntity(String name) {
+        final int proxyIndicator = name.indexOf("_$$_");
+        if(proxyIndicator > -1) {
+            name = name.substring(0, proxyIndicator);
+        }
+        
         return persistentEntitiesByName.get(name);
     }
 }
