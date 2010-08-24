@@ -1,6 +1,4 @@
 repositories {
-    mavenRepo name:'mavenLocal',
-              urls:new File( System.getProperty("user.home" ), ".m2/repository" ).toURL().toString()
     mavenRepo urls:'http://eaio.com/maven2'
 }
 dependencies {

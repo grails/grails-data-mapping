@@ -3,6 +3,9 @@ subprojects {
     apply plugin: 'eclipse'
 
     repositories {
+       mavenRepo name:'mavenLocal',
+                 urls:new File( System.getProperty("user.home" ), ".m2/repository" ).toURL().toString()
+
        mavenCentral()
     }
 
