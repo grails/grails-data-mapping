@@ -50,6 +50,10 @@ public class SimpleMapSession extends AbstractSession<Map> {
         return null;
     }
 
+    public Map<String, Map> getBackingMap() {
+        return datastore;
+    }
+
     @Override
     protected Transaction beginTransactionInternal() {
         return new MockTransaction(this);

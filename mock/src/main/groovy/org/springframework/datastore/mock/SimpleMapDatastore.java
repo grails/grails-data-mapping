@@ -41,11 +41,12 @@ public class SimpleMapDatastore extends AbstractDatastore{
     }
 
     public SimpleMapDatastore() {
+        super(new KeyValueMappingContext(""));
     }
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
-        return new SimpleMapSession(this, new KeyValueMappingContext(""));
+        return new SimpleMapSession(this, getMappingContext());
     }
 
     public Map<String, Map> getBackingMap() {

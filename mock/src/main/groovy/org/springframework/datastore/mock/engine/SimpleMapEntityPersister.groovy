@@ -23,6 +23,7 @@ import org.springframework.datastore.mapping.PersistentEntity
 import org.springframework.datastore.mapping.PersistentProperty
 import org.springframework.datastore.mapping.types.Association
 import org.springframework.datastore.query.Query
+import org.springframework.datastore.mock.query.SimpleMapQuery
 
 /**
  * A simple implementation of the {@link org.springframework.datastore.engine.EntityPersister} abstract class that backs onto an in-memory map.
@@ -34,15 +35,17 @@ import org.springframework.datastore.query.Query
 class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Object>{
 
   Map<String, Map> datastore
-  Integer lastKey
+  Map indices = [:]
+  Long lastKey = 0
 
   SimpleMapEntityPersister(MappingContext context, PersistentEntity entity, Session session, datastore) {
     super(context, entity, session);
     this.datastore = datastore;
+    datastore[getFamily(entity, entity.getMapping())] = [:]
   }
 
   Query createQuery() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return new SimpleMapQuery(session, super.getPersistentEntity())
   }
 
   protected void deleteEntry(String family, Object key) {
@@ -50,11 +53,67 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
   }
 
   PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return new PropertyValueIndexer() {
+
+
+      void index(Object value, Object primaryKey) {
+        def index = getIndexName(value)
+        def indexed = indices[index]
+        if(indexed == null) {
+          indexed = []
+          indices[index] = indexed
+        }
+        indexed << primaryKey
+      }
+
+      List query(Object value) {
+        query(value, 0, -1)
+      }
+
+      List query(Object value, int offset, int max) {
+        def index = getIndexName(value)
+        def indexed = indices[index]
+        if(indexed == null) {
+          return Collections.emptyList()
+        }
+        return indexed[offset..max]
+
+      }
+
+      String getIndexName(Object value) {
+        return "~${property.owner.name}:${property.name}:$value";
+      }
+    }
   }
 
   AssociationIndexer getAssociationIndexer(Association association) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return new AssociationIndexer() {
+
+      private getIndexName(primaryKey) { "~${association.owner.name}:${association.name}:$primaryKey"}
+      void index(Object primaryKey, List foreignKeys) {
+        def index = getIndexName(primaryKey)
+        def indexed = indices[index]
+        if(indexed == null) {
+          indexed = []
+          indices[index] = indexed
+        }
+        indexed.addAll(foreignKeys)
+
+      }
+
+      List query(Object primaryKey) {
+        def index = getIndexName(primaryKey)
+        def indexed = indices[index]
+        if(indexed == null) {
+          return Collections.emptyList()
+        }
+        return indexed
+      }
+
+      PersistentEntity getIndexedEntity() {
+        return association.owner
+      }
+    }
   }
 
   protected Map createNewEntry(String family) {
