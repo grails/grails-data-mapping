@@ -32,7 +32,7 @@ import java.util.List;
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface MappingContext<T,R> {
+public interface MappingContext {
 
     /**
      * Obtains a list of PersistentEntity instances
@@ -69,7 +69,7 @@ public interface MappingContext<T,R> {
      * Obtains the MappingFactory instance
      * @return The mapping factory instance
      */
-    MappingFactory<T,R> getMappingFactory();
+    MappingFactory getMappingFactory();
 
     /**
      * Returns whether the specified class is a persistent entity

@@ -32,7 +32,7 @@ public class AppEngineSession extends AbstractSession<DatastoreService> implemen
      * @param connectionDetails the session details
      * @param mappingContext The Mapping Context
      */
-    public AppEngineSession(Datastore ds,Map<String, String> connectionDetails, MappingContext<Family, KeyValue> mappingContext) {
+    public AppEngineSession(Datastore ds,Map<String, String> connectionDetails, MappingContext mappingContext) {
         super(ds, connectionDetails, mappingContext);
     }
 

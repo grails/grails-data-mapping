@@ -258,17 +258,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
                 }
                 else {
                     final boolean isNot = name.equals(NOT);
-                    logicalExpressionStack.add(new Query.Disjunction() {
-                        @Override
-                        public Query.Junction add(Query.Criterion c) {
-
-                            // TODO: Add support for negation
-//                            if(isNot)
-//                                return super.add(Restrictions.not(c));
-//                            else
-                                return super.add(c);
-                        }
-                    });
+                    logicalExpressionStack.add(new Query.Disjunction());
                 }
                 invokeClosureNode(args[0]);
 

@@ -26,7 +26,7 @@ import org.springframework.datastore.redis.RedisSession;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
 import org.springframework.datastore.redis.engine.RedisPropertyValueIndexer;
 import org.springframework.datastore.redis.util.RedisTemplate;
-import sma.RedisClient;
+import org.springframework.datastore.redis.util.SortParams;
 
 import java.util.*;
 
@@ -40,10 +40,10 @@ public class RedisQuery extends Query {
     private RedisEntityPersister entityPersister;
     private RedisTemplate template;
 
-    public RedisQuery(RedisSession session, PersistentEntity persistentEntity, RedisEntityPersister entityPersister) {
+    public RedisQuery(RedisSession session, RedisTemplate redisTemplate, PersistentEntity persistentEntity, RedisEntityPersister entityPersister) {
         super(session, persistentEntity);
         this.entityPersister = entityPersister;
-        template = new RedisTemplate(session.getNativeInterface());
+        template = redisTemplate;
     }
 
     @Override
@@ -100,7 +100,7 @@ public class RedisQuery extends Query {
                         if(postSortAndPaginationKey == null) postSortAndPaginationKey = storeSortedKey(finalKey);
 
                         String entityKey = entityPersister.getEntityBaseKey();
-                        final String[] values = template.sort(postSortAndPaginationKey, RedisClient.SortParam.get(entityKey + ":*->" + validProperty.getName()));
+                        final String[] values = template.sort(postSortAndPaginationKey, template.sortParams().get(entityKey + ":*->" + validProperty.getName()));
                         List resultList = new ArrayList();
                         Class type = validProperty.getType();
                         final PersistentEntity associatedEntity = getSession().getMappingContext().getPersistentEntity(type.getName());
@@ -224,27 +224,28 @@ public class RedisQuery extends Query {
         return offset > 0 || max > -1 || !orderBy.isEmpty();
     }
 
-    private RedisClient.SortParam[] getSortAndPaginationParams() {
-        List<RedisClient.SortParam> params = new ArrayList<RedisClient.SortParam>();
+    private SortParams getSortAndPaginationParams() {
+        SortParams params = template.sortParams();
         if(!orderBy.isEmpty()) {
             Order o = orderBy.get(0); // Redis doesn't really allow multiple orderings
             String orderBy = entityPersister.getEntityBaseKey() + ":*->" + o.getProperty();
-            final RedisClient.SortParam byParam = RedisClient.SortParam.by(orderBy);
-            params.add(byParam);
-            RedisClient.SortParam direction;
+
+
+            params.by(orderBy);
             if(o.getDirection() == Order.Direction.DESC) {
-               direction = RedisClient.SortParam.desc();
+               params.desc();
             }
             else {
-               direction = RedisClient.SortParam.asc();
+               params.asc();
             }
-            params.add(direction);
+
 
         }
         if(offset > 0 || max > -1) {
-            params.add( RedisClient.SortParam.limit(offset, max) );
+            params.limit(offset, max);
+
         }
-        return params.toArray(new RedisClient.SortParam[params.size()]);
+        return params;
     }
 
     private String formulateDisjunctionKey(String[] indices) {
@@ -319,7 +320,12 @@ public class RedisQuery extends Query {
 
            }
        });
-       put(Junction.class,  new CriterionHandler<Junction>() {
+       put(Conjunction.class,  new CriterionHandler<Junction>() {
+           public void handle(RedisEntityPersister entityPersister, List<String> indices, Junction criterion) {
+               indices.add( executeSubQuery(criterion, criterion.getCriteria()) );
+           }
+       });
+       put(Disjunction.class,  new CriterionHandler<Junction>() {
            public void handle(RedisEntityPersister entityPersister, List<String> indices, Junction criterion) {
                indices.add( executeSubQuery(criterion, criterion.getCriteria()) );
            }

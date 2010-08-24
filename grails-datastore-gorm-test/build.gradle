@@ -1,6 +1,5 @@
 dependencies {
-  compile project(":grails-datastore-gorm")
-  compile 'junit:junit:4.8.1'
-  compile group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.2'
+  compile project(":grails-datastore-gorm"), project(":mock")
+  testCompile project(":grails-datastore-gorm-tck")
 }
 jar.appendix = 'grails-gorm-test'

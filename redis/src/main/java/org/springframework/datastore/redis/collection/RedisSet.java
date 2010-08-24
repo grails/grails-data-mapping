@@ -14,9 +14,7 @@
  */
 package org.springframework.datastore.redis.collection;
 
-import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
-import sma.RedisClient;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -31,7 +29,7 @@ public class RedisSet extends AbstractRedisCollection implements Set {
     }
 
     public int size() {
-        return (int) redisTemplate.scard(redisKey);
+        return redisTemplate.scard(redisKey);
     }
 
     public boolean contains(Object o) {
@@ -56,11 +54,8 @@ public class RedisSet extends AbstractRedisCollection implements Set {
     }
 
     public String[] members(final int offset, final int max) {
-        return (String[]) redisTemplate.execute(new RedisCallback() {
-            public Object doInRedis(RedisClient redis) {
-                return redis.sort(redisKey, RedisClient.SortParam.limit(offset, max));
-            }
-        });
+        return redisTemplate.sort(redisKey, redisTemplate.sortParams().limit(offset, max));
+
     }
 
     public String random() {

@@ -1,5 +1,3 @@
-repositories {
-}
 dependencies {
   compile project(":core")
   compile 'sma:java-redis-client:0.1'

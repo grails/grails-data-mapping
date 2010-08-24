@@ -31,7 +31,7 @@ class RedisTests {
 
   @Test
   void testRedisList() {
-    def redis = new Redis(session.getDatastore())
+    def redis = new Redis(session.datastore, session.nativeInterface)
 
     redis.flushall()
 
@@ -48,7 +48,7 @@ class RedisTests {
   @Test
   void testEntities() {
 
-    def redis = new Redis(session.getDatastore())
+    def redis = new Redis(session.datastore, session.nativeInterface)
 
     def age = 40                                                                                                 
 

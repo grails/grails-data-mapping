@@ -17,21 +17,15 @@ package org.springframework.datastore.redis.engine;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.datastore.engine.PropertyValueIndexer;
-import org.springframework.datastore.keyvalue.mapping.Family;
-import org.springframework.datastore.mapping.ClassMapping;
-import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.redis.collection.RedisSet;
 import org.springframework.datastore.redis.query.RedisQueryUtils;
-import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
-import sma.RedisClient;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Indexes property values for querying later

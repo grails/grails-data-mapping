@@ -33,7 +33,7 @@ import java.util.Map;
  *
  * @since 1.0
  */
-public interface Session<N> extends EntityInterceptorAware {
+public interface Session extends EntityInterceptorAware {
 
     /**
      * @return the session details as map of parameter / value String pairs
@@ -161,7 +161,7 @@ public interface Session<N> extends EntityInterceptorAware {
     /**
      * @return The native interface to the datastore
      */
-    N getNativeInterface();
+    Object getNativeInterface();
 
     /**
      * The persister for the given object

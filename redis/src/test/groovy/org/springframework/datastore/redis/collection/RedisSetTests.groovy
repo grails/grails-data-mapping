@@ -1,6 +1,6 @@
 package org.springframework.datastore.redis.collection
 
-import org.springframework.datastore.redis.util.RedisTemplate
+import org.springframework.datastore.redis.util.RedisClientTemplate
 import org.junit.Test
 import org.junit.Before
 import sma.RedisClient
@@ -9,7 +9,7 @@ import sma.RedisClient
  */
 class RedisSetTests {
 
-  RedisTemplate template
+  RedisClientTemplate template
   @Before
   void setupRedis() {
     template = createTemplate()
@@ -62,7 +62,7 @@ class RedisSetTests {
     assert 6 == count
   }
 
-  private RedisTemplate createTemplate() {
-    return new RedisTemplate(new RedisClient())
+  private RedisClientTemplate createTemplate() {
+    return new RedisClientTemplate(new RedisClient())
   }
 }

@@ -14,28 +14,29 @@
  */
 package grails.datastore
 
-import org.springframework.datastore.redis.collection.RedisSet
-import org.springframework.datastore.redis.collection.RedisMap
-import org.springframework.datastore.redis.collection.RedisList
-import org.springframework.datastore.redis.RedisDatastore
-import org.springframework.datastore.redis.util.RedisTemplate
-import org.springframework.datastore.redis.query.RedisEntityResultList
-import org.springframework.datastore.core.Datastore
 import org.springframework.datastore.mapping.PersistentEntity
 import org.springframework.datastore.redis.collection.RedisCollection
+import org.springframework.datastore.redis.collection.RedisList
+import org.springframework.datastore.redis.collection.RedisMap
+import org.springframework.datastore.redis.collection.RedisSet
+import org.springframework.datastore.redis.query.RedisEntityResultList
+import org.springframework.datastore.redis.util.RedisTemplate
+import org.springframework.datastore.redis.RedisDatastore
+import org.springframework.datastore.core.Datastore
 
 /**
  * Convenience interface for access the redis datastore
  *
  * @author Graeme Rocher
  */
-class Redis extends RedisTemplate {
+class Redis  {
 
 
+  @Delegate RedisTemplate redisTemplate
   Datastore datastore
 
-  Redis(RedisDatastore datastore) {
-    super(datastore.currentSession.nativeInterface)
+  Redis(RedisDatastore datastore, RedisTemplate redisTemplate) {
+    this.redisTemplate = redisTemplate
     this.datastore = datastore
   }
 
@@ -45,7 +46,7 @@ class Redis extends RedisTemplate {
    * @return
    */
   RedisSet set(String key) {
-    return new RedisSet(new RedisTemplate(datastore.currentSession.getNativeInterface()), key)
+    return new RedisSet(redisTemplate, key)
   }
 
   /**
@@ -54,7 +55,7 @@ class Redis extends RedisTemplate {
    * @return
    */
   RedisMap hash(String key) {
-    return new RedisMap(new RedisTemplate(datastore.currentSession.getNativeInterface()), key)
+    return new RedisMap(redisTemplate, key)
   }
 
   /**
@@ -63,7 +64,7 @@ class Redis extends RedisTemplate {
    * @return
    */
   RedisList list(String key) {
-    return new RedisList(new RedisTemplate(datastore.currentSession.getNativeInterface()), key)
+    return new RedisList(redisTemplate, key)
   }
 
   /**

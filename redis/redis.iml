@@ -21,7 +21,7 @@
     <orderEntry type="module-library">
       <library name="Redis Java Client">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/java-redis-client-0.1.jar!/" />
+          <root url="jar://$GRADLE_CACHE$/sma/java-redis-client/jars/java-redis-client-0.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -30,6 +30,15 @@
       </library>
     </orderEntry>
     <orderEntry type="library" scope="RUNTIME" name="Javassist" level="project" />
+    <orderEntry type="module-library">
+      <library name="Jedis">
+        <CLASSES>
+          <root url="jar://$GRADLE_CACHE$/redis.clients/jedis/jars/jedis-1.0.0-RC3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 

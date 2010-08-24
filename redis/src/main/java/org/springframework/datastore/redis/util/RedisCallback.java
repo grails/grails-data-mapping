@@ -14,13 +14,14 @@
  */
 package org.springframework.datastore.redis.util;
 
-import sma.RedisClient;
+import java.io.IOException;
+
 
 /**
  * @author Graeme Rocher
  * @since 1.1
  */
-public interface RedisCallback {
+public interface RedisCallback<T> {
 
     /**
      * Executes redis logic whilst handling exce
@@ -28,5 +29,5 @@ public interface RedisCallback {
      * @return The result of the calling jredis
      *
      */
-    public Object doInRedis(RedisClient redis) ;
+    public Object doInRedis(T redis) throws IOException;
 }

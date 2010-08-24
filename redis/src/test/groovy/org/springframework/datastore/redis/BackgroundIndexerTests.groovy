@@ -1,7 +1,7 @@
 package org.springframework.datastore.redis
 
 import org.junit.Test
-import org.springframework.datastore.redis.util.RedisTemplate
+import org.springframework.datastore.redis.util.RedisClientTemplate
 import sma.RedisClient
 
 /**
@@ -37,8 +37,8 @@ class BackgroundIndexerTests {
     
   }
 
-  private RedisTemplate createTemplate() {
-    return new RedisTemplate(new RedisClient())
+  private RedisClientTemplate createTemplate() {
+    return new RedisClientTemplate(new RedisClient())
   }
 
 }

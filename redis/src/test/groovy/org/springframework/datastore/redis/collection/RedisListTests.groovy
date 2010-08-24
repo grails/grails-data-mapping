@@ -1,6 +1,6 @@
 package org.springframework.datastore.redis.collection
 
-import org.springframework.datastore.redis.util.RedisTemplate
+import org.springframework.datastore.redis.util.RedisClientTemplate
 import org.junit.Before
 import org.junit.Test
 import sma.RedisClient
@@ -14,7 +14,7 @@ import sma.RedisClient
  */
 class RedisListTests {
 
-  RedisTemplate template
+  RedisClientTemplate template
   @Before
   void setupRedis() {
     template = createTemplate()
@@ -53,7 +53,7 @@ class RedisListTests {
     assert list[1].toLong() == 10
   }
 
-  private RedisTemplate createTemplate() {
-    return new RedisTemplate(new RedisClient())
+  private RedisClientTemplate createTemplate() {
+    return new RedisClientTemplate(new RedisClient())
   }
 }

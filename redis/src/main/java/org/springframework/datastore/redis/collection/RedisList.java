@@ -18,7 +18,10 @@ import org.springframework.beans.TypeConverter;
 import org.springframework.datastore.keyvalue.convert.ByteArrayAwareTypeConverter;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
-import java.util.*;
+import java.util.AbstractList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Creates a list that is backed onto a Redis list
@@ -66,7 +69,7 @@ public class RedisList extends AbstractList implements List, RedisCollection {
     }
 
     public int size() {
-        return (int) redisTemplate.llen(redisKey);
+        return redisTemplate.llen(redisKey);
     }
 
     public boolean contains(Object o) {
