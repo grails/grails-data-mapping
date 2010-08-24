@@ -1,7 +1,18 @@
-TODO list
+TODO high priorities
 
-* Connection pooling for RedisClient
-
-
+* Connection pooling
 * Finish Grails plugin
 * Plugging in validation
+* open session in view interceptor
+* session flushing
+
+TODO medium priorities
+
+* Inheritance support
+* Embedded components
+* Nested querying of associations in criteria
+* Named queries
+
+TODO lower priorities
+
+* JPA-QL for string based queries
