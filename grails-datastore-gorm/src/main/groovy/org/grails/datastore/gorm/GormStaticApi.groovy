@@ -91,7 +91,13 @@ class GormStaticApi extends AbstractGormApi {
   Integer count() {
     def q = datastore.currentSession.createQuery(persistentClass)
     q.projections().count()
-    q.singleResult() as Integer
+    def result = q.singleResult()
+    if(!(result instanceof Number)) result = result.toString()
+    try {
+      result as Integer
+    } catch (NumberFormatException e) {
+      return 0
+    }
   }
 
   /**

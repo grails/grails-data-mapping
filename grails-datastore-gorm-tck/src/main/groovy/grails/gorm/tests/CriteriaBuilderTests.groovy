@@ -8,6 +8,45 @@ import org.junit.Test
 abstract class CriteriaBuilderTests {
 
   @Test
+  void testDisjunction() {
+    def age = 40
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
+
+
+    def criteria = TestEntity.createCriteria()
+
+    def results = criteria.list {
+      or {
+        like('name', 'B%')
+        eq('age', 41)
+      }
+
+    }
+
+    assert 3 == results.size()
+
+  }
+
+  @Test
+  void testConjunction() {
+    def age = 40
+    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
+
+
+    def criteria = TestEntity.createCriteria()
+
+    def results = criteria.list {
+      and {
+        like('name', 'B%')
+        eq('age', 40)
+      }
+
+    }
+
+    assert 1 == results.size()    
+  }
+
+  @Test
   void testListQuery() {
     def age = 40
     ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }

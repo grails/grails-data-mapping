@@ -45,7 +45,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
   }
 
   Query createQuery() {
-    return new SimpleMapQuery(session, super.getPersistentEntity())
+    return new SimpleMapQuery(session, super.getPersistentEntity(), this)
   }
 
   protected void deleteEntry(String family, Object key) {
@@ -55,6 +55,10 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
   PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
     return new PropertyValueIndexer() {
 
+
+      String getIndexRoot() {
+          return "~${property.owner.name}:${property.name}"
+      }
 
       void index(Object value, Object primaryKey) {
         def index = getIndexName(value)
@@ -81,7 +85,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
       }
 
       String getIndexName(Object value) {
-        return "~${property.owner.name}:${property.name}:$value";
+        return "${indexRoot}:$value";
       }
     }
   }

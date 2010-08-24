@@ -384,6 +384,10 @@ public abstract class Query {
             return name;
         }
 
+        public String getProperty() {
+            return getName();
+        }
+
         public Collection getValues() {
             return Collections.unmodifiableCollection(values);
         }

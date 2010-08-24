@@ -62,6 +62,11 @@ public class EntityAccess {
 
     }
 
+    public void setIdentifier(Object id) {
+        String idName = getIdentifierName(persistentEntity.getMapping());
+        setProperty(idName, id);
+    }
+
     protected String getIdentifierName(ClassMapping cm) {
         return cm.getIdentifier().getIdentifierName()[0];
     }

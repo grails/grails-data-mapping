@@ -17,6 +17,7 @@ abstract class QueryByAssociationTests {
     def child = ChildEntity.findByName("Barney Child")
 
     assert child
+    assert child.id
 
     def t = TestEntity.findByChild(child)
 
