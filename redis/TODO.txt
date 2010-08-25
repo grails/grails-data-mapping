@@ -1,6 +1,5 @@
 TODO high priorities
 
-* Connection pooling
 * Finish Grails plugin
 * Plugging in validation
 * open session in view interceptor

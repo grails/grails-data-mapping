@@ -15,6 +15,7 @@
 package org.springframework.datastore.redis;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.core.AbstractDatastore;
 import org.springframework.datastore.core.Session;
 import org.springframework.datastore.engine.EntityAccess;
@@ -26,10 +27,18 @@ import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.query.Query;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
+import org.springframework.datastore.redis.util.JedisTemplate;
+import org.springframework.datastore.redis.util.RedisClientTemplate;
+import org.springframework.datastore.redis.util.RedisTemplate;
+import org.springframework.util.ClassUtils;
+import redis.clients.jedis.JedisPool;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
+
+import static org.springframework.datastore.config.utils.ConfigUtils.read;
 
 /**
  * A Datastore implementation for the Redis key/value datastore
@@ -39,6 +48,28 @@ import java.util.Map;
  */
 public class RedisDatastore extends AbstractDatastore implements InitializingBean {
 
+    private static final boolean redisClientAvailable =
+            ClassUtils.isPresent("sma.RedisClient", RedisSession.class.getClassLoader());
+
+    private static final boolean jedisClientAvailable =
+            ClassUtils.isPresent("redis.clients.jedis.Jedis", RedisSession.class.getClassLoader());
+
+    public static final String CONFIG_HOST = "host";
+    public static final String CONFIG_TIMEOUT = "timeout";
+    private static final String CONFIG_RESOURCE_COUNT = "resources";
+    public static final String CONFIG_PORT = "port";
+    public static final String CONFIG_PASSWORD = "password";
+
+    private static final String CONFIG_POOLED = "pooled";
+
+    public static final String DEFAULT_HOST = "localhost";
+    public static final int DEFAULT_PORT = 6379;
+    private String host = DEFAULT_HOST;
+    private String password;
+    private int port = DEFAULT_PORT;
+
+    private int timeout = 2000;
+    private boolean pooled;
     private boolean backgroundIndex;
 
     public RedisDatastore() {
@@ -51,6 +82,59 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
 
     public RedisDatastore(MappingContext mappingContext, Map<String, String> connectionDetails) {
         super(mappingContext, connectionDetails);
+
+        if(connectionDetails != null) {
+            host = read(String.class, CONFIG_HOST, connectionDetails, DEFAULT_HOST);
+            port = read(Integer.class, CONFIG_PORT, connectionDetails, DEFAULT_PORT);
+            timeout = read(Integer.class, CONFIG_TIMEOUT, connectionDetails, 2000);
+            pooled = read(Boolean.class, CONFIG_POOLED, connectionDetails, false);
+            password = read(String.class, CONFIG_PASSWORD, connectionDetails, null);
+            int resourceCount = read(Integer.class, CONFIG_RESOURCE_COUNT, connectionDetails, 10);
+
+            if(pooled && usJedis()) {
+                JedisTemplateFactory.createPool(host, port, timeout, resourceCount);
+            }
+        }
+    }
+
+    private boolean usJedis() {
+        return jedisClientAvailable && !redisClientAvailable;
+    }
+
+    static class JedisTemplateFactory {
+        static JedisPool pool;
+
+        static void createPool(String host, int port, int timeout, int resources) {
+            pool = new JedisPool(host, port, timeout);
+            pool.setResourcesNumber(resources);
+        }
+        static RedisTemplate create(String host, int port, int timeout, boolean pooled, String password) {
+
+            JedisTemplate template;
+
+            if(pooled) {
+                template = new JedisTemplate(pool);
+            }
+            else {
+                template = new JedisTemplate(host, port, timeout);
+            }
+            if(password != null) {
+                template.setPassword(password);
+            }
+
+            return template;
+        }
+    }
+
+    static class RedisClientTemplateFactory {
+        static RedisTemplate create(String host, int port, String password) {
+            final RedisClientTemplate template = new RedisClientTemplate(host, port);
+            if(password != null) {
+                template.setPassword(password);
+            }
+
+            return template;
+        }
     }
 
     /**
@@ -64,7 +148,15 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
-        return new RedisSession(this, connectionDetails, getMappingContext());
+        if(redisClientAvailable) {
+            return new RedisSession(this, getMappingContext(), RedisClientTemplateFactory.create(host, port, password));
+        }
+        else if(jedisClientAvailable) {
+            return new RedisSession(this, getMappingContext(), JedisTemplateFactory.create(host, port, timeout, pooled,password ));
+        }
+        else {
+           throw new IllegalStateException("Cannot create RedisSession. No Redis client library found on classpath. Please use either Jedis or java-redis-client");
+        }
     }
 
     public void afterPropertiesSet() throws Exception {

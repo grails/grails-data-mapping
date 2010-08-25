@@ -36,8 +36,8 @@ public class CassandraSession extends AbstractSession<CassandraClient> {
     private CassandraClient cassandraClient;
     private CassandraClientPool connectionPool;
 
-    public CassandraSession(Datastore ds,Map<String, String> connectionDetails, MappingContext context, CassandraClientPool connectionPool, CassandraClient client) {
-        super(ds, connectionDetails, context);
+    public CassandraSession(Datastore ds,MappingContext context, CassandraClientPool connectionPool, CassandraClient client) {
+        super(ds, context);
         this.connectionPool = connectionPool;
         this.cassandraClient = client;
     }

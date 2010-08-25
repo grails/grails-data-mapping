@@ -3,6 +3,7 @@ package org.springframework.datastore.redis.util;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.NoTransactionException;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.SortingParams;
 import redis.clients.jedis.Transaction;
 
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 /**
  * A Spring-style template for querying Redis and translating
@@ -25,9 +27,32 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     private boolean connected;
     private Jedis redis;
     private Transaction transaction;
+    private JedisPool pool;
 
     public JedisTemplate(String host, int port, int timeout) {
         this.redis = new Jedis(host, port, timeout);
+    }
+
+    public JedisTemplate(Jedis jedis) {
+        this.redis = jedis;
+    }
+
+    public JedisTemplate(JedisPool pool) {
+        try {
+            this.redis = pool.getResource(2000);
+        } catch (TimeoutException e) {
+            throw new DataAccessResourceFailureException("Connection timeout geting Jedis connection from pool: " + e.getMessage(), e);        }
+
+        this.pool = pool;
+    }
+
+    public JedisTemplate(JedisPool pool, int timeout) {
+        try {
+            this.redis = pool.getResource(timeout);
+        } catch (TimeoutException e) {
+            throw new DataAccessResourceFailureException("Connection timeout geting Jedis connection from pool: " + e.getMessage(), e);        }
+
+        this.pool = pool;
     }
 
     public Object execute(RedisCallback<Jedis> jedisRedisCallback) {
@@ -389,7 +414,12 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public void close() {
         execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) throws IOException {
-                redis.disconnect();
+                if(pool != null) {
+                    pool.returnResource(redis);
+                }
+                else {
+                    redis.disconnect();
+                }
                 return null;
             }
         });

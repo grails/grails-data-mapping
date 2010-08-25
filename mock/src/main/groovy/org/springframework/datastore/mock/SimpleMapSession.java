@@ -37,7 +37,7 @@ public class SimpleMapSession extends AbstractSession<Map> {
     private Map<String, Map> datastore;
 
     public SimpleMapSession(SimpleMapDatastore datastore, MappingContext mappingContext) {
-        super(datastore, Collections.<String, String>emptyMap(), mappingContext);
+        super(datastore, mappingContext);
         this.datastore = datastore.getBackingMap();
     }
 

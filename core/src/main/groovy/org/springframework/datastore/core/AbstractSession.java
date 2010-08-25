@@ -40,16 +40,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public abstract class AbstractSession<N> implements Session {
     protected Map<Class,Persister> persisters = new ConcurrentHashMap<Class,Persister>();
     private MappingContext mappingContext;
-    protected Map<String, String> connectionDetails;
     protected List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
     protected ConcurrentLinkedQueue lockedObjects = new ConcurrentLinkedQueue();
     private Transaction transaction;
     private Datastore datastore;
 
-    public AbstractSession(Datastore datastore, Map<String, String> connectionDetails, MappingContext mappingContext) {
+    public AbstractSession(Datastore datastore,MappingContext mappingContext) {
         super();
         this.mappingContext = mappingContext;
-        this.connectionDetails = connectionDetails;
         this.datastore = datastore;
     }
 
@@ -65,10 +63,6 @@ public abstract class AbstractSession<N> implements Session {
 
     public void setEntityInterceptors(List<EntityInterceptor> interceptors) {
         if(interceptors!=null) this.interceptors = interceptors;
-    }
-
-    public Map<String, String> getDetails() {
-        return connectionDetails;
     }
 
     public MappingContext getMappingContext() {

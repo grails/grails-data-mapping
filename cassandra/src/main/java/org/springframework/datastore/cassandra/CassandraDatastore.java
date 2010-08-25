@@ -47,7 +47,7 @@ public class CassandraDatastore extends AbstractDatastore {
         final CassandraClient client;
         try {
             client = connectionPool.borrowClient("localhost", 9160);
-            return new CassandraSession(this, connectionDetails,getMappingContext(), connectionPool, client);
+            return new CassandraSession(this, getMappingContext(), connectionPool, client);
         } catch (Exception e) {
             throw new DataAccessResourceFailureException("Failed to obtain Cassandra client session: " + e.getMessage(), e);
         }

@@ -35,11 +35,8 @@ import java.util.Map;
  */
 public interface Session extends EntityInterceptorAware {
 
-    /**
-     * @return the session details as map of parameter / value String pairs
-     */
-    Map<String, String> getDetails();
 
+    
     /**
      * @return true if connected to the datastore
      */

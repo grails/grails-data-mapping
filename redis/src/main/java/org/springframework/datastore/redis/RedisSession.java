@@ -24,17 +24,12 @@ import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.redis.collection.RedisSet;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
-import org.springframework.datastore.redis.util.JedisTemplate;
-import org.springframework.datastore.redis.util.RedisClientTemplate;
 import org.springframework.datastore.redis.util.RedisTemplate;
 import org.springframework.datastore.transactions.Transaction;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.util.ClassUtils;
 
 import java.io.Serializable;
-import java.util.*;
-
-import static org.springframework.datastore.config.utils.ConfigUtils.*;
 
 /**
  * @author Graeme Rocher
@@ -42,63 +37,13 @@ import static org.springframework.datastore.config.utils.ConfigUtils.*;
  */
 public class RedisSession extends AbstractSession  {
 
-    private static final boolean redisClientAvailable =
-            ClassUtils.isPresent("sma.RedisClient", RedisSession.class.getClassLoader());
-
-    private static final boolean jedisClientAvailable =
-            ClassUtils.isPresent("redis.clients.jedis.Jedis", RedisSession.class.getClassLoader());
-
-    public static final String CONFIG_HOST = "host";
-    public static final String CONFIG_TIMEOUT = "timeout";
-    public static final String CONFIG_PORT = "port";
-    public static final String DEFAULT_HOST = "localhost";
-    public static final int DEFAULT_PORT = 6379;
-
     private RedisTemplate redisTemplate;
-    public static final String CONFIG_PASSWORD = "password";
 
-    public RedisSession(Datastore ds, Map<String, String> connectionInfo, MappingContext mappingContext) {
-        super(ds, connectionInfo != null ? connectionInfo : Collections.<String, String>emptyMap(), mappingContext);
-        if(redisClientAvailable) {
-           redisTemplate = RedisClientTemplateFactory.create(connectionDetails);
-        }
-        else if(jedisClientAvailable) {
-           redisTemplate = JedisTemplateFactory.create(connectionDetails);
-        }
-        else{
-            throw new IllegalStateException("Cannot create RedisSession. Neither jedis nor java-redis-client is found on the classpath");
-        }
-    }
+    public RedisSession(Datastore ds, MappingContext mappingContext, RedisTemplate template) {
+        super(ds, mappingContext);
 
+        redisTemplate = template;
 
-    static class JedisTemplateFactory {
-        static RedisTemplate create(Map connectionDetails) {
-            String host = read(String.class, CONFIG_HOST, connectionDetails, DEFAULT_HOST);
-            int port = read(Integer.class, CONFIG_PORT, connectionDetails, DEFAULT_PORT);
-            int timeout = read(Integer.class, CONFIG_TIMEOUT, connectionDetails, 2000);
-
-            final JedisTemplate template = new JedisTemplate(host, port, timeout);
-            String password = read(String.class, CONFIG_PASSWORD, connectionDetails, null);
-            if(password != null) {
-                template.setPassword(password);
-            }
-
-            return template;
-        }
-    }
-
-    static class RedisClientTemplateFactory {
-        static RedisTemplate create(Map connectionDetails) {
-            String host = read(String.class, CONFIG_HOST, connectionDetails, DEFAULT_HOST);
-            int port = read(Integer.class, CONFIG_PORT, connectionDetails, DEFAULT_PORT);
-            String password = read(String.class, CONFIG_PASSWORD, connectionDetails, null);
-            final RedisClientTemplate template = new RedisClientTemplate(host, port);
-            if(password != null) {
-                template.setPassword(password);
-            }
-
-            return template;
-        }
     }
 
 

@@ -29,11 +29,10 @@ public class AppEngineSession extends AbstractSession<DatastoreService> implemen
     /**
      * Create a new Google App Engine session to the datastore.
      *
-     * @param connectionDetails the session details
      * @param mappingContext The Mapping Context
      */
-    public AppEngineSession(Datastore ds,Map<String, String> connectionDetails, MappingContext mappingContext) {
-        super(ds, connectionDetails, mappingContext);
+    public AppEngineSession(Datastore ds,MappingContext mappingContext) {
+        super(ds, mappingContext);
     }
 
 
