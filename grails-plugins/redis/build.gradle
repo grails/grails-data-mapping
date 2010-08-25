@@ -1,0 +1,34 @@
+
+
+buildscript {
+	repositories {
+		mavenCentral()
+		mavenRepo urls: "http://repository.jboss.org/maven2/"
+	}
+    dependencies {
+        classpath "org.grails:grails-gradle-plugin:1.0",
+                  "org.grails:grails-bootstrap:1.3.4"
+    }	
+}
+
+apply plugin: "grails"
+
+grailsVersion = "1.3.4"
+
+repositories {
+	flatDir dirs: "lib"
+}
+
+configurations {
+	compile.exclude module: "commons-logging"
+	compile.exclude module: 'xml-apis'
+}
+
+dependencies {
+	runtime "org.aspectj:aspectjrt:1.6.8"
+    runtime "org.slf4j:slf4j-log4j12:1.5.5",
+            "hsqldb:hsqldb:1.8.0.5",
+            "net.sf.ehcache:ehcache-core:1.7.1"
+    compile "org.grails:grails-crud:${grailsVersion}",
+            "org.grails:grails-gorm:${grailsVersion}"
+}
