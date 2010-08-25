@@ -160,10 +160,15 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     @Override
-    protected Long storeEntry(PersistentEntity persistentEntity, RedisEntry nativeEntry) {
+    protected Long storeEntry(PersistentEntity persistentEntity, Long storeId, RedisEntry nativeEntry) {
         final String family = nativeEntry.getFamily();
-        Long id = generateIdentifier(family);
-        return performInsertion(family, id, nativeEntry);
+        return performInsertion(family, storeId, nativeEntry);
+    }
+
+    @Override
+    protected Long generateIdentifier(PersistentEntity persistentEntity, RedisEntry id) {
+        String family = getFamily(persistentEntity, persistentEntity.getMapping());
+        return generateIdentifier(family);
     }
 
     private Long performInsertion(final String family, final Long id, final RedisEntry nativeEntry) {

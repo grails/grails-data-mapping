@@ -92,7 +92,7 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     }
 
     @Override
-    protected com.google.appengine.api.datastore.Key storeEntry(PersistentEntity persistentEntity, Entity nativeEntry) {
+    protected com.google.appengine.api.datastore.Key storeEntry(PersistentEntity persistentEntity, Key storeId, Entity nativeEntry) {
         return this.datastoreService.put(nativeEntry);
     }
 
@@ -122,6 +122,11 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
         // TODO: GAE natively supports creating indices so not sure implementing this will be useful
         return null;
+    }
+
+    @Override
+    protected Key generateIdentifier(PersistentEntity persistentEntity, Entity entity) {
+        return datastoreService.put(entity);
     }
 
     @Override

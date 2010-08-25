@@ -29,7 +29,9 @@ import org.springframework.datastore.transactions.Transaction;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.util.ClassUtils;
 
+import javax.persistence.FlushModeType;
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * @author Graeme Rocher
@@ -93,6 +95,9 @@ public class RedisSession extends AbstractSession  {
             if(id != null) {
                 ep.lock(id);
             }
+            else {
+                throw new CannotAcquireLockException("Cannot lock transient instance ["+o+"]");
+            }
         }
         else {
             throw new CannotAcquireLockException("Cannot lock object ["+o+"]. It is not a persistent instance!");
@@ -115,7 +120,10 @@ public class RedisSession extends AbstractSession  {
         LockableEntityPersister ep = (LockableEntityPersister) getPersister(type);
         if(ep != null) {
             final Object lockedObject = ep.lock(key);
-            lockedObjects.add(lockedObject);
+            if(lockedObject != null) {
+                cacheObject(key, lockedObject);
+                lockedObjects.add(lockedObject);
+            }
             return lockedObject;
         }
         else {
@@ -124,25 +132,31 @@ public class RedisSession extends AbstractSession  {
     }
 
     public Object random(Class type) {
+        flushIfNecessary();
         RedisEntityPersister ep = (RedisEntityPersister) getPersister(type);
         if(ep != null) {
             RedisSet set = (RedisSet) ep.getAllEntityIndex();
             String id = set.random();
-            return ep.retrieve(id);
+            return retrieve(type, id);
         }
         else {
             throw new NonPersistentTypeException("The class ["+type+"] is not a known persistent type.");
         }
     }
 
+    private void flushIfNecessary() {
+        if(getFlushMode() == FlushModeType.AUTO) flush();
+    }
+
     public Object pop(Class type) {
+        flushIfNecessary();
         RedisEntityPersister ep = (RedisEntityPersister) getPersister(type);
         if(ep != null) {
             RedisSet set = (RedisSet) ep.getAllEntityIndex();
             String id = set.pop();
             Object result = null;
             try {
-                result = ep.retrieve(id);
+                result = retrieve(type, id);
                 return result;
             } finally {
                 if(result != null)

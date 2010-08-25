@@ -23,8 +23,11 @@ public class LazyLoadedOneToOneTests {
         a.setPostCode("308420");
         p.setAddress(a);
         conn.persist(p);
+        conn.flush();
 
-        p = (Person) conn.retrieve(Person.class, p.getId());
+        conn.clear();
+
+        p = conn.retrieve(Person.class, p.getId());
 
         Address proxy = p.getAddress();
 

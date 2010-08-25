@@ -18,10 +18,7 @@ import me.prettyprint.cassandra.model.HectorException;
 import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.Keyspace;
 import org.apache.cassandra.thrift.*;
-import org.apache.thrift.TException;
 import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.cassandra.CassandraDatastore;
 import org.springframework.datastore.cassandra.CassandraSession;
 import org.springframework.datastore.cassandra.uuid.UUIDUtil;
@@ -151,9 +148,9 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
     }
 
     @Override
-    protected Object storeEntry(PersistentEntity persistentEntity, KeyValueEntry nativeEntry) {
+    protected Object storeEntry(PersistentEntity persistentEntity, Object storeId, KeyValueEntry nativeEntry) {
 
-        UUID uuid = UUIDUtil.getTimeUUID();
+        UUID uuid = (UUID) storeId;
         final Keyspace keyspace = getKeyspace();
         String family = getFamily(persistentEntity, getPersistentEntity().getMapping());
         SuperColumn sc = new SuperColumn();
@@ -162,6 +159,11 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
         Map<String, List<SuperColumn>> insertMap = createInsertMap(family, sc);
         performInsertion(keyspace, uuid.toString(), insertMap, nativeEntry);
         return uuid;
+    }
+
+    @Override
+    protected Object generateIdentifier(PersistentEntity persistentEntity, KeyValueEntry id) {
+        return UUIDUtil.getTimeUUID();
     }
 
     private void performInsertion(Keyspace keyspace, String key, Map<String, List<SuperColumn>> insertMap, KeyValueEntry nativeEntry) {

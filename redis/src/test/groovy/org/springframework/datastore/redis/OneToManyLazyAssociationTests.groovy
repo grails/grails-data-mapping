@@ -16,6 +16,9 @@ class OneToManyLazyAssociationTests {
     a.books = [ new LazyBook(title:"The Stand"), new LazyBook(title:"It")]
 
     conn.persist(a)
+    conn.flush()
+
+    conn.clear()
 
     a = conn.retrieve(LazyAuthor, a.id)
 

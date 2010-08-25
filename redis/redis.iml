@@ -39,6 +39,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Java Persistence" level="project" />
   </component>
 </module>
 

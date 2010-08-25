@@ -21,6 +21,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.collection.PersistentList;
 import org.springframework.datastore.collection.PersistentSet;
 import org.springframework.datastore.core.Session;
+import org.springframework.datastore.core.SessionImplementor;
 import org.springframework.datastore.engine.*;
 import org.springframework.datastore.keyvalue.convert.ByteArrayAwareTypeConverter;
 import org.springframework.datastore.keyvalue.mapping.Family;
@@ -267,26 +268,18 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
     }
 
     @Override
-    protected final Serializable persistEntity(PersistentEntity persistentEntity, EntityAccess entityAccess) {
+    protected final Serializable persistEntity(final PersistentEntity persistentEntity, final EntityAccess entityAccess) {
         ClassMapping<Family> cm = persistentEntity.getMapping();
         String family = entityFamily;
 
-        T e = createNewEntry(family);
+        final T e = createNewEntry(family);
         K k = readObjectIdentifier(entityAccess, cm);
         boolean isUpdate = k != null;
 
-        for (EntityInterceptor interceptor : interceptors) {
-            if(isUpdate) {
-                if(!interceptor.beforeUpdate(persistentEntity, entityAccess.getEntity())) return (Serializable) k;
-            }
-            else {
-                if(!interceptor.beforeInsert(persistentEntity, entityAccess.getEntity())) return null;
-            }
-        }
 
         final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
-        List<OneToMany> oneToManys = new ArrayList<OneToMany>();
-        Map<PersistentProperty, Object> toIndex = new HashMap<PersistentProperty, Object>();
+        final Map<OneToMany, List<Serializable>> oneToManyKeys = new HashMap<OneToMany, List<Serializable>>();
+        final Map<PersistentProperty, Object> toIndex = new HashMap<PersistentProperty, Object>();
         for (PersistentProperty prop : props) {
             PropertyMapping<KeyValue> pm = prop.getMapping();
             final KeyValue keyValue = pm.getMappedForm();
@@ -305,7 +298,18 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
             }
             else if(prop instanceof OneToMany) {
-                oneToManys.add((OneToMany) prop);
+                final OneToMany oneToMany = (OneToMany) prop;
+
+                Object propValue = entityAccess.getProperty(oneToMany.getName());
+
+                if(propValue instanceof Collection) {
+                    Collection associatedObjects = (Collection) propValue;
+
+                    List<Serializable> keys = session.persist(associatedObjects);
+
+                    oneToManyKeys.put(oneToMany, keys);
+                }
+
             }
             else if(prop instanceof ToOne) {
                 ToOne association = (ToOne) prop;
@@ -332,47 +336,66 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         }
 
 
-        if(k == null) {
-            k = storeEntry(persistentEntity, e);
+        if(!isUpdate) {
+
+            k = generateIdentifier(persistentEntity, e);
             String id = entityAccess.getIdentifierName();
             entityAccess.setProperty(id, k);
+            final K updateId = k;
+            SessionImplementor si = (SessionImplementor) session;
+            si.getPendingInserts().add(new Runnable() {
+                public void run() {
+                    for (EntityInterceptor interceptor : interceptors) {
+                            if(!interceptor.beforeInsert(persistentEntity, entityAccess.getEntity())) return;
+                    }
+                    storeEntry(persistentEntity, updateId, e);
+                    updateOneToManyIndices(updateId, oneToManyKeys);
+                    updatePropertyIndices(updateId, toIndex);
+                }
+            });
         }
         else {
-            updateEntry(persistentEntity, k, e);
-        }
+            SessionImplementor si = (SessionImplementor) session;
+            final K updateId = k;
+            si.getPendingUpdates().add(new Runnable() {
 
+                public void run() {
+                    for (EntityInterceptor interceptor : interceptors) {
+                            if(!interceptor.beforeUpdate(persistentEntity, entityAccess.getEntity())) return;
+                    }
+                    updateEntry(persistentEntity, updateId, e);
+                    updateOneToManyIndices(updateId, oneToManyKeys);
+                    updatePropertyIndices(updateId, toIndex);
+                }
+            });
+        }
+        return (Serializable) k;
+    }
+
+    protected abstract K generateIdentifier(PersistentEntity persistentEntity, T id);
+
+    private void updateOneToManyIndices(K identifier, Map<OneToMany, List<Serializable>> oneToManyKeys) {
+        // now cascade onto one-to-many associations
+        for (OneToMany oneToMany : oneToManyKeys.keySet()) {
+            if(oneToMany.doesCascade(CascadeType.PERSIST)) {
+                    final AssociationIndexer indexer = getAssociationIndexer(oneToMany);
+                    if(indexer != null) {
+                        indexer.index(identifier, oneToManyKeys.get(oneToMany));
+                    }
+            }
+        }
+    }
+
+    private void updatePropertyIndices(K identifier, Map<PersistentProperty, Object> valuesToIndex) {
         // Here we manually create indices for any indexed properties so that queries work
-        for (PersistentProperty persistentProperty : toIndex.keySet()) {
-            Object value = toIndex.get(persistentProperty);
+        for (PersistentProperty persistentProperty : valuesToIndex.keySet()) {
+            Object value = valuesToIndex.get(persistentProperty);
 
             final PropertyValueIndexer indexer = getPropertyIndexer(persistentProperty);
             if(indexer != null) {
-                indexer.index(value, k);
+                indexer.index(value, identifier);
             }
         }
-
-
-        // now cascade onto one-to-many associations
-        for (OneToMany oneToMany : oneToManys) {
-            if(oneToMany.doesCascade(CascadeType.PERSIST)) {
-                Object propValue = entityAccess.getProperty(oneToMany.getName());
-
-                if(propValue instanceof Collection) {
-                    Collection associatedObjects = (Collection) propValue;
-
-                    List<Serializable> keys = session.persist(associatedObjects);
-
-                    final AssociationIndexer indexer = getAssociationIndexer(oneToMany);
-                    if(indexer != null) {
-                        indexer.index(k, keys);
-                    }
-                }
-            }
-
-        }
-
-
-        return (Serializable) k;
     }
 
 
@@ -504,11 +527,11 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
      * Stores the native form of a Key/value datastore to the actual data store
      *
      * @param persistentEntity The persistent entity
-     * @param nativeEntry The native form. Could be a a ColumnFamily, BigTable Entity etc.
-     *
-     * @return The native key
+     * @param storeId
+     *@param nativeEntry The native form. Could be a a ColumnFamily, BigTable Entity etc.
+     *  @return The native key
      */
-    protected abstract K storeEntry(PersistentEntity persistentEntity, T nativeEntry);
+    protected abstract K storeEntry(PersistentEntity persistentEntity, K storeId, T nativeEntry);
 
     /**
      * Updates an existing entry to the actual datastore

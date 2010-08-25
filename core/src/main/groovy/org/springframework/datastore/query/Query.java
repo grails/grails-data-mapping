@@ -20,6 +20,7 @@ import org.springframework.datastore.engine.EntityPersister;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.util.Assert;
 
+import javax.persistence.FlushModeType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -304,6 +305,10 @@ public abstract class Query {
      * @return The results
      */
     public List list() {
+        // flush before query execution in FlushModeType.AUTO
+        if(session.getFlushMode() == FlushModeType.AUTO) {
+            session.flush();
+        }
         return executeQuery(entity, criteria);
     }
 

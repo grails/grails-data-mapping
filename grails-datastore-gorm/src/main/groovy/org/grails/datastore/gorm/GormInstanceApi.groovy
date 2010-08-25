@@ -70,7 +70,11 @@ class GormInstanceApi extends AbstractGormApi {
    * @return The instance
    */
   def save(instance, Map params) {
-    datastore.currentSession.persist(instance)
+    def session = datastore.currentSession
+    session.persist(instance)
+    if(params?.flush) {
+      session.flush()
+    }
     return instance    
   }
 
@@ -87,19 +91,21 @@ class GormInstanceApi extends AbstractGormApi {
    * @return
    */
   def attach(instance) {
-    throw new UnsupportedOperationException("Method attach() not supported by GORM implementation")
+    datastore.currentSession.attach(instance)
   }
 
   /**
    * No concept of session-based model so defaults to true 
    */
-  boolean isAttached(instance) { true }
+  boolean isAttached(instance) {
+    datastore.currentSession.contains(instance)
+  }
 
   /**
    * Discards any pending changes. Requires a session-based model.
    */
   def discard(instance) {
-    throw new UnsupportedOperationException("Method discard() not supported by GORM implementation")
+    datastore.currentSession.clear(instance)
   }
   /**
    * Deletes an instance from the datastore

@@ -21,6 +21,7 @@ import org.springframework.datastore.query.Query;
 import org.springframework.datastore.transactions.Transaction;
 
 import javax.persistence.EntityTransaction;
+import javax.persistence.FlushModeType;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,49 @@ public interface Session extends EntityInterceptorAware {
      * @return The the generated key
      */
     Serializable persist(Object o);
+
+    /**
+     * Attaches an object the current session
+     * @param o The object to attach
+     */
+    void attach(Object o);
+
+    /**
+     * Flushes any pending changes to the datastore
+     */
+    void flush();
+
+
+    /**
+     * Clears any pending changes to the datastore
+     */
+    void clear();
+
+    /**
+     * Clear a specific object
+     * @param o The object to clear
+     */
+    void clear(Object o);
+
+    /**
+     * Whether the object is contained within the first level cache
+     * @param o The object to check
+     * @return True if it is
+     */
+    boolean contains(Object o);
+
+    /**
+     * The flush mode, defaults to FlushModeType.AUTO
+     *
+     * @param flushMode The FlushModeType
+     */
+    void setFlushMode(FlushModeType flushMode);
+
+    /**
+     * Obtains the current FlushModeType
+     * @return The FlushModeType instance
+     */
+    FlushModeType getFlushMode();
 
     /**
      * Obtains a write lock on the given object

@@ -34,6 +34,7 @@ class RedisEntityPesisterTests extends GroovyTestCase {
       assert "bob"  == t.name
 
       conn.delete(t)
+      conn.flush()
 
       t = conn.retrieve(TestEntity, key)
 

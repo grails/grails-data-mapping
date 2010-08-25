@@ -3,7 +3,6 @@ TODO high priorities
 * Finish Grails plugin
 * Plugging in validation
 * open session in view interceptor
-* session flushing
 
 TODO medium priorities
 

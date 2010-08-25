@@ -136,11 +136,15 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
     return datastore[family].get(key)
   }
 
-  protected Object storeEntry(PersistentEntity persistentEntity, Map nativeEntry) {
+  protected Object generateIdentifier(PersistentEntity persistentEntity, Map id) {
+    return ++lastKey;
+  }
+
+
+  protected Object storeEntry(PersistentEntity persistentEntity, Object storeId, Map nativeEntry) {
     def family = getFamily(persistentEntity, persistentEntity.getMapping())
-    def key = ++lastKey
-    datastore[family].put(key, nativeEntry)
-    return key
+    datastore[family].put(storeId, nativeEntry)
+    return storeId
   }
 
   protected void updateEntry(PersistentEntity persistentEntity, Object key, Map entry) {
