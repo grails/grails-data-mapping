@@ -16,6 +16,8 @@ package org.springframework.datastore.mapping.types;
 
 import org.springframework.datastore.mapping.*;
 
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,19 +30,19 @@ import java.util.List;
  */
 public abstract class Association<T> extends AbstractPersistentProperty {
 
-    public static final List<Cascade> DEFAULT_OWNER_CASCADE = new ArrayList<Cascade>() {{
-        add(Cascade.ALL);
+    public static final List<CascadeType> DEFAULT_OWNER_CASCADE = new ArrayList<CascadeType>() {{
+        add(CascadeType.ALL);
     }};
 
-    public static final List<Cascade> DEFAULT_CHILD_CASCADE = new ArrayList<Cascade>() {{
-        add(Cascade.SAVE);
+    public static final List<CascadeType> DEFAULT_CHILD_CASCADE = new ArrayList<CascadeType>() {{
+        add(CascadeType.PERSIST);
     }};
 
     private PersistentEntity associatedEntity;
     private String referencedPropertyName;
     private boolean owningSide;
-    private List<Cascade> cascadeOperations = new ArrayList<Cascade>();
-    private Fetch fetchStrategy = Fetch.EAGER;
+    private List<CascadeType> cascadeOperations = new ArrayList<CascadeType>();
+    private FetchType fetchStrategy = FetchType.EAGER;
 
     public Association(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
@@ -50,11 +52,11 @@ public abstract class Association<T> extends AbstractPersistentProperty {
         super(owner, context, name, type);
     }
 
-    public Fetch getFetchStrategy() {
+    public FetchType getFetchStrategy() {
         return fetchStrategy;
     }
 
-    public void setFetchStrategy(Fetch fetchStrategy) {
+    public void setFetchStrategy(FetchType fetchStrategy) {
         this.fetchStrategy = fetchStrategy;
     }
 
@@ -80,13 +82,13 @@ public abstract class Association<T> extends AbstractPersistentProperty {
      * @param cascadeOperation The cascadeOperation
      * @return True if it does
      */
-    public boolean doesCascade(Cascade cascadeOperation) {
-        List<Cascade> cascades = getCascadeOperations();
-        return cascadeOperation != null && (cascades.contains(Cascade.ALL) || cascades.contains(cascadeOperation));
+    public boolean doesCascade(CascadeType cascadeOperation) {
+        List<CascadeType> cascades = getCascadeOperations();
+        return cascadeOperation != null && (cascades.contains(CascadeType.ALL) || cascades.contains(cascadeOperation));
     }
 
-    protected List<Cascade> getCascadeOperations() {
-        List<Cascade> cascades;
+    protected List<CascadeType> getCascadeOperations() {
+        List<CascadeType> cascades;
         if(cascadeOperations.isEmpty()) {
             if(isOwningSide()) cascades = DEFAULT_OWNER_CASCADE;
             else {

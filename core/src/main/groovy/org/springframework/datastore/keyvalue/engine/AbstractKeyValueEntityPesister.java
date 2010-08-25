@@ -28,6 +28,8 @@ import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.*;
 import org.springframework.datastore.mapping.types.*;
 
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
 import java.io.Serializable;
 import java.util.*;
 
@@ -257,7 +259,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
     private boolean isLazyAssociation(PropertyMapping<KeyValue> associationPropertyMapping) {
         if(associationPropertyMapping != null) {
             KeyValue kv = associationPropertyMapping.getMappedForm();
-            if(kv.getFetchStrategy() != Fetch.LAZY) {
+            if(kv.getFetchStrategy() != FetchType.LAZY) {
                 return false;
             }
         }
@@ -307,7 +309,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
             }
             else if(prop instanceof ToOne) {
                 ToOne association = (ToOne) prop;
-                if(association.doesCascade(Cascade.SAVE)) {
+                if(association.doesCascade(CascadeType.PERSIST)) {
 
                     if(!association.isForeignKeyInChild()) {
 
@@ -352,7 +354,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
         // now cascade onto one-to-many associations
         for (OneToMany oneToMany : oneToManys) {
-            if(oneToMany.doesCascade(Cascade.SAVE)) {
+            if(oneToMany.doesCascade(CascadeType.PERSIST)) {
                 Object propValue = entityAccess.getProperty(oneToMany.getName());
 
                 if(propValue instanceof Collection) {

@@ -14,7 +14,7 @@
  */
 package org.springframework.datastore.keyvalue.mapping;
 
-import org.springframework.datastore.mapping.types.Fetch;
+import javax.persistence.FetchType;
 
 /**
  * <p>A KeyValue is a used to define the key used for a particular value</p>
@@ -26,7 +26,7 @@ public class KeyValue {
 
     private String key;
     private boolean index = false;
-    private Fetch fetchStrategy = Fetch.LAZY;
+    private FetchType fetchStrategy = FetchType.LAZY;
 
     public KeyValue() {
     }
@@ -58,11 +58,11 @@ public class KeyValue {
         this.index = index;
     }
 
-    public Fetch getFetchStrategy() {
+    public FetchType getFetchStrategy() {
         return this.fetchStrategy;
     }
 
-    public void setFetchStrategy(Fetch fetchStrategy) {
+    public void setFetchStrategy(FetchType fetchStrategy) {
         this.fetchStrategy = fetchStrategy;
     }
 }
