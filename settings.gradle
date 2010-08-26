@@ -3,10 +3,10 @@ include "spring-datastore-core",
         "spring-datastore-redis",
         "spring-datastore-mock",
         "spring-datastore-web",
-        "spring-datastore-cassandra",
+/*        "spring-datastore-cassandra",*/
         'grails-datastore-gorm',
         'grails-datastore-gorm-tck',
         'grails-datastore-gorm-test',
-//        'grails-plugins:redis',
+/*        'grails-plugins:redis',*/
         'grails-datastore-gorm-redis'
 

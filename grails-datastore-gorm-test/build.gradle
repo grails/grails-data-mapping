@@ -1,5 +1,7 @@
 dependencies {
-  compile project(":grails-datastore-gorm"), project(":spring-datastore-mock")
+  compile project(":grails-datastore-gorm"),
+   		  project(":spring-datastore-mock"),
+		  project(":spring-datastore-core")
   testCompile project(":grails-datastore-gorm-tck")
 }
 jar.appendix = 'gorm-test'

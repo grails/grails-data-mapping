@@ -3,12 +3,18 @@ repositories {
 }
 
 dependencies {
+    compile "org.springframework:spring-core:3.0.3.RELEASE"
+    compile "org.springframework:spring-beans:3.0.3.RELEASE"
+    compile "org.springframework:spring-tx:3.0.3.RELEASE"
+    compile "org.springframework:spring-context:3.0.3.RELEASE"	
+  	compile 'javax.persistence:persistence-api:1.0'	
+  	compile 'javassist:javassist:3.11.0.GA'
+  	compile 'javax.transaction:jta:1.1'
 
-  compile 'javax.persistence:persistence-api:1.0'
-  compile 'javassist:javassist:3.11.0.GA'
-  compile 'javax.transaction:jta:1.1'
-//  compile 'commons-beanutils:commons-beanutils:1.8.0'
-//  compile 'commons-collections:commons-collections:3.2'
+    compile "org.slf4j:jcl-over-slf4j:1.5.8"
+    compile "org.slf4j:slf4j-api:1.5.8"
+    compile "org.slf4j:slf4j-simple:1.5.8"
+
 
   // we need the Grails @Entity annotation to test GORM syntax mapping
   testCompile( "commons-lang:commons-lang:2.4" )
