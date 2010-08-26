@@ -1,4 +1,9 @@
+
+
 subprojects { project ->
+
+    version = '0.1'
+  
 	def projectName = project.toString()
     def isGrailsPlugin = projectName.contains(":grails-plugins")
 	if(!isGrailsPlugin) {
@@ -17,9 +22,9 @@ subprojects { project ->
     dependencies {
 		if(!isGrailsPlugin) {
 	       	groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.7.4'
-	        compile "org.springframework:spring-core:3.0.2.RELEASE"
-	        compile "org.springframework:spring-beans:3.0.2.RELEASE"
-	        compile "org.springframework:spring-tx:3.0.2.RELEASE"
+	        compile "org.springframework:spring-core:3.0.3.RELEASE"
+	        compile "org.springframework:spring-beans:3.0.3.RELEASE"
+	        compile "org.springframework:spring-tx:3.0.3.RELEASE"
             compile "org.slf4j:jcl-over-slf4j:1.5.8"
             compile "org.slf4j:slf4j-api:1.5.8"
             compile "org.slf4j:slf4j-simple:1.5.8"
@@ -28,7 +33,7 @@ subprojects { project ->
         }
     }
 
-    version = '0.1'
+
     if(projectName.contains(":grails-")) {
       group = "org.grails"
       archivesBaseName = "grails-datastore"

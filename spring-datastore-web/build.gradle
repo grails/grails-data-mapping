@@ -1,5 +1,5 @@
 dependencies {
   compile project(":spring-datastore-core")
-  compile "org.springframework:spring-web:3.0.2.RELEASE"
+  compile "org.springframework:spring-web:3.0.3.RELEASE"
 }
 

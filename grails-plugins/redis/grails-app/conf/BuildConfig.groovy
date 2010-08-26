@@ -10,9 +10,7 @@ grails.project.dependency.resolution = {
     }
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     repositories {
-        grailsPlugins()
-        grailsHome()
-        grailsCentral()
+        mavenLocal()
 
         // uncomment the below to enable remote dependency resolution
         // from public Maven repositories
@@ -26,6 +24,7 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        
+        compile "org.grails:grails-datastore-gorm-redis:0.1" 
+
     }
 }
