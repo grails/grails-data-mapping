@@ -14,6 +14,7 @@
       <sourceFolder url="file://$MODULE_DIR$/test/unit" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/web-app" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -21,11 +22,9 @@
     <orderEntry type="library" name="Spring Beans" level="project" />
     <orderEntry type="library" name="Spring Core" level="project" />
     <orderEntry type="library" name="Spring Context" level="project" />
-    <orderEntry type="module" module-name="core" />
     <orderEntry type="library" name="Grails Libraries" level="project" />
     <orderEntry type="module" module-name="grails-datastore-gorm" />
     <orderEntry type="module" module-name="grails-datastore-gorm-redis" />
-    <orderEntry type="module" module-name="redis" />
     <orderEntry type="library" name="Spring Transaction" level="project" />
   </component>
 </module>

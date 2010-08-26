@@ -10,7 +10,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="JUnit" level="project" />
     <orderEntry type="library" name="Groovy" level="project" />
-    <orderEntry type="module" module-name="core" />
     <orderEntry type="library" name="Spring Beans" level="project" />
     <orderEntry type="library" name="Spring Context" level="project" />
     <orderEntry type="library" name="Spring Core" level="project" />

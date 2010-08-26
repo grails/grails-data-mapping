@@ -11,9 +11,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Groovy" level="project" />
     <orderEntry type="module" module-name="grails-datastore-gorm" />
-    <orderEntry type="module" module-name="core" />
     <orderEntry type="library" scope="TEST" name="JUnit" level="project" />
-    <orderEntry type="module" module-name="redis" />
     <orderEntry type="library" name="Spring Beans" level="project" />
     <orderEntry type="library" name="Spring Context" level="project" />
     <orderEntry type="library" name="Redis Java Client" level="project" />
