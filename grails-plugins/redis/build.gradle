@@ -36,5 +36,4 @@ dependencies {
             "net.sf.ehcache:ehcache-core:1.7.1"
     compile "org.grails:grails-crud:${grailsVersion}",
             "org.grails:grails-gorm:${grailsVersion}"
-    test  "commons-cli:commons-cli:1.2"
 }

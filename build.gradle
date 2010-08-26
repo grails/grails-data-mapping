@@ -14,7 +14,7 @@ subprojects { project ->
 
     dependencies {
 		if(!isGrailsPlugin) {
-	       	groovy group: 'org.codehaus.groovy', name: 'groovy', version: '1.7.4'
+	       	groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.7.4'
 	        compile "org.springframework:spring-aop:3.0.2.RELEASE"
 	        compile "org.springframework:spring-core:3.0.2.RELEASE"
 	        compile "org.springframework:spring-beans:3.0.2.RELEASE"
