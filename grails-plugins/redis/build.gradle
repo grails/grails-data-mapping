@@ -2,7 +2,7 @@
 
 buildscript {
 	repositories {
-		mavenCentral()
+		mavenRepo urls:"http://repository.codehaus.org/"
 		mavenRepo urls: "http://repository.jboss.org/maven2/"
 	}
     dependencies {
@@ -24,9 +24,13 @@ configurations {
 	compile.exclude module: 'xml-apis'
 }
 
+repositories {
+  mavenRepo urls:"http://repository.codehaus.org/"
+}
+
 dependencies {
-    compile project(":core"),
-            project(":redis"),
+    compile project(":spring-datastore-core"),
+            project(":spring-datastore-redis"),
             project(":grails-datastore-gorm"),
             project(":grails-datastore-gorm-redis")
 

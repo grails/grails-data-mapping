@@ -1,5 +1,5 @@
 dependencies {
-  compile project(":grails-datastore-gorm"),project(":redis")
+  compile project(":grails-datastore-gorm"),project(":spring-datastore-redis")
   testCompile project(":grails-datastore-gorm-test"),project(":grails-datastore-gorm-tck")
 }
-jar.appendix = 'grails-gorm-redis'
+jar.appendix = 'gorm-redis'

@@ -1,0 +1,4 @@
+dependencies {
+  compile project(":spring-datastore-core")
+}
+jar.appendix = 'mock'

@@ -1,11 +1,11 @@
-include "core",
-        "appengine",
-        "redis",
-        "mock",
-        "web",
-        "cassandra",
+include "spring-datastore-core",
+        "spring-datastore-appengine",
+        "spring-datastore-redis",
+        "spring-datastore-mock",
+        "spring-datastore-web",
+        "spring-datastore-cassandra",
         'grails-datastore-gorm',
         'grails-datastore-gorm-tck',
         'grails-datastore-gorm-test',
-        'grails-datastore-gorm-redis',
-		'grails-plugins:redis'
+        'grails-datastore-gorm-redis'
+
