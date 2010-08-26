@@ -5,7 +5,7 @@ import org.junit.Test
 /**
  * Abstract base test for loading proxies. Subclasses should do the necessary setup to configure GORM
  */
-abstract class ProxyLoadingTests {
+abstract class ProxyLoadingTests extends AbstractGormTests{
 
   @Test
   void testProxy() {

@@ -22,6 +22,7 @@ import org.springframework.datastore.keyvalue.mapping.KeyValueMappingContext
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
+import org.springframework.datastore.mapping.PersistentEntity
 
 /**
  *
@@ -36,15 +37,22 @@ class RedisMappingContextFactoryBean implements FactoryBean<MappingContext>, Gra
 
     if(grailsApplication) {
       for(GrailsDomainClass domainClass in grailsApplication.domainClasses){
+         PersistentEntity entity = null
          if(!isHibernateInstalled) {
-           mappingContext.addPersistentEntity(domainClass.clazz)
+           entity = mappingContext.addPersistentEntity(domainClass.clazz)
+
          }
          else {
            def mappedWith = domainClass.getPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY, String)
            if(mappedWith == 'redis') {
-              mappingContext.addPersistentEntity(domainClass.clazz)
+              entity = mappingContext.addPersistentEntity(domainClass.clazz)
            }
          }
+
+        if(entity) {
+          def validator = domainClass.validator
+          mappingContext.addEntityValidator(entity, validator)
+        }
       }
     }
     return mappingContext

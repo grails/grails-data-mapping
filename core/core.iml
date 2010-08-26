@@ -17,11 +17,9 @@
     <orderEntry type="library" name="Java Persistence" level="project" />
     <orderEntry type="library" name="Spring Core" level="project" />
     <orderEntry type="library" name="Spring Transaction" level="project" />
-    <orderEntry type="library" scope="TEST" name="Spring Context" level="project" />
-    <orderEntry type="library" scope="TEST" name="Spring Web" level="project" />
+    <orderEntry type="library" name="Spring Context" level="project" />
     <orderEntry type="library" scope="TEST" name="Commons Lang" level="project" />
     <orderEntry type="library" name="Spring Beans" level="project" />
-    <orderEntry type="library" name="Spring AOP" level="project" />
     <orderEntry type="library" name="JTA" level="project" />
     <orderEntry type="library" name="Javassist" level="project" />
   </component>

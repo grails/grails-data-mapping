@@ -32,6 +32,13 @@ class GormStaticApi extends AbstractGormApi {
   }
 
   /**
+   * Creates an instance of this class
+   * @return The created instance
+   */
+  def create() {
+    persistentClass.newInstance()
+  }
+  /**
    * Retrieves and object from the datastore. eg. Book.get(1)
    */
   def get(Serializable id) {

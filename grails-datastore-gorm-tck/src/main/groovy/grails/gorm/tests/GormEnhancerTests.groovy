@@ -9,7 +9,7 @@ import org.junit.Test
  * Time: 1:43:50 PM
  * To change this template use File | Settings | File Templates.
  */
-abstract class GormEnhancerTests {
+abstract class GormEnhancerTests extends AbstractGormTests{
 
 
   @Test

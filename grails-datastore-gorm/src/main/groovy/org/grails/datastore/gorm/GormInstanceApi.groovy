@@ -15,6 +15,7 @@
 package org.grails.datastore.gorm
 
 import org.springframework.datastore.core.Datastore
+import org.springframework.datastore.validation.ValidationException
 
 /**
  * Instance methods of the GORM API
@@ -22,6 +23,8 @@ import org.springframework.datastore.core.Datastore
  * @author Graeme Rocher
  */
 class GormInstanceApi extends AbstractGormApi {
+
+  Class<Exception> validationException = ValidationException
 
   GormInstanceApi(Class persistentClass, Datastore datastore) {
     super(persistentClass, datastore)
@@ -33,8 +36,7 @@ class GormInstanceApi extends AbstractGormApi {
    * @return Returns the instance
    */
   def save(instance) {
-    datastore.currentSession.persist(instance)
-    return instance
+      save(instance, Collections.emptyMap())
   }
 
   /**
@@ -70,12 +72,25 @@ class GormInstanceApi extends AbstractGormApi {
    * @return The instance
    */
   def save(instance, Map params) {
-    def session = datastore.currentSession
-    session.persist(instance)
-    if(params?.flush) {
-      session.flush()
+    final session = datastore.currentSession
+    boolean hasErrors = false
+    if(instance.respondsTo('validate')) {
+      hasErrors = !instance.validate()
     }
-    return instance    
+
+    if(!hasErrors) {
+      session.persist(instance)
+      if(params?.flush) {
+        session.flush()
+      }
+    }
+    else {
+      if(params?.failOnError)
+        throw validationException.newInstance( "Validation error occured during call to save()", instance.errors)
+      else
+        return null
+    }
+    return instance
   }
 
   /**

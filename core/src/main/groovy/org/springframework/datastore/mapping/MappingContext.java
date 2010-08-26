@@ -14,6 +14,9 @@
  */
 package org.springframework.datastore.mapping;
 
+import org.springframework.validation.Validator;
+
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -39,7 +42,7 @@ public interface MappingContext {
      *
      * @return A list of PersistentEntity instances
      */
-    List<PersistentEntity> getPersistentEntities();
+    Collection<PersistentEntity> getPersistentEntities();
 
     /**
      * Obtains a PersistentEntity by name
@@ -56,6 +59,20 @@ public interface MappingContext {
      * @return The PersistentEntity instance
      */
     PersistentEntity addPersistentEntity(Class javaClass);
+
+    /**
+     * Adds a validator to be used by the entity for validation
+     * @param entity The PersistentEntity
+     * @param validator The validator
+     */
+    void addEntityValidator(PersistentEntity entity, Validator validator);
+
+    /**
+     * Obtains a validator for the given entity
+     * @param entity The entity
+     * @return A validator or null if none exists for the given entity
+     */
+    Validator getEntityValidator(PersistentEntity entity);
 
     /**
      * Returns the syntax reader used to interpret the entity

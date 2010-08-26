@@ -209,6 +209,7 @@
       <module fileurl="file://$PROJECT_DIR$/redis/redis.iml" filepath="$PROJECT_DIR$/redis/redis.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-plugins/redis/redis-grails-plugin.iml" filepath="$PROJECT_DIR$/grails-plugins/redis/redis-grails-plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/dynamic/runtime-dynamic.iml" filepath="$PROJECT_DIR$/dynamic/runtime-dynamic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web/web.iml" filepath="$PROJECT_DIR$/web/web.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">

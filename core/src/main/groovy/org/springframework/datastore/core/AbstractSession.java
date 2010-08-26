@@ -45,6 +45,8 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
     private Datastore datastore;
     private FlushModeType flushMode = FlushModeType.AUTO;
     protected Map<Class, Map<Serializable, Object>> firstLevelCache = new ConcurrentHashMap<Class, Map<Serializable, Object>>();
+
+    protected Map<Object, Map<String, Object>> attributes = new ConcurrentHashMap<Object, Map<String, Object>>();
     protected Map<Object, Serializable> objectToKey = new ConcurrentHashMap<Object, Serializable>();
     protected Collection<Runnable> pendingInserts = new ConcurrentLinkedQueue<Runnable>();
     protected Collection<Runnable> pendingUpdates = new ConcurrentLinkedQueue<Runnable>();
@@ -55,6 +57,31 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
         super();
         this.mappingContext = mappingContext;
         this.datastore = datastore;
+    }
+
+    public void setAttribute(Object entity, String attributeName, Object value) {
+        if(entity != null) {
+            Map<String, Object> attrs = attributes.get(entity);
+            if(attrs == null) {
+                attrs = new ConcurrentHashMap<String, Object>();
+                attributes.put(entity, attrs);
+            }
+
+            if(attributeName != null && value != null) {
+                attrs.put(attributeName, value);
+            }
+
+        }
+    }
+
+    public Object getAttribute(Object entity, String attributeName) {
+        if(entity != null) {
+            final Map<String, Object> attrs = attributes.get(entity);
+            if(attrs != null && attributeName != null) {
+                return attrs.get(attributeName);
+            }
+        }
+        return null;  
     }
 
     public Collection<Runnable> getPendingInserts() {
@@ -125,6 +152,7 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
         pendingInserts.clear();
         pendingUpdates.clear();
         pendingDeletes.clear();
+        attributes.clear();
         exceptionOccurred = false;
     }
 
@@ -298,6 +326,7 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
      * implementation.
      */
     public void disconnect() {
+        clear();
         AbstractDatastore.clearCurrentConnection();
     }
 

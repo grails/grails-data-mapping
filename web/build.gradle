@@ -1,0 +1,5 @@
+dependencies {
+  compile project(":core")
+  compile "org.springframework:spring-web:3.0.2.RELEASE"
+}
+

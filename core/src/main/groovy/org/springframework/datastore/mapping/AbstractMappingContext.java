@@ -14,10 +14,11 @@
  */
 package org.springframework.datastore.mapping;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.springframework.validation.Validator;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Abstract implementation of the MappingContext interface
@@ -27,10 +28,25 @@ import java.util.Map;
  */
 public abstract class AbstractMappingContext implements MappingContext {
 
-    protected List<PersistentEntity> persistentEntities = new ArrayList<PersistentEntity>();
-    protected Map<String,PersistentEntity>  persistentEntitiesByName = new HashMap<String,PersistentEntity>();
+    protected Collection<PersistentEntity> persistentEntities = new ConcurrentLinkedQueue<PersistentEntity>();
+    protected Map<String,PersistentEntity>  persistentEntitiesByName = new ConcurrentHashMap<String,PersistentEntity>();
+    protected Map<PersistentEntity,Validator>  entityValidators = new ConcurrentHashMap<PersistentEntity, Validator>();
+
+    public Validator getEntityValidator(PersistentEntity entity) {
+        if(entity != null) {
+            return entityValidators.get(entity);
+        }
+        return null;
+    }
+
+    public void addEntityValidator(PersistentEntity entity, Validator validator) {
+        if(entity != null && validator != null) {
+            entityValidators.put(entity, validator);
+        }
+    }
 
     public final PersistentEntity addPersistentEntity(Class javaClass) {
+        if(javaClass == null) throw new IllegalArgumentException("PersistentEntity class cannot be null");
         PersistentEntity entity = createPersistentEntity(javaClass);
 
         persistentEntities.remove(entity); persistentEntities.add(entity);
@@ -42,7 +58,7 @@ public abstract class AbstractMappingContext implements MappingContext {
 
     protected abstract PersistentEntity createPersistentEntity(Class javaClass);
 
-    public List<PersistentEntity> getPersistentEntities() {
+    public Collection<PersistentEntity> getPersistentEntities() {
         return persistentEntities;
     }
 

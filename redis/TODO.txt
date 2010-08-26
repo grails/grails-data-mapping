@@ -1,12 +1,12 @@
 TODO high priorities
 
 * Finish Grails plugin
-* Plugging in validation
 * open session in view interceptor
+* Inheritance support
+* Transactions
 
 TODO medium priorities
 
-* Inheritance support
 * Embedded components
 * Nested querying of associations in criteria
 * Named queries

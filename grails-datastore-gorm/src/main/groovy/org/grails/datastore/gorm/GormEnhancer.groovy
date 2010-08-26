@@ -57,21 +57,23 @@ class GormEnhancer {
   }
   void enhance(Class cls) {
     def staticMethods = getStaticApi(cls)
-    def instanceMethods = getInstanceApi(cls)
+    def instanceMethods = [getInstanceApi(cls), getValidationApi(cls)]
     def tm = transactionManager
     cls.metaClass {
-      for(method in instanceMethods.methodNames) {
-        Closure methodHandle = instanceMethods.&"$method"
-        if(methodHandle.parameterTypes.size()>0) {
+      for(apiProvider in instanceMethods) {
+        for(method in apiProvider.methodNames) {
+          Closure methodHandle = apiProvider.&"$method"
+          if(methodHandle.parameterTypes.size()>0) {
 
-           // use fake object just so we have the right method signature
-           Closure curried = methodHandle.curry(new Object())
-          "$method"(new Closure(this) {
-            def call(Object[] args) {
-              methodHandle(delegate, *args)
-            }
-            Class[] getParameterTypes() { curried.parameterTypes }
-          })
+             // use fake object just so we have the right method signature
+             Closure curried = methodHandle.curry(new Object())
+            "$method"(new Closure(this) {
+              def call(Object[] args) {
+                methodHandle(delegate, *args)
+              }
+              Class[] getParameterTypes() { curried.parameterTypes }
+            })
+          }
         }
       }
       'static' {
@@ -121,5 +123,9 @@ class GormEnhancer {
 
   protected GormInstanceApi getInstanceApi(Class cls) {
     return new GormInstanceApi(cls, datastore)
+  }
+
+  protected GormValidationApi getValidationApi(Class cls) {
+    return new GormValidationApi(cls, datastore)
   }
 }

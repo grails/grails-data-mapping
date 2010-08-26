@@ -5,7 +5,7 @@ import org.junit.Test
 /**
  * Abstract base test for testing transactions. Subclasses should do the necessary setup to configure GORM
  */
-abstract class WithTransactionTests {
+abstract class WithTransactionTests extends AbstractGormTests{
 
   @Test
   void testWithTransaction() {

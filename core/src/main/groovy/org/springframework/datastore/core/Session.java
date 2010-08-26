@@ -37,6 +37,24 @@ import java.util.Map;
 public interface Session extends EntityInterceptorAware {
 
 
+    /**
+     * Associates an attribute with the given persistent entity. Attributes will
+     * be cleared out when the Session is closed or cleared.
+     *
+     * @param entity The persistent instance (must be associated with this Session)
+     * @param attributeName The attribute name
+     * @param value The value
+     */
+    void setAttribute(Object entity, String attributeName, Object value);
+
+    /**
+     * Obtains an attribute for the given entity
+     *
+     * @param entity The entity
+     * @param attributeName The attribute
+     * @return The attribute value
+     */
+    Object getAttribute(Object entity, String attributeName);
     
     /**
      * @return true if connected to the datastore

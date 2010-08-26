@@ -17,6 +17,7 @@ package org.springframework.datastore.core;
 import org.springframework.datastore.engine.EntityInterceptor;
 import org.springframework.datastore.engine.EntityInterceptorAware;
 import org.springframework.datastore.mapping.MappingContext;
+import org.springframework.datastore.validation.ValidatingInterceptor;
 
 import java.util.*;
 
@@ -41,6 +42,7 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
     public AbstractDatastore(MappingContext mappingContext, Map<String, String> connectionDetails) {
         this.mappingContext = mappingContext;
         this.connectionDetails = connectionDetails;
+        addEntityInterceptor(new ValidatingInterceptor());
     }
 
     public void setConnectionDetails(Map<String, String> connectionDetails) {

@@ -34,6 +34,7 @@ import org.springframework.util.ClassUtils;
 import redis.clients.jedis.JedisPool;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -175,7 +176,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
 
         public void run() {
             final Session session = RedisDatastore.this.connect();
-            final List<PersistentEntity> entities = RedisDatastore.this.getMappingContext().getPersistentEntities();
+            final Collection<PersistentEntity> entities = RedisDatastore.this.getMappingContext().getPersistentEntities();
             for (PersistentEntity entity : entities) {
                 final List<PersistentProperty> props = entity.getPersistentProperties();
                 List<PersistentProperty> indexed = new ArrayList<PersistentProperty>();

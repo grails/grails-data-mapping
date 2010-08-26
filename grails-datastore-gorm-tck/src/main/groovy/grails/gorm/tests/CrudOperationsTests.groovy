@@ -9,7 +9,7 @@ import org.junit.Test
  * Time: 4:56:21 PM
  * To change this template use File | Settings | File Templates.
  */
-abstract class CrudOperationsTests {
+abstract class CrudOperationsTests extends AbstractGormTests{
 
   @Test
   void testCRUD() {

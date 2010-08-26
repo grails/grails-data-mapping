@@ -5,7 +5,7 @@ import org.junit.Test
 /**
  * Abstract base test for order by queries. Subclasses should do the necessary setup to configure GORM
  */
-abstract class OrderByTests {
+abstract class OrderByTests extends AbstractGormTests{
 
 
   @Test

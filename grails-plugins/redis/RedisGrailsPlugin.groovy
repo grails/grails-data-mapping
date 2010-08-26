@@ -17,14 +17,15 @@ class RedisGrailsPlugin {
     def authorEmail = "graeme.rocher@springsource.com"
     def title = "Redis GORM"
     def description = '''\\
-A plugin that 
+A plugin that integrates the Redis key/value datastore into Grails, providing
+a GORM-like API onto it
 '''
 
     // URL to the plugin's documentation
     def documentation = "http://grails.org/plugin/redis"
 
     def doWithSpring = {
-        def redisConfig = grailsApplication.config?.grails?.redis
+        def redisConfig = application.config?.grails?.redis
         datastoreMappingContext(RedisMappingContextFactoryBean) {
           grailsApplication = ref('grailsApplication')
           pluginManager = ref('pluginManager')
