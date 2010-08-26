@@ -205,6 +205,8 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
                 }
 
             }
+
+            attributes.remove(o);
         }
     }
 
