@@ -20,6 +20,7 @@
     <orderEntry type="module" module-name="grails-datastore-gorm-tck" />
     <orderEntry type="module" module-name="core" />
     <orderEntry type="module" module-name="redis" />
+    <orderEntry type="library" name="Jedis" level="project" />
   </component>
 </module>
 

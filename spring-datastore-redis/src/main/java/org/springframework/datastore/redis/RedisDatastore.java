@@ -179,10 +179,10 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
         if(useJedis()) {
-            return new RedisSession(this, getMappingContext(), RedisClientTemplateFactory.create(host, port, password));
+            return new RedisSession(this, getMappingContext(), JedisTemplateFactory.create(host, port, timeout, pooled,password ));
         }
         else if(redisClientAvailable) {
-            return new RedisSession(this, getMappingContext(), JedisTemplateFactory.create(host, port, timeout, pooled,password ));
+            return new RedisSession(this, getMappingContext(), RedisClientTemplateFactory.create(host, port, password));
         }
         else {
            throw new IllegalStateException("Cannot create RedisSession. No Redis client library found on classpath. Please use either Jedis or java-redis-client");

@@ -28,6 +28,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     private Jedis redis;
     private Transaction transaction;
     private JedisPool pool;
+    public static final String QUEUED = "QUEUED";
 
     public JedisTemplate(String host, int port, int timeout) {
         this.redis = new Jedis(host, port, timeout);
@@ -128,7 +129,13 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public boolean sadd(final String redisKey, final Object o) {
         return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
-                return redis.sadd(redisKey, o.toString()) > 0;
+                if(transaction != null) {
+                    String result = transaction.sadd(redisKey, o.toString());
+                    return result != null && result.equals(QUEUED);
+                }
+                else {
+                    return redis.sadd(redisKey, o.toString()) > 0;
+                }
             }
         });
     }
@@ -136,7 +143,13 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public boolean srem(final String redisKey, final Object o) {
         return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
-                return redis.srem(redisKey, o.toString()) > 0;
+                if(transaction != null) {
+                    String result = transaction.srem(redisKey, o.toString());
+                    return result != null && result.equals(QUEUED);
+                }
+                else {                
+                    return redis.srem(redisKey, o.toString()) > 0;
+                }
             }
         });
     }
@@ -380,7 +393,13 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public boolean expire(final String key, final int timeout) {
         return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
-                return redis.expire(key,timeout) > 0;
+                if(transaction != null) {
+                    String result = transaction.expire(key,timeout);
+                    return result != null && result.equals(QUEUED);
+                }
+                else {
+                    return redis.expire(key,timeout) > 0;
+                }
             }
         });
     }
@@ -478,7 +497,11 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
             public Object doInRedis(Jedis redis) {
                 if(transaction != null) {
                     List<Object> results = transaction.exec();
-                    return results.toArray(new Object[results.size()]);
+                    try {
+                        return results.toArray(new Object[results.size()]);
+                    } finally {
+                        transaction = null;
+                    }
                 }
                 else {
                     throw new NoTransactionException("No transaction started. Call multi() first!");
@@ -492,6 +515,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
             public Object doInRedis(Jedis redis) {
                 if(transaction != null) {
                     transaction.discard();
+                    transaction = null;
                 }
 
                 return null;
