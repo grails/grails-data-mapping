@@ -39,7 +39,8 @@ subprojects { project ->
     if(!isGrailsPlugin) {
       configure(install.repositories.mavenInstaller) {
           pom.whenConfigured { pom ->
-            pom.dependencies.find { dep -> dep.artifactId == 'slf4j-simple' }.optional = true
+            def dependency = pom.dependencies.find { dep -> dep.artifactId == 'slf4j-simple' }
+            dependency?.optional = true
           }
           pom.project {
             licenses {
