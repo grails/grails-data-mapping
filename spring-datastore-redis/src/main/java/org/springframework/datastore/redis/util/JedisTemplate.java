@@ -49,9 +49,9 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         this.redis = jedis;
     }
 
-    public Object[] pipeline(final RedisCallback<RedisTemplate<Jedis, SortingParams>> pipeline) {
+    public List<Object> pipeline(final RedisCallback<RedisTemplate<Jedis, SortingParams>> pipeline) {
 
-        return (Object[]) execute(new RedisCallback<Jedis>() {
+        return (List<Object>) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) throws IOException {
                 return redis.pipelined(new JedisPipeline(){
 
@@ -493,7 +493,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         return (Map<String, String>) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 if (pipeline != null) {
-                    redis.hgetAll(redisKey);
+                    pipeline.hgetAll(redisKey);
                     return null;
                 } else {
                     return redis.hgetAll(redisKey);

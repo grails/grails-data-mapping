@@ -30,12 +30,12 @@ import org.springframework.datastore.redis.RedisSession;
 import org.springframework.datastore.redis.collection.RedisCollection;
 import org.springframework.datastore.redis.collection.RedisSet;
 import org.springframework.datastore.redis.query.RedisQuery;
+import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -145,6 +145,47 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
         return map;
     }
 
+    @Override
+    protected List<Object> retrieveAllEntities(PersistentEntity persistentEntity, Iterable<Serializable> keys) {
+
+        List<Object> entityResults = new ArrayList<Object>();
+
+        if(keys != null ) {
+            final List<Serializable> redisKeys = new ArrayList<Serializable>();
+            for (Serializable key : keys) {
+                 redisKeys.add(key);
+            }
+
+            if(!redisKeys.isEmpty()) {
+                List<Object> results = redisTemplate.pipeline(new RedisCallback<RedisTemplate>(){
+                    public Object doInRedis(RedisTemplate redis) throws IOException {
+                        for (Serializable key : redisKeys) {
+                            redis.hgetall(getRedisKey(family,key));
+                        }
+                        return null;
+                    }
+                });
+
+                for (int i = 0; i < redisKeys.size(); i++) {
+                    Serializable nativeKey = redisKeys.get(i);
+                    Map nativeEntry = getNativeEntryFromList( results.get(i) );
+                    entityResults.add(createObjectFromNativeEntry(getPersistentEntity(), nativeKey, nativeEntry));
+                }
+            }
+        }
+        return entityResults;
+    }
+
+    private Map getNativeEntryFromList(Object result) {
+        Collection flatHash = (Collection) result;
+        Map<String, String> hash = new HashMap<String, String>();
+        Iterator<String> iterator = flatHash.iterator();
+        while (iterator.hasNext()) {
+            hash.put(iterator.next(), iterator.next());
+        }
+        return hash;
+    }
+
     private String getRedisKey(String family, Serializable key) {
         return family + ":" + getLong(key);
     }
@@ -222,14 +263,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
         return new RedisAssociationIndexer(redisTemplate, getMappingContext().getConversionService(), oneToMany);
     }
 
-    @Override
-    protected List<Object> retrieveAllEntities(PersistentEntity persistentEntity, Iterable<Serializable> keys) {
 
-        // TODO: Performance wise this sucks. Replace with lazy ResultList implementation that loads results on demand
-        // This could still result in an N+1 scenario, however it is better than what we have right now.
-        // Ideally replace this with some bulk retrieval mechanism when Redis supports it
-        return super.retrieveAllEntities(persistentEntity, keys);
-    }
 
     public Query createQuery() {
         return new RedisQuery((RedisSession) session, getRedisTemplate(), getPersistentEntity(), this);

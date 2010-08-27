@@ -193,7 +193,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         return getProxyInstance(getPersistentEntity().getJavaClass(), key);
     }
 
-    private Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, T nativeEntry) {
+    protected Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, T nativeEntry) {
         Object obj = persistentEntity.newInstance();
 
         EntityAccess ea = new EntityAccess(persistentEntity, obj);

@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public interface RedisTemplate<T, S> {
     
-    Object[] pipeline(RedisCallback<RedisTemplate<T,S>> pipeline);
+    List<Object> pipeline(RedisCallback<RedisTemplate<T,S>> pipeline);
 
     Object execute(RedisCallback<T> callback);
 
