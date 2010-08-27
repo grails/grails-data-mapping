@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module version="4">
+<module type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
@@ -26,6 +26,10 @@
     <orderEntry type="module" module-name="grails-datastore-gorm" />
     <orderEntry type="module" module-name="grails-datastore-gorm-redis" />
     <orderEntry type="library" name="Spring Transaction" level="project" />
+    <orderEntry type="module" module-name="redis" />
+    <orderEntry type="module" module-name="core" />
+    <orderEntry type="module" module-name="web" />
+    <orderEntry type="library" name="Java Persistence" level="project" />
   </component>
 </module>
 
