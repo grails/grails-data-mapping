@@ -1,15 +1,15 @@
 package org.springframework.datastore.redis.collection
 
-import org.springframework.datastore.redis.util.RedisClientTemplate
 import org.junit.Test
 import org.junit.Before
-import sma.RedisClient
+import org.springframework.datastore.redis.util.JedisTemplate
+import redis.clients.jedis.Jedis
 
 /**
  */
 class RedisSetTests {
 
-  RedisClientTemplate template
+  def template
   @Before
   void setupRedis() {
     template = createTemplate()
@@ -62,7 +62,7 @@ class RedisSetTests {
     assert 6 == count
   }
 
-  private RedisClientTemplate createTemplate() {
-    return new RedisClientTemplate(new RedisClient())
+  private def createTemplate() {
+    return new JedisTemplate(new Jedis("localhost"))
   }
 }

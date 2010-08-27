@@ -126,6 +126,17 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
                 return 0;
             }
         });
+        conversionService.addConverter(new Converter<String, Long>() {
+
+            public Long convert(String s) {
+                try {
+                    return Long.valueOf(s);
+                } catch (NumberFormatException e) {
+                    // ignore
+                }
+                return 0L;
+            }
+        });
 
         conversionService.addConverter(new Converter<Object, String>() {
             public String convert(Object o) {

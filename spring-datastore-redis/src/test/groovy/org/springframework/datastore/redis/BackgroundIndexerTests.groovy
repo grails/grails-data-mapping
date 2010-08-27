@@ -1,8 +1,9 @@
 package org.springframework.datastore.redis
 
 import org.junit.Test
-import org.springframework.datastore.redis.util.RedisClientTemplate
-import sma.RedisClient
+import org.springframework.datastore.redis.util.RedisTemplate
+import org.springframework.datastore.redis.util.JedisTemplate
+import redis.clients.jedis.Jedis
 
 /**
  * Tests background indexing functions correctly
@@ -37,8 +38,8 @@ class BackgroundIndexerTests {
     
   }
 
-  private RedisClientTemplate createTemplate() {
-    return new RedisClientTemplate(new RedisClient())
+  private RedisTemplate createTemplate() {
+    return new JedisTemplate(new Jedis("localhost"))
   }
 
 }

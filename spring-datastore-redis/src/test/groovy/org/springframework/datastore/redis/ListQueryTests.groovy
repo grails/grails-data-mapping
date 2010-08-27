@@ -4,7 +4,6 @@ import org.junit.Test
 import org.springframework.datastore.core.Session
 import org.springframework.datastore.query.Query
 import static org.springframework.datastore.query.Restrictions.*
-import sma.RedisClient
 /**
  * @author Graeme Rocher
  * @since 1.1
@@ -15,7 +14,7 @@ class ListQueryTests {
   void testListQuery() {
     def ds = new RedisDatastore()
     ds.mappingContext.addPersistentEntity(Author)
-    Session<RedisClient> session = ds.connect()
+    def session = ds.connect()
     session.getNativeInterface().flushall()
 
     def a = new Author(name:"Stephen King")
@@ -47,7 +46,7 @@ class ListQueryTests {
   void testDisjunction() {
     def ds = new RedisDatastore()
     ds.mappingContext.addPersistentEntity(Author)
-    Session<RedisClient> session = ds.connect(null)
+    def session = ds.connect(null)
     session.getNativeInterface().flushall()
 
     def a = new Author(name:"Stephen King")
@@ -76,7 +75,7 @@ class ListQueryTests {
   void testIdProjection() {
     def ds = new RedisDatastore()
     ds.mappingContext.addPersistentEntity(Author)
-    Session<RedisClient> session = ds.connect(null)
+    def session = ds.connect(null)
     session.getNativeInterface().flushall()
 
     def a = new Author(name:"Stephen King")
@@ -108,7 +107,7 @@ class ListQueryTests {
   void testSimpleQuery() {
     def ds = new RedisDatastore()
     ds.mappingContext.addPersistentEntity(Author)
-    Session<RedisClient> session = ds.connect()
+    def session = ds.connect()
     session.getNativeInterface().flushall()
 
     def a = new Author(name:"Stephen King")
