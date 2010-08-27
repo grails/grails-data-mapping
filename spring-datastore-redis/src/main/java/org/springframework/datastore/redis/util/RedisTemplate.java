@@ -14,7 +14,6 @@
  */
 package org.springframework.datastore.redis.util;
 
-import sma.RedisClient;
 
 import java.util.List;
 import java.util.Map;
