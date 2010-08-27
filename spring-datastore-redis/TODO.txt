@@ -1,7 +1,6 @@
 TODO high priorities
 
 * Finish Grails plugin
-* open session in view interceptor
 * Inheritance support
 * Transactions
 
