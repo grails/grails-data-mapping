@@ -292,10 +292,10 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
             if(key == null) key = prop.getName();
             if(prop instanceof Simple) {
                 Object propValue = entityAccess.getProperty(prop.getName());
-                propValue = getMappingContext().getConversionService().convert(propValue, prop.getType());
+
                 setEntryValue(e, key, propValue);
                 if(indexed) {
-                    toIndex.put(prop, propValue);
+                    toIndex.put(prop, getEntryValue(e, key));
                 }
 
             }

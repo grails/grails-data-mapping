@@ -15,6 +15,7 @@
 package org.springframework.datastore.redis.engine;
 
 import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.engine.PropertyValueIndexer;
@@ -71,7 +72,8 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     @Override
     protected void setEntryValue(RedisEntry nativeEntry, String key, Object value) {
         if(value != null) {
-            nativeEntry.put(key, value.toString());
+            final ConversionService conversionService = getMappingContext().getConversionService();
+            nativeEntry.put(key, conversionService.convert(value, String.class));
         }
     }
 
