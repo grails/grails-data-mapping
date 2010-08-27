@@ -236,7 +236,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                         pipeline.srem(redisKey, o.toString());
                         return false;
                     } else {
-                        return redis.sadd(redisKey, o.toString()) > 0;
+                        return redis.srem(redisKey, o.toString()) > 0;
                     }
                 }
             }
