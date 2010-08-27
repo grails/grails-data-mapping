@@ -35,6 +35,7 @@ import org.springframework.datastore.redis.util.RedisTemplate;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -43,15 +44,17 @@ import java.util.concurrent.TimeUnit;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEntry, Long> {
+public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Long> {
     private RedisAssociationIndexer indexer;
     private RedisTemplate redisTemplate;
     private RedisCollection allEntityIndex;
+    private String family;
 
     public RedisEntityPersister(MappingContext context, PersistentEntity entity, RedisSession conn, final RedisTemplate template) {
         super(context, entity, conn);
         this.redisTemplate = template;
         allEntityIndex = new RedisSet(redisTemplate, getEntityFamily() + ".all");
+        this.family = getFamily(entity, entity.getMapping());
     }
 
 
@@ -65,12 +68,12 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     @Override
-    protected Object getEntryValue(RedisEntry nativeEntry, String property) {
+    protected Object getEntryValue(Map nativeEntry, String property) {
         return nativeEntry.get(property);
     }
 
     @Override
-    protected void setEntryValue(RedisEntry nativeEntry, String key, Object value) {
+    protected void setEntryValue(Map nativeEntry, String key, Object value) {
         if(value != null) {
             final ConversionService conversionService = getMappingContext().getConversionService();
             nativeEntry.put(key, conversionService.convert(value, String.class));
@@ -134,17 +137,12 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     @Override
-    protected RedisEntry retrieveEntry(PersistentEntity persistentEntity, final String family, Serializable key) {
+    protected Map retrieveEntry(PersistentEntity persistentEntity, final String family, Serializable key) {
         final String hashKey = getRedisKey(family, key);
 
-        final List<String> props = persistentEntity.getPersistentPropertyNames();
-        final String[] values = redisTemplate.hmget(hashKey, props.toArray(new String[props.size()]));
-        if(entityDoesntExistForValues(values)) return null;
-        RedisEntry entry = new RedisEntry(family);
-        for (int i = 0; i < props.size(); i++) {
-              entry.put(props.get(i), values[i]);
-        }
-        return entry;
+        final Map map = redisTemplate.hgetall(hashKey);
+        if(map == null || map.isEmpty()) return null;
+        return map;
     }
 
     private String getRedisKey(String family, Serializable key) {
@@ -161,14 +159,12 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
 
 
     @Override
-    protected void updateEntry(PersistentEntity persistentEntity, Long key, RedisEntry nativeEntry) {
-        String family = getFamily(persistentEntity, persistentEntity.getMapping());
+    protected void updateEntry(PersistentEntity persistentEntity, Long key, Map nativeEntry) {
         performInsertion(family, key, nativeEntry);
     }
 
     @Override
-    protected Long storeEntry(PersistentEntity persistentEntity, Long storeId, RedisEntry nativeEntry) {
-        final String family = nativeEntry.getFamily();
+    protected Long storeEntry(PersistentEntity persistentEntity, Long storeId, Map nativeEntry) {
         try {
             return performInsertion(family, storeId, nativeEntry);
         } finally {
@@ -177,12 +173,12 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     @Override
-    protected Long generateIdentifier(PersistentEntity persistentEntity, RedisEntry id) {
+    protected Long generateIdentifier(PersistentEntity persistentEntity, Map entry) {
         String family = getFamily(persistentEntity, persistentEntity.getMapping());
         return generateIdentifier(family);
     }
 
-    private Long performInsertion(final String family, final Long id, final RedisEntry nativeEntry) {
+    private Long performInsertion(final String family, final Long id, final Map nativeEntry) {
         String key = family + ":" + id;
         redisTemplate.hmset(key,nativeEntry);
                 

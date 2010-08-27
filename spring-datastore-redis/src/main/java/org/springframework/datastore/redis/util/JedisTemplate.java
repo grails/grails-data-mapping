@@ -338,15 +338,13 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     }
 
     public Map<String, String> hgetall(final String redisKey) {
-        final Map map = new HashMap();
 
-        execute(new RedisCallback<Jedis>() {
+        return (Map<String, String>) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 return redis.hgetAll(redisKey);
             }
         });
 
-        return map;
     }
 
     public String[] hmget(final String hashKey, final String[] fields) {
