@@ -15,6 +15,9 @@
 package org.springframework.datastore.redis;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.core.AbstractDatastore;
 import org.springframework.datastore.core.Session;
@@ -33,10 +36,7 @@ import org.springframework.datastore.redis.util.RedisTemplate;
 import org.springframework.util.ClassUtils;
 import redis.clients.jedis.JedisPool;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 import static org.springframework.datastore.config.utils.ConfigUtils.read;
@@ -74,11 +74,11 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
     private boolean backgroundIndex;
 
     public RedisDatastore() {
-        super(new KeyValueMappingContext(""));
+        this(new KeyValueMappingContext(""));
     }
 
     public RedisDatastore(MappingContext mappingContext) {
-        super(mappingContext);
+        this(mappingContext, null);
     }
 
     public RedisDatastore(MappingContext mappingContext, Map<String, String> connectionDetails) {
@@ -96,6 +96,33 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
                 JedisTemplateFactory.createPool(host, port, timeout, resourceCount);
             }
         }
+
+        initializeConverters(mappingContext);
+    }
+
+    private void initializeConverters(MappingContext mappingContext) {
+        final GenericConversionService conversionService = mappingContext.getConversionService();
+
+        conversionService.addConverter(new Converter<Date, String>() {
+            public String convert(Date date) {
+                return String.valueOf(date.getTime());
+            }
+        });
+
+        conversionService.addConverter(new Converter<String, Date>() {
+
+            public Date convert(String s) {
+                try {
+                    final Long time = Long.valueOf(s);
+                    return new Date(time);
+                } catch (NumberFormatException e) {
+                    // ignore
+                }
+                return null;
+            }
+        });
+
+
     }
 
     private boolean usJedis() {

@@ -14,6 +14,9 @@
  */
 package org.springframework.datastore.mapping;
 
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.validation.Validator;
 
 import java.util.*;
@@ -31,6 +34,15 @@ public abstract class AbstractMappingContext implements MappingContext {
     protected Collection<PersistentEntity> persistentEntities = new ConcurrentLinkedQueue<PersistentEntity>();
     protected Map<String,PersistentEntity>  persistentEntitiesByName = new ConcurrentHashMap<String,PersistentEntity>();
     protected Map<PersistentEntity,Validator>  entityValidators = new ConcurrentHashMap<PersistentEntity, Validator>();
+    protected GenericConversionService conversionService = new GenericConversionService();
+
+    public GenericConversionService getConversionService() {
+        return conversionService;
+    }
+
+    public void addTypeConverter(Converter converter) {
+        conversionService.addConverter(converter);
+    }
 
     public Validator getEntityValidator(PersistentEntity entity) {
         if(entity != null) {

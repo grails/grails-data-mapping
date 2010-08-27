@@ -15,8 +15,7 @@
 package org.grails.datastore.gorm.finders;
 
 import groovy.lang.MissingMethodException;
-import org.springframework.beans.TypeConverter;
-import org.springframework.datastore.keyvalue.convert.ByteArrayAwareTypeConverter;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.datastore.query.Query;
 
 import java.util.ArrayList;
@@ -44,7 +43,6 @@ public abstract class DynamicFinder {
     protected Pattern pattern;
     private Pattern[] operatorPatterns;
     private String[] operators;
-    private static final TypeConverter typeConverter = new ByteArrayAwareTypeConverter();
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
 
     public DynamicFinder(Pattern pattern, String[] operators) {
@@ -56,6 +54,7 @@ public abstract class DynamicFinder {
         }
 
     }
+
 
     public boolean isMethodMatch(String methodName) {
         return this.pattern.matcher(methodName.subSequence(0, methodName.length())).find();
@@ -172,11 +171,12 @@ public abstract class DynamicFinder {
         if(argMap != null) {
             Integer maxParam = null;
             Integer offsetParam = null;
+            final ConversionService conversionService = q.getSession().getMappingContext().getConversionService();
             if (argMap.containsKey(ARGUMENT_MAX)) {
-                maxParam = typeConverter.convertIfNecessary(argMap.get(ARGUMENT_MAX),Integer.class);
+                maxParam = conversionService.convert(argMap.get(ARGUMENT_MAX),Integer.class);
             }
             if (argMap.containsKey(ARGUMENT_OFFSET)) {
-                offsetParam = typeConverter.convertIfNecessary(argMap.get(ARGUMENT_OFFSET),Integer.class);
+                offsetParam = conversionService.convert(argMap.get(ARGUMENT_OFFSET),Integer.class);
             }
             String orderParam = (String)argMap.get(ARGUMENT_ORDER);
 

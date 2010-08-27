@@ -1,11 +1,10 @@
 package org.springframework.datastore.redis.collection;
 
+import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.beans.TypeConverter;
-import org.springframework.datastore.keyvalue.convert.ByteArrayAwareTypeConverter;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * An iterator for iterating over Redis results
@@ -17,8 +16,8 @@ public class RedisIterator implements Iterator {
     private String[] values;
     private Collection collection;
     private int index = 0;
-    private RedisValue current;
-    private TypeConverter converter = new ByteArrayAwareTypeConverter();
+    private Object current;
+    private TypeConverter converter = new SimpleTypeConverter();
 
     public RedisIterator(String[] values, Collection col) {
         this.values = values;
@@ -30,7 +29,8 @@ public class RedisIterator implements Iterator {
     }
 
     public Object next() {
-        return values[index++];
+        current = values[index++];
+        return current;
     }
 
     public void remove() {

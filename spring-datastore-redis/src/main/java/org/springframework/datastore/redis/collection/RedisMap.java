@@ -14,8 +14,6 @@
  */
 package org.springframework.datastore.redis.collection;
 
-import org.springframework.beans.TypeConverter;
-import org.springframework.datastore.keyvalue.convert.ByteArrayAwareTypeConverter;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
 import java.util.AbstractMap;
@@ -33,7 +31,6 @@ public class RedisMap extends AbstractMap {
 
     private String redisKey;
     private RedisTemplate redisTemplate;
-    private TypeConverter converter = new ByteArrayAwareTypeConverter();
 
     public RedisMap(RedisTemplate template, String redisKey) {
         this.redisKey = redisKey;

@@ -16,9 +16,7 @@
 package grails.gorm;
 
 import groovy.lang.*;
-import org.springframework.beans.TypeConverter;
 import org.springframework.datastore.core.Datastore;
-import org.springframework.datastore.keyvalue.convert.ByteArrayAwareTypeConverter;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.query.Query;
 import org.springframework.datastore.query.Restrictions;

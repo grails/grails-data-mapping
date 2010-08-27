@@ -15,7 +15,6 @@
 package org.springframework.datastore.keyvalue.engine;
 
 import org.springframework.beans.SimpleTypeConverter;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.collection.PersistentList;
@@ -23,7 +22,6 @@ import org.springframework.datastore.collection.PersistentSet;
 import org.springframework.datastore.core.Session;
 import org.springframework.datastore.core.SessionImplementor;
 import org.springframework.datastore.engine.*;
-import org.springframework.datastore.keyvalue.convert.ByteArrayAwareTypeConverter;
 import org.springframework.datastore.keyvalue.mapping.Family;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.*;
@@ -50,13 +48,10 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         super(context, entity, session);
         classMapping = entity.getMapping();
         entityFamily = getFamily(entity, classMapping);
-        this.typeConverter = new ByteArrayAwareTypeConverter();
-
+        this.typeConverter = new SimpleTypeConverter();
+        typeConverter.setConversionService(context.getConversionService());
     }
 
-    public void setConversionService(ConversionService conversionService) {
-        typeConverter.setConversionService(conversionService);
-    }
 
     public String getEntityFamily() {
         return entityFamily;
@@ -202,7 +197,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         Object obj = persistentEntity.newInstance();
 
         EntityAccess ea = new EntityAccess(persistentEntity, obj);
-        ea.setConversionService(typeConverter.getConversionService());
+        ea.setConversionService(getMappingContext().getConversionService());
         String idName = ea.getIdentifierName();
         ea.setProperty(idName, nativeKey);
 
@@ -296,7 +291,8 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
             final boolean indexed = keyValue != null && keyValue.isIndex();
             if(key == null) key = prop.getName();
             if(prop instanceof Simple) {
-                final Object propValue = entityAccess.getProperty(prop.getName());
+                Object propValue = entityAccess.getProperty(prop.getName());
+                propValue = getMappingContext().getConversionService().convert(propValue, prop.getType());
                 setEntryValue(e, key, propValue);
                 if(indexed) {
                     toIndex.put(prop, propValue);
