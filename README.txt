@@ -30,15 +30,8 @@ mvn -DskipTests=true install
 Redis
 -----
 
-The Redis module requires Jedis and the Java Redis client to be installed into your
+The Redis module requires Jedis to be installed into your
 local Maven cache.
-
-To do so do the following for Java Redis Client:
-
-git clone git://github.com/graemerocher/java-redis-client.git
-cd java-redis-client
-gradle install
-
 
 Then do the following for Jedis:
 
