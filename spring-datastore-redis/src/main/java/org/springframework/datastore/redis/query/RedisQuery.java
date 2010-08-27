@@ -432,12 +432,14 @@ public class RedisQuery extends Query {
         if(!template.exists(key)) {
             String[] results;
             results = template.zrangebyscore(sortKey, from, to);
-            template.multi();
-            for (String result : results) {
-                template.sadd(key, result);
+            if(results != null && results.length > 0) {
+                template.multi();
+                for (String result : results) {
+                    template.sadd(key, result);
+                }
+                template.expire(key, 500);
+                template.exec();
             }
-            template.expire(key, 500);
-            template.exec();
         }
         return key;
     }

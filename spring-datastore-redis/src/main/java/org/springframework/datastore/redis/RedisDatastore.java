@@ -15,10 +15,8 @@
 package org.springframework.datastore.redis;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.GenericConversionService;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.core.AbstractDatastore;
 import org.springframework.datastore.core.Session;
 import org.springframework.datastore.engine.EntityAccess;
@@ -37,7 +35,6 @@ import org.springframework.util.ClassUtils;
 import redis.clients.jedis.JedisPool;
 
 import java.util.*;
-import java.util.concurrent.TimeoutException;
 
 import static org.springframework.datastore.config.utils.ConfigUtils.read;
 
@@ -88,11 +85,11 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
             host = read(String.class, CONFIG_HOST, connectionDetails, DEFAULT_HOST);
             port = read(Integer.class, CONFIG_PORT, connectionDetails, DEFAULT_PORT);
             timeout = read(Integer.class, CONFIG_TIMEOUT, connectionDetails, 2000);
-            pooled = read(Boolean.class, CONFIG_POOLED, connectionDetails, false);
+            pooled = read(Boolean.class, CONFIG_POOLED, connectionDetails, true);
             password = read(String.class, CONFIG_PASSWORD, connectionDetails, null);
             int resourceCount = read(Integer.class, CONFIG_RESOURCE_COUNT, connectionDetails, 10);
 
-            if(pooled && usJedis()) {
+            if(pooled && useJedis()) {
                 JedisTemplateFactory.createPool(host, port, timeout, resourceCount);
             }
         }
@@ -130,8 +127,8 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
 
     }
 
-    private boolean usJedis() {
-        return jedisClientAvailable && !redisClientAvailable;
+    private boolean useJedis() {
+        return jedisClientAvailable;
     }
 
     static class JedisTemplateFactory {
@@ -181,10 +178,10 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
-        if(redisClientAvailable) {
+        if(useJedis()) {
             return new RedisSession(this, getMappingContext(), RedisClientTemplateFactory.create(host, port, password));
         }
-        else if(jedisClientAvailable) {
+        else if(redisClientAvailable) {
             return new RedisSession(this, getMappingContext(), JedisTemplateFactory.create(host, port, timeout, pooled,password ));
         }
         else {

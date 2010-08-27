@@ -295,7 +295,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
                 setEntryValue(e, key, propValue);
                 if(indexed) {
-                    toIndex.put(prop, getEntryValue(e, key));
+                    toIndex.put(prop, propValue);
                 }
 
             }

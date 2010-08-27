@@ -19,6 +19,7 @@
     <orderEntry type="library" name="Grails Libraries" level="project" />
     <orderEntry type="library" name="Java Persistence" level="project" />
     <orderEntry type="library" name="SLF4J" level="project" />
+    <orderEntry type="library" name="Spring Web" level="project" />
   </component>
 </module>
 
