@@ -214,12 +214,12 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
 
     @Override
     public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-        return new RedisPropertyValueIndexer(this, property);
+        return new RedisPropertyValueIndexer(getMappingContext(),this, property);
     }
 
     @Override
     public AssociationIndexer getAssociationIndexer(Association oneToMany) {
-        return new RedisAssociationIndexer(redisTemplate, typeConverter, oneToMany);
+        return new RedisAssociationIndexer(redisTemplate, getMappingContext().getConversionService(), oneToMany);
     }
 
     @Override

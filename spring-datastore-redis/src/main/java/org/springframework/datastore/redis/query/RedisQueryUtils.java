@@ -14,9 +14,10 @@
  */
 package org.springframework.datastore.redis.query;
 
-import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.core.convert.ConversionService;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,12 +30,12 @@ import java.util.List;
 public class RedisQueryUtils {
 
 
-    public static List<Long> transformRedisResults(SimpleTypeConverter typeConverter, String[] results) {
+    public static List<Long> transformRedisResults(ConversionService conversionService, Collection<String> results) {
         List<Long> returnResults;
-        if(results.length != 0) {
-            List<Long> foreignKeys = new ArrayList<Long>(results.length);
+        if(!results.isEmpty()) {
+            List<Long> foreignKeys = new ArrayList<Long>();
             for (String result : results) {
-                foreignKeys.add(getLong(typeConverter, result));
+                foreignKeys.add(conversionService.convert(result, Long.class));
             }
             returnResults=  foreignKeys;
         }
@@ -44,7 +45,4 @@ public class RedisQueryUtils {
         return returnResults;
     }
 
-    public static Long getLong(SimpleTypeConverter typeConverter, Object key) {
-        return typeConverter.convertIfNecessary(key, Long.class);
-    }
 }

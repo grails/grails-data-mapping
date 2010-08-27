@@ -14,6 +14,8 @@
  */
 package org.springframework.datastore.redis.query;
 
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.engine.PropertyValueIndexer;
@@ -59,8 +61,9 @@ public class RedisQuery extends Query {
         }
 
 
-        String[] results;
+        Collection<String> results;
         IdProjection idProjection = null;
+        final ConversionService conversionService = getSession().getMappingContext().getConversionService();
         if(projectionList.isEmpty()) {
             results = paginateResults(finalKey);
         }
@@ -100,17 +103,17 @@ public class RedisQuery extends Query {
                         if(postSortAndPaginationKey == null) postSortAndPaginationKey = storeSortedKey(finalKey);
 
                         String entityKey = entityPersister.getEntityBaseKey();
-                        final String[] values = template.sort(postSortAndPaginationKey, template.sortParams().get(entityKey + ":*->" + validProperty.getName()));
+                        final List<String> values = template.sort(postSortAndPaginationKey, template.sortParams().get(entityKey + ":*->" + validProperty.getName()));
                         List resultList = new ArrayList();
                         Class type = validProperty.getType();
                         final PersistentEntity associatedEntity = getSession().getMappingContext().getPersistentEntity(type.getName());
                         final boolean isEntityType = associatedEntity != null;
                         if(isEntityType) {
-                             return new RedisEntityResultList(getSession(),associatedEntity, values );
+                             return getSession().retrieveAll(type, values);
                         }
                         else {
                             for (String value : values) {
-                                resultList.add(entityPersister.getTypeConverter().convertIfNecessary(value, type));
+                                resultList.add(conversionService.convert(value, type));
                             }
 
                             return resultList;
@@ -133,10 +136,10 @@ public class RedisQuery extends Query {
 
         if(results != null) {
             if(idProjection != null) {
-                return RedisQueryUtils.transformRedisResults(entityPersister.getTypeConverter(), results);
+                return RedisQueryUtils.transformRedisResults(conversionService, results);
             }
             else {
-                return new RedisEntityResultList(getSession(), getEntity(), results);
+                return getSession().retrieveAll(getEntity().getJavaClass(), results );
             }
         }
         else {
@@ -211,7 +214,7 @@ public class RedisQuery extends Query {
         return finalKey;
     }
 
-    private String[] paginateResults(final String key) {
+    private Collection<String> paginateResults(final String key) {
         final boolean shouldSort = shouldSortOrPaginate();
 
         if(shouldSort)
@@ -376,9 +379,9 @@ public class RedisQuery extends Query {
 
         Object max = template.get(maxKey);
         if(max == null) {
-            String[] results = template.zrevrange(sortKey, 0, 0);
-            if(results.length > 0) {
-                max = template.zscore(sortKey, results[0]);
+            Set<String> results = template.zrevrange(sortKey, 0, 0);
+            if(!results.isEmpty()) {
+                max = template.zscore(sortKey, results.iterator().next());
             }
             else max = -1;
 
@@ -392,9 +395,9 @@ public class RedisQuery extends Query {
 
         Object min = template.get(minKey);
         if(min == null) {
-            String[] results = template.zrange(sortKey, 0, 0);
-            if(results.length > 0) {
-                min = template.zscore(sortKey, results[0]);
+            Set<String> results = template.zrange(sortKey, 0, 0);
+            if(!results.isEmpty()) {
+                min = template.zscore(sortKey, results.iterator().next());
             }
             else min = -1;
 
@@ -430,9 +433,8 @@ public class RedisQuery extends Query {
 
         final String key = sortKey + "~between-" + from + "-" + from;
         if(!template.exists(key)) {
-            String[] results;
-            results = template.zrangebyscore(sortKey, from, to);
-            if(results != null && results.length > 0) {
+            Set<String> results = template.zrangebyscore(sortKey, from, to);
+            if(results != null && !results.isEmpty()) {
                 template.multi();
                 for (String result : results) {
                     template.sadd(key, result);
@@ -456,14 +458,14 @@ public class RedisQuery extends Query {
     private String executeSubLike(RedisEntityPersister entityPersister, Like like) {
         final String property = like.getProperty();
         String pattern = like.getPattern();
-        final String[] keys = resolveMatchingIndices(entityPersister, property, pattern);
+        final List<String> keys = resolveMatchingIndices(entityPersister, property, pattern);
         final String disjKey = formulateDisjunctionKey(keys);
-        template.sunionstore(disjKey, keys);
+        template.sunionstore(disjKey, keys.toArray(new String[keys.size()]));
         template.expire(disjKey, 300);
         return disjKey;
     }
 
-    private String[] resolveMatchingIndices(RedisEntityPersister entityPersister, String property, String pattern) {
+    private List<String> resolveMatchingIndices(RedisEntityPersister entityPersister, String property, String pattern) {
         PersistentProperty prop = getEntity().getPropertyByName(property);
         assertIndexed(property, prop);
         RedisPropertyValueIndexer indexer = (RedisPropertyValueIndexer) entityPersister.getPropertyIndexer(prop);

@@ -15,6 +15,7 @@
 package org.springframework.datastore.redis.engine;
 
 import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.types.Association;
@@ -25,6 +26,7 @@ import org.springframework.datastore.redis.query.RedisQueryUtils;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -35,10 +37,10 @@ import java.util.List;
  */
 public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
     private RedisTemplate template;
-    private SimpleTypeConverter typeConverter;
+    private ConversionService typeConverter;
     private Association association;
 
-    public RedisAssociationIndexer(RedisTemplate template, SimpleTypeConverter typeConverter, Association association) {
+    public RedisAssociationIndexer(RedisTemplate template, ConversionService typeConverter, Association association) {
         this.template = template;
         this.typeConverter = typeConverter;
         this.association = association;
@@ -75,7 +77,7 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
     }
 
     private List<Long> queryRedisCollection(RedisCollection col) {
-        String[] results = col.members();
+        Collection<String> results = col.members();
         return RedisQueryUtils.transformRedisResults(typeConverter, results);
     }
 

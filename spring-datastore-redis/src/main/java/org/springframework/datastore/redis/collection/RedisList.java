@@ -16,10 +16,7 @@ package org.springframework.datastore.redis.collection;
 
 import org.springframework.datastore.redis.util.RedisTemplate;
 
-import java.util.AbstractList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Creates a list that is backed onto a Redis list
@@ -74,10 +71,10 @@ public class RedisList extends AbstractList implements List, RedisCollection {
     }
 
     public Iterator iterator() {
-        return new RedisIterator(elements(), this);
+        return elements().iterator();
     }
 
-    private String[] elements() {
+    private List<String> elements() {
         return redisTemplate.lrange(redisKey, 0, -1);
     }
 
@@ -94,11 +91,11 @@ public class RedisList extends AbstractList implements List, RedisCollection {
         return this.redisKey;
     }
 
-    public String[] members() {
-        return redisTemplate.lrange(redisKey, 0, -1);
+    public Set<String> members() {
+        return new HashSet(redisTemplate.lrange(redisKey, 0, -1));
     }
 
-    public String[] members(int offset, int max) {
+    public List<String> members(int offset, int max) {
         return redisTemplate.lrange(redisKey, offset, max);
     }
 }

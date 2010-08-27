@@ -17,6 +17,7 @@ package org.springframework.datastore.redis.collection;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -37,7 +38,7 @@ public class RedisSet extends AbstractRedisCollection implements Set {
     }
 
     public Iterator iterator() {
-        return new RedisIterator(redisTemplate.smembers(redisKey), this);
+        return redisTemplate.smembers(redisKey).iterator();
     }
 
     public boolean add(Object o) {
@@ -49,11 +50,11 @@ public class RedisSet extends AbstractRedisCollection implements Set {
     }
 
 
-    public String[] members() {
+    public Set<String> members() {
         return redisTemplate.smembers(redisKey);  
     }
 
-    public String[] members(final int offset, final int max) {
+    public List<String> members(final int offset, final int max) {
         return redisTemplate.sort(redisKey, redisTemplate.sortParams().limit(offset, max));
 
     }

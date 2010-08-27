@@ -17,6 +17,7 @@ package org.springframework.datastore.redis.engine;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.datastore.engine.PropertyValueIndexer;
+import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.redis.collection.RedisSet;
 import org.springframework.datastore.redis.query.RedisQueryUtils;
@@ -24,6 +25,7 @@ import org.springframework.datastore.redis.util.RedisTemplate;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -39,13 +41,15 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     private PersistentProperty property;
     private SimpleTypeConverter typeConverter;
     private RedisEntityPersister entityPersister;
+    private MappingContext mappingContext;
 
 
-    public RedisPropertyValueIndexer(RedisEntityPersister redisEntityPersister, PersistentProperty property) {
+    public RedisPropertyValueIndexer(MappingContext context, RedisEntityPersister redisEntityPersister, PersistentProperty property) {
         this.template = redisEntityPersister.getRedisTemplate();
         this.typeConverter = redisEntityPersister.getTypeConverter();
         this.entityPersister = redisEntityPersister;
         this.property = property;
+        this.mappingContext = context;
     }
 
 
@@ -53,19 +57,26 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
         if(value != null) {
             template.sadd(createRedisKey(value), primaryKey);
             // for numbers and dates we also create a list index in order to support range queries
+            String propSortKey = entityPersister.getPropertySortKey(property);
             if(value instanceof Number) {
-                String propSortKey = entityPersister.getPropertySortKey(property);
                 Number n = (Number) value;
                 template.zadd(propSortKey,n.doubleValue(),primaryKey);
                 // delete any cached indices
-                final String[] toDelete = template.keys(propSortKey + "~*");
-                if(toDelete != null && toDelete.length>0)
-                    template.del(toDelete);
+                clearCachedIndices(propSortKey);
             }
             else if(value instanceof Date) {
-                // TODO: Support range queries for dates
+                Date d = (Date) value;
+                Long time = d.getTime();
+                template.zadd(propSortKey,time.doubleValue(),primaryKey);
+                clearCachedIndices(propSortKey);
             }
         }
+    }
+
+    private void clearCachedIndices(String propSortKey) {
+        final List<String> toDelete = template.keys(propSortKey + "~*");
+        if(toDelete != null && !toDelete.isEmpty())
+            template.del(toDelete.toArray(new String[toDelete.size()]));
     }
 
     private String createRedisKey(Object value) {
@@ -92,14 +103,14 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
         String redisKey = createRedisKey(value);
 
         RedisSet set = new RedisSet(template, redisKey);
-        String[] results;
+        Collection<String> results;
         if(offset > 0 || max > 0) {
             results = set.members(offset, max);
         }
         else {
             results = set.members();
         }
-        return RedisQueryUtils.transformRedisResults(typeConverter, results);
+        return RedisQueryUtils.transformRedisResults(mappingContext.getConversionService(), results);
     }
 
     public String getIndexName(Object value) {

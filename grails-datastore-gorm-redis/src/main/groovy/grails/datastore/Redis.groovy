@@ -19,7 +19,6 @@ import org.springframework.datastore.redis.collection.RedisCollection
 import org.springframework.datastore.redis.collection.RedisList
 import org.springframework.datastore.redis.collection.RedisMap
 import org.springframework.datastore.redis.collection.RedisSet
-import org.springframework.datastore.redis.query.RedisEntityResultList
 import org.springframework.datastore.redis.util.RedisTemplate
 import org.springframework.datastore.redis.RedisDatastore
 import org.springframework.datastore.core.Datastore
@@ -91,7 +90,7 @@ class Redis  {
       throw new IllegalArgumentException("Class [$type] is not a persistent entity")
     }
     def results = col.members(offset, max)
-    return new RedisEntityResultList(datastore.currentSession, entity, results)
+    datastore.currentSession.retrieveAll(type, results)
   }
 
 }

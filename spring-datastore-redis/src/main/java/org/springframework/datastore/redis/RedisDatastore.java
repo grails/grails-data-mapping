@@ -29,7 +29,6 @@ import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.query.Query;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
 import org.springframework.datastore.redis.util.JedisTemplate;
-import org.springframework.datastore.redis.util.RedisClientTemplate;
 import org.springframework.datastore.redis.util.RedisTemplate;
 import org.springframework.util.ClassUtils;
 import redis.clients.jedis.JedisPool;
@@ -45,9 +44,6 @@ import static org.springframework.datastore.config.utils.ConfigUtils.read;
  * @since 1.0
  */
 public class RedisDatastore extends AbstractDatastore implements InitializingBean {
-
-    private static final boolean redisClientAvailable =
-            ClassUtils.isPresent("sma.RedisClient", RedisSession.class.getClassLoader());
 
     private static final boolean jedisClientAvailable =
             ClassUtils.isPresent("redis.clients.jedis.Jedis", RedisSession.class.getClassLoader());
@@ -119,6 +115,18 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
             }
         });
 
+        conversionService.addConverter(new Converter<String, Integer>() {
+
+            public Integer convert(String s) {
+                try {
+                    return Integer.valueOf(s);
+                } catch (NumberFormatException e) {
+                    // ignore
+                }
+                return 0;
+            }
+        });
+
         conversionService.addConverter(new Converter<Object, String>() {
             public String convert(Object o) {
                 return o.toString();
@@ -156,16 +164,6 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
         }
     }
 
-    static class RedisClientTemplateFactory {
-        static RedisTemplate create(String host, int port, String password) {
-            final RedisClientTemplate template = new RedisClientTemplate(host, port);
-            if(password != null) {
-                template.setPassword(password);
-            }
-
-            return template;
-        }
-    }
 
     /**
      * Sets whether the Redis datastore should create indices in the background instead of on startup
@@ -181,11 +179,8 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
         if(useJedis()) {
             return new RedisSession(this, getMappingContext(), JedisTemplateFactory.create(host, port, timeout, pooled,password ));
         }
-        else if(redisClientAvailable) {
-            return new RedisSession(this, getMappingContext(), RedisClientTemplateFactory.create(host, port, password));
-        }
         else {
-           throw new IllegalStateException("Cannot create RedisSession. No Redis client library found on classpath. Please use either Jedis or java-redis-client");
+           throw new IllegalStateException("Cannot create RedisSession. No Redis client library found on classpath. Please make sure you have the Jedis library on your classpath");
         }
     }
 

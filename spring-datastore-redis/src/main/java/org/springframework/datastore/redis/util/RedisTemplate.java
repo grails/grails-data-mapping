@@ -1,8 +1,24 @@
+/* Copyright (C) 2010 SpringSource
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.datastore.redis.util;
 
 import sma.RedisClient;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Interface for RedisTemplate implementations to implement
@@ -10,6 +26,9 @@ import java.util.Map;
  * @param <T> The concrete Redis client class
  */
 public interface RedisTemplate<T, S> {
+    
+    Object[] pipeline(RedisCallback<RedisTemplate<T,S>> pipeline);
+
     Object execute(RedisCallback<T> callback);
 
     SortParams sortParams();
@@ -28,7 +47,7 @@ public interface RedisTemplate<T, S> {
 
     boolean srem(String redisKey, Object o);
 
-    String[] smembers(String redisKey);
+    Set<String> smembers(String redisKey);
 
     void lset(String redisKey, int index, Object o);
 
@@ -36,7 +55,7 @@ public interface RedisTemplate<T, S> {
 
     int llen(String redisKey);
 
-    String[] lrange(String redisKey, int start, int end);
+    List<String> lrange(String redisKey, int start, int end);
 
     void rpush(String redisKey, Object o);
 
@@ -62,7 +81,7 @@ public interface RedisTemplate<T, S> {
 
     Map<String, String> hgetall(String redisKey);
 
-    String[] hmget(String hashKey, String[] fields);
+    List<String> hmget(String hashKey, String... fields);
 
     void hmset(String key, Map<String, String> nativeEntry);
 
@@ -70,9 +89,9 @@ public interface RedisTemplate<T, S> {
 
     int del(String... redisKey);
 
-    String[] sinter(String...keys);
+    Set<String> sinter(String...keys);
 
-    String[] sunion(String... keys);
+    Set<String> sunion(String... keys);
 
     void sinterstore(String storeKey, String... keys);
 
@@ -86,7 +105,7 @@ public interface RedisTemplate<T, S> {
 
     String getset(String redisKey, Object o);
 
-    String[] keys(String pattern);
+    List<String> keys(String pattern);
 
     void close();
 
@@ -106,9 +125,9 @@ public interface RedisTemplate<T, S> {
 
     int zrank(String key, Object member);
 
-    String[] zrange(String key, int fromIndex, int toIndex);
+    Set<String> zrange(String key, int fromIndex, int toIndex);
 
-    String[] zrangebyscore(String sortKey, double rank1, double rank2);
+    Set<String> zrangebyscore(String sortKey, double rank1, double rank2);
 
     void set(String key, Object value);
 
@@ -116,7 +135,7 @@ public interface RedisTemplate<T, S> {
 
     Double zscore(String key, String member);
 
-    String[] zrevrange(String key, int start, int end);
+    Set<String> zrevrange(String key, int start, int end);
 
     void setPassword(String pass);
 
@@ -124,7 +143,7 @@ public interface RedisTemplate<T, S> {
 
     String spop(String key);
 
-    public String[] sort(final String key, final SortParams<S> params);
+    public List<String> sort(final String key, final SortParams<S> params);
 
     public void sortstore(final String key, final String destKey,  final SortParams<S> params);
 

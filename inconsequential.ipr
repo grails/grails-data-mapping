@@ -373,7 +373,9 @@
         <root url="jar://$GRADLE_CACHE$/redis.clients/jedis/jars/jedis-1.0.0-RC3.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/../../../nosql/jedis/src/main/java" />
+      </SOURCES>
     </library>
   </component>
 </project>

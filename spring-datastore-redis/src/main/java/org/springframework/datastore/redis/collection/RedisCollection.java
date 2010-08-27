@@ -2,6 +2,7 @@ package org.springframework.datastore.redis.collection;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Commons interface for Redis collections
@@ -15,7 +16,7 @@ public interface RedisCollection extends Collection {
      */    
     String getRedisKey();
     
-    String[] members();
+    Set<String> members();
 
-    String[] members(int offset, int max);
+    List<String> members(int offset, int max);
 }
