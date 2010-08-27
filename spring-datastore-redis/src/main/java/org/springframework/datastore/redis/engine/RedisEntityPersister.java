@@ -127,6 +127,11 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     @Override
+    protected Serializable convertToNativeKey(Serializable nativeKey) {
+        return typeConverter.convertIfNecessary(nativeKey, Long.class);
+    }
+
+    @Override
     protected RedisEntry retrieveEntry(PersistentEntity persistentEntity, final String family, Serializable key) {
         final String hashKey = getRedisKey(family, key);
 
@@ -162,7 +167,11 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     @Override
     protected Long storeEntry(PersistentEntity persistentEntity, Long storeId, RedisEntry nativeEntry) {
         final String family = nativeEntry.getFamily();
-        return performInsertion(family, storeId, nativeEntry);
+        try {
+            return performInsertion(family, storeId, nativeEntry);
+        } finally {
+            getAllEntityIndex().add(storeId);
+        }
     }
 
     @Override
@@ -174,6 +183,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     private Long performInsertion(final String family, final Long id, final RedisEntry nativeEntry) {
         String key = family + ":" + id;
         redisTemplate.hmset(key,nativeEntry);
+                
         return id;
 
     }
@@ -183,9 +193,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<RedisEn
     }
 
     protected Long generateIdentifier(final String family) {
-        long id = redisTemplate.incr(family + ".next_id");
-        getAllEntityIndex().add(id);
-        return id;
+        return (long) redisTemplate.incr(family + ".next_id");        
     }
 
     @Override

@@ -94,16 +94,30 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
     return new AssociationIndexer() {
 
       private getIndexName(primaryKey) { "~${association.owner.name}:${association.name}:$primaryKey"}
+
       void index(Object primaryKey, List foreignKeys) {
-        def index = getIndexName(primaryKey)
-        def indexed = indices[index]
-        if(indexed == null) {
-          indexed = []
-          indices[index] = indexed
-        }
+        def indexed = getIndex(primaryKey)
         indexed.addAll(foreignKeys)
 
       }
+
+      private List getIndex(primaryKey) {
+        def index = getIndexName(primaryKey)
+        def indexed = indices[index]
+        if (indexed == null) {
+          indexed = []
+          indices[index] = indexed
+        }
+        return indexed
+      }
+
+      void index(Object primaryKey, Object foreignKey) {
+        def indexed = getIndex(primaryKey)
+        indexed.add(foreignKey)
+
+      }
+
+
 
       List query(Object primaryKey) {
         def index = getIndexName(primaryKey)

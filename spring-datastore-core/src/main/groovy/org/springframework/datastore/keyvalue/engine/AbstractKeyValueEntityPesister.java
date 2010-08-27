@@ -181,12 +181,17 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
     @Override
     protected final Object retrieveEntity(PersistentEntity persistentEntity, Serializable nativeKey) {
 
-        T nativeEntry = retrieveEntry(persistentEntity, entityFamily, nativeKey);
+        final Serializable key = convertToNativeKey(nativeKey);
+        T nativeEntry = retrieveEntry(persistentEntity, entityFamily, key);
         if(nativeEntry != null) {
-            return createObjectFromNativeEntry(persistentEntity, nativeKey, nativeEntry);
+            return createObjectFromNativeEntry(persistentEntity, key, nativeEntry);
         }
 
         return null;
+    }
+
+    protected Serializable convertToNativeKey(Serializable nativeKey) {
+        return nativeKey;
     }
 
     public Object proxy(Serializable key) {
@@ -279,6 +284,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
         final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
         final Map<OneToMany, List<Serializable>> oneToManyKeys = new HashMap<OneToMany, List<Serializable>>();
+        final Map<OneToMany, Serializable> inverseCollectionUpdates = new HashMap<OneToMany, Serializable>();
         final Map<PersistentProperty, Object> toIndex = new HashMap<PersistentProperty, Object>();
         for (PersistentProperty prop : props) {
             PropertyMapping<KeyValue> pm = prop.getMapping();
@@ -319,12 +325,25 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
                         final Object associatedObject = entityAccess.getProperty(prop.getName());
                         if(associatedObject != null) {
-                            Serializable associationId = session.persist(associatedObject);
+                            Serializable associationId;
+                            AbstractKeyValueEntityPesister associationPersister = (AbstractKeyValueEntityPesister) session.getPersister(associatedObject);
+                            if(!session.contains(associatedObject)) {
+                                associationId = session.persist(associatedObject);
+                            }
+                            else {
+                                associationId = associationPersister.getObjectIdentifier(associatedObject);
+                            }
                             setEntryValue(e, key, associationId);
                             if(indexed) {
                                 toIndex.put(prop, associationId);
                             }
 
+                            if(association.isBidirectional()) {
+                                Association inverse = association.getInverseSide();
+                                if(inverse instanceof OneToMany) {
+                                    inverseCollectionUpdates.put((OneToMany) inverse, associationId);
+                                }
+                            }
                         }
                         else {
                             throw new DataIntegrityViolationException("Cannot save object ["+entityAccess.getEntity()+"] of type ["+persistentEntity+"]. The association ["+association+"] is cannot be null.");
@@ -351,6 +370,12 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
                     storeEntry(persistentEntity, updateId, e);
                     updateOneToManyIndices(updateId, oneToManyKeys);
                     updatePropertyIndices(updateId, toIndex);
+                    for (OneToMany inverseCollection : inverseCollectionUpdates.keySet()) {
+                        final Serializable primaryKey = inverseCollectionUpdates.get(inverseCollection);
+                        final AbstractKeyValueEntityPesister inversePersister = (AbstractKeyValueEntityPesister) session.getPersister(inverseCollection.getOwner());
+                        final AssociationIndexer associationIndexer = inversePersister.getAssociationIndexer(inverseCollection);
+                        associationIndexer.index(primaryKey, updateId );
+                    }
                 }
             });
         }

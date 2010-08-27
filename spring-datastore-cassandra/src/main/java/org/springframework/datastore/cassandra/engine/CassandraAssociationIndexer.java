@@ -80,6 +80,11 @@ public class CassandraAssociationIndexer implements AssociationIndexer<Serializa
         });
     }
 
+    public void index(Serializable primaryKey, Serializable foreignKey) {
+        List list = new ArrayList(); list.add(foreignKey);
+        index(primaryKey, list);
+    }
+
     public List<Serializable> query(final Serializable primaryKey) {
         HectorTemplate ht = new HectorTemplate(cassandraClient);
         return (List<Serializable>) ht.execute(keyspace, new HectorCallback() {

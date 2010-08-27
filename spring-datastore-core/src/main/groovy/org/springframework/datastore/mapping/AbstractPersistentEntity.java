@@ -17,6 +17,7 @@ package org.springframework.datastore.mapping;
 import org.springframework.datastore.core.EntityCreationException;
 import org.springframework.datastore.mapping.lifecycle.Initializable;
 import org.springframework.datastore.mapping.types.Association;
+import org.springframework.datastore.mapping.types.OneToMany;
 
 import java.beans.Introspector;
 import java.util.*;
@@ -52,7 +53,8 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
         persistentPropertyNames = new ArrayList<String>();
         associations = new ArrayList();
         for (PersistentProperty persistentProperty : persistentProperties) {
-            persistentPropertyNames.add(persistentProperty.getName());
+            if(!(persistentProperty instanceof OneToMany))
+                persistentPropertyNames.add(persistentProperty.getName());
             if(persistentProperty instanceof Association) {
                 associations.add((Association) persistentProperty);
             }

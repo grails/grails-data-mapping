@@ -16,6 +16,7 @@ package org.springframework.datastore.engine;
 
 import org.springframework.datastore.mapping.PersistentEntity;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -47,4 +48,11 @@ public interface AssociationIndexer<K, T> {
 
     
     PersistentEntity getIndexedEntity();
+
+    /**
+     * Index a single foreign key
+     * @param primaryKey The primaryKey
+     * @param foreignKey The foreignKey
+     */
+    void index(T primaryKey, K foreignKey);
 }

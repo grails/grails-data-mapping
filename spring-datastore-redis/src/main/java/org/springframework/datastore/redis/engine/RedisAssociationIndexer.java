@@ -24,6 +24,7 @@ import org.springframework.datastore.redis.collection.RedisSet;
 import org.springframework.datastore.redis.query.RedisQueryUtils;
 import org.springframework.datastore.redis.util.RedisTemplate;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -46,13 +47,13 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
     public void index(Long primaryKey, final List<Long> foreignKeys) {
         final String redisKey = createRedisKey(primaryKey);
         RedisCollection col = createRedisCollection(redisKey);
-        final List storedKeys = queryRedisCollection(col);
+        col.addAll(foreignKeys);
+    }
 
-        for (Long foreignKey : foreignKeys) {
-            if(!storedKeys.contains(foreignKey)) {
-                col.add(foreignKey);
-            }
-        }
+    public void index(Long primaryKey, Long foreignKey) {
+        final String redisKey = createRedisKey(primaryKey);
+        RedisCollection col = createRedisCollection(redisKey);
+        col.add(foreignKey);
     }
 
     private String createRedisKey(Long primaryKey) {
