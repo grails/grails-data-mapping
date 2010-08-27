@@ -23,14 +23,18 @@ import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import org.springframework.datastore.mapping.PersistentEntity
+import org.springframework.context.ApplicationContextAware
+import org.springframework.context.ApplicationContext
 
 /**
  *
  */
-class RedisMappingContextFactoryBean implements FactoryBean<MappingContext>, GrailsApplicationAware{
+class RedisMappingContextFactoryBean implements FactoryBean<MappingContext>, GrailsApplicationAware, ApplicationContextAware{
 
   GrailsApplication grailsApplication
   GrailsPluginManager pluginManager
+  ApplicationContext applicationContext
+
   MappingContext getObject() {
     def mappingContext = new KeyValueMappingContext("");
     def isHibernateInstalled = pluginManager.hasGrailsPlugin("hibernate")
@@ -50,8 +54,11 @@ class RedisMappingContextFactoryBean implements FactoryBean<MappingContext>, Gra
          }
 
         if(entity) {
-          def validator = domainClass.validator
-          mappingContext.addEntityValidator(entity, validator)
+          final validatorBeanName = "${domainClass.fullName}Validator"
+          def validator = applicationContext.containsBean(validatorBeanName) ? applicationContext.getBean(validatorBeanName) : null
+
+          if(validator)
+            mappingContext.addEntityValidator(entity, validator)
         }
       }
     }
