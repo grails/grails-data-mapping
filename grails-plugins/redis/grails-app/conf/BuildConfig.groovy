@@ -9,6 +9,7 @@ grails.project.dependency.resolution = {
         // excludes 'ehcache'
     }
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+    useOrigin true
     repositories {
         mavenLocal()
 
@@ -24,7 +25,8 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        compile "org.grails:grails-datastore-gorm-redis:0.1" 
+        compile "org.grails:grails-datastore-gorm-redis:0.1"
+        compile "org.springframework:spring-datastore-web:0.1"
 
     }
 }
