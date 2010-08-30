@@ -1,20 +1,17 @@
 package grails.gorm.tests
 
-import org.junit.Test
-
 /**
  * Abstract base test for criteria queries. Subclasses should do the necessary setup to configure GORM
  */
-class CriteriaBuilderTests extends AbstractGormTests{
+class CriteriaBuilderSpec extends GormDatastoreSpec {
 
-  @Test
-  void testDisjunction() {
+  def testDisjunction() {
+    given:
     def age = 40
     ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
-
-
     def criteria = TestEntity.createCriteria()
 
+    when:
     def results = criteria.list {
       or {
         like('name', 'B%')
@@ -23,8 +20,8 @@ class CriteriaBuilderTests extends AbstractGormTests{
 
     }
 
-    assert 3 == results.size()
-
+    then:
+    3 == results.size()
   }
 
   @Test

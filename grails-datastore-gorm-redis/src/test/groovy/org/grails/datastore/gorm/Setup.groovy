@@ -1,6 +1,6 @@
-package org.grails.datastore.gorm.redis
+package org.grails.datastore.gorm
 
-
+import org.grails.datastore.gorm.redis.*
 import grails.gorm.tests.ChildEntity
 import grails.gorm.tests.TestEntity
 import org.springframework.datastore.core.Session
@@ -17,7 +17,7 @@ import grails.gorm.tests.CommonTypes
  * Time: 12:31:02 PM
  * To change this template use File | Settings | File Templates.
  */
-class RedisSetup {
+class Setup {
   static Session setup() {
     def redis = new RedisDatastore()
     def entity = redis.mappingContext.addPersistentEntity(TestEntity)

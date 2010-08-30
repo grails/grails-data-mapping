@@ -1,17 +1,19 @@
 
+def spockDependency = "org.spockframework:spock-core:0.5-groovy-1.7-SNAPSHOT"
 
-subprojects { project ->
+subprojects {
 
     version = '0.1'
   
-	def projectName = project.toString()
-    def isGrailsPlugin = projectName.contains(":grails-plugins")
+    def isGrailsPlugin = project.name.startsWith("grails-plugins")
 	if(!isGrailsPlugin) {
 	    apply plugin: 'groovy'
 	    apply plugin: 'eclipse'
         apply plugin: 'maven'
 	}
 
+    def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") && !project.name.endsWith("tck")
+    
     repositories {
        mavenRepo name:'mavenLocal',
                  urls:new File( System.getProperty("user.home" ), ".m2/repository" ).toURL().toString()
@@ -23,12 +25,33 @@ subprojects { project ->
 		if(!isGrailsPlugin) {
 	       	groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.7.4'
             testCompile 'junit:junit:4.8.1'
-            testCompile "org.spockframework:spock-core:0.5-groovy-1.7-SNAPSHOT"          
+            testCompile spockDependency
+        }
+        
+        if (project.name == "grails-datastore-gorm-tck") {
+          compile spockDependency
         }
     }
 
+    if (isGormDatasource) {
+      dependencies {
+        testCompile project(":grails-datastore-gorm-tck")
+      }
+      
+      // We need to test against the TCK. Gradle cannot find/run tests from jars
+      // without a lot of plumbing, so here we copy the class files from the TCK
+      // project into this project's test classes dir so Gradle can find the test
+      // classes and run them. See grails.gorm.tests.GormDatastoreSpec for on the TCK.
+      test.doFirst {
+        copy {
+          from project(":grails-datastore-gorm-tck").sourceSets.main.classesDir
+          into sourceSets.test.classesDir
+          include "**/*Spec.class"
+        }
+      }
+    }
 
-    if(projectName.contains(":grails-")) {
+    if(project.name.startsWith("grails-")) {
       group = "org.grails"
       archivesBaseName = "grails-datastore"
     }
