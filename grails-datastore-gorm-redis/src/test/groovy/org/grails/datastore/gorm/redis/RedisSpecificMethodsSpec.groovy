@@ -11,7 +11,7 @@ import grails.gorm.tests.*
  */
 class RedisSpecificMethodsSpec extends GormDatastoreSpec {
 
-  def testGetRandom() {
+  def "Test get random entity"() {
     given:
     def age = 40
     def names = ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"]
@@ -25,7 +25,7 @@ class RedisSpecificMethodsSpec extends GormDatastoreSpec {
     names.find { it == t.name }
   }
 
-  def testPop() {
+  def "Test pop random entity"() {
     given:
     def age = 40
     def names = ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"]

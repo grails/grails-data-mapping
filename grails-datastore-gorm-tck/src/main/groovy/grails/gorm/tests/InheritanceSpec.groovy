@@ -9,11 +9,11 @@ import org.junit.Test
  * Time: 12:53:23 PM
  * To change this template use File | Settings | File Templates.
  */
-class InheritanceTests {
+class InheritanceSpec extends GormDatastoreSpec {
 
-    @Test
-    void testPolymorphicQuerying() {
+    void "Test querying with inheritance"() {
 
+      given:
         def city = new City([code: "LON", name: "London", longitude: 49.1, latitude: 53.1])
         def location = new Location([code: "XX", name: "The World"])
         def country = new Country([code: "UK", name: "United Kingdom", population: 10000000])
@@ -23,39 +23,31 @@ class InheritanceTests {
         location.save()
 
         City.withSession { session -> session.flush();session.clear() }
-        
 
-        assert 1 == City.count()
-        assert 1 == Country.count()
-        assert 3 == Location.count()
-
+      when:
         city = City.get(city.id)
-
-        assert city
-        assert city instanceof City
-
-        clearSession()
-
-        city = Location.get(city.id)
-
-        assert city
-        assert city instanceof City
-
-        clearSession()
-
-
-        city = Location.findByName("London")
-        assert city
-        assert city instanceof City
-        assert "London" == city.name
-        assert 49.1 == city.longitude
-        assert "LON" == city.code
-
+        def london = Location.get(city.id)
         country = Location.findByName("United Kingdom")
-        assert country
-        assert country instanceof Country
-        assert "UK" == country.code
-        assert 10000000 == country.population
+        def london2 = Location.findByName("London")
+
+      then:
+        1 == City.count()
+        1 == Country.count()
+        3 == Location.count()
+
+
+
+        city != null
+        city instanceof City
+        london instanceof City
+        london2 instanceof City
+        "London" == london2.name
+        49.1 == london2.longitude
+        "LON" == london2.code
+
+        country instanceof Country
+        "UK" == country.code
+        10000000 == country.population
 
     }
 
