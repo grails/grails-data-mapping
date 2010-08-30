@@ -377,6 +377,13 @@
         <root url="file://$PROJECT_DIR$/../../../nosql/jedis/src/main/java" />
       </SOURCES>
     </library>
+    <library name="Spock">
+      <CLASSES>
+        <root url="jar://$GRADLE_CACHE$/org.spockframework/spock-core/jars/spock-core-0.5-groovy-1.7-SNAPSHOT.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
   </component>
 </project>
 

@@ -15,7 +15,7 @@ subprojects { project ->
     repositories {
        mavenRepo name:'mavenLocal',
                  urls:new File( System.getProperty("user.home" ), ".m2/repository" ).toURL().toString()
-
+       mavenRepo name: "spock-snapshots", urls: ["http://m2repo.spockframework.org/snapshots"]
        mavenCentral()
     }
 
@@ -23,6 +23,7 @@ subprojects { project ->
 		if(!isGrailsPlugin) {
 	       	groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.7.4'
             testCompile 'junit:junit:4.8.1'
+            testCompile "org.spockframework:spock-core:0.5-groovy-1.7-SNAPSHOT"          
         }
     }
 
