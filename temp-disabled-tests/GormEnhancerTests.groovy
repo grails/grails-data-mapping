@@ -180,13 +180,3 @@ abstract class GormEnhancerTests extends AbstractGormTests{
   }
 }
 
-@grails.persistence.Entity
-class ChildEntity {
-  Long id
-  String name
-
-  static mapping = {
-    name index:true
-  }
-  static belongsTo = [TestEntity]
-}

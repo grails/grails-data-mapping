@@ -1,7 +1,7 @@
-package org.grails.datastore.gorm.redis
-
+package org.grails.datastore.gorm
 
 import grails.gorm.tests.*
+import org.grails.datastore.gorm.redis.*
 import org.springframework.datastore.core.Session
 import org.springframework.datastore.redis.RedisDatastore
 import org.springframework.validation.Validator
@@ -15,7 +15,7 @@ import org.springframework.validation.Errors
  * Time: 12:31:02 PM
  * To change this template use File | Settings | File Templates.
  */
-class RedisSetup {
+class Setup {
   static Session setup() {
     def redis = new RedisDatastore()
     def entity = redis.mappingContext.addPersistentEntity(TestEntity)
