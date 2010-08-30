@@ -33,6 +33,7 @@ public abstract class AbstractMappingContext implements MappingContext {
 
     protected Collection<PersistentEntity> persistentEntities = new ConcurrentLinkedQueue<PersistentEntity>();
     protected Map<String,PersistentEntity>  persistentEntitiesByName = new ConcurrentHashMap<String,PersistentEntity>();
+    protected Map<PersistentEntity,Map<String,PersistentEntity>>  persistentEntitiesByDiscriminator = new ConcurrentHashMap<PersistentEntity,Map<String,PersistentEntity>>();
     protected Map<PersistentEntity,Validator>  entityValidators = new ConcurrentHashMap<PersistentEntity, Validator>();
     protected GenericConversionService conversionService = new GenericConversionService();
 
@@ -59,13 +60,35 @@ public abstract class AbstractMappingContext implements MappingContext {
 
     public final PersistentEntity addPersistentEntity(Class javaClass) {
         if(javaClass == null) throw new IllegalArgumentException("PersistentEntity class cannot be null");
-        PersistentEntity entity = createPersistentEntity(javaClass);
 
-        persistentEntities.remove(entity); persistentEntities.add(entity);
-        persistentEntitiesByName.put(entity.getName(), entity);
-        entity.initialize();
+        PersistentEntity entity = persistentEntitiesByName.get(javaClass.getName());
+
+        if(entity == null) {
+            entity = createPersistentEntity(javaClass);
+
+            persistentEntities.remove(entity); persistentEntities.add(entity);
+            persistentEntitiesByName.put(entity.getName(), entity);
+            entity.initialize();
+            if(!entity.isRoot()) {
+                PersistentEntity root = entity.getRootEntity();
+                Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(root);
+                if(children == null) {
+                    children = new ConcurrentHashMap<String,PersistentEntity>();
+                    persistentEntitiesByDiscriminator.put(root, children);
+                }
+                children.put(entity.getDiscriminator(), entity);
+            }
+        }
 
         return entity;
+    }
+
+    public PersistentEntity getChildEntityByDiscriminator(PersistentEntity root, String discriminator) {
+        final Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(root);
+        if(children != null) {
+            return children.get(discriminator);
+        }
+        return null;  
     }
 
     protected abstract PersistentEntity createPersistentEntity(Class javaClass);

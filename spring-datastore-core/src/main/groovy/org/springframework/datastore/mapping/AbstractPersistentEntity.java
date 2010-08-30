@@ -20,6 +20,7 @@ import org.springframework.datastore.mapping.types.Association;
 import org.springframework.datastore.mapping.types.OneToMany;
 
 import java.beans.Introspector;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -38,6 +39,7 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
     protected List<String> persistentPropertyNames;
     private String decapitalizedName;
     protected Set owners;
+    private PersistentEntity parentEntity = null;
 
     public AbstractPersistentEntity(Class javaClass, MappingContext context) {
         if(javaClass == null) throw new IllegalArgumentException("The argument [javaClass] cannot be null");
@@ -63,7 +65,38 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
             propertiesByName.put(persistentProperty.getName(), persistentProperty);
         }
 
+        Class superClass = javaClass.getSuperclass();
+        if (!javaClass.getSuperclass().equals(Object.class) &&
+            !Modifier.isAbstract(javaClass.getSuperclass().getModifiers())) {
+            this.parentEntity = context.addPersistentEntity(superClass);
+        }
+
+
+
+
         getMapping().getMappedForm(); // initialize mapping
+    }
+
+    public PersistentEntity getParentEntity() {
+        return parentEntity;
+    }
+
+    public String getDiscriminator() {
+        return getJavaClass().getSimpleName();
+    }
+
+    public PersistentEntity getRootEntity() {
+        PersistentEntity root = this;
+        PersistentEntity parent = getParentEntity();
+        while(parent != null) {
+            root = parent;
+            parent = parent.getParentEntity();
+        }
+        return root;
+    }
+
+    public boolean isRoot() {
+        return getParentEntity() == null;
     }
 
     public boolean isOwningEntity(PersistentEntity owner) {

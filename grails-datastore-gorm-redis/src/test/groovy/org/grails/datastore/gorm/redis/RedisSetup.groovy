@@ -1,14 +1,12 @@
 package org.grails.datastore.gorm.redis
 
 
-import grails.gorm.tests.ChildEntity
-import grails.gorm.tests.TestEntity
+import grails.gorm.tests.*
 import org.springframework.datastore.core.Session
 import org.springframework.datastore.redis.RedisDatastore
 import org.springframework.validation.Validator
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
-import grails.gorm.tests.CommonTypes
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,6 +21,9 @@ class RedisSetup {
     def entity = redis.mappingContext.addPersistentEntity(TestEntity)
     redis.mappingContext.addPersistentEntity(ChildEntity)
     redis.mappingContext.addPersistentEntity(CommonTypes)
+    redis.mappingContext.addPersistentEntity(Location)
+    redis.mappingContext.addPersistentEntity(Country)
+    redis.mappingContext.addPersistentEntity(City)
 
     redis.mappingContext.addEntityValidator(entity, [
             supports: { Class c -> true },

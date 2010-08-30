@@ -14,10 +14,10 @@
  */
 package org.springframework.datastore.redis.engine;
 
-import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.mapping.MappingContext;
+import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.redis.collection.RedisSet;
 import org.springframework.datastore.redis.query.RedisQueryUtils;
@@ -39,14 +39,12 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
 
     private RedisTemplate template;
     private PersistentProperty property;
-    private SimpleTypeConverter typeConverter;
     private RedisEntityPersister entityPersister;
     private MappingContext mappingContext;
 
 
     public RedisPropertyValueIndexer(MappingContext context, RedisEntityPersister redisEntityPersister, PersistentProperty property) {
         this.template = redisEntityPersister.getRedisTemplate();
-        this.typeConverter = redisEntityPersister.getTypeConverter();
         this.entityPersister = redisEntityPersister;
         this.property = property;
         this.mappingContext = context;
@@ -92,7 +90,17 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     }
 
     private String getIndexRoot() {
-        return property.getOwner().getName()+ ":" + property.getName() + ":";
+        return getRootEntityName() + ":" + property.getName() + ":";
+    }
+
+    private String getRootEntityName() {
+
+        final PersistentEntity owner = property.getOwner();
+        if(owner.isRoot())
+            return owner.getName();
+        else {
+            return owner.getRootEntity().getName();
+        }
     }
 
     public List<Long> query(final Object value) {

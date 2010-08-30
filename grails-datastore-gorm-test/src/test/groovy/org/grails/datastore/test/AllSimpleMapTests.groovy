@@ -4,13 +4,11 @@ import org.junit.runner.RunWith
 import grails.gorm.tests.AllTests
 import org.junit.runners.model.RunnerBuilder
 import org.grails.datastore.gorm.GormEnhancer
-import grails.gorm.tests.ChildEntity
-import grails.gorm.tests.TestEntity
+import grails.gorm.tests.*
 import org.springframework.datastore.mock.SimpleMapDatastore
 import org.springframework.validation.Errors
 import org.springframework.util.StringUtils
 import org.springframework.validation.Validator
-import grails.gorm.tests.CommonTypes
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,6 +36,9 @@ class AllSimpleMapTests extends AllTests{
       def entity = datastore.mappingContext.addPersistentEntity(TestEntity)
       datastore.mappingContext.addPersistentEntity(ChildEntity)
       datastore.mappingContext.addPersistentEntity(CommonTypes)
+      datastore.mappingContext.addPersistentEntity(Location)
+      datastore.mappingContext.addPersistentEntity(City)
+      datastore.mappingContext.addPersistentEntity(Country)
 
       datastore.mappingContext.addEntityValidator(entity, [
               supports: { Class c -> true },

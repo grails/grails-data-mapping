@@ -96,4 +96,28 @@ public interface PersistentEntity extends Initializable {
      * @return True if it does own this entity
      */
     boolean isOwningEntity(PersistentEntity owner);
+
+    /**
+     * Returns the parent entity of this entity
+     * @return The ParentEntity instance
+     */
+    PersistentEntity getParentEntity();
+
+    /**
+     * Obtains the root entity of an inheritance hierarchy
+     * @return The root entity
+     */
+    PersistentEntity getRootEntity();
+
+    /**
+     * Whether this entity is a root entity
+     * @return True if it is a root entity
+     */
+    boolean isRoot();
+
+    /**
+     * The discriminator used when persisting subclasses of an inheritance hierarchy
+     * @return The discriminator
+     */
+    String getDiscriminator();
 }

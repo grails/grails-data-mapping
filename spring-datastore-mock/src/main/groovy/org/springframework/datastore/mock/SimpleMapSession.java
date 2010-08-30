@@ -45,7 +45,7 @@ public class SimpleMapSession extends AbstractSession<Map> {
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
         PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
         if(entity != null) {
-            return new SimpleMapEntityPersister(mappingContext, entity, this, datastore);
+            return new SimpleMapEntityPersister(mappingContext, entity, this, (SimpleMapDatastore) getDatastore());
         }
         return null;
     }

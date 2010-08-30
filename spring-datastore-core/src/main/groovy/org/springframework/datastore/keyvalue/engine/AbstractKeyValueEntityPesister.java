@@ -14,7 +14,6 @@
  */
 package org.springframework.datastore.keyvalue.engine;
 
-import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.collection.PersistentList;
@@ -40,7 +39,6 @@ import java.util.*;
  * @since 1.0
  */
 public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntityPersister {
-    protected SimpleTypeConverter typeConverter;
     protected String entityFamily;
     protected ClassMapping classMapping;
 
@@ -48,8 +46,6 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         super(context, entity, session);
         classMapping = entity.getMapping();
         entityFamily = getFamily(entity, classMapping);
-        this.typeConverter = new SimpleTypeConverter();
-        typeConverter.setConversionService(context.getConversionService());
     }
 
 
@@ -119,7 +115,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
     private K readIdentifierFromObject(Object object) {
         EntityAccess access = new EntityAccess(getPersistentEntity(), object);
-        access.setConversionService(typeConverter.getConversionService());
+        access.setConversionService(getMappingContext().getConversionService());
         final Object idValue = access.getIdentifier();
         K key = null;
         if(idValue != null) {
@@ -194,6 +190,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
     }
 
     protected Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, T nativeEntry) {
+        persistentEntity = discriminatePersistentEntity(persistentEntity, nativeEntry);
         Object obj = persistentEntity.newInstance();
 
         EntityAccess ea = new EntityAccess(persistentEntity, obj);
@@ -217,7 +214,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
             else if(prop instanceof ToOne) {
                 Serializable tmp = (Serializable) getEntryValue(nativeEntry, propKey);
                 PersistentEntity associatedEntity = prop.getOwner();
-                final Serializable associationKey = (Serializable) typeConverter.convertIfNecessary(tmp, associatedEntity.getIdentity().getType());
+                final Serializable associationKey = (Serializable) getMappingContext().getConversionService().convert(tmp, associatedEntity.getIdentity().getType());
                 PropertyMapping<KeyValue> associationPropertyMapping = prop.getMapping();
                 boolean isLazy = isLazyAssociation(associationPropertyMapping);
 
@@ -256,6 +253,17 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         }
         return obj;
     }
+
+    /**
+     * Subclasses should override to customize how entities in hierarchies are discriminated
+     * @param persistentEntity The PersistentEntity
+     * @param nativeEntry The native entry
+     * @return The discriminated entity
+     */
+    protected PersistentEntity discriminatePersistentEntity(PersistentEntity persistentEntity, T nativeEntry) {
+        return persistentEntity;
+    }
+
 
     private boolean isLazyAssociation(PropertyMapping<KeyValue> associationPropertyMapping) {
         if(associationPropertyMapping != null) {

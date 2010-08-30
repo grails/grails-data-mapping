@@ -29,9 +29,10 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 @RunWith(AllTests.TestSuite.class)
-@Suite.SuiteClasses({CriteriaBuilderTests.class,
+@Suite.SuiteClasses({InheritanceTests.class,
+                     CriteriaBuilderTests.class,
                      CommonTypesPersistenceTests.class,
-                     CrudOperationsTests.class,
+                     CrudOperationsTests.class,                     
                      OrderByTests.class,
                      ProxyLoadingTests.class,
                      QueryByAssociationTests.class,

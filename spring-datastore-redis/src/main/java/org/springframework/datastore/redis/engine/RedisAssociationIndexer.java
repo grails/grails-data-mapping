@@ -14,7 +14,6 @@
  */
 package org.springframework.datastore.redis.engine;
 
-import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.datastore.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.PersistentEntity;

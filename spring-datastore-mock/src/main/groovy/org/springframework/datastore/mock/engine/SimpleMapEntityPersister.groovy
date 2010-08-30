@@ -24,6 +24,7 @@ import org.springframework.datastore.mapping.PersistentProperty
 import org.springframework.datastore.mapping.types.Association
 import org.springframework.datastore.query.Query
 import org.springframework.datastore.mock.query.SimpleMapQuery
+import org.springframework.datastore.mock.SimpleMapDatastore
 
 /**
  * A simple implementation of the {@link org.springframework.datastore.engine.EntityPersister} abstract class that backs onto an in-memory map.
@@ -35,14 +36,27 @@ import org.springframework.datastore.mock.query.SimpleMapQuery
 class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Object>{
 
   Map<String, Map> datastore
-  Map indices = [:]
+  Map indices
   Long lastKey = 0
+  String family
 
-  SimpleMapEntityPersister(MappingContext context, PersistentEntity entity, Session session, datastore) {
+  SimpleMapEntityPersister(MappingContext context, PersistentEntity entity, Session session, SimpleMapDatastore datastore) {
     super(context, entity, session);
-    this.datastore = datastore;
-    datastore[getFamily(entity, entity.getMapping())] = [:]
+    this.datastore = datastore.backingMap;
+    this.indices = datastore.indices
+    family = getFamily(entity, entity.getMapping())
+    this.datastore[family] = [:]
   }
+
+  protected PersistentEntity discriminatePersistentEntity(PersistentEntity persistentEntity, Map nativeEntry) {
+    def disc = nativeEntry?.discriminator
+    if(disc) {
+      def childEntity = getMappingContext().getChildEntityByDiscriminator(persistentEntity.rootEntity, disc)
+      if(childEntity) return childEntity
+    }
+    return persistentEntity
+  }
+
 
   Query createQuery() {
     return new SimpleMapQuery(session, super.getPersistentEntity(), this)
@@ -57,7 +71,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
 
 
       String getIndexRoot() {
-          return "~${property.owner.name}:${property.name}"
+          return "~${property.owner.rootEntity.name}:${property.name}"
       }
 
       void index(Object value, Object primaryKey) {
@@ -147,27 +161,54 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
   }
 
   protected Map retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
+
     return datastore[family].get(key)
   }
 
   protected Object generateIdentifier(PersistentEntity persistentEntity, Map id) {
-    return ++lastKey;
+    if(persistentEntity.root)
+      return ++lastKey;
+    else {
+      def root = persistentEntity.rootEntity
+      return ++session.getPersister(root).lastKey
+    }
   }
 
 
   protected Object storeEntry(PersistentEntity persistentEntity, Object storeId, Map nativeEntry) {
-    def family = getFamily(persistentEntity, persistentEntity.getMapping())
+    if(!persistentEntity.root) {
+      nativeEntry.discriminator = persistentEntity.discriminator
+    }
     datastore[family].put(storeId, nativeEntry)
+    updateInheritanceHierarchy(persistentEntity, storeId, nativeEntry)
     return storeId
+  }
+
+  private updateInheritanceHierarchy(PersistentEntity persistentEntity, storeId, Map nativeEntry) {
+    def parent = persistentEntity.parentEntity
+    while (parent != null) {
+
+      def f = getFamily(parent, parent.mapping)
+      datastore[f].put(storeId, nativeEntry)
+      parent = parent.parentEntity
+    }
   }
 
   protected void updateEntry(PersistentEntity persistentEntity, Object key, Map entry) {
     def family = getFamily(persistentEntity, persistentEntity.getMapping())
     datastore[family].put(key, entry)
-
+    updateInheritanceHierarchy(persistentEntity, key, entry)
   }
 
   protected void deleteEntries(String family, List<Object> keys) {
-    keys?.each { datastore[family].remove(it) }
+    keys?.each {
+      datastore[family].remove(it)
+      def parent = persistentEntity.parentEntity
+      while (parent != null) {  
+        def f = getFamily(parent, parent.mapping)
+        datastore[f].remove(it)
+        parent = parent.parentEntity
+      }
+    }
   }
 }

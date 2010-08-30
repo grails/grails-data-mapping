@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SimpleMapDatastore extends AbstractDatastore{
     private Map<String, Map> datastore = new ConcurrentHashMap<String, Map>();
+    private Map indices = new ConcurrentHashMap();
 
     /**
      * Creates a map based datastore backing onto the specified map
@@ -42,6 +43,10 @@ public class SimpleMapDatastore extends AbstractDatastore{
 
     public SimpleMapDatastore() {
         super(new KeyValueMappingContext(""));
+    }
+
+    public Map getIndices() {
+        return indices;
     }
 
     @Override

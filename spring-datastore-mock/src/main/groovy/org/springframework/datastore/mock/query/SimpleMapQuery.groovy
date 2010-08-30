@@ -274,20 +274,7 @@ class SimpleMapQuery extends Query{
 
   protected populateQueryResult(identifiers, Map queryResult) {
     for (id in identifiers) {
-      def map = datastore[family].get(id)
-      if (map) {
-        for( PersistentProperty p in entity.persistentProperties) {
-          if(p instanceof ToOne) {
-            def associatedId = map[p.name]
-            if(!p.type.isInstance(associatedId)) {
-              map[p.name] = session.retrieve(p.type, associatedId)
-            }
-          }
-        }
-        def o = entity.javaClass.newInstance(map)
-        new EntityAccess(entity, o).setIdentifier(id)
-        queryResult.put(id, o)
-      }
+      queryResult.put(id, session.retrieve(entity.javaClass, id))
     }
   }
 

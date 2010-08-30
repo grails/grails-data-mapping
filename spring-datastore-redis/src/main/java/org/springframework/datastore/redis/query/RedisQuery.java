@@ -15,7 +15,6 @@
 package org.springframework.datastore.redis.query;
 
 import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.engine.PropertyValueIndexer;
@@ -41,11 +40,13 @@ import java.util.*;
 public class RedisQuery extends Query {
     private RedisEntityPersister entityPersister;
     private RedisTemplate template;
+    private ConversionService conversionService;
 
     public RedisQuery(RedisSession session, RedisTemplate redisTemplate, PersistentEntity persistentEntity, RedisEntityPersister entityPersister) {
         super(session, persistentEntity);
         this.entityPersister = entityPersister;
         template = redisTemplate;
+        conversionService = getSession().getMappingContext().getConversionService();
     }
 
     @Override
@@ -63,7 +64,6 @@ public class RedisQuery extends Query {
 
         Collection<String> results;
         IdProjection idProjection = null;
-        final ConversionService conversionService = getSession().getMappingContext().getConversionService();
         if(projectionList.isEmpty()) {
             results = paginateResults(finalKey);
         }
@@ -387,7 +387,8 @@ public class RedisQuery extends Query {
 
             template.setex(maxKey, max, 500);
         }
-        return entityPersister.getTypeConverter().convertIfNecessary(max, Double.class);
+
+        return conversionService.convert(max, Double.class);
     }
 
     private Object getMinValueFromSortedSet(String sortKey) {
@@ -403,7 +404,7 @@ public class RedisQuery extends Query {
 
             template.setex(minKey, min, 500);
         }
-        return entityPersister.getTypeConverter().convertIfNecessary(min, Double.class);
+        return conversionService.convert(min, Double.class);
     }
 
     protected String executeSubBetween(RedisEntityPersister entityPersister, Between between) {
@@ -422,10 +423,10 @@ public class RedisQuery extends Query {
     private String executeBetweenInternal(RedisEntityPersister entityPersister, PersistentProperty prop, Object fromObject, Object toObject, boolean includeFrom, boolean includeTo) {
         String sortKey = entityPersister.getPropertySortKey(prop);
         if(!(fromObject instanceof Number)) {
-            fromObject = entityPersister.getTypeConverter().convertIfNecessary(fromObject, Double.class);
+            fromObject = conversionService.convert(fromObject, Double.class);
         }
         if(!(toObject instanceof Number)) {
-            toObject = entityPersister.getTypeConverter().convertIfNecessary(toObject, Double.class);
+            toObject = conversionService.convert(toObject, Double.class);
         }
 
         final double from = ((Number) fromObject).doubleValue();

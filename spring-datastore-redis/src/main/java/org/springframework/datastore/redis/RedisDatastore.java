@@ -102,6 +102,13 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
             }
         });
 
+        conversionService.addConverter(new Converter<Integer, Long>() {
+            public Long convert(Integer integer) {
+                return integer.longValue();
+            }
+        });
+
+
         conversionService.addConverter(new Converter<String, Date>() {
 
             public Date convert(String s) {
@@ -112,6 +119,17 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
                     // ignore
                 }
                 return null;
+            }
+        });
+
+        conversionService.addConverter(new Converter<String, Double>() {
+
+            public Double convert(String s) {
+                try {
+                    return Double.valueOf(s);
+                } catch (NumberFormatException e) {
+                    return (double) 0;
+                }
             }
         });
 

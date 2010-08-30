@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import org.junit.Test
+import org.junit.Ignore
 
 /**
  * Abstract base test for criteria queries. Subclasses should do the necessary setup to configure GORM

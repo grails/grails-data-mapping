@@ -56,6 +56,14 @@ public interface MappingContext {
     PersistentEntity getPersistentEntity(String name);
 
     /**
+     * Obtains a child of the given root entity using the given discriminator
+     * @param root The root entity
+     * @param discriminator The discriminator
+     * @return The child entity or null if non exists
+     */
+    PersistentEntity getChildEntityByDiscriminator(PersistentEntity root, String discriminator);
+
+    /**
      * Adds a PersistentEntity instance
      *
      * @param javaClass The Java class representing the entity
