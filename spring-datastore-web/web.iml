@@ -15,6 +15,7 @@
     <orderEntry type="library" name="Spring Transaction" level="project" />
     <orderEntry type="library" name="SLF4J" level="project" />
     <orderEntry type="library" name="Java Persistence" level="project" />
+    <orderEntry type="library" name="Spring Core" level="project" />
   </component>
 </module>
 

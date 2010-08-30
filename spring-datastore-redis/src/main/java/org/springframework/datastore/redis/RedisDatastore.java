@@ -144,6 +144,26 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
             }
         });
 
+        conversionService.addConverter(new Converter<Calendar, String>() {
+            public String convert(Calendar calendar) {
+                return String.valueOf(calendar.getTime().getTime());
+            }
+        });
+
+        conversionService.addConverter(new Converter<String, Calendar>() {
+
+            public Calendar convert(String s) {
+                try {
+                    Date date = new Date(Long.valueOf(s));
+                    Calendar c = new GregorianCalendar();
+                    c.setTime(date);
+                    return c;
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            }
+        });
+
     }
 
     private boolean useJedis() {

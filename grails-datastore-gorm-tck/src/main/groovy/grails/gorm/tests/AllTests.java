@@ -30,6 +30,7 @@ import java.util.List;
  */
 @RunWith(AllTests.TestSuite.class)
 @Suite.SuiteClasses({CriteriaBuilderTests.class,
+                     CommonTypesPersistenceTests.class,
                      CrudOperationsTests.class,
                      OrderByTests.class,
                      ProxyLoadingTests.class,

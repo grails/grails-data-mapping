@@ -19,6 +19,7 @@
     <orderEntry type="library" name="Spring Beans" level="project" />
     <orderEntry type="library" name="Javassist" level="project" />
     <orderEntry type="library" name="SLF4J" level="project" />
+    <orderEntry type="library" name="Java Persistence" level="project" />
   </component>
 </module>
 

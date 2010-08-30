@@ -3,6 +3,7 @@ TODO high priorities
 * Finish Grails plugin
 * Inheritance support
 * Transactions
+* Testing support
 
 TODO medium priorities
 

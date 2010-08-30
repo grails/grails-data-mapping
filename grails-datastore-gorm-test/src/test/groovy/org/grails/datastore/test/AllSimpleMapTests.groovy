@@ -10,6 +10,7 @@ import org.springframework.datastore.mock.SimpleMapDatastore
 import org.springframework.validation.Errors
 import org.springframework.util.StringUtils
 import org.springframework.validation.Validator
+import grails.gorm.tests.CommonTypes
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,6 +37,7 @@ class AllSimpleMapTests extends AllTests{
       def datastore = new SimpleMapDatastore()
       def entity = datastore.mappingContext.addPersistentEntity(TestEntity)
       datastore.mappingContext.addPersistentEntity(ChildEntity)
+      datastore.mappingContext.addPersistentEntity(CommonTypes)
 
       datastore.mappingContext.addEntityValidator(entity, [
               supports: { Class c -> true },

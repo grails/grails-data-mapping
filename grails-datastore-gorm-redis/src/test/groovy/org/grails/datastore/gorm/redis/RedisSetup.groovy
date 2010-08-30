@@ -8,6 +8,7 @@ import org.springframework.datastore.redis.RedisDatastore
 import org.springframework.validation.Validator
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
+import grails.gorm.tests.CommonTypes
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,6 +22,7 @@ class RedisSetup {
     def redis = new RedisDatastore()
     def entity = redis.mappingContext.addPersistentEntity(TestEntity)
     redis.mappingContext.addPersistentEntity(ChildEntity)
+    redis.mappingContext.addPersistentEntity(CommonTypes)
 
     redis.mappingContext.addEntityValidator(entity, [
             supports: { Class c -> true },
