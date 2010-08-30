@@ -5,7 +5,7 @@ import org.junit.Test
 /**
  * Abstract base test for criteria queries. Subclasses should do the necessary setup to configure GORM
  */
-abstract class CriteriaBuilderTests extends AbstractGormTests{
+class CriteriaBuilderTests extends AbstractGormTests{
 
   @Test
   void testDisjunction() {

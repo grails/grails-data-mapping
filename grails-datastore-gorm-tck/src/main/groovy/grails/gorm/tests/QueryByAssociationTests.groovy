@@ -5,7 +5,7 @@ import org.junit.Test
 /**
  * Abstract base test for query associations. Subclasses should do the necessary setup to configure GORM
  */
-abstract class QueryByAssociationTests extends AbstractGormTests{
+class QueryByAssociationTests extends AbstractGormTests{
 
 
   @Test

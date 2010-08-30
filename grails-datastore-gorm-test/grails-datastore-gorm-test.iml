@@ -14,6 +14,11 @@
     <orderEntry type="library" name="JUnit" level="project" />
     <orderEntry type="module" module-name="grails-datastore-gorm-tck" />
     <orderEntry type="module" module-name="mock" />
+    <orderEntry type="module" module-name="core" />
+    <orderEntry type="library" name="Java Persistence" level="project" />
+    <orderEntry type="library" name="Spring Context" level="project" />
+    <orderEntry type="library" name="Spring Core" level="project" />
+    <orderEntry type="library" name="Spring Beans" level="project" />
   </component>
 </module>
 

@@ -1,13 +1,15 @@
 package grails.gorm.tests
 
 import org.junit.Test
+import org.junit.Ignore
 
 /**
  * Abstract base test for testing transactions. Subclasses should do the necessary setup to configure GORM
  */
-abstract class WithTransactionTests extends AbstractGormTests{
+class WithTransactionTests extends AbstractGormTests{
 
   @Test
+  @Ignore
   void testWithTransaction() {
 
     TestEntity.withTransaction {

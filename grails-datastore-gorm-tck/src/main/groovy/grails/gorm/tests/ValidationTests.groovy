@@ -6,7 +6,7 @@ import org.springframework.validation.Errors
 /**
  * Abstract base class for testing validation semantics
  */
-abstract class ValidationTests extends AbstractGormTests{
+class ValidationTests extends AbstractGormTests{
 
 
 

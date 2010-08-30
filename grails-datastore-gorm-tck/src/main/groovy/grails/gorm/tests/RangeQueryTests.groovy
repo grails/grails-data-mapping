@@ -4,7 +4,7 @@ import org.junit.Test
 /**
  * Abstract base test for querying ranges. Subclasses should do the necessary setup to configure GORM
  */
-abstract class RangeQueryTests extends AbstractGormTests{
+class RangeQueryTests extends AbstractGormTests{
 
 
   @Test
