@@ -22,6 +22,11 @@ import org.springframework.datastore.transactions.DatastoreTransactionManager
 import grails.test.MockUtils
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
+import org.springframework.datastore.core.AbstractDatastore
+import org.codehaus.groovy.grails.plugins.PluginManagerHolder
+import org.codehaus.groovy.grails.plugins.GrailsPluginManager
+import org.codehaus.groovy.grails.plugins.DefaultGrailsPluginManager
+import org.springframework.util.ClassUtils
 
 /**
  * <p>A Groovy mixin used for testing datastore interactions. Test cases should include the mixin using
@@ -46,6 +51,13 @@ class DatastoreUnitTestMixin {
   SimpleMapDatastore datastore = new SimpleMapDatastore()
   Session session
   PlatformTransactionManager transactionManager = new DatastoreTransactionManager(datastore)
+  private mockPluginManager = [hasGrailsPlugin: { String name ->
+    if(name == "hibernate") {
+      return ClassUtils.isPresent("org.hibernate.mapping.Value", getClass().getClassLoader())
+    }
+    return true
+  }
+  ] as GrailsPluginManager
 
   Session connect() {
     session = datastore.connect()
@@ -54,25 +66,20 @@ class DatastoreUnitTestMixin {
 
   
   def mockDomain(Class domainClass, List instances = []) {
+    if(session == null) {
+      datastore.clearData()
+      session = datastore.connect()      
+    }
+    if(!(PluginManagerHolder.pluginManager instanceof DefaultGrailsPluginManager)) {
+      PluginManagerHolder.pluginManager = mockPluginManager
+    }
     def entity = datastore.mappingContext.addPersistentEntity(domainClass)
     def enhancer = new GormEnhancer(datastore, transactionManager)
     enhancer.enhance entity
     MockUtils.prepareForConstraintsTests(entity.javaClass)
     def dc = new DefaultGrailsDomainClass(entity.javaClass)
     datastore.mappingContext.addEntityValidator(entity, new GrailsDomainClassValidator(domainClass:dc))
-
-    entity.javaClass.metaClass.constructor = { Map m ->
-      def obj = entity.newInstance()
-      if(m) {
-        m.each {
-          obj[it.key] = it.value  
-        }
-
-      }
-      return obj
-    }
     if(instances) {
-      def session = datastore.currentSession
       instances?.each {
         session.persist(it)
       }
@@ -82,7 +89,7 @@ class DatastoreUnitTestMixin {
 
 
   def disconnect() {
-    session.disconnect()
+    session?.disconnect()
     datastore.clearData()
   }
 
