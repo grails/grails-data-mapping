@@ -2,14 +2,14 @@ TODO high priorities
 
 * Finish Grails plugin
 * Transactions
-* Testing support
+* Documentation
 
 TODO medium priorities
 
-* Embedded components
 * Nested querying of associations in criteria
-* Named queries
+* Port as many GORM related tests from Grails core as possible
 
 TODO lower priorities
 
+* Embedded components
 * JPA-QL for string based queries

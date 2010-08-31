@@ -274,8 +274,11 @@
     </library>
     <library name="Grails Libraries">
       <CLASSES>
-        <root url="jar://$GRAILS_HOME$/dist/grails-core-1.3.4.jar!/" />
-        <root url="jar://$GRAILS_HOME$/dist/grails-bootstrap-1.3.4.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/org.grails/grails-test/jars/grails-test-1.3.4.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/org.grails/grails-bootstrap/jars/grails-bootstrap-1.3.4.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/org.grails/grails-core/jars/grails-core-1.3.4.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/org.grails/grails-web/jars/grails-web-1.3.4.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/org.grails/grails-spring/jars/grails-spring-1.3.4.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
@@ -380,6 +383,20 @@
     <library name="Spock">
       <CLASSES>
         <root url="jar://$GRADLE_CACHE$/org.spockframework/spock-core/jars/spock-core-0.5-groovy-1.7-SNAPSHOT.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Servlet API">
+      <CLASSES>
+        <root url="jar://$GRADLE_CACHE$/javax.servlet/servlet-api/jars/servlet-api-2.5.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Spring Mock">
+      <CLASSES>
+        <root url="jar://$GRADLE_CACHE$/org.springframework/spring-test/jars/spring-test-3.0.3.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />

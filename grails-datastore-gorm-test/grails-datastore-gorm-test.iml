@@ -22,6 +22,12 @@
     <orderEntry type="library" name="Spring Beans" level="project" />
     <orderEntry type="library" name="JTA" level="project" />
     <orderEntry type="library" scope="TEST" name="Spock" level="project" />
+    <orderEntry type="library" name="Grails Libraries" level="project" />
+    <orderEntry type="library" name="Spring Transaction" level="project" />
+    <orderEntry type="library" name="SLF4J" level="project" />
+    <orderEntry type="library" scope="TEST" name="Servlet API" level="project" />
+    <orderEntry type="library" scope="TEST" name="Spring Web" level="project" />
+    <orderEntry type="library" scope="TEST" name="Spring Mock" level="project" />
   </component>
 </module>
 

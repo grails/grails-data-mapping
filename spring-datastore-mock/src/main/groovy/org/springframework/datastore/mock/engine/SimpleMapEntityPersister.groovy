@@ -189,7 +189,12 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
     while (parent != null) {
 
       def f = getFamily(parent, parent.mapping)
-      datastore[f].put(storeId, nativeEntry)
+      def parentEntry = datastore[f]
+      if(parentEntry == null) {
+        parentEntry = [:]
+        datastore[f] = parentEntry
+      }
+      parentEntry.put(storeId, nativeEntry)
       parent = parent.parentEntity
     }
   }

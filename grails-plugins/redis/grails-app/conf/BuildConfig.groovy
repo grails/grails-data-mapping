@@ -25,8 +25,10 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        compile "org.grails:grails-datastore-gorm-redis:0.1"
-        compile "org.springframework:spring-datastore-web:0.1"
+      compile "org.grails:grails-datastore-gorm-redis:0.1"
+      compile "org.springframework:spring-datastore-web:0.1"
+
+      test "org.grails:grails-datastore-gorm-test:0.1"
 
     }
 }

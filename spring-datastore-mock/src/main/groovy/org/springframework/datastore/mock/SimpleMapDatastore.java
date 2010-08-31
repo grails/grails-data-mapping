@@ -83,4 +83,9 @@ public class SimpleMapDatastore extends AbstractDatastore{
     public Map<String, Map> getBackingMap() {
         return datastore;
     }
+
+    public void clearData() {
+        datastore.clear();
+        indices.clear();
+    }
 }
