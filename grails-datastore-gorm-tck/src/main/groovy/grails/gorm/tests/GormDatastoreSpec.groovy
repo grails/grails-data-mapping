@@ -18,7 +18,7 @@ import org.springframework.datastore.core.Session
 abstract class GormDatastoreSpec extends Specification {
 
     private static final SETUP_CLASS_NAME = 'org.grails.datastore.gorm.Setup'
-    private static final CLASSES_TO_CLEANUP = [TestEntity, ChildEntity]
+    private static final TEST_CLASSES = [TestEntity, ChildEntity,CommonTypes, Location, City, Country, PlantCategory, Publication]
     
     @Shared Class setupClass
     
@@ -30,7 +30,7 @@ abstract class GormDatastoreSpec extends Specification {
 
     def setup() {
         cleanRegistry()
-        session = setupClass.setup()
+        session = setupClass.setup(TEST_CLASSES)
     }
 
     def cleanup() {
@@ -39,7 +39,7 @@ abstract class GormDatastoreSpec extends Specification {
     }
 
     private cleanRegistry() {
-        for (clazz in CLASSES_TO_CLEANUP) {
+        for (clazz in TEST_CLASSES) {
             GroovySystem.metaClassRegistry.removeMetaClass(clazz)
         }
     }
@@ -47,14 +47,9 @@ abstract class GormDatastoreSpec extends Specification {
     static private loadSetupClass() {
         try {
             getClassLoader().loadClass(SETUP_CLASS_NAME)
-        } catch (ClassNotFoundException e) {
-            throw new DataStoreSetupClassMissingException()
+        } catch (Throwable e) {
+            throw new RuntimeException("Datastore setup class ($SETUP_CLASS_NAME) was not found",e)
         }
     }
     
-    private static class DataStoreSetupClassMissingException extends RuntimeException {
-        DataStoreSetupClassMissingException() {
-            super("Datastore setup class ($SETUP_CLASS_NAME) was not found")
-        }
-    }
 }

@@ -14,6 +14,8 @@
  */
 package org.springframework.datastore.mock;
 
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.datastore.core.AbstractDatastore;
 import org.springframework.datastore.core.Session;
 import org.springframework.datastore.keyvalue.mapping.KeyValueMappingContext;
@@ -39,10 +41,34 @@ public class SimpleMapDatastore extends AbstractDatastore{
      */
     public SimpleMapDatastore(Map<String, Map> datastore) {
         this.datastore = datastore;
+        initConverters();
     }
 
     public SimpleMapDatastore() {
         super(new KeyValueMappingContext(""));
+        initConverters();
+    }
+
+    private void initConverters() {
+        final ConverterRegistry registry = getMappingContext().getConversionService();
+        registry.addConverter( new Converter<String, Long>() {
+            public Long convert(String s) {
+                try {
+                    return Long.valueOf(s);
+                } catch (NumberFormatException e) {
+                    return 0L;
+                }
+            }
+        });
+        registry.addConverter( new Converter<String, Integer>() {
+            public Integer convert(String s) {
+                try {
+                    return Integer.valueOf(s);
+                } catch (NumberFormatException e) {
+                    return 0;
+                }
+            }
+        });
     }
 
     public Map getIndices() {

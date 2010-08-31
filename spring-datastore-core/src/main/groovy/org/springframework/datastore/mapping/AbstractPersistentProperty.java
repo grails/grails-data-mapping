@@ -14,6 +14,8 @@
  */
 package org.springframework.datastore.mapping;
 
+import org.springframework.datastore.reflect.NameUtils;
+
 import java.beans.PropertyDescriptor;
 
 /**
@@ -45,6 +47,10 @@ public abstract class AbstractPersistentProperty implements PersistentProperty {
 
     public String getName() {
         return name;
+    }
+
+    public String getCapitilizedName() {
+        return NameUtils.capitalize(getName());
     }
 
     public Class getType() {

@@ -13,6 +13,12 @@ public interface PersistentProperty<T> {
     String getName();
 
     /**
+     * The name with the first letter in upper case as per Java bean conventions
+     * @return The capitilized name
+     */
+    String getCapitilizedName();
+
+    /**
      * The type of the property
      * @return The property type
      */

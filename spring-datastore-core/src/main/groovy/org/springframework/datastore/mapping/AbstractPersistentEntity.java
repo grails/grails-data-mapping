@@ -48,6 +48,10 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
         this.decapitalizedName = Introspector.decapitalize(javaClass.getName());
     }
 
+    public MappingContext getMappingContext() {
+        return this.context;
+    }
+
     public void initialize() {
         this.identity = context.getMappingSyntaxStrategy().getIdentity(javaClass, context);
         this.owners = context.getMappingSyntaxStrategy().getOwningEntities(javaClass, context);

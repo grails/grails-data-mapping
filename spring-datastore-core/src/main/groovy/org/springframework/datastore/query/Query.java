@@ -41,7 +41,7 @@ public abstract class Query {
     protected int offset = 0;
     protected List<Order> orderBy = new ArrayList<Order>();
     private Session session;
-
+    private boolean uniqueResult;
 
 
     /**
@@ -134,6 +134,15 @@ public abstract class Query {
     }
 
     /**
+     * Defines the maximum number of results to return
+     * @param max The max results
+     * @return This query instance
+     */
+    public Query maxResults(int max) {
+        return max(max);
+    }
+
+    /**
      * Defines the offset (the first result index) of the query
      * @param offset The offset
      * @return This query instance
@@ -141,6 +150,15 @@ public abstract class Query {
     public Query offset(int offset) {
         this.offset = offset;
         return this;
+    }
+
+    /**
+     * Defines the offset (the first result index) of the query
+     * @param offset The offset
+     * @return This query instance
+     */
+    public Query firstResult(int offset) {
+        return offset(offset);
     }
 
     /**
@@ -309,6 +327,7 @@ public abstract class Query {
         if(session.getFlushMode() == FlushModeType.AUTO) {
             session.flush();
         }
+
         return executeQuery(entity, criteria);
     }
 
@@ -320,6 +339,16 @@ public abstract class Query {
         List results = list();
         if(results.isEmpty()) return null;
         else return results.get(0);
+    }
+
+    /**
+     * Here purely for compatibility
+     *
+     * @param uniqueResult Whether it is a unique result
+     * @deprecated
+     */
+    public void setUniqueResult(boolean uniqueResult) {
+        this.uniqueResult = uniqueResult;
     }
 
     /**

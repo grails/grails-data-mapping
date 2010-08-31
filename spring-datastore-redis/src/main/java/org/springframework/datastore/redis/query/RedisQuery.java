@@ -21,6 +21,7 @@ import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
+import org.springframework.datastore.mapping.types.Identity;
 import org.springframework.datastore.query.Query;
 import org.springframework.datastore.query.Restrictions;
 import org.springframework.datastore.redis.RedisSession;
@@ -274,6 +275,7 @@ public class RedisQuery extends Query {
     }
 
     private boolean isIndexed(PersistentProperty property) {
+        if(property instanceof Identity) return true;
         KeyValue kv = (KeyValue) property.getMapping().getMappedForm();
         return kv.isIndex();
     }
@@ -298,8 +300,20 @@ public class RedisQuery extends Query {
                indices.add(key);
            }
        });
+       put(GreaterThan.class,  new CriterionHandler<GreaterThan>() {
+           public void handle(RedisEntityPersister entityPersister, List<String> indices, GreaterThan criterion) {
+               String key = executeGreaterThanEquals(entityPersister, criterion);
+               indices.add(key);
+           }
+       });
        put(LessThanEquals.class,  new CriterionHandler<LessThanEquals>() {
            public void handle(RedisEntityPersister entityPersister, List<String> indices, LessThanEquals criterion) {
+               String key = executeLessThanEquals(entityPersister, criterion);
+               indices.add(key);
+           }
+       });
+       put(LessThan.class,  new CriterionHandler<LessThan>() {
+           public void handle(RedisEntityPersister entityPersister, List<String> indices, LessThan criterion) {
                String key = executeLessThanEquals(entityPersister, criterion);
                indices.add(key);
            }
@@ -356,7 +370,7 @@ public class RedisQuery extends Query {
     }
 
 
-    protected String executeLessThanEquals(RedisEntityPersister entityPersister, LessThanEquals criterion) {
+    protected String executeLessThanEquals(RedisEntityPersister entityPersister, PropertyCriterion criterion) {
 
         final String property = criterion.getProperty();
         PersistentProperty prop = getAndValidateProperty(entityPersister, property);
@@ -364,7 +378,7 @@ public class RedisQuery extends Query {
         return executeBetweenInternal(entityPersister, prop, 0, criterion.getValue(), false, true);
     }
 
-    protected String executeGreaterThanEquals(RedisEntityPersister entityPersister, GreaterThanEquals criterion) {
+    protected String executeGreaterThanEquals(RedisEntityPersister entityPersister, PropertyCriterion criterion) {
         final String property = criterion.getProperty();
         PersistentProperty prop = getAndValidateProperty(entityPersister, property);
 
@@ -422,6 +436,13 @@ public class RedisQuery extends Query {
 
     private String executeBetweenInternal(RedisEntityPersister entityPersister, PersistentProperty prop, Object fromObject, Object toObject, boolean includeFrom, boolean includeTo) {
         String sortKey = entityPersister.getPropertySortKey(prop);
+        if(fromObject instanceof Date) {
+            fromObject = ((Date)fromObject).getTime();
+        }
+        if(toObject instanceof Date) {
+            toObject = ((Date)toObject).getTime();
+        }
+
         if(!(fromObject instanceof Number)) {
             fromObject = conversionService.convert(fromObject, Double.class);
         }
@@ -475,6 +496,12 @@ public class RedisQuery extends Query {
 
     private String getIndexName(RedisEntityPersister entityPersister, String property, Object value) {
         PersistentProperty prop = getEntity().getPropertyByName(property);
+        if(prop == null) {
+            final PersistentProperty identity = getEntity().getIdentity();
+            if(identity.getName().equals(property)) {
+                prop = identity;
+            }
+        }
         assertIndexed(property, prop);
 
         PropertyValueIndexer indexer = entityPersister.getPropertyIndexer(prop);

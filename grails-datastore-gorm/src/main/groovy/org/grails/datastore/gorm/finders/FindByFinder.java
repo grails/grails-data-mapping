@@ -14,14 +14,14 @@
  */
 package org.grails.datastore.gorm.finders;
 
+import groovy.lang.Closure;
 import org.springframework.datastore.core.Datastore;
 import org.springframework.datastore.core.Session;
 import org.springframework.datastore.query.Query;
 
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
-import static org.springframework.datastore.query.Restrictions.*;
+
 /**
  * Finder used to return a single result
  */
@@ -40,12 +40,12 @@ public class FindByFinder extends DynamicFinder{
     }
 
     @Override
-    protected Object doInvokeInternalWithExpressions(Class clazz, String methodName, Object[] remainingArguments, List<MethodExpression> expressions, String operatorInUse) {
+    protected Object doInvokeInternalWithExpressions(Class clazz, String methodName, Object[] remainingArguments, List<MethodExpression> expressions, Closure additionalCriteria, String operatorInUse) {
 
         Session currentSession = datastore.getCurrentSession();
 
         Query q = currentSession.createQuery(clazz);
-
+        applyAdditionalCriteria(q, additionalCriteria);
         configureQueryWithArguments(clazz, q, remainingArguments);
 
         if(operatorInUse != null && operatorInUse.equals(OPERATOR_OR)) {

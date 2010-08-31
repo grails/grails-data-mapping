@@ -120,4 +120,10 @@ public interface PersistentEntity extends Initializable {
      * @return The discriminator
      */
     String getDiscriminator();
+
+    /**
+     * Obtains the MappingContext where this PersistentEntity is defined
+     * @return The MappingContext instance
+     */
+    MappingContext getMappingContext();
 }

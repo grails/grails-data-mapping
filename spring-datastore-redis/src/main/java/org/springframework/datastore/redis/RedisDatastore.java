@@ -108,6 +108,12 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
             }
         });
 
+        conversionService.addConverter(new Converter<Integer, Double>() {
+            public Double convert(Integer integer) {
+                return integer.doubleValue();
+            }
+        });
+
 
         conversionService.addConverter(new Converter<String, Date>() {
 

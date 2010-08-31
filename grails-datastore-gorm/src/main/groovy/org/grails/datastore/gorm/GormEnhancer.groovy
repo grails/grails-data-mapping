@@ -24,6 +24,9 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.transaction.support.TransactionCallback
 import org.springframework.transaction.TransactionDefinition
+import org.grails.datastore.gorm.query.NamedQueriesBuilder
+import org.springframework.datastore.mapping.types.OneToMany
+import org.springframework.datastore.reflect.ClassPropertyFetcher
 
 /**
  * Enhances a class with GORM behavior
@@ -52,13 +55,23 @@ class GormEnhancer {
 
   void enhance() {
     for(PersistentEntity e in datastore.mappingContext.persistentEntities) {
-      enhance e.javaClass
+      enhance e
     }
   }
-  void enhance(Class cls) {
+  void enhance(PersistentEntity e) {
+    def cls = e.javaClass
+    def cpf = ClassPropertyFetcher.forClass(cls)
     def staticMethods = getStaticApi(cls)
     def instanceMethods = [getInstanceApi(cls), getValidationApi(cls)]
     def tm = transactionManager
+
+    final namedQueries = cpf.getStaticPropertyValue('namedQueries', Closure)
+    if(namedQueries) {
+      if(namedQueries instanceof Closure) {
+        def namedQueryBuilder = new NamedQueriesBuilder(e, finders)
+        namedQueryBuilder.evaluate namedQueries
+      }
+    }
     cls.metaClass {
       for(apiProvider in instanceMethods) {
         for(method in apiProvider.methodNames) {
@@ -73,6 +86,42 @@ class GormEnhancer {
               }
               Class[] getParameterTypes() { curried.parameterTypes }
             })
+          }
+        }
+      }
+      for(prop in e.associations) {
+        if(prop instanceof OneToMany) {
+          def associatedEntity = prop.associatedEntity
+          "addTo${prop.capitilizedName}" { arg ->
+              def obj
+              if (delegate[prop.name] == null) {
+                  delegate[prop.name] = [].asType( prop.type )
+              }
+              if (arg instanceof Map) {
+                  obj = associatedEntity.javaClass.newInstance(arg)
+                  delegate[prop.name].add(obj)
+              }
+              else if (associatedEntity.javaClass.isInstance(arg)) {
+                  obj = arg
+                  delegate[prop.name].add(obj)
+              }
+              else {
+                  throw new MissingMethodException("addTo${prop.capitilizedName}", associatedEntity.javaClass, [arg] as Object[])
+              }
+              if (prop.bidirectional && prop.inverseSide) {
+                  def otherSide = prop.inverseSide
+                  if (otherSide instanceof OneToMany) {
+                      String name = otherSide.name
+                      if (!obj[name]) {
+                          obj[name] = [].asType(otherSide.type)
+                      }
+                      obj[otherSide.name].add(delegate)
+                  }
+                  else {
+                      obj[otherSide.name] = delegate
+                  }
+              }
+              delegate
           }
         }
       }
@@ -100,8 +149,9 @@ class GormEnhancer {
     }
 
     def mc = cls.metaClass
+    def dynamicFinders = finders
     mc.static.methodMissing = {String methodName, args ->
-          def method = finders.find { DynamicFinder f -> f.isMethodMatch(methodName) }
+          def method = dynamicFinders.find { DynamicFinder f -> f.isMethodMatch(methodName) }
           if (method) {
               // register the method invocation for next time
               synchronized(this) {

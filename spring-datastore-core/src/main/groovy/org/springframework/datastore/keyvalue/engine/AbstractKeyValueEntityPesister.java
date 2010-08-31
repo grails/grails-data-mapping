@@ -373,6 +373,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
                     }
                     storeEntry(persistentEntity, updateId, e);
                     updateOneToManyIndices(updateId, oneToManyKeys);
+                    toIndex.put(persistentEntity.getIdentity(), updateId);
                     updatePropertyIndices(updateId, toIndex);
                     for (OneToMany inverseCollection : inverseCollectionUpdates.keySet()) {
                         final Serializable primaryKey = inverseCollectionUpdates.get(inverseCollection);

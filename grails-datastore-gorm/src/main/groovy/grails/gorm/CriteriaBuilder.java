@@ -18,6 +18,7 @@ package grails.gorm;
 import groovy.lang.*;
 import org.springframework.datastore.core.Datastore;
 import org.springframework.datastore.mapping.PersistentEntity;
+import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.query.Query;
 import org.springframework.datastore.query.Restrictions;
 
@@ -78,6 +79,12 @@ public class CriteriaBuilder extends GroovyObjectSupport {
 
     }
 
+    public CriteriaBuilder(Class targetClass, Datastore datastore, Query query) {
+        this(targetClass, datastore);
+        this.query = query;
+
+    }
+
 
    public Query.ProjectionList id() {
        if(projectionList != null) {
@@ -85,6 +92,11 @@ public class CriteriaBuilder extends GroovyObjectSupport {
        }
        return projectionList;
     }
+
+    /**
+     * Count the number of records returned
+     * @return The project list
+     */
 
     public Query.ProjectionList count() {
         if(projectionList != null) {
@@ -95,9 +107,17 @@ public class CriteriaBuilder extends GroovyObjectSupport {
     }
 
     /**
+     * Count the number of records returned
+     * @return The project list
+     */
+    public Query.ProjectionList rowCount() {
+        return count();
+    }
+
+    /**
      * A projection that obtains the value of a property of an entity
      * @param name The name of the property
-     * @return The PropertyProjection instance
+     * @return The projection list
      */
     public Query.ProjectionList property(String name) {
         if(projectionList != null) {
@@ -112,7 +132,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * Computes the sum of a property
      *
      * @param name The name of the property
-     * @return The PropertyProjection instance
+     * @return The projection list
      */
     public Query.ProjectionList sum(String name) {
         if(projectionList != null) {
@@ -126,7 +146,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * Computes the min value of a property
      *
      * @param name The name of the property
-     * @return The PropertyProjection instance
+     * @return The projection list
      */
     public Query.ProjectionList min(String name) {
         if(projectionList != null) {
@@ -149,6 +169,8 @@ public class CriteriaBuilder extends GroovyObjectSupport {
         return projectionList;
 
     }
+
+
 
    /**
      * Computes the average value of a property
@@ -345,7 +367,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
         return addToCriteria(Restrictions.between(propertyName, start, finish));
     }
 
-  /**
+    /**
      * Used to restrict a value to be greater than or equal to the given value
      * @param property The property
      * @param value The value
@@ -356,7 +378,19 @@ public class CriteriaBuilder extends GroovyObjectSupport {
         return addToCriteria(Restrictions.gte(property, value));
     }
 
-  /**
+    /**
+     * Used to restrict a value to be greater than or equal to the given value
+     * @param property The property
+     * @param value The value
+     * @return The Criterion instance
+     */
+    public Query.Criterion gt(String property, Object value) {
+        validatePropertyName(property, "gt");
+        return addToCriteria(Restrictions.gt(property, value));
+    }
+
+
+    /**
      * Used to restrict a value to be less than or equal to the given value
      * @param property The property
      * @param value The value
@@ -365,6 +399,17 @@ public class CriteriaBuilder extends GroovyObjectSupport {
     public Query.Criterion lte(String property, Object value) {
         validatePropertyName(property, "lte");
         return addToCriteria(Restrictions.lte(property, value));
+    }
+
+    /**
+     * Used to restrict a value to be less than or equal to the given value
+     * @param property The property
+     * @param value The value
+     * @return The Criterion instance
+     */
+    public Query.Criterion lt(String property, Object value) {
+        validatePropertyName(property, "lt");
+        return addToCriteria(Restrictions.lt(property, value));
     }
 
     /**
@@ -484,7 +529,11 @@ public class CriteriaBuilder extends GroovyObjectSupport {
             throw new IllegalArgumentException("Cannot use ["+methodName+"] restriction with null property name");
         }
 
-        if(persistentEntity.getPropertyByName(propertyName) == null) {
+        PersistentProperty property = persistentEntity.getPropertyByName(propertyName);
+        if(property == null && persistentEntity.getIdentity().getName().equals(propertyName)) {
+            property = persistentEntity.getIdentity();
+        }
+        if(property == null) {
             throw new IllegalArgumentException("Property ["+propertyName+"] is not a valid property of class ["+persistentEntity+"]");
         }
     }
@@ -506,4 +555,9 @@ public class CriteriaBuilder extends GroovyObjectSupport {
     }
 
 
+    public void build(Closure criteria) {
+        if(criteria != null) {
+            invokeClosureNode(criteria);
+        }
+    }
 }

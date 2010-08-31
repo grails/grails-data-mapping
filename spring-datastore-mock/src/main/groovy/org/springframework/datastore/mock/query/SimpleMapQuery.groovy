@@ -115,11 +115,16 @@ class SimpleMapQuery extends Query{
       final def total = results.size()
       if(offset > total) return Collections.emptyList()
 
-      def overflow = offset + max
-      if(overflow >= total) {
-          max == total - offset
-      }
-      def finalResult = results[offset..(max > -1 ? max-1 : max)]
+      // 0..3
+      // 0..-1
+      // 1..1
+      def max = this.max // 20
+      def from = offset // 10
+      def to = max == -1 ? -1 : (offset + max)-1      // 15
+      if(to >= total) to = -1
+
+
+      def finalResult = results[from..to]
       if(orderBy) {
         orderBy.each { Query.Order order ->
           def sorted = finalResult.sort { it."${order.property}"}
@@ -144,7 +149,7 @@ class SimpleMapQuery extends Query{
           def indexer = entityPersister.getPropertyIndexer(property)
 
           def root = indexer.indexRoot
-          def regexFormat = like.pattern.replaceAll('%', '.+?')
+          def regexFormat = like.pattern.replaceAll('%', '.*?')
           def pattern = "${root}:${regexFormat}"
           def matchingIndices = entityPersister.indices.findAll { key, value ->
             key ==~ pattern
@@ -225,9 +230,8 @@ class SimpleMapQuery extends Query{
         PersistentProperty property = getValidProperty(criterion)
 
         def handler = handlers[criterion.getClass()]
-        def results = handler?.call(criterion, property)
-        if(results)
-          resultList << results
+        def results = handler?.call(criterion, property) ?: []
+        resultList << results
       }
 
     }
@@ -239,8 +243,7 @@ class SimpleMapQuery extends Query{
           finalIdentifiers = resultList[0]
           for (num in 1..<total) {
             def secondList = resultList[num]
-            if (secondList)
-              finalIdentifiers = finalIdentifiers.intersect(secondList)
+            finalIdentifiers = finalIdentifiers.intersect(secondList)
           }
         }
         else {
@@ -258,7 +261,11 @@ class SimpleMapQuery extends Query{
   protected PersistentProperty getValidProperty(criterion) {
     def property = entity.getPropertyByName(criterion.property)
     if (property == null) {
-      throw new InvalidDataAccessResourceUsageException("Cannot query [" + entity + "] on non-existent property: " + property);
+      def identity = entity.identity
+      if(identity.name == criterion.property) return identity
+      else {        
+        throw new InvalidDataAccessResourceUsageException("Cannot query [" + entity + "] on non-existent property: " + criterion.property);
+      }
     }
     else if (!isIndexed(property)) {
       throw new InvalidDataAccessResourceUsageException("Cannot query [" + entity + "] on non-indexed property: " + property);

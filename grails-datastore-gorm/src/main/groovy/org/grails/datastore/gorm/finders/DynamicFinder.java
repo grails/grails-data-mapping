@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.gorm.finders;
 
+import grails.gorm.CriteriaBuilder;
+import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.datastore.query.Query;
@@ -60,7 +62,7 @@ public abstract class DynamicFinder {
         return this.pattern.matcher(methodName.subSequence(0, methodName.length())).find();
     }
 
-    public Object invoke(final Class clazz, String methodName, Object[] arguments) {
+    public Object invoke(final Class clazz, String methodName, Closure additionalCriteria, Object[] arguments) {
         List expressions = new ArrayList();
         if (arguments == null) arguments = EMPTY_OBJECT_ARRAY;
         Matcher match = pattern.matcher(methodName);
@@ -162,10 +164,14 @@ public abstract class DynamicFinder {
             }
         }
 
-        return doInvokeInternalWithExpressions(clazz, methodName, remainingArguments, expressions, operatorInUse);
+        return doInvokeInternalWithExpressions(clazz, methodName, remainingArguments, expressions, additionalCriteria,operatorInUse);
     }
 
-    protected abstract Object doInvokeInternalWithExpressions(Class clazz, String methodName, Object[] remainingArguments, List<MethodExpression> expressions, String operatorInUse);
+    public Object invoke(final Class clazz, String methodName, Object[] arguments) {
+        return invoke(clazz, methodName, null, arguments);
+    }
+
+    protected abstract Object doInvokeInternalWithExpressions(Class clazz, String methodName, Object[] remainingArguments, List<MethodExpression> expressions, Closure additionalCriteria, String operatorInUse);
 
     public static void populateArgumentsForCriteria(Class<?> targetClass, Query q, Map argMap) {
         if(argMap != null) {
@@ -209,6 +215,13 @@ public abstract class DynamicFinder {
                Map<?, ?> argMap = (Map<?, ?>) arguments[0];
                populateArgumentsForCriteria(clazz, query, argMap);
             }
+        }
+    }
+
+    protected void applyAdditionalCriteria(Query query, Closure additionalCriteria) {
+        if(additionalCriteria != null) {
+            CriteriaBuilder builder = new CriteriaBuilder(query.getEntity().getJavaClass(), query.getSession().getDatastore(), query);
+            builder.build(additionalCriteria);
         }
     }
 }

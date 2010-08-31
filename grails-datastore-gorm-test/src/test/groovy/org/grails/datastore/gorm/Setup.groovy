@@ -1,31 +1,36 @@
 package org.grails.datastore.gorm
 
-import grails.gorm.tests.*
-import org.grails.datastore.gorm.redis.*
-import org.springframework.datastore.core.Session
-import org.springframework.datastore.redis.RedisDatastore
 import org.springframework.validation.Validator
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
+import grails.gorm.tests.City
+import grails.gorm.tests.Country
+import grails.gorm.tests.Location
+import grails.gorm.tests.CommonTypes
+import grails.gorm.tests.ChildEntity
+import grails.gorm.tests.TestEntity
+import org.springframework.datastore.core.Session
+import org.springframework.datastore.mock.SimpleMapDatastore
 import org.springframework.datastore.mapping.PersistentEntity
 
 /**
  * Created by IntelliJ IDEA.
  * User: graemerocher
- * Date: Aug 23, 2010
- * Time: 12:31:02 PM
+ * Date: Aug 30, 2010
+ * Time: 5:06:49 PM
  * To change this template use File | Settings | File Templates.
  */
 class Setup {
   static Session setup(classes) {
-    def redis = new RedisDatastore()
+    def simple = new SimpleMapDatastore()
     for(cls in classes) {
-      redis.mappingContext.addPersistentEntity(cls)
+      simple.mappingContext.addPersistentEntity(cls)
     }
 
-    PersistentEntity entity = redis.mappingContext.persistentEntities.find { PersistentEntity e -> e.name.contains("TestEntity")}    
+    PersistentEntity entity = simple.mappingContext.persistentEntities.find { PersistentEntity e -> e.name.contains("TestEntity")}
 
-    redis.mappingContext.addEntityValidator(entity, [
+
+    simple.mappingContext.addEntityValidator(entity, [
             supports: { Class c -> true },
             validate: { Object o, Errors errors ->
                 if(!StringUtils.hasText(o.name)) {
@@ -33,11 +38,10 @@ class Setup {
                 }
             }
     ] as Validator)
-    
-    new RedisGormEnhancer(redis).enhance()
 
-    def con = redis.connect()
-    con.getNativeInterface().flushdb()
+    new GormEnhancer(simple).enhance()
+
+    def con = simple.connect()
     return con
   }
 
