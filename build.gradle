@@ -122,15 +122,21 @@ subprojects {
 
                   case 'SNAPSHOT':
                       description += snapshotRepositoryUrl
-                      s3credentials = [userName: project.properties.s3AccessKey, passphrase: project.properties.s3SecretAccessKey]
+                      def credentials
+                      if(isSpringProject) {
+                        credentials = [userName: project.properties.s3AccessKey,
+                                       passphrase: project.properties.s3SecretAccessKey]
+                      }
+                      else {
+                        credentials = [userName: project.properties['codehaus.username'],
+                                       password: project.properties['codehaus.password']]
+                      }
                       configuration = configurations.deployerJars
                       repository(url: milestoneRepositoryUrl) {
-                        if(isSpringProject)
-                          authentication(s3credentials)
+                          authentication(credentials)
                       }
                       snapshotRepository(url: snapshotRepositoryUrl) {
-                        if(isSpringProject)
-                          authentication(s3credentials)
+                          authentication(credentials)
                       }
                     break;
               }
