@@ -13,8 +13,10 @@ def isGroovyProject(project) {
 
 subprojects {
 
-    version = '0.1'
-  
+    releaseType = "M1"
+    version = "1.0.0.${releaseType}"
+
+    def isSpringProject = project.name.contains("spring-datastore")
 	def isStandardGroovyMavenProject = isGroovyProject(project)
   
     if(isStandardGroovyMavenProject) {
@@ -29,6 +31,7 @@ subprojects {
        mavenRepo name:'mavenLocal',
                  urls:new File( System.getProperty("user.home" ), ".m2/repository" ).toURL().toString()
        mavenRepo name: "spock-snapshots", urls: ["http://m2repo.spockframework.org/snapshots"]
+       mavenRepo name: "springAWS", urls: 'http://maven.springframework.org/release'
        mavenCentral()
     }
 
@@ -87,5 +90,62 @@ subprojects {
             }
           }
       }
+
+      uploadArchives {
+          description = "Does a maven deploy of archives artifacts"
+
+//          def releaseRepositoryUrl = "file://${project.properties.mavenSyncRepoDir}"
+          def milestoneRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/milestone' :
+                                                         'dav:https://dav.codehaus.org/snapshots.repository/grails/'
+          def snapshotRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/snapshot' :
+                                                        'dav:https://dav.codehaus.org/snapshots.repository/grails/'
+
+          // add a configuration with a classpath that includes our s3 maven deployer
+          configurations { deployerJars }
+          dependencies {
+              deployerJars "org.springframework.build.aws:org.springframework.build.aws.maven:3.0.0.RELEASE",
+                           "org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-6"
+
+          }
+
+          repositories.mavenDeployer {
+              switch (releaseType) {
+                  case 'RELEASE':
+                    // TODO: Will need to update this when doing a non-snapshot/milestone release
+//                      repository(url: releaseRepositoryUrl)
+//                      description += releaseRepositoryUrl
+                      break;
+
+                  case ~/M[0-9]+/:
+                      description += milestoneRepositoryUrl
+                      // fall through and pick up config below
+
+                  case 'SNAPSHOT':
+                      description += snapshotRepositoryUrl
+                      s3credentials = [userName: project.properties.s3AccessKey, passphrase: project.properties.s3SecretAccessKey]
+                      configuration = configurations.deployerJars
+                      repository(url: milestoneRepositoryUrl) {
+                        if(isSpringProject)
+                          authentication(s3credentials)
+                      }
+                      snapshotRepository(url: snapshotRepositoryUrl) {
+                        if(isSpringProject)
+                          authentication(s3credentials)
+                      }
+                    break;
+              }
+
+              pom.project {
+                  licenses {
+                      license {
+                          name 'The Apache Software License, Version 2.0'
+                          url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                          distribution 'repo'
+                      }
+                  }
+              }
+          }
+      }
+
     }
 }
