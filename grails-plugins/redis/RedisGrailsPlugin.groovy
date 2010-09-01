@@ -17,6 +17,7 @@ import org.grails.plugins.redis.RedisMappingContextFactoryBean
 import org.grails.plugins.redis.RedisDatastoreFactoryBean
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.springframework.datastore.web.support.OpenSessionInViewInterceptor
+import grails.datastore.Redis
 
 class RedisGrailsPlugin {
     // the plugin version
@@ -50,6 +51,14 @@ a GORM-like API onto it
         springDatastore(RedisDatastoreFactoryBean) {
           config = redisConfig
           mappingContext = ref("datastoreMappingContext")
+        }
+        redisBean(Redis) { bean ->
+          bean.scope = "request"
+          datastore = ref("springDatastore")
+        }
+        redis(org.springframework.aop.scope.ScopedProxyFactoryBean) {
+          targetBeanName = "redisBean"
+          proxyTargetClass = true
         }
         datastorePersistenceInterceptor(DatastorePersistenceContextInterceptor, ref("springDatastore"))
 

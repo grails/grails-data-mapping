@@ -34,9 +34,11 @@ class Redis  {
   @Delegate RedisTemplate redisTemplate
   Datastore datastore
 
-  Redis(RedisDatastore datastore, RedisTemplate redisTemplate) {
-    this.redisTemplate = redisTemplate
-    this.datastore = datastore
+  Redis() {
+  }
+
+  void setDatastore(Datastore ds) {
+    this.datastore = ds
   }
 
   /**

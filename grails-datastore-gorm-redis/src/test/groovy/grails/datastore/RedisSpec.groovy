@@ -13,7 +13,7 @@ class RedisSpec extends GormDatastoreSpec {
 
   def testRedisList() {
     given:
-    def redis = new Redis(session.datastore, session.nativeInterface)
+    def redis = new Redis(datastore:session.datastore)
 
     when:
     redis.flushall()
@@ -29,7 +29,7 @@ class RedisSpec extends GormDatastoreSpec {
 
   def testEntities() {
     given:
-    def redis = new Redis(session.datastore, session.nativeInterface)
+    def redis = new Redis(datastore:session.datastore)
     def age = 40                                                                                                 
     ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each {
       new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
