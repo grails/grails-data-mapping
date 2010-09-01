@@ -2,7 +2,7 @@ h1. random
 
 h2. Purpose
 
-Returns a random domain instance
+Returns a random domain instance.
 
 h2. Examples
 
@@ -12,4 +12,4 @@ def randomPerson = Person.random()
 
 h2. Description
 
-A common use case for Redis is its great support for set operations including returning random set elements. This method takes advantage of that capability by returning an random domain class.
+One of the major benifits of Redis is its great support for set operations including returning random set elements. This method takes advantage of that capability by returning a random instance of the corresponding domain class.

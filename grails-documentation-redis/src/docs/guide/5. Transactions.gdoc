@@ -1,11 +1,11 @@
-Transactions in Redis (using MULTI/EXEC) operate differently to SQL transactions, in fact they are more a way to do bulk operations that can be discarded rather than full transactions (see the documentation on [MULTI/EXEC|http://code.google.com/p/redis/wiki/MultiExecCommand] for further information).
+Transactions in Redis (using MULTI/EXEC) operate differently to SQL transactions. In fact they are more a way to do bulk operations that can be discarded rather than full transactions (see the documentation on [MULTI/EXEC|http://code.google.com/p/redis/wiki/MultiExecCommand] for further information).
 
 One limitation of Redis' MULT/EXEC command is that even reads are batched up in the transaction. This trickles down to usage within GORM for Redis. So for example you can execute a transaction such as:
 
 {code:java}
 Person.withTransaction {
-	new Person(firstName:"Bob").save()
-	new Person(firstName:"Fred").save()	
+    new Person(firstName:"Bob").save()
+    new Person(firstName:"Fred").save()	
 }
 {code}
 
@@ -13,14 +13,14 @@ However, you cannot execute any queries (only write operations) in the middle of
 
 {code:java}
 Person.withTransaction {
-	new Person(firstName:"Bob").save()
+    new Person(firstName:"Bob").save()
 	
-	def fred
-	Person.withNewSession {
-		fred = Person.findByFirstName("Fred")
-	} 
-	if(!fred)
-		new Person(firstName:"Fred").save()	
+    def fred
+    Person.withNewSession {
+            fred = Person.findByFirstName("Fred")
+    } 
+    if(!fred)
+        new Person(firstName:"Fred").save()	
 }
 {code}
 
