@@ -2,22 +2,22 @@ Object mapping works largely as described in the [documentation on GORM|http://g
 
 The one notable exception is that the [mapping block|http://grails.org/doc/latest/ref/Database%20Mapping/Usage.html] works differently to GORM for Hibernate. Most of the mapping configuration options available to GORM for Hibernate are specific to SQL databases and hence don't make sense to Redis.
 
-Below is an example of a domain class that can be persisted to Redis:
+Here is an example of a domain class that can be persisted to Redis:
 
 {code}
 class Person {
 
-	String firstName
-	String lastName
+    String firstName
+    String lastName
 	
-	static constraints = {
-		firstName blank:false
-		lastName blank:false
-	}
+    static constraints = {
+        firstName blank:false
+        lastName blank:false
+    }
 	
-	static mapping = {
-		lastName index:true
-	}
+    static mapping = {
+        lastName index:true
+    }
 }
 {code}
 

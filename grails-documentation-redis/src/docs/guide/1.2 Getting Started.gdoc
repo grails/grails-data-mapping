@@ -4,7 +4,7 @@ To get started with GORM for Redis you need to install the plugin into a Grails 
 grails install-plugin redis
 {code}
 
-With that done you need to setup a running Redis server. One easy way to do this is grab the latest Redis from Github (although for production you'll want to use a stable distribution):
+With that done you need to set up a running Redis server. One easy way to do this is grab the latest Redis from Github (although for production you'll want to use a stable distribution):
 
 {code:java}
 git clone git://github.com/antirez/redis.git

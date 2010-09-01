@@ -14,22 +14,22 @@ import grails.datastore.test.DatastoreUnitTestMixin
 
 @Mixin(DatastoreUnitTestMixin)
 class PersonTests extends GroovyTestCase {
-	void testPersist() {
-		mockDomain(Person)
-		def s = new Simple(name:"Bob")
-		s.save()
+    void testPersist() {
+        mockDomain(Person)
+        def s = new Simple(name:"Bob")
+        s.save()
 		
-		assert s.id != null
+        assert s.id != null
 		
-		s = Simple.get(s.id)
-		
-		assert s != null
-	}
+        s = Simple.get(s.id)
+            
+        assert s != null
+    }
 	
-	void tearDown() {
-		disconnect()
-	}
+    void tearDown() {
+        disconnect()
+    }
 }
 {code}
 
-You should call the @mockDomain@ method to mock a domain instance and then the remainder of the API is the same. Note that you should call @disconnect()@ in the tearDown() method otherwise your tests will share data.
+You should call the @mockDomain()@ method to mock a domain instance and then the remainder of the API is the same. Note that you should call @disconnect()@ in @tearDown()@ otherwise your tests will share data.
