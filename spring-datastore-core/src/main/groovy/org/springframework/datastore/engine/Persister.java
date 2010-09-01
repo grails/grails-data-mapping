@@ -105,4 +105,10 @@ public interface Persister {
     List<Object> retrieveAll(Serializable[] keys);
 
 
+    /**
+     * Refreshes the given objects state
+     * @param o The object to refresh
+     * @return The objects id
+     */
+    Serializable refresh(Object o);
 }

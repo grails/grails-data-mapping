@@ -246,6 +246,16 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
         throw new NonPersistentTypeException("Object ["+o+"] cannot be persisted. It is not a known persistent type.");
     }
 
+    public void refresh(Object o) {
+        if(o == null) throw new IllegalArgumentException("Cannot persist null object");
+        Persister persister = getPersister(o);
+        if(persister != null) {
+            final Serializable key = persister.refresh(o);
+            cacheObject(key, o);
+        }
+        throw new NonPersistentTypeException("Object ["+o+"] cannot be persisted. It is not a known persistent type.");
+    }
+
     public Object retrieve(Class type, Serializable key) {
         if(key == null || type == null) return null;
         Persister persister = getPersister(type);

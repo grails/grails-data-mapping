@@ -189,10 +189,27 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         return getProxyInstance(getPersistentEntity().getJavaClass(), key);
     }
 
+    public Serializable refresh(Object o) {
+        final PersistentEntity entity = getPersistentEntity();
+        EntityAccess ea = new EntityAccess(entity, o);
+
+        Serializable identifier = (Serializable) ea.getIdentifier();
+        if(identifier != null) {
+            final T entry = retrieveEntry(entity, entityFamily, identifier);
+            refreshObjectStateFromNativeEntry(entity, o, identifier, entry);
+            return identifier;
+        }
+        return null;
+    }
+
     protected Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, T nativeEntry) {
         persistentEntity = discriminatePersistentEntity(persistentEntity, nativeEntry);
         Object obj = persistentEntity.newInstance();
+        refreshObjectStateFromNativeEntry(persistentEntity, obj, nativeKey, nativeEntry);
+        return obj;
+    }
 
+    protected void refreshObjectStateFromNativeEntry(PersistentEntity persistentEntity, Object obj, Serializable nativeKey, T nativeEntry) {
         EntityAccess ea = new EntityAccess(persistentEntity, obj);
         ea.setConversionService(getMappingContext().getConversionService());
         String idName = ea.getIdentifierName();
@@ -252,7 +269,6 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
             }
         }
-        return obj;
     }
 
     /**

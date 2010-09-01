@@ -16,6 +16,7 @@ package org.grails.datastore.gorm
 
 import org.springframework.datastore.core.Datastore
 import org.springframework.datastore.validation.ValidationException
+import org.springframework.datastore.proxy.EntityProxy
 
 /**
  * Instance methods of the GORM API
@@ -30,15 +31,18 @@ class GormInstanceApi extends AbstractGormApi {
     super(persistentClass, datastore)
   }
 
-  /**
-   * Saves an object the datastore
-   * @param instance The instance
-   * @return Returns the instance
-   */
-  def save(instance) {
-      save(instance, Collections.emptyMap())
-  }
 
+  /**
+   * Proxy aware instanceOf implementation
+   */
+  boolean instanceOf(instance, Class cls) {
+    if (instance instanceof EntityProxy) {
+        def obj = instance.getTarget()
+        return cls.isInstance(instance)
+    }
+    return cls.isInstance(instance)
+
+  }
   /**
    * Upgrades an existing persistence instance to a write lock
    * @return The instance
@@ -63,6 +67,42 @@ class GormInstanceApi extends AbstractGormApi {
     finally {
       session.unlock(instance)
     }
+  }
+
+  /**
+   * Refreshes the state of the current instance
+   * @param instance The instance
+   * @return The instance
+   */
+  def refresh(instance) {
+    datastore.currentSession.refresh instance
+    return instance
+  }
+  /**
+   * Saves an object the datastore
+   * @param instance The instance
+   * @return Returns the instance
+   */
+  def save(instance) {
+      save(instance, Collections.emptyMap())
+  }
+
+  /**
+   * Saves an object the datastore
+   * @param instance The instance
+   * @return Returns the instance
+   */
+  def merge(instance) {
+      save(instance, Collections.emptyMap())
+  }
+
+  /**
+   * Saves an object the datastore
+   * @param instance The instance
+   * @return Returns the instance
+   */
+  def merge(instance, Map params) {
+      save(instance, params)
   }
 
   /**
@@ -127,7 +167,16 @@ class GormInstanceApi extends AbstractGormApi {
    * @param instance The instance to delete
    */
   def delete(instance) {
-    datastore.currentSession.delete(instance)
+    delete(instance, Collections.emptyMap())
   }
-
+  /**
+   * Deletes an instance from the datastore
+   * @param instance The instance to delete
+   */
+  def delete(instance, Map params) {
+    final def session = datastore.currentSession
+    session.delete(instance)
+    if(params?.flush)
+      session.flush()
+  }
 }

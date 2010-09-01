@@ -47,6 +47,16 @@ class GormStaticApi extends AbstractGormApi {
   }
 
   /**
+   * Retrieves and object from the datastore. eg. Book.read(1)
+   *
+   * Since the datastore abstraction doesn't support dirty checking yet this
+   * just delegates to {@link #get(Serializable)}
+   */
+  def read(Serializable id) {
+    datastore.currentSession.retrieve(persistentClass,id)
+  }
+
+  /**
    * Retrieves and object from the datastore as a proxy. eg. Book.load(1)
    */
   def load(Serializable id) {
@@ -90,6 +100,16 @@ class GormStaticApi extends AbstractGormApi {
    */
   def lock(Serializable id) {
     datastore.currentSession.lock(persistentClass, id)
+  }
+
+  /**
+   * Merges an instance with the current session
+   * @param o The object to merge
+   * @return The instance
+   */
+  def merge(Object o) {
+    datastore.currentSession.persist(o)
+    return o
   }
 
   /**

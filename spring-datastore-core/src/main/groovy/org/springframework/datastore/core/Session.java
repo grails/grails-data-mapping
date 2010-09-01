@@ -88,6 +88,12 @@ public interface Session extends EntityInterceptorAware {
     Serializable persist(Object o);
 
     /**
+     * Refreshes the given objects state
+     * @param o The object to refresh
+     */
+    void refresh(Object o);
+
+    /**
      * Attaches an object the current session
      * @param o The object to attach
      */
