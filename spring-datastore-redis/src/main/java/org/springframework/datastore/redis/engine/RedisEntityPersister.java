@@ -156,15 +156,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
 
     @Override
     protected Map retrieveEntry(PersistentEntity persistentEntity, final String family, Serializable key) {
-        String hashKey;
-
-        if(persistentEntity.isRoot()) {
-            hashKey = getRedisKey(family, key);
-        }
-        else {
-            RedisEntityPersister persister = (RedisEntityPersister) session.getPersister(persistentEntity.getRootEntity());
-            hashKey = getRedisKey(persister.getFamily(), key);
-        }
+        String hashKey = getEntryKey(persistentEntity, family, key);
 
 
         final Map map = redisTemplate.hgetall(hashKey);
@@ -172,8 +164,20 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
         return map;
     }
 
+    private String getEntryKey(PersistentEntity persistentEntity, String family, Serializable key) {
+        String hashKey;
+        if(persistentEntity.isRoot()) {
+            hashKey = getRedisKey(family, key);
+        }
+        else {
+            RedisEntityPersister persister = (RedisEntityPersister) session.getPersister(persistentEntity.getRootEntity());
+            hashKey = getRedisKey(persister.getFamily(), key);
+        }
+        return hashKey;
+    }
+
     @Override
-    protected List<Object> retrieveAllEntities(PersistentEntity persistentEntity, Iterable<Serializable> keys) {
+    protected List<Object> retrieveAllEntities(final PersistentEntity persistentEntity, Iterable<Serializable> keys) {
 
         List<Object> entityResults = new ArrayList<Object>();
 
@@ -194,7 +198,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
                 List<Object> results = redisTemplate.pipeline(new RedisCallback<RedisTemplate>(){
                     public Object doInRedis(RedisTemplate redis) throws IOException {
                         for (Serializable key : redisKeys) {
-                            redis.hgetall(getRedisKey(getFamily(),key));
+                            redis.hgetall(getEntryKey(persistentEntity, getFamily(), key));
                         }
                         return null;
                     }
