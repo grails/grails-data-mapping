@@ -18,22 +18,11 @@
     <orderEntry type="library" name="Spring Core" level="project" />
     <orderEntry type="library" name="Spring Beans" level="project" />
     <orderEntry type="library" name="Spring AOP" level="project" />
-    <orderEntry type="module-library">
-      <library name="Redis Java Client">
-        <CLASSES>
-          <root url="jar://$GRADLE_CACHE$/sma/java-redis-client/jars/java-redis-client-0.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/../../../../nosql/java-redis-client/src/main/java" />
-        </SOURCES>
-      </library>
-    </orderEntry>
     <orderEntry type="library" scope="RUNTIME" name="Javassist" level="project" />
     <orderEntry type="module-library">
       <library name="Jedis">
         <CLASSES>
-          <root url="jar://$GRADLE_CACHE$/redis.clients/jedis/jars/jedis-1.0.0-RC3.jar!/" />
+          <root url="jar://$GRADLE_CACHE$/redis.clients/jedis/jars/jedis-1.0.0-RC4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

@@ -30,12 +30,13 @@ mvn -DskipTests=true install
 Redis
 -----
 
-The Redis module requires Jedis to be installed into your
-local Maven cache.
+To run tests against the Redis module you need a running instance of Redis. To
+get started do the following:
 
-Then do the following for Jedis:
 
-git clone git://github.com/graemerocher/jedis.git
-cd jedis
-gradle install
+git clone git://github.com/antirez/redis.git
+cd redis
+make
+src src
+./redis-server
 
