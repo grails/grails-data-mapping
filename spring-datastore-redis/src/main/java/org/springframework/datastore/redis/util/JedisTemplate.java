@@ -19,6 +19,7 @@ import org.springframework.transaction.NoTransactionException;
 import redis.clients.jedis.*;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,8 +51,9 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         this.timeout = timeout;
     }
 
-    public JedisTemplate(Jedis jedis) {
+    public JedisTemplate(Jedis jedis) throws IOException {
         this.redis = jedis;
+        jedis.connect();
     }
 
     public List<Object> pipeline(final RedisCallback<RedisTemplate<Jedis, SortingParams>> pipeline) {
