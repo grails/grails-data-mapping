@@ -9,26 +9,20 @@ grails.project.dependency.resolution = {
         // excludes 'ehcache'
     }
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
-    useOrigin true
     repositories {
-        mavenLocal()
-
-        // uncomment the below to enable remote dependency resolution
-        // from public Maven repositories
-        //mavenLocal()
-        //mavenCentral()
-        //mavenRepo "http://snapshots.repository.codehaus.org"
-        //mavenRepo "http://repository.codehaus.org"
-        //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
+		def libResolver = new org.apache.ivy.plugins.resolver.URLResolver(name:"jedis", settings:ivySettings)	
+		libResolver.addArtifactPattern("http://github.com/downloads/xetorthio/jedis/[module]-[revision].jar")
+		resolver(libResolver)
+		
+		mavenRepo "http://maven.springframework.org/milestone"
+		mavenRepo "http://snapshots.repository.codehaus.org"
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-      compile "org.grails:grails-datastore-gorm-redis:0.1"
-      compile "org.springframework:spring-datastore-web:0.1"
-
-      test "org.grails:grails-datastore-gorm-test:0.1"
+      compile "org.grails:grails-datastore-gorm-redis:1.0.0.M1"
+      compile "org.springframework:spring-datastore-web:1.0.0.M1"
+      test "org.grails:grails-datastore-gorm-test:1.0.0.M1"
 
     }
 }
