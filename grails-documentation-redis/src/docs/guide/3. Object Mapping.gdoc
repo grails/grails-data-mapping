@@ -1,0 +1,32 @@
+Object mapping works largely as described in the [documentation on GORM|http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html]. In general you can continue to model your associations using typical GORM notation such as @hasMany@, @belongsTo@ and so on.
+
+The one notable exception is that the [mapping block|http://grails.org/doc/latest/ref/Database%20Mapping/Usage.html] works differently to GORM for Hibernate. Most of the mapping configuration options available to GORM for Hibernate are specific to SQL databases and hence don't make sense to Redis.
+
+Below is an example of a domain class that can be persisted to Redis:
+
+{code}
+class Person {
+
+	String firstName
+	String lastName
+	
+	static constraints = {
+		firstName blank:false
+		lastName blank:false
+	}
+	
+	static mapping = {
+		lastName index:true
+	}
+}
+{code}
+
+Note that one key difference with GORM for Redis is that you *must* specify the properties you want to index before you can execute any query against the property. In the example above the @lastName@ property can be queried with a dynamic finder such as:
+
+{code:java}
+Person.findByLastName("Simpson")
+{code}
+
+However, the @firstName@ property cannot be queried and an error will be thrown if you attempt the equivalent dynamic finder for the @firstName@ property unless you specify @index:true@ for that property too.
+
+In other words, unlike SQL where every single property can be queried with Redis you must specify which properties can be queried up front.

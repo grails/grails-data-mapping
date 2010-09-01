@@ -1,0 +1,36 @@
+To get started with GORM for Redis you need to install the plugin into a Grails application:
+
+{code:java}
+grails install-plugin redis
+{code}
+
+With that done you need to setup a running Redis server. One easy way to do this is grab the latest Redis from Github (although for production you'll want to use a stable distribution):
+
+{code:java}
+git clone git://github.com/antirez/redis.git
+cd redis
+make
+cd src
+./redis-server
+{code}
+
+With the above commands executed in a terminal window you should see output like the following appear:
+
+{code:java}
+[45240] 01 Sep 15:58:40 * Server started, Redis version 2.1.2
+[45240] 01 Sep 15:58:41 * DB loaded from disk: 1 seconds
+[45240] 01 Sep 15:58:41 * The server is now ready to accept connections on port 6379
+{code}
+
+As you can see the server is running on port 6379, but don't worry the Redis plugin for Grails will automatically configure itself to look for Redis on that port by default. 
+
+If you want to configure how Grails connects to redis then you can do so using the following settings in @grails-app/conf/Config.groovy@:
+
+{code:java}
+grails.redis.host="myserver"
+grails.redis.port=6380
+grails.redis.password="secret"
+grails.redis.pooled=true
+grails.redis.resources=15
+grails.redis.timeout=5000
+{code}

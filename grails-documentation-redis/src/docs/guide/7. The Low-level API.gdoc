@@ -1,0 +1,69 @@
+There is a lower-level API that provides access to the majority of commands from the [Redis Command Reference|http://code.google.com/p/redis/wiki/CommandReference] by injecting a bean called @redis@:
+
+For example in a controller:
+
+{code:java}
+def redis
+
+def foo = {
+	redis.select(2)
+	redis.flushdb()
+	redis["message"] = "World"
+	
+	render "Hello ${redis["message"]}!"
+}
+{code}
+
+See the @org.springframework.datastore.redis.util.RedisTemplate@ interface for the full list of available methods.
+
+The low-level API gives you easy an easy way to work with Redis lists, sets and hashes via the @list@, @set@ and @hash@ methods:
+
+For example the @list@ method returns a normal Java @java.util.List@ that is backed onto a Redis list:
+
+{code:java}
+def list = redis.list("my.list")
+list << 1 << 2 << 3
+assert 3 == list.size()
+assert 1 == list[0] as Integer
+assert 2 == list[1] as Integer
+assert 3 == list[2] as Integer
+{code}
+
+Whilst the @set@ method returns a Java @java.util.Set@:
+
+{code:java}
+def set = redis.set("my.set")
+set << 1 << 2 << 3 << 1 << 2
+assert 3 == set.size()
+assert set.contains(1)
+{code}
+
+And finally the @hash@ method returns a Java @java.util.Map@:
+
+{code:java}
+def hash = redis.hash("my.hash")
+
+hash["foo"] = "bar"
+
+assert "bar" == hash["foo"]
+{code}
+
+There is also an @entities@ helper method for obtaining domain classes from a Redis set or list. This is useful when you want to build your own indices, for example:
+
+{code:java}
+def theSimpsons = Person.findAllByLastName("Simpson")
+
+def list = redis.list("the.simpsons")
+theSimpsons.each { list << it.id }
+
+{code}
+
+And later query the indices:
+
+{code:java}
+
+def theSimpsons = redis.entities(Person, "the.simpsons")
+theSimpsons.each {
+	println it.firstName
+}
+{code}

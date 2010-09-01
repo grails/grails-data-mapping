@@ -6,17 +6,22 @@ dependencies {
 	project(":spring-datastore-core")
 }
 
-task javadoc(type: Javadoc) {
-/*	def springProjects = groovyProjects().findAll { it.name.contains("spring-datastore") }*/
-    source groovyProjects().collect {project -> 
-		project.sourceSets.main.allJava 
+if(Boolean.getBoolean("skip.javadoc")) {
+	task javadoc << {} // do nothing
+}
+else {
+	task javadoc(type: Javadoc) {
+	    source groovyProjects().collect {project -> 
+			project.sourceSets.main.allJava 
+		}
+		destinationDir = new File(file("$buildDir/docs"), 'api')
+	    classpath = files(groovyProjects().collect {project -> [project.sourceSets.main.compileClasspath, project.sourceSets.main.classes] })
+	    options.links("http://java.sun.com/j2se/1.5.0/docs/api", "http://groovy.codehaus.org/gapi/")
+	    doFirst {
+	        title = "Datastore API $version"
+	    }		
 	}
-	destinationDir = new File(file("$buildDir/docs"), 'api')
-    classpath = files(groovyProjects().collect {project -> [project.sourceSets.main.compileClasspath, project.sourceSets.main.classes] })
-    options.links("http://java.sun.com/j2se/1.5.0/docs/api", "http://groovy.codehaus.org/gapi/")
-    doFirst {
-        title = "Datastore API $version"
-    }
+	
 }
 
 task clean << {
