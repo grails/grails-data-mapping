@@ -32,13 +32,22 @@ class Redis  {
 
 
   @Delegate RedisTemplate redisTemplate
-  Datastore datastore
+  private Datastore datastore
 
   Redis() {
   }
 
+  def getAt(String s) {
+    get(s)
+  }
+
+  def setAt(String s, v) {
+    set s, v
+  }
+
   void setDatastore(Datastore ds) {
     this.datastore = ds
+    this.redisTemplate = datastore.currentSession.nativeInterface
   }
 
   /**

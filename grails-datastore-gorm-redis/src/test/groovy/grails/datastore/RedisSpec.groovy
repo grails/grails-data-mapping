@@ -11,6 +11,17 @@ import grails.gorm.tests.*
  */
 class RedisSpec extends GormDatastoreSpec {
 
+  def "Test usage of subscript operator"() {
+    given:
+      def redis = new Redis(datastore:session.datastore)
+
+    when:
+      redis.flushall()
+      redis["foo"] = "bar"
+
+    then:
+      "bar" == redis["foo"]
+  }
   def testRedisList() {
     given:
     def redis = new Redis(datastore:session.datastore)
