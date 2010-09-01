@@ -106,6 +106,16 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
         return connection;
     }
 
+    /**
+     * Binds the session to the current thread local
+     * @param session The session
+     */
+    public static void bindSession(Session session) {
+        if(session != null) {
+            currentConnectionThreadLocal.set(session);
+        }
+    }
+
     public MappingContext getMappingContext() {
         return mappingContext;
     }

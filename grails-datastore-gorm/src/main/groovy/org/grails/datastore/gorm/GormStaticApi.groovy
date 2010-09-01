@@ -18,6 +18,7 @@ import org.springframework.datastore.core.Datastore
 import org.springframework.datastore.query.Query
 import grails.gorm.CriteriaBuilder
 import org.grails.datastore.gorm.finders.DynamicFinder
+import org.springframework.datastore.core.AbstractDatastore
 
 /**
  *  Static methods of the GORM API
@@ -165,6 +166,21 @@ class GormStaticApi extends AbstractGormApi {
    */
   def withSession(Closure callable) {
     callable.call(datastore.currentSession)
+  }
+
+  /**
+   * Creates and binds a new session for the scope of the given closure
+   */
+  def withNewSession(Closure callable) {
+    def oldSession = datastore.currentSession
+
+    try {
+      def session = datastore.connect()
+      callable?.call(session)
+    }
+    finally {
+      AbstractDatastore.bindSession oldSession
+    }
   }
 
   // TODO: In the first version no support will exist for String-based queries
