@@ -1,0 +1,15 @@
+h1. pop
+
+h2. Purpose
+
+Returns and deletes random domain instance
+
+h2. Examples
+
+{code:java}
+def randomPerson = Person.pop()
+{code}
+
+h2. Description
+
+Similar to the @random@ method but deletes the domain instance at the same time.

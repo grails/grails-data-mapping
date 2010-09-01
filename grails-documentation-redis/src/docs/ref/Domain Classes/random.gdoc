@@ -1,0 +1,15 @@
+h1. random
+
+h2. Purpose
+
+Returns a random domain instance
+
+h2. Examples
+
+{code:java}
+def randomPerson = Person.random()
+{code}
+
+h2. Description
+
+A common use case for Redis is its great support for set operations including returning random set elements. This method takes advantage of that capability by returning an random domain class.

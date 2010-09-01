@@ -1,0 +1,35 @@
+h1. DatastoreUnitTestMixin
+
+h2. Purpose
+
+A mixin for setting up unit testing of datastores such as the Redis datastore.
+
+h2. Examples
+
+{code:java}
+import grails.datastore.test.DatastoreUnitTestMixin
+
+@Mixin(DatastoreUnitTestMixin)
+class PersonTests extends GroovyTestCase {
+	void testPersist() {
+		mockDomain(Person)
+		def s = new Simple(name:"Bob")
+		s.save()
+		
+		assert s.id != null
+		
+		s = Simple.get(s.id)
+		
+		assert s != null
+	}
+	
+	void tearDown() {
+		disconnect()
+	}
+}
+{code}
+
+h2. Description
+
+The @DatastoreUnitTestMixin@ mixin allows testing of datastore interactions by mocking the complete GORM API including simple persistence methods, dynamic finders, criteria queries and named queries.
+
