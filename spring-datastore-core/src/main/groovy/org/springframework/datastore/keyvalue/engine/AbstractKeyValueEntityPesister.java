@@ -234,6 +234,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
                 boolean isLazy = isLazyAssociation(associationPropertyMapping);
                 AssociationIndexer indexer = getAssociationIndexer(association);
+                nativeKey = (Serializable) getMappingContext().getConversionService().convert(nativeKey, getPersistentEntity().getIdentity().getType());
                 if(isLazy) {
                     if(List.class.isAssignableFrom(association.getType())) {
                         ea.setProperty(association.getName(), new PersistentList(nativeKey, session, indexer));
