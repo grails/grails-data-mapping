@@ -40,9 +40,14 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     private JedisPool pool;
     public static final String QUEUED = "QUEUED";
     private Client pipeline;
+    private String host = "localhost";
+    private int port;
+    private int timeout = 2000;
 
     public JedisTemplate(String host, int port, int timeout) {
-        this.redis = new Jedis(host, port, timeout);
+        this.host = host;
+        this.port = port;
+        this.timeout = timeout;
     }
 
     public JedisTemplate(Jedis jedis) {
@@ -75,28 +80,18 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     }
 
     public JedisTemplate(JedisPool pool) {
-        try {
-            this.redis = pool.getResource(2000);
-        } catch (TimeoutException e) {
-            throw new DataAccessResourceFailureException("Connection timeout geting Jedis connection from pool: " + e.getMessage(), e);        }
-
         this.pool = pool;
     }
 
     public JedisTemplate(JedisPool pool, int timeout) {
-        try {
-            this.redis = pool.getResource(timeout);
-        } catch (TimeoutException e) {
-            throw new DataAccessResourceFailureException("Connection timeout geting Jedis connection from pool: " + e.getMessage(), e);        }
-
+        this.timeout = timeout;
         this.pool = pool;
     }
 
     public Object execute(RedisCallback<Jedis> jedisRedisCallback) {
         try {
-            if(!connected) {
-                redis.connect();
-                connected = true;
+            if(redis == null) {
+                redis = getNewConnection();
             }
             if(password != null && !authenticated) {
                 try {
@@ -111,6 +106,25 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
             throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
 
+    }
+
+    protected Jedis getNewConnection() {
+        Jedis jedis;
+        if(pool == null)
+            jedis = new Jedis(host, port, timeout);
+        else {
+            try {
+                jedis = pool.getResource(timeout);
+            } catch (TimeoutException e) {
+                throw new DataAccessResourceFailureException("Connection timeout getting Jedis connection from pool: " + e.getMessage(), e);
+            }
+        }
+        try {
+            jedis.connect();
+        } catch (IOException e) {
+            throw new DataAccessResourceFailureException("Connection failure connecting to Redis: " + e.getMessage(), e);
+        }
+        return jedis;
     }
 
     public SortParams sortParams() {
@@ -529,8 +543,20 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
 
     public int incr(final String key) {
         return (Integer)execute(new RedisCallback<Jedis>() {
-            public Object doInRedis(Jedis redis) {
-                return redis.incr(key);
+            public Object doInRedis(Jedis redis) throws IOException {
+                if(transaction != null) {
+                    redis = getNewConnection();
+                    try {
+                        return redis.incr(key);
+                    }
+                    finally {
+                        redis.disconnect();
+                    }
+
+                }
+                else {
+                    return redis.incr(key);
+                }
             }
         });
     }
@@ -643,8 +669,19 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
 
     public List<String> keys(final String pattern) {
         return (List<String>) execute(new RedisCallback<Jedis>() {
-            public Object doInRedis(Jedis redis) {
-                return redis.keys(pattern);
+            public Object doInRedis(Jedis redis) throws IOException {
+                if(transaction != null) {
+                    redis = getNewConnection();
+                    try {
+                        return redis.keys(pattern);
+                    } finally {
+                        redis.disconnect();
+                    }
+                }
+                else {
+
+                    return redis.keys(pattern);
+                }
             }
         });
     }
@@ -737,10 +774,12 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
 
     public void discard() {
         execute(new RedisCallback<Jedis>() {
-            public Object doInRedis(Jedis redis) {
+            public Object doInRedis(Jedis redis) throws IOException {
                 if(transaction != null) {
                     transaction.discard();
                     transaction = null;
+                    redis.disconnect();
+                    JedisTemplate.this.redis = getNewConnection();
                 }
 
                 return null;

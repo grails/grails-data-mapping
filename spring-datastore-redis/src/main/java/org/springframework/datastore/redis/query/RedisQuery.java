@@ -27,9 +27,11 @@ import org.springframework.datastore.query.Restrictions;
 import org.springframework.datastore.redis.RedisSession;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
 import org.springframework.datastore.redis.engine.RedisPropertyValueIndexer;
+import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
 import org.springframework.datastore.redis.util.SortParams;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -455,14 +457,18 @@ public class RedisQuery extends Query {
 
         final String key = sortKey + "~between-" + from + "-" + from;
         if(!template.exists(key)) {
-            Set<String> results = template.zrangebyscore(sortKey, from, to);
+            final Set<String> results = template.zrangebyscore(sortKey, from, to);
             if(results != null && !results.isEmpty()) {
-                template.multi();
-                for (String result : results) {
-                    template.sadd(key, result);
-                }
-                template.expire(key, 500);
-                template.exec();
+                template.pipeline(new RedisCallback<RedisTemplate>() {
+                    public Object doInRedis(RedisTemplate redis) throws IOException {
+                        for (String result : results) {
+                            redis.sadd(key, result);
+                        }
+                        redis.expire(key, 500);
+
+                        return null;
+                    }
+                });
             }
         }
         return key;

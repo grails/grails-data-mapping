@@ -7,15 +7,60 @@ import org.junit.Ignore
  */
 class WithTransactionSpec extends GormDatastoreSpec{
 
-  @Ignore
   void "Test save() with transaction"() {
+    given:
+      TestEntity.withTransaction {
+        new TestEntity(name:"Bob", age:50, child:new ChildEntity(name:"Bob Child")).save()
+        new TestEntity(name:"Fred", age:45, child:new ChildEntity(name:"Fred Child")).save()
+      }
 
-    TestEntity.withTransaction {
-      new TestEntity(name:"Bob", age:50, child:new ChildEntity(name:"Bob Child")).save()
-      new TestEntity(name:"Fred", age:45, child:new ChildEntity(name:"Fred Child")).save()
-    }
-    
-    assert 2 == TestEntity.count()
+    when:
+      int count = TestEntity.count()
+      def results = TestEntity.list(sort:"name")
+    then:
+      2 == count
+      "Bob" == results[0].name
+      "Fred" == results[1].name
 
+  }
+
+
+  void "Test rollback transaction"() {
+    given:
+      TestEntity.withTransaction { status ->
+        new TestEntity(name:"Bob", age:50, child:new ChildEntity(name:"Bob Child")).save()
+        status.setRollbackOnly()
+        new TestEntity(name:"Fred", age:45, child:new ChildEntity(name:"Fred Child")).save()
+      }
+
+    when:
+      int count = TestEntity.count()
+      def results = TestEntity.list(sort:"name")
+
+    then:
+      count == 0
+      results.size() == 0
+  }
+
+  void "Test rollback transaction with Exception"() {
+    given:
+
+      try {
+        TestEntity.withTransaction { status ->
+          new TestEntity(name:"Bob", age:50, child:new ChildEntity(name:"Bob Child")).save()
+          throw new RuntimeException("bad")
+          new TestEntity(name:"Fred", age:45, child:new ChildEntity(name:"Fred Child")).save()
+        }
+      } catch (e) {
+        // ignore
+      }
+
+    when:
+      int count = TestEntity.count()
+      def results = TestEntity.list(sort:"name")
+
+    then:
+      count == 0
+      results.size() == 0
   }
 }

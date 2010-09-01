@@ -3,8 +3,7 @@ package org.grails.datastore.gorm.redis
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 import org.junit.runners.Suite.SuiteClasses
-import grails.gorm.tests.GormEnhancerSpec
-import grails.gorm.tests.NamedQuerySpec
+import grails.gorm.tests.WithTransactionSpec
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,7 +14,7 @@ import grails.gorm.tests.NamedQuerySpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-        NamedQuerySpec
+      WithTransactionSpec
 ])
 class RedisSuite {
 }

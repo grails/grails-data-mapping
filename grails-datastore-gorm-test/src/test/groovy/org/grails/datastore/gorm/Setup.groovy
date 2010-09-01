@@ -12,6 +12,7 @@ import grails.gorm.tests.TestEntity
 import org.springframework.datastore.core.Session
 import org.springframework.datastore.mock.SimpleMapDatastore
 import org.springframework.datastore.mapping.PersistentEntity
+import org.springframework.datastore.transactions.DatastoreTransactionManager
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,7 +40,7 @@ class Setup {
             }
     ] as Validator)
 
-    new GormEnhancer(simple).enhance()
+    new GormEnhancer(simple, new DatastoreTransactionManager(simple)).enhance()
 
     def con = simple.connect()
     return con

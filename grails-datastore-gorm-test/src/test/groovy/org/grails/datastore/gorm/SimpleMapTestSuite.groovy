@@ -4,6 +4,7 @@ import grails.gorm.tests.NamedQuerySpec
 import org.junit.runners.Suite.SuiteClasses
 import org.junit.runners.Suite
 import org.junit.runner.RunWith
+import grails.gorm.tests.WithTransactionSpec
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,7 +15,7 @@ import org.junit.runner.RunWith
  */
 @RunWith(Suite)
 @SuiteClasses([
-        NamedQuerySpec
+        WithTransactionSpec
 ])
 
 class SimpleMapTestSuite {

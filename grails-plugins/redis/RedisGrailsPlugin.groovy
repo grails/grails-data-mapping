@@ -17,7 +17,6 @@ import org.grails.plugins.redis.RedisMappingContextFactoryBean
 import org.grails.plugins.redis.RedisDatastoreFactoryBean
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.springframework.datastore.web.support.OpenSessionInViewInterceptor
-import javax.persistence.FlushModeType
 
 class RedisGrailsPlugin {
     // the plugin version

@@ -8,6 +8,7 @@ import org.springframework.validation.Validator
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.datastore.mapping.PersistentEntity
+import org.springframework.datastore.transactions.DatastoreTransactionManager
 
 /**
  * Created by IntelliJ IDEA.
@@ -34,7 +35,7 @@ class Setup {
             }
     ] as Validator)
     
-    new RedisGormEnhancer(redis).enhance()
+    new RedisGormEnhancer(redis, new DatastoreTransactionManager(redis)).enhance()
 
     def con = redis.connect()
     con.getNativeInterface().flushdb()

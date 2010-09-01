@@ -28,6 +28,8 @@ import org.springframework.transaction.support.AbstractPlatformTransactionManage
 import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import javax.persistence.FlushModeType;
+
 /**
  * A {@link org.springframework.transaction.PlatformTransactionManager} instance that
  * works with the Spring datastore abstraction
@@ -99,19 +101,10 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
 			session = txObject.getSessionHolder().getSession();
 
 
-//			if (definition.isReadOnly() && txObject.isNewSession()) {
-//				// Just set to NEVER in case of a new Session for this transaction.
-//				session.setFlushMode(FlushMode.MANUAL);
-//			}
-
-//			if (!definition.isReadOnly() && !txObject.isNewSession()) {
-//				// We need AUTO or COMMIT for a non-read-only transaction.
-//				FlushMode flushMode = session.getFlushMode();
-//				if (flushMode.lessThan(FlushMode.COMMIT)) {
-//					session.setFlushMode(FlushMode.AUTO);
-//					txObject.getSessionHolder().setPreviousFlushMode(flushMode);
-//				}
-//			}
+			if (definition.isReadOnly()) {
+				// Just set to NEVER in case of a new Session for this transaction.
+				session.setFlushMode(FlushModeType.COMMIT);
+			}
 
 			Transaction tx;
 
@@ -158,10 +151,13 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
     @Override
     protected void doCommit(DefaultTransactionStatus status) throws TransactionException {
 		TransactionObject txObject = (TransactionObject) status.getTransaction();
-		if (status.isDebug()) {
-			logger.debug("Committing Datastore transaction on Session [" + txObject.getSessionHolder().getSession() + "]");
+        final SessionHolder sessionHolder = txObject.getSessionHolder();
+        if (status.isDebug()) {
+			logger.debug("Committing Datastore transaction on Session [" + sessionHolder.getSession() + "]");
 		}
 		try {
+            if(sessionHolder.getSession() != null)
+                sessionHolder.getSession().flush();
 			txObject.getTransaction().commit();
 		}
 		catch (DataAccessException ex) {
@@ -173,9 +169,10 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
     @Override
     protected void doRollback(DefaultTransactionStatus status) throws TransactionException {
 		TransactionObject txObject = (TransactionObject) status.getTransaction();
-		if (status.isDebug()) {
+        final SessionHolder sessionHolder = txObject.getSessionHolder();
+        if (status.isDebug()) {
 			logger.debug("Rolling back Datastore transaction on Session [" +
-					    txObject.getSessionHolder().getSession() + "]");
+					    sessionHolder.getSession() + "]");
 		}
 		try {
 			txObject.getTransaction().rollback();
@@ -185,11 +182,10 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
         }
 
 		finally {
-			if (!txObject.isNewSession() && !this.datastoreManagedSession) {
-				// Clear all pending inserts/updates/deletes in the Session.
-				// Necessary for pre-bound Sessions, to avoid inconsistent state.
-//				txObject.getSessionHolder().getSession().clear();
-			}
+            // Clear all pending inserts/updates/deletes in the Session.
+            // Necessary for pre-bound Sessions, to avoid inconsistent state.
+            if(sessionHolder.getSession() != null)
+                sessionHolder.getSession().clear();
 		}
     }
 }

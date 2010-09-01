@@ -1,7 +1,6 @@
 TODO high priorities
 
 * Finish Grails plugin
-* Transactions
 * Documentation
 
 TODO medium priorities
