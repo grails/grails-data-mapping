@@ -1,0 +1,31 @@
+configurations {
+	documentation
+}
+dependencies {
+    documentation group: 'org.grails', name: 'grails-docs', version: '1.3.+'
+	project(":spring-datastore-core")
+}
+task assemble << {
+	dependsOn javadoc
+	ant.taskdef (name: 'docs', classname : 'grails.doc.ant.DocPublisherTask') {
+		classpath {
+			configurations.documentation.resolve().each { f ->
+				pathelement(location:f)
+			}			
+		}
+
+	}
+	ant.docs(src:"src/docs", dest:"build/docs", properties:"src/docs/doc.properties")
+}
+
+task javadoc(type: Javadoc) {
+    source groovyProjects().collect {project -> 
+		project.sourceSets.main.allJava 
+	}
+	destinationDir = new File(file("$buildDir/docs"), 'api')
+    classpath = files(groovyProjects().collect {project -> [project.sourceSets.main.compileClasspath, project.sourceSets.main.classes] })
+    options.links("http://java.sun.com/j2se/1.5.0/docs/api", "http://groovy.codehaus.org/gapi/")
+    doFirst {
+        title = "Datastore API $version"
+    }
+}

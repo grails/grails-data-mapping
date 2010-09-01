@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A Persister specified to PersistentEntity instances
+ * A {@link org.springframework.datastore.engine.Persister} specificly for persisting PersistentEntity instances
  *
  * @author Graeme Rocher
  * @since 1.0

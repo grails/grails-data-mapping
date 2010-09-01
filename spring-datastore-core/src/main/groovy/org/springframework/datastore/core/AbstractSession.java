@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- * Abstract implementation of the ObjectDatastore interface that uses
+ * Abstract implementation of the {@link org.springframework.datastore.core.Session} interface that uses
  * a list of {@link org.springframework.datastore.engine.Persister} instances
  * to save, update and delete instances
  *

@@ -1,12 +1,23 @@
 
 def spockDependency = "org.spockframework:spock-core:0.5-groovy-1.7-SNAPSHOT"
 
+def groovyProjects() {
+    subprojects.findAll { project -> isGroovyProject(project) }
+}
+
+def isGroovyProject(project) {
+  def isGrailsPlugin = project.name.contains("grails-plugins")
+  def isDocumentation = project.name.contains("documentation")
+  !isGrailsPlugin && !isDocumentation
+}
+
 subprojects {
 
     version = '0.1'
   
-    def isGrailsPlugin = project.name.startsWith("grails-plugins")
-	if(!isGrailsPlugin) {
+	def isStandardGroovyMavenProject = isGroovyProject(project)
+  
+    if(isStandardGroovyMavenProject) {
 	    apply plugin: 'groovy'
 	    apply plugin: 'eclipse'
         apply plugin: 'maven'
@@ -22,7 +33,7 @@ subprojects {
     }
 
     dependencies {
-		if(!isGrailsPlugin) {
+		if(isStandardGroovyMavenProject) {
 	       	groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.7.4'
             testCompile 'junit:junit:4.8.1'
             testCompile spockDependency
@@ -60,7 +71,7 @@ subprojects {
       archivesBaseName = 'spring-datastore'
     }
 
-    if(!isGrailsPlugin) {
+    if(isStandardGroovyMavenProject) {
       configure(install.repositories.mavenInstaller) {
           pom.whenConfigured { pom ->
             def dependency = pom.dependencies.find { dep -> dep.artifactId == 'slf4j-simple' }

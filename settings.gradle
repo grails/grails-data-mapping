@@ -8,5 +8,6 @@ include "spring-datastore-core",
         'grails-datastore-gorm-tck',
         'grails-datastore-gorm-test',
 /*        'grails-plugins:redis',*/
-        'grails-datastore-gorm-redis'
+        'grails-datastore-gorm-redis',
+        'grails-documentation-redis'
 

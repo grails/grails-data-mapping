@@ -1,2 +1,7 @@
 .DS_Store
 build
+.gradle
+grails-plugins/redis/target
+grails-plugins/redis/web-app
+out
+stacktrace.log

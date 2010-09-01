@@ -22,7 +22,7 @@ import org.springframework.datastore.validation.ValidatingInterceptor;
 import java.util.*;
 
 /**
- * Abstract Datastore implementation that deals with binding the
+ * Abstract Datastore implementation that deals with binding the Session to thread locale upon creation.
  *
  * @author Graeme Rocher
  * @since 1.0
