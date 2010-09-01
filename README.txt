@@ -37,6 +37,6 @@ get started do the following:
 git clone git://github.com/antirez/redis.git
 cd redis
 make
-src src
+cd src
 ./redis-server
 
