@@ -55,7 +55,12 @@ class SimpleMapQuery extends Query{
     else {
       def criteriaList = criteria.getCriteria()
       entityMap = executeSubQuery(criteria, criteriaList)
+      if(!entity.isRoot()) {
+        def childKeys = datastore[family].keySet()
+        entityMap = entityMap.subMap(childKeys)  
+      }
     }
+
 
     if(projections.isEmpty()) {
       results = entityMap.values() as List
