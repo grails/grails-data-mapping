@@ -17,6 +17,9 @@ package org.springframework.datastore.keyvalue.mapping;
 import org.springframework.datastore.mapping.MappingFactory;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
+import org.springframework.datastore.mapping.types.OneToMany;
+
+import javax.persistence.FetchType;
 
 /**
  * @author Graeme Rocher
@@ -37,6 +40,14 @@ public class KeyValueMappingFactory extends MappingFactory<Family, KeyValue> {
 
     @Override
     public KeyValue createMappedForm(PersistentProperty mpp) {
-        return new KeyValue(mpp.getName());
+        final KeyValue kv = new KeyValue(mpp.getName());
+        if(mpp instanceof OneToMany) {
+            ((OneToMany) mpp).setFetchStrategy(FetchType.LAZY);
+        }
+        else {
+            // TODO: make the default lazy for one-to-ones for M2
+            kv.setFetchStrategy(FetchType.EAGER);
+        }
+        return kv;
     }
 }
