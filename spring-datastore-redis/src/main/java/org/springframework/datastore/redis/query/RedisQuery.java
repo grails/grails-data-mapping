@@ -64,6 +64,20 @@ public class RedisQuery extends Query {
             finalKey = executeSubQuery(criteria, criteriaList);
         }
 
+        if(!getEntity().isRoot()) {
+            // if the entity is not a root entity then apply a conjunction to trim
+            // any enities not of this type
+
+
+            final String childEntityResultsKey = finalKey + "-" + getEntity().getDecapitalizedName();
+            template.sinterstore(childEntityResultsKey,
+                                 finalKey,
+                                 entityPersister.getAllEntityIndex().getRedisKey());
+            finalKey = childEntityResultsKey;            
+        }
+
+
+
 
         Collection<String> results;
         IdProjection idProjection = null;
@@ -198,6 +212,7 @@ public class RedisQuery extends Query {
 
     private String executeSubQuery(Junction junction, List<Criterion> criteria) {
         List<String> indices = getIndexNames(junction, entityPersister);
+
         if(indices.isEmpty()) {
             throw new DataRetrievalFailureException("Unsupported Redis query");
         }

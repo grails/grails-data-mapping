@@ -11,6 +11,28 @@ import org.junit.Test
  */
 class InheritanceSpec extends GormDatastoreSpec {
 
+    void "Test inheritance with dynamic finder"() {
+
+      given:
+        def city = new City([code: "UK", name: "London", longitude: 49.1, latitude: 53.1])
+        def country = new Country([code: "UK", name: "United Kingdom", population: 10000000])
+
+        city.save()
+        country.save(flush:true)
+        session.clear()
+
+      when:
+        def cities = City.findAllByCode("UK")
+        def countries = Country.findAllByCode("UK")
+
+      then:
+        1 == cities.size()
+        1 == countries.size()
+        "London" == cities[0].name
+        "United Kingdom" == countries[0].name
+
+    }
+
     void "Test querying with inheritance"() {
 
       given:
@@ -63,6 +85,7 @@ class Location {
 
   static mapping = {
     name index:true
+    code index:true
   }
 }
 class City extends Location {

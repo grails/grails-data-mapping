@@ -4,6 +4,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.Suite
 import org.junit.runners.Suite.SuiteClasses
 import grails.gorm.tests.WithTransactionSpec
+import grails.gorm.tests.InheritanceSpec
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,7 +15,7 @@ import grails.gorm.tests.WithTransactionSpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-      WithTransactionSpec
+      InheritanceSpec
 ])
 class RedisSuite {
 }

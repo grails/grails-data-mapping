@@ -1,6 +1,6 @@
 TODO high priorities
 
-* Maven deployment
+* Allow hibernate entities to be saved to Redis
 
 TODO medium priorities
 
