@@ -81,7 +81,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
             host = read(String.class, CONFIG_HOST, connectionDetails, DEFAULT_HOST);
             port = read(Integer.class, CONFIG_PORT, connectionDetails, DEFAULT_PORT);
             timeout = read(Integer.class, CONFIG_TIMEOUT, connectionDetails, 2000);
-            pooled = read(Boolean.class, CONFIG_POOLED, connectionDetails, true);
+            pooled = read(Boolean.class, CONFIG_POOLED, connectionDetails, false);
             password = read(String.class, CONFIG_PASSWORD, connectionDetails, null);
             int resourceCount = read(Integer.class, CONFIG_RESOURCE_COUNT, connectionDetails, 10);
 
