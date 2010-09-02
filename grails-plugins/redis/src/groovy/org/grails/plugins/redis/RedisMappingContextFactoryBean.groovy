@@ -37,29 +37,17 @@ class RedisMappingContextFactoryBean implements FactoryBean<MappingContext>, Gra
 
   MappingContext getObject() {
     def mappingContext = new KeyValueMappingContext("");
-    def isHibernateInstalled = pluginManager.hasGrailsPlugin("hibernate")
 
     if(grailsApplication) {
       for(GrailsDomainClass domainClass in grailsApplication.domainClasses){
-         PersistentEntity entity = null
-         if(!isHibernateInstalled) {
-           entity = mappingContext.addPersistentEntity(domainClass.clazz)
+         PersistentEntity entity = mappingContext.addPersistentEntity(domainClass.clazz)
+         if(entity) {
+            final validatorBeanName = "${domainClass.fullName}Validator"
+            def validator = applicationContext.containsBean(validatorBeanName) ? applicationContext.getBean(validatorBeanName) : null
 
+            if(validator)
+              mappingContext.addEntityValidator(entity, validator)
          }
-         else {
-           def mappedWith = domainClass.getPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY, String)
-           if(mappedWith == 'redis') {
-              entity = mappingContext.addPersistentEntity(domainClass.clazz)
-           }
-         }
-
-        if(entity) {
-          final validatorBeanName = "${domainClass.fullName}Validator"
-          def validator = applicationContext.containsBean(validatorBeanName) ? applicationContext.getBean(validatorBeanName) : null
-
-          if(validator)
-            mappingContext.addEntityValidator(entity, validator)
-        }
       }
     }
     return mappingContext

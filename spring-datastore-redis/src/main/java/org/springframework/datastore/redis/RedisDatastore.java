@@ -200,6 +200,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
         static void createPool(String host, int port, int timeout, int resources) {
             pool = new JedisPool(host, port, timeout);
             pool.setResourcesNumber(resources);
+            pool.setRepairThreadsNumber(1);
             pool.init();
         }
         static RedisTemplate create(String host, int port, int timeout, boolean pooled, String password) {

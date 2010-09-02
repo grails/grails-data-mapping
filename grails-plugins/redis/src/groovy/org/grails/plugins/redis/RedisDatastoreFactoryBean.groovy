@@ -19,6 +19,12 @@ import org.springframework.datastore.redis.RedisDatastore
 import org.springframework.datastore.mapping.MappingContext
 import org.grails.datastore.gorm.redis.RedisGormEnhancer
 import org.springframework.transaction.PlatformTransactionManager
+import org.codehaus.groovy.grails.plugins.GrailsPluginManager
+import org.springframework.datastore.reflect.ClassPropertyFetcher
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
+import org.grails.datastore.gorm.GormStaticApi
+import org.grails.datastore.gorm.GormInstanceApi
+import org.grails.datastore.gorm.redis.RedisGormStaticApi
 
 /**
  * Constructs a RedisDatastore instance
@@ -31,6 +37,7 @@ class RedisDatastoreFactoryBean implements FactoryBean<RedisDatastore>{
   Map<String, String> config
   MappingContext mappingContext
   PlatformTransactionManager transactionManager
+  GrailsPluginManager pluginManager
 
   RedisDatastore getObject() {
     def datastore = new RedisDatastore(mappingContext, config)
@@ -38,11 +45,37 @@ class RedisDatastoreFactoryBean implements FactoryBean<RedisDatastore>{
                         new RedisGormEnhancer(datastore, transactionManager) :
                         new RedisGormEnhancer(datastore)
 
-    enhancer.enhance()
+    def isHibernateInstalled = pluginManager.hasGrailsPlugin("hibernate")
+    for(entity in datastore.mappingContext.persistentEntities) {
+      if(isHibernateInstalled) {
+        def cls = entity.javaClass
+        def cpf = ClassPropertyFetcher.forClass(cls)
+        def mappedWith = cpf.getStaticPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY, String)
+        if(mappedWith == 'redis') {
+          enhancer.enhance(entity)
+        }
+        else {
+          def staticApi = new RedisGormStaticApi(cls, datastore)
+          def instanceApi = new GormInstanceApi(cls, datastore)
+          cls.metaClass.static.getRedis = {-> staticApi }
+          cls.metaClass.getRedis = {-> new InstanceProxy(instance:delegate, target:instanceApi) }
+        }
+      }
+      else {
+        enhancer.enhance(entity)
+      }
+    }
     return datastore
   }
 
   Class<?> getObjectType() { RedisDatastore }
 
   boolean isSingleton() { true }
+}
+class InstanceProxy {
+    def instance
+    def target
+    def invokeMethod(String name, args) {
+      target."$name"(instance, *args)
+    }
 }

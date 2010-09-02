@@ -230,11 +230,15 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
 
     @Override
     protected void updateEntry(PersistentEntity persistentEntity, Long key, Map nativeEntry) {
-        if(!persistentEntity.isRoot()) {
-            performInsertion(getRootFamily(persistentEntity), key, nativeEntry);
-        }
-        else {
-            performInsertion(getFamily(), key, nativeEntry);
+        try {
+            if(!persistentEntity.isRoot()) {
+                performInsertion(getRootFamily(persistentEntity), key, nativeEntry);
+            }
+            else {
+                performInsertion(getFamily(), key, nativeEntry);
+            }
+        } finally {
+            updateAllEntityIndex(persistentEntity, key);            
         }
     }
 
@@ -251,14 +255,18 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
         } finally {
 
 
-            getAllEntityIndex().add(storeId);
-            PersistentEntity parent = persistentEntity.getParentEntity();
-            while(parent != null) {
+            updateAllEntityIndex(persistentEntity, storeId);
+        }
+    }
 
-                RedisEntityPersister persister = (RedisEntityPersister) session.getPersister(parent);
-                persister.getAllEntityIndex().add(storeId);
-                parent = parent.getParentEntity();
-            }
+    private void updateAllEntityIndex(PersistentEntity persistentEntity, Long storeId) {
+        getAllEntityIndex().add(storeId);
+        PersistentEntity parent = persistentEntity.getParentEntity();
+        while(parent != null) {
+
+            RedisEntityPersister persister = (RedisEntityPersister) session.getPersister(parent);
+            persister.getAllEntityIndex().add(storeId);
+            parent = parent.getParentEntity();
         }
     }
 

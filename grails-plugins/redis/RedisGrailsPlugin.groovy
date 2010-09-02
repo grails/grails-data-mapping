@@ -21,7 +21,7 @@ import grails.datastore.Redis
 
 class RedisGrailsPlugin {
     // the plugin version
-    def version = "0.1"
+    def version = "1.0.0.M1"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.3.4 > *"
     // the other plugins this plugin depends on
@@ -51,6 +51,7 @@ a GORM-like API onto it
         springDatastore(RedisDatastoreFactoryBean) {
           config = redisConfig
           mappingContext = ref("datastoreMappingContext")
+          pluginManager = ref('pluginManager')
         }
         redisBean(Redis) { bean ->
           bean.scope = "request"
