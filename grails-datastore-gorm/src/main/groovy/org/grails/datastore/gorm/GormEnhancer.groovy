@@ -29,6 +29,8 @@ import org.springframework.datastore.mapping.types.OneToMany
 import org.springframework.datastore.reflect.ClassPropertyFetcher
 import org.grails.datastore.gorm.finders.FindByBooleanFinder
 import org.grails.datastore.gorm.finders.FindAllByBooleanFinder
+import org.grails.datastore.gorm.finders.ListOrderByFinder
+import org.grails.datastore.gorm.finders.FinderMethod
 
 /**
  * Enhances a class with GORM behavior
@@ -53,7 +55,8 @@ class GormEnhancer {
                     new FindByBooleanFinder(datastore),
                     new FindByFinder(datastore),
                     new FindAllByFinder(datastore),
-                    new CountByFinder(datastore)
+                    new CountByFinder(datastore),
+                    new ListOrderByFinder(datastore)
                     ]
   }
 
@@ -163,7 +166,7 @@ class GormEnhancer {
     def mc = cls.metaClass
     def dynamicFinders = finders
     mc.static.methodMissing = {String methodName, args ->
-          def method = dynamicFinders.find { DynamicFinder f -> f.isMethodMatch(methodName) }
+          def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
           if (method) {
               // register the method invocation for next time
               synchronized(this) {

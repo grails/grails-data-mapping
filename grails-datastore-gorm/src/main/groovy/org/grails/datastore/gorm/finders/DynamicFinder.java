@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 /**
  * Implementation of dynamic finders
  */
-public abstract class DynamicFinder {
+public abstract class DynamicFinder implements FinderMethod{
 
     public static final String ARGUMENT_MAX = "max";
     public static final String ARGUMENT_OFFSET = "offset";
