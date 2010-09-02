@@ -16,5 +16,7 @@ However, some features are not supported:
 * Many-to-many associations (these can be modelled with a mapping class)
 * Any direct interaction with the Hibernate API
 * Sorting on strings
+* Custom Hibernate user types
+* Auto timestamping and Domain events
 
 There may be other limitations not mentioned here so in general it shouldn't be expected that an application based on GORM for Hibernate will "just work" without some tweaking involved. Having said that, the large majority of common GORM functionality is supported.
