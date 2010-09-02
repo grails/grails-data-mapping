@@ -93,18 +93,28 @@ subprojects {
 
       uploadArchives {
           description = "Does a maven deploy of archives artifacts"
-
-//          def releaseRepositoryUrl = "file://${project.properties.mavenSyncRepoDir}"
+          def isDav = System.getProperty("deploy.protocol") == 'dav'
+        def protocol = isDav ? 'dav:' : ''
+//          def releaseRepositoryUrl = "https://dav.codehaus.org/repository/grails/"
           def milestoneRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/milestone' :
-                                                         'dav:https://dav.codehaus.org/snapshots.repository/grails/'
+                                                         "${protocol}https://dav.codehaus.org/snapshots.repository/grails/"
           def snapshotRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/snapshot' :
-                                                        'dav:https://dav.codehaus.org/snapshots.repository/grails/'
+                                                        "${protocol}https://dav.codehaus.org/snapshots.repository/grails/"
 
           // add a configuration with a classpath that includes our s3 maven deployer
           configurations { deployerJars }
           dependencies {
-              deployerJars "org.springframework.build.aws:org.springframework.build.aws.maven:3.0.0.RELEASE",
-                           "org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-6"
+
+            deployerJars "org.springframework.build.aws:org.springframework.build.aws.maven:3.0.0.RELEASE"
+
+            if(isDav) {
+              deployerJars "org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-6"
+            }
+            else {
+              deployerJars "org.apache.maven.wagon:wagon-http-lightweight:1.0-beta-6"
+            }
+
+
 
           }
 
