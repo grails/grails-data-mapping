@@ -18,7 +18,7 @@ import org.springframework.datastore.core.Session
 abstract class GormDatastoreSpec extends Specification {
 
     private static final SETUP_CLASS_NAME = 'org.grails.datastore.gorm.Setup'
-    private static final TEST_CLASSES = [TestEntity, ChildEntity,CommonTypes, Location, City, Country, PlantCategory, Publication]
+    private static final TEST_CLASSES = [Book, Highway,TestEntity, ChildEntity,CommonTypes, Location, City, Country, PlantCategory, Publication]
     
     @Shared Class setupClass
     

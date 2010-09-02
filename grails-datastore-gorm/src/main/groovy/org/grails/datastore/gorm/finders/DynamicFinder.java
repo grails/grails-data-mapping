@@ -58,6 +58,10 @@ public abstract class DynamicFinder {
     }
 
 
+    public void setPattern(String pattern) {
+        this.pattern = Pattern.compile(pattern);
+    }
+
     public boolean isMethodMatch(String methodName) {
         return this.pattern.matcher(methodName.subSequence(0, methodName.length())).find();
     }

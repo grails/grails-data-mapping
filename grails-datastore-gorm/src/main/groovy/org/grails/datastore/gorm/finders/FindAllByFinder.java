@@ -48,6 +48,10 @@ public class FindAllByFinder extends DynamicFinder {
         configureQueryWithArguments(clazz, q, remainingArguments);
 
         if(operatorInUse != null && operatorInUse.equals(OPERATOR_OR)) {
+            if (firstExpressionIsRequiredBoolean()) {
+                MethodExpression expression = expressions.remove(0);
+                q.add(expression.createCriterion());
+            }
             Query.Junction disjunction = q.disjunction();
 
             for (MethodExpression expression : expressions) {
@@ -62,6 +66,10 @@ public class FindAllByFinder extends DynamicFinder {
         }
 
         return q.list();
+    }
+
+    private boolean firstExpressionIsRequiredBoolean() {
+        return false;  
     }
 
 

@@ -27,6 +27,8 @@ import org.springframework.transaction.TransactionDefinition
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
 import org.springframework.datastore.mapping.types.OneToMany
 import org.springframework.datastore.reflect.ClassPropertyFetcher
+import org.grails.datastore.gorm.finders.FindByBooleanFinder
+import org.grails.datastore.gorm.finders.FindAllByBooleanFinder
 
 /**
  * Enhances a class with GORM behavior
@@ -42,12 +44,22 @@ class GormEnhancer {
 
   GormEnhancer(Datastore datastore) {
     this.datastore = datastore;
-    this.finders = [new FindByFinder(datastore), new FindAllByFinder(datastore), new CountByFinder(datastore)]
+    initialiseFinders(datastore)
+  }
+
+  private List initialiseFinders(Datastore datastore) {
+
+    this.finders = [new FindAllByBooleanFinder(datastore),
+                    new FindByBooleanFinder(datastore),
+                    new FindByFinder(datastore),
+                    new FindAllByFinder(datastore),
+                    new CountByFinder(datastore)
+                    ]
   }
 
   GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
     this.datastore = datastore;
-    this.finders = [new FindByFinder(datastore), new FindAllByFinder(datastore), new CountByFinder(datastore)]
+    initialiseFinders(datastore)
     this.transactionManager = transactionManager
   }
 

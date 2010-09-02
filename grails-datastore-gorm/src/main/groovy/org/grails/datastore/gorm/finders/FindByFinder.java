@@ -49,6 +49,11 @@ public class FindByFinder extends DynamicFinder{
         configureQueryWithArguments(clazz, q, remainingArguments);
 
         if(operatorInUse != null && operatorInUse.equals(OPERATOR_OR)) {
+            if (firstExpressionIsRequiredBoolean()) {
+                MethodExpression expression = expressions.remove(0);
+                q.add(expression.createCriterion());
+            }
+
             Query.Junction disjunction = q.disjunction();
 
             for (MethodExpression expression : expressions) {
@@ -66,6 +71,10 @@ public class FindByFinder extends DynamicFinder{
         List results = q.list();
         if(!results.isEmpty()) return results.get(0);
         return null;
+    }
+
+    private boolean firstExpressionIsRequiredBoolean() {
+        return false;
     }
 
 }
