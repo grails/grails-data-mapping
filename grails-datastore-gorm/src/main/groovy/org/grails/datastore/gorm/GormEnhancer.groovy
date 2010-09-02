@@ -51,10 +51,11 @@ class GormEnhancer {
 
   private List initialiseFinders(Datastore datastore) {
 
-    this.finders = [new FindAllByBooleanFinder(datastore),
-                    new FindByBooleanFinder(datastore),
+    this.finders = [
                     new FindByFinder(datastore),
                     new FindAllByFinder(datastore),
+                    new FindAllByBooleanFinder(datastore),
+                    new FindByBooleanFinder(datastore),
                     new CountByFinder(datastore),
                     new ListOrderByFinder(datastore)
                     ]

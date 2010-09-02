@@ -18,6 +18,7 @@ package org.grails.datastore.gorm.query
 import org.springframework.datastore.mapping.PersistentEntity
 import org.grails.datastore.gorm.finders.DynamicFinder
 import java.lang.reflect.Modifier
+import org.grails.datastore.gorm.finders.FinderMethod
 
 /**
  * Handles creation of named queries
@@ -182,7 +183,7 @@ class NamedCriteriaProxy {
     def methodMissing(String methodName, args) {
 
         def javaClass = entity.javaClass
-        DynamicFinder method = finders.find { DynamicFinder f ->  f.isMethodMatch(methodName) }
+        DynamicFinder method = finders.find { FinderMethod f ->  f.isMethodMatch(methodName) }
 
         if (method) {
             def preparedClosure = getPreparedCriteriaClosure()
