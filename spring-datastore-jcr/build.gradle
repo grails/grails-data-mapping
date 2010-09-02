@@ -1,0 +1,22 @@
+//apply plugin: 'groovy'
+
+repositories {
+  mavenRepo name:'mavenLocal',
+              urls:new File( System.getProperty("user.home" ), ".m2/repository" ).toURL().toString()
+
+  flatDir dirs: ['lib', 'jcr/lib']
+}
+dependencies {
+  compile project(":core")
+  compile 'javax.jcr:jcr:1.0'
+  compile 'org.springmodules:spring-modules-jcr:0.10-SNAPSHOT'
+  compile 'org.apache.jackrabbit:jackrabbit-core:1.6.2'
+  compile 'org.apache.jackrabbit:jackrabbit-api:1.6.2'
+  compile 'org.apache.jackrabbit:jackrabbit-jcr-commons:1.6.2'
+  compile 'org.apache.jackrabbit:jackrabbit-spi-commons:1.6.2'
+  compile 'org.slf4j:slf4j-log4j12:1.5.3'
+
+  //runtime 'org.apache.jackrabbit:jackrabbit-standalone:1.6.2'
+  testCompile 'junit:junit:4.8.1'
+}
+jar.appendix = 'jcr'
