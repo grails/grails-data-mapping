@@ -48,11 +48,14 @@ public class OpenSessionInViewInterceptor implements WebRequestInterceptor {
     }
 
     public void preHandle(WebRequest webRequest) throws Exception {
-        // single session mode
-        LOG.debug("Opening single Datastore Session in OpenSessionInViewInterceptor");
-        Session session = DatastoreUtils.getSession(datastore, true);
-        session.setFlushMode(flushMode);
-        TransactionSynchronizationManager.bindResource(getDatastore(), new SessionHolder(session));
+        if(!hasSessionBound()) {
+            // single session mode
+            LOG.debug("Opening single Datastore Session in OpenSessionInViewInterceptor");
+
+            Session session = DatastoreUtils.getSession(datastore, true);
+            session.setFlushMode(flushMode);
+            TransactionSynchronizationManager.bindResource(getDatastore(), new SessionHolder(session));            
+        }
     }
 
     public void postHandle(WebRequest webRequest, ModelMap modelMap) throws Exception {
