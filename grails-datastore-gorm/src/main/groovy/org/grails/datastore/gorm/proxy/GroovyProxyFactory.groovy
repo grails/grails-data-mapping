@@ -27,18 +27,19 @@ class GroovyProxyFactory implements ProxyFactory{
   def createProxy(Session session, Class type, Serializable key) {
     def proxy = type.newInstance()
     def target = null
-    def initializeTarget = { if(target == null) target = session.retrieve(type, key)}
 
     proxy.metaClass.invokeMethod = { String name, args ->
         switch(name) {
           case 'initialize':
-             return initializeTarget
+             if(target == null) target = session.retrieve(type, key)
+             return target
           case 'isInitialized':
              return target != null
           case 'getTarget':
+             if(target == null) target = session.retrieve(type, key)
              return target
           default:
-            initializeTarget()
+            if(target == null) target = session.retrieve(type, key)
             return target."$name"(*args)
 
         }
@@ -48,14 +49,15 @@ class GroovyProxyFactory implements ProxyFactory{
          case 'initialized':
            return target != null
          case 'target':
+           if(target == null) target = session.retrieve(type, key)
            return target
          default:
-           initializeTarget()
+           if(target == null) target = session.retrieve(type, key)
            return target[name]
        }
     }
     proxy.metaClass.setProperty = { String name, value ->
-        initializeTarget()
+        if(target == null) target = session.retrieve(type, key)
         target[name] = value
     }
     return proxy;

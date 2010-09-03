@@ -17,13 +17,13 @@ package org.springframework.datastore.redis.engine;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.datastore.engine.AssociationIndexer;
-import org.springframework.datastore.engine.Persister;
 import org.springframework.datastore.engine.PropertyValueIndexer;
 import org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.mapping.PersistentProperty;
 import org.springframework.datastore.mapping.types.Association;
+import org.springframework.datastore.proxy.EntityProxy;
 import org.springframework.datastore.query.Query;
 import org.springframework.datastore.redis.RedisEntry;
 import org.springframework.datastore.redis.RedisSession;
@@ -73,9 +73,15 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
     @Override
     protected void setEntryValue(Map nativeEntry, String key, Object value) {
         if(value != null) {
-            final ConversionService conversionService = getMappingContext().getConversionService();
-            nativeEntry.put(key, conversionService.convert(value, String.class));
+            if(shouldConvert(value)) {
+                final ConversionService conversionService = getMappingContext().getConversionService();
+                nativeEntry.put(key, conversionService.convert(value, String.class));                
+            }
         }
+    }
+
+    private boolean shouldConvert(Object value) {
+        return !getMappingContext().isPersistentEntity(value) && !(value instanceof EntityProxy);
     }
 
     @Override
