@@ -80,7 +80,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
     protected void deleteEntity(PersistentEntity persistentEntity, Object obj) {
         if(obj != null) {
             for (EntityInterceptor interceptor : interceptors) {
-                if(!interceptor.beforeDelete(persistentEntity, obj)) return;
+                if(!interceptor.beforeDelete(persistentEntity, createEntityAccess(persistentEntity, obj))) return;
             }
 
             K key = readIdentifierFromObject(obj);
@@ -88,6 +88,21 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
                 deleteEntry(entityFamily, key);
             }
         }
+    }
+
+    @Override
+    protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj) {
+        return new EntityAccess(persistentEntity, obj);
+    }
+
+    protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj, final T nativeEntry) {
+        return new EntityAccess(persistentEntity, obj) {
+            @Override
+            public void setProperty(String name, Object value) {
+                super.setProperty(name, value);
+                setEntryValue(nativeEntry, name, value);
+            }
+        };
     }
 
     /**
@@ -114,7 +129,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
     }
 
     private K readIdentifierFromObject(Object object) {
-        EntityAccess access = new EntityAccess(getPersistentEntity(), object);
+        EntityAccess access = createEntityAccess(getPersistentEntity(), object);
         access.setConversionService(getMappingContext().getConversionService());
         final Object idValue = access.getIdentifier();
         K key = null;
@@ -156,7 +171,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
     }
 
     public void unlock(Object o) {
-        unlockEntry(getPersistentEntity(), entityFamily, (Serializable) new EntityAccess(getPersistentEntity(), o).getIdentifier());
+        unlockEntry(getPersistentEntity(), entityFamily, (Serializable) createEntityAccess(getPersistentEntity(), o).getIdentifier());
     }
 
     /**
@@ -191,7 +206,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
     public Serializable refresh(Object o) {
         final PersistentEntity entity = getPersistentEntity();
-        EntityAccess ea = new EntityAccess(entity, o);
+        EntityAccess ea = createEntityAccess(entity, o);
 
         Serializable identifier = (Serializable) ea.getIdentifier();
         if(identifier != null) {
@@ -210,7 +225,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
     }
 
     protected void refreshObjectStateFromNativeEntry(PersistentEntity persistentEntity, Object obj, Serializable nativeKey, T nativeEntry) {
-        EntityAccess ea = new EntityAccess(persistentEntity, obj);
+        EntityAccess ea = createEntityAccess(persistentEntity, obj, nativeEntry);
         ea.setConversionService(getMappingContext().getConversionService());
         String idName = ea.getIdentifierName();
         ea.setProperty(idName, nativeKey);
@@ -270,6 +285,8 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         }
     }
 
+
+
     /**
      * Subclasses should override to customize how entities in hierarchies are discriminated
      * @param persistentEntity The PersistentEntity
@@ -292,11 +309,12 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
     }
 
     @Override
-    protected final Serializable persistEntity(final PersistentEntity persistentEntity, final EntityAccess entityAccess) {
+    protected final Serializable persistEntity(final PersistentEntity persistentEntity, Object obj) {
         ClassMapping<Family> cm = persistentEntity.getMapping();
         String family = entityFamily;
 
         final T e = createNewEntry(family);
+        final EntityAccess entityAccess = createEntityAccess(persistentEntity, obj, e );
         K k = readObjectIdentifier(entityAccess, cm);
         boolean isUpdate = k != null;
 
@@ -385,7 +403,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
             si.getPendingInserts().add(new Runnable() {
                 public void run() {
                     for (EntityInterceptor interceptor : interceptors) {
-                            if(!interceptor.beforeInsert(persistentEntity, entityAccess.getEntity())) return;
+                            if(!interceptor.beforeInsert(persistentEntity, entityAccess)) return;
                     }
                     storeEntry(persistentEntity, updateId, e);
                     updateOneToManyIndices(updateId, oneToManyKeys);
@@ -407,7 +425,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
                 public void run() {
                     for (EntityInterceptor interceptor : interceptors) {
-                            if(!interceptor.beforeUpdate(persistentEntity, entityAccess.getEntity())) return;
+                            if(!interceptor.beforeUpdate(persistentEntity, entityAccess)) return;
                     }
                     updateEntry(persistentEntity, updateId, e);
                     updateOneToManyIndices(updateId, oneToManyKeys);

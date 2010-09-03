@@ -17,6 +17,7 @@
     <orderEntry type="library" name="Java Persistence" level="project" />
     <orderEntry type="library" name="Spock" level="project" />
     <orderEntry type="module" module-name="core" />
+    <orderEntry type="module" module-name="grails-datastore-gorm" />
   </component>
 </module>
 

@@ -29,28 +29,28 @@ public interface EntityInterceptor extends DatastoreAware {
      * Called before an entity is inserted
      *
      * @param entity The entity
-     * @param o The object
+     * @param entityAccess The object
      * @return False if the operation should be cancelled
      */
-    boolean beforeInsert(PersistentEntity entity, Object o);
+    boolean beforeInsert(PersistentEntity entity, EntityAccess entityAccess);
 
     /**
      * Called before an entity is updated
      *
      * @param entity The entity
-     * @param o The object
+     * @param entityAccess The object
      * @return False if the operation should be cancelled
      */
-    boolean beforeUpdate(PersistentEntity entity, Object o);
+    boolean beforeUpdate(PersistentEntity entity, EntityAccess entityAccess);
 
     /**
      * Called before an entity is deleted
      *
      * @param entity The entity
-     * @param obj The object
+     * @param entityAccess The object
      * @return False if the operation should be cancelled
      */
-    boolean beforeDelete(PersistentEntity entity, Object obj);
+    boolean beforeDelete(PersistentEntity entity, EntityAccess entityAccess);
 
     // TODO: Add more interception hooks
 

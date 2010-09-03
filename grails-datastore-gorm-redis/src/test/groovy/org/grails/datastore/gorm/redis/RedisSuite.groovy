@@ -7,6 +7,9 @@ import grails.gorm.tests.WithTransactionSpec
 import grails.gorm.tests.InheritanceSpec
 import grails.gorm.tests.FindByMethodSpec
 import grails.gorm.tests.ListOrderBySpec
+import grails.gorm.tests.ProxyLoadingSpec
+import grails.gorm.tests.GroovyProxySpec
+import grails.gorm.tests.DomainEventsSpec
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,7 +20,7 @@ import grails.gorm.tests.ListOrderBySpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-      ListOrderBySpec
+      DomainEventsSpec
 ])
 class RedisSuite {
 }

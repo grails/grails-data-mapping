@@ -1,0 +1,167 @@
+package grails.gorm.tests
+
+import org.grails.datastore.gorm.events.DomainEventInterceptor
+import org.grails.datastore.gorm.events.AutoTimestampInterceptor
+import org.springframework.datastore.core.Session
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: graemerocher
+ * Date: Sep 3, 2010
+ * Time: 12:15:38 PM
+ * To change this template use File | Settings | File Templates.
+ */
+class DomainEventsSpec extends GormDatastoreSpec{
+
+
+
+  Session setupEventsSession() {
+    def datastore = session.datastore
+    datastore.addEntityInterceptor(new DomainEventInterceptor())
+    datastore.addEntityInterceptor(new AutoTimestampInterceptor())
+    session= datastore.connect()
+  }
+
+
+  void "Test auto time stamping working"() {
+
+     given:
+       session = setupEventsSession()
+    
+       def p = new PersonEvent()
+
+       p.name = "Fred"
+       p.save(flush:true)
+       session.clear()
+
+     when:
+       p = PersonEvent.get(1)
+
+     then:
+       sleep(2000)
+
+       p.dateCreated == p.lastUpdated
+
+     when:
+       p.name = "Wilma"
+       p.save(flush:true)
+
+     then:
+       p.dateCreated.before(p.lastUpdated) == true
+   }
+
+//   void testOnloadEvent() {
+//       def personClass = ga.getDomainClass("PersonEvent")
+//       def p = personClass.newInstance()
+//
+//       p.name = "Fred"
+//       p.save()
+//       session.flush()
+//       session.clear()
+//
+//       p = personClass.clazz.get(1)
+//       assertEquals "Bob", p.name
+//   }
+
+   void "Test before delete event"() {
+     given:
+       session = setupEventsSession()     
+       PersonEvent.resetStore()
+       def p = new PersonEvent()
+       p.name = "Fred"
+       p.save(flush:true)
+       session.clear()
+
+     when:
+       p.delete(flush:true)
+
+     then:
+       assert PersonEvent.STORE['deleted'] == true
+   }
+
+   void "Test before update event"() {
+      given:
+        session = setupEventsSession()
+        PersonEvent.resetStore()
+
+
+       def p = new PersonEvent()
+
+       p.name = "Fred"
+       p.save(flush:true)
+       session.clear()
+
+      when:
+
+       p = PersonEvent.get(p.id)
+
+      then:
+       "Fred" == p.name
+       0 == PersonEvent.STORE['updated']
+
+
+      when:
+       p.name = "Bob"
+       p.save(flush:true)
+       session.clear()
+       p = PersonEvent.get(p.id)
+      then:
+       "Bob" == p.name
+       1 == PersonEvent.STORE['updated']
+   }
+
+   void "Test before insert event"() {
+     given:
+       session = setupEventsSession()
+       PersonEvent.resetStore()
+       def p = new PersonEvent()
+
+       p.name = "Fred"
+       p.save(flush:true)
+       session.clear()
+
+     when:
+       p = PersonEvent.get(p.id)
+
+     then:
+       "Fred" == p.name
+       0 == PersonEvent.STORE['updated']
+       1 == PersonEvent.STORE['inserted']
+
+     when:
+       p.name = "Bob"
+       p.save(flush:true)
+       session.clear()
+       p = PersonEvent.get(p.id)
+
+     then:
+       "Bob" == p.name
+       1 == PersonEvent.STORE['updated']
+       1 == PersonEvent.STORE['inserted']
+
+   }
+  
+}
+class PersonEvent {
+    Long id
+    Long version
+    String name
+    Date dateCreated
+    Date lastUpdated
+
+    static STORE = [updated:0, inserted:0]
+
+    static void resetStore() { STORE = [updated:0, inserted:0] }
+
+    def beforeDelete() {
+      STORE["deleted"] = true
+
+    }
+    def beforeUpdate() {
+      STORE["updated"]++
+    }
+    def beforeInsert() {
+      STORE["inserted"]++
+    }
+
+}

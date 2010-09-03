@@ -14,12 +14,14 @@
  */
 package org.springframework.datastore.mapping;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.datastore.core.EntityCreationException;
 import org.springframework.datastore.mapping.lifecycle.Initializable;
 import org.springframework.datastore.mapping.types.Association;
 import org.springframework.datastore.mapping.types.OneToMany;
 
 import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
@@ -79,6 +81,11 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
 
 
         getMapping().getMappedForm(); // initialize mapping
+    }
+
+    public boolean hasProperty(String name, Class type) {
+        final PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(getJavaClass(), name);
+        return pd != null && pd.getPropertyType().equals(type);
     }
 
     public PersistentEntity getParentEntity() {

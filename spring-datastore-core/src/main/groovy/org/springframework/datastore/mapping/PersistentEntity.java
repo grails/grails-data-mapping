@@ -3,6 +3,7 @@ package org.springframework.datastore.mapping;
 import org.springframework.datastore.mapping.lifecycle.Initializable;
 import org.springframework.datastore.mapping.types.Association;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -126,4 +127,12 @@ public interface PersistentEntity extends Initializable {
      * @return The MappingContext instance
      */
     MappingContext getMappingContext();
+
+    /**
+     * Checks whether an entity has a bean property of the given name and type
+     * @param name The name
+     * @param type The type
+     * @return True if it does
+     */
+    boolean hasProperty(String name, Class type);
 }

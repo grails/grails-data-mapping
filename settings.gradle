@@ -1,5 +1,5 @@
 include "spring-datastore-core",
-        "spring-datastore-appengine",
+/*        "spring-datastore-appengine",*/
         "spring-datastore-redis",
         "spring-datastore-mock",
         "spring-datastore-web",

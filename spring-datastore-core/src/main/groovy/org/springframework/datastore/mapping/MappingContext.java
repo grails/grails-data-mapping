@@ -139,4 +139,23 @@ public interface MappingContext {
      * @param factory The proxy factory
      */
     void setProxyFactory(ProxyFactory factory);
+
+    /**
+     * Adds a new mapping context listener instance
+     * @param listener The listener
+     */
+    void addMappingContextListener(Listener listener);
+
+    /**
+     * Implementors can register for events when the mapping context changes
+     *
+     */
+    public static interface Listener {
+
+        /**
+         * Fired when a new entity is added
+         * @param entity The entity
+         */
+        void persistentEntityAdded(PersistentEntity entity);
+    }
 }

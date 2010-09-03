@@ -95,7 +95,7 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
     public final Serializable persist(Object obj) {
         if(!persistentEntity.isInstance(obj)) throw new IllegalArgumentException("Object ["+obj+"] is not an instance supported by the persister for class ["+getType().getName()+"]");
 
-        return persistEntity(getPersistentEntity(), new EntityAccess(getPersistentEntity(), obj));
+        return persistEntity(getPersistentEntity(), obj);
     }
 
     public List<Serializable> persist(Iterable objs) {
@@ -134,10 +134,10 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
      * Persist the given persistent entity
      *
      * @param persistentEntity The PersistentEntity
-     * @param entityAccess An object that allows easy access to the entities properties
+     * @param obj
      * @return The generated key
      */
-    protected abstract Serializable persistEntity(PersistentEntity persistentEntity, EntityAccess entityAccess);
+    protected abstract Serializable persistEntity(PersistentEntity persistentEntity, Object obj);
 
     public final void delete(Iterable objects) {
         if(objects != null) {
@@ -156,5 +156,8 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
     protected abstract void deleteEntities(PersistentEntity persistentEntity, Iterable objects);
 
 
+    protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj) {
+        return new EntityAccess(persistentEntity, obj);
+    }
 }
 

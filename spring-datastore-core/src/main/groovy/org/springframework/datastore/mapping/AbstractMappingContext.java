@@ -38,6 +38,7 @@ public abstract class AbstractMappingContext implements MappingContext {
     protected Map<String,PersistentEntity>  persistentEntitiesByName = new ConcurrentHashMap<String,PersistentEntity>();
     protected Map<PersistentEntity,Map<String,PersistentEntity>>  persistentEntitiesByDiscriminator = new ConcurrentHashMap<PersistentEntity,Map<String,PersistentEntity>>();
     protected Map<PersistentEntity,Validator>  entityValidators = new ConcurrentHashMap<PersistentEntity, Validator>();
+    protected Collection<Listener> eventListeners = new ConcurrentLinkedQueue<Listener>();
     protected GenericConversionService conversionService = new GenericConversionService();
     protected ProxyFactory proxyFactory;
 
@@ -50,6 +51,11 @@ public abstract class AbstractMappingContext implements MappingContext {
             proxyFactory = DefaultProxyFactoryCreator.create();
         }
         return proxyFactory;
+    }
+
+    public void addMappingContextListener(Listener listener) {
+        if(listener != null)
+            eventListeners.add(listener);
     }
 
     public void setProxyFactory(ProxyFactory factory) {
@@ -100,6 +106,9 @@ public abstract class AbstractMappingContext implements MappingContext {
                     persistentEntitiesByDiscriminator.put(root, children);
                 }
                 children.put(entity.getDiscriminator(), entity);
+            }
+            for (Listener eventListener : eventListeners) {
+                eventListener.persistentEntityAdded(entity);
             }
         }
 

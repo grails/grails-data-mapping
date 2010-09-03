@@ -25,6 +25,8 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.redis.RedisGormStaticApi
+import org.grails.datastore.gorm.events.AutoTimestampInterceptor
+import org.grails.datastore.gorm.events.DomainEventInterceptor
 
 /**
  * Constructs a RedisDatastore instance
@@ -41,6 +43,9 @@ class RedisDatastoreFactoryBean implements FactoryBean<RedisDatastore>{
 
   RedisDatastore getObject() {
     def datastore = new RedisDatastore(mappingContext, config)
+    datastore.addEntityInterceptor(new DomainEventInterceptor())
+    datastore.addEntityInterceptor(new AutoTimestampInterceptor())
+
     def enhancer = transactionManager ?
                         new RedisGormEnhancer(datastore, transactionManager) :
                         new RedisGormEnhancer(datastore)

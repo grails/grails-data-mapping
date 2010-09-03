@@ -15,6 +15,8 @@
 package org.springframework.datastore.validation;
 
 import org.springframework.datastore.core.Datastore;
+import org.springframework.datastore.engine.EmptyInterceptor;
+import org.springframework.datastore.engine.EntityAccess;
 import org.springframework.datastore.engine.EntityInterceptor;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -29,20 +31,15 @@ import org.springframework.validation.Validator;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class ValidatingInterceptor implements EntityInterceptor{
-    private Datastore datastore;
-
-    public boolean beforeInsert(PersistentEntity entity, Object o) {
-        return doValidate(entity, o);
+public class ValidatingInterceptor extends EmptyInterceptor{
+    public boolean beforeInsert(PersistentEntity entity, EntityAccess e) {
+        return doValidate(entity, e.getEntity());
     }
 
-    public boolean beforeUpdate(PersistentEntity entity, Object o) {
-        return doValidate(entity, o);
+    public boolean beforeUpdate(PersistentEntity entity, EntityAccess e) {
+        return doValidate(entity, e.getEntity());
     }
 
-    public boolean beforeDelete(PersistentEntity entity, Object obj) {
-        return true; // do nothing for deletes
-    }
 
     private boolean doValidate(PersistentEntity entity, Object o) {
         Validator v = datastore.getMappingContext().getEntityValidator(entity);
@@ -67,7 +64,4 @@ public class ValidatingInterceptor implements EntityInterceptor{
         // do nothing
     }
 
-    public void setDatastore(Datastore datastore) {
-        this.datastore = datastore;
-    }
 }
