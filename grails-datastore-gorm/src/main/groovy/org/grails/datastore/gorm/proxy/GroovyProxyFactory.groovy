@@ -28,13 +28,31 @@ class GroovyProxyFactory implements ProxyFactory{
     def proxy = type.newInstance()
     def target = null
     def initializeTarget = { if(target == null) target = session.retrieve(type, key)}
+
     proxy.metaClass.invokeMethod = { String name, args ->
-        initializeTarget()
-        target."$name"(*args)
+        switch(name) {
+          case 'initialize':
+             return initializeTarget
+          case 'isInitialized':
+             return target != null
+          case 'getTarget':
+             return target
+          default:
+            initializeTarget()
+            return target."$name"(*args)
+
+        }
     }
     proxy.metaClass.getProperty = { String name ->
-        initializeTarget()
-        target[name]
+       switch(name) {
+         case 'initialized':
+           return target != null
+         case 'target':
+           return target
+         default:
+           initializeTarget()
+           return target[name]
+       }
     }
     proxy.metaClass.setProperty = { String name, value ->
         initializeTarget()
