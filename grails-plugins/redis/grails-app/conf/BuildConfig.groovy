@@ -20,18 +20,13 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-      compile( "org.grails:grails-datastore-gorm-redis:1.0.0.M1" ) {
-        excludes "slf4j-simple", "persistence-api", "commons-logging"
-		excludes "spring-core","spring-beans","spring-aop","spring-tx","spring-context","spring-asm"
+      def excludes = {
+        excludes "slf4j-simple", "persistence-api", "commons-logging", "jcl-over-slf4j", "slf4j-api", "jta"
+        excludes "spring-core", "spring-beans", "spring-aop", "spring-tx", "spring-context", "spring-web"
       }
-      compile( "org.springframework:spring-datastore-web:1.0.0.M1" ){
-        excludes "slf4j-simple", "persistence-api", "commons-logging"
-		excludes "spring-core","spring-beans","spring-aop","spring-tx","spring-context","spring-web"
-      }
-      test( "org.grails:grails-datastore-gorm-test:1.0.0.M1"){
-        excludes "slf4j-simple", "persistence-api", "commons-logging"
-		excludes "spring-core","spring-beans","spring-aop","spring-tx","spring-context","spring-asm"
-      }
+      compile("org.grails:grails-datastore-gorm-redis:1.0.0.M1", excludes)
+      compile( "org.springframework:spring-datastore-web:1.0.0.M1", excludes)
+      test("org.grails:grails-datastore-gorm-test:1.0.0.M1", excludes)
 
     }
 }
