@@ -127,10 +127,15 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
             executePendings(pendingInserts);
             executePendings(pendingUpdates);
             executePendings(pendingDeletes);
+            postFlush();
         }
         else {
             throw new InvalidDataAccessResourceUsageException("Do not flush() the Session after an exception occurs");
         }
+    }
+
+    protected void postFlush() {
+        // do nothing
     }
 
     private void executePendings(Collection<Runnable> pendings) {

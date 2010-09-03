@@ -35,7 +35,7 @@ class DomainEventsSpec extends GormDatastoreSpec{
        session.clear()
 
      when:
-       p = PersonEvent.get(1)
+       p = PersonEvent.get(p.id)
 
      then:
        sleep(2000)

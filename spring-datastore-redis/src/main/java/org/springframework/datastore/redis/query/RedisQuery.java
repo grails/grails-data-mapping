@@ -233,7 +233,7 @@ public class RedisQuery extends Query {
 
             //
             //  since the keys used for queries are temporary we set Redis to kill them after a while
-            template.expire(finalKey, 1000);
+//            template.expire(finalKey, 1000);
             return finalKey;
         }
     }
@@ -485,7 +485,7 @@ public class RedisQuery extends Query {
                         for (String result : results) {
                             redis.sadd(key, result);
                         }
-                        redis.expire(key, 1000);
+//                        redis.expire(key, 1000);
 
                         return null;
                     }
@@ -510,7 +510,7 @@ public class RedisQuery extends Query {
         final List<String> keys = resolveMatchingIndices(entityPersister, property, pattern);
         final String disjKey = formulateDisjunctionKey(keys);
         template.sunionstore(disjKey, keys.toArray(new String[keys.size()]));
-        template.expire(disjKey, 1000);
+//        template.expire(disjKey, 1000);
         return disjKey;
     }
 

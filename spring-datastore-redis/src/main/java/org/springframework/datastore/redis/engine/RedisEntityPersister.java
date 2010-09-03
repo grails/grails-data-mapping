@@ -348,6 +348,6 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
     }
 
     public String getPropertySortKey(PersistentProperty property) {
-        return "~" + getEntityBaseKey() + ":" + property.getName() + ":sorted";
+        return getEntityBaseKey() + ":" + property.getName() + ":sorted";
     }
 }

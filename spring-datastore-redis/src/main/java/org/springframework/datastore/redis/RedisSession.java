@@ -24,13 +24,16 @@ import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
 import org.springframework.datastore.redis.collection.RedisSet;
 import org.springframework.datastore.redis.engine.RedisEntityPersister;
+import org.springframework.datastore.redis.util.RedisCallback;
 import org.springframework.datastore.redis.util.RedisTemplate;
 import org.springframework.datastore.transactions.Transaction;
 import org.springframework.transaction.CannotCreateTransactionException;
 import org.springframework.util.ClassUtils;
 
 import javax.persistence.FlushModeType;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -146,6 +149,13 @@ public class RedisSession extends AbstractSession  {
 
     private void flushIfNecessary() {
         if(getFlushMode() == FlushModeType.AUTO) flush();
+    }
+
+    @Override
+    protected void postFlush() {
+        final List<String> keys = redisTemplate.keys("~*");
+        if(keys != null && !keys.isEmpty())
+            redisTemplate.del(keys.toArray(new String[keys.size()]));
     }
 
     public Object pop(Class type) {
