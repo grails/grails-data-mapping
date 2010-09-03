@@ -186,7 +186,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
     }
 
     public Object proxy(Serializable key) {
-        return getProxyInstance(getPersistentEntity().getJavaClass(), key);
+        return getProxyFactory().createProxy(session, getPersistentEntity().getJavaClass(), key);
     }
 
     public Serializable refresh(Object o) {
@@ -237,8 +237,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
                 final Class propType = prop.getType();
                 if(isLazy) {
-                    Class proxyClass = getProxyClass(propType);
-                    Object proxy = createProxiedInstance(propType, proxyClass, associationKey);
+                    Object proxy = getProxyFactory().createProxy(session, propType, associationKey);
                     ea.setProperty(prop.getName(), proxy);
                 }
                 else {

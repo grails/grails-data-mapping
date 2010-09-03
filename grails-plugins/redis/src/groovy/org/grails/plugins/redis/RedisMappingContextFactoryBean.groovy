@@ -25,6 +25,7 @@ import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import org.springframework.datastore.mapping.PersistentEntity
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ApplicationContext
+import org.grails.datastore.gorm.proxy.GroovyProxyFactory
 
 /**
  *
@@ -37,6 +38,7 @@ class RedisMappingContextFactoryBean implements FactoryBean<MappingContext>, Gra
 
   MappingContext getObject() {
     def mappingContext = new KeyValueMappingContext("");
+    mappingContext.proxyFactory = new GroovyProxyFactory()
 
     if(grailsApplication) {
       for(GrailsDomainClass domainClass in grailsApplication.domainClasses){

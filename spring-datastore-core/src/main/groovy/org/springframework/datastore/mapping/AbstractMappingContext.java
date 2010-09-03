@@ -17,6 +17,9 @@ package org.springframework.datastore.mapping;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.GenericConversionService;
+import org.springframework.datastore.core.Session;
+import org.springframework.datastore.proxy.JavassistProxyFactory;
+import org.springframework.datastore.proxy.ProxyFactory;
 import org.springframework.validation.Validator;
 
 import java.util.*;
@@ -36,9 +39,29 @@ public abstract class AbstractMappingContext implements MappingContext {
     protected Map<PersistentEntity,Map<String,PersistentEntity>>  persistentEntitiesByDiscriminator = new ConcurrentHashMap<PersistentEntity,Map<String,PersistentEntity>>();
     protected Map<PersistentEntity,Validator>  entityValidators = new ConcurrentHashMap<PersistentEntity, Validator>();
     protected GenericConversionService conversionService = new GenericConversionService();
+    protected ProxyFactory proxyFactory;
 
     public GenericConversionService getConversionService() {
         return conversionService;
+    }
+
+    public ProxyFactory getProxyFactory() {
+        if(this.proxyFactory == null) {
+            proxyFactory = DefaultProxyFactoryCreator.create();
+        }
+        return proxyFactory;
+    }
+
+    public void setProxyFactory(ProxyFactory factory) {
+        if(factory != null) {
+            this.proxyFactory = factory;
+        }
+    }
+
+    private static class DefaultProxyFactoryCreator {
+        public static ProxyFactory create() {
+            return new JavassistProxyFactory();
+        }
     }
 
     public void addTypeConverter(Converter converter) {

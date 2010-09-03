@@ -26,6 +26,7 @@ class RedisGrailsPlugin {
     def grailsVersion = "1.3.4 > *"
     // the other plugins this plugin depends on
     def dependsOn = [:]
+    def loadAfter = ['domainClass']
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
             "grails-app/views/error.gsp"

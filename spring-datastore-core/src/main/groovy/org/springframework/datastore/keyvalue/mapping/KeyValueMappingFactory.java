@@ -40,14 +40,6 @@ public class KeyValueMappingFactory extends MappingFactory<Family, KeyValue> {
 
     @Override
     public KeyValue createMappedForm(PersistentProperty mpp) {
-        final KeyValue kv = new KeyValue(mpp.getName());
-        if(mpp instanceof OneToMany) {
-            ((OneToMany) mpp).setFetchStrategy(FetchType.LAZY);
-        }
-        else {
-            // TODO: make the default lazy for one-to-ones for M2
-            kv.setFetchStrategy(FetchType.EAGER);
-        }
-        return kv;
+        return new KeyValue(mpp.getName());
     }
 }

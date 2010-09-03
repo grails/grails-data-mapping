@@ -17,6 +17,8 @@ package org.springframework.datastore.mapping;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.GenericConversionService;
+import org.springframework.datastore.core.Session;
+import org.springframework.datastore.proxy.ProxyFactory;
 import org.springframework.validation.Validator;
 
 import java.util.Collection;
@@ -125,4 +127,16 @@ public interface MappingContext {
      * @return True if it is
      */
     boolean isPersistentEntity(Object value);
+
+    /**
+     * Factory used for creating proxies
+     * @return The proxy factory
+     */
+    ProxyFactory getProxyFactory();
+
+    /**
+     * Factory to use for creating proxies
+     * @param factory The proxy factory
+     */
+    void setProxyFactory(ProxyFactory factory);
 }
