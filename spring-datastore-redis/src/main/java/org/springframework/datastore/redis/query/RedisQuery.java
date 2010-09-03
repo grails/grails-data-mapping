@@ -216,20 +216,26 @@ public class RedisQuery extends Query {
         if(indices.isEmpty()) {
             throw new DataRetrievalFailureException("Unsupported Redis query");
         }
-        final String[] keyArray = indices.toArray(new String[indices.size()]);
-        String finalKey;
-        if(junction instanceof Conjunction) {
-            finalKey = formulateConjunctionKey(indices);
-            template.sinterstore(finalKey, keyArray);
+        if(indices.size() == 1) {
+            return indices.get(0);
         }
         else {
-            finalKey = formulateDisjunctionKey(indices);
-            template.sunionstore(finalKey, keyArray);
-        }
+            final String[] keyArray = indices.toArray(new String[indices.size()]);
+            String finalKey;
+            if(junction instanceof Conjunction) {
+                finalKey = formulateConjunctionKey(indices);
+                template.sinterstore(finalKey, keyArray);
+            }
+            else {
+                finalKey = formulateDisjunctionKey(indices);
+                template.sunionstore(finalKey, keyArray);
+            }
 
-        // since the keys used for queries are temporary we set Redis to kill them after a while
-        template.expire(finalKey, 300);
-        return finalKey;
+            //
+            //  since the keys used for queries are temporary we set Redis to kill them after a while
+            template.expire(finalKey, 1000);
+            return finalKey;
+        }
     }
 
     private Collection<String> paginateResults(final String key) {
@@ -275,11 +281,11 @@ public class RedisQuery extends Query {
     }
 
     private String formulateDisjunctionKey(List<String> indicesList) {
-        return "~!" + indicesList.toString().replaceAll("\\s", "-");
+        return "~!" + indicesList.toString().replaceAll("\\s", "");
     }
 
     private String formulateConjunctionKey(List<String> indices) {
-        return "~" + indices.toString().replaceAll("\\s", "-");
+        return "~" + indices.toString().replaceAll("\\s", "");
     }
 
     private long getCountResult(String redisKey) {
@@ -479,7 +485,7 @@ public class RedisQuery extends Query {
                         for (String result : results) {
                             redis.sadd(key, result);
                         }
-                        redis.expire(key, 500);
+                        redis.expire(key, 1000);
 
                         return null;
                     }
@@ -504,7 +510,7 @@ public class RedisQuery extends Query {
         final List<String> keys = resolveMatchingIndices(entityPersister, property, pattern);
         final String disjKey = formulateDisjunctionKey(keys);
         template.sunionstore(disjKey, keys.toArray(new String[keys.size()]));
-        template.expire(disjKey, 300);
+        template.expire(disjKey, 1000);
         return disjKey;
     }
 
