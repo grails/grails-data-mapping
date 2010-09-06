@@ -223,6 +223,10 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         final Serializable key = convertToNativeKey(nativeKey);
         T nativeEntry = retrieveEntry(persistentEntity, entityFamily, key);
         if(nativeEntry != null) {
+            SessionImplementor<T> si = (SessionImplementor<T>) session;
+
+            si.cacheEntry(persistentEntity,nativeKey, nativeEntry);
+
             return createObjectFromNativeEntry(persistentEntity, key, nativeEntry);
         }
 
@@ -354,13 +358,20 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         K k = readObjectIdentifier(entityAccess, cm);
         boolean isUpdate = k != null;
 
+        final Serializable serializableKey = (Serializable) k;
         if(!isUpdate) {
             k = generateIdentifier(persistentEntity, tmp);
             String id = entityAccess.getIdentifierName();
             entityAccess.setProperty(id, k);            
         }
         else {
-            tmp = retrieveEntry(persistentEntity, family, (Serializable) k);
+            SessionImplementor<T> si = (SessionImplementor<T>) session;
+
+
+            tmp = si.getCachedEntry(persistentEntity, serializableKey);
+            if(tmp == null) {
+                tmp = retrieveEntry(persistentEntity, family, serializableKey);
+            }
             entityAccess.setNativeEntry(tmp);
         }
 
@@ -499,7 +510,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
                 }
             });
         }
-        return (Serializable) k;
+        return serializableKey;
     }
 
     protected abstract K generateIdentifier(PersistentEntity persistentEntity, T id);

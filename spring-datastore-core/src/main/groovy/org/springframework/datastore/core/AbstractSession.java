@@ -45,6 +45,7 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
     private Datastore datastore;
     private FlushModeType flushMode = FlushModeType.AUTO;
     protected Map<Class, Map<Serializable, Object>> firstLevelCache = new ConcurrentHashMap<Class, Map<Serializable, Object>>();
+    protected Map<Class, Map<Serializable, Object>> firstLevelEntryCache = new ConcurrentHashMap<Class, Map<Serializable, Object>>();
 
     protected Map<Object, Map<String, Object>> attributes = new ConcurrentHashMap<Object, Map<String, Object>>();
     protected Map<Object, Serializable> objectToKey = new ConcurrentHashMap<Object, Serializable>();
@@ -57,6 +58,27 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
         super();
         this.mappingContext = mappingContext;
         this.datastore = datastore;
+    }
+
+    public Object getCachedEntry(PersistentEntity entity, Serializable key) {
+        if(key != null) {
+            final Map<Serializable, Object> map = firstLevelEntryCache.get(entity);
+            if(map != null) {
+                return map.get(key);
+            }
+        }
+        return null;
+    }
+
+    public void cacheEntry(PersistentEntity entity, Serializable key, Object entry) {
+        if(key != null && entry != null) {
+            Map<Serializable, Object> cache = firstLevelEntryCache.get(entity);
+            if(cache == null) {
+                cache = new ConcurrentHashMap<Serializable,Object>();
+                firstLevelEntryCache.put(entity.getJavaClass(), cache);
+            }
+            cache.put(key, entry);
+        }
     }
 
     public void setAttribute(Object entity, String attributeName, Object value) {
@@ -159,6 +181,9 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
 
     public void clear() {
         for (Map<Serializable, Object> cache : firstLevelCache.values()) {
+            cache.clear();
+        }
+        for (Map<Serializable, Object> cache : firstLevelEntryCache.values()) {
             cache.clear();
         }
         pendingInserts.clear();

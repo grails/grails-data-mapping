@@ -14,6 +14,9 @@
  */
 package org.springframework.datastore.core;
 
+import org.springframework.datastore.mapping.PersistentEntity;
+
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -22,10 +25,14 @@ import java.util.Collection;
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface SessionImplementor {
+public interface SessionImplementor<T> {
     Collection<Runnable> getPendingInserts();
 
     Collection<Runnable> getPendingUpdates();
 
     Collection<Runnable> getPendingDeletes();
+
+    void cacheEntry(PersistentEntity entity, Serializable key, T entry);
+
+    T getCachedEntry(PersistentEntity entity, Serializable key);
 }

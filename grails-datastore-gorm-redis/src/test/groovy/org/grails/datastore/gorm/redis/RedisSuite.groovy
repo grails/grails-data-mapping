@@ -28,7 +28,7 @@ import grails.gorm.tests.CrudOperationsSpec
 @RunWith(Suite)
 @SuiteClasses([
 //  ProxyLoadingSpec,
-//  QueryAfterPropertyChangeSpec,
+  QueryAfterPropertyChangeSpec
 //  CircularOneToManySpec,
 //  InheritanceSpec,
 //  FindByMethodSpec,
@@ -40,7 +40,7 @@ import grails.gorm.tests.CrudOperationsSpec
 //  UpdateWithProxyPresentSpec,
 //  AttachMethodSpec,
 //  WithTransactionSpec,
-  CrudOperationsSpec
+//  CrudOperationsSpec
 ])
 class RedisSuite {
 }
