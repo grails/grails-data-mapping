@@ -23,9 +23,9 @@ class GroovyProxySpec extends GormDatastoreSpec{
     then:
 
       location != null
+      id == location.id
       false == location.isInitialized()
       false == location.initialized
-      null == location.target
 
       "UK" == location.code
       "United Kingdom - UK" == location.namedAndCode()
