@@ -40,7 +40,7 @@ class Setup {
             }
     ] as Validator)
 
-    new GormEnhancer(simple, new DatastoreTransactionManager(simple)).enhance()
+    new GormEnhancer(simple, new DatastoreTransactionManager(datastore:simple)).enhance()
 
     def con = simple.connect()
     return con

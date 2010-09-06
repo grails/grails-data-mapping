@@ -35,7 +35,7 @@ class Setup {
             }
     ] as Validator)
     
-    new RedisGormEnhancer(redis, new DatastoreTransactionManager(redis)).enhance()
+    new RedisGormEnhancer(redis, new DatastoreTransactionManager(datastore:redis)).enhance()
 
     def con = redis.connect()
     con.getNativeInterface().flushdb()
