@@ -369,9 +369,11 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
                 Object propValue = entityAccess.getProperty(prop.getName());
 
                 if(indexed) {
-                    final Object oldValue = getEntryValue(e, key);
-                    if(oldValue != null && !oldValue.equals(propValue))
-                        toUnindex.put(prop, oldValue);
+                    if(isUpdate) {
+                        final Object oldValue = getEntryValue(e, key);
+                        if(oldValue != null && !oldValue.equals(propValue))
+                            toUnindex.put(prop, oldValue);
+                    }
 
                     toIndex.put(prop, propValue);
                 }
@@ -416,9 +418,11 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
                                 if(indexed) {
                                     toIndex.put(prop, associationId);
-                                    final Object oldValue = getEntryValue(e, key);
-                                    if(oldValue != null && !oldValue.equals(associatedObject))
-                                        toUnindex.put(prop, oldValue);
+                                    if(isUpdate) {
+                                        final Object oldValue = getEntryValue(e, key);
+                                        if(oldValue != null && !oldValue.equals(associatedObject))
+                                            toUnindex.put(prop, oldValue);
+                                    }
                                 }
                                 setEntryValue(e, key, associationId);
 
