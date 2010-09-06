@@ -53,10 +53,12 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
 
     public void index(final Object value, final Long primaryKey) {
         if(value != null) {
+            String propSortKey = entityPersister.getPropertySortKey(property);            
+            clearCachedIndices(propSortKey);
             final String primaryIndex = createRedisKey(value);
             template.sadd(primaryIndex, primaryKey);
             // for numbers and dates we also create a list index in order to support range queries
-            String propSortKey = entityPersister.getPropertySortKey(property);
+
             if(value instanceof Number) {
                 Number n = (Number) value;
                 template.zadd(propSortKey,n.doubleValue(),primaryKey);
@@ -66,12 +68,16 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
                 Long time = d.getTime();
                 template.zadd(propSortKey,time.doubleValue(),primaryKey);
             }
-            clearCachedIndices(propSortKey);
+
         }
     }
 
     private void clearCachedIndices(String propSortKey) {
-        final List<String> toDelete = template.keys(propSortKey + "~*");
+        deleteKeys(template.keys(getIndexRoot()+ "*"));
+        deleteKeys(template.keys(propSortKey + "~*"));
+    }
+
+    private void deleteKeys(List<String> toDelete) {
         if(toDelete != null && !toDelete.isEmpty())
             template.del(toDelete.toArray(new String[toDelete.size()]));
     }

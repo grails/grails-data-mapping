@@ -8,6 +8,7 @@ import grails.gorm.tests.WithTransactionSpec
 import grails.gorm.tests.DomainEventsSpec
 import grails.gorm.tests.NegationSpec
 import grails.gorm.tests.UpdateWithProxyPresentSpec
+import grails.gorm.tests.QueryAfterPropertyChangeSpec
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,7 +19,7 @@ import grails.gorm.tests.UpdateWithProxyPresentSpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-      UpdateWithProxyPresentSpec
+      QueryAfterPropertyChangeSpec
 ])
 
 class SimpleMapTestSuite {

@@ -13,6 +13,9 @@ import grails.gorm.tests.DomainEventsSpec
 import grails.gorm.tests.CriteriaBuilderSpec
 import grails.gorm.tests.NegationSpec
 import grails.gorm.tests.UpdateWithProxyPresentSpec
+import grails.gorm.tests.AttachMethodSpec
+import grails.gorm.tests.CircularOneToManySpec
+import grails.gorm.tests.QueryAfterPropertyChangeSpec
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,7 +26,7 @@ import grails.gorm.tests.UpdateWithProxyPresentSpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-      UpdateWithProxyPresentSpec
+      QueryAfterPropertyChangeSpec
 ])
 class RedisSuite {
 }

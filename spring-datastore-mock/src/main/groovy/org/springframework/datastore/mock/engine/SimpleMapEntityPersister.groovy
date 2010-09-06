@@ -76,6 +76,11 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
       }
 
       void index(Object value, Object primaryKey) {
+        // clear old indices
+        indices.findAll { it.key ==~ /$indexRoot.+/}?.each {
+          indices.remove(it.key)
+        }
+
         def index = getIndexName(value)
         def indexed = indices[index]
         if(indexed == null) {
