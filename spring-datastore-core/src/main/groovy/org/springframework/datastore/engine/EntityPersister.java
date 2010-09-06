@@ -17,7 +17,6 @@ package org.springframework.datastore.engine;
 import org.springframework.datastore.core.Session;
 import org.springframework.datastore.mapping.MappingContext;
 import org.springframework.datastore.mapping.PersistentEntity;
-import org.springframework.datastore.proxy.JavassistProxyFactory;
 import org.springframework.datastore.proxy.ProxyFactory;
 
 import java.io.Serializable;
@@ -96,7 +95,6 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
     /**
      * Obtains an objects identifer
      * @param obj The object
-     * @return The identifier or null if it doesn't have one
      */
     public void setObjectIdentifier(Object obj, Serializable id) {
         new EntityAccess(getPersistentEntity(), obj).setIdentifier(id);
