@@ -40,6 +40,11 @@ public class JavassistProxyFactory implements org.springframework.datastore.prox
         return object instanceof EntityProxy;
     }
 
+    public Serializable getIdentifier(Object obj) {
+        return ((EntityProxy)obj).getProxyKey();
+
+    }
+
     public <T> T createProxy(Session session, Class<T> type, Serializable key) {
         return (T) getProxyInstance(session, type, key);
     }
@@ -50,7 +55,7 @@ public class JavassistProxyFactory implements org.springframework.datastore.prox
             public Object invoke(Object proxy, Method method, Method proceed, Object[] args) throws Throwable {
                 if(args.length == 0) {
                     final String methodName = method.getName();
-                    if(methodName.equals("getId")) {
+                    if(methodName.equals("getId") || methodName.equals("getProxyKey")) {
                         return id;
                     }
                     if(methodName.equals("initialize")) {

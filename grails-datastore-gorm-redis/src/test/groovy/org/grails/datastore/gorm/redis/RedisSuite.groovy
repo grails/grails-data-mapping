@@ -26,7 +26,19 @@ import grails.gorm.tests.QueryAfterPropertyChangeSpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-      QueryAfterPropertyChangeSpec
+//  ProxyLoadingSpec,
+//  QueryAfterPropertyChangeSpec,
+//  CircularOneToManySpec,
+//  InheritanceSpec,
+//  FindByMethodSpec,
+//  ListOrderBySpec,
+//  GroovyProxySpec,
+//  DomainEventsSpec,
+//  CriteriaBuilderSpec,
+//  NegationSpec,
+//  UpdateWithProxyPresentSpec,
+//  AttachMethodSpec,
+  WithTransactionSpec
 ])
 class RedisSuite {
 }

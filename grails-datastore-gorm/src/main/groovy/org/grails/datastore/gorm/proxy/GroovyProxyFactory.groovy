@@ -16,7 +16,7 @@ package org.grails.datastore.gorm.proxy
 
 import org.springframework.datastore.proxy.ProxyFactory
 import org.springframework.datastore.core.Session
-import org.springframework.datastore.engine.EntityAccess
+
 import org.springframework.datastore.engine.EntityPersister
 
 /**
@@ -30,6 +30,11 @@ class GroovyProxyFactory implements ProxyFactory{
   boolean isProxy(Object object) {
       object.metaClass.getMetaMethod("isProxy", null) != null
   }
+
+  Serializable getIdentifier(Object obj) {
+    return obj.getId()
+  }
+
 
 
   def createProxy(Session session, Class type, Serializable key) {

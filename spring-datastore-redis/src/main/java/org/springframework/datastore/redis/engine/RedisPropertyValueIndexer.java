@@ -51,6 +51,13 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     }
 
 
+    public void deindex(Object value, Long primaryKey) {
+        if(value != null) {
+            final String primaryIndex = createRedisKey(value);
+            template.srem(primaryIndex, primaryKey);            
+        }
+    }
+
     public void index(final Object value, final Long primaryKey) {
         if(value != null) {
             String propSortKey = entityPersister.getPropertySortKey(property);            
@@ -73,7 +80,6 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     }
 
     private void clearCachedIndices(String propSortKey) {
-        deleteKeys(template.keys(getIndexRoot()+ "*"));
         deleteKeys(template.keys(propSortKey + "~*"));
     }
 

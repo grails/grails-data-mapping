@@ -14,6 +14,8 @@
  */
 package org.springframework.datastore.proxy;
 
+import java.io.Serializable;
+
 /**
  * @author Graeme Rocher
  * @since 1.0
@@ -37,4 +39,9 @@ public interface EntityProxy {
      * @return True if it has
      */
     boolean isInitialized();
+
+    /**
+     * @return The identifier
+     */
+    Serializable getProxyKey();
 }

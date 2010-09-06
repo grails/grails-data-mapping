@@ -84,7 +84,13 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
      * @return The identifier or null if it doesn't have one
      */
     public Serializable getObjectIdentifier(Object obj) {
-        return (Serializable) new EntityAccess(getPersistentEntity(), obj).getIdentifier();
+        final ProxyFactory pf = getProxyFactory();
+        if(pf.isProxy(obj)) {
+            return pf.getIdentifier(obj);
+        }
+        else {
+            return (Serializable) new EntityAccess(getPersistentEntity(), obj).getIdentifier();
+        }
     }
 
     /**

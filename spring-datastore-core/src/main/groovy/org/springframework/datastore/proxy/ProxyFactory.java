@@ -31,4 +31,5 @@ public interface ProxyFactory {
 
     boolean isProxy(Object object);
 
+    Serializable getIdentifier(Object obj);
 }

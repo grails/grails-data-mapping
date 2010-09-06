@@ -59,4 +59,11 @@ public interface PropertyValueIndexer<K> {
      * @return The name of the index
      */
     String getIndexName(Object value);
+
+    /**
+     * Removes the index for the given value and key
+     * @param value The value
+     * @param primaryKey The key
+     */
+    void deindex(Object value, K primaryKey);
 }

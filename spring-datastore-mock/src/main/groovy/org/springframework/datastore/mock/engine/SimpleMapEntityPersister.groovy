@@ -75,11 +75,17 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
           return "~${property.owner.rootEntity.name}:${property.name}"
       }
 
+      void deindex(Object value, Object primaryKey) {
+         def index = getIndexName(value)
+         def indexed = indices[index]
+         if(indexed) {
+           indexed.remove(primaryKey)
+         }
+      }
+
+
       void index(Object value, Object primaryKey) {
-        // clear old indices
-        indices.findAll { it.key ==~ /$indexRoot.+/}?.each {
-          indices.remove(it.key)
-        }
+
 
         def index = getIndexName(value)
         def indexed = indices[index]
@@ -97,7 +103,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
       List query(Object value, int offset, int max) {
         def index = getIndexName(value)
         def indexed = indices[index]
-        if(indexed == null) {
+        if(!indexed) {
           return Collections.emptyList()
         }
         return indexed[offset..max]

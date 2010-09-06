@@ -97,13 +97,30 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
     }
 
     protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj, final T nativeEntry) {
-        return new EntityAccess(persistentEntity, obj) {
-            @Override
-            public void setProperty(String name, Object value) {
-                super.setProperty(name, value);
+        final NativeEntryModifyingEntityAccess ea = new NativeEntryModifyingEntityAccess(persistentEntity, obj);
+        ea.setNativeEntry(nativeEntry);
+        return ea;
+
+    }
+
+    protected class NativeEntryModifyingEntityAccess extends EntityAccess  {
+
+        T nativeEntry;
+        public NativeEntryModifyingEntityAccess(PersistentEntity persistentEntity, Object entity) {
+            super(persistentEntity, entity);
+        }
+
+        @Override
+        public void setProperty(String name, Object value) {
+            super.setProperty(name, value);
+            if(nativeEntry != null) {
                 setEntryValue(nativeEntry, name, value);
             }
-        };
+        }
+
+        public void setNativeEntry(T nativeEntry) {
+            this.nativeEntry = nativeEntry;
+        }
     }
 
     /**
@@ -317,22 +334,28 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         ClassMapping<Family> cm = persistentEntity.getMapping();
         String family = entityFamily;
 
-        final T e = createNewEntry(family);
-        final EntityAccess entityAccess = createEntityAccess(persistentEntity, obj, e );
+        T tmp = createNewEntry(family);
+        final NativeEntryModifyingEntityAccess entityAccess = (NativeEntryModifyingEntityAccess) createEntityAccess(persistentEntity, obj, tmp );
         K k = readObjectIdentifier(entityAccess, cm);
         boolean isUpdate = k != null;
 
         if(!isUpdate) {
-            k = generateIdentifier(persistentEntity, e);
+            k = generateIdentifier(persistentEntity, tmp);
             String id = entityAccess.getIdentifierName();
             entityAccess.setProperty(id, k);            
         }
+        else {
+            tmp = retrieveEntry(persistentEntity, family, (Serializable) k);
+            entityAccess.setNativeEntry(tmp);
+        }
 
+        final T e = tmp;
 
         final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
         final Map<OneToMany, List<Serializable>> oneToManyKeys = new HashMap<OneToMany, List<Serializable>>();
         final Map<OneToMany, Serializable> inverseCollectionUpdates = new HashMap<OneToMany, Serializable>();
         final Map<PersistentProperty, Object> toIndex = new HashMap<PersistentProperty, Object>();
+        final Map<PersistentProperty, Object> toUnindex = new HashMap<PersistentProperty, Object>();
         for (PersistentProperty prop : props) {
             PropertyMapping<KeyValue> pm = prop.getMapping();
             final KeyValue keyValue = pm.getMappedForm();
@@ -345,10 +368,14 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
             if(prop instanceof Simple) {
                 Object propValue = entityAccess.getProperty(prop.getName());
 
-                setEntryValue(e, key, propValue);
                 if(indexed) {
+                    final Object oldValue = getEntryValue(e, key);
+                    if(oldValue != null && !oldValue.equals(propValue))
+                        toUnindex.put(prop, oldValue);
+
                     toIndex.put(prop, propValue);
                 }
+                setEntryValue(e, key, propValue);                
 
             }
             else if(prop instanceof OneToMany) {
@@ -386,10 +413,14 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
                                 else {
                                     associationId = associationPersister.getObjectIdentifier(associatedObject);
                                 }
-                                setEntryValue(e, key, associationId);
+
                                 if(indexed) {
                                     toIndex.put(prop, associationId);
+                                    final Object oldValue = getEntryValue(e, key);
+                                    if(oldValue != null && !oldValue.equals(associatedObject))
+                                        toUnindex.put(prop, oldValue);
                                 }
+                                setEntryValue(e, key, associationId);
 
                                 if(association.isBidirectional()) {
                                     Association inverse = association.getInverseSide();
@@ -424,7 +455,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
                     storeEntry(persistentEntity, updateId, e);
                     updateOneToManyIndices(updateId, oneToManyKeys);
                     toIndex.put(persistentEntity.getIdentity(), updateId);
-                    updatePropertyIndices(updateId, toIndex);
+                    updatePropertyIndices(updateId, toIndex, toUnindex);
                     for (OneToMany inverseCollection : inverseCollectionUpdates.keySet()) {
                         final Serializable primaryKey = inverseCollectionUpdates.get(inverseCollection);
                         final AbstractKeyValueEntityPesister inversePersister = (AbstractKeyValueEntityPesister) session.getPersister(inverseCollection.getOwner());
@@ -445,7 +476,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
                     }
                     updateEntry(persistentEntity, updateId, e);
                     updateOneToManyIndices(updateId, oneToManyKeys);
-                    updatePropertyIndices(updateId, toIndex);
+                    updatePropertyIndices(updateId, toIndex, toUnindex);
                 }
             });
         }
@@ -466,7 +497,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         }
     }
 
-    private void updatePropertyIndices(K identifier, Map<PersistentProperty, Object> valuesToIndex) {
+    private void updatePropertyIndices(K identifier, Map<PersistentProperty, Object> valuesToIndex, Map<PersistentProperty, Object> valuesToDeindex) {
         // Here we manually create indices for any indexed properties so that queries work
         for (PersistentProperty persistentProperty : valuesToIndex.keySet()) {
             Object value = valuesToIndex.get(persistentProperty);
@@ -476,6 +507,15 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
                 indexer.index(value, identifier);
             }
         }
+
+        for (PersistentProperty persistentProperty : valuesToDeindex.keySet()) {
+            final PropertyValueIndexer indexer = getPropertyIndexer(persistentProperty);
+            Object value = valuesToDeindex.get(persistentProperty);
+            if(indexer != null) {
+                indexer.deindex(value, identifier);
+            }
+        }
+
     }
 
 
