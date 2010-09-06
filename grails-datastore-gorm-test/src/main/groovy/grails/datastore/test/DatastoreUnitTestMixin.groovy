@@ -50,7 +50,7 @@ class DatastoreUnitTestMixin {
 
   SimpleMapDatastore datastore = new SimpleMapDatastore()
   Session session
-  PlatformTransactionManager transactionManager = new DatastoreTransactionManager(datastore)
+  PlatformTransactionManager transactionManager = new DatastoreTransactionManager(datastore:datastore)
   private mockPluginManager = [hasGrailsPlugin: { String name ->
     if(name == "hibernate") {
       return ClassUtils.isPresent("org.hibernate.mapping.Value", getClass().getClassLoader())

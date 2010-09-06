@@ -25,6 +25,7 @@ import org.springframework.datastore.mapping.types.Association
 import org.springframework.datastore.query.Query
 import org.springframework.datastore.mock.query.SimpleMapQuery
 import org.springframework.datastore.mock.SimpleMapDatastore
+import org.springframework.datastore.engine.EntityPersister
 
 /**
  * A simple implementation of the {@link org.springframework.datastore.engine.EntityPersister} abstract class that backs onto an in-memory map.
@@ -143,7 +144,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
       }
 
       PersistentEntity getIndexedEntity() {
-        return association.owner
+        return association.associatedEntity
       }
     }
   }
@@ -157,11 +158,14 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
   }
 
   protected void setEntryValue(Map nativeEntry, String key, Object value) {
+    if(mappingContext.isPersistentEntity(value)) {
+      EntityPersister persister = session.getPersister(value)
+      value = persister.getObjectIdentifier(value)
+    }
     nativeEntry[key] = value
   }
 
   protected Map retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
-
     return datastore[family].get(key)
   }
 
@@ -201,7 +205,12 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
 
   protected void updateEntry(PersistentEntity persistentEntity, Object key, Map entry) {
     def family = getFamily(persistentEntity, persistentEntity.getMapping())
-    datastore[family].put(key, entry)
+    def existing = datastore[family].get(key)
+    if(existing == null)
+      datastore[family].put(key, entry)
+    else {
+      existing.putAll(entry)
+    }
     updateInheritanceHierarchy(persistentEntity, key, entry)
   }
 

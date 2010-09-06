@@ -248,16 +248,19 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
                 Serializable tmp = (Serializable) getEntryValue(nativeEntry, propKey);
                 PersistentEntity associatedEntity = prop.getOwner();
                 final Serializable associationKey = (Serializable) getMappingContext().getConversionService().convert(tmp, associatedEntity.getIdentity().getType());
-                PropertyMapping<KeyValue> associationPropertyMapping = prop.getMapping();
-                boolean isLazy = isLazyAssociation(associationPropertyMapping);
+                if(associationKey != null) {
 
-                final Class propType = prop.getType();
-                if(isLazy) {
-                    Object proxy = getProxyFactory().createProxy(session, propType, associationKey);
-                    ea.setProperty(prop.getName(), proxy);
-                }
-                else {
-                    ea.setProperty(prop.getName(), session.retrieve(propType, associationKey));
+                    PropertyMapping<KeyValue> associationPropertyMapping = prop.getMapping();
+                    boolean isLazy = isLazyAssociation(associationPropertyMapping);
+
+                    final Class propType = prop.getType();
+                    if(isLazy) {
+                        Object proxy = getProxyFactory().createProxy(session, propType, associationKey);
+                        ea.setProperty(prop.getName(), proxy);
+                    }
+                    else {
+                        ea.setProperty(prop.getName(), session.retrieve(propType, associationKey));
+                    }
                 }
             }
             else if(prop instanceof OneToMany) {
@@ -269,10 +272,10 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
                 nativeKey = (Serializable) getMappingContext().getConversionService().convert(nativeKey, getPersistentEntity().getIdentity().getType());
                 if(isLazy) {
                     if(List.class.isAssignableFrom(association.getType())) {
-                        ea.setProperty(association.getName(), new PersistentList(nativeKey, session, indexer));
+                        ea.setPropertyNoConversion(association.getName(), new PersistentList(nativeKey, session, indexer));
                     }
                     else if(Set.class.isAssignableFrom(association.getType())) {
-                        ea.setProperty(association.getName(), new PersistentSet(nativeKey, session, indexer));
+                        ea.setPropertyNoConversion(association.getName(), new PersistentSet(nativeKey, session, indexer));
                     }
                 }
                 else {

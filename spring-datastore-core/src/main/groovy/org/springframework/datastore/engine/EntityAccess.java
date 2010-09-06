@@ -17,8 +17,14 @@ package org.springframework.datastore.engine;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.datastore.collection.PersistentSet;
 import org.springframework.datastore.mapping.ClassMapping;
 import org.springframework.datastore.mapping.PersistentEntity;
+import org.springframework.util.ReflectionUtils;
+
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 
 /**
@@ -74,5 +80,15 @@ public class EntityAccess {
     public String getIdentifierName() {
         return getIdentifierName(persistentEntity.getMapping());
         
+    }
+
+    public void setPropertyNoConversion(String name, Object value) {
+        final PropertyDescriptor pd = beanWrapper.getPropertyDescriptor(name);
+        if(pd != null) {
+            final Method writeMethod = pd.getWriteMethod();
+            if(writeMethod!=null) {
+                ReflectionUtils.invokeMethod(writeMethod, beanWrapper.getWrappedInstance(), value);
+            }
+        }
     }
 }

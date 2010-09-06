@@ -7,6 +7,7 @@ import org.junit.runner.RunWith
 import grails.gorm.tests.WithTransactionSpec
 import grails.gorm.tests.DomainEventsSpec
 import grails.gorm.tests.NegationSpec
+import grails.gorm.tests.UpdateWithProxyPresentSpec
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,7 +18,7 @@ import grails.gorm.tests.NegationSpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-      NegationSpec
+      UpdateWithProxyPresentSpec
 ])
 
 class SimpleMapTestSuite {
