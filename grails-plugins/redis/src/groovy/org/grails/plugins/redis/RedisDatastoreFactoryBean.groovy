@@ -38,7 +38,6 @@ class RedisDatastoreFactoryBean implements FactoryBean<RedisDatastore>{
 
   Map<String, String> config
   MappingContext mappingContext
-  PlatformTransactionManager transactionManager
   GrailsPluginManager pluginManager
 
   RedisDatastore getObject() {
@@ -46,30 +45,6 @@ class RedisDatastoreFactoryBean implements FactoryBean<RedisDatastore>{
     datastore.addEntityInterceptor(new DomainEventInterceptor())
     datastore.addEntityInterceptor(new AutoTimestampInterceptor())
 
-    def enhancer = transactionManager ?
-                        new RedisGormEnhancer(datastore, transactionManager) :
-                        new RedisGormEnhancer(datastore)
-
-    def isHibernateInstalled = pluginManager.hasGrailsPlugin("hibernate")
-    for(entity in datastore.mappingContext.persistentEntities) {
-      if(isHibernateInstalled) {
-        def cls = entity.javaClass
-        def cpf = ClassPropertyFetcher.forClass(cls)
-        def mappedWith = cpf.getStaticPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY, String)
-        if(mappedWith == 'redis') {
-          enhancer.enhance(entity)
-        }
-        else {
-          def staticApi = new RedisGormStaticApi(cls, datastore)
-          def instanceApi = new GormInstanceApi(cls, datastore)
-          cls.metaClass.static.getRedis = {-> staticApi }
-          cls.metaClass.getRedis = {-> new InstanceProxy(instance:delegate, target:instanceApi) }
-        }
-      }
-      else {
-        enhancer.enhance(entity)
-      }
-    }
     return datastore
   }
 

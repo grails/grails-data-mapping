@@ -42,11 +42,12 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
     private Datastore datastore;
     private boolean datastoreManagedSession;
 
-    public DatastoreTransactionManager(Datastore datastore) {
+    public void setDatastore(Datastore datastore) {
         this.datastore = datastore;
     }
 
     public Datastore getDatastore() {
+        if(datastore == null) throw new IllegalStateException("Cannot use DatastoreTransactionManager without a datastore set!");
         return datastore;
     }
 

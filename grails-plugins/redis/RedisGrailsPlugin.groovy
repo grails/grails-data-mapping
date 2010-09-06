@@ -18,6 +18,16 @@ import org.grails.plugins.redis.RedisDatastoreFactoryBean
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.springframework.datastore.web.support.OpenSessionInViewInterceptor
 import grails.datastore.Redis
+import org.springframework.datastore.transactions.DatastoreTransactionManager
+import org.grails.plugins.redis.InstanceProxy
+import org.grails.datastore.gorm.GormInstanceApi
+import org.grails.datastore.gorm.redis.RedisGormStaticApi
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
+import org.springframework.datastore.reflect.ClassPropertyFetcher
+import org.grails.datastore.gorm.redis.RedisGormEnhancer
+import org.springframework.context.ApplicationContext
+import org.springframework.datastore.core.Datastore
+import org.springframework.transaction.PlatformTransactionManager
 
 class RedisGrailsPlugin {
     // the plugin version
@@ -45,6 +55,14 @@ a GORM-like API onto it
 
     def doWithSpring = {
         def redisConfig = application.config?.grails?.redis
+
+        def existingTransactionManager = manager?.hasGrailsPlugin("hibernate") || getSpringConfig().containsBean("transactionManager")
+        def txManagerName = existingTransactionManager ? 'datastoreTransactionManager' : 'transactionManager'
+
+        "$txManagerName"(DatastoreTransactionManager) {
+          datastore = ref("springDatastore")
+        }
+
         datastoreMappingContext(RedisMappingContextFactoryBean) {
           grailsApplication = ref('grailsApplication')
           pluginManager = ref('pluginManager')
@@ -82,7 +100,33 @@ a GORM-like API onto it
         }
     }
 
-    def doWithApplicationContext = { ctx ->
-      ctx.getBean("springDatastore") // initialize it
+    def doWithDynamicMethods = { ApplicationContext ctx ->
+      Datastore datastore = ctx.getBean(Datastore)
+      PlatformTransactionManager transactionManager = ctx.getBean(DatastoreTransactionManager)
+      def enhancer = transactionManager ?
+                          new RedisGormEnhancer(datastore, transactionManager) :
+                          new RedisGormEnhancer(datastore)
+
+      def isHibernateInstalled = manager.hasGrailsPlugin("hibernate")
+      for(entity in datastore.mappingContext.persistentEntities) {
+        if(isHibernateInstalled) {
+          def cls = entity.javaClass
+          def cpf = ClassPropertyFetcher.forClass(cls)
+          def mappedWith = cpf.getStaticPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY, String)
+          if(mappedWith == 'redis') {
+            enhancer.enhance(entity)
+          }
+          else {
+            def staticApi = new RedisGormStaticApi(cls, datastore)
+            def instanceApi = new GormInstanceApi(cls, datastore)
+            cls.metaClass.static.getRedis = {-> staticApi }
+            cls.metaClass.getRedis = {-> new InstanceProxy(instance:delegate, target:instanceApi) }
+          }
+        }
+        else {
+          enhancer.enhance(entity)
+        }
+      }
+
     }
 }
