@@ -335,7 +335,7 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
 
     public void delete(final Object obj) {
         if(obj != null) {
-            pendingDeletes.add(new Runnable() {
+            getPendingDeletes().add(new Runnable() {
                 public void run() {
                     Persister p = getPersister(obj);
                     if(p != null) {

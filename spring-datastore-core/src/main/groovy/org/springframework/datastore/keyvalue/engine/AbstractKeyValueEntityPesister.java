@@ -86,15 +86,8 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
             final K key = readIdentifierFromObject(obj);
 
-            SessionImplementor si = (SessionImplementor) session;
             if(key != null) {
-                si.getPendingDeletes().add(new Runnable() {
-                    public void run() {
-                        deleteEntry(entityFamily, key);
-                    }
-                });
-
-
+                deleteEntry(entityFamily, key);
             }
 
         }
@@ -149,14 +142,9 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
                if(key != null)
                     keys.add(key);
             }
-            if(!keys.isEmpty()) {
-                SessionImplementor si = (SessionImplementor) session;
-                si.getPendingDeletes().add(new Runnable() {
-                    public void run() {
-                        deleteEntries(entityFamily, keys);
-                    }
-                });
 
+            if(!keys.isEmpty()) {
+                deleteEntries(entityFamily, keys);
             }
         }
     }
