@@ -33,6 +33,18 @@ public class Restrictions {
     }
 
     /**
+     * Restricts the property to be not equal to the given value
+     * @param property The property
+     * @param value The value
+     * @return An instance of Query.Equals
+     */
+
+    public static Query.NotEquals ne(String property, Object value) {
+        return new Query.NotEquals(property, value);
+    }
+
+
+    /**
      * Restricts the property to be in the list of given values
      * @param property The property
      * @param values The values
@@ -112,4 +124,5 @@ public class Restrictions {
     public static Query.LessThanEquals lte(String property, Object value) {
         return new Query.LessThanEquals(property, value);
     }
+
 }

@@ -52,6 +52,9 @@ public abstract class MethodExpression {
 
     public static MethodExpression create(Class clazz, String expression) {
         if(expression.endsWith(Equal.class.getSimpleName())) {
+            return new NotEqual(clazz, calcPropertyName(expression, NotEqual.class.getSimpleName()));
+        }
+        else if(expression.endsWith(Equal.class.getSimpleName())) {
             return new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()));
         }
         else if(expression.endsWith(InList.class.getSimpleName())) {
@@ -208,6 +211,16 @@ public abstract class MethodExpression {
         @Override
         public Query.Criterion createCriterion() {
             return Restrictions.eq(propertyName, arguments[0]);
+        }
+    }
+    public static class NotEqual extends MethodExpression {
+        protected NotEqual(Class<?> targetClass, String propertyName) {
+            super(targetClass, propertyName);
+        }
+
+        @Override
+        public Query.Criterion createCriterion() {
+            return Restrictions.ne(propertyName, arguments[0]);
         }
     }
 }

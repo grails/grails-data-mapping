@@ -10,6 +10,8 @@ import grails.gorm.tests.ListOrderBySpec
 import grails.gorm.tests.ProxyLoadingSpec
 import grails.gorm.tests.GroovyProxySpec
 import grails.gorm.tests.DomainEventsSpec
+import grails.gorm.tests.CriteriaBuilderSpec
+import grails.gorm.tests.NegationSpec
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,7 +22,7 @@ import grails.gorm.tests.DomainEventsSpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-      DomainEventsSpec
+      NegationSpec
 ])
 class RedisSuite {
 }

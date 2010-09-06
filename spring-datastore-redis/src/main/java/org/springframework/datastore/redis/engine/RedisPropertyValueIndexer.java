@@ -53,7 +53,8 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
 
     public void index(final Object value, final Long primaryKey) {
         if(value != null) {
-            template.sadd(createRedisKey(value), primaryKey);
+            final String primaryIndex = createRedisKey(value);
+            template.sadd(primaryIndex, primaryKey);
             // for numbers and dates we also create a list index in order to support range queries
             String propSortKey = entityPersister.getPropertySortKey(property);
             if(value instanceof Number) {

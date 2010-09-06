@@ -150,6 +150,12 @@ class SimpleMapQuery extends Query{
           def indexer = entityPersister.getPropertyIndexer(property)
           return indexer.query(equals.value)
         },
+        (Query.NotEquals): { Query.NotEquals equals, PersistentProperty property ->
+          def indexer = entityPersister.getPropertyIndexer(property)
+          def indexed = indexer.query(equals.value)
+          ArrayList allIds = negateResults(indexed)
+          return allIds
+        },
         (Query.Like): { Query.Like like, PersistentProperty property ->
           def indexer = entityPersister.getPropertyIndexer(property)
 
@@ -215,7 +221,16 @@ class SimpleMapQuery extends Query{
         }
 
 
+
   ]
+
+  private ArrayList negateResults(List results) {
+    def entityMap = datastore[family]
+    def allIds = new ArrayList(entityMap.keySet())
+    allIds.removeAll(results)
+    return allIds
+  }
+
   protected Map executeSubQuery(criteria, criteriaList) {
 
     def finalIdentifiers = executeSubQueryInternal(criteria, criteriaList)
@@ -251,12 +266,25 @@ class SimpleMapQuery extends Query{
             finalIdentifiers = finalIdentifiers.intersect(secondList)
           }
         }
+        else if(criteria instanceof Query.Negation) {
+          def total = resultList.size()
+          finalIdentifiers = negateResults( resultList[0] )
+          for (num in 1..<total) {
+            def secondList = negateResults( resultList[num] )
+            finalIdentifiers = finalIdentifiers.intersect(secondList)
+          }
+        }
         else {
           finalIdentifiers = resultList.flatten()
         }
       }
       else {
-        finalIdentifiers = resultList[0]
+        if(criteria instanceof Query.Negation) {
+          finalIdentifiers = negateResults(resultList[0])
+        }
+        else {          
+          finalIdentifiers = resultList[0]
+        }
 
       }
     }

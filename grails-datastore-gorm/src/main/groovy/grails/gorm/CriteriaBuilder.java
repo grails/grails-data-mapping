@@ -276,8 +276,10 @@ public class CriteriaBuilder extends GroovyObjectSupport {
                 if(name.equals(AND)) {
                     logicalExpressionStack.add(new Query.Conjunction());
                 }
+                else if(name.equals(NOT)) {
+                    logicalExpressionStack.add(new Query.Negation());
+                }
                 else {
-                    final boolean isNot = name.equals(NOT);
                     logicalExpressionStack.add(new Query.Disjunction());
                 }
                 invokeClosureNode(args[0]);
@@ -352,6 +354,19 @@ public class CriteriaBuilder extends GroovyObjectSupport {
         return addToCriteria(Restrictions.eq(propertyName, propertyValue));
     }
 
+    /**
+     * Creates a "not equals" Criterion based on the specified property name and value.
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    @SuppressWarnings("rawtypes")
+    public Query.Criterion ne(String propertyName, Object propertyValue) {
+        validatePropertyName(propertyName, "ne");
+        return addToCriteria(Restrictions.ne(propertyName, propertyValue));
+    }
     /**
      * Restricts the results by the given property value range (inclusive)
      *

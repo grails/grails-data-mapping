@@ -349,6 +349,15 @@ public class RedisQuery extends Query {
                indices.add(indexName);
            }
        });
+       put(NotEquals.class,  new CriterionHandler<NotEquals>() {
+           public void handle(RedisEntityPersister entityPersister, List<String> indices, NotEquals criterion) {
+               final String property = criterion.getProperty();
+               final Object value = criterion.getValue();
+               final String indexName = getIndexName(entityPersister, property, value);
+
+               indices.add( negateIndex(entityPersister, indexName) );
+           }
+       });
        put(In.class,  new CriterionHandler<In>() {
            public void handle(RedisEntityPersister entityPersister, List<String> indices, In criterion) {
                final String property = criterion.getName();
@@ -370,8 +379,19 @@ public class RedisQuery extends Query {
                indices.add( executeSubQuery(criterion, criterion.getCriteria()) );
            }
        });
+       put(Negation.class,  new CriterionHandler<Negation>() {
+           public void handle(RedisEntityPersister entityPersister, List<String> indices, Negation criterion) {
+               final String finalIndex = executeSubQuery(criterion, criterion.getCriteria());
+               indices.add( negateIndex(entityPersister, finalIndex) );
+           }
+       });
     }};
 
+    private String negateIndex(RedisEntityPersister entityPersister, String indexName) {
+        final String negatedIndex = "!" + indexName;
+        template.sdiffstore(negatedIndex, entityPersister.getAllEntityIndex().getRedisKey(), indexName);
+        return negatedIndex;
+    }
 
 
     private static interface CriterionHandler<T> {

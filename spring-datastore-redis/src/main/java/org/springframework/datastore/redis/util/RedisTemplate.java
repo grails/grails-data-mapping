@@ -96,6 +96,8 @@ public interface RedisTemplate<T, S> {
 
     void sunionstore(String storeKey, String... keys);
 
+    void sdiffstore(String key, String... otherKeys);
+
     boolean setnx(String redisKey, Object o);
 
     boolean expire(String key, int timeout);
@@ -147,4 +149,6 @@ public interface RedisTemplate<T, S> {
     public void sortstore(final String key, final String destKey,  final SortParams<S> params);
 
     T getRedisClient();
+
+
 }

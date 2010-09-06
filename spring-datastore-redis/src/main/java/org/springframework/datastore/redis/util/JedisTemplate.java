@@ -623,6 +623,21 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
 
     }
 
+    public void sdiffstore(final String storeKey, final String... keys) {
+        execute(new RedisCallback<Jedis>() {
+            public Object doInRedis(Jedis redis) {
+                if(transaction != null) {
+                    transaction.sdiffstore(storeKey, keys);
+                }
+                else {
+                    redis.sdiffstore(storeKey, keys);
+                }
+                return null;
+            }
+        });
+
+    }
+
     public boolean setnx(final String redisKey, final Object o) {
         return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {

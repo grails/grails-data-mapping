@@ -123,6 +123,22 @@ public abstract class Query {
             return dis;
         }
     }
+
+    /**
+     * Creates a negation of several criterion
+     * @return The negation
+     */
+    public Junction negation() {
+        Negation dis = new Negation();
+        if(criteria.isEmpty()) {
+            criteria = dis;
+            return criteria;
+        }
+        else {
+            criteria.add(dis);
+            return dis;
+        }
+    }
     /**
      * Defines the maximum number of results to return
      * @param max The max results
@@ -403,6 +419,20 @@ public abstract class Query {
     }
 
     /**
+     * A criterion that restricts the results based on equality
+     */
+    public static class NotEquals extends PropertyCriterion {
+
+        public NotEquals(String name, Object value) {
+            super(name, value);
+        }
+
+        public void setValue(Object value) {
+            this.value = value;
+        }
+    }
+
+    /**
      * Criterion used to restrict the results based on a list of values
      */
     public static class In extends Criterion {
@@ -540,6 +570,11 @@ public abstract class Query {
      */
     public static class Disjunction extends Junction {
     }
+
+    /**
+     * A criterion used to negate several other criterion
+     */
+    public static class Negation extends Junction {}
 
     /**
      * A projection

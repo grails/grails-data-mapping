@@ -5,6 +5,8 @@ import org.junit.runners.Suite.SuiteClasses
 import org.junit.runners.Suite
 import org.junit.runner.RunWith
 import grails.gorm.tests.WithTransactionSpec
+import grails.gorm.tests.DomainEventsSpec
+import grails.gorm.tests.NegationSpec
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,7 +17,7 @@ import grails.gorm.tests.WithTransactionSpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-        WithTransactionSpec
+      NegationSpec
 ])
 
 class SimpleMapTestSuite {
