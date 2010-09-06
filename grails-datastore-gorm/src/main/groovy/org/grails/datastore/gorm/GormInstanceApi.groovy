@@ -147,6 +147,7 @@ class GormInstanceApi extends AbstractGormApi {
    */
   def attach(instance) {
     datastore.currentSession.attach(instance)
+    return instance
   }
 
   /**

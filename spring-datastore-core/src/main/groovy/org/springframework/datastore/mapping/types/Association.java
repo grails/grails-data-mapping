@@ -139,4 +139,8 @@ public abstract class Association<T> extends AbstractPersistentProperty {
     public boolean isList() {
         return List.class.isAssignableFrom(getType());
     }
+
+    public boolean isCircular() {
+        return isBidirectional() && getAssociatedEntity().equals(getOwner());        
+    }
 }

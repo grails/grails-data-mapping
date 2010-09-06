@@ -39,4 +39,10 @@ public interface PersistentProperty<T> {
      */
     PersistentEntity getOwner();
 
+    /**
+     * Whether the property can be set to null
+     * 
+     * @return True if it can
+     */
+    boolean isNullable();
 }

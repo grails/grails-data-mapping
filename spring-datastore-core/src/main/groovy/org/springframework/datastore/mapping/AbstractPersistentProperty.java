@@ -30,6 +30,7 @@ public abstract class AbstractPersistentProperty implements PersistentProperty {
     protected MappingContext context;
     protected String name;
     protected Class type;
+    private boolean nullable = false;
 
     public AbstractPersistentProperty(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         this.owner = owner;
@@ -64,5 +65,13 @@ public abstract class AbstractPersistentProperty implements PersistentProperty {
     @Override
     public String toString() {
         return getName() + ":" + getType().getName();
+    }
+
+    public boolean isNullable() {
+        return nullable;
+    }
+
+    public void setNullable(boolean nullable) {
+        this.nullable = nullable;
     }
 }

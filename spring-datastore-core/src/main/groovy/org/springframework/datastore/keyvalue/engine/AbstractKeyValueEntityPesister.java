@@ -401,7 +401,9 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
                             }
                         }
                         else {
-                            throw new DataIntegrityViolationException("Cannot save object ["+entityAccess.getEntity()+"] of type ["+persistentEntity+"]. The association ["+association+"] is cannot be null.");
+                            if(!association.isNullable() && !association.isCircular()) {
+                                throw new DataIntegrityViolationException("Cannot save object ["+entityAccess.getEntity()+"] of type ["+persistentEntity+"]. The association ["+association+"] is cannot be null.");
+                            }
                         }
                     }
                 }
