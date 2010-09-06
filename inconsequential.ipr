@@ -409,7 +409,7 @@
     </library>
     <library name="Spring Extension JCR">
       <CLASSES>
-        <root url="jar://$GRADLE_REPOSITORY$/org.springframework/se-jcr/jars/se-jcr-1.0-SNAPSHOT.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/org.springframework/se-jcr/jars/se-jcr-1.0-SNAPSHOT.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
