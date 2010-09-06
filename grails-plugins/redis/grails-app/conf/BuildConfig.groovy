@@ -14,9 +14,8 @@ grails.project.dependency.resolution = {
 		jedisResolver.addArtifactPattern("http://github.com/downloads/xetorthio/jedis/[module]-[revision].jar")
 		resolver(jedisResolver)
 
-        mavenLocal()
-//		mavenRepo "http://maven.springframework.org/milestone"
-//		mavenRepo "http://snapshots.repository.codehaus.org"
+		mavenRepo "http://maven.springframework.org/milestone"
+		mavenRepo "http://snapshots.repository.codehaus.org"
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
