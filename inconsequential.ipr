@@ -309,7 +309,7 @@
     </library>
     <library name="Spring Beans">
       <CLASSES>
-        <root url="jar://$GRADLE_CACHE$/org.springframework/spring-beans/jars/spring-beans-3.0.2.RELEASE.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/org.springframework/spring-beans/jars/spring-beans-3.0.4.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
@@ -337,14 +337,14 @@
     </library>
     <library name="Spring Context">
       <CLASSES>
-        <root url="jar://$GRADLE_CACHE$/org.springframework/spring-context/jars/spring-context-3.0.2.RELEASE.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/org.springframework/spring-context/jars/spring-context-3.0.4.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
     </library>
     <library name="Spring Web">
       <CLASSES>
-        <root url="jar://$GRADLE_CACHE$/org.springframework/spring-web/jars/spring-web-3.0.2.RELEASE.jar!/" />
+        <root url="jar://$GRADLE_CACHE$/org.springframework/spring-web/jars/spring-web-3.0.4.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
