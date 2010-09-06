@@ -84,10 +84,19 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
                 if(!interceptor.beforeDelete(persistentEntity, createEntityAccess(persistentEntity, obj))) return;
             }
 
-            K key = readIdentifierFromObject(obj);
+            final K key = readIdentifierFromObject(obj);
+
+            SessionImplementor si = (SessionImplementor) session;
             if(key != null) {
-                deleteEntry(entityFamily, key);
+                si.getPendingDeletes().add(new Runnable() {
+                    public void run() {
+                        deleteEntry(entityFamily, key);
+                    }
+                });
+
+
             }
+
         }
     }
 
@@ -134,14 +143,20 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
     @Override
     protected final void deleteEntities(PersistentEntity persistentEntity, Iterable objects) {
         if(objects != null) {
-            List<K> keys = new ArrayList<K>();
+            final List<K> keys = new ArrayList<K>();
             for (Object object : objects) {
                K key = readIdentifierFromObject(object);
                if(key != null)
                     keys.add(key);
             }
             if(!keys.isEmpty()) {
-                deleteEntries(entityFamily, keys);
+                SessionImplementor si = (SessionImplementor) session;
+                si.getPendingDeletes().add(new Runnable() {
+                    public void run() {
+                        deleteEntries(entityFamily, keys);
+                    }
+                });
+
             }
         }
     }

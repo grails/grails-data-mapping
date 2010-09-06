@@ -16,6 +16,7 @@ import grails.gorm.tests.UpdateWithProxyPresentSpec
 import grails.gorm.tests.AttachMethodSpec
 import grails.gorm.tests.CircularOneToManySpec
 import grails.gorm.tests.QueryAfterPropertyChangeSpec
+import grails.gorm.tests.CrudOperationsSpec
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,7 +39,8 @@ import grails.gorm.tests.QueryAfterPropertyChangeSpec
 //  NegationSpec,
 //  UpdateWithProxyPresentSpec,
 //  AttachMethodSpec,
-  WithTransactionSpec
+//  WithTransactionSpec,
+  CrudOperationsSpec
 ])
 class RedisSuite {
 }

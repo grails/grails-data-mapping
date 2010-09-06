@@ -10,7 +10,7 @@ package grails.gorm.tests
  */
 class CrudOperationsSpec extends GormDatastoreSpec{
 
-  void "Test get(..) returns null of non-existent entity"() {
+  void "Test get returns null of non-existent entity"() {
     given:
       def t
     when:
@@ -41,7 +41,7 @@ class CrudOperationsSpec extends GormDatastoreSpec{
   }
 
 
-  void "Test save() method that takes a map"() {
+  void "Test save method that takes a map"() {
 
     given:
       def t = new TestEntity(name:"Bob", child:new ChildEntity(name:"Child"))
