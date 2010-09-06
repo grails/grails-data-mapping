@@ -25,6 +25,7 @@ import org.springframework.datastore.keyvalue.mapping.Family;
 import org.springframework.datastore.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.*;
 import org.springframework.datastore.mapping.types.*;
+import org.springframework.datastore.proxy.ProxyFactory;
 
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
@@ -318,6 +319,12 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         K k = readObjectIdentifier(entityAccess, cm);
         boolean isUpdate = k != null;
 
+        if(!isUpdate) {
+            k = generateIdentifier(persistentEntity, e);
+            String id = entityAccess.getIdentifierName();
+            entityAccess.setProperty(id, k);            
+        }
+
 
         final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
         final Map<OneToMany, List<Serializable>> oneToManyKeys = new HashMap<OneToMany, List<Serializable>>();
@@ -363,24 +370,31 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
                         final Object associatedObject = entityAccess.getProperty(prop.getName());
                         if(associatedObject != null) {
-                            Serializable associationId;
-                            AbstractKeyValueEntityPesister associationPersister = (AbstractKeyValueEntityPesister) session.getPersister(associatedObject);
-                            if(!session.contains(associatedObject)) {
-                                associationId = session.persist(associatedObject);
-                            }
-                            else {
-                                associationId = associationPersister.getObjectIdentifier(associatedObject);
-                            }
-                            setEntryValue(e, key, associationId);
-                            if(indexed) {
-                                toIndex.put(prop, associationId);
-                            }
-
-                            if(association.isBidirectional()) {
-                                Association inverse = association.getInverseSide();
-                                if(inverse instanceof OneToMany) {
-                                    inverseCollectionUpdates.put((OneToMany) inverse, associationId);
+                            ProxyFactory proxyFactory = getProxyFactory();
+                            // never cascade to proxies
+                            if(!proxyFactory.isProxy(associatedObject)) {
+                                Serializable associationId;
+                                AbstractKeyValueEntityPesister associationPersister = (AbstractKeyValueEntityPesister) session.getPersister(associatedObject);
+                                if(!session.contains(associatedObject)) {
+                                    Serializable tempId = associationPersister.getObjectIdentifier(associatedObject);
+                                    if(tempId == null) tempId = session.persist(associatedObject);
+                                    associationId = tempId;
                                 }
+                                else {
+                                    associationId = associationPersister.getObjectIdentifier(associatedObject);
+                                }
+                                setEntryValue(e, key, associationId);
+                                if(indexed) {
+                                    toIndex.put(prop, associationId);
+                                }
+
+                                if(association.isBidirectional()) {
+                                    Association inverse = association.getInverseSide();
+                                    if(inverse instanceof OneToMany) {
+                                        inverseCollectionUpdates.put((OneToMany) inverse, associationId);
+                                    }
+                                }
+
                             }
                         }
                         else {
@@ -395,9 +409,6 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
         if(!isUpdate) {
 
-            k = generateIdentifier(persistentEntity, e);
-            String id = entityAccess.getIdentifierName();
-            entityAccess.setProperty(id, k);
             final K updateId = k;
             SessionImplementor si = (SessionImplementor) session;
             si.getPendingInserts().add(new Runnable() {

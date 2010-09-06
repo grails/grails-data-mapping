@@ -16,6 +16,8 @@ package org.grails.datastore.gorm.proxy
 
 import org.springframework.datastore.proxy.ProxyFactory
 import org.springframework.datastore.core.Session
+import org.springframework.datastore.engine.EntityAccess
+import org.springframework.datastore.engine.EntityPersister
 
 /**
  * Implements the proxy interface and creates a Groovy proxy by passing the need for javassist style proxies
@@ -24,12 +26,23 @@ import org.springframework.datastore.core.Session
  * @author Graeme Rocher
  */
 class GroovyProxyFactory implements ProxyFactory{
-  def createProxy(Session session, Class type, Serializable key) {
-    def proxy = type.newInstance()
-    def target = null
 
+  boolean isProxy(Object object) {
+      object.metaClass.getMetaMethod("isProxy", null) != null
+  }
+
+
+  def createProxy(Session session, Class type, Serializable key) {
+    EntityPersister persister = session.getPersister(type)
+
+    def proxy = type.newInstance()
+    persister.setObjectIdentifier(proxy, key)
+    def target = null
+    proxy.metaClass.isProxy = {-> true}
     proxy.metaClass.invokeMethod = { String name, args ->
         switch(name) {
+          case "getId":
+             return key
           case 'initialize':
              if(target == null) target = session.retrieve(type, key)
              return target
@@ -46,6 +59,8 @@ class GroovyProxyFactory implements ProxyFactory{
     }
     proxy.metaClass.getProperty = { String name ->
        switch(name) {
+         case 'id':
+           return key
          case 'initialized':
            return target != null
          case 'target':

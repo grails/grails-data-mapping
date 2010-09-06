@@ -86,6 +86,15 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
     public Serializable getObjectIdentifier(Object obj) {
         return (Serializable) new EntityAccess(getPersistentEntity(), obj).getIdentifier();
     }
+
+    /**
+     * Obtains an objects identifer
+     * @param obj The object
+     * @return The identifier or null if it doesn't have one
+     */
+    public void setObjectIdentifier(Object obj, Serializable id) {
+        new EntityAccess(getPersistentEntity(), obj).setIdentifier(id);
+    }
     /**
      * Persists an object returning the identifier
      *

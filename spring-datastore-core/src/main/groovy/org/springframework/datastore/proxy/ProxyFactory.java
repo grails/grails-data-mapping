@@ -15,6 +15,7 @@
 package org.springframework.datastore.proxy;
 
 import org.springframework.datastore.core.Session;
+import org.springframework.datastore.engine.EntityAccess;
 
 import java.io.Serializable;
 
@@ -27,4 +28,7 @@ import java.io.Serializable;
 public interface ProxyFactory {
 
     <T> T createProxy(Session session, Class<T> type, Serializable key);
+
+    boolean isProxy(Object object);
+
 }

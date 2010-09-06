@@ -124,17 +124,24 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
 
     public void flush() {
         if(!exceptionOccurred) {
-            executePendings(pendingInserts);
-            executePendings(pendingUpdates);
-            executePendings(pendingDeletes);
-            postFlush();
+            boolean hasInserts = hasUpdates();
+            if(hasInserts) {
+                executePendings(pendingInserts);
+                executePendings(pendingUpdates);
+                executePendings(pendingDeletes);
+                postFlush(hasInserts);
+            }
         }
         else {
             throw new InvalidDataAccessResourceUsageException("Do not flush() the Session after an exception occurs");
         }
     }
 
-    protected void postFlush() {
+    private boolean hasUpdates() {
+        return !pendingInserts.isEmpty() || !pendingUpdates.isEmpty() || !pendingDeletes.isEmpty();
+    }
+
+    protected void postFlush(boolean hasUpdates) {
         // do nothing
     }
 

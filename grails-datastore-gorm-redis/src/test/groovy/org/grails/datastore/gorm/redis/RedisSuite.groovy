@@ -12,6 +12,7 @@ import grails.gorm.tests.GroovyProxySpec
 import grails.gorm.tests.DomainEventsSpec
 import grails.gorm.tests.CriteriaBuilderSpec
 import grails.gorm.tests.NegationSpec
+import grails.gorm.tests.UpdateWithProxyPresentSpec
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,7 +23,7 @@ import grails.gorm.tests.NegationSpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-      NegationSpec
+      UpdateWithProxyPresentSpec
 ])
 class RedisSuite {
 }

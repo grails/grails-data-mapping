@@ -36,6 +36,9 @@ public class JavassistProxyFactory implements org.springframework.datastore.prox
 
     private static final Map<Class, Class > PROXY_FACTORIES = new ConcurrentHashMap<Class, Class >();
 
+    public boolean isProxy(Object object) {
+        return object instanceof EntityProxy;
+    }
 
     public <T> T createProxy(Session session, Class<T> type, Serializable key) {
         return (T) getProxyInstance(session, type, key);
