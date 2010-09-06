@@ -1,12 +1,9 @@
 TODO high priorities
 
-* Allow hibernate entities to be saved to Redis
-
 TODO medium priorities
 
 * Nested querying of associations in criteria
 * Port as many GORM related tests from Grails core as possible
-* GORM auto-timestamping
 
 TODO lower priorities
 
