@@ -341,12 +341,13 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         ClassMapping<Family> cm = persistentEntity.getMapping();
         String family = entityFamily;
 
-        T tmp = createNewEntry(family);
+        T tmp = null;
         final NativeEntryModifyingEntityAccess entityAccess = (NativeEntryModifyingEntityAccess) createEntityAccess(persistentEntity, obj, tmp );
         K k = readObjectIdentifier(entityAccess, cm);
         boolean isUpdate = k != null;
 
         if(!isUpdate) {
+            tmp = createNewEntry(family);
             k = generateIdentifier(persistentEntity, tmp);
             String id = entityAccess.getIdentifierName();
             entityAccess.setProperty(id, k);            
@@ -359,10 +360,14 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
             if(tmp == null) {
                 tmp = retrieveEntry(persistentEntity, family, (Serializable) k);
             }
-            entityAccess.setNativeEntry(tmp);
+            if(tmp == null) {
+                tmp = createNewEntry(family);
+            }
+
         }
 
         final T e = tmp;
+        entityAccess.setNativeEntry(e);
 
         final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
         final Map<OneToMany, List<Serializable>> oneToManyKeys = new HashMap<OneToMany, List<Serializable>>();
