@@ -17,6 +17,12 @@ import grails.gorm.tests.AttachMethodSpec
 import grails.gorm.tests.CircularOneToManySpec
 import grails.gorm.tests.QueryAfterPropertyChangeSpec
 import grails.gorm.tests.CrudOperationsSpec
+import grails.gorm.tests.CommonTypesPersistenceSpec
+import grails.gorm.tests.GormEnhancerSpec
+import grails.gorm.tests.NamedQuerySpec
+import grails.gorm.tests.OrderBySpec
+import grails.gorm.tests.RangeQuerySpec
+import grails.gorm.tests.ValidationSpec
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,20 +33,26 @@ import grails.gorm.tests.CrudOperationsSpec
  */
 @RunWith(Suite)
 @SuiteClasses([
+//  DomainEventsSpec,
 //  ProxyLoadingSpec,
-  QueryAfterPropertyChangeSpec
+//  QueryAfterPropertyChangeSpec,
 //  CircularOneToManySpec,
 //  InheritanceSpec,
 //  FindByMethodSpec,
 //  ListOrderBySpec,
 //  GroovyProxySpec,
-//  DomainEventsSpec,
+//  CommonTypesPersistenceSpec,
+//  GormEnhancerSpec,
 //  CriteriaBuilderSpec,
 //  NegationSpec,
+//  NamedQuerySpec,
+//  OrderBySpec,
+//  RangeQuerySpec,
+//  ValidationSpec,
 //  UpdateWithProxyPresentSpec,
 //  AttachMethodSpec,
 //  WithTransactionSpec,
-//  CrudOperationsSpec
+  CrudOperationsSpec
 ])
 class RedisSuite {
 }
