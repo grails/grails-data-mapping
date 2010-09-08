@@ -17,7 +17,7 @@ package org.grails.datastore.gorm
 import org.springframework.datastore.core.Datastore
 import org.springframework.datastore.validation.ValidationException
 import org.springframework.datastore.proxy.EntityProxy
-
+import static org.springframework.datastore.validation.ValidatingInterceptor.*
 /**
  * Instance methods of the GORM API
  *
@@ -38,7 +38,7 @@ class GormInstanceApi extends AbstractGormApi {
   boolean instanceOf(instance, Class cls) {
     if (instance instanceof EntityProxy) {
         def obj = instance.getTarget()
-        return cls.isInstance(instance)
+        return cls.isInstance(obj)
     }
     return cls.isInstance(instance)
 
@@ -114,8 +114,14 @@ class GormInstanceApi extends AbstractGormApi {
   def save(instance, Map params) {
     final session = datastore.currentSession
     boolean hasErrors = false
-    if(instance.respondsTo('validate')) {
+    boolean validate = params?.containsKey("validate") ? params.validate : true
+    if(instance.respondsTo('validate') && validate) {
+      session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, false)
       hasErrors = !instance.validate()
+    }
+    else {
+      session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, true)
+      instance.clearErrors()
     }
 
     if(!hasErrors) {

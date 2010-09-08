@@ -19,7 +19,7 @@ import org.springframework.validation.Validator
 import org.springframework.datastore.mapping.MappingContext
 import org.springframework.validation.Errors
 import org.springframework.validation.BeanPropertyBindingResult
-
+import static org.springframework.datastore.validation.ValidatingInterceptor.*
 /**
  * Methods used for validating GORM instances
  *
@@ -28,7 +28,6 @@ import org.springframework.validation.BeanPropertyBindingResult
  */
 class GormValidationApi extends AbstractGormApi{
 
-  static final ERRORS_ATTR = "org.codehaus.groovy.grails.ERRORS"
 
   Validator validator
 
@@ -61,7 +60,7 @@ class GormValidationApi extends AbstractGormApi{
    */
   Errors getErrors(instance) {
     def session = datastore.currentSession
-    def errors = session.getAttribute(instance, ERRORS_ATTR)
+    def errors = session.getAttribute(instance, ERRORS_ATTRIBUTE)
     if(errors == null) {
       errors = resetErrors(instance)
     }
@@ -82,7 +81,7 @@ class GormValidationApi extends AbstractGormApi{
   void setErrors(instance, Errors errors) {
     def session = datastore.currentSession
 
-    session.setAttribute(instance, ERRORS_ATTR, errors)
+    session.setAttribute(instance, ERRORS_ATTRIBUTE, errors)
   }
 
   /**

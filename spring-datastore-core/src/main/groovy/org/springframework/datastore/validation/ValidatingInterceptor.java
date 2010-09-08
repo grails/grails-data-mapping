@@ -32,6 +32,9 @@ import org.springframework.validation.Validator;
  * @since 1.0
  */
 public class ValidatingInterceptor extends EmptyInterceptor{
+    public static final String ERRORS_ATTRIBUTE = "org.springframework.datastore.ERRORS";
+    public static final String SKIP_VALIDATION_ATTRIBUTE = "org.springframework.datastore.SKIP_VALIDATION";
+
     public boolean beforeInsert(PersistentEntity entity, EntityAccess e) {
         return doValidate(entity, e.getEntity());
     }
@@ -43,7 +46,10 @@ public class ValidatingInterceptor extends EmptyInterceptor{
 
     private boolean doValidate(PersistentEntity entity, Object o) {
         Validator v = datastore.getMappingContext().getEntityValidator(entity);
+
         if(v != null) {
+            final Object skipValidation = datastore.getCurrentSession().getAttribute(o, SKIP_VALIDATION_ATTRIBUTE);
+            if((skipValidation instanceof Boolean) && (Boolean) skipValidation) return true;
             BeanPropertyBindingResult result = new BeanPropertyBindingResult(o, o.getClass().getName());
             v.validate(o, result);
             if(result.hasErrors()) {
@@ -61,7 +67,7 @@ public class ValidatingInterceptor extends EmptyInterceptor{
      * @param errors The errors instance
      */
     protected void onErrors(Object object, Errors errors) {
-        // do nothing
+        datastore.getCurrentSession().setAttribute(object, ERRORS_ATTRIBUTE, errors);
     }
 
 }
