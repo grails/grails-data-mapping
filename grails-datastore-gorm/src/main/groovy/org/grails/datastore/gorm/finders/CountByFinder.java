@@ -15,9 +15,9 @@
 package org.grails.datastore.gorm.finders;
 
 import groovy.lang.Closure;
-import org.springframework.datastore.core.Datastore;
-import org.springframework.datastore.core.Session;
-import org.springframework.datastore.query.Query;
+import org.springframework.datastore.mapping.core.Datastore;
+import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.query.Query;
 
 import java.util.List;
 import java.util.regex.Pattern;

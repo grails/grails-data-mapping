@@ -1,7 +1,7 @@
 include "spring-datastore-core",
 /*        "spring-datastore-appengine",*/
         "spring-datastore-redis",
-        "spring-datastore-mock",
+        "spring-datastore-simple",
         "spring-datastore-web",
 /*        "spring-datastore-cassandra",*/
         'grails-datastore-gorm',

@@ -1,6 +1,6 @@
 dependencies {
   compile project(":grails-datastore-gorm"),
-   		  project(":spring-datastore-mock"),
+   		  project(":spring-datastore-simple"),
 		  project(":spring-datastore-core")
 
   compile "org.grails:grails-test:1.3.+"

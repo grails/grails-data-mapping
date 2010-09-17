@@ -14,10 +14,10 @@
  */
 package org.grails.datastore.gorm
 
-import org.springframework.datastore.core.Datastore
-import org.springframework.datastore.validation.ValidationException
-import org.springframework.datastore.proxy.EntityProxy
-import static org.springframework.datastore.validation.ValidatingInterceptor.*
+import org.springframework.datastore.mapping.core.Datastore
+import org.springframework.datastore.mapping.validation.ValidationException
+import org.springframework.datastore.mapping.proxy.EntityProxy
+import static org.springframework.datastore.mapping.validation.ValidatingInterceptor.*
 /**
  * Instance methods of the GORM API
  *

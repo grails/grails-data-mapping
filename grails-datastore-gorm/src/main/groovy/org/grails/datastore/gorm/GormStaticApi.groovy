@@ -14,11 +14,11 @@
  */
 package org.grails.datastore.gorm
 
-import org.springframework.datastore.core.Datastore
-import org.springframework.datastore.query.Query
+import org.springframework.datastore.mapping.core.Datastore
+import org.springframework.datastore.mapping.query.Query
 import grails.gorm.CriteriaBuilder
 import org.grails.datastore.gorm.finders.DynamicFinder
-import org.springframework.datastore.core.AbstractDatastore
+import org.springframework.datastore.mapping.core.AbstractDatastore
 
 /**
  *  Static methods of the GORM API

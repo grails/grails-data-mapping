@@ -16,9 +16,9 @@ package org.grails.datastore.gorm.redis
 
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormStaticApi
-import org.springframework.datastore.core.Datastore
+import org.springframework.datastore.mapping.core.Datastore
 
-import org.springframework.datastore.redis.RedisSession
+import org.springframework.datastore.mapping.redis.RedisSession
 import org.springframework.transaction.PlatformTransactionManager
 
 /**

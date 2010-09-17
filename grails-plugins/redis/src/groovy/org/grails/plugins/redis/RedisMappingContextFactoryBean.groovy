@@ -15,14 +15,14 @@
 package org.grails.plugins.redis
 
 import org.springframework.beans.factory.FactoryBean
-import org.springframework.datastore.mapping.MappingContext
+import org.springframework.datastore.mapping.model.MappingContext
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.springframework.datastore.keyvalue.mapping.KeyValueMappingContext
+import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingContext
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
+
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
-import org.springframework.datastore.mapping.PersistentEntity
+import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ApplicationContext
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory

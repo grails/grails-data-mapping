@@ -206,9 +206,9 @@
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-tck/grails-datastore-gorm-tck.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-tck/grails-datastore-gorm-tck.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-test/grails-datastore-gorm-test.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-test/grails-datastore-gorm-test.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-datastore-jcr/jcr.iml" filepath="$PROJECT_DIR$/spring-datastore-jcr/jcr.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spring-datastore-mock/mock.iml" filepath="$PROJECT_DIR$/spring-datastore-mock/mock.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-datastore-redis/redis.iml" filepath="$PROJECT_DIR$/spring-datastore-redis/redis.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-plugins/redis/redis-grails-plugin.iml" filepath="$PROJECT_DIR$/grails-plugins/redis/redis-grails-plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-datastore-mock/simple.iml" filepath="$PROJECT_DIR$/spring-datastore-mock/simple.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-datastore-web/web.iml" filepath="$PROJECT_DIR$/spring-datastore-web/web.iml" />
     </modules>
   </component>

@@ -16,11 +16,11 @@
 package grails.gorm;
 
 import groovy.lang.*;
-import org.springframework.datastore.core.Datastore;
-import org.springframework.datastore.mapping.PersistentEntity;
-import org.springframework.datastore.mapping.PersistentProperty;
-import org.springframework.datastore.query.Query;
-import org.springframework.datastore.query.Restrictions;
+import org.springframework.datastore.mapping.core.Datastore;
+import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.query.Query;
+import org.springframework.datastore.mapping.query.Restrictions;
 
 import java.util.*;
 

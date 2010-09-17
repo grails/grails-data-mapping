@@ -110,37 +110,37 @@
                     CompareWith="UTF8Type"
                     KeysCached="100%"/>
       <ColumnFamily
-              Name="org.springframework.datastore.cassandra.TestEntity"
+              Name="org.springframework.datastore.mapping.cassandra.TestEntity"
               ColumnType="Super"
               CompareWith="TimeUUIDType"
               CompareSubcolumnsWith="BytesType"/>
 
         <ColumnFamily
-                Name="org.springframework.datastore.cassandra.Address"
+                Name="org.springframework.datastore.mapping.cassandra.Address"
                 ColumnType="Super"
                 CompareWith="TimeUUIDType"
                 CompareSubcolumnsWith="BytesType"/>
 
         <ColumnFamily
-                Name="org.springframework.datastore.cassandra.Person"
+                Name="org.springframework.datastore.mapping.cassandra.Person"
                 ColumnType="Super"
                 CompareWith="TimeUUIDType"
                 CompareSubcolumnsWith="BytesType"/>
 
         <ColumnFamily
-                Name="org.springframework.datastore.cassandra.Book"
+                Name="org.springframework.datastore.mapping.cassandra.Book"
                 ColumnType="Super"
                 CompareWith="TimeUUIDType"
                 CompareSubcolumnsWith="BytesType"/>
 
         <ColumnFamily
-                Name="org.springframework.datastore.cassandra.Author"
+                Name="org.springframework.datastore.mapping.cassandra.Author"
                 ColumnType="Super"
                 CompareWith="TimeUUIDType"
                 CompareSubcolumnsWith="BytesType"/>
 
         <ColumnFamily
-                Name="org.springframework.datastore.cassandra.AuthorBooks"
+                Name="org.springframework.datastore.mapping.cassandra.AuthorBooks"
                 CompareWith="BytesType" />        
 
       <ColumnFamily Name="StandardByUUID1" CompareWith="TimeUUIDType" />

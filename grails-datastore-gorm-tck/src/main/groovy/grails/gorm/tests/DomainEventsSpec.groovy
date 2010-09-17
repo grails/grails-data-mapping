@@ -2,7 +2,7 @@ package grails.gorm.tests
 
 import org.grails.datastore.gorm.events.DomainEventInterceptor
 import org.grails.datastore.gorm.events.AutoTimestampInterceptor
-import org.springframework.datastore.core.Session
+import org.springframework.datastore.mapping.core.Session
 
 /**
  * Created by IntelliJ IDEA.

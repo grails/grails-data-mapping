@@ -18,7 +18,7 @@ import grails.gorm.CriteriaBuilder;
 import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.datastore.query.Query;
+import org.springframework.datastore.mapping.query.Query;
 
 import java.util.ArrayList;
 import java.util.List;

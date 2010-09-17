@@ -14,8 +14,8 @@
  */
 package org.grails.datastore.gorm
 
-import org.springframework.datastore.core.Datastore
-import org.springframework.datastore.mapping.PersistentEntity
+import org.springframework.datastore.mapping.core.Datastore
+import org.springframework.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.gorm.finders.FindByFinder
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FindAllByFinder
@@ -25,8 +25,8 @@ import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.transaction.support.TransactionCallback
 import org.springframework.transaction.TransactionDefinition
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
-import org.springframework.datastore.mapping.types.OneToMany
-import org.springframework.datastore.reflect.ClassPropertyFetcher
+import org.springframework.datastore.mapping.model.types.OneToMany
+import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.gorm.finders.FindByBooleanFinder
 import org.grails.datastore.gorm.finders.FindAllByBooleanFinder
 import org.grails.datastore.gorm.finders.ListOrderByFinder

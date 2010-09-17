@@ -110,7 +110,7 @@
                     CompareWith="UTF8Type"
                     KeysCached="100%"/>
       <ColumnFamily
-              Name="org.springframework.datastore.groovy.TestEntity"
+              Name="org.springframework.datastore.mapping.groovy.TestEntity"
               ColumnType="Super"
               CompareWith="TimeUUIDType"
               CompareSubcolumnsWith="BytesType"/>

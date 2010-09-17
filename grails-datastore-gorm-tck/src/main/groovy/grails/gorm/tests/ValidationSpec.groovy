@@ -1,7 +1,7 @@
 package grails.gorm.tests
 
 import org.springframework.validation.Errors
-import org.springframework.datastore.validation.ValidatingInterceptor
+import org.springframework.datastore.mapping.validation.ValidatingInterceptor
 
 /**
  * Abstract base class for testing validation semantics

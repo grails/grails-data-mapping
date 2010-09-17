@@ -16,17 +16,17 @@
 import org.grails.plugins.redis.RedisMappingContextFactoryBean
 import org.grails.plugins.redis.RedisDatastoreFactoryBean
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
-import org.springframework.datastore.web.support.OpenSessionInViewInterceptor
+import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import grails.datastore.Redis
-import org.springframework.datastore.transactions.DatastoreTransactionManager
+import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.grails.plugins.redis.InstanceProxy
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.redis.RedisGormStaticApi
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
-import org.springframework.datastore.reflect.ClassPropertyFetcher
+import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.gorm.redis.RedisGormEnhancer
 import org.springframework.context.ApplicationContext
-import org.springframework.datastore.core.Datastore
+import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.transaction.PlatformTransactionManager
 
 class RedisGrailsPlugin {

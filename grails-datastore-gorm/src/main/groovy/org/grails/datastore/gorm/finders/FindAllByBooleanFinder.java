@@ -15,7 +15,7 @@
 
 package org.grails.datastore.gorm.finders;
 
-import org.springframework.datastore.core.Datastore;
+import org.springframework.datastore.mapping.core.Datastore;
 
 /**
  * The "findAll<booleanProperty>By*" static persistent method. This method allows querying for

@@ -14,12 +14,11 @@
  */
 package org.grails.datastore.gorm.finders;
 
-import org.springframework.datastore.query.Query;
-import org.springframework.datastore.query.Restrictions;
+import org.springframework.datastore.mapping.query.Query;
+import org.springframework.datastore.mapping.query.Restrictions;
 import org.springframework.util.StringUtils;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 
 /**

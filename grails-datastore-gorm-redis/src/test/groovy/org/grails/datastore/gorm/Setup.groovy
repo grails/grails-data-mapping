@@ -1,14 +1,13 @@
 package org.grails.datastore.gorm
 
-import grails.gorm.tests.*
 import org.grails.datastore.gorm.redis.*
-import org.springframework.datastore.core.Session
-import org.springframework.datastore.redis.RedisDatastore
+import org.springframework.datastore.mapping.core.Session
+import org.springframework.datastore.mapping.redis.RedisDatastore
 import org.springframework.validation.Validator
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
-import org.springframework.datastore.mapping.PersistentEntity
-import org.springframework.datastore.transactions.DatastoreTransactionManager
+import org.springframework.datastore.mapping.model.PersistentEntity
+import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 
 /**
  * Created by IntelliJ IDEA.

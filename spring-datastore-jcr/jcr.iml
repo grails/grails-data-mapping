@@ -19,6 +19,7 @@
     <orderEntry type="library" name="Spring Transaction" level="project" />
     <orderEntry type="library" name="Spring Core" level="project" />
     <orderEntry type="library" name="Spring Extension JCR" level="project" />
+    <orderEntry type="library" name="Groovy" level="project" />
   </component>
 </module>
 

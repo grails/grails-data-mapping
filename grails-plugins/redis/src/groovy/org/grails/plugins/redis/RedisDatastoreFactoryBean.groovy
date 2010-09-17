@@ -15,16 +15,11 @@
 package org.grails.plugins.redis
 
 import org.springframework.beans.factory.FactoryBean
-import org.springframework.datastore.redis.RedisDatastore
-import org.springframework.datastore.mapping.MappingContext
-import org.grails.datastore.gorm.redis.RedisGormEnhancer
-import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.datastore.mapping.redis.RedisDatastore
+import org.springframework.datastore.mapping.model.MappingContext
+
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager
-import org.springframework.datastore.reflect.ClassPropertyFetcher
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
-import org.grails.datastore.gorm.GormStaticApi
-import org.grails.datastore.gorm.GormInstanceApi
-import org.grails.datastore.gorm.redis.RedisGormStaticApi
+
 import org.grails.datastore.gorm.events.AutoTimestampInterceptor
 import org.grails.datastore.gorm.events.DomainEventInterceptor
 

@@ -15,7 +15,7 @@
 
 package org.grails.datastore.gorm.query
 
-import org.springframework.datastore.mapping.PersistentEntity
+import org.springframework.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.gorm.finders.DynamicFinder
 import java.lang.reflect.Modifier
 import org.grails.datastore.gorm.finders.FinderMethod

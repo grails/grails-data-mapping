@@ -14,12 +14,12 @@
  */
 package org.grails.datastore.gorm
 
-import org.springframework.datastore.core.Datastore
+import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.validation.Validator
-import org.springframework.datastore.mapping.MappingContext
+import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.validation.Errors
 import org.springframework.validation.BeanPropertyBindingResult
-import static org.springframework.datastore.validation.ValidatingInterceptor.*
+import static org.springframework.datastore.mapping.validation.ValidatingInterceptor.*
 /**
  * Methods used for validating GORM instances
  *

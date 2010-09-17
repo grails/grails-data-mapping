@@ -2,187 +2,213 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="be89379f-fd5d-4dca-9d83-b5ea01f03fe4" name="Default" comment="Moved to a session-based model so it">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/RedisSession.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/RedisSession.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/collection/RedisMapTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/collection/RedisMapTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/web/web.iml" afterPath="$PROJECT_DIR$/spring-datastore-web/web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/settings.gradle" afterPath="$PROJECT_DIR$/settings.gradle" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/engine/RedisEntityPersister.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/engine/RedisEntityPersister.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/appengine/build.gradle" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/config/GormMappingConfigurationStrategy.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/config/GormMappingConfigurationStrategy.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/config/groovy/MappingConfigurationBuilder.groovy" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/config/groovy/MappingConfigurationBuilder.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/appengine/appengine.iml" afterPath="$PROJECT_DIR$/spring-datastore-appengine/appengine.iml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/collection/PersistentList.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/collection/PersistentList.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/test/groovy/grails/persistence/Entity.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/grails/persistence/Entity.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/appengine/src/main/java/org/springframework/datastore/appengine/AppEngineSession.java" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/main/java/org/springframework/datastore/appengine/AppEngineSession.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/RedisEntry.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/RedisEntry.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/appengine/src/test/groovy/org/springframework/datastore/appengine/testsupport/TestEnvironment.java" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/org/springframework/datastore/appengine/testsupport/TestEnvironment.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisIterator.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/collection/RedisIterator.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/document/DocumentDatastore.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/document/DocumentDatastore.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/RedisTransaction.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/RedisTransaction.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/reflect/InstantiationException.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/reflect/InstantiationException.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/test/groovy/org/springframework/datastore/mapping/GormMappingSyntaxTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/mapping/GormMappingSyntaxTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/mock/src/main/groovy/org/springframework/datastore/mock/query/SimpleMapQuery.groovy" afterPath="$PROJECT_DIR$/spring-datastore-mock/src/main/groovy/org/springframework/datastore/mock/query/SimpleMapQuery.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisList.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/collection/RedisList.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/web/build.gradle" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/CountQueryTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/CountQueryTests.groovy" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/mock/build.gradle" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/query/Query.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/query/Query.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/convert/ByteArrayAwareTypeConverter.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/convert/ByteArrayAwareTypeConverter.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/engine/PropertyValueIndexer.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/PropertyValueIndexer.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/AbstractSession.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/AbstractSession.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/AbstractClassMapping.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/AbstractClassMapping.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/spring-datastore-web/build.gradle" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/validation/ValidationException.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/validation/ValidationException.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/cassandra/src/main/java/org/springframework/datastore/cassandra/util/HectorTemplate.java" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/cassandra/util/HectorTemplate.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/types/ManyToMany.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/ManyToMany.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/test/groovy/grails/persistence/Entity.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/grails/persistence/Entity.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisCollection.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/collection/RedisCollection.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/engine/LockableEntityPersister.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/LockableEntityPersister.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/reflect/ClassPropertyFetcher.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/reflect/ClassPropertyFetcher.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/ListQueryTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/ListQueryTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/appengine/src/main/java/org/springframework/datastore/appengine/AppEngineTransaction.java" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/main/java/org/springframework/datastore/appengine/AppEngineTransaction.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/AbstractPersistentProperty.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/AbstractPersistentProperty.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/types/OneToOne.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/OneToOne.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-plugins/redis/build.gradle" afterPath="$PROJECT_DIR$/grails-plugins/redis/build.gradle" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/query/RedisQueryUtils.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/query/RedisQueryUtils.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/engine/AssociationIndexer.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/AssociationIndexer.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/collection/PersistentCollection.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/collection/PersistentCollection.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/DatastoreAware.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/DatastoreAware.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/test/groovy/org/springframework/datastore/mapping/TestMappedPropertyFactory.groovy" afterPath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/mapping/TestMappedPropertyFactory.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/appengine/src/main/java/org/springframework/datastore/appengine/AppEngineDatastore.java" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/main/java/org/springframework/datastore/appengine/AppEngineDatastore.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/collection/PersistentSet.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/collection/PersistentSet.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/transactions/support/SpringSessionSynchronization.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/transactions/support/SpringSessionSynchronization.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/cassandra/src/main/java/org/springframework/datastore/cassandra/util/HectorCallback.java" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/cassandra/util/HectorCallback.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/engine/EntityPersister.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityPersister.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/KeyValue.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/KeyValue.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/column/ColumnDatastore.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/column/ColumnDatastore.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/redis.iml" afterPath="$PROJECT_DIR$/spring-datastore-redis/redis.iml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/AbstractDatastore.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/AbstractDatastore.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/types/Association.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/Association.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/test/groovy/org/springframework/datastore/proxy/ProxyFactoryTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/proxy/ProxyFactoryTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/ConnectionNotFoundException.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/ConnectionNotFoundException.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/IllegalMappingException.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/IllegalMappingException.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisValue.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/collection/RedisValue.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/collection/RedisSetTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/collection/RedisSetTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/types/Identity.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/Identity.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/core.iml" afterPath="$PROJECT_DIR$/spring-datastore-core/core.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/spring-datastore-redis/build.gradle" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/engine/RedisAssociationIndexer.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/engine/RedisAssociationIndexer.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/util/SortParams.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/util/SortParams.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/transactions/SessionHolder.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/transactions/SessionHolder.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/test/groovy/org/springframework/datastore/keyvalue/mapping/KeyValueMappingFactoryTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/keyvalue/mapping/KeyValueMappingFactoryTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/ClassMapping.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/ClassMapping.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm-redis/build.gradle" afterPath="$PROJECT_DIR$/grails-datastore-gorm-redis/build.gradle" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/Session.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/Session.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/util/JedisTemplate.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/util/JedisTemplate.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/appengine/src/test/groovy/org/springframework/datastore/appengine/EntityPersisterTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/org/springframework/datastore/appengine/EntityPersisterTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/PersistentProperty.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/PersistentProperty.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/AbstractPersistentEntity.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/AbstractPersistentEntity.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/DatastoreException.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/DatastoreException.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/PersistentEntity.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/PersistentEntity.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/query/Projections.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/query/Projections.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/LockTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/LockTests.groovy" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm-tck/build.gradle" afterPath="$PROJECT_DIR$/grails-datastore-gorm-tck/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm-test/build.gradle" afterPath="$PROJECT_DIR$/grails-datastore-gorm-test/build.gradle" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/KeyValueMappingContext.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/KeyValueMappingContext.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/cassandra/build.gradle" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/Datastore.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/Datastore.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/MappingConfigurationStrategy.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/MappingConfigurationStrategy.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/engine/RedisPropertyValueIndexer.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/engine/RedisPropertyValueIndexer.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/cassandra/src/test/groovy/org/springframework/datastore/cassandra/OneTOManyAssociationTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/groovy/org/springframework/datastore/cassandra/OneTOManyAssociationTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/transactions/TransactionUtils.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/transactions/TransactionUtils.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/reflect/NameUtils.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/reflect/NameUtils.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/cassandra/cassandra.iml" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/cassandra.iml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/OneToOneAssociationTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/OneToOneAssociationTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/config/utils/ConfigUtils.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/config/utils/ConfigUtils.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/cassandra/src/main/java/org/springframework/datastore/cassandra/CassandraSession.java" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/cassandra/CassandraSession.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/proxy/EntityProxy.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/proxy/EntityProxy.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/test/groovy/org/springframework/datastore/mapping/TestPersistentEntity.groovy" afterPath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/mapping/TestPersistentEntity.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/Family.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/Family.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/rdbms/RelationalDatastore.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/rdbms/RelationalDatastore.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/cassandra/src/test/groovy/grails/persistence/Entity.java" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/groovy/grails/persistence/Entity.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/DatastoreUtils.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/DatastoreUtils.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/MappingFactory.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/MappingFactory.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/types/ManyToOne.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/ManyToOne.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/appengine/src/main/java/org/springframework/datastore/appengine/engine/AppEngineEntityPersister.java" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/main/java/org/springframework/datastore/appengine/engine/AppEngineEntityPersister.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/LazyLoadedOneToOneTests.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/LazyLoadedOneToOneTests.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/RedisEntityPesisterTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/RedisEntityPesisterTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisMap.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/collection/RedisMap.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/RedisSet.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/collection/RedisSet.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/cassandra/src/test/groovy/org/springframework/datastore/cassandra/CassandraEntityPersisterTest.groovy" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/groovy/org/springframework/datastore/cassandra/CassandraEntityPersisterTest.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/engine/AbstractKeyValueEntityPesister.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/engine/AbstractKeyValueEntityPesister.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/types/Simple.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/Simple.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/collection/AbstractRedisCollection.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/collection/AbstractRedisCollection.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/query/RedisQuery.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/query/RedisQuery.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build.gradle" afterPath="$PROJECT_DIR$/build.gradle" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/cassandra/src/main/java/org/springframework/datastore/cassandra/CassandraDatastore.java" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/cassandra/CassandraDatastore.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/engine/Persister.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/Persister.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/engine/NonPersistentTypeException.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/NonPersistentTypeException.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/types/OneToMany.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/OneToMany.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/proxy/LazyLoadingTargetSource.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/proxy/LazyLoadingTargetSource.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/RedisDatastore.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/RedisDatastore.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/engine/EntityInterceptorAware.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityInterceptorAware.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/config/GormProperties.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/config/GormProperties.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/engine/EntityAccess.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityAccess.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/transactions/TransactionObject.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/transactions/TransactionObject.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/transactions/Transaction.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/transactions/Transaction.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/MappingContext.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/MappingContext.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/transactions/DatastoreTransactionManager.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/transactions/DatastoreTransactionManager.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/test/groovy/org/springframework/datastore/reflect/ClassPropertyFetcherTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/reflect/ClassPropertyFetcherTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/KeyValueSession.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/KeyValueSession.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/spring-datastore-appengine/build.gradle" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/mock/src/main/groovy/org/springframework/datastore/mock/engine/SimpleMapEntityPersister.groovy" afterPath="$PROJECT_DIR$/spring-datastore-mock/src/main/groovy/org/springframework/datastore/mock/engine/SimpleMapEntityPersister.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/config/GormKeyValueMappingFactory.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/config/GormKeyValueMappingFactory.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/cassandra/src/main/java/org/springframework/datastore/cassandra/engine/CassandraAssociationIndexer.java" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/cassandra/engine/CassandraAssociationIndexer.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/EntityCreationException.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/EntityCreationException.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/PropertyMapping.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/PropertyMapping.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/RedisSession.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/RedisSession.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/graph/GraphDatastore.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/query/Restrictions.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/query/Restrictions.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/engine/RedisPropertyValueIndexer.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/engine/RedisPropertyValueIndexer.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/mapping/TestMappedPropertyFactory.groovy" afterPath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/mapping/model/TestMappedPropertyFactory.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/PersistentEntity.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/PersistentEntity.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/validation/ValidatingInterceptor.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/validation/ValidatingInterceptor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormStaticApi.groovy" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormStaticApi.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-appengine/src/main/java/org/springframework/datastore/appengine/engine/AppEngineEntityPersister.java" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/main/java/org/springframework/datastore/mapping/appengine/engine/AppEngineEntityPersister.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm-test/src/main/groovy/grails/datastore/test/DatastoreUnitTestMixin.groovy" afterPath="$PROJECT_DIR$/grails-datastore-gorm-test/src/main/groovy/grails/datastore/test/DatastoreUnitTestMixin.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/query/NamedQueriesBuilder.groovy" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/query/NamedQueriesBuilder.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/Identity.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/types/Identity.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityInterceptorAware.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/engine/EntityInterceptorAware.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-mock/src/main/groovy/org/springframework/datastore/mock/SimpleMapSession.java" afterPath="$PROJECT_DIR$/spring-datastore-simple/src/main/groovy/org/springframework/datastore/mapping/simple/SimpleMapSession.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm-tck/src/main/groovy/grails/gorm/tests/ValidationSpec.groovy" afterPath="$PROJECT_DIR$/grails-datastore-gorm-tck/src/main/groovy/grails/gorm/tests/ValidationSpec.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/EntityCreationException.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/core/EntityCreationException.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm-redis/src/test/groovy/org/grails/datastore/gorm/Setup.groovy" afterPath="$PROJECT_DIR$/grails-datastore-gorm-redis/src/test/groovy/org/grails/datastore/gorm/Setup.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-jcr/src/test/groovy/org/springframework/datastore/jcr/OneToOneAssociationTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-jcr/src/test/groovy/org/springframework/datastore/mapping/jcr/OneToOneAssociationTests.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/collection/RedisMap.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/collection/RedisMap.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/OneToManyLazyAssociationTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/mapping/redis/OneToManyLazyAssociationTests.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/FindAllByBooleanFinder.java" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/FindAllByBooleanFinder.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/Datastore.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/core/Datastore.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/events/DomainEventInterceptor.java" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/events/DomainEventInterceptor.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/RedisEntry.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/RedisEntry.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EmptyInterceptor.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/engine/EmptyInterceptor.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/org/springframework/datastore/appengine/AppEngineDatastoreTest.java" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/org/springframework/datastore/mapping/appengine/AppEngineDatastoreTest.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/DatastoreUtils.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/core/DatastoreUtils.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/node/mapping/Node.java" afterPath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/mapping/node/mapping/Node.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/IdentityMapping.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/IdentityMapping.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/org/springframework/datastore/appengine/OneToOneAssociationTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/org/springframework/datastore/mapping/appengine/OneToOneAssociationTests.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-mock/src/main/groovy/org/springframework/datastore/mock/SimpleMapDatastore.java" afterPath="$PROJECT_DIR$/spring-datastore-simple/src/main/groovy/org/springframework/datastore/mapping/simple/SimpleMapDatastore.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/lifecycle/Initializable.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/lifecycle/Initializable.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/MappingFactory.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/MappingFactory.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-appengine/src/main/java/org/springframework/datastore/appengine/AppEngineSession.java" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/main/java/org/springframework/datastore/mapping/appengine/AppEngineSession.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/MappingConfigurationStrategy.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/MappingConfigurationStrategy.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/cassandra/CassandraSession.java" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/mapping/cassandra/CassandraSession.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/transactions/TransactionObject.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/transactions/TransactionObject.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/node/mapping/NodeMappingFactory.java" afterPath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/mapping/node/mapping/NodeMappingFactory.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/MethodExpression.java" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/MethodExpression.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/DatastoreException.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/core/DatastoreException.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/KeyValuePersistentEntity.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/keyvalue/mapping/KeyValuePersistentEntity.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/rdbms/RelationalDatastore.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/jcr/JcrSession.java" afterPath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/mapping/jcr/JcrSession.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/Session.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/core/Session.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/AbstractMappingContext.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/AbstractMappingContext.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/node/mapping/config/GormNodeMappingFactory.java" afterPath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/mapping/node/mapping/config/GormNodeMappingFactory.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/RedisTransaction.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/RedisTransaction.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/config/groovy/MappingConfigurationBuilder.groovy" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/config/groovy/MappingConfigurationBuilder.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/MappingContext.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/MappingContext.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/KeyValueMappingContext.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/keyvalue/mapping/KeyValueMappingContext.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/grails/gorm/CriteriaBuilder.java" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/grails/gorm/CriteriaBuilder.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/AbstractClassMapping.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/AbstractClassMapping.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/query/Query.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/query/Query.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/rdbms/RelationalDatastore.java" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/FindByFinder.java" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/FindByFinder.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/collection/RedisCollection.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/collection/RedisCollection.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/LockableEntityPersister.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/engine/LockableEntityPersister.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/org/springframework/datastore/appengine/EntityPersisterTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/org/springframework/datastore/mapping/appengine/EntityPersisterTests.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/query/Projections.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/query/Projections.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/AbstractGormApi.groovy" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/AbstractGormApi.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/NonPersistentTypeException.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/engine/NonPersistentTypeException.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/collection/PersistentCollection.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/collection/PersistentCollection.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-mock/src/main/groovy/org/springframework/datastore/mock/engine/SimpleMapEntityPersister.groovy" afterPath="$PROJECT_DIR$/spring-datastore-simple/src/main/groovy/org/springframework/datastore/mapping/simple/engine/SimpleMapEntityPersister.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/inconsequential.ipr" afterPath="$PROJECT_DIR$/inconsequential.ipr" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/config/utils/ConfigUtils.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/config/utils/ConfigUtils.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/query/RedisQueryUtils.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/query/RedisQueryUtils.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/collection/RedisValue.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/collection/RedisValue.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/inconsequential.iws" afterPath="$PROJECT_DIR$/inconsequential.iws" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/graph/GraphDatastore.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/graph/GraphDatastore.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/KeyValueMappingFactory.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/KeyValueMappingFactory.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/reflect/ReflectionUtils.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/reflect/ReflectionUtils.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/util/RedisCallback.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/util/RedisCallback.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/util/RedisClientTemplate.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/util/RedisClientTemplate.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/OneToManyLazyAssociationTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/OneToManyLazyAssociationTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/cassandra/src/main/java/org/springframework/datastore/cassandra/engine/CassandraEntityPersister.java" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/cassandra/engine/CassandraEntityPersister.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/lifecycle/Initializable.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/lifecycle/Initializable.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/engine/KeyValueEntry.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/engine/KeyValueEntry.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/KeyValuePersistentEntity.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/KeyValuePersistentEntity.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/cassandra/src/test/groovy/org/springframework/datastore/cassandra/OneToOneAssociationTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/groovy/org/springframework/datastore/cassandra/OneToOneAssociationTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/cassandra/src/test/resources/cassandra-conf/storage-conf.xml" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/resources/cassandra-conf/storage-conf.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/build.gradle" afterPath="$PROJECT_DIR$/spring-datastore-core/build.gradle" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/build.gradle" afterPath="$PROJECT_DIR$/grails-datastore-gorm/build.gradle" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/query/RedisEntityResultList.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/query/RedisEntityResultList.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/OneToManyAssociationTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/OneToManyAssociationTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/collection/RedisListTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/collection/RedisListTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/appengine/src/test/groovy/org/springframework/datastore/appengine/AppEngineDatastoreTest.java" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/org/springframework/datastore/appengine/AppEngineDatastoreTest.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/mock/src/main/groovy/org/springframework/datastore/mock/SimpleMapSession.java" afterPath="$PROJECT_DIR$/spring-datastore-mock/src/main/groovy/org/springframework/datastore/mock/SimpleMapSession.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/SessionImplementor.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/SessionImplementor.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/mock/mock.iml" afterPath="$PROJECT_DIR$/spring-datastore-mock/mock.iml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/engine/EntityInterceptor.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityInterceptor.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/query/Restrictions.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/query/Restrictions.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/test/groovy/org/springframework/datastore/mapping/TestMappingContext.groovy" afterPath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/mapping/TestMappingContext.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/main/java/org/springframework/datastore/redis/util/RedisTemplate.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/util/RedisTemplate.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/cassandra/src/main/java/org/springframework/datastore/cassandra/uuid/UUIDUtil.java" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/cassandra/uuid/UUIDUtil.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/appengine/src/test/groovy/org/springframework/datastore/appengine/OneToOneAssociationTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/org/springframework/datastore/appengine/OneToOneAssociationTests.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/appengine/src/test/groovy/grails/persistence/Entity.java" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/grails/persistence/Entity.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/types/Embedded.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/Embedded.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/mock/src/main/groovy/org/springframework/datastore/mock/SimpleMapDatastore.java" afterPath="$PROJECT_DIR$/spring-datastore-mock/src/main/groovy/org/springframework/datastore/mock/SimpleMapDatastore.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/IdentityMapping.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/IdentityMapping.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/TODO.txt" afterPath="$PROJECT_DIR$/spring-datastore-redis/TODO.txt" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/redis/build.gradle" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/types/ToOne.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/ToOne.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/cassandra/src/test/groovy/org/springframework/datastore/cassandra/AbstractCassandraTest.groovy" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/groovy/org/springframework/datastore/cassandra/AbstractCassandraTest.groovy" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/cassandra/src/test/resources/cassandra-conf/log4j.properties" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/resources/cassandra-conf/log4j.properties" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/validation/ValidatingInterceptor.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/validation/ValidatingInterceptor.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/mapping/AbstractMappingContext.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/AbstractMappingContext.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/appengine/src/test/groovy/org/springframework/datastore/appengine/testsupport/AppEngineDatastoreTestCase.java" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/org/springframework/datastore/appengine/testsupport/AppEngineDatastoreTestCase.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/redis/src/test/groovy/org/springframework/datastore/redis/BackgroundIndexerTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/BackgroundIndexerTests.groovy" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/spring-datastore-mock/build.gradle" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/transactions/DatastoreTransactionManager.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/transactions/DatastoreTransactionManager.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/groovy/org/springframework/datastore/cassandra/OneTOManyAssociationTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/groovy/org/springframework/datastore/mapping/cassandra/OneTOManyAssociationTests.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm-redis/src/main/groovy/org/grails/datastore/gorm/redis/RedisGormEnhancer.groovy" afterPath="$PROJECT_DIR$/grails-datastore-gorm-redis/src/main/groovy/org/grails/datastore/gorm/redis/RedisGormEnhancer.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/reflect/ClassPropertyFetcherTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/mapping/reflect/ClassPropertyFetcherTests.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/FindByBooleanFinder.java" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/FindByBooleanFinder.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/KeyValueSession.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/keyvalue/KeyValueSession.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/jcr/util/JcrConstants.java" afterPath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/mapping/jcr/util/JcrConstants.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormInstanceApi.groovy" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormInstanceApi.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/KeyValueMappingFactory.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/keyvalue/mapping/KeyValueMappingFactory.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/validation/ValidationException.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/validation/ValidationException.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/engine/RedisAssociationIndexer.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/engine/RedisAssociationIndexer.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityInterceptor.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/engine/EntityInterceptor.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/convert/ByteArrayAwareTypeConverter.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/keyvalue/convert/ByteArrayAwareTypeConverter.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/transactions/SessionHolder.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/transactions/SessionHolder.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/groovy/org/springframework/datastore/cassandra/OneToOneAssociationTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/groovy/org/springframework/datastore/mapping/cassandra/OneToOneAssociationTests.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/mapping/TestPersistentEntity.groovy" afterPath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/mapping/model/TestPersistentEntity.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/cassandra/engine/CassandraAssociationIndexer.java" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/mapping/cassandra/engine/CassandraAssociationIndexer.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/RedisDatastore.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/RedisDatastore.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/ListQueryTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/mapping/redis/ListQueryTests.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm-tck/src/main/groovy/grails/gorm/tests/GormDatastoreSpec.groovy" afterPath="$PROJECT_DIR$/grails-datastore-gorm-tck/src/main/groovy/grails/gorm/tests/GormDatastoreSpec.groovy" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/column/ColumnDatastore.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/ManyToMany.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/types/ManyToMany.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/LockTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/mapping/redis/LockTests.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/settings.gradle" afterPath="$PROJECT_DIR$/settings.gradle" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/mapping/GormMappingSyntaxTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/mapping/model/GormMappingSyntaxTests.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/OneToManyAssociationTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/mapping/redis/OneToManyAssociationTests.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-appengine/src/main/java/org/springframework/datastore/appengine/AppEngineTransaction.java" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/main/java/org/springframework/datastore/mapping/appengine/AppEngineTransaction.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/cassandra/util/HectorTemplate.java" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/mapping/cassandra/util/HectorTemplate.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/AbstractPersistentProperty.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/AbstractPersistentProperty.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/config/GormProperties.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/config/GormProperties.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/AssociationIndexer.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/engine/AssociationIndexer.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/ManyToOne.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/types/ManyToOne.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/Family.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/keyvalue/mapping/Family.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/test/resources/cassandra-conf/storage-conf.xml" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/test/resources/cassandra-conf/storage-conf.xml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityAccess.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/engine/EntityAccess.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/ConnectionNotFoundException.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/core/ConnectionNotFoundException.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/keyvalue/mapping/KeyValueMappingFactoryTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/mapping/keyvalue/mapping/KeyValueMappingFactoryTests.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/cassandra/util/HectorCallback.java" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/mapping/cassandra/util/HectorCallback.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/jcr/engine/JcrEntityPersister.java" afterPath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/mapping/jcr/engine/JcrEntityPersister.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/AbstractDatastore.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/core/AbstractDatastore.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/AbstractPersistentEntity.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/AbstractPersistentEntity.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/jcr/JcrDatastore.java" afterPath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/mapping/jcr/JcrDatastore.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/CountByFinder.java" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/CountByFinder.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/SessionImplementor.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/core/SessionImplementor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/ListOrderByFinder.java" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/ListOrderByFinder.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/collection/AbstractRedisCollection.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/collection/AbstractRedisCollection.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/mapping/TestMappingContext.groovy" afterPath="$PROJECT_DIR$/spring-datastore-core/src/test/groovy/org/springframework/datastore/mapping/model/TestMappingContext.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/org/springframework/datastore/appengine/testsupport/TestEnvironment.java" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/org/springframework/datastore/mapping/appengine/testsupport/TestEnvironment.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/RedisEntityPesisterTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/mapping/redis/RedisEntityPesisterTests.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormEnhancer.groovy" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormEnhancer.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/query/RedisQuery.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/query/RedisQuery.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm-tck/src/main/groovy/grails/gorm/tests/DomainEventsSpec.groovy" afterPath="$PROJECT_DIR$/grails-datastore-gorm-tck/src/main/groovy/grails/gorm/tests/DomainEventsSpec.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/CountQueryTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/mapping/redis/CountQueryTests.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/proxy/EntityProxy.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/proxy/EntityProxy.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/jcr/JcrTransaction.java" afterPath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/mapping/jcr/JcrTransaction.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/proxy/ProxyFactory.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/proxy/ProxyFactory.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/events/AutoTimestampInterceptor.java" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/events/AutoTimestampInterceptor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/proxy/GroovyProxyFactory.groovy" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/proxy/GroovyProxyFactory.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/reflect/ClassPropertyFetcher.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/reflect/ClassPropertyFetcher.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/collection/RedisSet.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/collection/RedisSet.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/PersistentProperty.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/PersistentProperty.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/config/GormKeyValueMappingFactory.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/keyvalue/mapping/config/GormKeyValueMappingFactory.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spring-datastore-jcr/jcr.iml" afterPath="$PROJECT_DIR$/spring-datastore-jcr/jcr.iml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/ClassMapping.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/ClassMapping.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/document/DocumentDatastore.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-plugins/redis/src/groovy/org/grails/plugins/redis/RedisDatastoreFactoryBean.groovy" afterPath="$PROJECT_DIR$/grails-plugins/redis/src/groovy/org/grails/plugins/redis/RedisDatastoreFactoryBean.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/groovy/org/springframework/datastore/cassandra/CassandraEntityPersisterTest.groovy" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/groovy/org/springframework/datastore/mapping/cassandra/CassandraEntityPersisterTest.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/collection/RedisList.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/collection/RedisList.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/support/DatastorePersistenceContextInterceptor.java" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/support/DatastorePersistenceContextInterceptor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/FindAllByFinder.java" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/FindAllByFinder.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/config/GormMappingConfigurationStrategy.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/config/GormMappingConfigurationStrategy.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm-test/src/test/groovy/org/grails/datastore/gorm/Setup.groovy" afterPath="$PROJECT_DIR$/grails-datastore-gorm-test/src/test/groovy/org/grails/datastore/gorm/Setup.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/Association.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/types/Association.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/LazyLoadedOneToOneTests.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/mapping/redis/LazyLoadedOneToOneTests.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/document/DocumentDatastore.java" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/groovy/org/springframework/datastore/cassandra/AbstractCassandraTest.groovy" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/groovy/org/springframework/datastore/mapping/cassandra/AbstractCassandraTest.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/ToOne.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/types/ToOne.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityPersister.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/engine/EntityPersister.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/OneToMany.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/types/OneToMany.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm-test/build.gradle" afterPath="$PROJECT_DIR$/grails-datastore-gorm-test/build.gradle" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-jcr/src/test/groovy/org/springframework/datastore/jcr/JcrEntityPersisterTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-jcr/src/test/groovy/org/springframework/datastore/mapping/jcr/JcrEntityPersisterTests.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/engine/KeyValueEntry.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/keyvalue/engine/KeyValueEntry.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/Simple.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/types/Simple.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/transactions/support/SpringSessionSynchronization.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/transactions/support/SpringSessionSynchronization.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-mock/src/main/groovy/org/springframework/datastore/mock/query/SimpleMapQuery.groovy" afterPath="$PROJECT_DIR$/spring-datastore-simple/src/main/groovy/org/springframework/datastore/mapping/simple/query/SimpleMapQuery.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-plugins/redis/RedisGrailsPlugin.groovy" afterPath="$PROJECT_DIR$/grails-plugins/redis/RedisGrailsPlugin.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/util/RedisCallback.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/util/RedisCallback.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-mock/build.gradle" afterPath="$PROJECT_DIR$/spring-datastore-simple/build.gradle" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/AbstractSession.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/core/AbstractSession.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-appengine/src/main/java/org/springframework/datastore/appengine/AppEngineDatastore.java" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/main/java/org/springframework/datastore/mapping/appengine/AppEngineDatastore.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/OneToOne.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/types/OneToOne.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/cassandra/engine/CassandraEntityPersister.java" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/mapping/cassandra/engine/CassandraEntityPersister.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/collection/RedisSetTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/mapping/redis/collection/RedisSetTests.groovy" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/DynamicFinder.java" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/DynamicFinder.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm-test/grails-datastore-gorm-test.iml" afterPath="$PROJECT_DIR$/grails-datastore-gorm-test/grails-datastore-gorm-test.iml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/mapping/KeyValue.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/keyvalue/mapping/KeyValue.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm-redis/src/main/groovy/grails/datastore/Redis.groovy" afterPath="$PROJECT_DIR$/grails-datastore-gorm-redis/src/main/groovy/grails/datastore/Redis.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/node/mapping/NodePersistentEntity.java" afterPath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/mapping/node/mapping/NodePersistentEntity.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-jcr/src/test/groovy/org/springframework/datastore/jcr/AbstractJcrTest.groovy" afterPath="$PROJECT_DIR$/spring-datastore-jcr/src/test/groovy/org/springframework/datastore/mapping/jcr/AbstractJcrTest.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/DatastoreAware.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/core/DatastoreAware.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/util/JedisTemplate.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/util/JedisTemplate.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/reflect/InstantiationException.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/reflect/InstantiationException.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/PropertyValueIndexer.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/engine/PropertyValueIndexer.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/collection/PersistentSet.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/collection/PersistentSet.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/PropertyMapping.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/PropertyMapping.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/node/engine/AbstractNodeEntityPersister.java" afterPath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/mapping/node/engine/AbstractNodeEntityPersister.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/column/ColumnDatastore.java" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/BackgroundIndexerTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/mapping/redis/BackgroundIndexerTests.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/cassandra/uuid/UUIDUtil.java" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/mapping/cassandra/uuid/UUIDUtil.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/node/mapping/NodeProperty.java" afterPath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/mapping/node/mapping/NodeProperty.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/transactions/TransactionUtils.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/transactions/TransactionUtils.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/Persister.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/engine/Persister.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormValidationApi.groovy" afterPath="$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormValidationApi.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/collection/RedisMapTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/mapping/redis/collection/RedisMapTests.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/OneToOneAssociationTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/mapping/redis/OneToOneAssociationTests.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/engine/RedisEntityPersister.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/engine/RedisEntityPersister.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/IllegalMappingException.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/IllegalMappingException.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/types/Embedded.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/model/types/Embedded.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/graph/GraphDatastore.java" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/grails-plugins/redis/src/groovy/org/grails/plugins/redis/RedisMappingContextFactoryBean.groovy" afterPath="$PROJECT_DIR$/grails-plugins/redis/src/groovy/org/grails/plugins/redis/RedisMappingContextFactoryBean.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/util/RedisTemplate.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/util/RedisTemplate.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-web/src/main/groovy/org/springframework/datastore/web/support/OpenSessionInViewInterceptor.java" afterPath="$PROJECT_DIR$/spring-datastore-web/src/main/groovy/org/springframework/datastore/mapping/web/support/OpenSessionInViewInterceptor.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/reflect/ReflectionUtils.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/reflect/ReflectionUtils.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/org/springframework/datastore/appengine/testsupport/AppEngineDatastoreTestCase.java" afterPath="$PROJECT_DIR$/spring-datastore-appengine/src/test/groovy/org/springframework/datastore/mapping/appengine/testsupport/AppEngineDatastoreTestCase.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/node/mapping/NodeMappingContext.java" afterPath="$PROJECT_DIR$/spring-datastore-jcr/src/main/java/org/springframework/datastore/mapping/node/mapping/NodeMappingContext.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/collection/PersistentList.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/collection/PersistentList.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/cassandra/CassandraDatastore.java" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/main/java/org/springframework/datastore/mapping/cassandra/CassandraDatastore.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/engine/AbstractKeyValueEntityPesister.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/keyvalue/engine/AbstractKeyValueEntityPesister.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/reflect/NameUtils.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/reflect/NameUtils.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/transactions/Transaction.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/transactions/Transaction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/resources/cassandra-conf/storage-conf.xml" afterPath="$PROJECT_DIR$/spring-datastore-cassandra/src/test/resources/cassandra-conf/storage-conf.xml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/proxy/JavassistProxyFactory.java" afterPath="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/proxy/JavassistProxyFactory.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/util/SortParams.java" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/mapping/redis/util/SortParams.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/collection/RedisListTests.groovy" afterPath="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/mapping/redis/collection/RedisListTests.groovy" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/spring-datastore-mock/mock.iml" afterPath="$PROJECT_DIR$/spring-datastore-simple/simple.iml" />
     </list>
     <list id="43a521f5-abc4-46b6-967a-4840e7edafe2" name="Failed commit: Default" comment="Simple CRUD operations working against a Map" />
-    <ignored path="$USER_HOME_GRIFFON$/" />
     <ignored path="$USER_HOME_GRAILS$/" />
+    <ignored path="$USER_HOME_GRIFFON$/" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -198,333 +224,6 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
-    <line_breakpoints>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/RedisDatastore.java" line="177" class="org.springframework.datastore.redis.RedisDatastore.IndexOperation" package="org.springframework.datastore.redis">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/engine/RedisPropertyValueIndexer.java" line="16" class="Class at RedisPropertyValueIndexer.java:16" package="">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="jar://$SPRING_HOME$/src/org.springframework.aop-sources-3.0.3.RELEASE.jar!/org/springframework/aop/aspectj/AspectJAroundAdvice.java" line="18" class="Class at AspectJAroundAdvice.java:18" package="">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityPersister.java" line="171" class="org.springframework.datastore.engine.EntityPersister$1" package="org.springframework.datastore.engine">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityPersister.java" line="183" class="org.springframework.datastore.engine.EntityPersister$1" package="org.springframework.datastore.engine">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityPersister.java" line="174" class="org.springframework.datastore.engine.EntityPersister$1" package="org.springframework.datastore.engine">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityPersister.java" line="161" class="org.springframework.datastore.engine.EntityPersister$1" package="org.springframework.datastore.engine">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityPersister.java" line="167" class="org.springframework.datastore.engine.EntityPersister$1" package="org.springframework.datastore.engine">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityPersister.java" line="179" class="org.springframework.datastore.engine.EntityPersister$1" package="org.springframework.datastore.engine">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-mock/src/main/groovy/org/springframework/datastore/mock/engine/SimpleMapEntityPersister.groovy" line="135" class="Class at SimpleMapEntityPersister.groovy:135" package="">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-mock/src/main/groovy/org/springframework/datastore/mock/query/SimpleMapQuery.groovy" line="69" class="Class at SimpleMapQuery.groovy:69" package="">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-mock/src/main/groovy/org/springframework/datastore/mock/query/SimpleMapQuery.groovy" line="67" class="Class at SimpleMapQuery.groovy:67" package="">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-mock/src/main/groovy/org/springframework/datastore/mock/query/SimpleMapQuery.groovy" line="170" class="Class at SimpleMapQuery.groovy:170" package="">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-mock/src/main/groovy/org/springframework/datastore/mock/query/SimpleMapQuery.groovy" line="139" class="Class at SimpleMapQuery.groovy:139" package="">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/finders/MethodExpression.java" line="49" class="org.grails.datastore.gorm.finders.MethodExpression" package="org.grails.datastore.gorm.finders">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/query/RedisQuery.java" line="342" class="org.springframework.datastore.redis.query.RedisQuery" package="org.springframework.datastore.redis.query">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-redis/src/main/java/org/springframework/datastore/redis/RedisSession.java" line="135" class="org.springframework.datastore.redis.RedisSession" package="org.springframework.datastore.redis">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/engine/AbstractKeyValueEntityPesister.java" line="204" class="org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister" package="org.springframework.datastore.keyvalue.engine">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/engine/AbstractKeyValueEntityPesister.java" line="183" class="org.springframework.datastore.keyvalue.engine.AbstractKeyValueEntityPesister" package="org.springframework.datastore.keyvalue.engine">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityPersister.java" line="119" class="org.springframework.datastore.engine.EntityPersister" package="org.springframework.datastore.engine">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/redis/RedisEntityPesisterTests.groovy" line="38" class="Class at RedisEntityPesisterTests.groovy:38" package="">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/AbstractSession.java" line="196" class="org.springframework.datastore.core.AbstractSession" package="org.springframework.datastore.core">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormInstanceApi.groovy" line="76" class="Class at GormInstanceApi.groovy:76" package="">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/grails-datastore-gorm/src/main/groovy/org/grails/datastore/gorm/GormValidationApi.groovy" line="48" class="Class at GormValidationApi.groovy:48" package="">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-      <breakpoint url="file://$PROJECT_DIR$/grails-datastore-gorm-redis/src/test/groovy/org/grails/datastore/gorm/redis/ValidationTests.groovy" line="33" class="Class at ValidationTests.groovy:33" package="">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="false" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-    </line_breakpoints>
     <breakpoint_any>
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -596,22 +295,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/grails-datastore-gorm-tck/src/main/groovy/grails/gorm/tests/RangeQueryTests.groovy" />
-        <option value="$PROJECT_DIR$/grails-datastore-gorm-tck/src/main/groovy/grails/gorm/tests/WithTransactionTests.groovy" />
-        <option value="$PROJECT_DIR$/grails-plugins/redis/RedisGrailsPlugin.groovy" />
-        <option value="$PROJECT_DIR$/core/src/main/groovy/org/springframework/datastore/core/AbstractSession.java" />
-        <option value="$PROJECT_DIR$/grails-datastore-gorm-tck/build.gradle" />
-        <option value="$PROJECT_DIR$/build.gradle" />
-        <option value="$PROJECT_DIR$/grails-datastore-gorm/build.gradle" />
-        <option value="$PROJECT_DIR$/grails-datastore-gorm-redis/build.gradle" />
-        <option value="$PROJECT_DIR$/grails-datastore-gorm-test/build.gradle" />
-        <option value="$PROJECT_DIR$/spring-datastore-appengine/build.gradle" />
-        <option value="$PROJECT_DIR$/spring-datastore-cassandra/build.gradle" />
-        <option value="$PROJECT_DIR$/spring-datastore-mock/build.gradle" />
         <option value="$PROJECT_DIR$/spring-datastore-redis/build.gradle" />
         <option value="$PROJECT_DIR$/spring-datastore-web/build.gradle" />
         <option value="$PROJECT_DIR$/grails-plugins/redis/build.gradle" />
+        <option value="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/engine/EntityPersister.java" />
+        <option value="$PROJECT_DIR$/grails-datastore-gorm/build.gradle" />
+        <option value="$PROJECT_DIR$/grails-datastore-gorm-redis/src/test/groovy/org/grails/datastore/gorm/redis/RedisSuite.groovy" />
+        <option value="$PROJECT_DIR$/grails-datastore-gorm-redis/build.gradle" />
+        <option value="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/AbstractSession.java" />
+        <option value="$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/keyvalue/engine/AbstractKeyValueEntityPesister.java" />
+        <option value="$PROJECT_DIR$/grails-datastore-gorm-redis/src/test/groovy/org/grails/datastore/gorm/redis/JavaApiUsageSpec.groovy" />
+        <option value="$PROJECT_DIR$/grails-plugins/redis/RedisGrailsPlugin.groovy" />
+        <option value="$PROJECT_DIR$/grails-datastore-gorm-redis/src/test/groovy/org/grails/spock/demo/TestSpec.groovy" />
         <option value="$PROJECT_DIR$/settings.gradle" />
+        <option value="$PROJECT_DIR$/spring-datastore-simple/build.gradle" />
+        <option value="$PROJECT_DIR$/grails-datastore-gorm-test/build.gradle" />
+        <option value="$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/mapping/redis/BackgroundIndexerTests.groovy" />
       </list>
     </option>
   </component>
@@ -639,7 +338,7 @@
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
-      <flattenPackages />
+      <flattenPackages ProjectPane="false" />
       <showMembers />
       <showModules />
       <showLibraryContents />
@@ -845,6 +544,7 @@
         </subPane>
       </pane>
       <pane id="Favorites" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -859,13 +559,138 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="redis" />
+              <option name="myItemId" value="spring-datastore-jcr" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="inconsequential" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="spring-datastore-core" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="inconsequential" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="grails-datastore-gorm-test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="inconsequential" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="grails-datastore-gorm-redis" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="inconsequential" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="grails-datastore-gorm-redis" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="groovy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="grails" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="inconsequential" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="grails-datastore-gorm-redis" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="groovy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="grails" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gorm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="inconsequential" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="grails-datastore-gorm-redis" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="groovy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="datastore" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="inconsequential" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="grails-datastore-gorm-redis" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -874,7 +699,7 @@
     <property name="OverrideImplement.combined" value="true" />
     <property name="project.structure.proportion" value="0.2578125" />
     <property name="options.splitter.main.proportions" value="0.3" />
-    <property name="options.lastSelected" value="preferences.keymap" />
+    <property name="options.lastSelected" value="preferences.pathVariables" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="recentsLimit" value="5" />
     <property name="project.structure.side.proportion" value="0.32756868" />
@@ -901,20 +726,21 @@
       <recent name="$PROJECT_DIR$/grails-datastore-gorm-test/src/main/groovy/grails/gorm/tests" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.ValidationTests">
-    <configuration default="false" name="LazyLoadedOneToOneTests.testLazyLoadedOneToOne" type="JUnit" factoryName="JUnit" temporary="true">
+  <component name="RunManager" selected="JUnit.BackgroundIndexerTests">
+    <configuration default="false" name="TestSpec.Calculate maximum value" type="JUnit" factoryName="JUnit" temporary="true">
       <extension name="coverage" enabled="false" merge="false">
         <pattern>
-          <option name="PATTERN" value="org.springframework.datastore.redis.*" />
+          <option name="PATTERN" value="org.grails.spock.demo.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <module name="redis" />
+      <extension name="snapshooter" />
+      <module name="grails-datastore-gorm-redis" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="org.springframework.datastore.redis" />
-      <option name="MAIN_CLASS_NAME" value="org.springframework.datastore.redis.LazyLoadedOneToOneTests" />
-      <option name="METHOD_NAME" value="testLazyLoadedOneToOne" />
+      <option name="PACKAGE_NAME" value="org.grails.spock.demo" />
+      <option name="MAIN_CLASS_NAME" value="org.grails.spock.demo.TestSpec" />
+      <option name="METHOD_NAME" value="Calculate maximum value" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" />
       <option name="PARAMETERS" />
@@ -925,29 +751,24 @@
         <value defaultName="moduleWithDependencies" />
       </option>
       <envs />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="53261" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
       <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Debug" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
-    <configuration default="false" name="RedisEntityPesisterTests.testPersistObject" type="JUnit" factoryName="JUnit" temporary="true">
+    <configuration default="false" name="TestSpec.Calculate the sum of all numbers" type="JUnit" factoryName="JUnit" temporary="true">
       <extension name="coverage" enabled="false" merge="false">
         <pattern>
-          <option name="PATTERN" value="org.springframework.datastore.redis.*" />
+          <option name="PATTERN" value="org.grails.spock.demo.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <module name="redis" />
+      <extension name="snapshooter" />
+      <module name="grails-datastore-gorm-redis" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="org.springframework.datastore.redis" />
-      <option name="MAIN_CLASS_NAME" value="org.springframework.datastore.redis.RedisEntityPesisterTests" />
-      <option name="METHOD_NAME" value="testPersistObject" />
+      <option name="PACKAGE_NAME" value="org.grails.spock.demo" />
+      <option name="MAIN_CLASS_NAME" value="org.grails.spock.demo.TestSpec" />
+      <option name="METHOD_NAME" value="Calculate the sum of all numbers" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" />
       <option name="PARAMETERS" />
@@ -958,28 +779,85 @@
         <value defaultName="moduleWithDependencies" />
       </option>
       <envs />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="53466" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
       <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Debug" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
-    <configuration default="false" name="ValidationTests" type="JUnit" factoryName="JUnit" temporary="true">
+    <configuration default="false" name="CrudOperationsSpec.Test get returns null of non-existent entity" type="JUnit" factoryName="JUnit" temporary="true">
+      <extension name="coverage" enabled="false" merge="false">
+        <pattern>
+          <option name="PATTERN" value="grails.gorm.tests.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <extension name="snapshooter" />
+      <module name="grails-datastore-gorm-tck" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="grails.gorm.tests" />
+      <option name="MAIN_CLASS_NAME" value="grails.gorm.tests.CrudOperationsSpec" />
+      <option name="METHOD_NAME" value="Test get returns null of non-existent entity" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="RedisSuite" type="JUnit" factoryName="JUnit" temporary="true">
       <extension name="coverage" enabled="false" merge="false">
         <pattern>
           <option name="PATTERN" value="org.grails.datastore.gorm.redis.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <extension name="snapshooter" />
       <module name="grails-datastore-gorm-redis" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <option name="PACKAGE_NAME" value="org.grails.datastore.gorm.redis" />
-      <option name="MAIN_CLASS_NAME" value="org.grails.datastore.gorm.redis.ValidationTests" />
+      <option name="MAIN_CLASS_NAME" value="org.grails.datastore.gorm.redis.RedisSuite" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="59399" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="BackgroundIndexerTests" type="JUnit" factoryName="JUnit" temporary="true">
+      <extension name="coverage" enabled="false" merge="false">
+        <pattern>
+          <option name="PATTERN" value="org.springframework.datastore.mapping.redis.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <extension name="snapshooter" />
+      <module name="redis" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="org.springframework.datastore.mapping.redis" />
+      <option name="MAIN_CLASS_NAME" value="org.springframework.datastore.mapping.redis.BackgroundIndexerTests" />
       <option name="METHOD_NAME" />
       <option name="TEST_OBJECT" value="class" />
       <option name="VM_PARAMETERS" />
@@ -995,68 +873,6 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
-    <configuration default="false" name="ValidationTests.testValidateMethod" type="JUnit" factoryName="JUnit" temporary="true">
-      <extension name="coverage" enabled="false" merge="false">
-        <pattern>
-          <option name="PATTERN" value="org.grails.datastore.gorm.redis.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <module name="grails-datastore-gorm-redis" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="org.grails.datastore.gorm.redis" />
-      <option name="MAIN_CLASS_NAME" value="org.grails.datastore.gorm.redis.ValidationTests" />
-      <option name="METHOD_NAME" value="testValidateMethod" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="53511" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Debug" />
-      <method />
-    </configuration>
-    <configuration default="false" name="ValidationTests.testValidateOnSave" type="JUnit" factoryName="JUnit" temporary="true">
-      <extension name="coverage" enabled="false" merge="false">
-        <pattern>
-          <option name="PATTERN" value="org.grails.datastore.gorm.redis.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <module name="grails-datastore-gorm-redis" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="org.grails.datastore.gorm.redis" />
-      <option name="MAIN_CLASS_NAME" value="org.grails.datastore.gorm.redis.ValidationTests" />
-      <option name="METHOD_NAME" value="testValidateOnSave" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <envs />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="53612" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <ConfigurationWrapper RunnerId="Debug" />
-      <method />
-    </configuration>
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
@@ -1070,6 +886,40 @@
       </method>
     </configuration>
     <configuration default="true" type="FlexUnitRunConfigurationType" factoryName="FlexUnit" air_descriptor_path="" air_program_params="" air_publisher_id="" air_root_dir_path="" air_run_mode="AppDescriptor" class_name="" html_or_swf_file_path="" main_class_name="" method_name="" module_name="" output_log_level="" package_name="" port="0" run_mode="HtmlOrSwfFile" scope="Class" socket_policy_port="0" url_to_launch="http://">
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
+    <configuration default="true" type="TestNG" factoryName="TestNG">
+      <extension name="coverage" enabled="false" merge="false" />
+      <extension name="snapshooter" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="SUITE_NAME" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="GROUP_NAME" />
+      <option name="TEST_OBJECT" value="CLASS" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" />
+      <option name="OUTPUT_DIRECTORY" />
+      <option name="ANNOTATION_TYPE" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <option name="USE_DEFAULT_REPORTERS" value="false" />
+      <option name="PROPERTIES_FILE" />
+      <envs />
+      <properties />
+      <listeners />
       <method>
         <option name="AntTarget" enabled="false" />
         <option name="BuildArtifacts" enabled="false" />
@@ -1097,6 +947,7 @@
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
       <extension name="coverage" enabled="false" merge="false" />
+      <extension name="snapshooter" />
       <option name="MAIN_CLASS_NAME" />
       <option name="VM_PARAMETERS" />
       <option name="PROGRAM_PARAMETERS" />
@@ -1117,6 +968,7 @@
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
       <extension name="coverage" enabled="false" merge="false" />
+      <extension name="snapshooter" />
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
@@ -1161,6 +1013,7 @@
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <extension name="snapshooter" />
       <module name="grails-datastore-gorm-test" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
@@ -1183,11 +1036,11 @@
     </configuration>
     <list size="6">
       <item index="0" class="java.lang.String" itemvalue="JUnit.CrudOperationsTests" />
-      <item index="1" class="java.lang.String" itemvalue="JUnit.LazyLoadedOneToOneTests.testLazyLoadedOneToOne" />
-      <item index="2" class="java.lang.String" itemvalue="JUnit.RedisEntityPesisterTests.testPersistObject" />
-      <item index="3" class="java.lang.String" itemvalue="JUnit.ValidationTests" />
-      <item index="4" class="java.lang.String" itemvalue="JUnit.ValidationTests.testValidateMethod" />
-      <item index="5" class="java.lang.String" itemvalue="JUnit.ValidationTests.testValidateOnSave" />
+      <item index="1" class="java.lang.String" itemvalue="JUnit.TestSpec.Calculate maximum value" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.TestSpec.Calculate the sum of all numbers" />
+      <item index="3" class="java.lang.String" itemvalue="JUnit.CrudOperationsSpec.Test get returns null of non-existent entity" />
+      <item index="4" class="java.lang.String" itemvalue="JUnit.RedisSuite" />
+      <item index="5" class="java.lang.String" itemvalue="JUnit.BackgroundIndexerTests" />
     </list>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
@@ -1205,7 +1058,6 @@
     <option name="UPDATE_LOCK_ON_DEMAND" value="false" />
     <option name="IGNORE_SPACES_IN_MERGE" value="false" />
     <option name="DETECT_NESTED_COPIES" value="true" />
-    <option name="CHECK_NESTED_FOR_QUICK_MERGE" value="false" />
     <option name="IGNORE_SPACES_IN_ANNOTATE" value="true" />
     <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
     <configuration useDefault="false">/Users/graemerocher/.subversion_IDEA</configuration>
@@ -1222,26 +1074,28 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="56" y="22" width="1864" height="1174" extended-state="0" />
+    <frame x="0" y="22" width="1440" height="874" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32922202" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32891247" sideWeight="0.0" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32922202" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39943075" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39871383" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32922202" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32891247" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24779736" sideWeight="0.66413665" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.27729884" sideWeight="0.66843504" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24944934" sideWeight="0.66413665" order="5" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32922202" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24928162" sideWeight="0.66413665" order="5" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32228118" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" x="156" y="122" width="1664" height="974" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32891247" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
     </layout>
@@ -1259,7 +1113,7 @@
     <option name="ENABLE_BACKGROUND_PROCESSES" value="false" />
     <option name="CHANGED_ON_SERVER_INTERVAL" value="60" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="used groovy-all instead of groovy to avoid dependency on commons-cli" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed another failing test" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -1272,10 +1126,6 @@
     <option name="UPDATE_GROUP_BY_CHANGELIST" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="Support for min and max projections in Redis" />
-    <MESSAGE value="Support for property projection in Redis" />
-    <MESSAGE value="property projection working on one-to-one associations" />
-    <MESSAGE value="Query by association support for one-to-one associations" />
     <MESSAGE value="Initial version of Spring transaction management for datastore abstraction. Still not working correctly for Redis read queries however. Need to investigate using second Redis connection for reads whilst a transaction is active." />
     <MESSAGE value="added withTransaction methods missing from GORM api and a test which is not yet working. Need to update internals of redis transaction to add creation of indices only upon commit etc." />
     <MESSAGE value="Utility methods for working with Transactions" />
@@ -1297,6 +1147,10 @@
     <MESSAGE value="Support for validation, fleshed out the the Grails plugin further, starting a 'web' project for things like the OpenSessionInViewInterceptor etc." />
     <MESSAGE value="remove attributes stored about an object when it is cleared" />
     <MESSAGE value="used groovy-all instead of groovy to avoid dependency on commons-cli" />
+    <MESSAGE value="disable transitive resolution for grails-bootstrap" />
+    <MESSAGE value="fix some dependencies" />
+    <MESSAGE value="fix for failing tests" />
+    <MESSAGE value="Fixed another failing test" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -1306,114 +1160,114 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/core/AbstractSession.java">
+    <entry file="file://$PROJECT_DIR$/spring-datastore-simple/src/main/groovy/org/springframework/datastore/mapping/simple/SimpleMapDatastore.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="208" column="33" selection-start="7182" selection-end="7182" vertical-scroll-proportion="4.6363635">
+        <state line="33" column="62" selection-start="1369" selection-end="1386" vertical-scroll-proportion="0.36197183">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spring-datastore-simple/src/main/groovy/org/springframework/datastore/mapping/simple/engine/SimpleMapEntityPersister.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="6" selection-start="1643" selection-end="1643" vertical-scroll-proportion="-4.192958">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spring-datastore-simple/src/main/groovy/org/springframework/datastore/mapping/simple/SimpleMapSession.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="13" selection-start="1315" selection-end="1315" vertical-scroll-proportion="0.33239436">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$GRADLE_CACHE$/org.spockframework/spock-core/jars/spock-core-0.5-groovy-1.7-SNAPSHOT.jar!/spock/lang/Specification.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="29" selection-start="196" selection-end="196" vertical-scroll-proportion="0.15306123">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-datastore-gorm-tck/src/main/groovy/grails/gorm/tests/FindByMethodSpec.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="39" selection-start="232" selection-end="232" vertical-scroll-proportion="0.26619717">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-datastore-gorm-tck/src/main/groovy/grails/gorm/tests/CriteriaBuilderSpec.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="8" selection-start="547" selection-end="547" vertical-scroll-proportion="0.39965397">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/../Classes/classes.jar!/java/lang/Class.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="26" selection-start="160" selection-end="160" vertical-scroll-proportion="0.14532872">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-datastore-gorm-tck/src/main/groovy/grails/gorm/tests/GormDatastoreSpec.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="26" column="13" selection-start="926" selection-end="926" vertical-scroll-proportion="0.06501548">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-datastore-gorm-tck/src/main/groovy/grails/gorm/tests/CrudOperationsSpec.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="10" selection-start="384" selection-end="386" vertical-scroll-proportion="-0.5581787">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spring-datastore-core/src/main/groovy/org/springframework/datastore/mapping/core/AbstractSession.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="301" column="14" selection-start="10627" selection-end="10627" vertical-scroll-proportion="0.366782">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-datastore-gorm-redis/src/test/groovy/org/grails/datastore/gorm/redis/RedisSuite.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="56" column="6" selection-start="1687" selection-end="1687" vertical-scroll-proportion="0.7790894">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="20" selection-start="638" selection-end="638" vertical-scroll-proportion="-0.013412816">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.3681073">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/spring-datastore-redis/TODO.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="34" selection-start="283" selection-end="283" vertical-scroll-proportion="0.3800298">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-datastore-gorm/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="2" selection-start="17" selection-end="58" vertical-scroll-proportion="0.025335321">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-datastore-gorm-redis/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-datastore-gorm-tck/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="16" selection-start="180" selection-end="180" vertical-scroll-proportion="0.1266766">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-datastore-gorm-test/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="72" selection-start="87" selection-end="87" vertical-scroll-proportion="0.025335321">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/spring-datastore-appengine/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="39" selection-start="141" selection-end="141" vertical-scroll-proportion="0.101341285">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/spring-datastore-cassandra/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="37" selection-start="113" selection-end="113" vertical-scroll-proportion="0.101341285">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/spring-datastore-core/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/spring-datastore-mock/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="37" selection-start="52" selection-end="52" vertical-scroll-proportion="0.025335321">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/spring-datastore-redis/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="37" selection-start="52" selection-end="52" vertical-scroll-proportion="0.025335321">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/spring-datastore-web/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="37" selection-start="52" selection-end="52" vertical-scroll-proportion="0.025335321">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-1.3450705">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/settings.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="37" selection-start="353" selection-end="353" vertical-scroll-proportion="0.22801788">
+        <state line="3" column="32" selection-start="141" selection-end="141" vertical-scroll-proportion="0.08689655">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grails-plugins/redis/build.gradle">
+    <entry file="file://$PROJECT_DIR$/spring-datastore-simple/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="37" selection-start="953" selection-end="954" vertical-scroll-proportion="1.0134128">
+        <state line="3" column="22" selection-start="83" selection-end="83" vertical-scroll-proportion="0.08689655">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-datastore-gorm-test/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="0" selection-start="60" selection-end="60" vertical-scroll-proportion="0.059154928">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spring-datastore-redis/src/test/groovy/org/springframework/datastore/mapping/redis/BackgroundIndexerTests.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="23" column="56" selection-start="791" selection-end="791" vertical-scroll-proportion="0.2652174">
           <folding />
         </state>
       </provider>

@@ -14,11 +14,11 @@
  */
 package org.grails.datastore.gorm.events;
 
-import org.springframework.datastore.core.Datastore;
-import org.springframework.datastore.engine.EmptyInterceptor;
-import org.springframework.datastore.engine.EntityAccess;
-import org.springframework.datastore.mapping.MappingContext;
-import org.springframework.datastore.mapping.PersistentEntity;
+import org.springframework.datastore.mapping.core.Datastore;
+import org.springframework.datastore.mapping.engine.EmptyInterceptor;
+import org.springframework.datastore.mapping.engine.EntityAccess;
+import org.springframework.datastore.mapping.model.MappingContext;
+import org.springframework.datastore.mapping.model.PersistentEntity;
 
 import java.util.Date;
 import java.util.Map;

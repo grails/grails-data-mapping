@@ -1,7 +1,7 @@
 package grails.gorm.tests
 
 import spock.lang.*
-import org.springframework.datastore.core.Session
+import org.springframework.datastore.mapping.core.Session
 
 /**
  * A Spec base class that manages a Session for each feature as well as

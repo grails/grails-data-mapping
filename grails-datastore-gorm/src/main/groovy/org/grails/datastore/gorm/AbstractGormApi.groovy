@@ -1,9 +1,9 @@
 package org.grails.datastore.gorm
 
-import org.springframework.datastore.core.Datastore
+import org.springframework.datastore.mapping.core.Datastore
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
-import org.springframework.datastore.mapping.PersistentEntity
+import org.springframework.datastore.mapping.model.PersistentEntity
 
 /**
  * Abstract GORM API provider

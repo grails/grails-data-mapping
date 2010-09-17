@@ -14,15 +14,15 @@
  */
 package grails.datastore.test
 
-import org.springframework.datastore.mock.SimpleMapDatastore
-import org.springframework.datastore.core.Session
+import org.springframework.datastore.mapping.simple.SimpleMapDatastore
+import org.springframework.datastore.mapping.core.Session
 import org.grails.datastore.gorm.GormEnhancer
 import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.datastore.transactions.DatastoreTransactionManager
+import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import grails.test.MockUtils
 import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
-import org.springframework.datastore.core.AbstractDatastore
+
 import org.codehaus.groovy.grails.plugins.PluginManagerHolder
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import org.codehaus.groovy.grails.plugins.DefaultGrailsPluginManager

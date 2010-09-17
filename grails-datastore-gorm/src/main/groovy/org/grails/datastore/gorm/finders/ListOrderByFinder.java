@@ -14,13 +14,10 @@
  */
 package org.grails.datastore.gorm.finders;
 
-import groovy.lang.Closure;
-import org.springframework.datastore.core.Datastore;
-import org.springframework.datastore.query.Query;
-import org.springframework.datastore.reflect.NameUtils;
+import org.springframework.datastore.mapping.core.Datastore;
+import org.springframework.datastore.mapping.query.Query;
+import org.springframework.datastore.mapping.reflect.NameUtils;
 
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

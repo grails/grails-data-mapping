@@ -17,10 +17,10 @@ package org.grails.datastore.gorm.support;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
-import org.springframework.datastore.core.Datastore;
-import org.springframework.datastore.core.DatastoreUtils;
-import org.springframework.datastore.core.Session;
-import org.springframework.datastore.transactions.SessionHolder;
+import org.springframework.datastore.mapping.core.Datastore;
+import org.springframework.datastore.mapping.core.DatastoreUtils;
+import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.transactions.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.persistence.FlushModeType;
