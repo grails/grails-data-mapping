@@ -3,15 +3,17 @@ package org.springframework.datastore.mapping.jcr;
 import org.apache.jackrabbit.core.TransientRepository;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.mapping.core.AbstractSession;
+import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.jcr.engine.JcrEntityPersister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
-import org.springframework.datastore.mapping.tx.Transaction;
+import org.springframework.datastore.mapping.transactions.Transaction;
+import org.springframework.extensions.jcr.JcrSessionFactory;
+import org.springframework.extensions.jcr.JcrTemplate;
+import org.springframework.extensions.jcr.support.OpenSessionInViewInterceptor;
 import org.springframework.transaction.TransactionSystemException;
-import org.springmodules.jcr.JcrSessionFactory;
-import org.springmodules.jcr.JcrTemplate;
-import org.springmodules.jcr.support.OpenSessionInViewInterceptor;
+
 
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -23,29 +25,30 @@ import java.util.Map;
  * @author Erawat Chamanont
  * @since 1.0
  */
-public class JcrSession extends AbstractSession<Repository> {
+public class JcrSession extends AbstractSession<JcrSessionFactory> {
 
-    private Repository repository;
+    //private Repository repository;
     private JcrSessionFactory jcrSessionFactory;
     private OpenSessionInViewInterceptor interceptor;
 
-    public JcrSession(Map<String, String> connectionDetails, MappingContext mappingContext) {
-        super(connectionDetails, mappingContext);
+    public JcrSession(Datastore ds,MappingContext mappingContext,JcrSessionFactory jcrSessionFactory) {
+        super(ds, mappingContext);
         try {
-            repository = new TransientRepository();
-            jcrSessionFactory = new JcrSessionFactory(repository, connectionDetails.get("workspace"),
-                                                                  new SimpleCredentials(connectionDetails.get("username"), connectionDetails.get("password").toCharArray()));
+            //repository = new (Repository)TransientRepository();
+            //jcrSessionFactory = new JcrSessionFactory(repository, connectionDetails.get("workspace"),
+            //                                                      new SimpleCredentials(connectionDetails.get("username"), connectionDetails.get("password").toCharArray()));
 
-            jcrSessionFactory.afterPropertiesSet();
+            //jcrSessionFactory.afterPropertiesSet();*/
+            this.jcrSessionFactory = jcrSessionFactory;
             interceptor = new OpenSessionInViewInterceptor();
-            interceptor.setSessionFactory(jcrSessionFactory);
+            interceptor.setSessionFactory(this.jcrSessionFactory);
             interceptor.preHandle(null, null, null);
         } catch (Exception e) {
-            throw new DataAccessResourceFailureException("Cannot connect to repository: " + e.getMessage(), e);              
+            throw new DataAccessResourceFailureException("Cannot connect to repository: " + e.getMessage(), e);
         }
     }
 
-    @Override
+   @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
         PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
         if(entity != null) {
@@ -56,7 +59,7 @@ public class JcrSession extends AbstractSession<Repository> {
 
     @Override
     public void disconnect(){
-        try{ 
+        try{
             //interceptor.afterCompletion(null, null, null, null);
             ((TransientRepository)jcrSessionFactory.getRepository()).shutdown();
         }catch (Exception e) {
@@ -74,8 +77,10 @@ public class JcrSession extends AbstractSession<Repository> {
         }
     }
 
-    public Transaction beginTransaction() {
-           throw new TransactionSystemException("Transactions have not yet implemented");
+    
+    @Override
+    protected Transaction beginTransactionInternal() {
+        throw new TransactionSystemException("Transactions have not yet implemented");
     }
 
     public Session getNativeInterface() {
@@ -85,5 +90,5 @@ public class JcrSession extends AbstractSession<Repository> {
             throw new DataAccessResourceFailureException("Session not found: " + e.getMessage(), e);
         }
     }
-    
+
 }
