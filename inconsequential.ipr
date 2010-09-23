@@ -209,6 +209,7 @@
       <module fileurl="file://$PROJECT_DIR$/spring-datastore-redis/redis.iml" filepath="$PROJECT_DIR$/spring-datastore-redis/redis.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-plugins/redis/redis-grails-plugin.iml" filepath="$PROJECT_DIR$/grails-plugins/redis/redis-grails-plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-datastore-mock/simple.iml" filepath="$PROJECT_DIR$/spring-datastore-mock/simple.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-datastore-mongo/spring-datastore-mongo.iml" filepath="$PROJECT_DIR$/spring-datastore-mongo/spring-datastore-mongo.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-datastore-web/web.iml" filepath="$PROJECT_DIR$/spring-datastore-web/web.iml" />
     </modules>
   </component>
