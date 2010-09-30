@@ -63,7 +63,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
     private int port = DEFAULT_PORT;
 
     private int timeout = 2000;
-    private boolean pooled;
+    private boolean pooled = true;
     private boolean backgroundIndex;
 
     public RedisDatastore() {
