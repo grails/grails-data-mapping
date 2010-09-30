@@ -6,6 +6,6 @@ repositories {
 }
 dependencies {
   compile project(":spring-datastore-core")
-  compile 'redis.clients:jedis:1.0.0-RC4'
+  compile 'redis.clients:jedis:1.2.0'
 }
 jar.appendix = 'redis'
