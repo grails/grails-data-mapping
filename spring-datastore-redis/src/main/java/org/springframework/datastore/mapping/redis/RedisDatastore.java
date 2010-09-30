@@ -14,6 +14,7 @@
  */
 package org.springframework.datastore.mapping.redis;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.support.GenericConversionService;
@@ -43,7 +44,7 @@ import static org.springframework.datastore.mapping.config.utils.ConfigUtils.rea
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisDatastore extends AbstractDatastore implements InitializingBean {
+public class RedisDatastore extends AbstractDatastore implements InitializingBean, DisposableBean {
 
     private static final boolean jedisClientAvailable =
             ClassUtils.isPresent("redis.clients.jedis.Jedis", RedisSession.class.getClassLoader());
@@ -65,6 +66,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
     private int timeout = 2000;
     private boolean pooled = true;
     private boolean backgroundIndex;
+    private JedisPool pool;
 
     public RedisDatastore() {
         this(new KeyValueMappingContext(""));
@@ -77,17 +79,17 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
     public RedisDatastore(MappingContext mappingContext, Map<String, String> connectionDetails) {
         super(mappingContext, connectionDetails);
 
+        int resourceCount = 10;
         if(connectionDetails != null) {
             host = read(String.class, CONFIG_HOST, connectionDetails, DEFAULT_HOST);
             port = read(Integer.class, CONFIG_PORT, connectionDetails, DEFAULT_PORT);
             timeout = read(Integer.class, CONFIG_TIMEOUT, connectionDetails, 2000);
             pooled = read(Boolean.class, CONFIG_POOLED, connectionDetails, false);
             password = read(String.class, CONFIG_PASSWORD, connectionDetails, null);
-            int resourceCount = read(Integer.class, CONFIG_RESOURCE_COUNT, connectionDetails, 10);
-
-            if(pooled && useJedis()) {
-                JedisTemplateFactory.createPool(host, port, timeout, resourceCount);
-            }
+            resourceCount = read(Integer.class, CONFIG_RESOURCE_COUNT, connectionDetails, 10);
+        }
+        if(pooled && useJedis()) {
+            this.pool = JedisTemplateFactory.createPool(host, port, timeout, resourceCount);
         }
 
         initializeConverters(mappingContext);
@@ -194,14 +196,21 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
         return jedisClientAvailable;
     }
 
+    public void destroy() throws Exception {
+        if(pool != null) {
+            pool.destroy();
+        }
+    }
+
     static class JedisTemplateFactory {
         static JedisPool pool;
 
-        static void createPool(String host, int port, int timeout, int resources) {
+        static JedisPool createPool(String host, int port, int timeout, int resources) {
             pool = new JedisPool(host, port, timeout);
             pool.setResourcesNumber(resources);
             pool.setRepairThreadsNumber(1);
             pool.init();
+            return pool;
         }
         static RedisTemplate create(String host, int port, int timeout, boolean pooled, String password) {
 

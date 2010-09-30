@@ -8,6 +8,7 @@ import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
+import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingContext
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,8 +18,12 @@ import org.springframework.datastore.mapping.transactions.DatastoreTransactionMa
  * To change this template use File | Settings | File Templates.
  */
 class Setup {
+  static redis
+  static destroy() {
+    redis?.destroy()
+  }
   static Session setup(classes) {
-    def redis = new RedisDatastore()
+    redis = new RedisDatastore(new KeyValueMappingContext(""), [pooled:"false"])
     for(cls in classes) {
       redis.mappingContext.addPersistentEntity(cls)
     }

@@ -35,6 +35,10 @@ abstract class GormDatastoreSpec extends Specification {
 
     def cleanup() {
         session?.disconnect()
+        try {
+          setupClass.destroy()
+        } catch(e) {}
+
         cleanRegistry()
     }
 
