@@ -17,6 +17,7 @@ package org.springframework.datastore.mapping.redis;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.core.Datastore;
+import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.LockableEntityPersister;
 import org.springframework.datastore.mapping.engine.NonPersistentTypeException;
 import org.springframework.datastore.mapping.engine.Persister;
@@ -130,6 +131,13 @@ public class RedisSession extends AbstractSession  {
         }
     }
 
+
+    /**
+     * Returns a random entity for the given type
+     *
+     * @param type The entity type
+     * @return A random entity instance
+     */
     public Object random(Class type) {
         flushIfNecessary();
         RedisEntityPersister ep = (RedisEntityPersister) getPersister(type);
@@ -140,6 +148,57 @@ public class RedisSession extends AbstractSession  {
         }
         else {
             throw new NonPersistentTypeException("The class ["+type+"] is not a known persistent type.");
+        }
+    }
+
+    /**
+     * Expires an instance
+     *
+     * @param instance The instance to expire
+     * @param ttl The time to live in seconds
+     */
+    public void expire(Object instance, int ttl) {
+        if(instance != null) {
+            final RedisEntityPersister ep = (RedisEntityPersister) getPersister(instance);
+            if(ep != null) {
+                final Serializable key = ep.getObjectIdentifier(instance);
+                if(key != null) {
+                    expire(instance.getClass(), key, ttl);
+                }
+            }
+            else {
+              throw new NonPersistentTypeException("The class ["+instance.getClass()+"] is not a known persistent type.");  
+            }
+        }
+    }
+    /**
+     * Expires an entity for the given type, identifier and time to live
+     *
+     * @param type The entity type
+     * @param key The entity key
+     * @param ttl The time to live in seconds
+     */
+    public void expire(final Class type, final Serializable key, final int ttl) {
+        final RedisEntityPersister ep = (RedisEntityPersister) getPersister(type);
+
+        if(ep != null) {
+            String entityKey = ep.getRedisKey(key);
+            redisTemplate.expire(entityKey, ttl);
+            new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        Thread.sleep(ttl*1000);
+                    } catch (InterruptedException e) {
+                        // ignore
+                    }
+                    final RedisSession newSession = (RedisSession) getDatastore().connect();
+                    RedisEntityPersister newEp = (RedisEntityPersister) newSession.getPersister(type);
+                    newEp.getAllEntityIndex().remove(key);
+                }
+            }).start();
+        }
+        else {
+          throw new NonPersistentTypeException("The class ["+type+"] is not a known persistent type.");
         }
     }
 
@@ -156,6 +215,12 @@ public class RedisSession extends AbstractSession  {
         }
     }
 
+    /**
+     * Locates a random entity and removes it within the same operation
+     *
+     * @param type The entity type
+     * @return A random entity
+     */
     public Object pop(Class type) {
         flushIfNecessary();
         RedisEntityPersister ep = (RedisEntityPersister) getPersister(type);

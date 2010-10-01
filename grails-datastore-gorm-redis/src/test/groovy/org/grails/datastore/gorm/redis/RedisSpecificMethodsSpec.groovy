@@ -11,6 +11,26 @@ import grails.gorm.tests.*
  */
 class RedisSpecificMethodsSpec extends GormDatastoreSpec {
 
+  def "Test expire an entity"() {
+    given:
+      new TestEntity(name:"Bob", age:45, child:new ChildEntity(name:"Child")).save()
+      session.flush()
+
+    when:
+      def te = TestEntity.random()
+
+    then:
+      te != null
+
+    when:
+      te.expire(5)
+      session.clear()
+      sleep(10000)
+    then:
+      TestEntity.get(te.id) == null
+
+  }
+
   def "Test get random entity"() {
     given:
     def age = 40

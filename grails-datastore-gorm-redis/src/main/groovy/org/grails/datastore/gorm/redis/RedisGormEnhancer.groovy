@@ -20,6 +20,8 @@ import org.springframework.datastore.mapping.core.Datastore
 
 import org.springframework.datastore.mapping.redis.RedisSession
 import org.springframework.transaction.PlatformTransactionManager
+import org.grails.datastore.gorm.GormInstanceApi
+import org.springframework.datastore.mapping.redis.engine.RedisEntityPersister
 
 /**
  * Adds Redis specific functionality to GORM
@@ -38,15 +40,37 @@ class RedisGormEnhancer extends GormEnhancer{
     return new RedisGormStaticApi(cls, datastore)
   }
 
+  protected GormInstanceApi getInstanceApi(Class cls) {
+    return new RedisGormInstanceApi(cls, datastore)
+  }
 
+
+}
+class RedisGormInstanceApi extends GormInstanceApi {
+
+  RedisGormInstanceApi(Class persistentClass, Datastore datastore) {
+    super(persistentClass, datastore);
+  }
+
+  def expire(instance, int ttl) {
+     RedisSession session = datastore.currentSession
+
+     session.expire instance, ttl
+  }
 }
 class RedisGormStaticApi extends GormStaticApi {
   RedisGormStaticApi(Class persistentClass, Datastore datastore) {
     super(persistentClass, datastore);
   }
 
+  /**
+   * Expires an entity for the given id and TTL
+   */
+  void expire(Serializable id, int ttl) {
+    RedisSession session = datastore.currentSession
 
-
+    session.expire(persistentClass, id, ttl)
+  }
   /**
    * A random domain class instance is returned
    * @return A random domain class
