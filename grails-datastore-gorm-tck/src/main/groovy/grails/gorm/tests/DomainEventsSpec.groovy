@@ -22,6 +22,20 @@ class DomainEventsSpec extends GormDatastoreSpec{
     session= datastore.connect()
   }
 
+  void "Test modify property before save"() {
+    given:
+      session = setupEventsSession()
+      session.datastore.mappingContext.addPersistentEntity(ModifyPerson)
+      def p = new ModifyPerson(name:"Bob").save(flush:true)
+      session.clear()
+
+    when:
+      p = ModifyPerson.get(p.id)
+
+    then:
+      p.name == "Fred"
+
+  }
 
   void "Test auto time stamping working"() {
 
@@ -164,4 +178,15 @@ class PersonEvent {
       STORE["inserted"]++
     }
 
+}
+
+class ModifyPerson {
+  Long id
+  Long version
+
+  String name
+
+  def beforeInsert() {
+    name = "Fred"
+  }
 }

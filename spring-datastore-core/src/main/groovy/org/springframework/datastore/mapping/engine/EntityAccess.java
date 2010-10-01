@@ -23,6 +23,8 @@ import org.springframework.util.ReflectionUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -33,6 +35,10 @@ import java.lang.reflect.Method;
  * @since 1.0
  */
 public class EntityAccess {
+
+    private static final Set EXCLUDED_PROPERTIES = new HashSet() {{
+        add("class"); add("metaClass");
+    }};
 
     protected Object entity;
     private BeanWrapper beanWrapper;
@@ -86,6 +92,23 @@ public class EntityAccess {
             final Method writeMethod = pd.getWriteMethod();
             if(writeMethod!=null) {
                 ReflectionUtils.invokeMethod(writeMethod, beanWrapper.getWrappedInstance(), value);
+            }
+        }
+    }
+
+    /**
+     * Refreshes the object from entity state
+     */
+    public void refresh() {
+        final PropertyDescriptor[] descriptors = beanWrapper.getPropertyDescriptors();
+        for (PropertyDescriptor descriptor : descriptors) {
+            final String name = descriptor.getName();
+            if(!EXCLUDED_PROPERTIES.contains(name)) {
+                if(beanWrapper.isReadableProperty(name) && beanWrapper.isWritableProperty(name)) {
+                    Object newValue = getProperty(name);
+                    setProperty(name, newValue);
+                }
+
             }
         }
     }

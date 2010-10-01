@@ -17,6 +17,7 @@ package org.grails.datastore.gorm.events;
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.engine.EmptyInterceptor;
 import org.springframework.datastore.mapping.engine.EntityAccess;
+import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.util.ReflectionUtils;
 
@@ -30,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class DomainEventInterceptor extends EmptyInterceptor {
+public class DomainEventInterceptor extends EmptyInterceptor implements MappingContext.Listener {
 
     private Map<PersistentEntity, Map<String, Method>> entityEvents = new ConcurrentHashMap<PersistentEntity, Map<String, Method>>();
     public static final Class[] ZERO_PARAMS = new Class[0];
@@ -59,9 +60,12 @@ public class DomainEventInterceptor extends EmptyInterceptor {
             final Method eventMethod = events.get(eventName);
             if(eventMethod != null) {
                 final Object result = ReflectionUtils.invokeMethod(eventMethod, ea.getEntity());
-                if(result instanceof Boolean) {
-                    return ((Boolean)result).booleanValue();
+                boolean booleanResult = (result instanceof Boolean) ? (Boolean)result : true;
+                if(booleanResult) {
+                    ea.refresh();
                 }
+                return booleanResult;
+
             }
         }
         return true;
@@ -72,14 +76,20 @@ public class DomainEventInterceptor extends EmptyInterceptor {
         super.setDatastore(datastore);
 
         for (PersistentEntity entity : datastore.getMappingContext().getPersistentEntities()) {
-            Class javaClass = entity.getJavaClass();
-            final ConcurrentHashMap<String, Method> events = new ConcurrentHashMap<String, Method>();
-            entityEvents.put(entity, events);
-
-            findAndCacheEvent(EVENT_BEFORE_INSERT, javaClass, events);
-            findAndCacheEvent(EVENT_BEFORE_UPDATE, javaClass, events);
-            findAndCacheEvent(EVENT_BEFORE_DELETE, javaClass, events);
+            createEventCaches(entity);
         }
+
+        datastore.getMappingContext().addMappingContextListener(this);
+    }
+
+    private void createEventCaches(PersistentEntity entity) {
+        Class javaClass = entity.getJavaClass();
+        final ConcurrentHashMap<String, Method> events = new ConcurrentHashMap<String, Method>();
+        entityEvents.put(entity, events);
+
+        findAndCacheEvent(EVENT_BEFORE_INSERT, javaClass, events);
+        findAndCacheEvent(EVENT_BEFORE_UPDATE, javaClass, events);
+        findAndCacheEvent(EVENT_BEFORE_DELETE, javaClass, events);
     }
 
     private void findAndCacheEvent(String event, Class javaClass, Map<String, Method> events) {
@@ -87,5 +97,9 @@ public class DomainEventInterceptor extends EmptyInterceptor {
         if(method != null) {
             events.put(event, method);
         }
+    }
+
+    public void persistentEntityAdded(PersistentEntity entity) {
+        createEventCaches(entity);
     }
 }

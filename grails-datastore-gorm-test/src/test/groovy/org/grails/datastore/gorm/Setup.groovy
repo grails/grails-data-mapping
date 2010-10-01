@@ -8,6 +8,7 @@ import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.simple.SimpleMapDatastore
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
+import org.springframework.datastore.mapping.model.MappingContext
 
 /**
  * Created by IntelliJ IDEA.
@@ -35,7 +36,13 @@ class Setup {
             }
     ] as Validator)
 
-    new GormEnhancer(simple, new DatastoreTransactionManager(datastore:simple)).enhance()
+    def enhancer = new GormEnhancer(simple, new DatastoreTransactionManager(datastore: simple))
+    enhancer.enhance()
+
+    simple.mappingContext.addMappingContextListener({ e ->
+      enhancer.enhance e
+    } as MappingContext.Listener)
+
 
     def con = simple.connect()
     return con

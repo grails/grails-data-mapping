@@ -9,6 +9,7 @@ import org.springframework.validation.Errors
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingContext
+import org.springframework.datastore.mapping.model.MappingContext
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,7 +40,13 @@ class Setup {
             }
     ] as Validator)
     
-    new RedisGormEnhancer(redis, new DatastoreTransactionManager(datastore:redis)).enhance()
+    def enhancer = new RedisGormEnhancer(redis, new DatastoreTransactionManager(datastore: redis))
+    enhancer.enhance()
+
+    redis.mappingContext.addMappingContextListener({ e ->
+      enhancer.enhance e
+    } as MappingContext.Listener)
+    
 
     def con = redis.connect()
     con.getNativeInterface().flushdb()
