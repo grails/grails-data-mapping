@@ -357,6 +357,10 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
         return getEntityBaseKey() + ":" + property.getName() + ":sorted";
     }
 
+    public String getPropertySortKeyPattern() {
+        return getEntityBaseKey() + ":*:sorted";
+    }
+
     public String getRedisKey(Serializable key) {
         return getRedisKey(getFamily(), key);
     }

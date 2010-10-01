@@ -244,4 +244,6 @@ public interface Session extends EntityInterceptorAware {
      * @return The Datastore instance
      */
     Datastore getDatastore();
+
+
 }

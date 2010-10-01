@@ -15,6 +15,8 @@
 package org.springframework.datastore.mapping.redis.engine;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.core.SessionImplementor;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
@@ -60,8 +62,8 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
 
     public void index(final Object value, final Long primaryKey) {
         if(value != null) {
-            String propSortKey = entityPersister.getPropertySortKey(property);            
-            clearCachedIndices(propSortKey);
+            String propSortKey = entityPersister.getPropertySortKey(property);
+            clearCachedIndices(entityPersister.getPropertySortKeyPattern());
             final String primaryIndex = createRedisKey(value);
             template.sadd(primaryIndex, primaryKey);
             // for numbers and dates we also create a list index in order to support range queries
@@ -79,8 +81,36 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
         }
     }
 
-    private void clearCachedIndices(String propSortKey) {
-        deleteKeys(template.keys(propSortKey + "~*"));
+    private void clearCachedIndices(final String propSortKey) {
+        final SessionImplementor session = (SessionImplementor) entityPersister.getSession();
+        final String keyPattern = propSortKey + "~*";
+        session.addPostFlushOperation(new KeyPatternRunnable(keyPattern) {
+            public void run() {
+                deleteKeys(template.keys(keyPattern));
+            }
+        });
+
+    }
+
+    private abstract class KeyPatternRunnable implements Runnable {
+        private String keyPattern;
+
+        public KeyPatternRunnable(String keyPattern) {
+            this.keyPattern = keyPattern;
+        }
+
+        @Override
+            public boolean equals(Object obj) {
+                if(obj instanceof KeyPatternRunnable) {
+                    return keyPattern.equals(((KeyPatternRunnable)obj).keyPattern);
+                }
+                return super.equals(obj);
+            }
+
+            @Override
+            public int hashCode() {
+                return keyPattern.hashCode();
+            }
     }
 
     private void deleteKeys(List<String> toDelete) {

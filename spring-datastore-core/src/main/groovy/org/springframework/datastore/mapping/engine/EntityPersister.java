@@ -42,6 +42,10 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
         this.session = session;
     }
 
+    public Session getSession() {
+        return session;
+    }
+
     public ProxyFactory getProxyFactory() {
         if(proxyFactory == null) {
             proxyFactory = mappingContext.getProxyFactory();

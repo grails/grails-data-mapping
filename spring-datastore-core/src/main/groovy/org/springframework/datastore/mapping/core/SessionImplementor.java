@@ -35,4 +35,6 @@ public interface SessionImplementor<T> {
     void cacheEntry(PersistentEntity entity, Serializable key, T entry);
 
     T getCachedEntry(PersistentEntity entity, Serializable key);
+
+    void addPostFlushOperation(Runnable runnable);
 }

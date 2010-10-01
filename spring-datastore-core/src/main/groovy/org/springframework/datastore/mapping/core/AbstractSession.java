@@ -52,12 +52,21 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
     protected Collection<Runnable> pendingInserts = new ConcurrentLinkedQueue<Runnable>();
     protected Collection<Runnable> pendingUpdates = new ConcurrentLinkedQueue<Runnable>();
     protected Collection<Runnable> pendingDeletes = new ConcurrentLinkedQueue<Runnable>();
+    protected Collection<Runnable> postFlushOperations = new ConcurrentLinkedQueue<Runnable>();
     private boolean exceptionOccurred;
 
     public AbstractSession(Datastore datastore,MappingContext mappingContext) {
         super();
         this.mappingContext = mappingContext;
         this.datastore = datastore;
+    }
+
+    public void addPostFlushOperation(Runnable runnable) {
+        if(runnable != null) {
+            if(!this.postFlushOperations.contains(runnable))
+                this.postFlushOperations.add(runnable);
+        }
+
     }
 
     public Object getCachedEntry(PersistentEntity entity, Serializable key) {
@@ -151,6 +160,7 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
                 executePendings(pendingInserts);
                 executePendings(pendingUpdates);
                 executePendings(pendingDeletes);
+                executePendings(postFlushOperations);
                 postFlush(hasInserts);
             }
         }
