@@ -81,6 +81,7 @@ class DatastoreUnitTestMixin {
     datastore.mappingContext.addEntityValidator(entity, new GrailsDomainClassValidator(domainClass:dc))
     if(instances) {
       instances?.each {
+        it.metaClass = GroovySystem.metaClassRegistry.getMetaClass(domainClass)
         session.persist(it)
       }
       session.flush()      
