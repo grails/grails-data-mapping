@@ -129,6 +129,8 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
 
     @Override
     protected Node createNewEntry(final String name) {
+
+        
         return (Node) jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
                 Node rootNode = session.getRootNode();
