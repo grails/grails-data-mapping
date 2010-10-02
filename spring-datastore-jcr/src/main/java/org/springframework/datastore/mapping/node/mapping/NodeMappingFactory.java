@@ -12,6 +12,7 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
  * @since 1.0
  */
 public class NodeMappingFactory extends MappingFactory{
+    
     @Override
     public Node createMappedForm(PersistentEntity entity) {
         return new Node(entity.getName());

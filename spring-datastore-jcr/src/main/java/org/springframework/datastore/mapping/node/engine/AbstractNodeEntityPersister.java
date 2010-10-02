@@ -4,14 +4,22 @@ package org.springframework.datastore.mapping.node.engine;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.engine.*;
-import org.springframework.datastore.mapping.keyvalue.convert.ByteArrayAwareTypeConverter;
+import org.springframework.datastore.mapping.core.SessionImplementor;
+import org.springframework.datastore.mapping.engine.AssociationIndexer;
+import org.springframework.datastore.mapping.engine.EntityAccess;
+import org.springframework.datastore.mapping.engine.EntityInterceptor;
+import org.springframework.datastore.mapping.engine.LockableEntityPersister;
 import org.springframework.datastore.mapping.model.*;
-import org.springframework.datastore.mapping.model.types.*;
+import org.springframework.datastore.mapping.model.types.Association;
+import org.springframework.datastore.mapping.model.types.OneToMany;
+import org.springframework.datastore.mapping.model.types.Simple;
+import org.springframework.datastore.mapping.model.types.ToOne;
 import org.springframework.datastore.mapping.node.mapping.Node;
 import org.springframework.datastore.mapping.node.mapping.NodeProperty;
+import org.springframework.datastore.mapping.proxy.ProxyFactory;
 import org.springframework.datastore.mapping.query.Query;
 
+import javax.persistence.CascadeType;
 import java.io.Serializable;
 import java.util.*;
 
@@ -53,9 +61,112 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
     }
 
     @Override
-    protected Serializable persistEntity(PersistentEntity persistentEntity, Object obj) {
-        return null;
+    protected Serializable persistEntity(final PersistentEntity persistentEntity, Object obj) {
+        System.out.println("Persist Entity: " + persistentEntity.getName());
+        ClassMapping<Node> cm = persistentEntity.getMapping();
+
+        T tmp = null;
+        final EntityAccess entityAccess = new EntityAccess(persistentEntity, obj);
+        K k = readObjectIdentifier(entityAccess, cm);
+        boolean isUpdate = k != null;
+
+        if(!isUpdate) {
+            tmp = createNewEntry(persistentEntity.getJavaClass().getSimpleName());      
+            //k = generateIdentifier(persistentEntity, tmp);
+            k = readObjectIdentifier(entityAccess, cm);
+            String id = entityAccess.getIdentifierName();
+            entityAccess.setProperty(id, k);
+        }
+        else {
+            SessionImplementor<T> si = (SessionImplementor<T>) session;
+            tmp = si.getCachedEntry(persistentEntity, (Serializable) k);
+            if(tmp == null) {
+                //TODO If entity is update then update the entity
+            }
+            if(tmp == null) {
+                tmp = createNewEntry(persistentEntity.getJavaClass().getSimpleName());
+            }
+
+        }
+
+        final T e = tmp;
+
+        final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
+        final Map<OneToMany, List<Serializable>> oneToManyKeys = new HashMap<OneToMany, List<Serializable>>();
+        final Map<OneToMany, Serializable> inverseCollectionUpdates = new HashMap<OneToMany, Serializable>();
+        final Map<PersistentProperty, Object> toIndex = new HashMap<PersistentProperty, Object>();
+        final Map<PersistentProperty, Object> toUnindex = new HashMap<PersistentProperty, Object>();
+        for (PersistentProperty prop : props) {
+            PropertyMapping<NodeProperty> pm = prop.getMapping();
+            final NodeProperty nodeProperty = pm.getMappedForm();
+            String key = null;
+            String propName = null;
+            if (nodeProperty != null) {
+                propName = nodeProperty.getName();
+            }
+            final boolean indexed = nodeProperty != null && nodeProperty.isIndex();
+            if(propName == null) propName = prop.getName();
+            //Single Entity
+            if(prop instanceof Simple) {
+                Object propValue = entityAccess.getProperty(prop.getName());
+                if(indexed) {
+                    if(isUpdate) {
+                        final Object oldValue = getEntryValue(e, key);
+                        if(oldValue != null && !oldValue.equals(propValue))
+                            toUnindex.put(prop, oldValue);
+                    }
+
+                    toIndex.put(prop, propValue);
+                }
+                setEntryValue(e, propName, propValue);
+            }
+            //TODO Implement OneToMany Relationship Entities
+            else if(prop instanceof OneToMany) {
+                final OneToMany oneToMany = (OneToMany) prop;
+
+                Object propValue = entityAccess.getProperty(oneToMany.getName());
+
+                if(propValue instanceof Collection) {
+                    Collection associatedObjects = (Collection) propValue;
+
+                    List<Serializable> keys = session.persist(associatedObjects);
+
+                    oneToManyKeys.put(oneToMany, keys);
+                }
+            }
+            //TODO OneToOne Relationship Entities
+            else if(prop instanceof ToOne) {                
+
+            }// End
+        }
+      
+        if(!isUpdate) {
+            final K updateId = k;
+            SessionImplementor si = (SessionImplementor) session;
+            si.getPendingInserts().add(new Runnable() {
+                public void run() {
+                    for (EntityInterceptor interceptor : interceptors) {
+                            if(!interceptor.beforeInsert(persistentEntity, entityAccess)) return;
+                    }
+                    storeEntry(persistentEntity, updateId, e);                    
+                }
+            });
+        }
+        else {
+            SessionImplementor si = (SessionImplementor) session;
+            final K updateId = k;
+            si.getPendingUpdates().add(new Runnable() {
+                public void run() {
+                    for (EntityInterceptor interceptor : interceptors) {
+                            if(!interceptor.beforeUpdate(persistentEntity, entityAccess)) return;
+                    }
+                    updateEntry(persistentEntity, updateId, e);
+               }
+            });
+        }
+        return (Serializable) k;
     }
+
 
     @Override
     protected void deleteEntity(PersistentEntity persistentEntity, Object obj) {
@@ -96,9 +207,25 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
     }
 
     public Serializable refresh(Object o) {
-        return null;  
+        return null;
     }
 
+    protected K readObjectIdentifier(EntityAccess entityAccess, ClassMapping<Node> cm) {
+        return (K)entityAccess.getIdentifier();
+    }
+
+     /**
+     * Obtains an indexer for the given association
+     *
+     * @param association The association
+     * @return An indexer
+     */
+    public abstract AssociationIndexer getAssociationIndexer(Association association);
+
+
+    protected String getIdentifierName(ClassMapping cm) {
+        return cm.getIdentifier().getIdentifierName()[0];
+    }
 
       /**
      * Used to establish the native key to use from the identifier defined by the object
@@ -155,7 +282,7 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
      * @param nativeEntry      The native form. Could be a a JCR Node,etc.
      * @return The native identitys
      */
-    protected abstract K storeEntry(PersistentEntity persistentEntity, T nativeEntry);
+    protected abstract K storeEntry(PersistentEntity persistentEntity, Object id, T nativeEntry);
 
     /**
      * Updates an existing entry to the actual datastore

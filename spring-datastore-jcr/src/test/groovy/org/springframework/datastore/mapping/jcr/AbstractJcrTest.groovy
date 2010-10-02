@@ -1,10 +1,6 @@
 package org.springframework.datastore.mapping.jcr
 
 import org.junit.BeforeClass
-import javax.jcr.Repository
-
-import javax.jcr.Session
-import javax.jcr.SimpleCredentials
 
 import org.junit.AfterClass
 
@@ -16,8 +12,8 @@ import org.junit.AfterClass
  */
 class AbstractJcrTest{
 
-  protected static def conn = null;
-  protected static def ds = null;
+  protected static def conn = null
+  protected static def ds = null
   //setup JCR Environments
   @BeforeClass
   public static void setupJCR(){
@@ -27,11 +23,11 @@ class AbstractJcrTest{
                               workspace:"default",
                               configuration:"classpath:repository.xml",
                               homeDir:"/temp/repo"];
-    conn = ds.connect(connectionDetails)
+    conn = ds.connect(connectionDetails)   
   }
 
  @AfterClass
   public static void tearDown() {
-    conn.disconnect();
+   conn.disconnect();
   }
 }

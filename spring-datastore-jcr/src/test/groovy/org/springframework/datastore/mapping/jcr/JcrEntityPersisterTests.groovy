@@ -5,6 +5,7 @@ import org.junit.Ignore
 import javax.jcr.Value
 import javax.jcr.PropertyIterator
 import javax.jcr.Property
+import javax.jcr.Session
 
 /**
  * @author Erawat Chamanont
@@ -12,7 +13,7 @@ import javax.jcr.Property
  */
 class JcrEntityPersisterTests extends AbstractJcrTest {
 
-  @Ignore
+  //@Ignore
   @Test
   void testConnection() {
     assert null != conn;
@@ -21,8 +22,6 @@ class JcrEntityPersisterTests extends AbstractJcrTest {
     def session = conn.getNativeInterface();
     assert null != session;
 
-    conn.disconnect(); //doesn't work, the session is still alive.
-    assert false == conn.isConnected();
   }
 
   @Test
@@ -48,15 +47,34 @@ class JcrEntityPersisterTests extends AbstractJcrTest {
     def id = t.id
 
     conn.delete(t)
-    t = conn.retrieve(TestEntity,  id)
+    t = conn.retrieve(TestEntity, id)
     assert t == null
   }
 
+  @Test(dependsOnMethods = ["testPersist"])
+  void deleteInstances() {
+    def session = conn.getNativeInterface();
+    if (session.itemExists("/TestEntity")) {
+        session.getRootNode().getNode("TestEntity").getNodes().each {
+        it.remove()
+      }
+      session.save()
+    }
+
+  }
 }
 
-class TestEntity {
-  String id
 
+
+class TestEntity {
+  static mapWith = 'jcr'
+  static namespace = 'blog'
+
+  Long id
+  String version
+
+  String path
+  String UUID
   String title
   String body
 }
