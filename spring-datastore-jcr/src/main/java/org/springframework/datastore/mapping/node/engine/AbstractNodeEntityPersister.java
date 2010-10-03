@@ -62,18 +62,16 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
 
     @Override
     protected Serializable persistEntity(final PersistentEntity persistentEntity, Object obj) {
-        System.out.println("Persist Entity: " + persistentEntity.getName());
         ClassMapping<Node> cm = persistentEntity.getMapping();
-
         T tmp = null;
         final EntityAccess entityAccess = new EntityAccess(persistentEntity, obj);
         K k = readObjectIdentifier(entityAccess, cm);
         boolean isUpdate = k != null;
 
         if(!isUpdate) {
-            tmp = createNewEntry(persistentEntity.getJavaClass().getSimpleName());      
-            //k = generateIdentifier(persistentEntity, tmp);
-            k = readObjectIdentifier(entityAccess, cm);
+            System.out.println("!isUpdate");
+            tmp = createNewEntry(persistentEntity);
+            k = generateIdentifier(persistentEntity, tmp);
             String id = entityAccess.getIdentifierName();
             entityAccess.setProperty(id, k);
         }
@@ -84,9 +82,8 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
                 //TODO If entity is update then update the entity
             }
             if(tmp == null) {
-                tmp = createNewEntry(persistentEntity.getJavaClass().getSimpleName());
+                tmp = createNewEntry(persistentEntity);
             }
-
         }
 
         final T e = tmp;
@@ -141,14 +138,14 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
         }
       
         if(!isUpdate) {
-            final K updateId = k;
             SessionImplementor si = (SessionImplementor) session;
+            final K updateId = k;
             si.getPendingInserts().add(new Runnable() {
                 public void run() {
                     for (EntityInterceptor interceptor : interceptors) {
                             if(!interceptor.beforeInsert(persistentEntity, entityAccess)) return;
                     }
-                    storeEntry(persistentEntity, updateId, e);                    
+                      storeEntry(persistentEntity, updateId, e);                   
                 }
             });
         }
@@ -166,6 +163,8 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
         }
         return (Serializable) k;
     }
+
+    protected abstract K generateIdentifier(PersistentEntity persistentEntity, T tmp);
 
 
     @Override
@@ -261,10 +260,10 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
     /**
      * Creates a new entry for the given Node.
      *
-     * @param name The Node name
+     * @param persistentEntity persistentEntity The persistent entity
      * @return An entry such as a JCR Node etc.
      */
-    protected abstract T createNewEntry(String name);
+    protected abstract T createNewEntry(PersistentEntity persistentEntity);
 
     /**
      * Sets a value on an entry
@@ -279,10 +278,11 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
      * Stores the native form of a Node style datastore to the actual data store
      *
      * @param persistentEntity The persistent entity
+     * @param id               The id of the object to store
      * @param nativeEntry      The native form. Could be a a JCR Node,etc.
      * @return The native identitys
      */
-    protected abstract K storeEntry(PersistentEntity persistentEntity, Object id, T nativeEntry);
+    protected abstract K storeEntry(PersistentEntity persistentEntity, K id, T nativeEntry);
 
     /**
      * Updates an existing entry to the actual datastore

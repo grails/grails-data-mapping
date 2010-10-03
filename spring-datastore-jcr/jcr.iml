@@ -25,6 +25,7 @@
     <orderEntry type="library" name="Spring Context" level="project" />
     <orderEntry type="library" name="Spring Web" level="project" />
     <orderEntry type="library" name="Servlet API" level="project" />
+    <orderEntry type="library" name="Spring Web MVC" level="project" />
   </component>
 </module>
 

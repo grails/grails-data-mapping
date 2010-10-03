@@ -13,7 +13,7 @@ import javax.jcr.Session
  */
 class JcrEntityPersisterTests extends AbstractJcrTest {
 
-  //@Ignore
+  @Ignore
   @Test
   void testConnection() {
     assert null != conn;
@@ -31,7 +31,7 @@ class JcrEntityPersisterTests extends AbstractJcrTest {
     conn.persist(t);
     assert null != t.id;
 
-    t = conn.retrieve(TestEntity, t.id)
+  /*  t = conn.retrieve(TestEntity, t.id)
 
     assert t != null
     assert "foo" == t.title
@@ -48,10 +48,10 @@ class JcrEntityPersisterTests extends AbstractJcrTest {
 
     conn.delete(t)
     t = conn.retrieve(TestEntity, id)
-    assert t == null
+    assert t == null*/
   }
 
-  @Test(dependsOnMethods = ["testPersist"])
+  @Test
   void deleteInstances() {
     def session = conn.getNativeInterface();
     if (session.itemExists("/TestEntity")) {
@@ -60,6 +60,7 @@ class JcrEntityPersisterTests extends AbstractJcrTest {
       }
       session.save()
     }
+    assert false == session.itemExists("/TestEntity");
 
   }
 }
@@ -67,14 +68,12 @@ class JcrEntityPersisterTests extends AbstractJcrTest {
 
 
 class TestEntity {
-  static mapWith = 'jcr'
-  static namespace = 'blog'
-
-  Long id
+  //using id field as based APIs required,
+  //the JCR generated UUID will be assigned to the id property.
+  String id
   String version
 
   String path
-  String UUID
   String title
   String body
 }

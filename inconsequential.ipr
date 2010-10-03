@@ -434,6 +434,13 @@
       <JAVADOC />
       <SOURCES />
     </library>
+    <library name="Spring Web MVC">
+      <CLASSES>
+        <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-webmvc/jars/spring-webmvc-3.0.3.RELEASE.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
   </component>
 </project>
 
