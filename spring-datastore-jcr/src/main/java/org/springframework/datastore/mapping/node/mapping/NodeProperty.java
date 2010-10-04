@@ -1,6 +1,7 @@
 package org.springframework.datastore.mapping.node.mapping;
 
-import org.springframework.datastore.mapping.model.types.Fetch;
+import javax.persistence.FetchType;
+
 
 /**
  * TODO: write javadoc
@@ -10,22 +11,22 @@ import org.springframework.datastore.mapping.model.types.Fetch;
  */
 public class NodeProperty {
 
-    private String attributeName;
+    private String name;
     private boolean index = false;
-    private Fetch fetchStrategy = Fetch.LAZY;
+    private FetchType fetchStrategy = FetchType.LAZY;
 
     public NodeProperty(){}
 
-    public NodeProperty(String attributeName) {
-       this.attributeName = attributeName;
+    public NodeProperty(String name) {
+       this.name = name;
     }
 
-    public String getAttributeName() {
-        return attributeName;
+    public String getName() {
+        return name;
     }
 
-    public void setAttributeName(String attributeName) {
-        this.attributeName = attributeName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -43,11 +44,11 @@ public class NodeProperty {
         this.index = index;
     }
 
-    public Fetch getFetchStrategy() {
-        return this.fetchStrategy;
+    public FetchType getFetchStrategy() {
+        return fetchStrategy;
     }
 
-    public void setFetchStrategy(Fetch fetchStrategy) {
+    public void setFetchStrategy(FetchType fetchStrategy) {
         this.fetchStrategy = fetchStrategy;
     }
 }

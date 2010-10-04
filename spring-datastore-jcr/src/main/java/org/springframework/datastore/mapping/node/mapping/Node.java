@@ -8,20 +8,20 @@ package org.springframework.datastore.mapping.node.mapping;
  */
 public class Node {
 
-    private String className;
+    private String entityName;
 
     public Node() {
     }
 
     public Node(String entityName) {
-        this.className = entityName;
+        this.entityName = entityName;
     }
 
-    public String getClassName() {
-        return className;
+    public String getEntityName() {
+        return entityName;
     }
 
-    public void setClassName(String className) {
-        this.className = className;
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
     }
 }
