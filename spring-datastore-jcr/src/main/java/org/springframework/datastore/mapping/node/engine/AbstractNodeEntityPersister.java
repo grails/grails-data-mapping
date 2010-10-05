@@ -31,6 +31,7 @@ import java.util.*;
  * @since 1.0
  */
 public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPersister {
+    protected String nodeEntity;
     protected Session session;
     protected ClassMapping classMapping;
 
@@ -38,6 +39,24 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
         super(mappingContext, entity, session);
         this.session = session;
         this.classMapping = entity.getMapping();
+        this.nodeEntity = getEntity(entity, classMapping);
+    }
+
+    public String getNodeEntity() {
+        return nodeEntity;
+    }
+
+    public void setNodeEntity(String nodeEntity) {
+        this.nodeEntity = nodeEntity;
+    }
+
+    protected String getEntity(PersistentEntity persistentEntity, ClassMapping<Node> cm) {
+        String enName = null;
+        if (cm.getMappedForm() != null) {
+            enName = cm.getMappedForm().getEntityName();
+        }
+        if (enName == null) enName = persistentEntity.getJavaClass().getSimpleName();
+        return enName;
     }
 
     @Override
@@ -57,7 +76,59 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
 
     @Override
     protected Object retrieveEntity(PersistentEntity persistentEntity, Serializable key) {
+        T nativeEntry = retrieveEntry(persistentEntity, key);
+        if (nativeEntry != null) {
+            return createObjectFromNativeEntry(persistentEntity, key, nativeEntry);
+        }
         return null;
+    }
+
+    private Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, T nativeEntry) {
+        Object obj = persistentEntity.newInstance();
+
+        EntityAccess ea = new EntityAccess(persistentEntity, obj);
+        ea.setConversionService(getMappingContext().getConversionService());
+        String idName = ea.getIdentifierName();
+        ea.setProperty(idName, nativeKey);
+
+        final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
+        for (PersistentProperty prop : props) {
+            PropertyMapping<NodeProperty> pm = prop.getMapping();
+            String propName = null;
+            if (pm.getMappedForm() != null) {
+                propName = pm.getMappedForm().getName();
+            }
+            if (propName == null) {
+                propName = prop.getName();
+            }
+            if (prop instanceof Simple) {
+                ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propName));
+            } else if (prop instanceof ToOne) {
+                Serializable tmp = (Serializable) getEntryValue(nativeEntry, propName);
+                PersistentEntity associatedEntity = prop.getOwner();
+                final Serializable associationKey = (Serializable) getMappingContext().getConversionService().convert(tmp, associatedEntity.getIdentity().getType());
+                if (associationKey != null) {
+
+                    PropertyMapping<NodeProperty> associationPropertyMapping = prop.getMapping();
+                    boolean isLazy = isLazyAssociation(associationPropertyMapping);
+
+                    final Class propType = prop.getType();
+                    if (isLazy) {
+                        Object proxy = getProxyFactory().createProxy(session, propType, associationKey);
+                        ea.setProperty(prop.getName(), proxy);
+                    } else {
+                        ea.setProperty(prop.getName(), session.retrieve(propType, associationKey));
+                    }
+                }
+            }
+            //TODO: to handle these relational behavior OneToOne, OneToManny, ManyToMany sto map with NodeType entity such as JCR Node etc.
+        }
+        return obj;
+    }
+
+    private boolean isLazyAssociation(PropertyMapping<NodeProperty> associationPropertyMapping) {
+        return false;
+
     }
 
     @Override
@@ -67,21 +138,18 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
         final EntityAccess entityAccess = new EntityAccess(persistentEntity, obj);
         K k = readObjectIdentifier(entityAccess, cm);
         boolean isUpdate = k != null;
-
-        if(!isUpdate) {
-            System.out.println("!isUpdate");
+        if (!isUpdate) {
             tmp = createNewEntry(persistentEntity);
             k = generateIdentifier(persistentEntity, tmp);
             String id = entityAccess.getIdentifierName();
             entityAccess.setProperty(id, k);
-        }
-        else {
+        } else {
             SessionImplementor<T> si = (SessionImplementor<T>) session;
             tmp = si.getCachedEntry(persistentEntity, (Serializable) k);
-            if(tmp == null) {
-                //TODO If entity is update then update the entity
+            if (tmp == null) {
+                tmp = retrieveEntry(persistentEntity, (Serializable) k);
             }
-            if(tmp == null) {
+            if (tmp == null) {
                 tmp = createNewEntry(persistentEntity);
             }
         }
@@ -96,20 +164,19 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
         for (PersistentProperty prop : props) {
             PropertyMapping<NodeProperty> pm = prop.getMapping();
             final NodeProperty nodeProperty = pm.getMappedForm();
-            String key = null;
             String propName = null;
             if (nodeProperty != null) {
                 propName = nodeProperty.getName();
             }
             final boolean indexed = nodeProperty != null && nodeProperty.isIndex();
-            if(propName == null) propName = prop.getName();
+            if (propName == null) propName = prop.getName();
             //Single Entity
-            if(prop instanceof Simple) {
+            if (prop instanceof Simple) {
                 Object propValue = entityAccess.getProperty(prop.getName());
-                if(indexed) {
-                    if(isUpdate) {
-                        final Object oldValue = getEntryValue(e, key);
-                        if(oldValue != null && !oldValue.equals(propValue))
+                if (indexed) {
+                    if (isUpdate) {
+                        final Object oldValue = getEntryValue(e, propName);
+                        if (oldValue != null && !oldValue.equals(propValue))
                             toUnindex.put(prop, oldValue);
                     }
 
@@ -117,60 +184,124 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
                 }
                 setEntryValue(e, propName, propValue);
             }
-            //TODO Implement OneToMany Relationship Entities
-            else if(prop instanceof OneToMany) {
+            else if (prop instanceof OneToMany) {
                 final OneToMany oneToMany = (OneToMany) prop;
 
                 Object propValue = entityAccess.getProperty(oneToMany.getName());
 
-                if(propValue instanceof Collection) {
+                if (propValue instanceof Collection) {
                     Collection associatedObjects = (Collection) propValue;
 
                     List<Serializable> keys = session.persist(associatedObjects);
 
                     oneToManyKeys.put(oneToMany, keys);
                 }
-            }
-            //TODO OneToOne Relationship Entities
-            else if(prop instanceof ToOne) {                
+            } else if (prop instanceof ToOne) {
+                ToOne association = (ToOne) prop;
+                if (association.doesCascade(CascadeType.PERSIST)) {
 
+                    if (!association.isForeignKeyInChild()) {
+
+                        final Object associatedObject = entityAccess.getProperty(prop.getName());
+                        if (associatedObject != null) {
+                            ProxyFactory proxyFactory = getProxyFactory();
+                            // never cascade to proxies
+                            if (!proxyFactory.isProxy(associatedObject)) {
+                                Serializable associationId;
+                                AbstractNodeEntityPersister associationPersister = (AbstractNodeEntityPersister) session.getPersister(associatedObject);
+                                if (!session.contains(associatedObject)) {
+                                    Serializable tempId = associationPersister.getObjectIdentifier(associatedObject);
+                                    if (tempId == null) tempId = session.persist(associatedObject);
+                                    associationId = tempId;
+                                } else {
+                                    associationId = associationPersister.getObjectIdentifier(associatedObject);
+                                }
+
+                                if (indexed) {
+                                    toIndex.put(prop, associationId);
+                                    if (isUpdate) {
+                                        final Object oldValue = getEntryValue(e, propName);
+                                        if (oldValue != null && !oldValue.equals(associatedObject))
+                                            toUnindex.put(prop, oldValue);
+                                    }
+                                }
+                                setEntryAssociatedValue(e,propName, associationId);
+                                if (association.isBidirectional()) {
+                                    Association inverse = association.getInverseSide();
+                                    if (inverse instanceof OneToMany) {
+                                        inverseCollectionUpdates.put((OneToMany) inverse, associationId);
+                                    }
+                                }
+
+                            }
+                        } else {
+                            if (!association.isNullable() && !association.isCircular()) {
+                                throw new DataIntegrityViolationException("Cannot save object [" + entityAccess.getEntity() + "] of type [" + persistentEntity + "]. The association [" + association + "] is cannot be null.");
+                            }
+                        }
+                    }
+                }
             }// End
         }
-      
-        if(!isUpdate) {
+
+        if (!isUpdate) {
             SessionImplementor si = (SessionImplementor) session;
             final K updateId = k;
             si.getPendingInserts().add(new Runnable() {
                 public void run() {
                     for (EntityInterceptor interceptor : interceptors) {
-                            if(!interceptor.beforeInsert(persistentEntity, entityAccess)) return;
+                        if (!interceptor.beforeInsert(persistentEntity, entityAccess)) return;
                     }
-                      storeEntry(persistentEntity, updateId, e);                   
+                    storeEntry(persistentEntity, updateId, e);
                 }
             });
-        }
-        else {
+        } else {
             SessionImplementor si = (SessionImplementor) session;
             final K updateId = k;
             si.getPendingUpdates().add(new Runnable() {
                 public void run() {
                     for (EntityInterceptor interceptor : interceptors) {
-                            if(!interceptor.beforeUpdate(persistentEntity, entityAccess)) return;
+                        if (!interceptor.beforeUpdate(persistentEntity, entityAccess)) return;
                     }
                     updateEntry(persistentEntity, updateId, e);
-               }
+                }
             });
         }
         return (Serializable) k;
     }
+
+    protected abstract void setEntryAssociatedValue(T e, String propName, Serializable associationId);
 
     protected abstract K generateIdentifier(PersistentEntity persistentEntity, T tmp);
 
 
     @Override
     protected void deleteEntity(PersistentEntity persistentEntity, Object obj) {
+        if (obj != null) {
+            for (EntityInterceptor interceptor : interceptors) {
+                if (!interceptor.beforeDelete(persistentEntity, createEntityAccess(persistentEntity, obj))) return;
+            }
 
+            final K key = readIdentifierFromObject(obj);
+
+            if (key != null) {
+                deleteEntry(key);
+            }
+
+        }
     }
+
+    private K readIdentifierFromObject(Object object) {
+        EntityAccess access = new EntityAccess(getPersistentEntity(), object);
+        access.setConversionService(getMappingContext().getConversionService());
+        final Object idValue = access.getIdentifier();
+        K key = null;
+        if (idValue != null) {
+            key = inferNativeKey(idValue);
+        }
+        return key;
+    }
+
 
     @Override
     protected void deleteEntities(PersistentEntity persistentEntity, Iterable objects) {
@@ -210,10 +341,17 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
     }
 
     protected K readObjectIdentifier(EntityAccess entityAccess, ClassMapping<Node> cm) {
-        return (K)entityAccess.getIdentifier();
+        return (K) entityAccess.getIdentifier();
     }
 
-     /**
+    /**
+     * Deletes a single entry
+     *
+     * @param key The identity
+     */
+    protected abstract void deleteEntry(K key);
+
+    /**
      * Obtains an indexer for the given association
      *
      * @param association The association
@@ -226,7 +364,7 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
         return cm.getIdentifier().getIdentifierName()[0];
     }
 
-      /**
+    /**
      * Used to establish the native key to use from the identifier defined by the object
      *
      * @param identifier The identifier specified by the object

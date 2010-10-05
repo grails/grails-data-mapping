@@ -1,6 +1,5 @@
 package org.springframework.datastore.mapping.jcr.engine;
 
-import org.apache.jackrabbit.core.NodeImpl;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.mapping.core.Session;
@@ -44,6 +43,22 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     }
 
     @Override
+    protected void setEntryAssociatedValue(Node parentEntity, String property, Serializable associationId) {
+       Node node = jcrTemplate.getNodeByUUID((String) associationId);
+        try {
+            parentEntity.setProperty(property,node);
+            Property pro = parentEntity.getProperty(property);
+            System.out.println(pro.getNode().getPath());
+            System.out.println(pro.getNode().getParent().getPath());
+            //System.out.println("path: "+ node.getPath());
+            //System.out.println("moved path: "+parentEntity.getPath() + node.getPath());
+            //jcrTemplate.move(node.getPath(),parentEntity.getPath() + node.getPath());
+        } catch (RepositoryException e) {
+            e.printStackTrace();  
+        }
+    }
+
+    @Override
     protected String generateIdentifier(PersistentEntity persistentEntity, Node tmp) {
         try {
             return tmp.getUUID();
@@ -51,6 +66,17 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
             throw new DataAccessResourceFailureException("Exception occurred cannot getUUID from Node: " + e.getMessage(), e);
         }
 
+    }
+
+    @Override
+    protected void deleteEntry(final String key) {
+        Node node = jcrTemplate.getNodeByUUID(key);
+        try {
+            node.remove();
+            jcrTemplate.save();
+        } catch (RepositoryException e) {
+            throw new DataAccessResourceFailureException("Exception occurred cannot delete Node: " + e.getMessage(), e);
+        }
     }
 
     @Override
@@ -63,10 +89,10 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     protected Object getEntryValue(Node nativeEntry, String property) {
         try {
             Property prop = nativeEntry.getProperty(property);
-            if (prop.getType() == PropertyType.REFERENCE){
+            if (prop.getType() == PropertyType.REFERENCE) {
                 String nodeUuid = prop.getString();
-                return nativeEntry.getSession().getNodeByUUID(nodeUuid);
-            }else{
+                return jcrTemplate.getNodeByUUID(nodeUuid);
+            } else {
                 switch (prop.getType()) {
                     case PropertyType.BINARY:
                         // TODO - add lazyinputstream
@@ -95,26 +121,16 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     }
 
     @Override
-    protected Node retrieveEntry(PersistentEntity persistentEntity, final Serializable key) {
-        return (Node) jcrTemplate.execute(new JcrCallback() {
-            public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
-                try {
-                    return session.getNodeByUUID(getString(key));
-                } catch (ItemNotFoundException ex) {   //getNodeByUUID always throws ItemNotFoundException when Node doesn't exist
-                    return null;
-                }
-            }
-        });
+    protected Node retrieveEntry(PersistentEntity persistentEntity, Serializable key) {
+        return jcrTemplate.getNodeByUUID((String) key);
     }
 
     @Override
     protected Node createNewEntry(final PersistentEntity persistentEntity) {
-        System.out.println("create new entry");
-        final String name = persistentEntity.getJavaClass().getName();
         return (Node) jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
                 Node rootNode = session.getRootNode();
-                Node node = rootNode.addNode(name, JcrConstants.DEFAULT_JCR_TYPE);
+                Node node = rootNode.addNode(persistentEntity.getJavaClass().getSimpleName(), JcrConstants.DEFAULT_JCR_TYPE);
                 node.addMixin(JcrConstants.MIXIN_REFERENCEABLE);
                 node.addMixin(JcrConstants.MIXIN_VERSIONABLE);
                 node.addMixin(JcrConstants.MIXIN_LOCKABLE);
@@ -126,8 +142,10 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     @Override
     protected void setEntryValue(Node nativeEntry, String propertyName, Object value) {
         if (value != null) {
-            try {
-                if (value instanceof Boolean) {
+            try {                  
+                if (value instanceof String){
+                    nativeEntry.setProperty(propertyName, (String) value);                 
+                } else if (value instanceof Boolean) {
                     nativeEntry.setProperty(propertyName, (Boolean) value);
                 } else if (value instanceof Calendar) {
                     nativeEntry.setProperty(propertyName, (Calendar) value);
@@ -137,10 +155,7 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                     nativeEntry.setProperty(propertyName, (InputStream) value);
                 } else if (value instanceof Long) {
                     nativeEntry.setProperty(propertyName, (Long) value);
-                } else if (value instanceof String) {
-                    nativeEntry.setProperty(propertyName, (String) value);
                 }
-                //TODO Maybe to handle NAME, PATH, and REFERENCE
             } catch (RepositoryException e) {
                 throw new DataAccessResourceFailureException("Exception occurred set a property value to Node: " + e.getMessage(), e);
             }
@@ -149,25 +164,16 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
 
     @Override
     protected String storeEntry(PersistentEntity persistentEntity, String id, Node nativeEntry) {
-        final Node node = nativeEntry;
-        return (String) jcrTemplate.execute(new JcrCallback() {
-            public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
-                session.save();
-                return node.getUUID();
-            }
-        });
+        jcrTemplate.save();
+        return id;
     }
 
-
-
     @Override
-    protected void updateEntry(PersistentEntity persistentEntity, final String id, final Node entry) {
-        final List<String> pns = persistentEntity.getPersistentPropertyNames();
+    protected void updateEntry(final PersistentEntity persistentEntity, final String id, final Node entry) {
         jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
+                List<String> pns = persistentEntity.getPersistentPropertyNames();
                 Node node = session.getNodeByUUID(id);
-                PropertyIterator props = entry.getProperties();
-                node.addMixin(JcrConstants.MIXIN_VERSIONABLE);
                 node.checkout();
                 for (String propName : pns) {
                     node.setProperty(propName, entry.getProperty(propName).getValue());
@@ -178,11 +184,6 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
             }
         });
     }
-
-    private String getString(Object key) {
-        return typeConverter.convertIfNecessary(key, String.class);
-    }
-
 
 }
 

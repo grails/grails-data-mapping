@@ -18,7 +18,7 @@ class OneToOneAssociationTests extends AbstractJcrTest {
 
     conn.persist(b)
 
-    b = conn.retrieve(Post, b.id)
+   b = conn.retrieve(Post, b.id)
 
     assert b != null
     assert "Greame Rocher" == b.author
