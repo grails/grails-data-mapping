@@ -2,6 +2,7 @@ package org.springframework.datastore.mapping.jcr.engine;
 
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.model.types.Association;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,6 +13,9 @@ import java.util.List;
  * @since 1.0
  */
 public class JcrAssociationIndexer implements AssociationIndexer<Serializable, Serializable> {
+    public JcrAssociationIndexer(Association association) {
+    }
+
     public void index(Serializable primaryKey, List<Serializable> foreignKeys) {
         //To change body of implemented methods use File | Settings | File Templates.
     }

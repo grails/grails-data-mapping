@@ -2,11 +2,6 @@ package org.springframework.datastore.mapping.jcr
 
 import org.junit.Test
 import org.junit.Ignore
-import javax.jcr.Value
-import javax.jcr.PropertyIterator
-import javax.jcr.Property
-import javax.jcr.Session
-import javax.jcr.NodeIterator
 
 /**
  * @author Erawat Chamanont
@@ -27,8 +22,8 @@ class JcrEntityPersisterTests extends AbstractJcrTest {
 
   @Test
   void testPersist() {
-    ds.mappingContext.addPersistentEntity(TestEntity);
-    def t = new TestEntity(title: "foo", body: "bar", isTest: true);
+    ds.mappingContext.addPersistentEntity(TestEntity)
+    def t = new TestEntity(title: "foo", body: "bar")
     conn.persist(t);
     assert null != t.id;
 
@@ -45,26 +40,35 @@ class JcrEntityPersisterTests extends AbstractJcrTest {
 
     assert 'blog' == t.title
     assert 'bar' == t.body
- 
+
     def id = t.id
 
-    //conn.delete(t)
-    //conn.flush()
+    println id;
+
+    conn.delete(t)
+    conn.flush()
 
     t = conn.retrieve(TestEntity, id)
-    //assert t == null
-    def session = conn.getNativeInterface();
-    def root = session.getRootNode();
-    printNode(root);
-    if (session.itemExists("/TestEntity")) {
-      session.getRootNode().getNode("TestEntity").getNodes().each {
-        it.remove()
-      }
-      session.save()
-    }
+    assert t == null
+
   }
 
-  /** Recursively outputs the contents of the given node.  */
+  @Ignore
+  @Test
+  void testNodeExists() {
+    def session = conn.getNativeInterface()
+    def root = session.getRootNode()
+    printNode(root);
+    if (session.itemExists("/TestEntity")) {
+      def node = session.getRootNode().getNode("TestEntity")
+      node.remove();
+      session.save()
+    }
+    printNode(root)
+  }
+
+  /** Credit from http://jackrabbit.apache.org/first-hops.html     */
+  /** Recursively outputs the contents of the given node.         */
   void printNode(def node) {
     // First output the node path
     System.out.println(node.getPath());
@@ -79,13 +83,13 @@ class JcrEntityPersisterTests extends AbstractJcrTest {
       def property = properties.nextProperty();
       if (property.getDefinition().isMultiple()) {
         // A multi-valued property, print all values
-        Value[] values = property.getValues();
+        def values = property.getValues();
         for (int i = 0; i < values.length; i++) {
-          System.out.println(property.getPath() + " = " + values[i].getString());
+          println(property.getPath() + " = " + values[i].getString());
         }
       } else {
         // A single-valued property
-        System.out.println(property.getPath() + " = " + property.getString());
+        println(property.getPath() + " = " + property.getString());
       }
     }
     // Finally output all the child nodes recursively
@@ -96,14 +100,13 @@ class JcrEntityPersisterTests extends AbstractJcrTest {
   }
 }
 
+
+
 class TestEntity {
   //using id field as based APIs required,
   //the JCR generated UUID will be assigned to the id property.
   String id
-  String version
 
-  String path
   String title
   String body
-  boolean isTest
 }
