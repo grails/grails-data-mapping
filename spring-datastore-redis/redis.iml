@@ -21,7 +21,7 @@
     <orderEntry type="module-library">
       <library name="Jedis">
         <CLASSES>
-          <root url="jar://$GRADLE_CACHE$/redis.clients/jedis/jars/jedis-1.2.0.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/redis.clients/jedis/jars/jedis-1.2.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

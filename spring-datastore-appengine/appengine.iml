@@ -23,12 +23,12 @@
     <orderEntry type="module-library">
       <library name="AppEngine">
         <CLASSES>
-          <root url="jar://$GRADLE_CACHE$/com.google.appengine/appengine-api-stubs/jars/appengine-api-stubs-1.3.4.jar!/" />
-          <root url="jar://$GRADLE_CACHE$/com.google.appengine/appengine-api-1.0-sdk/jars/appengine-api-1.0-sdk-1.3.4.jar!/" />
-          <root url="jar://$GRADLE_CACHE$/com.google.appengine/appengine-tools-api/jars/appengine-tools-api-1.3.4.jar!/" />
-          <root url="jar://$GRADLE_CACHE$/com.google.appengine/appengine-testing/jars/appengine-testing-1.3.4.jar!/" />
-          <root url="jar://$GRADLE_CACHE$/com.google.appengine/appengine-local-runtime/jars/appengine-local-runtime-1.3.4.jar!/" />
-          <root url="jar://$GRADLE_CACHE$/com.google.appengine/appengine-api-labs/jars/appengine-api-labs-1.3.4.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/com.google.appengine/appengine-api-stubs/jars/appengine-api-stubs-1.3.4.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/com.google.appengine/appengine-api-1.0-sdk/jars/appengine-api-1.0-sdk-1.3.4.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/com.google.appengine/appengine-tools-api/jars/appengine-tools-api-1.3.4.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/com.google.appengine/appengine-testing/jars/appengine-testing-1.3.4.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/com.google.appengine/appengine-local-runtime/jars/appengine-local-runtime-1.3.4.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/com.google.appengine/appengine-api-labs/jars/appengine-api-labs-1.3.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
