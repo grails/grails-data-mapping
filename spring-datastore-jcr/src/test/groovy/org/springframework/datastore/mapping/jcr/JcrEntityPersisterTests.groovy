@@ -37,7 +37,6 @@ class JcrEntityPersisterTests extends AbstractJcrTest {
     conn.persist(t)
 
     t = conn.retrieve(TestEntity, t.id)
-
     assert 'blog' == t.title
     assert 'bar' == t.body
 
@@ -53,54 +52,37 @@ class JcrEntityPersisterTests extends AbstractJcrTest {
 
   }
 
-  @Ignore
-  @Test
-  void testNodeExists() {
-    def session = conn.getNativeInterface()
-    def root = session.getRootNode()
-    printNode(root);
-    if (session.itemExists("/TestEntity")) {
-      def node = session.getRootNode().getNode("TestEntity")
-      node.remove();
-      session.save()
-    }
-    printNode(root)
+  //Still doen't work
+  @Test  
+  void testTransactions() {
+    ds.getMappingContext().addPersistentEntity(TestEntity)
+    conn.clear()
+
+    def tx = conn.beginTransaction()
+
+    TestEntity t = new TestEntity(title: "foo", body: "bar")
+    conn.persist(t)    
+    TestEntity t2 = new TestEntity(title: "blog", body: "bar")
+    conn.persist(t2)
+    tx.commit()
+
+    assert null != t.id;
+    assert null != t2.id
+
+    tx = conn.beginTransaction()
+    TestEntity t3 = new TestEntity(title: "curry", body: "chicken")
+    conn.persist(t3)
+    TestEntity t4 = new TestEntity(title: "salad", body: "beef")
+    conn.persist(t4)
+    tx.rollback()
+
+    assert null == t3.id;
+    assert null == t4.id;
+
+
   }
 
-  /** Credit from http://jackrabbit.apache.org/first-hops.html     */
-  /** Recursively outputs the contents of the given node.         */
-  void printNode(def node) {
-    // First output the node path
-    System.out.println(node.getPath());
-    // Skip the virtual (and large!) jcr:system subtree
-    if (node.getName().equals("jcr:system")) {
-      return;
-    }
-
-    // Then output the properties
-    def properties = node.getProperties();
-    while (properties.hasNext()) {
-      def property = properties.nextProperty();
-      if (property.getDefinition().isMultiple()) {
-        // A multi-valued property, print all values
-        def values = property.getValues();
-        for (int i = 0; i < values.length; i++) {
-          println(property.getPath() + " = " + values[i].getString());
-        }
-      } else {
-        // A single-valued property
-        println(property.getPath() + " = " + property.getString());
-      }
-    }
-    // Finally output all the child nodes recursively
-    def nodes = node.getNodes();
-    while (nodes.hasNext()) {
-      printNode(nodes.nextNode());
-    }
-  }
 }
-
-
 
 class TestEntity {
   //using id field as based APIs required,

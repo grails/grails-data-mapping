@@ -1,31 +1,25 @@
 package org.springframework.datastore.mapping.jcr.engine;
 
-import org.apache.jackrabbit.core.NodeImpl;
-import org.apache.jackrabbit.core.nodetype.NodeTypeManagerImpl;
-import org.apache.jackrabbit.ocm.mapper.model.ClassDescriptor;
-import org.apache.jackrabbit.ocm.mapper.model.FieldDescriptor;
+
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.engine.AssociationIndexer;
-import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
 import org.springframework.datastore.mapping.jcr.util.JcrConstants;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
-import org.springframework.datastore.mapping.model.PersistentProperty;
-import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.node.engine.AbstractNodeEntityPersister;
 import org.springframework.extensions.jcr.JcrCallback;
 import org.springframework.extensions.jcr.JcrTemplate;
 
 import javax.jcr.*;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -45,7 +39,7 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
         super(context, entity, session);
         typeConverter = new SimpleTypeConverter();
         this.jcrTemplate = jcrTemplate;
-        this.jcrTemplate.setAllowCreate(true);
+        //this.jcrTemplate.setAllowCreate(true);
     }
 
     public JcrEntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
@@ -59,7 +53,6 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
         Node node = jcrTemplate.getNodeByUUID((String) associationId);
         try {
             parentEntity.setProperty(property, node);
-            Property pro = parentEntity.getProperty(property);          
         } catch (RepositoryException e) {
             e.printStackTrace();
         }
@@ -77,6 +70,8 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
 
     @Override
     protected void deleteEntry(final String key) {
+        System.out.println("deleteEntry");
+
         Node node = jcrTemplate.getNodeByUUID(key);
         try {
             node.remove();
@@ -124,13 +119,18 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
 
     //TODO Re-implement retrieveEntry to use Query instead.
     @Override
-    protected Node retrieveEntry(PersistentEntity persistentEntity,final Serializable key) {
-       return (Node) jcrTemplate.execute(new JcrCallback() {
+    protected Node retrieveEntry(final PersistentEntity persistentEntity,final Serializable key) {
+        System.out.println("retrieveEntry");
+        return (Node) jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
+               // Workspace ws = session.getWorkspace();
+                //QueryManager qm = ws.getQueryManager();
+               // Query q = qm.createQuery("//"+persistentEntity.getJavaClass().getSimpleName()+"[@id = '"+getString(key)+"']",Query.XPATH);
+               // System.out.println(q.getStatement());
                 try{
-                    return session.getNodeByUUID(getString(key));
+                   return session.getNodeByUUID(getString(key));
                 }catch(ItemNotFoundException ex){   //getNodeByUUID always throws ItemNotFoundException when Node doesn't exist
-                    return null;
+                return null;
                 }
             }
         });
@@ -188,13 +188,10 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
         if(id != null) {
         jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
-                List<String> pns = persistentEntity.getPersistentPropertyNames();
-                for(String p: pns)
-                    System.out.println(p);
+                List<String> pns = persistentEntity.getPersistentPropertyNames();                
                 Node node = session.getNodeByUUID(id);
                 node.checkout();
                 for (String propName : pns) {
-                    System.out.println("property: "+propName);
                     node.setProperty(propName, entry.getProperty(propName).getValue());
                 }
                 node.save();
