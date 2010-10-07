@@ -18,14 +18,15 @@ class OneToOneAssociationTests extends AbstractJcrTest {
 
     conn.persist(b)
 
-    b = conn.retrieve(Post, b.id)
+    b = conn.retrieve(Blog, b.id)
 
     assert b != null
     assert "Greame Rocher" == b.author
     assert b.post != null
     assert "foo" == b.post.title
     assert "bar" == b.post.text
-  }
+
+   }
 }
 
 @Entity

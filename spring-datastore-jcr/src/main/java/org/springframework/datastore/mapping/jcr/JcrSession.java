@@ -9,10 +9,8 @@ import org.springframework.datastore.mapping.jcr.engine.JcrEntityPersister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.transactions.Transaction;
-import org.springframework.extensions.jcr.JcrSessionFactory;
-import org.springframework.extensions.jcr.JcrTemplate;
+import org.springframework.extensions.jcr.*;
 import org.springframework.extensions.jcr.support.OpenSessionInViewInterceptor;
-import org.springframework.transaction.TransactionSystemException;
 
 
 import javax.jcr.Repository;
@@ -48,7 +46,7 @@ public class JcrSession extends AbstractSession<JcrSessionFactory> {
 
     @Override
     public void disconnect(){
-       // interceptor.afterCompletion(null, null, null, null);    
+        interceptor.afterCompletion(null, null, null, null);    
         try{
             ((TransientRepository)jcrSessionFactory.getRepository()).shutdown();
             super.disconnect();
@@ -68,8 +66,8 @@ public class JcrSession extends AbstractSession<JcrSessionFactory> {
     }
 
     @Override
-    protected Transaction beginTransactionInternal() {
-        throw new TransactionSystemException("Transactions have not yet implemented");
+    protected Transaction beginTransactionInternal() {     
+        return new JcrTransaction(jcrSessionFactory);           
     }
 
     public Session getNativeInterface() {
