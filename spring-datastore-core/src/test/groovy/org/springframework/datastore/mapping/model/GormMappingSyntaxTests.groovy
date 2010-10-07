@@ -128,29 +128,38 @@ class GormMappingSyntaxTests {
 }
 @grails.persistence.Entity
 class Book {
+    Long id
     String title
+    Author author
     static belongsTo = [author:Author]  
 }
 @grails.persistence.Entity
 class Author {
+    Long id
     String name
+    Set books
     static hasMany = [books:Book]
 }
 @grails.persistence.Entity
 class Publisher {
+  Long id
+  Set authors
   static hasMany = [authors:Author]
 }
 @grails.persistence.Entity
 class TestEntity {
-
+  Long id
+  Long version
   String name
   String bar
 
+  SecondEntity second
   static hasOne = [second:SecondEntity]
   static transients = ['bar']
 }
 @grails.persistence.Entity
 class SecondEntity {
+  Long id
   String name
   String bar
 

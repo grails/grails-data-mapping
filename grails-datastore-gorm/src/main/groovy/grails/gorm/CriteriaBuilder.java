@@ -569,6 +569,9 @@ public class CriteriaBuilder extends GroovyObjectSupport {
         return c;
     }
 
+    public Query getQuery() {
+        return query;
+    }
 
     public void build(Closure criteria) {
         if(criteria != null) {

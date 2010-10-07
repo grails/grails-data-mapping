@@ -34,12 +34,12 @@ import grails.gorm.tests.ProxyLoadingSpec
 //  FindByMethodSpec,
 //  ListOrderBySpec,
 //  GroovyProxySpec,
-//  DomainEventsSpec,
+  DomainEventsSpec,
 //  CriteriaBuilderSpec,
 //  NegationSpec,
 //  UpdateWithProxyPresentSpec,
 //  AttachMethodSpec,
-  WithTransactionSpec
+//  WithTransactionSpec
 ])
 class SimpleMapTestSuite {
 }

@@ -94,6 +94,9 @@ class NamedCriteriaProxy {
             if (paramsMap?.offset) {
                 firstResult conversionService.convert(paramsMap.offset, Integer)
             }
+            if(paramsMap) {
+              DynamicFinder.populateArgumentsForCriteria(entity.javaClass, queryBuilder.query, paramsMap)
+            }
 
         }
         entity.javaClass.withCriteria(listClosure)

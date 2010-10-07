@@ -197,7 +197,7 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
       }
 
     then:
-      [40, 41, 42, 43] == results
+      [40, 41, 42, 43] == results.sort()
   }
 
   void "Test obtain association entity using property projection"() {

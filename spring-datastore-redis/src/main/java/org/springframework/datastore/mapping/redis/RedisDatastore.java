@@ -17,6 +17,7 @@ package org.springframework.datastore.mapping.redis;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
@@ -27,6 +28,7 @@ import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingCon
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.model.types.BasicTypeConverterRegistrar;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.redis.engine.RedisEntityPersister;
 import org.springframework.datastore.mapping.redis.util.JedisTemplate;
@@ -93,103 +95,6 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
         }
 
         initializeConverters(mappingContext);
-    }
-
-    private void initializeConverters(MappingContext mappingContext) {
-        final GenericConversionService conversionService = mappingContext.getConversionService();
-
-        conversionService.addConverter(new Converter<Date, String>() {
-            public String convert(Date date) {
-                return String.valueOf(date.getTime());
-            }
-        });
-
-        conversionService.addConverter(new Converter<Integer, Long>() {
-            public Long convert(Integer integer) {
-                return integer.longValue();
-            }
-        });
-
-        conversionService.addConverter(new Converter<Integer, Double>() {
-            public Double convert(Integer integer) {
-                return integer.doubleValue();
-            }
-        });
-
-
-        conversionService.addConverter(new Converter<String, Date>() {
-
-            public Date convert(String s) {
-                try {
-                    final Long time = Long.valueOf(s);
-                    return new Date(time);
-                } catch (NumberFormatException e) {
-                    // ignore
-                }
-                return null;
-            }
-        });
-
-        conversionService.addConverter(new Converter<String, Double>() {
-
-            public Double convert(String s) {
-                try {
-                    return Double.valueOf(s);
-                } catch (NumberFormatException e) {
-                    return (double) 0;
-                }
-            }
-        });
-
-        conversionService.addConverter(new Converter<String, Integer>() {
-
-            public Integer convert(String s) {
-                try {
-                    return Integer.valueOf(s);
-                } catch (NumberFormatException e) {
-                    // ignore
-                }
-                return 0;
-            }
-        });
-        conversionService.addConverter(new Converter<String, Long>() {
-
-            public Long convert(String s) {
-                try {
-                    return Long.valueOf(s);
-                } catch (NumberFormatException e) {
-                    // ignore
-                }
-                return 0L;
-            }
-        });
-
-        conversionService.addConverter(new Converter<Object, String>() {
-            public String convert(Object o) {
-                return o.toString();
-            }
-        });
-
-        conversionService.addConverter(new Converter<Calendar, String>() {
-            public String convert(Calendar calendar) {
-                return String.valueOf(calendar.getTime().getTime());
-            }
-        });
-
-        conversionService.addConverter(new Converter<String, Calendar>() {
-
-            public Calendar convert(String s) {
-                try {
-                    Date date = new Date(Long.valueOf(s));
-                    Calendar c = new GregorianCalendar();
-                    c.setTime(date);
-                    return c;
-                } catch (NumberFormatException e) {
-                    return null;
-                }
-            }
-        });
-
     }
 
     private boolean useJedis() {

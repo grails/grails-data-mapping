@@ -202,6 +202,7 @@
       <module fileurl="file://$PROJECT_DIR$/spring-datastore-cassandra/cassandra.iml" filepath="$PROJECT_DIR$/spring-datastore-cassandra/cassandra.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-datastore-core/core.iml" filepath="$PROJECT_DIR$/spring-datastore-core/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm/grails-datastore-gorm.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm/grails-datastore-gorm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-gemfire/grails-datastore-gorm-gemfire.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-gemfire/grails-datastore-gorm-gemfire.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-redis/grails-datastore-gorm-redis.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-redis/grails-datastore-gorm-redis.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-tck/grails-datastore-gorm-tck.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-tck/grails-datastore-gorm-tck.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-test/grails-datastore-gorm-test.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-test/grails-datastore-gorm-test.iml" />
@@ -210,6 +211,7 @@
       <module fileurl="file://$PROJECT_DIR$/grails-plugins/redis/redis-grails-plugin.iml" filepath="$PROJECT_DIR$/grails-plugins/redis/redis-grails-plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-datastore-simple/simple.iml" filepath="$PROJECT_DIR$/spring-datastore-simple/simple.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-datastore-mock/simple.iml" filepath="$PROJECT_DIR$/spring-datastore-mock/simple.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-datastore-gemfire/spring-datastore-gemfire.iml" filepath="$PROJECT_DIR$/spring-datastore-gemfire/spring-datastore-gemfire.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-datastore-mongo/spring-datastore-mongo.iml" filepath="$PROJECT_DIR$/spring-datastore-mongo/spring-datastore-mongo.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-datastore-web/web.iml" filepath="$PROJECT_DIR$/spring-datastore-web/web.iml" />
     </modules>
@@ -437,6 +439,20 @@
     <library name="Spring Web MVC">
       <CLASSES>
         <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-webmvc/jars/spring-webmvc-3.0.3.RELEASE.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Gemfire">
+      <CLASSES>
+        <root url="jar://$GRADLE_REPOSITORY$/com.gemstone.gemfire/gemfire/jars/gemfire-6.0.1.A.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Spring Gemfire">
+      <CLASSES>
+        <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data.gemfire/spring-gemfire/jars/spring-gemfire-1.0.0.M1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />

@@ -33,7 +33,7 @@ import grails.gorm.tests.ValidationSpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-//  DomainEventsSpec,
+  DomainEventsSpec,
 //  ProxyLoadingSpec,
 //  QueryAfterPropertyChangeSpec,
 //  CircularOneToManySpec,
@@ -52,7 +52,7 @@ import grails.gorm.tests.ValidationSpec
 //  UpdateWithProxyPresentSpec,
 //  AttachMethodSpec,
 //  WithTransactionSpec,
-  CrudOperationsSpec
+//  CrudOperationsSpec
 ])
 class RedisSuite {
 }

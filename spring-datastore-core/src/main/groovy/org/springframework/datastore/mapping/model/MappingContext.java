@@ -14,7 +14,9 @@
  */
 package org.springframework.datastore.mapping.model;
 
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.datastore.mapping.proxy.ProxyFactory;
 import org.springframework.validation.Validator;
@@ -88,7 +90,14 @@ public interface MappingContext {
      * Obtains the ConversionService instance to use for type conversion
      * @return The conversion service instance
      */
-    GenericConversionService getConversionService();
+    ConversionService getConversionService();
+
+    /**
+     * Obtains the converter registry
+     *
+     * @return The converter registry used for type conversion
+     */
+    ConverterRegistry getConverterRegistry();
 
     /**
      * Obtains a validator for the given entity

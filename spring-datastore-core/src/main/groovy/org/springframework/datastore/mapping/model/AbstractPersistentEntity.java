@@ -47,7 +47,7 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
         if(javaClass == null) throw new IllegalArgumentException("The argument [javaClass] cannot be null");
         this.javaClass = javaClass;
         this.context = context;
-        this.decapitalizedName = Introspector.decapitalize(javaClass.getName());
+        this.decapitalizedName = Introspector.decapitalize(javaClass.getSimpleName());
     }
 
     public MappingContext getMappingContext() {

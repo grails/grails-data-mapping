@@ -14,9 +14,14 @@
  */
 package org.springframework.datastore.mapping.core;
 
+import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.datastore.mapping.engine.EntityInterceptor;
 import org.springframework.datastore.mapping.engine.EntityInterceptorAware;
+import org.springframework.datastore.mapping.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.model.MappingContext;
+import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.model.PropertyMapping;
+import org.springframework.datastore.mapping.model.types.BasicTypeConverterRegistrar;
 import org.springframework.datastore.mapping.validation.ValidatingInterceptor;
 
 import java.util.*;
@@ -126,5 +131,17 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
      */
     public static void clearCurrentConnection() {
         currentConnectionThreadLocal.set(null);
+    }
+
+    protected void initializeConverters(MappingContext mappingContext) {
+        final ConverterRegistry conversionService = mappingContext.getConverterRegistry();
+        BasicTypeConverterRegistrar registrar = new BasicTypeConverterRegistrar();
+        registrar.register(conversionService);
+    }
+
+    protected boolean isIndexed(PersistentProperty property) {
+        PropertyMapping<KeyValue> pm = property.getMapping();
+        final KeyValue keyValue = pm.getMappedForm();
+        return keyValue != null && keyValue.isIndex();
     }
 }

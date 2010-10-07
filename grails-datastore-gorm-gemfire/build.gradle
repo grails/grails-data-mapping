@@ -1,0 +1,7 @@
+dependencies {
+  compile project(":grails-datastore-gorm"),
+		  project(":spring-datastore-gemfire"),
+		  project(":spring-datastore-core")
+  testCompile project(":grails-datastore-gorm-test"),project(":grails-datastore-gorm-tck")
+}
+jar.appendix = 'gorm-gemfire'

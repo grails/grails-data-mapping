@@ -225,10 +225,6 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
         return nativeKey;
     }
 
-    public Object proxy(Serializable key) {
-        return getProxyFactory().createProxy(session, getPersistentEntity().getJavaClass(), key);
-    }
-
     public Serializable refresh(Object o) {
         final PersistentEntity entity = getPersistentEntity();
         EntityAccess ea = createEntityAccess(entity, o);

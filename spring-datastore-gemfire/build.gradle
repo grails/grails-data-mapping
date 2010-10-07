@@ -1,0 +1,15 @@
+repositories {
+  mavenRepo urls:'http://maven.springframework.org/milestone'
+  mavenRepo urls:'http://dist.gemstone.com/maven/release'
+}
+dependencies {
+  compile project(":spring-datastore-core")
+  compile('org.springframework.data.gemfire:spring-gemfire:1.0.0.M1') {
+     exclude module:'spring-context'
+     exclude module:'spring-tx'
+  }
+  compile('com.gemstone.gemfire:gemfire:6.0.1.A') {
+     exclude module:'antlr'
+  }  
+}
+jar.appendix = 'gemfire'

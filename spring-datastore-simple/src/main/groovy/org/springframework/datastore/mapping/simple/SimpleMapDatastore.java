@@ -40,35 +40,14 @@ public class SimpleMapDatastore extends AbstractDatastore{
      * @param datastore The datastore to back on to
      */
     public SimpleMapDatastore(Map<String, Map> datastore) {
+        this();
         this.datastore = datastore;
-        initConverters();
     }
 
     public SimpleMapDatastore() {
         super(new KeyValueMappingContext(""));
-        initConverters();
-    }
+        initializeConverters(getMappingContext());
 
-    private void initConverters() {
-        final ConverterRegistry registry = getMappingContext().getConversionService();
-        registry.addConverter( new Converter<String, Long>() {
-            public Long convert(String s) {
-                try {
-                    return Long.valueOf(s);
-                } catch (NumberFormatException e) {
-                    return 0L;
-                }
-            }
-        });
-        registry.addConverter( new Converter<String, Integer>() {
-            public Integer convert(String s) {
-                try {
-                    return Integer.valueOf(s);
-                } catch (NumberFormatException e) {
-                    return 0;
-                }
-            }
-        });
     }
 
     public Map getIndices() {

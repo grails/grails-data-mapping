@@ -47,7 +47,7 @@ public abstract class LockableEntityPersister extends EntityPersister{
     /**
      * Acquire a lock using the given identifier and timeout delay
      * @param id the identifier
-     * @param timeout the amount of time to wait before giving up
+     * @param timeout the amount of time to wait before giving up in seconds
      * @return The locked object
      * @throws CannotAcquireLockException
      */
@@ -66,4 +66,7 @@ public abstract class LockableEntityPersister extends EntityPersister{
      */
     public abstract void unlock(Object o);
 
+    public Object proxy(Serializable key) {
+        return getProxyFactory().createProxy(session, getPersistentEntity().getJavaClass(), key);
+    }
 }
