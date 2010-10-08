@@ -14,7 +14,7 @@ import org.junit.runner.RunWith
  */
 @RunWith(Suite)
 @SuiteClasses([
-//  NamedQuerySpec,
+  NamedQuerySpec,
 //  CriteriaBuilderSpec,
 //  OrderBySpec,
 //  CommonTypesPersistenceSpec,

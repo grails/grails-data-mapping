@@ -10,6 +10,7 @@ import org.springframework.validation.Validator
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.datastore.mapping.model.MappingContext
 import com.gemstone.gemfire.cache.Cache
+import org.grails.datastore.gorm.gemfire.GemfireGormEnhancer
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,7 +42,7 @@ class Setup {
             }
     ] as Validator)
 
-    def enhancer = new GormEnhancer(gemfire, new DatastoreTransactionManager(datastore: gemfire))
+    def enhancer = new GemfireGormEnhancer(gemfire, new DatastoreTransactionManager(datastore: gemfire))
     enhancer.enhance()
 
     gemfire.mappingContext.addMappingContextListener({ e ->

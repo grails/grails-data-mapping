@@ -109,6 +109,20 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         return gemfireTemplates.get(entity);
     }
 
+    /**
+     * Obtains the template used to query data for a particular entity
+     *
+     * @param entity The entity to use
+     * @return The template
+     */
+    public GemfireTemplate getTemplate(Class entity) {
+        final PersistentEntity e = getMappingContext().getPersistentEntity(entity.getName());
+        if(e != null) {
+            return gemfireTemplates.get(e);
+        }
+        return null;
+    }
+
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
         return new GemfireSession(this, mappingContext);

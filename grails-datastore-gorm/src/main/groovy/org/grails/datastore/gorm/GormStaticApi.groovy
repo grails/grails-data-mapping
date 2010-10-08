@@ -264,23 +264,23 @@ class GormStaticApi extends AbstractGormApi {
     unsupported("find")
   }
 
-  def findAll(String query) {
+  List findAll(String query) {
     unsupported("findAll")
   }
 
-  def findAll(String query, Map args) {
+  List findAll(String query, Map args) {
     unsupported("findAll")
   }
 
-  def findAll(String query, Map params, Map args) {
+  List findAll(String query, Map params, Map args) {
     unsupported("findAll")
   }
 
-  def findAll(String query, Collection params) {
+  List findAll(String query, Collection params) {
     unsupported("find")
   }
 
-  def findAll(String query, Collection params, Map args) {
+  List findAll(String query, Collection params, Map args) {
     unsupported("findAll")
   }
 

@@ -62,6 +62,7 @@ public class GemfireSession extends AbstractSession<Cache> {
         return ((GemfireDatastore)getDatastore()).getGemfireCache();
     }
 
+
     private class GemfireTransaction implements Transaction<CacheTransactionManager> {
 
         private CacheTransactionManager transactionManager;
