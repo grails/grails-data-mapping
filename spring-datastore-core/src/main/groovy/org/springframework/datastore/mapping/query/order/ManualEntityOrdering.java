@@ -112,14 +112,17 @@ public class ManualEntityOrdering {
                         }
 
                         if(readMethod != null) {
-                            Object left = ReflectionUtils.invokeMethod(readMethod, o1);
-                            Object right = ReflectionUtils.invokeMethod(readMethod, o2);
+                            final Class<?> declaringClass = readMethod.getDeclaringClass();
+                            if(declaringClass.isInstance(o1) && declaringClass.isInstance(o2)) {
+                                Object left = ReflectionUtils.invokeMethod(readMethod, o1);
+                                Object right = ReflectionUtils.invokeMethod(readMethod, o2);
 
-                            if(left == null && right == null) return 0;
-                            else if(left != null && right == null) return 1;
-                            else if(left == null) return -1;
-                            else if((left instanceof Comparable) && (right instanceof Comparable)) {
-                                return ((Comparable)left).compareTo(right);
+                                if(left == null && right == null) return 0;
+                                else if(left != null && right == null) return 1;
+                                else if(left == null) return -1;
+                                else if((left instanceof Comparable) && (right instanceof Comparable)) {
+                                    return ((Comparable)left).compareTo(right);
+                                }
                             }
                         }
                     }
