@@ -265,7 +265,8 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
                                             toUnindex.put(prop, oldValue);
                                     }
                                 }
-                                setEntryAssociatedValue(e, propName, associationId);
+                                //setEntryAssociatedValue(e, propName, associationId);
+                                 setEntryValue(e, propName,associationId);
                                 if (association.isBidirectional()) {
                                     Association inverse = association.getInverseSide();
                                     if (inverse instanceof OneToMany) {
@@ -370,9 +371,6 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
         return null;
     }
 
-    public Query createQuery() {
-        return null;
-    }
 
     public Serializable refresh(Object o) {
         return null;
@@ -388,8 +386,9 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
      * @param nativeEntry  The native entry such as a JCR Node etc.
      * @param propertyName The Property Name
      * @param associationId  The Association Id
-     */
+
     protected abstract void setEntryAssociatedValue(T nativeEntry, String propertyName, Serializable associationId);
+    */
 
     protected abstract K generateIdentifier(PersistentEntity persistentEntity, T tmp);
 

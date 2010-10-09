@@ -4,16 +4,16 @@ package org.springframework.datastore.mapping.jcr.engine;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.jcr.JcrSession;
 import org.springframework.datastore.mapping.jcr.util.JcrConstants;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.node.engine.AbstractNodeEntityPersister;
+import org.springframework.datastore.mapping.query.JcrQuery;
 import org.springframework.extensions.jcr.JcrCallback;
 import org.springframework.extensions.jcr.JcrTemplate;
 
 import javax.jcr.*;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +29,10 @@ import java.util.List;
  * @since 1.0
  */
 public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String> {
+
+    private static String parentNodeUUID = null;
+    private static String rootParentUUID = null;
+    private static Class clazz = null;
 
     private JcrTemplate jcrTemplate;
     private SimpleTypeConverter typeConverter;
@@ -47,18 +51,7 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     }
 
   
-
-    @Override
-    protected void setEntryAssociatedValue(Node parentEntity, String property, Serializable associationId) {
-        Node node = jcrTemplate.getNodeByUUID((String) associationId);
-        try {
-            parentEntity.setProperty(property, node);
-        } catch (RepositoryException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
+   @Override
     protected String generateIdentifier(PersistentEntity persistentEntity, Node tmp) {
         try {
             return tmp.getUUID();
@@ -112,14 +105,14 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
             }
 
         } catch (Exception e) {
-            //throw new DataAccessResourceFailureException("Exception occurred cannot getProperty from Node: " + e.getMessage(), e);
-            return null;
+            throw new DataAccessResourceFailureException("Exception occurred cannot getProperty from Node: " + e.getMessage(), e);
         }
     }
 
     //TODO Re-implement retrieveEntry to use Query instead.
+
     @Override
-    protected Node retrieveEntry(final PersistentEntity persistentEntity,final Serializable key) {
+    protected Node retrieveEntry(final PersistentEntity persistentEntity, final Serializable key) {
         System.out.println("retrieveEntry");
         return (Node) jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
@@ -127,10 +120,10 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                 //QueryManager qm = ws.getQueryManager();
                // Query q = qm.createQuery("//"+persistentEntity.getJavaClass().getSimpleName()+"[@id = '"+getString(key)+"']",Query.XPATH);
                // System.out.println(q.getStatement());
-                try{
-                   return session.getNodeByUUID(getString(key));
-                }catch(ItemNotFoundException ex){   //getNodeByUUID always throws ItemNotFoundException when Node doesn't exist
-                return null;
+                try {
+                    return session.getNodeByUUID(getString(key));
+                } catch (ItemNotFoundException ex) {   //getNodeByUUID always throws ItemNotFoundException when Node doesn't exist
+                    return null;
                 }
             }
         });
@@ -140,19 +133,38 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
         return typeConverter.convertIfNecessary(key, String.class);
     }
 
+
+    //TODO Write Document how createNewEntry Method Work
     @Override
-    protected Node createNewEntry(final PersistentEntity persistentEntity) {
-        return (Node) jcrTemplate.execute(new JcrCallback() {
-            public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
-                Node rootNode = session.getRootNode();
-                Node node = rootNode.addNode(persistentEntity.getJavaClass().getSimpleName(), JcrConstants.DEFAULT_JCR_TYPE);
+    protected  Node createNewEntry(final PersistentEntity persistentEntity) {
+        try {
+            Node node = null;
+            if (parentNodeUUID == null && rootParentUUID == null) {
+                Node rootNode = jcrTemplate.getRootNode();
+                node = rootNode.addNode(persistentEntity.getJavaClass().getSimpleName(), JcrConstants.DEFAULT_JCR_TYPE);
                 node.addMixin(JcrConstants.MIXIN_REFERENCEABLE);
-                node.addMixin(JcrConstants.MIXIN_VERSIONABLE);
-                node.addMixin(JcrConstants.MIXIN_LOCKABLE);
-                return node;
+                rootParentUUID = node.getUUID();
+                parentNodeUUID = node.getUUID();
+            } else if (rootParentUUID != null && parentNodeUUID != null && (clazz != null && clazz.equals(persistentEntity.getJavaClass()))) {
+                Node parentNode = jcrTemplate.getNodeByUUID(rootParentUUID);
+                node = parentNode.addNode(persistentEntity.getJavaClass().getSimpleName(), JcrConstants.DEFAULT_JCR_TYPE);
+                node.addMixin(JcrConstants.MIXIN_REFERENCEABLE);
+                parentNodeUUID = node.getUUID();
+            } else {
+                Node parentNode = jcrTemplate.getNodeByUUID(parentNodeUUID);
+                node = parentNode.addNode(persistentEntity.getJavaClass().getSimpleName(), JcrConstants.DEFAULT_JCR_TYPE);
+                node.addMixin(JcrConstants.MIXIN_REFERENCEABLE);
+                clazz = persistentEntity.getJavaClass();
+                parentNodeUUID = node.getUUID();
             }
-        });
+            node.addMixin(JcrConstants.MIXIN_VERSIONABLE);
+            node.addMixin(JcrConstants.MIXIN_LOCKABLE);
+            return node;
+        } catch (RepositoryException e) {
+            throw new DataAccessResourceFailureException("Exception occurred cannot create Node: " + e.getMessage(), e);
+        }
     }
+
 
     @Override
     protected void setEntryValue(Node nativeEntry, String propertyName, Object value) {
@@ -203,6 +215,13 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     }
 
 
+    public org.springframework.datastore.mapping.query.Query createQuery() {
+        System.out.println("createQuery");
+        return new JcrQuery((JcrSession) getSession(), getJcrTemplate(), getPersistentEntity(), this);  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
+    public JcrTemplate getJcrTemplate() {
+        return jcrTemplate;
+    }
 }
 
