@@ -43,7 +43,7 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
         super(context, entity, session);
         typeConverter = new SimpleTypeConverter();
         this.jcrTemplate = jcrTemplate;
-        //this.jcrTemplate.setAllowCreate(true);
+        this.jcrTemplate.setAllowCreate(true);
     }
 
     public JcrEntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
