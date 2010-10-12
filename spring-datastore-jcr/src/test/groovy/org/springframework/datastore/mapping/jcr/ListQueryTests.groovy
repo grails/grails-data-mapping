@@ -2,25 +2,54 @@ package org.springframework.datastore.mapping.jcr
 
 import org.junit.Test
 import org.springframework.datastore.mapping.query.Query
+import org.junit.AfterClass
+import org.junit.BeforeClass
+import javax.jcr.Session
 
 /**
- * 
+ *
  * @author Erawat Chamanont
  * @since 1.0
  */
-class ListQueryTests extends AbstractJcrTest{
+class ListQueryTests {
+
+  protected static def conn = null
+  protected static def ds = null
+
+  @BeforeClass
+  public static void setupJCR() {
+    ds = new JcrDatastore()
+    def connectionDetails = [username: "username",
+            password: "password",
+            workspace: "default",
+            configuration: "classpath:repository.xml",
+            homeDir: "/temp/repo"];
+    conn = ds.connect(connectionDetails)
+  }
+
+  @AfterClass
+  public static void tearDown() {
+    def session = conn.getNativeInterface();
+    if (session.itemExists("/Author")) {
+        print true;
+        javax.jcr.Node node = session.getRootNode().getNode("Author")
+        print node.getPath();
+        node.remove()
+        session.save()
+    }
+    conn.disconnect()
+  }
 
   @Test
   void testListQuery() {
     ds.mappingContext.addPersistentEntity(Author)
 
-    def a = new Author(name:"Stephen King")
+    def a = new Author(name: "Stephen King")
     a.books = [
-            new Book(title:"The Stand"),
-            new Book(title:"It")]
+            new Book(title: "The Stand"),
+            new Book(title: "It")]
 
     conn.persist(a)
-
 
     Query q = conn.createQuery(Book)
 
@@ -43,21 +72,18 @@ class ListQueryTests extends AbstractJcrTest{
   void testDisjunction() {
     ds.mappingContext.addPersistentEntity(Author)
 
-    def a = new Author(name:"Stephen King")
+    def a = new Author(name: "Stephen King")
     a.books = [
-            new Book(title:"The Stand"),
-            new Book(title:"It")  ,
-            new Book(title:"The Shining")
+            new Book(title: "The Stand"),
+            new Book(title: "It"),
+            new Book(title: "The Shining")
     ]
 
     conn.persist(a)
 
 
     Query q = conn.createQuery(Book)
-    q
-     .disjunction()
-     .add( eq( "title", "The Stand" ) )
-     .add( eq( "title", "It" ) )
+    q.disjunction().add(eq("title", "The Stand")).add(eq("title", "It"))
 
     def results = q.list()
 
@@ -69,23 +95,19 @@ class ListQueryTests extends AbstractJcrTest{
   void testIdProjection() {
     ds.mappingContext.addPersistentEntity(Author)
 
-    def a = new Author(name:"Stephen King")
+    def a = new Author(name: "Stephen King")
     a.books = [
-            new Book(title:"The Stand"),
-            new Book(title:"It")  ,
-            new Book(title:"The Shining")
+            new Book(title: "The Stand"),
+            new Book(title: "It"),
+            new Book(title: "The Shining")
     ]
 
     conn.persist(a)
 
 
     Query q = conn.createQuery(Book)
-    q
-     .disjunction()
-     .add( eq( "title", "The Stand" ) )
-     .add( eq( "title", "It" ) )
-    q.projections()
-      .id()
+    q.disjunction().add(eq("title", "The Stand")).add(eq("title", "It"))
+    q.projections().id()
 
 
     def results = q.list()
@@ -98,10 +120,10 @@ class ListQueryTests extends AbstractJcrTest{
   void testSimpleQuery() {
     ds.mappingContext.addPersistentEntity(Author)
 
-    def a = new Author(name:"Stephen King")
+    def a = new Author(name: "Stephen King")
     a.books = [
-            new Book(title:"The Stand"),
-            new Book(title:"It")
+            new Book(title: "The Stand"),
+            new Book(title: "It")
     ]
 
     conn.persist(a)
