@@ -9,8 +9,9 @@ import org.springframework.util.StringUtils
 import org.springframework.validation.Validator
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.datastore.mapping.model.MappingContext
-import com.gemstone.gemfire.cache.Cache
+
 import org.grails.datastore.gorm.gemfire.GemfireGormEnhancer
+import org.springframework.datastore.mapping.gemfire.config.GormGemfireMappingFactory
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,7 +26,9 @@ class Setup {
     gemfire?.destroy()
   }
   static Session setup(classes) {
-    gemfire = new GemfireDatastore(new KeyValueMappingContext(""), [:])
+    def context = new KeyValueMappingContext("")
+    context.mappingFactory = new GormGemfireMappingFactory()
+    gemfire = new GemfireDatastore(context)
     gemfire.afterPropertiesSet()
     for(cls in classes) {
       gemfire.mappingContext.addPersistentEntity(cls)
@@ -36,7 +39,7 @@ class Setup {
     gemfire.mappingContext.addEntityValidator(entity, [
             supports: { Class c -> true },
             validate: { Object o, Errors errors ->
-                if(!StringUtils.hasText(o.name)) {
+                if(!StringUtils.hasText(o.region)) {
                   errors.rejectValue("name", "name.is.blank")
                 }
             }

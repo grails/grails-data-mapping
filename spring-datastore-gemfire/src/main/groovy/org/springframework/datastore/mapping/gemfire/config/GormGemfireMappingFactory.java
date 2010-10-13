@@ -12,31 +12,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.datastore.mapping.keyvalue.mapping.config;
+package org.springframework.datastore.mapping.gemfire.config;
 
 import groovy.lang.Closure;
 import org.springframework.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.springframework.datastore.mapping.keyvalue.mapping.Family;
 import org.springframework.datastore.mapping.keyvalue.mapping.KeyValue;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingFactory;
+import org.springframework.datastore.mapping.keyvalue.mapping.config.GormKeyValueMappingFactory;
 import org.springframework.datastore.mapping.model.PersistentEntity;
-import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.config.GormProperties;
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
+ *
+ * Allows GORM-style configuration of how an entity maps to a
+ * Gemfire region
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
-public class GormKeyValueMappingFactory extends KeyValueMappingFactory {
+public class GormGemfireMappingFactory extends GormKeyValueMappingFactory {
 
-    protected Map<PersistentEntity, Map> entityToPropertyMap = new HashMap<PersistentEntity, Map>();
 
-    public GormKeyValueMappingFactory(String keyspace) {
-        super(keyspace);
+    public GormGemfireMappingFactory() {
+        super("Gemfire");
     }
 
     @Override
@@ -44,7 +43,7 @@ public class GormKeyValueMappingFactory extends KeyValueMappingFactory {
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
         final Closure value = cpf.getStaticPropertyValue(GormProperties.MAPPING, Closure.class);
         if(value != null) {
-            Family family = new Family();
+            Region family = new Region();
             MappingConfigurationBuilder builder = new MappingConfigurationBuilder(family, KeyValue.class);
             builder.evaluate(value);
             entityToPropertyMap.put(entity, builder.getProperties());
@@ -53,14 +52,5 @@ public class GormKeyValueMappingFactory extends KeyValueMappingFactory {
         else {
             return super.createMappedForm(entity);
         }
-    }
-
-    @Override
-    public KeyValue createMappedForm(PersistentProperty mpp) {
-        Map properties = entityToPropertyMap.get(mpp.getOwner());
-        if(properties != null && properties.containsKey(mpp.getName())) {
-            return (KeyValue) properties.get(mpp.getName());
-        }
-        return super.createMappedForm(mpp);
     }
 }

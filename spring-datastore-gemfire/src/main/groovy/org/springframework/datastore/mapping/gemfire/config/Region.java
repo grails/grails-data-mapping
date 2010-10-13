@@ -38,11 +38,11 @@ public class Region extends Family {
         return regionAttributes;
     }
 
-    public void setName(String name) {
+    public void setRegion(String name) {
         setFamily(name);
     }
 
-    public String getName() { return getFamily(); }
+    public String getRegion() { return getFamily(); }
     
     public void setRegionAttributes(RegionAttributes regionAttributes) {
         this.regionAttributes = regionAttributes;

@@ -53,6 +53,7 @@ public class GemfireQuery extends Query {
     public static final String LOGICAL_OR = " OR ";
     private ManualEntityOrdering ordering;
     private ManualProjections manualProjections;
+    private String regionName;
 
     private static interface QueryHandler {
         public int handle(PersistentEntity entity, Criterion criterion, StringBuilder query, List params, int index);
@@ -280,6 +281,24 @@ public class GemfireQuery extends Query {
         gemfireDatastore = (GemfireDatastore) session.getDatastore();
         this.ordering = new ManualEntityOrdering(entity);
         this.manualProjections = new ManualProjections(entity);
+        final org.springframework.datastore.mapping.gemfire.config.Region region = getMappedRegionInfo(entity);
+
+        if(region != null && region.getRegion() != null) {
+            this.regionName = region.getRegion();
+        }
+        else {
+            this.regionName = entity.getDecapitalizedName();
+        }
+
+    }
+
+    private org.springframework.datastore.mapping.gemfire.config.Region getMappedRegionInfo(PersistentEntity entity) {
+        final Object mappedForm = entity.getMapping().getMappedForm();
+
+        org.springframework.datastore.mapping.gemfire.config.Region mappedRegion = null;
+        if(mappedForm instanceof org.springframework.datastore.mapping.gemfire.config.Region)
+            mappedRegion = (org.springframework.datastore.mapping.gemfire.config.Region) mappedForm;
+        return mappedRegion;
     }
 
     @Override
@@ -413,7 +432,7 @@ public class GemfireQuery extends Query {
     protected String getQueryString(List params, boolean distinct) {
         ProjectionList projectionList = projections();
         String select = SELECT_CLAUSE;
-        String from = FROM_CLAUSE + entity.getDecapitalizedName();
+        String from = FROM_CLAUSE + regionName;
         String where = WHERE_CLAUSE;
 
 

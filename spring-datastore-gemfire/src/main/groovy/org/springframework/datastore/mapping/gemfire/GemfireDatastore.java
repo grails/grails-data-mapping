@@ -15,6 +15,7 @@
 package org.springframework.datastore.mapping.gemfire;
 
 import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.CacheListener;
 import com.gemstone.gemfire.cache.DataPolicy;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.query.CqQuery;
@@ -22,7 +23,6 @@ import com.gemstone.gemfire.cache.query.IndexType;
 import com.gemstone.gemfire.cache.query.QueryService;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.gemfire.CacheFactoryBean;
@@ -30,9 +30,7 @@ import org.springframework.data.gemfire.GemfireTemplate;
 import org.springframework.data.gemfire.RegionFactoryBean;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.model.*;
-import org.springframework.datastore.mapping.model.types.BasicTypeConverterRegistrar;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,6 +58,10 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         mappingContext.addMappingContextListener(this);
     }
 
+    public GemfireDatastore(MappingContext mappingContext) {
+        this(mappingContext, Collections.<String, String>emptyMap());
+    }
+
     protected void initializeRegions(Cache cache, MappingContext mappingContext) throws Exception {
         for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
             initializeRegion(cache, entity);
@@ -74,7 +76,11 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         final QueryService queryService = cache.getQueryService();
         String entityName = entity.getDecapitalizedName();
         final String idName = entity.getIdentity().getName();
-        queryService.createIndex(entityName+"PrimaryKeyIndex", IndexType.PRIMARY_KEY, idName, "/"+entityName);
+
+        org.springframework.datastore.mapping.gemfire.config.Region mappedRegion = getMappedRegionInfo(entity);
+
+        queryService.createIndex(entityName+"PrimaryKeyIndex", IndexType.PRIMARY_KEY, idName, mappedRegion != null && mappedRegion.getRegion() != null ?
+                                                                                              "/" + mappedRegion.getRegion() : "/"+entityName);
         for (PersistentProperty property : properties) {
             final boolean indexed = isIndexed(property) && Comparable.class.isAssignableFrom(property.getType());
 
@@ -88,11 +94,47 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         RegionFactoryBean regionFactory = new RegionFactoryBean();
         regionFactory.setCache(cache);
 
-        regionFactory.setName(entity.getDecapitalizedName());
-        regionFactory.setDataPolicy(DataPolicy.REPLICATE);
+        org.springframework.datastore.mapping.gemfire.config.Region mappedRegion = getMappedRegionInfo(entity);
+
+        final boolean hasMappedRegion = mappedRegion != null;
+        if(hasMappedRegion && mappedRegion.getRegion() != null) {
+            regionFactory.setName(mappedRegion.getRegion());
+        }
+        else {
+            regionFactory.setName(entity.getDecapitalizedName());
+        }
+        if(hasMappedRegion && mappedRegion.getDataPolicy() != null) {
+            regionFactory.setDataPolicy(mappedRegion.getDataPolicy());
+        }
+        else {
+            regionFactory.setDataPolicy(DataPolicy.REPLICATE);
+        }
+        if(hasMappedRegion && mappedRegion.getRegionAttributes() != null) {
+            regionFactory.setAttributes(mappedRegion.getRegionAttributes());
+        }
+        if(hasMappedRegion && mappedRegion.getCacheListeners() != null) {
+            final List<CacheListener> listeners = mappedRegion.getCacheListeners();
+            regionFactory.setCacheListeners(listeners.toArray(new CacheListener[listeners.size()]));
+        }
+        if(hasMappedRegion && mappedRegion.getCacheLoader() != null) {
+            regionFactory.setCacheLoader(mappedRegion.getCacheLoader());
+        }
+        if(hasMappedRegion && mappedRegion.getCacheWriter() != null) {
+            regionFactory.setCacheWriter(mappedRegion.getCacheWriter());
+        }
+
         regionFactory.afterPropertiesSet();
         final Region region = regionFactory.getObject();
         gemfireTemplates.put(entity, new GemfireTemplate(region));
+    }
+
+    private org.springframework.datastore.mapping.gemfire.config.Region getMappedRegionInfo(PersistentEntity entity) {
+        final Object mappedForm = entity.getMapping().getMappedForm();
+
+        org.springframework.datastore.mapping.gemfire.config.Region mappedRegion = null;
+        if(mappedForm instanceof org.springframework.datastore.mapping.gemfire.config.Region)
+            mappedRegion = (org.springframework.datastore.mapping.gemfire.config.Region) mappedForm;
+        return mappedRegion;
     }
 
     public Cache getGemfireCache() {

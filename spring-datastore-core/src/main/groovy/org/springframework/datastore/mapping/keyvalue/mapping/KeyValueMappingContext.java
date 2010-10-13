@@ -20,6 +20,7 @@ import org.springframework.datastore.mapping.model.MappingFactory;
 import org.springframework.datastore.mapping.model.MappingConfigurationStrategy;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.config.GormMappingConfigurationStrategy;
+import org.springframework.util.ClassUtils;
 
 /**
  * A MappingContext used to map objects to a Key/Value store
@@ -29,7 +30,8 @@ import org.springframework.datastore.mapping.model.config.GormMappingConfigurati
  */
 public class KeyValueMappingContext extends AbstractMappingContext {
     protected MappingFactory<Family, KeyValue> mappingFactory;
-    private MappingConfigurationStrategy syntaxStrategy;
+    protected MappingConfigurationStrategy syntaxStrategy;
+    public static final String GROOVY_OBJECT_CLASS = "groovy.lang.GroovyObject";
 
     /**
      * Constructs a context using the given keyspace
@@ -38,11 +40,28 @@ public class KeyValueMappingContext extends AbstractMappingContext {
      */
     public KeyValueMappingContext(String keyspace) {
         if(keyspace == null) throw new IllegalArgumentException("Argument [keyspace] cannot be null");
+        initializeDefualtMappingFactory(keyspace);
 
-        // TODO: Need to abstract the construction of these to support JPA syntax etc.
-        this.mappingFactory = new GormKeyValueMappingFactory(keyspace);
+
         this.syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
     }
+
+    protected void initializeDefualtMappingFactory(String keyspace) {
+        // TODO: Need to abstract the construction of these to support JPA syntax etc.
+        if(ClassUtils.isPresent(GROOVY_OBJECT_CLASS, KeyValueMappingContext.class.getClassLoader()))
+            this.mappingFactory = new GormKeyValueMappingFactory(keyspace);
+        else
+            this.mappingFactory = new KeyValueMappingFactory(keyspace);
+    }
+
+    public void setMappingFactory(MappingFactory<Family, KeyValue> mappingFactory) {
+        this.mappingFactory = mappingFactory;
+    }
+
+    public void setSyntaxStrategy(MappingConfigurationStrategy syntaxStrategy) {
+        this.syntaxStrategy = syntaxStrategy;
+    }
+
     public MappingConfigurationStrategy getMappingSyntaxStrategy() {
         return syntaxStrategy;
     }

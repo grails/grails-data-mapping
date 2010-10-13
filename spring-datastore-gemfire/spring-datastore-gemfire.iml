@@ -32,6 +32,7 @@
     <orderEntry type="library" name="Spring Beans" level="project" />
     <orderEntry type="library" name="Spring Transaction" level="project" />
     <orderEntry type="library" name="Java Persistence" level="project" />
+    <orderEntry type="library" name="Groovy" level="project" />
   </component>
 </module>
 
