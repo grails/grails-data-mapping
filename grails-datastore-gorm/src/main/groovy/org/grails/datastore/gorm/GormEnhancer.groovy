@@ -51,14 +51,7 @@ class GormEnhancer {
 
   private List initialiseFinders(Datastore datastore) {
 
-    this.finders = [
-                    new FindByFinder(datastore),
-                    new FindAllByFinder(datastore),
-                    new FindAllByBooleanFinder(datastore),
-                    new FindByBooleanFinder(datastore),
-                    new CountByFinder(datastore),
-                    new ListOrderByFinder(datastore)
-                    ]
+    this.finders = DynamicFinder.getAllDynamicFinders(datastore)
   }
 
   GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {

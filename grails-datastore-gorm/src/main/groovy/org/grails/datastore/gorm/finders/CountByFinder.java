@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 /**
  * Supports counting objects. For example Book.countByTitle("The Stand")
  */
-public class CountByFinder extends DynamicFinder {
+public class CountByFinder extends DynamicFinder implements QueryBuildingFinder{
 
     private static final String OPERATOR_OR = "Or";
     private static final String OPERATOR_AND = "And";
@@ -39,32 +39,41 @@ public class CountByFinder extends DynamicFinder {
         this.datastore = datastore;
     }
 
-
     @Override
-    protected Object doInvokeInternalWithExpressions(Class clazz, String methodName, Object[] remainingArguments, List<MethodExpression> expressions, Closure additionalCriteria, String operatorInUse) {
-        Session currentSession = datastore.getCurrentSession();
+    protected Object doInvokeInternal(DynamicFinderInvocation invocation) {
+        Query q = buildQuery(invocation);
+        return invokeQuery(q);
+    }
 
+
+    protected Object invokeQuery(Query q) {
+        return q.singleResult();
+    }
+
+    public Query buildQuery(DynamicFinderInvocation invocation) {
+      Session currentSession = datastore.getCurrentSession();
+
+        final Class clazz = invocation.getJavaClass();
         Query q = currentSession.createQuery(clazz);
-        applyAdditionalCriteria(q, additionalCriteria);
-        configureQueryWithArguments(clazz, q, remainingArguments);
+        applyAdditionalCriteria(q, invocation.getCriteria());
+        configureQueryWithArguments(clazz, q, invocation.getArguments());
 
+        String operatorInUse = invocation.getOperator();
         if(operatorInUse != null && operatorInUse.equals(OPERATOR_OR)) {
             Query.Junction disjunction = q.disjunction();
 
-            for (MethodExpression expression : expressions) {
+            for (MethodExpression expression : invocation.getExpressions()) {
                 disjunction.add(expression.createCriterion());
             }
 
         }
         else {
-            for (MethodExpression expression : expressions) {
+            for (MethodExpression expression : invocation.getExpressions()) {
                 q.add( expression.createCriterion() );
             }
         }
 
         q.projections().count();
-
-        return q.singleResult();
+        return q;
     }
-
 }

@@ -17,6 +17,7 @@ package org.springframework.datastore.mapping.gemfire;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.DataPolicy;
 import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.query.CqQuery;
 import com.gemstone.gemfire.cache.query.IndexType;
 import com.gemstone.gemfire.cache.query.QueryService;
 import org.springframework.beans.factory.DisposableBean;
@@ -33,11 +34,9 @@ import org.springframework.datastore.mapping.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.model.*;
 import org.springframework.datastore.mapping.model.types.BasicTypeConverterRegistrar;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Implementation of the {@link org.springframework.datastore.mapping.core.Datastore} interface
@@ -50,6 +49,7 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
 
     protected Cache gemfireCache;
     protected Map<PersistentEntity, GemfireTemplate> gemfireTemplates = new ConcurrentHashMap<PersistentEntity, GemfireTemplate>();
+    protected Collection<CqQuery> continuousQueries = new ConcurrentLinkedQueue<CqQuery>();
 
     public static final String SETTING_CACHE_XML = "cacheXml";
     public static final String SETTING_PROPERTIES = "properties";
@@ -99,6 +99,10 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         return gemfireCache;
     }
 
+    public void addContinuousQuery(CqQuery query) {
+        continuousQueries.add(query);
+    }
+
     /**
      * Obtains the template used to query data for a particular entity
      *
@@ -132,6 +136,10 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
     public void destroy() throws Exception {
         if(gemfireCache != null) {
             gemfireCache.close();
+            for (CqQuery continuousQuery : continuousQueries) {
+                continuousQuery.close();
+            }
+            continuousQueries.clear();
         }
     }
 

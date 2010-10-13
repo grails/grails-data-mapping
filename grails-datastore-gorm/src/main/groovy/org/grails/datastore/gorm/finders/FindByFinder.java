@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 /**
  * Finder used to return a single result
  */
-public class FindByFinder extends DynamicFinder{
+public class FindByFinder extends DynamicFinder implements QueryBuildingFinder{
 
     private static final String OPERATOR_OR = "Or";
     private static final String OPERATOR_AND = "And";
@@ -40,33 +40,14 @@ public class FindByFinder extends DynamicFinder{
     }
 
     @Override
-    protected Object doInvokeInternalWithExpressions(Class clazz, String methodName, Object[] remainingArguments, List<MethodExpression> expressions, Closure additionalCriteria, String operatorInUse) {
+    protected Object doInvokeInternal(DynamicFinderInvocation invocation) {
+        Query q = buildQuery(invocation);
 
-        Session currentSession = datastore.getCurrentSession();
+        return invokeQuery(q);
+    }
 
-        Query q = currentSession.createQuery(clazz);
-        applyAdditionalCriteria(q, additionalCriteria);
-        configureQueryWithArguments(clazz, q, remainingArguments);
 
-        if(operatorInUse != null && operatorInUse.equals(OPERATOR_OR)) {
-            if (firstExpressionIsRequiredBoolean()) {
-                MethodExpression expression = expressions.remove(0);
-                q.add(expression.createCriterion());
-            }
-
-            Query.Junction disjunction = q.disjunction();
-
-            for (MethodExpression expression : expressions) {
-                disjunction.add(expression.createCriterion());
-            }
-
-        }
-        else {
-            for (MethodExpression expression : expressions) {
-                q.add( expression.createCriterion() );
-            }
-        }
-
+    protected Object invokeQuery(Query q) {
         q.max(1);
         List results = q.list();
         if(!results.isEmpty()) return results.get(0);
@@ -77,4 +58,34 @@ public class FindByFinder extends DynamicFinder{
         return false;
     }
 
+    public Query buildQuery(DynamicFinderInvocation invocation) {
+        Session currentSession = datastore.getCurrentSession();
+
+        final Class clazz = invocation.getJavaClass();
+        Query q = currentSession.createQuery(clazz);
+        applyAdditionalCriteria(q, invocation.getCriteria());
+        configureQueryWithArguments(clazz, q, invocation.getArguments());
+
+        final String operatorInUse = invocation.getOperator();
+
+        if(operatorInUse != null && operatorInUse.equals(OPERATOR_OR)) {
+            if (firstExpressionIsRequiredBoolean()) {
+                MethodExpression expression = invocation.getExpressions().remove(0);
+                q.add(expression.createCriterion());
+            }
+
+            Query.Junction disjunction = q.disjunction();
+
+            for (MethodExpression expression : invocation.getExpressions()) {
+                disjunction.add(expression.createCriterion());
+            }
+
+        }
+        else {
+            for (MethodExpression expression : invocation.getExpressions()) {
+                q.add( expression.createCriterion() );
+            }
+        }
+        return q;
+    }
 }

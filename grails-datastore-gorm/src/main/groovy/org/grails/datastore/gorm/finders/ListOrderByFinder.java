@@ -60,6 +60,10 @@ public class ListOrderByFinder implements FinderMethod{
 
         q.order(Query.Order.asc(propertyName));
 
+        return invokeQuery(q);
+    }
+
+    protected Object invokeQuery(Query q) {
         return q.list();
     }
 
