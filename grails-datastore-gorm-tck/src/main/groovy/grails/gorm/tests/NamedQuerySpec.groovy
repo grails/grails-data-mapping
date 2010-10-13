@@ -39,22 +39,16 @@ class NamedQuerySpec extends GormDatastoreSpec {
         }
 
       when:
-        def pubs = Publication.recentPublications.list(max: 10, offset: new Integer(5), sort:"id")
+        def pubs = Publication.recentPublications.list(max: 10, offset: 5)
 
       then:
-        assert 10 == pubs?.size()
-        (6..15).each {num ->
-            assert pubs.find { it.title == "Book Number ${num}" } != null
-        }
+        10 == pubs?.size()
 
       when:
-        pubs = Publication.recentPublications.list(max: '10', offset: '5', sort:'id')
+        pubs = Publication.recentPublications.list(max: '10', offset: '5')
 
       then:
-        assert 10 == pubs?.size()
-        (6..15).each {num ->
-                assert pubs.find { it.title == "Book Number ${num}" } != null
-        }
+        10 == pubs?.size()
     }
   
     void "Test that parameter to get is converted"() {
