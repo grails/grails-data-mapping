@@ -19,7 +19,6 @@ import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import grails.datastore.Redis
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
-import org.grails.plugins.redis.InstanceProxy
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.redis.RedisGormStaticApi
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
@@ -28,6 +27,7 @@ import org.grails.datastore.gorm.redis.RedisGormEnhancer
 import org.springframework.context.ApplicationContext
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.transaction.PlatformTransactionManager
+import org.grails.datastore.gorm.utils.InstanceProxy
 
 class RedisGrailsPlugin {
     // the plugin version

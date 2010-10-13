@@ -47,10 +47,3 @@ class RedisDatastoreFactoryBean implements FactoryBean<RedisDatastore>{
 
   boolean isSingleton() { true }
 }
-class InstanceProxy {
-    def instance
-    def target
-    def invokeMethod(String name, args) {
-      target."$name"(instance, *args)
-    }
-}
