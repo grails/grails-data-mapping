@@ -49,11 +49,11 @@ public class BasicTypeConverterRegistrar {
         });
 
 
-        registry.addConverter(new Converter<String, Date>() {
+        registry.addConverter(new Converter<CharSequence, Date>() {
 
-            public Date convert(String s) {
+            public Date convert(CharSequence s) {
                 try {
-                    final Long time = Long.valueOf(s);
+                    final Long time = Long.valueOf(s.toString());
                     return new Date(time);
                 } catch (NumberFormatException e) {
                     // ignore
@@ -62,39 +62,40 @@ public class BasicTypeConverterRegistrar {
             }
         });
 
-        registry.addConverter(new Converter<String, Double>() {
+        registry.addConverter(new Converter<CharSequence, Double>() {
 
-            public Double convert(String s) {
+            public Double convert(CharSequence s) {
                 try {
-                    return Double.valueOf(s);
+                    return Double.valueOf(s.toString());
                 } catch (NumberFormatException e) {
                     return (double) 0;
                 }
             }
         });
 
-        registry.addConverter(new Converter<String, Integer>() {
+        registry.addConverter(new Converter<CharSequence, Integer>() {
 
-            public Integer convert(String s) {
+            public Integer convert(CharSequence s) {
                 try {
-                    return Integer.valueOf(s);
+                    return Integer.valueOf(s.toString());
                 } catch (NumberFormatException e) {
                     // ignore
                 }
                 return 0;
             }
         });
-        registry.addConverter(new Converter<String, Long>() {
+        registry.addConverter(new Converter<CharSequence, Long>() {
 
-            public Long convert(String s) {
+            public Long convert(CharSequence s) {
                 try {
-                    return Long.valueOf(s);
+                    return Long.valueOf(s.toString());
                 } catch (NumberFormatException e) {
                     // ignore
                 }
                 return 0L;
             }
         });
+
 
         registry.addConverter(new Converter<Object, String>() {
             public String convert(Object o) {
@@ -108,11 +109,11 @@ public class BasicTypeConverterRegistrar {
             }
         });
 
-        registry.addConverter(new Converter<String, Calendar>() {
+        registry.addConverter(new Converter<CharSequence, Calendar>() {
 
-            public Calendar convert(String s) {
+            public Calendar convert(CharSequence s) {
                 try {
-                    Date date = new Date(Long.valueOf(s));
+                    Date date = new Date(Long.valueOf(s.toString()));
                     Calendar c = new GregorianCalendar();
                     c.setTime(date);
                     return c;

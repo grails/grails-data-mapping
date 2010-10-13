@@ -10,6 +10,20 @@ package grails.gorm.tests
  */
 class CrudOperationsSpec extends GormDatastoreSpec{
 
+  void "Test get using a string-based key"() {
+    given:
+
+      def t = new TestEntity(name:"Bob", child:new ChildEntity(name:"Child"))
+      t.save()
+
+    when:     
+      t = TestEntity.get("${t.id}")
+
+
+    then:
+      t != null
+
+  }
   void "Test get returns null of non-existent entity"() {
     given:
       def t

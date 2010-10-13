@@ -189,15 +189,40 @@ public class GemfireEntityPersister extends LockableEntityPersister {
     }
 
     @Override
-    protected Object retrieveEntity(PersistentEntity persistentEntity, final Serializable key) {
+    protected Object retrieveEntity(final PersistentEntity persistentEntity, final Serializable key) {
 
         final GemfireTemplate template = gemfireDatastore.getTemplate(persistentEntity);
         return template.execute(new GemfireCallback() {
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
-                return region.get(key);
+                final Class idType = persistentEntity.getIdentity().getType();
+                Object lookupKey = getMappingContext().getConversionService().convert(key,idType);
+                final Object entry = region.get(lookupKey);
+                for (Association association : persistentEntity.getAssociations()) {
+                    if(association instanceof OneToMany) {
+                        final EntityAccess ea = createEntityAccess(persistentEntity, entry);
+                        final String propertyName = association.getName();
+                        final Object currentState = ea.getProperty(propertyName);
+                        if(currentState == null) {
+                            initializeCollectionState(association, ea, propertyName);
+                        }
+                    }
+                }
+                return entry;
             }
         });
 
+    }
+
+    private void initializeCollectionState(Association association, EntityAccess ea, String propertyName) {
+        if(Set.class.isAssignableFrom(association.getType())) {
+            ea.setProperty(propertyName, new HashSet());
+        }
+        else if(List.class.isAssignableFrom(association.getType())) {
+            ea.setProperty(propertyName, new ArrayList());
+        }
+        else if(Map.class.isAssignableFrom(association.getType())) {
+            ea.setProperty(propertyName, new HashMap());
+        }
     }
 
     @Override

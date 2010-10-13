@@ -14,48 +14,15 @@
  */
 package org.grails.plugins.redis
 
-import org.springframework.beans.factory.FactoryBean
-import org.springframework.datastore.mapping.model.MappingContext
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
+import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
 import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingContext
-import org.codehaus.groovy.grails.plugins.GrailsPluginManager
-
-import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.context.ApplicationContextAware
-import org.springframework.context.ApplicationContext
-import org.grails.datastore.gorm.proxy.GroovyProxyFactory
+import org.springframework.datastore.mapping.model.MappingContext
 
 /**
- *
+ * Creates a Redis mapping context
  */
-class RedisMappingContextFactoryBean implements FactoryBean<MappingContext>, GrailsApplicationAware, ApplicationContextAware{
-
-  GrailsApplication grailsApplication
-  GrailsPluginManager pluginManager
-  ApplicationContext applicationContext
-
-  MappingContext getObject() {
-    def mappingContext = new KeyValueMappingContext("");
-    mappingContext.proxyFactory = new GroovyProxyFactory()
-
-    if(grailsApplication) {
-      for(GrailsDomainClass domainClass in grailsApplication.domainClasses){
-         PersistentEntity entity = mappingContext.addPersistentEntity(domainClass.clazz)
-         if(entity) {
-            final validatorBeanName = "${domainClass.fullName}Validator"
-            def validator = applicationContext.containsBean(validatorBeanName) ? applicationContext.getBean(validatorBeanName) : null
-
-            if(validator)
-              mappingContext.addEntityValidator(entity, validator)
-         }
-      }
-    }
-    return mappingContext
+class RedisMappingContextFactoryBean extends AbstractMappingContextFactoryBean{
+  protected MappingContext createMappingContext() {
+    new KeyValueMappingContext("");
   }
-
-  Class<?> getObjectType() { MappingContext }
-
-  boolean isSingleton() { true }
 }
