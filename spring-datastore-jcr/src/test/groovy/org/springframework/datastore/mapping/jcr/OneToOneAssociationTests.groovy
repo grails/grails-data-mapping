@@ -26,6 +26,15 @@ class OneToOneAssociationTests extends AbstractJcrTest {
     assert "foo" == b.post.title
     assert "bar" == b.post.text
 
+    def id = b.id;
+
+    conn.delete(b)
+    conn.flush()
+
+    b = conn.retrieve(Blog, id)
+
+    assert null == b
+
    }
 }
 

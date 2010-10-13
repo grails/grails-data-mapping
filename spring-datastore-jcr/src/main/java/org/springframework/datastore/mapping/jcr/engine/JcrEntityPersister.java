@@ -2,18 +2,19 @@ package org.springframework.datastore.mapping.jcr.engine;
 
 
 import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.jcr.JcrSession;
 import org.springframework.datastore.mapping.jcr.util.JcrConstants;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.node.engine.AbstractNodeEntityPersister;
+import org.springframework.datastore.mapping.query.JcrQuery;
 import org.springframework.extensions.jcr.JcrCallback;
 import org.springframework.extensions.jcr.JcrTemplate;
 
 import javax.jcr.*;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,31 +31,69 @@ import java.util.List;
  */
 public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String> {
 
+    private static String parentNodeUUID = null;
+    private static String rootParentUUID = null;
+    private static Class clazz = null;
+
     private JcrTemplate jcrTemplate;
     private SimpleTypeConverter typeConverter;
-    public static final boolean DISCRIMINATOR = true;
-
 
     public JcrEntityPersister(MappingContext context, PersistentEntity entity, Session session, JcrTemplate jcrTemplate) {
         super(context, entity, session);
         typeConverter = new SimpleTypeConverter();
         this.jcrTemplate = jcrTemplate;
-        //this.jcrTemplate.setAllowCreate(true);
+        this.jcrTemplate.setAllowCreate(true);
     }
 
     public JcrEntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
         super(mappingContext, entity, session);
     }
 
-  
-
+    /**
+     * @param persistentEntity The PesistentEntity instnace
+     * @param id               The identifer
+     * @param timeout          The lock timeout in seconds
+     */
     @Override
-    protected void setEntryAssociatedValue(Node parentEntity, String property, Serializable associationId) {
-        Node node = jcrTemplate.getNodeByUUID((String) associationId);
+    protected void lockEntry(PersistentEntity persistentEntity, Serializable id, int timeout) {
+        //TODO: Implement  lock timeout
+        Node node = jcrTemplate.getNodeByUUID(getString(id));
         try {
-            parentEntity.setProperty(property, node);
+            node.lock(true, true);
         } catch (RepositoryException e) {
-            e.printStackTrace();
+            throw new DataAccessResourceFailureException("Exception occurred cannot lock entity: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * @param o The object
+     * @return True if the object is locked
+     */
+    @Override
+    public boolean isLocked(Object o) {
+        String uuid = getString(((Serializable) createEntityAccess(getPersistentEntity(), o).getIdentifier()));
+        if (uuid == null) return false;
+        else {
+            Node node = jcrTemplate.getNodeByUUID(uuid);
+            try {
+                return node.isLocked();
+            } catch (RepositoryException e) {
+                throw new DataAccessResourceFailureException("Exception occurred cannot unlock entity: " + e.getMessage(), e);
+            }
+        }
+    }
+
+    /**
+     * @param persistentEntity The persistent entity
+     * @param id               The identifer
+     */
+    @Override
+    protected void unlockEntry(PersistentEntity persistentEntity, Serializable id) {
+        Node node = jcrTemplate.getNodeByUUID(getString(id));
+        try {
+            node.unlock();
+        } catch (RepositoryException e) {
+            throw new DataAccessResourceFailureException("Exception occurred cannot unlock entity: " + e.getMessage(), e);
         }
     }
 
@@ -63,15 +102,12 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
         try {
             return tmp.getUUID();
         } catch (RepositoryException e) {
-            throw new DataAccessResourceFailureException("Exception occurred cannot getUUID from Node: " + e.getMessage(), e);
+            throw new DataAccessResourceFailureException("Exception occurred cannot generateIdentifier by getting UUID from Node: " + e.getMessage(), e);
         }
-
     }
 
     @Override
     protected void deleteEntry(final String key) {
-        System.out.println("deleteEntry");
-
         Node node = jcrTemplate.getNodeByUUID(key);
         try {
             node.remove();
@@ -81,13 +117,13 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
         }
     }
 
-     @Override
+    @Override
     protected Object getEntryValue(Node nativeEntry, String property) {
         try {
-           Property prop = nativeEntry.getProperty(property);
+            Property prop = nativeEntry.getProperty(property);
             if (prop.getType() == PropertyType.REFERENCE) {
-                String nodeUuid = prop.getString();
-                return jcrTemplate.getNodeByUUID(nodeUuid);
+                String nodeUUID = prop.getString();
+                return jcrTemplate.getNodeByUUID(nodeUUID);
             } else {
                 switch (prop.getType()) {
                     case PropertyType.BINARY:
@@ -110,67 +146,80 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                         return prop.getString();
                 }
             }
-
+        }catch(PathNotFoundException e){ 
+            return null;   
         } catch (Exception e) {
-            //throw new DataAccessResourceFailureException("Exception occurred cannot getProperty from Node: " + e.getMessage(), e);
-            return null;
+            throw new org.springframework.dao.DataRetrievalFailureException("Exception occurred cannot getProperty from Node: " + e.getMessage(), e);
         }
     }
 
-    //TODO Re-implement retrieveEntry to use Query instead.
     @Override
-    protected Node retrieveEntry(final PersistentEntity persistentEntity,final Serializable key) {
-        System.out.println("retrieveEntry");
+    protected Node retrieveEntry(final PersistentEntity persistentEntity, final Serializable key) {
         return (Node) jcrTemplate.execute(new JcrCallback() {
             public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
-               // Workspace ws = session.getWorkspace();
-                //QueryManager qm = ws.getQueryManager();
-               // Query q = qm.createQuery("//"+persistentEntity.getJavaClass().getSimpleName()+"[@id = '"+getString(key)+"']",Query.XPATH);
-               // System.out.println(q.getStatement());
-                try{
-                   return session.getNodeByUUID(getString(key));
-                }catch(ItemNotFoundException ex){   //getNodeByUUID always throws ItemNotFoundException when Node doesn't exist
-                return null;
+                try {
+                    return session.getNodeByUUID(getString(key));
+                } catch (ItemNotFoundException ex) { // Always throw ItemNotFoundException when the requested Node doesn't exist
+                    return null;
                 }
             }
         });
     }
 
-      private String getString(Object key) {
+    private String getString(Object key) {
         return typeConverter.convertIfNecessary(key, String.class);
     }
 
     @Override
     protected Node createNewEntry(final PersistentEntity persistentEntity) {
-        return (Node) jcrTemplate.execute(new JcrCallback() {
-            public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
-                Node rootNode = session.getRootNode();
-                Node node = rootNode.addNode(persistentEntity.getJavaClass().getSimpleName(), JcrConstants.DEFAULT_JCR_TYPE);
+        try {
+            Node node = null;
+            //create a new node starting from rootNode
+            if (parentNodeUUID == null && rootParentUUID == null) {
+                Node rootNode = jcrTemplate.getRootNode();
+                node = rootNode.addNode(persistentEntity.getJavaClass().getSimpleName(), JcrConstants.DEFAULT_JCR_TYPE);
                 node.addMixin(JcrConstants.MIXIN_REFERENCEABLE);
-                node.addMixin(JcrConstants.MIXIN_VERSIONABLE);
-                node.addMixin(JcrConstants.MIXIN_LOCKABLE);
-                return node;
+                rootParentUUID = node.getUUID();
+                parentNodeUUID = node.getUUID();
+            }// create association nodes in the same hierarchy for List, Map etc.
+            else if (rootParentUUID != null && parentNodeUUID != null && (clazz != null && clazz.equals(persistentEntity.getJavaClass()))) {
+                Node parentNode = jcrTemplate.getNodeByUUID(rootParentUUID);
+                node = parentNode.addNode(persistentEntity.getJavaClass().getSimpleName(), JcrConstants.DEFAULT_JCR_TYPE);
+                node.addMixin(JcrConstants.MIXIN_REFERENCEABLE);
+                parentNodeUUID = node.getUUID();
+            } else { //create an association node
+                Node parentNode = jcrTemplate.getNodeByUUID(parentNodeUUID);
+                node = parentNode.addNode(persistentEntity.getJavaClass().getSimpleName(), JcrConstants.DEFAULT_JCR_TYPE);
+                node.addMixin(JcrConstants.MIXIN_REFERENCEABLE);
+                clazz = persistentEntity.getJavaClass();
+                parentNodeUUID = node.getUUID();
             }
-        });
+            node.addMixin(JcrConstants.MIXIN_VERSIONABLE);
+            node.addMixin(JcrConstants.MIXIN_LOCKABLE);
+            return node;
+        } catch (RepositoryException e) {
+            throw new DataAccessResourceFailureException("Exception occurred cannot create Node: " + e.getMessage(), e);
+        }
     }
+
 
     @Override
     protected void setEntryValue(Node nativeEntry, String propertyName, Object value) {
+        //Possible property should be only String, Boolean, Calendar, Double, InputStream and Long
         if (value != null) {
             try {
-                if (value instanceof String) {
+                if (value instanceof String)
                     nativeEntry.setProperty(propertyName, (String) value);
-                } else if (value instanceof Boolean) {
+                else if (value instanceof Boolean)
                     nativeEntry.setProperty(propertyName, (Boolean) value);
-                } else if (value instanceof Calendar) {
+                else if (value instanceof Calendar)
                     nativeEntry.setProperty(propertyName, (Calendar) value);
-                } else if (value instanceof Double) {
+                else if (value instanceof Double)
                     nativeEntry.setProperty(propertyName, (Double) value);
-                } else if (value instanceof InputStream) {
+                else if (value instanceof InputStream)
                     nativeEntry.setProperty(propertyName, (InputStream) value);
-                } else if (value instanceof Long) {
+                else if (value instanceof Long)
                     nativeEntry.setProperty(propertyName, (Long) value);
-                }
             } catch (RepositoryException e) {
                 throw new DataAccessResourceFailureException("Exception occurred set a property value to Node: " + e.getMessage(), e);
             }
@@ -185,24 +234,28 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
 
     @Override
     protected void updateEntry(final PersistentEntity persistentEntity, final String id, final Node entry) {
-        if(id != null) {
-        jcrTemplate.execute(new JcrCallback() {
-            public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
-                List<String> pns = persistentEntity.getPersistentPropertyNames();                
-                Node node = session.getNodeByUUID(id);
+        if (id != null) {
+            List<String> propNames = persistentEntity.getPersistentPropertyNames();
+            Node node = jcrTemplate.getNodeByUUID(id);
+            try {
                 node.checkout();
-                for (String propName : pns) {
+                for (String propName : propNames) {
                     node.setProperty(propName, entry.getProperty(propName).getValue());
                 }
                 node.save();
                 node.checkin();
-                return null;
+            } catch (RepositoryException e) {
+                throw new DataAccessResourceFailureException("Exception occurred when updating Node: " + e.getMessage(), e);
             }
-        });
         }
     }
 
+    public org.springframework.datastore.mapping.query.Query createQuery() {
+        return new JcrQuery((JcrSession) getSession(), getJcrTemplate(), getPersistentEntity(), this);
+    }
 
-
+    public JcrTemplate getJcrTemplate() {
+        return jcrTemplate;
+    }
 }
 
