@@ -31,7 +31,7 @@ public class Region extends Family {
     private java.util.List<CacheListener> cacheListeners;
     private CacheLoader cacheLoader;
     private CacheWriter cacheWriter;
-    private DataPolicy dataPolicy = DataPolicy.PARTITION;
+    private DataPolicy dataPolicy;
 
 
     public RegionAttributes getRegionAttributes() {

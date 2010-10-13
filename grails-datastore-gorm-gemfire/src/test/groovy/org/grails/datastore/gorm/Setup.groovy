@@ -39,7 +39,7 @@ class Setup {
     gemfire.mappingContext.addEntityValidator(entity, [
             supports: { Class c -> true },
             validate: { Object o, Errors errors ->
-                if(!StringUtils.hasText(o.region)) {
+                if(!StringUtils.hasText(o.name)) {
                   errors.rejectValue("name", "name.is.blank")
                 }
             }
