@@ -172,7 +172,7 @@ public class GemfireQuery extends Query {
                 q.append(LOGICAL_AND)
                  .append(calculatedName);
 
-                index = appendOrEmbedValue(q, params, index, eq.getFrom(), LESS_THAN_EQUALS);
+                index = appendOrEmbedValue(q, params, index, eq.getTo(), LESS_THAN_EQUALS);
                 q.append(") ");
 
                 return index;

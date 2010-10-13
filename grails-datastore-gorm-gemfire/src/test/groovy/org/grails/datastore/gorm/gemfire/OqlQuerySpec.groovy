@@ -95,7 +95,7 @@ class OqlQuerySpec extends GormDatastoreSpec{
       new Plant(name:"daisy", goesInPatch:true).save(flush:true)
 
     when:
-      def results = Plant.findAll('goesInPatch = $1', [false], [sort:'name'])
+      def results = Plant.findAll('goesInPatch = $1', [false], [sort:'name']).sort { it.name }
 
     then:
       results.size() == 2
