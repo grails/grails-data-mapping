@@ -64,6 +64,11 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         this(mappingContext, Collections.<String, String>emptyMap());
     }
 
+    public GemfireDatastore(MappingContext mappingContext, Cache gemfireCache) {
+        this(mappingContext, Collections.<String, String>emptyMap());
+        this.gemfireCache = gemfireCache;
+    }
+
     protected void initializeRegions(Cache cache, MappingContext mappingContext) throws Exception {
         for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
             initializeRegion(cache, entity);
@@ -226,7 +231,8 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
 
         try {
             cacheFactory.afterPropertiesSet();
-            gemfireCache = cacheFactory.getObject();
+            if(gemfireCache == null)
+                gemfireCache = cacheFactory.getObject();
             initializeRegions(gemfireCache, mappingContext);
             initializeConverters(mappingContext);
         } catch (Exception e) {
