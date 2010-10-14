@@ -57,6 +57,8 @@ import java.util.concurrent.locks.Lock;
 public class GemfireEntityPersister extends LockableEntityPersister {
     private GemfireDatastore gemfireDatastore;
     private Map<Object, Lock> distributedLocksHeld = new ConcurrentHashMap<Object, Lock>();
+    private static final String CASCADE_PROCESSED = "cascade.processed";
+    private static final Boolean TRUE = true;
 
     public GemfireEntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
         super(mappingContext, entity, session);
@@ -147,13 +149,15 @@ public class GemfireEntityPersister extends LockableEntityPersister {
     }
 
     @Override
-    protected List<Serializable> persistEntities(PersistentEntity persistentEntity, Iterable objs) {
+    protected List<Serializable> persistEntities(final PersistentEntity persistentEntity, Iterable objs) {
         final GemfireTemplate template = gemfireDatastore.getTemplate(persistentEntity);
         final Map putMap = new HashMap();
         List<Serializable> identifiers = new ArrayList<Serializable>();
+        final Map<Object, EntityAccess> entityAccessObjects = new HashMap<Object, EntityAccess>();
         out:
         for (Object obj : objs) {
             final EntityAccess access = createEntityAccess(persistentEntity,obj);
+            entityAccessObjects.put(obj, access);
             Object identifier = access.getIdentifier();
             boolean isUpdate = true;
             if(identifier == null) {
@@ -181,6 +185,20 @@ public class GemfireEntityPersister extends LockableEntityPersister {
 
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
                 region.putAll(putMap);
+                if(!persistentEntity.isRoot()) {
+                    doWithParents(persistentEntity, new GemfireCallback() {
+                        public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
+                            region.putAll(putMap);
+                            return null;
+                        }
+                    });
+                }
+                for (Object id : putMap.keySet()) {
+                    Object obj = putMap.get(id);
+                    final EntityAccess access = entityAccessObjects.get(obj);
+                    if(access != null)
+                        cascadeSaveOrUpdate(persistentEntity, obj, access);
+                }
                 return null;
             }
         });
@@ -213,16 +231,23 @@ public class GemfireEntityPersister extends LockableEntityPersister {
 
     }
 
-    private void initializeCollectionState(Association association, EntityAccess ea, String propertyName) {
+    private Object initializeCollectionState(Association association, EntityAccess ea, String propertyName) {
         if(Set.class.isAssignableFrom(association.getType())) {
-            ea.setProperty(propertyName, new HashSet());
+            final HashSet set = new HashSet();
+            ea.setProperty(propertyName, set);
+            return set;
         }
         else if(List.class.isAssignableFrom(association.getType())) {
-            ea.setProperty(propertyName, new ArrayList());
+            final ArrayList list = new ArrayList();
+            ea.setProperty(propertyName, list);
+            return list;
         }
         else if(Map.class.isAssignableFrom(association.getType())) {
-            ea.setProperty(propertyName, new HashMap());
+            final HashMap map = new HashMap();
+            ea.setProperty(propertyName, map);
+            return map;
         }
+        return null;
     }
 
     @Override
@@ -276,22 +301,67 @@ public class GemfireEntityPersister extends LockableEntityPersister {
         final List<Association> associations = persistentEntity.getAssociations();
         for (Association association : associations) {
             if(association.doesCascade(CascadeType.PERSIST)) {
+                final Session session = getSession();
                 if(association instanceof ToOne) {
-                   ToOne toOne = (ToOne) association;
+                    final Object associatedObject = access.getProperty(association.getName());
 
-                   final Object associatedObject = access.getProperty(toOne.getName());
-                   if(associatedObject != null && !associatedObject.equals(obj))
-                        session.persist(associatedObject);
+                    if(associatedObject != null && !associatedObject.equals(obj)) {
+                        if(session.getAttribute(association, CASCADE_PROCESSED) == null) {
+                           session.setAttribute(association, CASCADE_PROCESSED, true);
+                           this.session.persist(associatedObject);
+                           autoAssociateInverseSide(obj, association, associatedObject);
+                       }
+                   }
+                   else {
+                       session.setAttribute(association, CASCADE_PROCESSED, false);
+                   }
                 }
                 else if(association instanceof OneToMany) {
-                    Object associatedObjects = access.getProperty(association.getName());
-                    if(associatedObjects instanceof Iterable) {
-                        session.persist((Iterable)associatedObjects);
+                    if(session.getAttribute(association, CASCADE_PROCESSED) == TRUE) {
+                       session.setAttribute(association, CASCADE_PROCESSED, TRUE);
+                       Object associatedObjects = access.getProperty(association.getName());
+                       if(associatedObjects instanceof Iterable) {
+                            final Iterable iterable = (Iterable) associatedObjects;
+                            for (Object associatedObject : iterable) {
+                                autoAssociateInverseSide(obj, association, associatedObject);
+                            }
+                            session.persist(iterable);
+
+                       }
                     }
+                    else {
+                       session.setAttribute(association, CASCADE_PROCESSED, false);
+                    }
+
+
                 }
             }
 
 
+        }
+    }
+
+    private void autoAssociateInverseSide(Object obj, Association association, Object associatedObject) {
+        if(association.isBidirectional()) {
+            final Association inverseSide = association.getInverseSide();
+            if(inverseSide instanceof ToOne) {
+                final EntityAccess associationAccess = createEntityAccess(association.getAssociatedEntity(), associatedObject);
+                associationAccess.setProperty(inverseSide.getName(), obj);
+            }
+            else if(inverseSide instanceof OneToMany) {
+                final EntityAccess associationAccess = createEntityAccess(association.getAssociatedEntity(), associatedObject);
+                Object collectionObject = associationAccess.getProperty(inverseSide.getName());
+                if(collectionObject == null) {
+                    collectionObject = initializeCollectionState(inverseSide, associationAccess, inverseSide.getName());
+                }
+
+                if(collectionObject instanceof Collection) {
+                    final Collection collection = (Collection) collectionObject;
+                    if(!collection.contains(obj))
+                        collection.add(obj);
+                }
+
+            }
         }
     }
 

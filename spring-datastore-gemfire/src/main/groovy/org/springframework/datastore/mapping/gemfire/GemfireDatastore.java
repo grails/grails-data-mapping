@@ -25,7 +25,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.gemfire.CacheFactoryBean;
+import org.springframework.data.gemfire.GemfireCallback;
 import org.springframework.data.gemfire.GemfireTemplate;
 import org.springframework.data.gemfire.RegionFactoryBean;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
@@ -125,7 +127,19 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
 
         regionFactory.afterPropertiesSet();
         final Region region = regionFactory.getObject();
-        gemfireTemplates.put(entity, new GemfireTemplate(region));
+        gemfireTemplates.put(entity, new GemfireTemplate(region) /*{
+            @Override
+            public <T> T execute(GemfireCallback<T> action) throws DataAccessException {
+                long now = System.currentTimeMillis();
+                try {
+                    return super.execute(action);
+                } finally {
+                    System.out.println("Gemfire query took " + (System.currentTimeMillis() - now) + "ms");
+                }
+            }
+
+
+        }*/);
     }
 
     private org.springframework.datastore.mapping.gemfire.config.Region getMappedRegionInfo(PersistentEntity entity) {
