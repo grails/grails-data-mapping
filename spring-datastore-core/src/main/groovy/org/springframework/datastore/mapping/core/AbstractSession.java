@@ -306,19 +306,26 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
     public Object retrieve(Class type, Serializable key) {
         if(key == null || type == null) return null;
         Persister persister = getPersister(type);
-        final Map<Serializable, Object> cache = firstLevelCache.get(type);
-        Object o = cache.get(key);
-        if(o == null) {
+        if(persister != null) {
 
-            if(persister != null) {
+            final PersistentEntity entity = getMappingContext().getPersistentEntity(type.getName());
+            if(entity != null) {
+                key = (Serializable) getMappingContext().getConversionService().convert(key, entity.getIdentity().getType());
+            }
+            final Map<Serializable, Object> cache = firstLevelCache.get(type);
+            Object o = cache.get(key);
+            if(o == null) {
                 o = persister.retrieve(key);
                 if(o != null)
                     cacheObject(key, o);
                 return o;
             }
-            throw new NonPersistentTypeException("Cannot retrieve object with key ["+key+"]. The class ["+type+"] is not a known persistent type.");
+            return o;
         }
-        return o;
+        else {
+               throw new NonPersistentTypeException("Cannot retrieve object with key ["+key+"]. The class ["+type+"] is not a known persistent type.");
+        }
+
     }
 
     public Object proxy(Class type, Serializable key) {
