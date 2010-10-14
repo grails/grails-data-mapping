@@ -28,14 +28,23 @@ import java.util.List;
 public class Region extends Family {
 
     private RegionAttributes regionAttributes;
-    private java.util.List<CacheListener> cacheListeners;
+    private CacheListener[] cacheListeners;
     private CacheLoader cacheLoader;
     private CacheWriter cacheWriter;
     private DataPolicy dataPolicy;
+    private String regionShortcut;
 
 
     public RegionAttributes getRegionAttributes() {
         return regionAttributes;
+    }
+
+    public String getRegionShortcut() {
+        return regionShortcut;
+    }
+
+    public void setRegionShortcut(String regionShortcut) {
+        this.regionShortcut = regionShortcut;
     }
 
     public void setRegion(String name) {
@@ -48,11 +57,11 @@ public class Region extends Family {
         this.regionAttributes = regionAttributes;
     }
 
-    public List<CacheListener> getCacheListeners() {
+    public CacheListener[] getCacheListeners() {
         return cacheListeners;
     }
 
-    public void setCacheListeners(List<CacheListener> cacheListeners) {
+    public void setCacheListeners(CacheListener[] cacheListeners) {
         this.cacheListeners = cacheListeners;
     }
 
@@ -78,5 +87,6 @@ public class Region extends Family {
 
     public void setDataPolicy(DataPolicy dataPolicy) {
         this.dataPolicy = dataPolicy;
+
     }
 }

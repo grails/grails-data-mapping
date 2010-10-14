@@ -14,6 +14,8 @@
  */
 package org.springframework.datastore.mapping.gemfire.config;
 
+import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.RegionAttributes;
 import groovy.lang.Closure;
 import org.springframework.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.springframework.datastore.mapping.keyvalue.mapping.Family;
@@ -43,10 +45,21 @@ public class GormGemfireMappingFactory extends GormKeyValueMappingFactory {
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
         final Closure value = cpf.getStaticPropertyValue(GormProperties.MAPPING, Closure.class);
         if(value != null) {
-            Region family = new Region();
-            MappingConfigurationBuilder builder = new MappingConfigurationBuilder(family, KeyValue.class);
+            final Region family = new Region();
+            AttributesFactory factory = new AttributesFactory() {
+                public void setRegion(String name) {
+                    family.setRegion(name);
+                }
+            };
+            MappingConfigurationBuilder builder = new MappingConfigurationBuilder(factory, KeyValue.class);
             builder.evaluate(value);
             entityToPropertyMap.put(entity, builder.getProperties());
+            final RegionAttributes regionAttributes = factory.create();
+            family.setRegionAttributes(regionAttributes);
+            family.setCacheListeners(regionAttributes.getCacheListeners());
+            family.setDataPolicy(regionAttributes.getDataPolicy());
+            family.setCacheLoader(regionAttributes.getCacheLoader());
+            family.setCacheWriter(regionAttributes.getCacheWriter());
             return family;
         }
         else {

@@ -115,8 +115,7 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
             regionFactory.setAttributes(mappedRegion.getRegionAttributes());
         }
         if(hasMappedRegion && mappedRegion.getCacheListeners() != null) {
-            final List<CacheListener> listeners = mappedRegion.getCacheListeners();
-            regionFactory.setCacheListeners(listeners.toArray(new CacheListener[listeners.size()]));
+            regionFactory.setCacheListeners(mappedRegion.getCacheListeners());
         }
         if(hasMappedRegion && mappedRegion.getCacheLoader() != null) {
             regionFactory.setCacheLoader(mappedRegion.getCacheLoader());
