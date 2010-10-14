@@ -302,23 +302,24 @@ public class GemfireEntityPersister extends LockableEntityPersister {
         for (Association association : associations) {
             if(association.doesCascade(CascadeType.PERSIST)) {
                 final Session session = getSession();
+                String processKey = association + ">" + obj;
                 if(association instanceof ToOne) {
                     final Object associatedObject = access.getProperty(association.getName());
 
                     if(associatedObject != null && !associatedObject.equals(obj)) {
-                        if(session.getAttribute(association, CASCADE_PROCESSED) == null) {
-                           session.setAttribute(association, CASCADE_PROCESSED, true);
+                        if(session.getAttribute(processKey, CASCADE_PROCESSED) == null) {
+                           session.setAttribute(processKey, CASCADE_PROCESSED, true);
                            this.session.persist(associatedObject);
                            autoAssociateInverseSide(obj, association, associatedObject);
                        }
                    }
                    else {
-                       session.setAttribute(association, CASCADE_PROCESSED, false);
+                       session.setAttribute(processKey, CASCADE_PROCESSED, false);
                    }
                 }
                 else if(association instanceof OneToMany) {
-                    if(session.getAttribute(association, CASCADE_PROCESSED) == TRUE) {
-                       session.setAttribute(association, CASCADE_PROCESSED, TRUE);
+                    if(session.getAttribute(processKey, CASCADE_PROCESSED) == TRUE) {
+                       session.setAttribute(processKey, CASCADE_PROCESSED, TRUE);
                        Object associatedObjects = access.getProperty(association.getName());
                        if(associatedObjects instanceof Iterable) {
                             final Iterable iterable = (Iterable) associatedObjects;
@@ -330,7 +331,7 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                        }
                     }
                     else {
-                       session.setAttribute(association, CASCADE_PROCESSED, false);
+                       session.setAttribute(processKey, CASCADE_PROCESSED, false);
                     }
 
 
