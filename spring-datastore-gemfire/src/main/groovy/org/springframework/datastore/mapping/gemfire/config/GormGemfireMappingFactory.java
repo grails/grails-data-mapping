@@ -63,7 +63,7 @@ public class GormGemfireMappingFactory extends GormKeyValueMappingFactory {
             return family;
         }
         else {
-            return super.createMappedForm(entity);
+            return new Region();
         }
     }
 }
