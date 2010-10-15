@@ -97,7 +97,7 @@ subprojects {
       uploadArchives {
           description = "Does a maven deploy of archives artifacts"
           def isDav = System.getProperty("deploy.protocol") == 'dav'
-        def protocol = isDav ? 'dav:' : ''
+          def protocol = isDav ? 'dav:' : ''
 //          def releaseRepositoryUrl = "https://dav.codehaus.org/repository/grails/"
           def milestoneRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/milestone' :
                                                          "${protocol}https://dav.codehaus.org/snapshots.repository/grails/"
@@ -109,6 +109,10 @@ subprojects {
           dependencies {
 
             deployerJars "org.springframework.build.aws:org.springframework.build.aws.maven:3.0.0.RELEASE"
+
+            // NOTE!!!!!: Maven deployment over webdav is broken due to SHA1 checksum issues. To deploy
+            // you first need to run ./gradlew -Ddeploy.protocol=dav uploadArchives
+            // and then ./gradlew uploadArchives a second time to get a valid deployment
 
             if(isDav) {
               deployerJars "org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-6"
@@ -133,7 +137,7 @@ subprojects {
                       description += milestoneRepositoryUrl
                       // fall through and pick up config below
 
-                  case 'SNAPSHOT':
+                  case 'BUILD-SNAPSHOT':
                       description += snapshotRepositoryUrl
                       def credentials
                       if(isSpringProject) {
