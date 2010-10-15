@@ -52,7 +52,11 @@ class ContinuousQueryApi {
           GemfireQuery q = dynamicFinder.buildQuery(invocation)
           def queryString = q.getQueryString()
 
-          def queryService = gemfire.gemfirePool.getQueryService()
+          def gemfirePool = gemfire.gemfirePool
+          if(gemfirePool == null) {
+              throw new IllegalStateException("Cannot invoke a continuous query without an appropriately initialized Gemfire Pool")
+          }
+          def queryService = gemfirePool.getQueryService()
 
 
           CqAttributesFactory cqf = new CqAttributesFactory()

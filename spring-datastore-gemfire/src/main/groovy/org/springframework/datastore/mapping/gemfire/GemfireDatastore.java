@@ -17,10 +17,8 @@ package org.springframework.datastore.mapping.gemfire;
 import com.gemstone.gemfire.cache.Cache;
 import com.gemstone.gemfire.cache.DataPolicy;
 import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.cache.query.CqQuery;
-import com.gemstone.gemfire.cache.query.Index;
-import com.gemstone.gemfire.cache.query.IndexType;
-import com.gemstone.gemfire.cache.query.QueryService;
+import com.gemstone.gemfire.cache.client.Pool;
+import com.gemstone.gemfire.cache.query.*;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
@@ -46,6 +44,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class GemfireDatastore extends AbstractDatastore implements InitializingBean, DisposableBean, MappingContext.Listener {
 
     protected Cache gemfireCache;
+    protected Pool gemfirePool;
     protected Map<PersistentEntity, GemfireTemplate> gemfireTemplates = new ConcurrentHashMap<PersistentEntity, GemfireTemplate>();
     protected Collection<CqQuery> continuousQueries = new ConcurrentLinkedQueue<CqQuery>();
 
@@ -67,6 +66,14 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         this.gemfireCache = gemfireCache;
     }
 
+    public void setGemfirePool(Pool gemfirePool) {
+        this.gemfirePool = gemfirePool;
+    }
+
+    public Pool getGemfirePool() {
+        return gemfirePool;
+    }
+
     protected void initializeRegions(Cache cache, MappingContext mappingContext) throws Exception {
         for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
             Region region = initializeRegion(cache, entity);
@@ -75,7 +82,7 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
 
     }
 
-    protected void initializeIndices(Cache cache, PersistentEntity entity, Region region) throws Exception{
+    protected void initializeIndices(Cache cache, PersistentEntity entity, Region region) throws Exception {
         final List<PersistentProperty> properties = entity.getPersistentProperties();
 
         final QueryService queryService = cache.getQueryService();
@@ -88,8 +95,16 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         final String indexName = entityName + "PrimaryKeyIndex";
 
         if(!checkIndexExists(indices, indexName)) {
-            queryService.createIndex(indexName, IndexType.PRIMARY_KEY, idName, mappedRegion != null && mappedRegion.getRegion() != null ?
-                    "/" + mappedRegion.getRegion() : "/"+entityName);
+            try {
+                queryService.createIndex(indexName, IndexType.PRIMARY_KEY, idName, mappedRegion != null && mappedRegion.getRegion() != null ?
+                        "/" + mappedRegion.getRegion() : "/"+entityName);
+            }
+            catch (IndexExistsException e) {
+               // ignore
+            }
+            catch(IndexNameConflictException e) {
+                // ignore
+            }
         }
         for (PersistentProperty property : properties) {
             final boolean indexed = isIndexed(property) && Comparable.class.isAssignableFrom(property.getType());
@@ -97,7 +112,15 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
             if(indexed) {
                 final String propertyIndexName = entityName + property.getCapitilizedName() + "Index";
                 if(!checkIndexExists(indices, propertyIndexName)) {
-                    queryService.createIndex(propertyIndexName, IndexType.FUNCTIONAL,property.getName(), "/"+entityName);
+                    try {
+                        queryService.createIndex(propertyIndexName, IndexType.FUNCTIONAL,property.getName(), "/"+entityName);
+                    }
+                    catch (IndexExistsException e) {
+                       // ignore
+                    }
+                    catch(IndexNameConflictException e) {
+                        // ignore
+                    }
                 }
             }
         }
@@ -260,9 +283,11 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         }
 
         try {
-            cacheFactory.afterPropertiesSet();
-            if(gemfireCache == null)
+
+            if(gemfireCache == null) {
+                cacheFactory.afterPropertiesSet();
                 gemfireCache = cacheFactory.getObject();
+            }
             initializeRegions(gemfireCache, mappingContext);
             initializeConverters(mappingContext);
         } catch (Exception e) {
