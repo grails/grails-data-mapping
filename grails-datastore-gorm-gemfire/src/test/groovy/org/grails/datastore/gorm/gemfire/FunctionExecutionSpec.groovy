@@ -17,7 +17,7 @@ class FunctionExecutionSpec extends GormDatastoreSpec {
       def p = new Plant(name:"cabbage", goesInPatch:true).save()
     when:
       def results = Plant.executeFunction {
-        lastResult localData[p.id]
+        it.lastResult it.localData[p.id]
       }
 
     then:
@@ -33,7 +33,7 @@ class FunctionExecutionSpec extends GormDatastoreSpec {
       def p2 = new Plant(name:"carrot", goesInPatch:true).save()
     when:
       def results = Plant.executeFunction([p1.id]) {
-        lastResult localData[filter.iterator().next()]
+        it.lastResult it.localData[it.filter.iterator().next()]
       }
 
     then:

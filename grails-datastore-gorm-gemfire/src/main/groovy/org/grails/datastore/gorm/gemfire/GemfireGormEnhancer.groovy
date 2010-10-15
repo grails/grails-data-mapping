@@ -29,6 +29,7 @@ import com.gemstone.gemfire.cache.execute.FunctionContext
 import com.gemstone.gemfire.cache.partition.PartitionRegionHelper
 import com.gemstone.gemfire.cache.execute.RegionFunctionContext
 import com.gemstone.gemfire.cache.execute.ResultSender
+import org.springframework.util.ReflectionUtils
 
 /**
  * Extends the default GORM capabilities adding Gemfire specific methods
@@ -58,27 +59,40 @@ class ClosureInvokingFunction extends FunctionAdapter {
   def callable
   String id
 
-  ClosureInvokingFunction(callable, id) {
+  ClosureInvokingFunction(Closure callable, id) {
     this.callable = callable;
     this.id = id;
+
+    disableOwner(callable)
+  }
+
+  protected disableOwner(Closure callable) {
+    // disable owner to prevent the owner being serialized with the function
+    nullifyField(callable, "owner")
+    nullifyField(callable, "delegate")
+    nullifyField(callable, "thisObject")
+  }
+
+  protected nullifyField(Closure callable, String fieldName) {
+    def field = ReflectionUtils.findField(callable.getClass(), fieldName)
+    ReflectionUtils.makeAccessible field
+    field.set callable, null
   }
 
   ClosureInvokingFunction(callable) {
-    this.callable = callable;
-    this.id = callable.getClass().name
+    this(callable, callable.getClass().name)
   }
 
   void execute(FunctionContext functionContext) {
     def helper = new FunctionContextHelper(functionContext)
-    callable.delegate = helper
     callable.resolveStrategy = Closure.DELEGATE_FIRST
-    callable?.call(functionContext)
+    callable?.call(helper)
   }
 
 
 }
 
-class FunctionContextHelper implements RegionFunctionContext, ResultSender {
+class FunctionContextHelper implements RegionFunctionContext, ResultSender, Serializable {
   @Delegate RegionFunctionContext context
   @Delegate ResultSender resultSender
   FunctionContextHelper(RegionFunctionContext context) {
