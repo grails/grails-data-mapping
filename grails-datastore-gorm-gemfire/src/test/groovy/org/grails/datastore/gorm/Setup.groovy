@@ -12,6 +12,7 @@ import org.springframework.datastore.mapping.model.MappingContext
 
 import org.grails.datastore.gorm.gemfire.GemfireGormEnhancer
 import org.springframework.datastore.mapping.gemfire.config.GormGemfireMappingFactory
+import com.gemstone.gemfire.cache.DataPolicy
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,7 +28,9 @@ class Setup {
   }
   static Session setup(classes) {
     def context = new KeyValueMappingContext("")
-    context.mappingFactory = new GormGemfireMappingFactory()
+    def factory = new GormGemfireMappingFactory()
+    factory.defaultDataPolicy = DataPolicy.REPLICATE
+    context.mappingFactory = factory
     gemfire = new GemfireDatastore(context)
     gemfire.afterPropertiesSet()
     for(cls in classes) {

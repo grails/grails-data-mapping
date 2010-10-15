@@ -37,8 +37,14 @@ import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher;
 public class GormGemfireMappingFactory extends GormKeyValueMappingFactory {
 
 
+    private DataPolicy defaultDataPolicy = DataPolicy.PARTITION;
+
     public GormGemfireMappingFactory() {
         super("Gemfire");
+    }
+
+    public void setDefaultDataPolicy(DataPolicy defaultDataPolicy) {
+        this.defaultDataPolicy = defaultDataPolicy;
     }
 
     @Override
@@ -54,7 +60,7 @@ public class GormGemfireMappingFactory extends GormKeyValueMappingFactory {
             };
             MappingConfigurationBuilder builder = new MappingConfigurationBuilder(factory, KeyValue.class);
             builder.evaluate(value);
-            factory.setDataPolicy(DataPolicy.REPLICATE);
+            factory.setDataPolicy(defaultDataPolicy);
             entityToPropertyMap.put(entity, builder.getProperties());
             final RegionAttributes regionAttributes = factory.create();
             family.setRegionAttributes(regionAttributes);
