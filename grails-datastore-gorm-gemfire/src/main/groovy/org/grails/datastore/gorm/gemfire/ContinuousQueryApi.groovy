@@ -24,6 +24,7 @@ import com.gemstone.gemfire.cache.query.CqListener
 import com.gemstone.gemfire.cache.query.CqAttributes
 import com.gemstone.gemfire.cache.client.PoolManager
 import com.gemstone.gemfire.cache.client.Pool
+import com.gemstone.gemfire.cache.query.CqEvent
 
 /**
  * Extended API for doing Continous queries in Gemfire
@@ -41,7 +42,7 @@ class ContinuousQueryApi {
     this.dynamicFinders = DynamicFinder.getAllDynamicFinders(gemfire)
   }
 
-  def methodMissing(String methodName, args) {
+  def invokeMethod(String methodName, args) {
       FinderMethod method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
       def cls = entity.javaClass
       if (method && args && (args[-1] instanceof Closure) && (method instanceof DynamicFinder)) {
@@ -51,20 +52,12 @@ class ContinuousQueryApi {
           GemfireQuery q = dynamicFinder.buildQuery(invocation)
           def queryString = q.getQueryString()
 
-          def cache = gemfire.gemfireCache
-          def queryService = cache.getQueryService()
-          Pool pool = queryService.pool
-          if(pool == null) {
-            def factory = PoolManager.createFactory()
-            factory.addLocator("localhost",64771)
-            factory.setSubscriptionEnabled(true)
-            pool = factory.create(entity.name);
+          def queryService = gemfire.gemfirePool.getQueryService()
 
-            queryService.pool = pool
-          }
 
           CqAttributesFactory cqf = new CqAttributesFactory()
-          cqf.addCqListener(args[-1] as CqListener)
+          def listeners = [new ClosureInvokingCqListener(args[-1])] as CqListener[]
+          cqf.initCqListeners(listeners)
           CqAttributes attrs = cqf.create()
 
           def continuousQuery = queryService.newCq("${entity.name}.${methodName}",queryString, attrs)
@@ -76,5 +69,25 @@ class ContinuousQueryApi {
       else {
           throw new MissingMethodException(methodName, cls, args)
       }
+  }
+}
+class ClosureInvokingCqListener implements CqListener{
+
+  Closure callable
+
+  ClosureInvokingCqListener(callable) {
+    this.callable = callable;
+  }
+
+  void onEvent(CqEvent cqEvent) {
+    callable?.call(cqEvent)
+  }
+
+  void onError(CqEvent cqEvent) {
+    callable?.call(cqEvent)
+  }
+
+  void close() {
+    // do nothing
   }
 }
