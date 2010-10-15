@@ -15,19 +15,17 @@
 package org.springframework.datastore.mapping.gemfire;
 
 import com.gemstone.gemfire.cache.Cache;
-import com.gemstone.gemfire.cache.CacheListener;
 import com.gemstone.gemfire.cache.DataPolicy;
 import com.gemstone.gemfire.cache.Region;
 import com.gemstone.gemfire.cache.query.CqQuery;
+import com.gemstone.gemfire.cache.query.Index;
 import com.gemstone.gemfire.cache.query.IndexType;
 import com.gemstone.gemfire.cache.query.QueryService;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.gemfire.CacheFactoryBean;
-import org.springframework.data.gemfire.GemfireCallback;
 import org.springframework.data.gemfire.GemfireTemplate;
 import org.springframework.data.gemfire.RegionFactoryBean;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
@@ -71,13 +69,13 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
 
     protected void initializeRegions(Cache cache, MappingContext mappingContext) throws Exception {
         for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
-            initializeRegion(cache, entity);
-            initializeIndices(cache, entity);
+            Region region = initializeRegion(cache, entity);
+            initializeIndices(cache, entity, region);
         }
 
     }
 
-    protected void initializeIndices(Cache cache, PersistentEntity entity) throws Exception{
+    protected void initializeIndices(Cache cache, PersistentEntity entity, Region region) throws Exception{
         final List<PersistentProperty> properties = entity.getPersistentProperties();
 
         final QueryService queryService = cache.getQueryService();
@@ -86,18 +84,38 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
 
         org.springframework.datastore.mapping.gemfire.config.Region mappedRegion = getMappedRegionInfo(entity);
 
-        queryService.createIndex(entityName+"PrimaryKeyIndex", IndexType.PRIMARY_KEY, idName, mappedRegion != null && mappedRegion.getRegion() != null ?
-                                                                                              "/" + mappedRegion.getRegion() : "/"+entityName);
+        final Collection<Index> indices = queryService.getIndexes(region);
+        final String indexName = entityName + "PrimaryKeyIndex";
+
+        if(!checkIndexExists(indices, indexName)) {
+            queryService.createIndex(indexName, IndexType.PRIMARY_KEY, idName, mappedRegion != null && mappedRegion.getRegion() != null ?
+                    "/" + mappedRegion.getRegion() : "/"+entityName);
+        }
         for (PersistentProperty property : properties) {
             final boolean indexed = isIndexed(property) && Comparable.class.isAssignableFrom(property.getType());
 
             if(indexed) {
-                queryService.createIndex(entityName + property.getCapitilizedName() + "Index", IndexType.FUNCTIONAL,property.getName(), "/"+entityName);
+                final String propertyIndexName = entityName + property.getCapitilizedName() + "Index";
+                if(!checkIndexExists(indices, propertyIndexName)) {
+                    queryService.createIndex(propertyIndexName, IndexType.FUNCTIONAL,property.getName(), "/"+entityName);
+                }
             }
         }
     }
 
-    protected void initializeRegion(Cache cache, PersistentEntity entity) throws Exception {
+    private boolean checkIndexExists(Collection<Index> indices, String indexName) {
+        boolean indexExists = false;
+        if(indices != null) {
+            for (Index index : indices) {
+                if(index.getName().equals(indexName)) {
+                    indexExists = true;
+                }
+            }
+        }
+        return indexExists;
+    }
+
+    protected Region initializeRegion(Cache cache, PersistentEntity entity) throws Exception {
         RegionFactoryBean regionFactory = new RegionFactoryBean();
         regionFactory.setCache(cache);
 
@@ -114,7 +132,7 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
             regionFactory.setDataPolicy(mappedRegion.getDataPolicy());
         }
         else {
-            regionFactory.setDataPolicy(DataPolicy.REPLICATE);
+            regionFactory.setDataPolicy(DataPolicy.PARTITION);
         }
         if(hasMappedRegion && mappedRegion.getRegionAttributes() != null) {
             regionFactory.setAttributes(mappedRegion.getRegionAttributes());
@@ -144,6 +162,7 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
 
 
         }*/);
+        return region;
     }
 
     private org.springframework.datastore.mapping.gemfire.config.Region getMappedRegionInfo(PersistentEntity entity) {
@@ -242,8 +261,8 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
 
     public void persistentEntityAdded(PersistentEntity entity) {
         try {
-            initializeRegion(gemfireCache, entity);
-            initializeIndices(gemfireCache, entity);
+            Region region = initializeRegion(gemfireCache, entity);
+            initializeIndices(gemfireCache, entity, region);
         } catch (Exception e) {
             throw new DatastoreConfigurationException("Failed to configure Gemfire cache and regions for entity ["+entity+"]: " + e.getMessage(),e);
         }
