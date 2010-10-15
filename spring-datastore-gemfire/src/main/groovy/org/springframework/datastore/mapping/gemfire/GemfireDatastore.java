@@ -14,9 +14,7 @@
  */
 package org.springframework.datastore.mapping.gemfire;
 
-import com.gemstone.gemfire.cache.Cache;
-import com.gemstone.gemfire.cache.DataPolicy;
-import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.*;
 import com.gemstone.gemfire.cache.client.Pool;
 import com.gemstone.gemfire.cache.query.*;
 import org.springframework.beans.factory.DisposableBean;
@@ -158,26 +156,35 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         if(region == null) {
             RegionFactoryBean regionFactory = new RegionFactoryBean();
             regionFactory.setCache(cache);
-            
+
             regionFactory.setName(regionName);
-            if(hasMappedRegion && mappedRegion.getDataPolicy() != null) {
-                regionFactory.setDataPolicy(mappedRegion.getDataPolicy());
+            if(gemfirePool != null) {
+                AttributesFactory factory = new AttributesFactory();
+                factory.setScope(Scope.LOCAL);
+                factory.setPoolName(gemfirePool.getName());
+                regionFactory.setAttributes(factory.create());
             }
             else {
-                regionFactory.setDataPolicy(DataPolicy.PARTITION);
+                if(hasMappedRegion && mappedRegion.getDataPolicy() != null) {
+                    regionFactory.setDataPolicy(mappedRegion.getDataPolicy());
+                }
+                else {
+                    regionFactory.setDataPolicy(DataPolicy.PARTITION);
+                }
+                if(hasMappedRegion && mappedRegion.getRegionAttributes() != null) {
+                    regionFactory.setAttributes(mappedRegion.getRegionAttributes());
+                }
+                if(hasMappedRegion && mappedRegion.getCacheListeners() != null) {
+                    regionFactory.setCacheListeners(mappedRegion.getCacheListeners());
+                }
+                if(hasMappedRegion && mappedRegion.getCacheLoader() != null) {
+                    regionFactory.setCacheLoader(mappedRegion.getCacheLoader());
+                }
+                if(hasMappedRegion && mappedRegion.getCacheWriter() != null) {
+                    regionFactory.setCacheWriter(mappedRegion.getCacheWriter());
+                }
             }
-            if(hasMappedRegion && mappedRegion.getRegionAttributes() != null) {
-                regionFactory.setAttributes(mappedRegion.getRegionAttributes());
-            }
-            if(hasMappedRegion && mappedRegion.getCacheListeners() != null) {
-                regionFactory.setCacheListeners(mappedRegion.getCacheListeners());
-            }
-            if(hasMappedRegion && mappedRegion.getCacheLoader() != null) {
-                regionFactory.setCacheLoader(mappedRegion.getCacheLoader());
-            }
-            if(hasMappedRegion && mappedRegion.getCacheWriter() != null) {
-                regionFactory.setCacheWriter(mappedRegion.getCacheWriter());
-            }
+
 
             regionFactory.afterPropertiesSet();
              region = regionFactory.getObject();
