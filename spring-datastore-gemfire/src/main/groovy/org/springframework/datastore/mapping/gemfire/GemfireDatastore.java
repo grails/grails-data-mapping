@@ -116,39 +116,50 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
     }
 
     protected Region initializeRegion(Cache cache, PersistentEntity entity) throws Exception {
-        RegionFactoryBean regionFactory = new RegionFactoryBean();
-        regionFactory.setCache(cache);
+
 
         org.springframework.datastore.mapping.gemfire.config.Region mappedRegion = getMappedRegionInfo(entity);
 
         final boolean hasMappedRegion = mappedRegion != null;
+        String regionName;
         if(hasMappedRegion && mappedRegion.getRegion() != null) {
-            regionFactory.setName(mappedRegion.getRegion());
+            regionName = mappedRegion.getRegion();
+
         }
         else {
-            regionFactory.setName(entity.getDecapitalizedName());
-        }
-        if(hasMappedRegion && mappedRegion.getDataPolicy() != null) {
-            regionFactory.setDataPolicy(mappedRegion.getDataPolicy());
-        }
-        else {
-            regionFactory.setDataPolicy(DataPolicy.PARTITION);
-        }
-        if(hasMappedRegion && mappedRegion.getRegionAttributes() != null) {
-            regionFactory.setAttributes(mappedRegion.getRegionAttributes());
-        }
-        if(hasMappedRegion && mappedRegion.getCacheListeners() != null) {
-            regionFactory.setCacheListeners(mappedRegion.getCacheListeners());
-        }
-        if(hasMappedRegion && mappedRegion.getCacheLoader() != null) {
-            regionFactory.setCacheLoader(mappedRegion.getCacheLoader());
-        }
-        if(hasMappedRegion && mappedRegion.getCacheWriter() != null) {
-            regionFactory.setCacheWriter(mappedRegion.getCacheWriter());
+            regionName = entity.getDecapitalizedName();
         }
 
-        regionFactory.afterPropertiesSet();
-        final Region region = regionFactory.getObject();
+        Region region = cache.getRegion(regionName);
+
+        if(region == null) {
+            RegionFactoryBean regionFactory = new RegionFactoryBean();
+            regionFactory.setCache(cache);
+            
+            regionFactory.setName(regionName);
+            if(hasMappedRegion && mappedRegion.getDataPolicy() != null) {
+                regionFactory.setDataPolicy(mappedRegion.getDataPolicy());
+            }
+            else {
+                regionFactory.setDataPolicy(DataPolicy.PARTITION);
+            }
+            if(hasMappedRegion && mappedRegion.getRegionAttributes() != null) {
+                regionFactory.setAttributes(mappedRegion.getRegionAttributes());
+            }
+            if(hasMappedRegion && mappedRegion.getCacheListeners() != null) {
+                regionFactory.setCacheListeners(mappedRegion.getCacheListeners());
+            }
+            if(hasMappedRegion && mappedRegion.getCacheLoader() != null) {
+                regionFactory.setCacheLoader(mappedRegion.getCacheLoader());
+            }
+            if(hasMappedRegion && mappedRegion.getCacheWriter() != null) {
+                regionFactory.setCacheWriter(mappedRegion.getCacheWriter());
+            }
+
+            regionFactory.afterPropertiesSet();
+             region = regionFactory.getObject();
+        }
+
         gemfireTemplates.put(entity, new GemfireTemplate(region) /*{
             @Override
             public <T> T execute(GemfireCallback<T> action) throws DataAccessException {
