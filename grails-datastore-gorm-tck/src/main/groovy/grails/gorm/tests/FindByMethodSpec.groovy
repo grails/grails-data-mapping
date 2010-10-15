@@ -155,7 +155,7 @@ class FindByMethodSpec extends GormDatastoreSpec{
         assert 0 == books?.size()
     }  
 }
-class Highway {
+class Highway implements Serializable{
     Long id
     Boolean bypassed
     String name
@@ -165,7 +165,7 @@ class Highway {
       name index:true
     }
 }
-class Book {
+class Book implements Serializable{
     Long id
     String author
     String title

@@ -30,7 +30,7 @@ class CircularOneToManySpec extends GormDatastoreSpec{
 }
 
 @Entity
-class Task {
+class Task implements Serializable{
     Long id
     Set tasks
     Task task

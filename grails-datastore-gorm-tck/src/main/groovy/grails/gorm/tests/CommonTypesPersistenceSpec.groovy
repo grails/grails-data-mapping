@@ -57,7 +57,7 @@ class CommonTypesPersistenceSpec extends GormDatastoreSpec {
 
 }
 
-class CommonTypes {
+class CommonTypes implements Serializable{
   Long id
   Long l
   Byte b

@@ -78,7 +78,7 @@ class InheritanceSpec extends GormDatastoreSpec {
   }
 }
 
-class Location {
+class Location implements Serializable{
   Long id
   String name
   String code

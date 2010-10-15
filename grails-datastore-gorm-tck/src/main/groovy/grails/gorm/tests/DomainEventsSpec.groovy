@@ -156,7 +156,7 @@ class DomainEventsSpec extends GormDatastoreSpec{
    }
   
 }
-class PersonEvent {
+class PersonEvent implements Serializable{
     Long id
     Long version
     String name
@@ -180,7 +180,7 @@ class PersonEvent {
 
 }
 
-class ModifyPerson {
+class ModifyPerson implements Serializable{
   Long id
   Long version
 

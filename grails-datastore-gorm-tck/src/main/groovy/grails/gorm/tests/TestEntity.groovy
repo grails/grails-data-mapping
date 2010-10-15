@@ -8,7 +8,7 @@ package grails.gorm.tests
  * To change this template use File | Settings | File Templates.
  */
 @grails.persistence.Entity
-class TestEntity {
+class TestEntity implements Serializable{
   Long id
   String name
   Integer age

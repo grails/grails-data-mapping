@@ -986,7 +986,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
         assert 'Book Number 2' == pub.title
     }
 }
-class PlantCategory {
+class PlantCategory implements Serializable{
     Long id
     Long version
     Set plants
@@ -1011,14 +1011,16 @@ class PlantCategory {
 //        }
     }
 }
-class Plant {
+class Plant implements Serializable{
     Long id
     Long version
     boolean goesInPatch
     String name
+
+
 }
 
-class Publication {
+class Publication implements Serializable{
    Long id
    Long version
    String title

@@ -41,7 +41,7 @@ class UpdateWithProxyPresentSpec extends GormDatastoreSpec {
 }
 
 @Entity
-class Pet {
+class Pet implements Serializable {
     Long id
 	String name
 	Date birthDate = new Date()
@@ -51,7 +51,7 @@ class Pet {
 }
 
 @Entity
-class Person {
+class Person implements Serializable{
   Long id
   String firstName
   String lastName
@@ -65,7 +65,7 @@ class Person {
 }
 
 @Entity
-class PetType  {
+class PetType implements Serializable {
     Long id  
 	String name
 }
