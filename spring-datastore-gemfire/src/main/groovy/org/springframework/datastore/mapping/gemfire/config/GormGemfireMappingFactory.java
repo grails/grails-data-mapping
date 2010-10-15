@@ -54,7 +54,7 @@ public class GormGemfireMappingFactory extends GormKeyValueMappingFactory {
             };
             MappingConfigurationBuilder builder = new MappingConfigurationBuilder(factory, KeyValue.class);
             builder.evaluate(value);
-            factory.setDataPolicy(DataPolicy.PARTITION);
+            factory.setDataPolicy(DataPolicy.REPLICATE);
             entityToPropertyMap.put(entity, builder.getProperties());
             final RegionAttributes regionAttributes = factory.create();
             family.setRegionAttributes(regionAttributes);
