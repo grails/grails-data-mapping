@@ -23,6 +23,12 @@ import org.springframework.data.gemfire.GemfireCallback
 import com.gemstone.gemfire.cache.Region
 import org.springframework.datastore.mapping.query.order.ManualEntityOrdering
 import org.springframework.datastore.mapping.query.Query
+import com.gemstone.gemfire.cache.execute.FunctionService
+import com.gemstone.gemfire.cache.execute.FunctionAdapter
+import com.gemstone.gemfire.cache.execute.FunctionContext
+import com.gemstone.gemfire.cache.partition.PartitionRegionHelper
+import com.gemstone.gemfire.cache.execute.RegionFunctionContext
+import com.gemstone.gemfire.cache.execute.ResultSender
 
 /**
  * Extends the default GORM capabilities adding Gemfire specific methods
@@ -45,6 +51,70 @@ class GemfireGormEnhancer extends GormEnhancer{
 }
 
 /**
+ * Wrapper for invoking Gemfire functions
+ */
+class ClosureInvokingFunction extends FunctionAdapter {
+
+  def callable
+  String id
+
+  ClosureInvokingFunction(callable, id) {
+    this.callable = callable;
+    this.id = id;
+  }
+
+  ClosureInvokingFunction(callable) {
+    this.callable = callable;
+    this.id = callable.getClass().name
+  }
+
+  void execute(FunctionContext functionContext) {
+    def helper = new FunctionContextHelper(functionContext)
+    callable.delegate = helper
+    callable.resolveStrategy = Closure.DELEGATE_FIRST
+    callable?.call(functionContext)
+  }
+
+
+}
+
+class FunctionContextHelper implements RegionFunctionContext, ResultSender {
+  @Delegate RegionFunctionContext context
+  @Delegate ResultSender resultSender
+  FunctionContextHelper(RegionFunctionContext context) {
+    this.context = context;
+    this.resultSender = context.resultSender
+  }
+
+  def getLocalData() {
+    PartitionRegionHelper.getLocalDataForContext(context)
+  }
+
+  Set<?> getFilter() {
+    return context.filter
+  }
+
+  Region getDataSet() {
+    return context.dataSet
+  }
+
+  Serializable getArguments() {
+    return context.arguments
+  }
+
+  String getFunctionId() {
+    return context.functionId
+  }
+
+  void sendResult(Serializable t) {
+    resultSender.sendResult t
+  }
+
+  void lastResult(Serializable t) {
+    resultSender.lastResult t
+  }
+}
+/**
  * Adds support for String-based queries using OQL and continuous queries
  */
 class GemfireStaticApi extends GormStaticApi {
@@ -57,6 +127,27 @@ class GemfireStaticApi extends GormStaticApi {
 
   ContinuousQueryApi getCq() { cqApi }
 
+  def executeFunction(Collection keys, Closure callable) {
+    GemfireDatastore gemfire = datastore
+    GemfireTemplate template = gemfire.getTemplate(persistentClass)
+    def resultCollector = FunctionService
+                            .onRegion(template.region)
+                            .withFilter(keys as Set)
+                            .execute(new ClosureInvokingFunction(callable))
+
+    return resultCollector.getResult()
+  }
+
+  def executeFunction(Closure callable) {
+    GemfireDatastore gemfire = datastore
+    GemfireTemplate template = gemfire.getTemplate(persistentClass)
+    def resultCollector = FunctionService
+                            .onRegion(template.region)
+                            .execute(new ClosureInvokingFunction(callable))
+
+    return resultCollector.getResult()
+  }
+  
   def executeQuery(String query) {
     GemfireDatastore gemfire = datastore
     GemfireTemplate template = gemfire.getTemplate(persistentClass)
