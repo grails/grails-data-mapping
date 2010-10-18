@@ -187,7 +187,10 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
 
 
             regionFactory.afterPropertiesSet();
-             region = regionFactory.getObject();
+            region = regionFactory.getObject();
+			if(gemfirePool != null) {
+				region.registerInterest("ALL_KEYS");
+			}
         }
 
         gemfireTemplates.put(entity, new GemfireTemplate(region) /*{
