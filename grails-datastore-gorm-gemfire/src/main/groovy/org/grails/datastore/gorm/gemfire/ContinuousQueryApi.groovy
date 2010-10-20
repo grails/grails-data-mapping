@@ -64,7 +64,8 @@ class ContinuousQueryApi {
           cqf.initCqListeners(listeners)
           CqAttributes attrs = cqf.create()
 
-          def continuousQuery = queryService.newCq("${entity.name}.${methodName}",queryString, attrs)
+          def cqName = "${entity.name}.${methodName}(${args[0..-2].join(',')})"
+          def continuousQuery = queryService.newCq(cqName,queryString, attrs)
 
           continuousQuery.execute()
           gemfire.addContinuousQuery(continuousQuery)
