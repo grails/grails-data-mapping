@@ -13,7 +13,7 @@ def isGroovyProject(project) {
 
 subprojects {
 
-    releaseType = "BUILD-SNAPSHOT"
+    releaseType = "M2"
     version = "1.0.0.${releaseType}"
 
     def isSpringProject = project.name.contains("spring-datastore")
@@ -100,7 +100,7 @@ subprojects {
           def protocol = isDav ? 'dav:' : ''
 //          def releaseRepositoryUrl = "https://dav.codehaus.org/repository/grails/"
           def milestoneRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/milestone' :
-                                                         "${protocol}https://dav.codehaus.org/snapshots.repository/grails/"
+                                                         "${protocol}https://dav.codehaus.org/repository/grails/"
           def snapshotRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/snapshot' :
                                                         "${protocol}https://dav.codehaus.org/snapshots.repository/grails/"
 
