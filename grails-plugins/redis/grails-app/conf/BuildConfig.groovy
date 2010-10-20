@@ -16,7 +16,6 @@ grails.project.dependency.resolution = {
 
 		mavenRepo "http://maven.springframework.org/milestone"
 		mavenRepo "http://snapshots.repository.codehaus.org"
-        mavenLocal()
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
