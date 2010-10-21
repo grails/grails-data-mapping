@@ -14,11 +14,13 @@
  */
 package org.springframework.datastore.mapping.keyvalue.mapping;
 
+import org.springframework.datastore.mapping.keyvalue.mapping.config.AnnotationKeyValueMappingFactory;
 import org.springframework.datastore.mapping.keyvalue.mapping.config.GormKeyValueMappingFactory;
 import org.springframework.datastore.mapping.model.AbstractMappingContext;
-import org.springframework.datastore.mapping.model.MappingFactory;
 import org.springframework.datastore.mapping.model.MappingConfigurationStrategy;
+import org.springframework.datastore.mapping.model.MappingFactory;
 import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.model.config.DefaultMappingConfigurationStrategy;
 import org.springframework.datastore.mapping.model.config.GormMappingConfigurationStrategy;
 import org.springframework.util.ClassUtils;
 
@@ -43,7 +45,13 @@ public class KeyValueMappingContext extends AbstractMappingContext {
         initializeDefualtMappingFactory(keyspace);
 
 
-        this.syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
+        if(ClassUtils.isPresent(GROOVY_OBJECT_CLASS, KeyValueMappingContext.class.getClassLoader()))
+            this.syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
+        else
+            this.syntaxStrategy = new DefaultMappingConfigurationStrategy(mappingFactory);
+
+
+
     }
 
     protected void initializeDefualtMappingFactory(String keyspace) {
@@ -51,7 +59,7 @@ public class KeyValueMappingContext extends AbstractMappingContext {
         if(ClassUtils.isPresent(GROOVY_OBJECT_CLASS, KeyValueMappingContext.class.getClassLoader()))
             this.mappingFactory = new GormKeyValueMappingFactory(keyspace);
         else
-            this.mappingFactory = new KeyValueMappingFactory(keyspace);
+            this.mappingFactory = new AnnotationKeyValueMappingFactory(keyspace);
     }
 
     public void setMappingFactory(MappingFactory<Family, KeyValue> mappingFactory) {
