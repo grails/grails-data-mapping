@@ -59,8 +59,8 @@ class ListQueryTests {
     //assert "The Stand" == results[0].title
     //assert "It" == results[1].title
 
-    assert null !=  results.find { it.title == "The Stand" }
-    assert null !=  results.find { it.title == "It" }
+     assert null !=  results.find { it.title == "The Stand" }
+     assert null !=  results.find { it.title == "It" }
 
 
     q.max 1
@@ -93,8 +93,9 @@ class ListQueryTests {
     def results = q.list()
 
     assert 2 == results.size()
-    assert null !=  results.find { it.title == "The Stand" }
-    assert null !=  results.find { it.title == "The Shining" }
+    assert null != results.find { it.title == "The Stand" }
+    assert null != results.find { it.title == "The Shining" }
+    assert null == results.find { it.title == "It" }
 
   }
 

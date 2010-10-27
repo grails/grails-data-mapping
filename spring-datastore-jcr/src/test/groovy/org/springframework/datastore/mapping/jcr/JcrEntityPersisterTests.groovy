@@ -42,8 +42,6 @@ class JcrEntityPersisterTests extends AbstractJcrTest {
 
     def id = t.id
 
-    println id;
-
     conn.delete(t)
     conn.flush()
 

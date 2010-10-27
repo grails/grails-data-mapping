@@ -50,7 +50,7 @@ public class JcrSession extends AbstractSession<JcrSessionFactory> {
 
     @Override
     public void disconnect() {
-        interceptor.afterCompletion(null, null, null, null);
+//        interceptor.afterCompletion(null, null, null, null);
         try {
             ((TransientRepository) jcrSessionFactory.getRepository()).shutdown();
             super.disconnect();

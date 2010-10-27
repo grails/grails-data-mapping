@@ -20,15 +20,15 @@ class LockTests extends AbstractJcrTest{
     assert null != t.id;
 
     Session session = conn.getNativeInterface();
-    def node = session.getNodeByUUID(t.id);
+    def node = session.getNodeByUUID(t.id)
 
     conn.lock(t);
-    //assert true == conn.isLock(t);
-    assert true  == node.isLocked();
+
+    assert true  == node.isLocked()
 
     conn.unlock(t);
 
-    assert false == node.isLocked();;
+    assert false == node.isLocked()
 
     
   }

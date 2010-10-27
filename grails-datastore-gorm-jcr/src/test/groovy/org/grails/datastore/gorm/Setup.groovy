@@ -30,7 +30,7 @@ class Setup {
       PersistentEntity e -> e.name.contains("TestEntity")
     }
 
-    redis.mappingContext.addEntityValidator(entity, [
+    jcr.mappingContext.addEntityValidator(entity, [
             supports: { Class c -> true },
             validate: { Object o, Errors errors ->
                 if(!StringUtils.hasText(o.name)) {
@@ -39,15 +39,15 @@ class Setup {
             }
     ] as Validator)
 
-    def enhancer = new JcrGormEnhancer(jcr, new DatastoreTransactionManager(datastore: redis))
+    def enhancer = new JcrGormEnhancer(jcr, new DatastoreTransactionManager(datastore: jcr))
     enhancer.enhance()
 
-    redis.mappingContext.addMappingContextListener({ e ->
+    jcr.mappingContext.addMappingContextListener({ e ->
       enhancer.enhance e
     } as MappingContext.Listener)
 
 
-    def con = jcr.connect(conconnectionDetails,[username:"username",
+    def con = jcr.connect([username:"username",
                               password:"password",
                               workspace:"default",
                               configuration:"classpath:repository.xml",

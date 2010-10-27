@@ -13,7 +13,6 @@
     <orderEntry type="module" module-name="grails-datastore-gorm-tck" />
     <orderEntry type="module" module-name="grails-datastore-gorm" />
     <orderEntry type="library" name="Groovy" level="project" />
-    <orderEntry type="library" name="Spring Transaction" level="project" />
     <orderEntry type="library" name="Spring Context" level="project" />
     <orderEntry type="library" name="Spring Beans" level="project" />
     <orderEntry type="library" name="Spring Extension JCR" level="project" />
@@ -23,6 +22,8 @@
     <orderEntry type="library" name="SLF4J" level="project" />
     <orderEntry type="library" name="Spring Web" level="project" />
     <orderEntry type="library" name="Spring Web MVC" level="project" />
+    <orderEntry type="library" name="Spring Transaction" level="project" />
+    <orderEntry type="library" name="Spock" level="project" />
   </component>
 </module>
 

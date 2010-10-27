@@ -38,7 +38,7 @@ public class JcrQuery extends Query {
     @Override
     protected List executeQuery(PersistentEntity entity, Junction criteria) {
         final ProjectionList projectionList = projections();
-        List<String> results = null;
+        List results = null;
         List<String> uuids = null;
         if (!criteria.isEmpty()) {
             List criteriaList = criteria.getCriteria();
@@ -46,10 +46,10 @@ public class JcrQuery extends Query {
         }
         IdProjection idProjection = null;
         if (projectionList.isEmpty()) {
-            if (uuids == null) results = paginateResults(getEntity().getJavaClass().getSimpleName());
-            else {
+            if (uuids == null) uuids = paginateResults(getEntity().getJavaClass().getSimpleName());
+            //else {
                 results = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
-            }
+            //}
             if (results != null)
                 return results;
         } else {
@@ -58,15 +58,13 @@ public class JcrQuery extends Query {
             for (Projection projection : projectionList.getProjectionList()) {
                 final String projectionType = projection.getClass().getSimpleName();
                 if (projection instanceof CountProjection) {
-                    return unsupportedProjection(projectionType);
+                    projectionResults.add(results.size());
                 } else if (projection instanceof MaxProjection) {
                     MaxProjection max = (MaxProjection) projection;
                     return unsupportedProjection(projectionType);
-
                 } else if (projection instanceof MinProjection) {
                     MinProjection min = (MinProjection) projection;
                     return unsupportedProjection(projectionType);
-
                 } else {
                     if (projection instanceof SumProjection) {
                         return unsupportedProjection(projectionType);
@@ -74,8 +72,8 @@ public class JcrQuery extends Query {
                         return unsupportedProjection(projectionType);
                     } else if (projection instanceof PropertyProjection) {
                         PropertyProjection propertyProjection = (PropertyProjection) projection;
-                        List resultList = new ArrayList();
-                        //return resultList                                        
+                        final String propName = propertyProjection.getPropertyName();
+                        PersistentProperty prop = entityPersister.getPersistentEntity().getPropertyByName(propName);                                                                  
                         return unsupportedProjection(projectionType);
                     } else if (projection instanceof IdProjection) {
                         idProjection = (IdProjection) projection;
@@ -125,7 +123,6 @@ public class JcrQuery extends Query {
 
         final int total = results.size();
         if (offset > total) return Collections.emptyList();
-
         // 0..3
         // 0..-1
         // 1..1
@@ -137,14 +134,12 @@ public class JcrQuery extends Query {
             List<String> finalResult = results.subList(from, max);
             return finalResult;
         }
-
         return results;
     }
 
     private static interface CriterionHandler<T> {
         void handle(JcrEntityPersister entityPersister, List<String> uuids, T criterion);
     }
-
 
     private final Map<Class, CriterionHandler> criterionHandlers = new HashMap() {
         {
