@@ -59,11 +59,41 @@ subprojects {
       // without a lot of plumbing, so here we copy the class files from the TCK
       // project into this project's test classes dir so Gradle can find the test
       // classes and run them. See grails.gorm.tests.GormDatastoreSpec for on the TCK.
+      
+      // helper, used below.
+      def toBaseClassRelativePathWithoutExtension = { String base, String classFile ->
+        if (classFile.startsWith(base)) {
+          def sansClass = classFile[0 .. classFile.size() - ".class".size() - 1]
+          def dollarIndex = sansClass.indexOf('$')
+          def baseClass = dollarIndex > 0 ? sansClass[0..dollarIndex - 1] : sansClass
+          def relative = baseClass - base - '/'
+          relative
+        } else {
+          null
+        }
+      }
+
       test.doFirst {
+        def tckClassesDir = project(":grails-datastore-gorm-tck").sourceSets.main.classesDir
+        def thisProjectsTests =  // surely there is a less hardcoded way to do this
         copy {
-          from project(":grails-datastore-gorm-tck").sourceSets.main.classesDir
+          from tckClassesDir
           into sourceSets.test.classesDir
-          include "**/*Spec.class"
+          include "**/*.class"
+          exclude { details ->
+            // Do not copy across any TCK class (or nested classes of that class)
+            // If there is a corresponding source file in the particular modules 
+            // test source tree. Allows a module to override a test/helper.
+            
+            def candidatePath = details.file.absolutePath
+            def relativePath = toBaseClassRelativePathWithoutExtension(tckClassesDir.absolutePath, candidatePath)
+
+            if (relativePath == null) {
+              throw new IllegalStateException("$candidatePath does not appear to be in the TCK")
+            }
+            
+            project.file("src/test/groovy/${relativePath}.groovy").exists()
+          }
         }
       }
     }
