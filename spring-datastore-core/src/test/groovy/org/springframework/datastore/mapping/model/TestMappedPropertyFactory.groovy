@@ -4,13 +4,13 @@ package org.springframework.datastore.mapping.model
  * @author Graeme Rocher
  * @since 1.1
  */
-class TestMappedPropertyFactory<String, GString> extends MappingFactory {
+class TestMappedPropertyFactory extends MappingFactory {
 
-    String createMappedForm(PersistentProperty mpp) {
+    def createMappedForm(PersistentProperty mpp) {
       return "${mpp.name}_mapped"
     }
 
-    String createMappedForm(PersistentEntity entity) {
+    def createMappedForm(PersistentEntity entity) {
       return "${entity.name}_mapped"
     }
 }
