@@ -31,10 +31,11 @@ import java.util.List;
  */
 public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String> {
 
+/*
     private static String parentNodeUUID = null;
     private static String rootParentUUID = null;
     private static Class clazz = null;
-
+*/
     private JcrTemplate jcrTemplate;
     private SimpleTypeConverter typeConverter;
 
@@ -155,15 +156,17 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
 
     @Override
     protected Node retrieveEntry(final PersistentEntity persistentEntity, final Serializable key) {
-        return (Node) jcrTemplate.execute(new JcrCallback() {
-            public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
-                try {
-                    return session.getNodeByUUID(getString(key));
-                } catch (ItemNotFoundException ex) { // Always throw ItemNotFoundException when the requested Node doesn't exist
-                    return null;
+        if(key != null){
+            return (Node) jcrTemplate.execute(new JcrCallback() {
+                public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
+                    try {
+                        return session.getNodeByUUID(getString(key));
+                    } catch (ItemNotFoundException ex) { // Always throw ItemNotFoundException when the requested Node doesn't exist
+                        return null;
+                    }
                 }
-            }
-        });
+            });
+        }else return null;
     }
 
     private String getString(Object key) {
@@ -173,6 +176,10 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     @Override
     protected Node createNewEntry(final PersistentEntity persistentEntity) {
         try {
+            Node rootNode = jcrTemplate.getRootNode();
+            Node node = rootNode.addNode(persistentEntity.getJavaClass().getSimpleName(), JcrConstants.DEFAULT_JCR_TYPE);
+            node.addMixin(JcrConstants.MIXIN_REFERENCEABLE);
+            /* /Hierachy model     
             Node node = null;
             //create a new node starting from rootNode
             if (parentNodeUUID == null && rootParentUUID == null) {
@@ -194,9 +201,13 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                 clazz = persistentEntity.getJavaClass();
                 parentNodeUUID = node.getUUID();
             }
+            */
             node.addMixin(JcrConstants.MIXIN_VERSIONABLE);
             node.addMixin(JcrConstants.MIXIN_LOCKABLE);
+
+            
             return node;
+
         } catch (RepositoryException e) {
             throw new DataAccessResourceFailureException("Exception occurred cannot create Node: " + e.getMessage(), e);
         }
@@ -206,6 +217,8 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     @Override
     protected void setEntryValue(Node nativeEntry, String propertyName, Object value) {
         //Possible property should be only String, Boolean, Calendar, Double, InputStream and Long
+        System.out.println(propertyName);
+        System.out.println(value);
         if (value != null) {
             try {
                 if (value instanceof String)
@@ -220,7 +233,7 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                     nativeEntry.setProperty(propertyName, (InputStream) value);
                 else if (value instanceof Long)
                     nativeEntry.setProperty(propertyName, (Long) value);
-            } catch (RepositoryException e) {
+                            } catch (RepositoryException e) {
                 throw new DataAccessResourceFailureException("Exception occurred set a property value to Node: " + e.getMessage(), e);
             }
         }

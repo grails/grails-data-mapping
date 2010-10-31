@@ -53,6 +53,8 @@ public class JcrQuery extends Query {
             if (results != null)
                 return results;
         } else {
+            uuids = paginateResults(getEntity().getJavaClass().getSimpleName());
+            System.out.println("uuids" + uuids.size());
             results = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
             List projectionResults = new ArrayList();
             for (Projection projection : projectionList.getProjectionList()) {
@@ -192,7 +194,6 @@ public class JcrQuery extends Query {
                             .append("'")
                             .append(value)
                             .append("']");
-                    //QueryResult qr = jcrTemplate.query("//"+getEntity().getJavaClass().getSimpleName()+"[@"+property+" = '"+value+"']", javax.jcr.query.Query.XPATH);
                     QueryResult qr = jcrTemplate.query(q.toString(), javax.jcr.query.Query.XPATH);
                     try {
                         NodeIterator itr = qr.getNodes();
@@ -235,7 +236,6 @@ public class JcrQuery extends Query {
                 }
             });
         }
-
 
     };
 
