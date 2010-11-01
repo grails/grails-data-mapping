@@ -24,8 +24,11 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
+import org.springframework.datastore.mapping.proxy.EntityProxy;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.riak.RiakEntry;
+import org.springframework.datastore.mapping.riak.collection.RiakCollection;
+import org.springframework.datastore.mapping.riak.collection.RiakEntityIndex;
 import org.springframework.datastore.mapping.riak.util.RiakTemplate;
 
 import java.io.Serializable;
@@ -36,7 +39,7 @@ import java.util.UUID;
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
  */
-public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, String> {
+public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Long> {
 
   private RiakTemplate riakTemplate;
 
@@ -46,13 +49,17 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Str
   }
 
   @Override
-  protected void deleteEntry(String family, String key) {
+  protected void deleteEntry(String family, Long key) {
     riakTemplate.delete(family, key);
   }
 
   @Override
-  protected String generateIdentifier(PersistentEntity persistentEntity, Map id) {
-    return UUID.randomUUID().toString();
+  protected Long generateIdentifier(PersistentEntity persistentEntity, Map id) {
+    return UUID.randomUUID().getLeastSignificantBits();
+  }
+
+  public RiakCollection getAllEntityIndex() {
+    return new RiakEntityIndex(riakTemplate, getEntityFamily());
   }
 
   @Override
@@ -82,26 +89,30 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Str
 
   @Override
   protected Map retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
-    return riakTemplate.fetch(family, key.toString());
+    return riakTemplate.fetch(family, Long.parseLong(key.toString()));
   }
 
   @Override
-  protected String storeEntry(PersistentEntity persistentEntity, String storeId, Map nativeEntry) {
+  protected Long storeEntry(PersistentEntity persistentEntity, Long storeId, Map nativeEntry) {
     String family = getRootFamily(persistentEntity);
     return riakTemplate.store(family, storeId, nativeEntry);
   }
 
   @Override
-  protected void updateEntry(PersistentEntity persistentEntity, String key, Map entry) {
+  protected void updateEntry(PersistentEntity persistentEntity, Long key, Map entry) {
     String family = getRootFamily(persistentEntity);
     riakTemplate.store(family, key, entry);
   }
 
   @Override
-  protected void deleteEntries(String family, List<String> keys) {
-    for (String key : keys) {
+  protected void deleteEntries(String family, List<Long> keys) {
+    for (Long key : keys) {
       riakTemplate.delete(family, key);
     }
+  }
+
+  protected boolean shouldConvert(Object value) {
+    return !getMappingContext().isPersistentEntity(value) && !(value instanceof EntityProxy);
   }
 
   public Query createQuery() {

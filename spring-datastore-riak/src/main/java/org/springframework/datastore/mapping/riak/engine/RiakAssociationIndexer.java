@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
  */
-public class RiakAssociationIndexer implements AssociationIndexer<String, String> {
+public class RiakAssociationIndexer implements AssociationIndexer<Long, Long> {
 
   private final Logger log = LoggerFactory.getLogger(getClass());
   private RiakTemplate riakTemplate;
@@ -46,21 +46,25 @@ public class RiakAssociationIndexer implements AssociationIndexer<String, String
     this.child = association.getAssociatedEntity();
   }
 
-  public void index(String primaryKey, List<String> foreignKeys) {
-    for (String foreignKey : foreignKeys) {
+  public void index(Long primaryKey, List<Long> foreignKeys) {
+    for (Long foreignKey : foreignKeys) {
       link(foreignKey, primaryKey);
     }
   }
 
-  public void index(String primaryKey, String foreignKey) {
+  public void index(Long primaryKey, Long foreignKey) {
     link(foreignKey, primaryKey);
   }
 
-  protected void link(String childKey, String ownerKey) {
-    riakTemplate.link(child.getName(), childKey, owner.getName(), ownerKey, association.getName());
+  protected void link(Long childKey, Long ownerKey) {
+    riakTemplate.link(child.getName(),
+        childKey,
+        owner.getName(),
+        ownerKey,
+        association.getName());
   }
 
-  public List<String> query(String primaryKey) {
+  public List<Long> query(Long primaryKey) {
     return riakTemplate.findChildKeysByOwner(owner.getName(), primaryKey, association.getName());
   }
 

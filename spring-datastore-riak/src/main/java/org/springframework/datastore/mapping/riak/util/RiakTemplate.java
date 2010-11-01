@@ -30,23 +30,28 @@ public interface RiakTemplate<T> {
 
   Object execute(RiakCallback<T> callback);
 
-  boolean delete(String bucket, String key);
+  boolean delete(String bucket, Long key);
 
-  void delete(String bucket, String key, RiakCallback<HttpResponse> callback);
+  void delete(String bucket, Long key, RiakCallback<HttpResponse> callback);
 
-  Map<String, Object> fetch(String bucket, String key);
+  Map<String, Object> fetch(String bucket, Long key);
 
-  void fetch(String bucket, String key, RiakCallback<FetchResponse> callback);
+  void fetch(String bucket, Long key, RiakCallback<FetchResponse> callback);
 
-  String store(String bucket, String key, Map<String, Object> obj);
+  Long fetchKeyAt(String bucket, int i);
 
-  String store(String bucket, Map<String, Object> obj);
+  Long store(String bucket, Long key, Map<String, Object> obj);
 
-  String store(String bucket, String key, Map<String, Object> obj, RiakCallback<StoreResponse> callback);
+  Long store(String bucket, Map<String, Object> obj);
 
-  void link(String childBucket, String childKey, String parentBucket, String parentKey, String association);
+  Long store(String bucket, Long key, Map<String, Object> obj, RiakCallback<StoreResponse> callback);
 
-  List<String> findChildKeysByOwner(String ownerBucket, String ownerKey, String association);
+  void link(String childBucket, Long childKey, String parentBucket, Long parentKey, String association);
 
-  void walk(String bucket, String key, String walkSpec);
+  List<Long> findChildKeysByOwner(String ownerBucket, Long ownerKey, String association);
+
+  void walk(String bucket, Long key, String walkSpec);
+
+  int count(String bucket);
+
 }

@@ -16,10 +16,7 @@
 
 package org.springframework.datastore.mapping.riak.util;
 
-import com.basho.riak.client.RiakClient;
-import com.basho.riak.client.RiakConfig;
-import com.basho.riak.client.RiakLink;
-import com.basho.riak.client.RiakObject;
+import com.basho.riak.client.*;
 import com.basho.riak.client.request.RequestMeta;
 import com.basho.riak.client.response.BucketResponse;
 import com.basho.riak.client.response.FetchResponse;
@@ -65,28 +62,28 @@ public class RiakJavaClientTemplate implements RiakTemplate<RiakClient> {
     }
   }
 
-  public boolean delete(final String bucket, final String key) {
+  public boolean delete(final String bucket, final Long key) {
     return (Boolean) execute(new RiakCallback<RiakClient>() {
       public Object doInRiak(RiakClient riak) throws Exception {
-        return riak.delete(bucket, key).isSuccess();
+        return riak.delete(bucket, String.format("%s", key)).isSuccess();
       }
     });
   }
 
-  public void delete(final String bucket, final String key, final RiakCallback<HttpResponse> callback) {
+  public void delete(final String bucket, final Long key, final RiakCallback<HttpResponse> callback) {
     execute(new RiakCallback<RiakClient>() {
       public Object doInRiak(RiakClient riak) throws Exception {
-        HttpResponse resp = riak.delete(bucket, key);
+        HttpResponse resp = riak.delete(bucket, String.format("%s", key));
         return callback.doInRiak(resp);
       }
     });
   }
 
   @SuppressWarnings({"unchecked"})
-  public Map<String, Object> fetch(final String bucket, final String key) {
+  public Map<String, Object> fetch(final String bucket, final Long key) {
     return (Map<String, Object>) execute(new RiakCallback<RiakClient>() {
       public Object doInRiak(RiakClient riak) throws Exception {
-        FetchResponse resp = riak.fetch(bucket, key);
+        FetchResponse resp = riak.fetch(bucket, String.format("%s", key));
         if (resp.isSuccess()) {
           byte[] bytes = resp.getBody();
           return mapper.readValue(bytes, 0, bytes.length, Map.class);
@@ -99,22 +96,41 @@ public class RiakJavaClientTemplate implements RiakTemplate<RiakClient> {
     });
   }
 
-  public void fetch(final String bucket, final String key, final RiakCallback<FetchResponse> callback) {
+  public void fetch(final String bucket, final Long key, final RiakCallback<FetchResponse> callback) {
     execute(new RiakCallback<RiakClient>() {
       public Object doInRiak(RiakClient riak) throws Exception {
-        FetchResponse resp = riak.fetch(bucket, key);
+        FetchResponse resp = riak.fetch(bucket, String.format("%s", key));
         return callback.doInRiak(resp);
       }
     });
   }
 
-  public String store(final String bucket, final Map<String, Object> obj) {
-    return (String) execute(new RiakCallback<RiakClient>() {
+  public Long fetchKeyAt(final String bucket, final int i) {
+    return (Long) execute(new RiakCallback<RiakClient>() {
+      public Object doInRiak(RiakClient riak) throws Exception {
+        RequestMeta meta = new RequestMeta();
+        meta.setQueryParam("keys", "true");
+        BucketResponse bucketResp = riak.getBucketSchema(bucket, meta);
+        if (bucketResp.isSuccess()) {
+          RiakBucketInfo info = bucketResp.getBucketInfo();
+          try {
+            String key = (String) info.getKeys().toArray()[i];
+            return Long.parseLong(key);
+          } catch (IndexOutOfBoundsException ignored) {
+          }
+        }
+        return null;
+      }
+    });
+  }
+
+  public Long store(final String bucket, final Map<String, Object> obj) {
+    return (Long) execute(new RiakCallback<RiakClient>() {
       public Object doInRiak(RiakClient riak) throws Exception {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         mapper.writeValue(bout, obj);
-        String id = UUID.randomUUID().toString();
-        RiakObject robj = new RiakObject(riak, bucket, id, bout.toByteArray(), "application/json");
+        Long id = UUID.randomUUID().getLeastSignificantBits();
+        RiakObject robj = new RiakObject(riak, bucket, String.format("%s", id), bout.toByteArray(), "application/json");
         StoreResponse resp = riak.store(robj);
         if (resp.isSuccess()) {
           return id;
@@ -127,15 +143,19 @@ public class RiakJavaClientTemplate implements RiakTemplate<RiakClient> {
     });
   }
 
-  public String store(final String bucket, final String key, final Map<String, Object> obj) {
-    return (String) execute(new RiakCallback<RiakClient>() {
+  public Long store(final String bucket, final Long key, final Map<String, Object> obj) {
+    return (Long) execute(new RiakCallback<RiakClient>() {
       public Object doInRiak(RiakClient riak) throws Exception {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         mapper.writeValue(bout, obj);
-        RiakObject robj = new RiakObject(riak, bucket, key, bout.toByteArray(), "application/json");
+        RiakObject robj = new RiakObject(riak,
+            bucket,
+            String.format("%s", key),
+            bout.toByteArray(),
+            "application/json");
         StoreResponse resp = riak.store(robj);
         if (resp.isSuccess()) {
-          return robj.getKey();
+          return Long.parseLong(robj.getKey());
         } else if (resp.isError() && resp.getStatusCode() >= 500) {
           throw new DataAccessResourceFailureException(String.format("Error encountered storing object: %s ",
               obj) + resp.getBodyAsString());
@@ -145,24 +165,28 @@ public class RiakJavaClientTemplate implements RiakTemplate<RiakClient> {
     });
   }
 
-  public String store(final String bucket, final String key, final Map<String, Object> obj, final RiakCallback<StoreResponse> callback) {
-    return (String) execute(new RiakCallback<RiakClient>() {
+  public Long store(final String bucket, final Long key, final Map<String, Object> obj, final RiakCallback<StoreResponse> callback) {
+    return (Long) execute(new RiakCallback<RiakClient>() {
       public Object doInRiak(RiakClient riak) throws Exception {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         mapper.writeValue(bout, obj);
-        RiakObject robj = new RiakObject(riak, bucket, key, bout.toByteArray(), "application/json");
+        RiakObject robj = new RiakObject(riak,
+            bucket,
+            String.format("%s", key),
+            bout.toByteArray(),
+            "application/json");
         StoreResponse resp = riak.store(robj);
         return callback.doInRiak(resp);
       }
     });
   }
 
-  public void link(final String childBucket, final String childKey, final String parentBucket, final String parentKey, final String association) {
+  public void link(final String childBucket, final Long childKey, final String parentBucket, final Long parentKey, final String association) {
     execute(new RiakCallback<RiakClient>() {
       public Object doInRiak(RiakClient riak) throws Exception {
-        FetchResponse resp = riak.fetch(childBucket, childKey);
+        FetchResponse resp = riak.fetch(childBucket, String.format("%s", childKey));
         if (resp.isSuccess()) {
-          RiakLink link = new RiakLink(parentBucket, parentKey, association);
+          RiakLink link = new RiakLink(parentBucket, String.format("%s", parentKey), association);
           RiakObject child = resp.getObject();
           List<RiakLink> existingLinks = child.getLinks();
           if (null != existingLinks && !existingLinks.contains(link)) {
@@ -171,15 +195,15 @@ public class RiakJavaClientTemplate implements RiakTemplate<RiakClient> {
           }
           // Update special "index" entry
           List<RiakLink> links = new ArrayList<RiakLink>();
-          links.add(new RiakLink(parentBucket, parentKey, "parent"));
-          links.add(new RiakLink(childBucket, childKey, "entity"));
-          String relBucket = formatRelBucketName(parentBucket, parentKey, association);
+          links.add(new RiakLink(parentBucket, String.format("%s", parentKey), "parent"));
+          links.add(new RiakLink(childBucket, String.format("%s", childKey), "entity"));
+          String relBucket = formatRelBucketName(parentBucket, String.format("%s", parentKey), association);
           if (log.isDebugEnabled()) {
             log.debug("Associating " + relBucket + " with " + childBucket + "/" + childKey);
           }
           RiakObject relObj = new RiakObject(riak,
               relBucket,
-              childKey,
+              String.format("%s", childKey),
               new byte[0],
               "relationship/index",
               links);
@@ -197,22 +221,42 @@ public class RiakJavaClientTemplate implements RiakTemplate<RiakClient> {
     });
   }
 
-  public List<String> findChildKeysByOwner(final String ownerBucket, final String ownerKey, final String association) {
-    return (List<String>) execute(new RiakCallback<RiakClient>() {
+  public List<Long> findChildKeysByOwner(final String ownerBucket, final Long ownerKey, final String association) {
+    return (List<Long>) execute(new RiakCallback<RiakClient>() {
       public Object doInRiak(RiakClient riak) throws Exception {
         RequestMeta meta = new RequestMeta();
         meta.setQueryParam("keys", "true");
-        BucketResponse resp = riak.listBucket(formatRelBucketName(ownerBucket, ownerKey, association), meta);
+        BucketResponse resp = riak.listBucket(formatRelBucketName(ownerBucket,
+            String.format("%s", ownerKey),
+            association), meta);
         if (resp.isSuccess()) {
-          return resp.getBucketInfo().getKeys();
+          List<Long> keys = new ArrayList<Long>();
+          for (String s : resp.getBucketInfo().getKeys()) {
+            keys.add(Long.parseLong(s));
+          }
+          return keys;
         }
-        return new ArrayList<String>();
+        return new ArrayList<Long>();
       }
     });
   }
 
-  public void walk(String bucket, String key, String walkSpec) {
+  public void walk(String bucket, Long key, String walkSpec) {
     //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  public int count(final String bucket) {
+    return (Integer) execute(new RiakCallback<RiakClient>() {
+      public Object doInRiak(RiakClient riak) throws Exception {
+        RequestMeta meta = new RequestMeta();
+        meta.setQueryParam("keys", "true");
+        BucketResponse resp = riak.getBucketSchema(bucket, meta);
+        if (resp.isSuccess()) {
+          return resp.getBucketInfo().getKeys().size();
+        }
+        return 0;
+      }
+    });
   }
 
   protected String formatRelBucketName(String b, String k, String a) {

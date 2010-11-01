@@ -16,13 +16,40 @@
 
 package org.springframework.datastore.mapping.riak.collection;
 
-import java.util.Collection;
+import org.springframework.datastore.mapping.riak.util.RiakTemplate;
+
+import java.util.AbstractList;
+import java.util.List;
 
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
  */
-public interface RiakCollection<T> extends Collection {
+public class RiakEntityIndex<Long> extends AbstractList implements List, RiakCollection {
 
-  public String getBucket();
+  private RiakTemplate riakTemplate;
+  private String bucket;
 
+  public RiakEntityIndex(RiakTemplate riakTemplate, String bucket) {
+    this.riakTemplate = riakTemplate;
+    this.bucket = bucket;
+  }
+
+  @Override
+  public Object get(int i) {
+    return riakTemplate.fetchKeyAt(bucket, i);
+  }
+
+  @Override
+  public int size() {
+    return riakTemplate.count(bucket);
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return size() == 0;
+  }
+
+  public String getBucket() {
+    return this.bucket;
+  }
 }

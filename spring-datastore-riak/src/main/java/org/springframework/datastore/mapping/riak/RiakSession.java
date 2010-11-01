@@ -16,6 +16,8 @@
 
 package org.springframework.datastore.mapping.riak;
 
+import org.codehaus.groovy.runtime.GStringImpl;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.engine.Persister;
@@ -35,6 +37,8 @@ public class RiakSession extends AbstractSession {
   public RiakSession(Datastore datastore, MappingContext mappingContext, RiakTemplate riakTemplate) {
     super(datastore, mappingContext);
     this.riakTemplate = riakTemplate;
+    mappingContext.addTypeConverter(new GStringImplToLongConverter());
+    mappingContext.addTypeConverter(new IntegerToLongConverter());
   }
 
   @Override
@@ -58,4 +62,17 @@ public class RiakSession extends AbstractSession {
   public Object getNativeInterface() {
     return riakTemplate;
   }
+
+  protected class GStringImplToLongConverter implements Converter<GStringImpl, Long> {
+    public Long convert(GStringImpl gString) {
+      return Long.parseLong(gString.toString());
+    }
+  }
+
+  protected class IntegerToLongConverter implements Converter<Integer, Long> {
+    public Long convert(Integer integer) {
+      return new Long(integer);
+    }
+  }
+
 }
