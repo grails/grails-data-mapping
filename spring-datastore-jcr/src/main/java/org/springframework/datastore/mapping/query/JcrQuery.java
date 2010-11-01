@@ -37,29 +37,38 @@ public class JcrQuery extends Query {
 
     @Override
     protected List executeQuery(PersistentEntity entity, Junction criteria) {
+        System.out.println("executeQuery");
         final ProjectionList projectionList = projections();
         List results = null;
         List<String> uuids = null;
         if (!criteria.isEmpty()) {
+            System.out.println("!criteria.isEmpty");
             List criteriaList = criteria.getCriteria();
             uuids = executeSubQuery(criteria, criteriaList);
+            results = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
+            System.out.println("results size with unempty criteria: " + results.size());
         }
         IdProjection idProjection = null;
         if (projectionList.isEmpty()) {
-            if (uuids == null) uuids = paginateResults(getEntity().getJavaClass().getSimpleName());
+            System.out.println("projectionList.isEmpty");
+            if (uuids == null)
+                uuids = paginateResults(getEntity().getJavaClass().getSimpleName());
             //else {
-                results = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
+            results = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
             //}
             if (results != null)
                 return results;
         } else {
-            uuids = paginateResults(getEntity().getJavaClass().getSimpleName());
-            System.out.println("uuids" + uuids.size());
-            results = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
+            if (results == null) {
+                uuids = paginateResults(getEntity().getJavaClass().getSimpleName());
+                results = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
+            }
+            System.out.println("projectionList is not Empty");
             List projectionResults = new ArrayList();
             for (Projection projection : projectionList.getProjectionList()) {
                 final String projectionType = projection.getClass().getSimpleName();
                 if (projection instanceof CountProjection) {
+                    System.out.println("result size: " + results.size());
                     projectionResults.add(results.size());
                 } else if (projection instanceof MaxProjection) {
                     MaxProjection max = (MaxProjection) projection;
@@ -75,7 +84,7 @@ public class JcrQuery extends Query {
                     } else if (projection instanceof PropertyProjection) {
                         PropertyProjection propertyProjection = (PropertyProjection) projection;
                         final String propName = propertyProjection.getPropertyName();
-                        PersistentProperty prop = entityPersister.getPersistentEntity().getPropertyByName(propName);                                                                  
+                        PersistentProperty prop = entityPersister.getPersistentEntity().getPropertyByName(propName);
                         return unsupportedProjection(projectionType);
                     } else if (projection instanceof IdProjection) {
                         idProjection = (IdProjection) projection;
@@ -103,7 +112,7 @@ public class JcrQuery extends Query {
     }
 
     private List<String> executeSubQuery(Junction junction, List<Criterion> criteriaList) {
-        return getUUIDs(junction,entityPersister);       
+        return getUUIDs(junction, entityPersister);
     }
 
     private List<String> paginateResults(String jcrNode) {
@@ -190,15 +199,25 @@ public class JcrQuery extends Query {
                             .append(getEntity().getJavaClass().getSimpleName())
                             .append("[@")
                             .append(property)
-                            .append(" = ")
-                            .append("'")
-                            .append(value)
-                            .append("']");
+                            .append(" = ");
+                    if (value instanceof String) {
+                        q.append("'")
+                                .append(value)
+                                .append("'");
+                    } else {
+                        q.append(value);                          
+                    }
+                    q.append("]");
+
+                    System.out.println(q.toString());
+                    System.out.println("-----------------");
                     QueryResult qr = jcrTemplate.query(q.toString(), javax.jcr.query.Query.XPATH);
                     try {
                         NodeIterator itr = qr.getNodes();
                         while (itr.hasNext()) {
-                            uuids.add(itr.nextNode().getUUID());
+                            String uuid = itr.nextNode().getUUID();
+                            uuids.add(uuid);
+                            System.out.println(jcrTemplate.dump(jcrTemplate.getNodeByUUID(uuid)));
                         }
                     } catch (RepositoryException e) {
                         e.printStackTrace();
@@ -209,6 +228,7 @@ public class JcrQuery extends Query {
                 public void handle(JcrEntityPersister entityPersister, List<String> uuids, NotEquals criterion) {
                     final String property = criterion.getProperty();
                     final Object value = criterion.getValue();
+                    System.out.println("NotEquals");
                 }
             });
             put(In.class, new CriterionHandler<In>() {
@@ -218,21 +238,23 @@ public class JcrQuery extends Query {
                     for (Object value : criterion.getValues()) {
                         dis.add(Restrictions.eq(property, value));
                     }
+                    System.out.println("In");
                 }
+
             });
             put(Conjunction.class, new CriterionHandler<Junction>() {
                 public void handle(JcrEntityPersister entityPersister, List<String> uuids, Junction criterion) {
-
+                    System.out.println("Conjunction");
                 }
             });
             put(Disjunction.class, new CriterionHandler<Junction>() {
                 public void handle(JcrEntityPersister entityPersister, List<String> uuids, Junction criterion) {
-
+                    System.out.println("Disjunction");
                 }
             });
             put(Negation.class, new CriterionHandler<Negation>() {
                 public void handle(JcrEntityPersister entityPersister, List<String> uuids, Negation criterion) {
-                  
+                    System.out.println("Negation");
                 }
             });
         }
@@ -265,11 +287,12 @@ public class JcrQuery extends Query {
             }
 
         }
+        System.out.println("uuids size: " + uuids.size());
         return uuids;
     }
 
     private List unsupportedProjection(String projectionType) {
-        throw new InvalidDataAccessResourceUsageException("Cannot use ["+ projectionType +"] projection. ["+projectionType+"] projections are not currently supported." );
+        throw new InvalidDataAccessResourceUsageException("Cannot use [" + projectionType + "] projection. [" + projectionType + "] projections are not currently supported.");
     }
 
 }

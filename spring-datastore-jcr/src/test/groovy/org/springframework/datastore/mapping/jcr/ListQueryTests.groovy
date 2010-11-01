@@ -5,7 +5,7 @@ import org.springframework.datastore.mapping.query.Query
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import static org.springframework.datastore.mapping.query.Restrictions.*
-
+import org.junit.After
 
 /**
  *
@@ -30,15 +30,26 @@ class ListQueryTests {
 
   @AfterClass
   public static void tearDown() {
-    def session = conn.getNativeInterface();
-    if (session.itemExists("/Author")) {
-        javax.jcr.Node node = session.getRootNode().getNode("Author")
-        node.remove()
-        session.save()
-    }
-    conn.disconnect()
+    conn.disconnect();
   }
 
+  @After
+  public void clearNodes() {
+    def session = conn.getNativeInterface();
+    def wp = session.getWorkspace();
+    def qm = wp.getQueryManager();
+
+    def q = qm.createQuery("//Book", javax.jcr.query.Query.XPATH);
+    def qr = q.execute()
+    def itr = qr.getNodes();
+    itr.each { it.remove() }
+
+    q = qm.createQuery("//Author", javax.jcr.query.Query.XPATH);
+    qr = q.execute()
+    itr = qr.getNodes();
+    itr.each { it.remove() }
+    session.save()
+  }
   @Test
   void testListQuery() {
     ds.mappingContext.addPersistentEntity(Author)

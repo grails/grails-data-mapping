@@ -173,6 +173,10 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
         return typeConverter.convertIfNecessary(key, String.class);
     }
 
+    private Long getLong(Object value){
+        return typeConverter.convertIfNecessary(value, Long.class);
+    }
+
     @Override
     protected Node createNewEntry(final PersistentEntity persistentEntity) {
         try {
@@ -217,8 +221,6 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     @Override
     protected void setEntryValue(Node nativeEntry, String propertyName, Object value) {
         //Possible property should be only String, Boolean, Calendar, Double, InputStream and Long
-        System.out.println(propertyName);
-        System.out.println(value);
         if (value != null) {
             try {
                 if (value instanceof String)
@@ -233,7 +235,9 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                     nativeEntry.setProperty(propertyName, (InputStream) value);
                 else if (value instanceof Long)
                     nativeEntry.setProperty(propertyName, (Long) value);
-                            } catch (RepositoryException e) {
+                else if (value instanceof Integer)
+                    nativeEntry.setProperty(propertyName, getLong(value));
+               } catch (RepositoryException e) {
                 throw new DataAccessResourceFailureException("Exception occurred set a property value to Node: " + e.getMessage(), e);
             }
         }
