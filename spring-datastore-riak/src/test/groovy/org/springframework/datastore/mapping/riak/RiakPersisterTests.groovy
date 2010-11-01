@@ -52,9 +52,9 @@ class RiakPersisterTests extends GroovyTestCase {
     t3.intgr = 1
     t3.children = [new TestEntity(id: "childtest1", name: "child1"), new TestEntity(id: "childtest2", name: "child2")]
 
-    //def key3 = sess.persist(t3)
-    //println "saved ${t3} into ${key3}"
-    //sess.flush()
+    def key3 = sess.persist(t3)
+    println "saved ${t3} into ${key3}"
+    sess.flush()
 
     def t4 = sess.retrieve(TestEntity, "thisisatest")
     println "loaded ${t4}"

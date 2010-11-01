@@ -46,7 +46,7 @@ public interface RiakTemplate<T> {
 
   void link(String childBucket, String childKey, String parentBucket, String parentKey, String association);
 
-  List<String> findByOwner(String childBucket, String ownerBucket, String ownerKey, String association);
+  List<String> findChildKeysByOwner(String ownerBucket, String ownerKey, String association);
 
   void walk(String bucket, String key, String walkSpec);
 }

@@ -56,6 +56,6 @@ public class RiakSession extends AbstractSession {
   }
 
   public Object getNativeInterface() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return riakTemplate;
   }
 }

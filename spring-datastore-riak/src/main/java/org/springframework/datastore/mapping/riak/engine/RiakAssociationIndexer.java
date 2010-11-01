@@ -61,7 +61,7 @@ public class RiakAssociationIndexer implements AssociationIndexer<String, String
   }
 
   public List<String> query(String primaryKey) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return riakTemplate.findChildKeysByOwner(owner.getName(), primaryKey, association.getName());
   }
 
   public PersistentEntity getIndexedEntity() {

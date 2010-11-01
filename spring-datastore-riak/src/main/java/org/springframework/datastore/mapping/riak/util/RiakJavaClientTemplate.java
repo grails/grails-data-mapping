@@ -20,11 +20,10 @@ import com.basho.riak.client.RiakClient;
 import com.basho.riak.client.RiakConfig;
 import com.basho.riak.client.RiakLink;
 import com.basho.riak.client.RiakObject;
-import com.basho.riak.client.mapreduce.JavascriptFunction;
-import com.basho.riak.client.request.MapReduceBuilder;
+import com.basho.riak.client.request.RequestMeta;
+import com.basho.riak.client.response.BucketResponse;
 import com.basho.riak.client.response.FetchResponse;
 import com.basho.riak.client.response.HttpResponse;
-import com.basho.riak.client.response.MapReduceResponse;
 import com.basho.riak.client.response.StoreResponse;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -147,7 +146,15 @@ public class RiakJavaClientTemplate implements RiakTemplate<RiakClient> {
   }
 
   public String store(final String bucket, final String key, final Map<String, Object> obj, final RiakCallback<StoreResponse> callback) {
-    return null;
+    return (String) execute(new RiakCallback<RiakClient>() {
+      public Object doInRiak(RiakClient riak) throws Exception {
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        mapper.writeValue(bout, obj);
+        RiakObject robj = new RiakObject(riak, bucket, key, bout.toByteArray(), "application/json");
+        StoreResponse resp = riak.store(robj);
+        return callback.doInRiak(resp);
+      }
+    });
   }
 
   public void link(final String childBucket, final String childKey, final String parentBucket, final String parentKey, final String association) {
@@ -157,8 +164,26 @@ public class RiakJavaClientTemplate implements RiakTemplate<RiakClient> {
         if (resp.isSuccess()) {
           RiakLink link = new RiakLink(parentBucket, parentKey, association);
           RiakObject child = resp.getObject();
-          child.addLink(link);
-          child.store();
+          List<RiakLink> existingLinks = child.getLinks();
+          if (null != existingLinks && !existingLinks.contains(link)) {
+            child.addLink(link);
+            child.store();
+          }
+          // Update special "index" entry
+          List<RiakLink> links = new ArrayList<RiakLink>();
+          links.add(new RiakLink(parentBucket, parentKey, "parent"));
+          links.add(new RiakLink(childBucket, childKey, "entity"));
+          String relBucket = formatRelBucketName(parentBucket, parentKey, association);
+          if (log.isDebugEnabled()) {
+            log.debug("Associating " + relBucket + " with " + childBucket + "/" + childKey);
+          }
+          RiakObject relObj = new RiakObject(riak,
+              relBucket,
+              childKey,
+              new byte[0],
+              "relationship/index",
+              links);
+          relObj.store();
         } else if (resp.isError() && resp.getStatusCode() >= 500) {
           throw new DataAccessResourceFailureException(String.format("Error encountered linking %s/%s to %s/%s: %s ",
               childBucket,
@@ -172,32 +197,14 @@ public class RiakJavaClientTemplate implements RiakTemplate<RiakClient> {
     });
   }
 
-  public List<String> findByOwner(final String childBucket, final String ownerBucket, final String ownerKey, final String association) {
+  public List<String> findChildKeysByOwner(final String ownerBucket, final String ownerKey, final String association) {
     return (List<String>) execute(new RiakCallback<RiakClient>() {
       public Object doInRiak(RiakClient riak) throws Exception {
-        MapReduceBuilder mapred = new MapReduceBuilder(riak);
-        mapred.setBucket(childBucket);
-        mapred.map(JavascriptFunction.anon(
-            "function(data){ " +
-                "  var r = [];" +
-                "  var o = Riak.mapValuesJson(data);" +
-                "  var links = data.values[0].metadata['Links'];" +
-                "  if(links) {" +
-                "    for(i in links) {" +
-                "      var link = links[i];" +
-                "      if(link[0] == '" + ownerBucket + "' && link[1] == '" + ownerKey + "' && link[2] == '" + association + "') {" +
-                "        ejsLog('/tmp/riak_mapred.log', 'link: '+JSON.stringify(link));" +
-                "        r.push(o);" +
-                "      }" +
-                "    }" +
-                "  }" +
-                "  ejsLog('/tmp/riak_mapred.log', JSON.stringify(data));" +
-                "  return r;" +
-                "}"),
-            false);
-        MapReduceResponse resp = mapred.submit();
-        if (log.isDebugEnabled()) {
-          log.debug("Map/Reduce response: " + resp.getBodyAsString());
+        RequestMeta meta = new RequestMeta();
+        meta.setQueryParam("keys", "true");
+        BucketResponse resp = riak.listBucket(formatRelBucketName(ownerBucket, ownerKey, association), meta);
+        if (resp.isSuccess()) {
+          return resp.getBucketInfo().getKeys();
         }
         return new ArrayList<String>();
       }
@@ -206,5 +213,9 @@ public class RiakJavaClientTemplate implements RiakTemplate<RiakClient> {
 
   public void walk(String bucket, String key, String walkSpec) {
     //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  protected String formatRelBucketName(String b, String k, String a) {
+    return String.format("%s.%s.%s", b, a, k);
   }
 }
