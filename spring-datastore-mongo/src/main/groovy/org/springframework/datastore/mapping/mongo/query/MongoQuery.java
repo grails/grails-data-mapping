@@ -60,6 +60,28 @@ public class MongoQuery extends Query{
                 query.put(in.getProperty(), inQuery);
             }
         });
+        queryHandlers.put(Conjunction.class, new QueryHandler<Conjunction>() {
+
+            public void handle(PersistentEntity entity, Conjunction criterion, DBObject query) {
+                populateMongoQuery(entity, query, criterion);
+            }
+        });
+
+        queryHandlers.put(Disjunction.class, new QueryHandler<Disjunction>() {
+
+            public void handle(PersistentEntity entity, Disjunction criterion, DBObject query) {
+                List orList = new ArrayList();
+                for (Criterion subCriterion : criterion.getCriteria()) {
+                    final QueryHandler queryHandler = queryHandlers.get(subCriterion.getClass());
+                    if(queryHandler != null) {
+                        DBObject dbo = new BasicDBObject();
+                        queryHandler.handle(entity, subCriterion, dbo);
+                        orList.add(dbo);
+                    }
+                }
+                query.put("$or", orList);
+            }
+        });
     }
 
     private MongoSession mongoSession;
@@ -105,6 +127,11 @@ public class MongoQuery extends Query{
                         cursor.limit(max);
                     }
 
+                    for (Order order : orderBy) {
+                        DBObject orderObject = new BasicDBObject();
+                        orderObject.put(order.getProperty(), order.getDirection() == Order.Direction.DESC ? -1 : 1);
+                        cursor.sort(orderObject);
+                    }
 
                     final List<Projection> projectionList = projections().getProjectionList();
                     if(projectionList.isEmpty()) {
@@ -127,7 +154,7 @@ public class MongoQuery extends Query{
         });
     }
 
-    protected void populateMongoQuery(PersistentEntity entity, DBObject query, Junction criteria) {
+    public static void populateMongoQuery(PersistentEntity entity, DBObject query, Junction criteria) {
 
         List disjunction = null;
         if(criteria instanceof Disjunction) {
