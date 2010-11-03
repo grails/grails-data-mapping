@@ -16,6 +16,7 @@ package org.springframework.datastore.mapping.appengine.engine;
 
 import com.google.appengine.api.datastore.*;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.datastore.mapping.appengine.AppEngineSession;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
@@ -45,7 +46,7 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
         super(context, entity, conn);
         this.datastoreService = datastoreService;
         this.entityFamily = getFamily(entity, entity.getMapping());
-        GenericConversionService conversionService = context.getConversionService();
+        ConverterRegistry conversionService = context.getConverterRegistry();
 
         conversionService.addConverter(new Converter<Object, com.google.appengine.api.datastore.Key>() {
             public com.google.appengine.api.datastore.Key convert(Object source) {
