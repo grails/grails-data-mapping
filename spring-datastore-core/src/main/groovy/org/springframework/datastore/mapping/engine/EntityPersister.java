@@ -47,7 +47,6 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
     }
 
     @SuppressWarnings("unchecked")
-	@Override
     public Object proxy(Serializable key) {
          return getProxyFactory().createProxy(session, getPersistentEntity().getJavaClass(), key);
     }

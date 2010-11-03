@@ -19,7 +19,10 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.datastore.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.document.mongodb.MongoFactoryBean;
 import org.springframework.datastore.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
@@ -30,6 +33,7 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
 import com.mongodb.Mongo;
+import org.springframework.datastore.mapping.model.PersistentProperty;
 
 /**
  * A Datastore implementation for the Mongo document store
@@ -96,9 +100,33 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 		}
 		
 		mongoTemplates.put(entity, mt);
+
+        initializeIndices(entity, mt);
 	}
 
-	public void persistentEntityAdded(PersistentEntity entity) {
+    /**
+     * Indexes any properties that are mapped with index:true
+     * @param entity The entity
+     * @param template The template
+     */
+    protected void initializeIndices(final PersistentEntity entity, final MongoTemplate template) {
+        template.execute(new DocumentStoreConnectionCallback<DB, Object>() {
+            public Object doInConnection(DB db) throws Exception {
+                final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
+                for (PersistentProperty property : entity.getPersistentProperties()) {
+                    final boolean indexed = isIndexed(property) && Comparable.class.isAssignableFrom(property.getType());
+
+                    if(indexed) {
+                        collection.ensureIndex(property.getName());
+                    }
+                }
+
+                return null;
+            }
+        });
+    }
+
+    public void persistentEntityAdded(PersistentEntity entity) {
 		createMongoTemplate(entity, this.mongo);
 	}
 

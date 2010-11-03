@@ -16,6 +16,7 @@
 package org.springframework.datastore.mapping.mongo;
 
 import com.mongodb.DB;
+import org.springframework.datastore.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.Persister;
@@ -66,4 +67,7 @@ public class MongoSession extends AbstractSession<DB> {
 		throw new TransactionSystemException("Transactions are not supported by Mongo. See http://www.mongodb.org/display/DOCS/Atomic+Operations");
 	}
 
+    public MongoTemplate getMongoTemplate(PersistentEntity entity) {
+        return mongoDatastore.getMongoTemplate(entity);
+    }
 }

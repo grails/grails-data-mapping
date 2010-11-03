@@ -1,30 +1,51 @@
+/* Copyright (C) 2010 SpringSource
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.datastore.mapping.mongo.engine;
-
-import java.io.Serializable;
-import java.util.List;
 
 import com.mongodb.*;
 import org.bson.types.ObjectId;
 import org.springframework.datastore.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
+import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
-import org.springframework.datastore.mapping.keyvalue.engine.AbstractKeyValueEntityPesister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.mongo.MongoDatastore;
 import org.springframework.datastore.mapping.mongo.MongoSession;
+import org.springframework.datastore.mapping.mongo.query.MongoQuery;
 import org.springframework.datastore.mapping.query.Query;
 
-import javax.print.Doc;
+import java.io.Serializable;
+import java.util.List;
 
-public class MongoEntityPersister extends AbstractKeyValueEntityPesister<DBObject, Object> {
+
+/**
+ * A {@link org.springframework.datastore.mapping.engine.EntityPersister} implementation for the Mongo document store
+ *
+ * @author Graeme Rocher
+ * @since 1.0
+ */
+public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, Object> {
 
     public static final String MONGO_ID_FIELD = "_id";
     private MongoTemplate mongoTemplate;
     private boolean hasNumericalIdentifier = false;
+
 	
 	public MongoEntityPersister(MappingContext mappingContext,
 			PersistentEntity entity, MongoSession mongoSession) {
@@ -37,11 +58,15 @@ public class MongoEntityPersister extends AbstractKeyValueEntityPesister<DBObjec
 	}
 
 	public Query createQuery() {
-		// TODO Auto-generated method stub
-		return null;
+        return new MongoQuery((MongoSession) getSession(), getPersistentEntity());
 	}
 
-	@Override
+    @Override
+    public String getEntityFamily() {
+        return mongoTemplate.getDefaultCollectionName();
+    }
+
+    @Override
 	protected void deleteEntry(String family, final Object key) {
 		mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
 			public Object doInConnection(DB con) throws Exception {
