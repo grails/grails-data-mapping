@@ -462,15 +462,24 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
 
 
         if(!isUpdate) {
+            // if the identifier is null at this point that means that datastore could not generated an identifer
+            // and the identifer is generated only upon insert of the entity
+        	boolean b = false;
+            if(k == null) {
+            	k = executeInsert(persistentEntity, entityAccess, null, e);
+            	if(k != null) {
+            		entityAccess.setIdentifier(k);
+            	}
+            	b = true;
+            }
 
             final K updateId = k;
+            final boolean skipInsert = b;
             SessionImplementor si = (SessionImplementor) session;
             si.getPendingInserts().add(new Runnable() {
                 public void run() {
-                    for (EntityInterceptor interceptor : interceptors) {
-                            if(!interceptor.beforeInsert(persistentEntity, entityAccess)) return;
-                    }
-                    storeEntry(persistentEntity, updateId, e);
+                	if(!skipInsert)
+                		executeInsert(persistentEntity, entityAccess, updateId, e);
                     updateOneToManyIndices(updateId, oneToManyKeys);
                     toIndex.put(persistentEntity.getIdentity(), updateId);
                     updatePropertyIndices(updateId, toIndex, toUnindex);
@@ -687,5 +696,15 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends LockableEntity
      * @param keys The keys
      */
     protected abstract void deleteEntries(String family, List<K> keys);
+
+
+	protected K executeInsert(final PersistentEntity persistentEntity,
+			final NativeEntryModifyingEntityAccess entityAccess, final K id,
+			final T e) {
+		for (EntityInterceptor interceptor : interceptors) {
+		        if(!interceptor.beforeInsert(persistentEntity, entityAccess)) return null;
+		}
+		return storeEntry(persistentEntity, id, e);
+	}
 
 }

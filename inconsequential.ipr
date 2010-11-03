@@ -193,6 +193,15 @@
       </item>
     </group>
   </component>
+  <component name="ProjectDictionaryState">
+    <dictionary name="graemerocher">
+      <words>
+        <w>datastore</w>
+        <w>mongo</w>
+        <w>persister</w>
+      </words>
+    </dictionary>
+  </component>
   <component name="ProjectKey">
     <option name="state" value="project://default" />
   </component>
@@ -204,6 +213,7 @@
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm/grails-datastore-gorm.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm/grails-datastore-gorm.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-gemfire/grails-datastore-gorm-gemfire.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-gemfire/grails-datastore-gorm-gemfire.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-jcr/grails-datastore-gorm-jcr.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-jcr/grails-datastore-gorm-jcr.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-mongo/grails-datastore-gorm-mongo.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-mongo/grails-datastore-gorm-mongo.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-redis/grails-datastore-gorm-redis.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-redis/grails-datastore-gorm-redis.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-tck/grails-datastore-gorm-tck.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-tck/grails-datastore-gorm-tck.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-test/grails-datastore-gorm-test.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-test/grails-datastore-gorm-test.iml" />
@@ -430,6 +440,15 @@
     <library name="Spring Mock">
       <CLASSES>
         <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-test/jars/spring-test-3.0.3.RELEASE.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Spring Mongo">
+      <CLASSES>
+        <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data/spring-datastore-mongodb/jars/spring-datastore-mongodb-1.0.0.BUILD-SNAPSHOT.jar!/" />
+        <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data/spring-datastore-document-core/jars/spring-datastore-document-core-1.0.0.BUILD-SNAPSHOT.jar!/" />
+        <root url="jar://$GRADLE_REPOSITORY$/org.mongodb/mongo-java-driver/jars/mongo-java-driver-2.1.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />

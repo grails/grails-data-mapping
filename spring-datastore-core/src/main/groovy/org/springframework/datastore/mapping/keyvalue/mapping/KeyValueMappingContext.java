@@ -33,6 +33,7 @@ import org.springframework.util.ClassUtils;
 public class KeyValueMappingContext extends AbstractMappingContext {
     protected MappingFactory<Family, KeyValue> mappingFactory;
     protected MappingConfigurationStrategy syntaxStrategy;
+	private String keyspace;
     public static final String GROOVY_OBJECT_CLASS = "groovy.lang.GroovyObject";
 
     /**
@@ -42,6 +43,7 @@ public class KeyValueMappingContext extends AbstractMappingContext {
      */
     public KeyValueMappingContext(String keyspace) {
         if(keyspace == null) throw new IllegalArgumentException("Argument [keyspace] cannot be null");
+        this.keyspace = keyspace;
         initializeDefualtMappingFactory(keyspace);
 
 
@@ -53,8 +55,14 @@ public class KeyValueMappingContext extends AbstractMappingContext {
 
 
     }
+    
+    
 
-    protected void initializeDefualtMappingFactory(String keyspace) {
+    public String getKeyspace() {
+		return keyspace;
+	}
+
+	protected void initializeDefualtMappingFactory(String keyspace) {
         // TODO: Need to abstract the construction of these to support JPA syntax etc.
         if(ClassUtils.isPresent(GROOVY_OBJECT_CLASS, KeyValueMappingContext.class.getClassLoader()))
             this.mappingFactory = new GormKeyValueMappingFactory(keyspace);
