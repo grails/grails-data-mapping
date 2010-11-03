@@ -22,6 +22,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.mongo.MongoSession;
 import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.springframework.datastore.mapping.query.Query;
+import org.springframework.datastore.mapping.query.projections.ManualProjections;
 
 import java.io.Serializable;
 import java.util.*;
@@ -86,9 +87,11 @@ public class MongoQuery extends Query{
 
     private MongoSession mongoSession;
     private MongoEntityPersister mongoEntityPersister;
+    private ManualProjections manualProjections;
     public MongoQuery(MongoSession session, PersistentEntity entity) {
         super(session, entity);
         this.mongoSession = session;
+        this.manualProjections = new ManualProjections(entity);
         this.mongoEntityPersister = (MongoEntityPersister) session.getPersister(entity);
     }
 
@@ -108,11 +111,11 @@ public class MongoQuery extends Query{
                 }
                 else {
                     final DBCursor cursor;
+                    DBObject query = new BasicDBObject();
                     if(criteria.isEmpty()) {
                         cursor = collection.find();
                     }
                     else {
-                        DBObject query = new BasicDBObject();
 
                         populateMongoQuery(entity, query, criteria);
 
@@ -142,6 +145,22 @@ public class MongoQuery extends Query{
                         for (Projection projection : projectionList) {
                             if(projection instanceof CountProjection) {
                                 projectedResults.add(cursor.size());
+                            }
+                            else if(projection instanceof MinProjection) {
+                                MinProjection mp = (MinProjection) projection;
+
+                                List results = new MongoResultList(cursor, mongoEntityPersister);
+                                projectedResults.add( manualProjections.min(results, mp.getPropertyName()) );
+                            }
+                            else if(projection instanceof MaxProjection) {
+                                MaxProjection mp = (MaxProjection) projection;
+
+                                List results = new MongoResultList(cursor, mongoEntityPersister);
+                                projectedResults.add( manualProjections.max(results, mp.getPropertyName()) );
+                            }
+                            else if(projection instanceof PropertyProjection) {
+                                PropertyProjection pp = (PropertyProjection) projection;
+                                return collection.distinct(pp.getPropertyName(), query);
                             }
                         }
 

@@ -218,20 +218,22 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
             }
             else if(prop instanceof ToOne) {
                 Serializable tmp = (Serializable) getEntryValue(nativeEntry, propKey);
-                PersistentEntity associatedEntity = prop.getOwner();
-                final Serializable associationKey = (Serializable) getMappingContext().getConversionService().convert(tmp, associatedEntity.getIdentity().getType());
-                if(associationKey != null) {
+                if(tmp != null && !prop.getType().isInstance(tmp)) {
+                    PersistentEntity associatedEntity = prop.getOwner();
+                    final Serializable associationKey = (Serializable) getMappingContext().getConversionService().convert(tmp, associatedEntity.getIdentity().getType());
+                    if(associationKey != null) {
 
-                    PropertyMapping<KeyValue> associationPropertyMapping = prop.getMapping();
-                    boolean isLazy = isLazyAssociation(associationPropertyMapping);
+                        PropertyMapping<KeyValue> associationPropertyMapping = prop.getMapping();
+                        boolean isLazy = isLazyAssociation(associationPropertyMapping);
 
-                    final Class propType = prop.getType();
-                    if(isLazy) {
-                        Object proxy = getProxyFactory().createProxy(session, propType, associationKey);
-                        ea.setProperty(prop.getName(), proxy);
-                    }
-                    else {
-                        ea.setProperty(prop.getName(), session.retrieve(propType, associationKey));
+                        final Class propType = prop.getType();
+                        if(isLazy) {
+                            Object proxy = getProxyFactory().createProxy(session, propType, associationKey);
+                            ea.setProperty(prop.getName(), proxy);
+                        }
+                        else {
+                            ea.setProperty(prop.getName(), session.retrieve(propType, associationKey));
+                        }
                     }
                 }
             }
