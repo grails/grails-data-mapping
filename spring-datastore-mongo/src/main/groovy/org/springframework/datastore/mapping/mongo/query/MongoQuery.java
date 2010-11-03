@@ -14,10 +14,7 @@
  */
 package org.springframework.datastore.mapping.mongo.query;
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.mongodb.*;
 import org.springframework.datastore.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.core.Session;
@@ -27,10 +24,8 @@ import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.springframework.datastore.mapping.query.Query;
 
 import java.io.Serializable;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * A {@link org.springframework.datastore.mapping.query.Query} implementation for the Mongo document store
@@ -40,6 +35,33 @@ import java.util.List;
  */
 
 public class MongoQuery extends Query{
+
+    private static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
+
+    static {
+        queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
+            public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
+                query.put(criterion.getProperty(), criterion.getValue());
+            }
+        });
+        queryHandlers.put(Like.class, new QueryHandler<Like>() {
+            public void handle(PersistentEntity entity, Like like, DBObject query) {
+                Object value = like.getValue();
+                if(value == null) value = "null";
+                final String expr = value.toString().replace("%", ".*");
+                Pattern regex = Pattern.compile(expr);
+                query.put(like.getProperty(), regex);
+            }
+        });
+        queryHandlers.put(In.class, new QueryHandler<In>() {
+            public void handle(PersistentEntity entity, In in, DBObject query) {
+                DBObject inQuery = new BasicDBObject();
+                inQuery.put("$in", in.getValues());
+                query.put(in.getProperty(), inQuery);
+            }
+        });
+    }
+
     private MongoSession mongoSession;
     private MongoEntityPersister mongoEntityPersister;
     public MongoQuery(MongoSession session, PersistentEntity entity) {
@@ -49,43 +71,95 @@ public class MongoQuery extends Query{
     }
 
     @Override
-    protected List executeQuery(PersistentEntity entity, Junction criteria) {
-        if(criteria.isEmpty()) {
+    protected List executeQuery(final PersistentEntity entity, final Junction criteria) {
+        final MongoTemplate template = mongoSession.getMongoTemplate(entity);
 
-            final MongoTemplate template = mongoSession.getMongoTemplate(entity);
+        return (List) template.execute(new DocumentStoreConnectionCallback<DB, Object>(){
 
-            return (List) template.execute(new DocumentStoreConnectionCallback<DB, Object>(){
+            public Object doInConnection(DB db) throws Exception {
 
-                public Object doInConnection(DB db) throws Exception {
-
-                    final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
-                    if(uniqueResult) {
-                        final DBObject dbObject = collection.findOne();
-                        final Object id = dbObject.get(MongoEntityPersister.MONGO_ID_FIELD);
-                        final Object object = mongoEntityPersister.createObjectFromNativeEntry(getEntity(), (Serializable) id, dbObject);
-                        List result = new ArrayList();
-                        result.add(object);
-                        return result;
+                final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
+                if(uniqueResult) {
+                    final DBObject dbObject = collection.findOne();
+                    final Object object = createObjectFromDBObject(dbObject);
+                    return wrapObjectResultInList(object);
+                }
+                else {
+                    final DBCursor cursor;
+                    if(criteria.isEmpty()) {
+                        cursor = collection.find();
                     }
                     else {
-                        final DBCursor cursor = collection.find();
-                        if(offset > 0) {
-                            cursor.skip(offset);
-                        }
-                        if(max > -1) {
-                            cursor.limit(max);
-                        }
+                        DBObject query = new BasicDBObject();
 
+                        populateMongoQuery(entity, query, criteria);
+
+                        cursor = collection.find(query);
+
+                    }
+
+                    if(offset > 0) {
+                        cursor.skip(offset);
+                    }
+                    if(max > -1) {
+                        cursor.limit(max);
+                    }
+
+
+                    final List<Projection> projectionList = projections().getProjectionList();
+                    if(projectionList.isEmpty()) {
                         return new MongoResultList(cursor, mongoEntityPersister);
                     }
+                    else {
+                        List projectedResults = new ArrayList();
+                        for (Projection projection : projectionList) {
+                            if(projection instanceof CountProjection) {
+                                projectedResults.add(cursor.size());
+                            }
+                        }
+
+                        return projectedResults;
+                    }
+
                 }
+            }
 
-            });
-        }
-        else {
+        });
+    }
 
+    protected void populateMongoQuery(PersistentEntity entity, DBObject query, Junction criteria) {
+
+        List disjunction = null;
+        if(criteria instanceof Disjunction) {
+            disjunction = new ArrayList();
+            query.put("$or",disjunction);
         }
-        return Collections.emptyList();
+        for (Criterion criterion : criteria.getCriteria()) {
+            final QueryHandler queryHandler = queryHandlers.get(criterion.getClass());
+            if(queryHandler != null) {
+                DBObject dbo = query;
+                if(disjunction != null) {
+                    dbo = new BasicDBObject();
+                    disjunction.add(dbo);
+                }
+                queryHandler.handle(entity, criterion, dbo);
+            }
+        }
+    }
+
+    private Object createObjectFromDBObject(DBObject dbObject) {
+        final Object id = dbObject.get(MongoEntityPersister.MONGO_ID_FIELD);
+        return mongoEntityPersister.createObjectFromNativeEntry(getEntity(), (Serializable) id, dbObject);
+    }
+
+    private Object wrapObjectResultInList(Object object) {
+        List result = new ArrayList();
+        result.add(object);
+        return result;
+    }
+
+    private static interface QueryHandler<T> {
+        public void handle(PersistentEntity entity, T criterion, DBObject query);
     }
 
     public static class MongoResultList extends AbstractList{

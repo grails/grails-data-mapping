@@ -19,8 +19,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
+import com.mongodb.*;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.datastore.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.document.mongodb.MongoFactoryBean;
@@ -32,8 +31,8 @@ import org.springframework.datastore.mapping.model.DatastoreConfigurationExcepti
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
-import com.mongodb.Mongo;
 import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
 
 /**
  * A Datastore implementation for the Mongo document store
@@ -113,11 +112,17 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         template.execute(new DocumentStoreConnectionCallback<DB, Object>() {
             public Object doInConnection(DB db) throws Exception {
                 final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
+                DBObject dbo = new BasicDBObject();
+                dbo.put(MongoEntityPersister.MONGO_ID_FIELD, 1);
+                collection.ensureIndex(dbo, entity.getIdentity().toString(), true);
+
                 for (PersistentProperty property : entity.getPersistentProperties()) {
                     final boolean indexed = isIndexed(property) && Comparable.class.isAssignableFrom(property.getType());
 
                     if(indexed) {
-                        collection.ensureIndex(property.getName());
+                        DBObject dbObject = new BasicDBObject();
+                        dbObject.put(property.getName(),1);
+                        collection.ensureIndex(dbObject);
                     }
                 }
 

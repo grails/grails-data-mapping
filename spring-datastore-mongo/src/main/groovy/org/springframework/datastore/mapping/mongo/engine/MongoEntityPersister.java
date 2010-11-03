@@ -32,6 +32,7 @@ import org.springframework.datastore.mapping.query.Query;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -85,6 +86,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 		});
 	}
 
+    private AtomicInteger sessionId = new AtomicInteger(0);
 	@Override
 	protected Object generateIdentifier(final PersistentEntity persistentEntity,
 			DBObject id) {
@@ -95,15 +97,15 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
                 public Long doInConnection(DB db) throws Exception {
                     DBCollection idCollection = db.getCollection(mongoTemplate.getDefaultCollectionName());
-                    DBCursor result = idCollection.find(new BasicDBObject(), new BasicDBObject(MONGO_ID_FIELD, 1)).sort(new BasicDBObject(MONGO_ID_FIELD, -1)).limit(1);
+                    DBCursor result = idCollection.find().sort(new BasicDBObject(MONGO_ID_FIELD, -1)).limit(1);
 
                     long nextId;
                     if(result.hasNext()) {
                        Long current = getMappingContext().getConversionService().convert(result.next().get(MONGO_ID_FIELD), Long.class);
-                       nextId = current + 1;
+                       nextId = current + sessionId.incrementAndGet();
                     }
                     else {
-                        nextId = 1;
+                        nextId = sessionId.incrementAndGet();
                     }
                     return nextId;
                 }
