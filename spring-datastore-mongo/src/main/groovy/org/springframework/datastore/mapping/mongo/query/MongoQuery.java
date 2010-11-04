@@ -39,6 +39,18 @@ public class MongoQuery extends Query{
 
     private static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
 
+    public static final String MONGO_IN_OPERATOR = "$in";
+
+    public static final String MONGO_OR_OPERATOR = "$or";
+
+    public static final String MONGO_GTE_OPERATOR = "$gte";
+
+    public static final String MONGO_LTE_OPERATOR = "$lte";
+
+    public static final String MONGO_GT_OPERATOR = "$gt";
+
+    public static final String MONGO_LT_OPERATOR = "$lt";
+
     static {
         queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
             public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
@@ -54,13 +66,64 @@ public class MongoQuery extends Query{
                 query.put(like.getProperty(), regex);
             }
         });
+        queryHandlers.put(RLike.class, new QueryHandler<RLike>() {
+            public void handle(PersistentEntity entity, RLike like, DBObject query) {
+                Object value = like.getValue();
+                if(value == null) value = "null";
+                final String expr = value.toString();
+                Pattern regex = Pattern.compile(expr);
+                query.put(like.getProperty(), regex);
+            }
+        });
         queryHandlers.put(In.class, new QueryHandler<In>() {
             public void handle(PersistentEntity entity, In in, DBObject query) {
                 DBObject inQuery = new BasicDBObject();
-                inQuery.put("$in", in.getValues());
+                inQuery.put(MONGO_IN_OPERATOR, in.getValues());
                 query.put(in.getProperty(), inQuery);
             }
         });
+        queryHandlers.put(Between.class, new QueryHandler<Between>() {
+            public void handle(PersistentEntity entity, Between between, DBObject query) {
+                DBObject betweenQuery = new BasicDBObject();
+                betweenQuery.put(MONGO_GTE_OPERATOR, between.getFrom());
+                betweenQuery.put(MONGO_LTE_OPERATOR, between.getTo());
+                query.put(between.getProperty(), betweenQuery);
+            }
+        });
+        queryHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
+            public void handle(PersistentEntity entity, GreaterThan criterion, DBObject query) {
+                DBObject greaterThanQuery = new BasicDBObject();
+                greaterThanQuery.put(MONGO_GT_OPERATOR, criterion.getValue());
+
+                query.put(criterion.getProperty(), greaterThanQuery);
+            }
+        });
+        queryHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
+            public void handle(PersistentEntity entity, GreaterThanEquals criterion, DBObject query) {
+                DBObject greaterThanQuery = new BasicDBObject();
+                greaterThanQuery.put(MONGO_GTE_OPERATOR, criterion.getValue());
+
+                query.put(criterion.getProperty(), greaterThanQuery);
+            }
+        });
+        queryHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
+            public void handle(PersistentEntity entity, LessThan criterion, DBObject query) {
+                DBObject lessThanQuery = new BasicDBObject();
+                lessThanQuery.put(MONGO_LT_OPERATOR, criterion.getValue());
+
+                query.put(criterion.getProperty(), lessThanQuery);
+            }
+        });
+        queryHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
+            public void handle(PersistentEntity entity, LessThanEquals criterion, DBObject query) {
+                DBObject lessThanQuery = new BasicDBObject();
+                lessThanQuery.put(MONGO_LTE_OPERATOR, criterion.getValue());
+
+                query.put(criterion.getProperty(), lessThanQuery);
+            }
+        });
+
+
         queryHandlers.put(Conjunction.class, new QueryHandler<Conjunction>() {
 
             public void handle(PersistentEntity entity, Conjunction criterion, DBObject query) {
@@ -80,7 +143,7 @@ public class MongoQuery extends Query{
                         orList.add(dbo);
                     }
                 }
-                query.put("$or", orList);
+                query.put(MONGO_OR_OPERATOR, orList);
             }
         });
     }
@@ -150,7 +213,7 @@ public class MongoQuery extends Query{
                                 MinProjection mp = (MinProjection) projection;
 
                                 List results = new MongoResultList(cursor, mongoEntityPersister);
-                                projectedResults.add( manualProjections.min(results, mp.getPropertyName()) );
+                                projectedResults.add(manualProjections.min(results, mp.getPropertyName()));
                             }
                             else if(projection instanceof MaxProjection) {
                                 MaxProjection mp = (MaxProjection) projection;
@@ -178,7 +241,7 @@ public class MongoQuery extends Query{
         List disjunction = null;
         if(criteria instanceof Disjunction) {
             disjunction = new ArrayList();
-            query.put("$or",disjunction);
+            query.put(MONGO_OR_OPERATOR,disjunction);
         }
         for (Criterion criterion : criteria.getCriteria()) {
             final QueryHandler queryHandler = queryHandlers.get(criterion.getClass());
@@ -189,6 +252,9 @@ public class MongoQuery extends Query{
                     disjunction.add(dbo);
                 }
                 queryHandler.handle(entity, criterion, dbo);
+            }
+            else {
+                throw new UnsupportedOperationException("Queries of type "+criterion.getClass().getSimpleName()+" are not supported by this implementation");
             }
         }
     }

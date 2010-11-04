@@ -305,6 +305,18 @@ public abstract class Query {
     }
 
     /**
+     * Restricts the results by the given properties value
+     *
+     * @param property The name of the property
+     * @param expr The expression to restrict by
+     * @return This query instance
+     */
+    public Query rlike(String property, String expr) {
+        criteria.add(Restrictions.rlike(property, expr));
+        return this;
+    }
+
+    /**
      * Creates a conjunction using two specified criterion
      *
      * @param a The left hand side
@@ -526,6 +538,19 @@ public abstract class Query {
      */
     public static class Like extends PropertyCriterion {
         public Like(String name, String expression) {
+            super(name, expression);
+        }
+
+        public String getPattern() {
+            return getValue().toString();
+        }
+    }
+
+    /**
+     * Criterion used to restrict the results based on a regular expression pattern
+     */
+    public static class RLike extends Like {
+        public RLike(String name, String expression) {
             super(name, expression);
         }
 
