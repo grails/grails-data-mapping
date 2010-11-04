@@ -46,6 +46,11 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
         return session;
     }
 
+    @SuppressWarnings("unchecked")
+    public Object proxy(Serializable key) {
+         return getProxyFactory().createProxy(session, getPersistentEntity().getJavaClass(), key);
+    }
+    
     public ProxyFactory getProxyFactory() {
         if(proxyFactory == null) {
             proxyFactory = mappingContext.getProxyFactory();
@@ -77,7 +82,8 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
         return persistentEntity;
     }
 
-    public Class getType() {
+    @SuppressWarnings("rawtypes")
+	public Class getType() {
         return persistentEntity.getJavaClass();
     }
 
@@ -115,7 +121,7 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
         return persistEntity(getPersistentEntity(), obj);
     }
 
-    public List<Serializable> persist(Iterable objs) {
+    public List<Serializable> persist(@SuppressWarnings("rawtypes") Iterable objs) {
         return persistEntities(getPersistentEntity(), objs);
     }
 
@@ -131,7 +137,7 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
 
     protected abstract List<Object> retrieveAllEntities(PersistentEntity persistentEntity, Iterable<Serializable> keys);
 
-    protected abstract List<Serializable> persistEntities(PersistentEntity persistentEntity, Iterable objs);
+    protected abstract List<Serializable> persistEntities(PersistentEntity persistentEntity, @SuppressWarnings("rawtypes") Iterable objs);
 
     public final Object retrieve(Serializable key) {
         if(key == null) return null;
@@ -156,7 +162,7 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
      */
     protected abstract Serializable persistEntity(PersistentEntity persistentEntity, Object obj);
 
-    public final void delete(Iterable objects) {
+    public final void delete(@SuppressWarnings("rawtypes") Iterable objects) {
         if(objects != null) {
             deleteEntities(getPersistentEntity(), objects);
         }
@@ -170,7 +176,7 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
 
     protected abstract void deleteEntity(PersistentEntity persistentEntity, Object obj);
 
-    protected abstract void deleteEntities(PersistentEntity persistentEntity, Iterable objects);
+    protected abstract void deleteEntities(PersistentEntity persistentEntity, @SuppressWarnings("rawtypes") Iterable objects);
 
 
     protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj) {

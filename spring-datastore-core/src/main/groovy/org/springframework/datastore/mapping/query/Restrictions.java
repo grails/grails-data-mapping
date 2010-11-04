@@ -63,6 +63,17 @@ public class Restrictions {
         return new Query.Like(property, expression);
     }
 
+    /**
+     * Restricts the property match the given regular expressions.
+     *
+     * @param property The property name
+     * @param expression The expression
+     * @return An instance of Query.RLike
+     */
+    public static Query.RLike rlike(String property, String expression) {
+        return new Query.RLike(property, expression);
+    }
+
     public static Query.Criterion and(Query.Criterion a, Query.Criterion b) {
         return new Query.Conjunction().add(a).add(b);
     }

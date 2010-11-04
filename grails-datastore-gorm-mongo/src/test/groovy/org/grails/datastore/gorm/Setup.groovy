@@ -1,0 +1,58 @@
+package org.grails.datastore.gorm
+
+import org.springframework.datastore.mapping.core.Session
+
+import org.springframework.datastore.mapping.model.PersistentEntity
+import org.springframework.validation.Errors
+import org.springframework.util.StringUtils
+import org.springframework.validation.Validator
+import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
+import org.springframework.datastore.mapping.model.MappingContext
+import org.springframework.datastore.mapping.mongo.MongoDatastore
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: graemerocher
+ * Date: 03/11/2010
+ * Time: 09:54
+ * To change this template use File | Settings | File Templates.
+ */
+class Setup {
+
+  static mongo
+  static destroy() {
+    mongo?.destroy()
+  }
+  static Session setup(classes) {
+    mongo = new MongoDatastore()
+    mongo.afterPropertiesSet()
+    for(cls in classes) {
+      mongo.mappingContext.addPersistentEntity(cls)
+    }
+
+    PersistentEntity entity = mongo.mappingContext.persistentEntities.find { PersistentEntity e -> e.name.contains("TestEntity")}
+
+    mongo.mappingContext.addEntityValidator(entity, [
+            supports: { Class c -> true },
+            validate: { Object o, Errors errors ->
+                if(!StringUtils.hasText(o.name)) {
+                  errors.rejectValue("name", "name.is.blank")
+                }
+            }
+    ] as Validator)
+
+    def enhancer = new GormEnhancer(mongo, new DatastoreTransactionManager(datastore: mongo))
+    enhancer.enhance()
+
+    mongo.mappingContext.addMappingContextListener({ e ->
+      enhancer.enhance e
+    } as MappingContext.Listener)
+
+
+    def con = mongo.connect()
+    con.nativeInterface.dropDatabase()
+    return con
+  }
+
+
+}

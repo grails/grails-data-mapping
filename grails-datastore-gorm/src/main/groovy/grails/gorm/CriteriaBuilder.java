@@ -428,7 +428,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
     }
 
     /**
-     * Creates an "equals" Criterion based on the specified property name and value.
+     * Creates an like Criterion based on the specified property name and value.
      *
      * @param propertyName The property name
      * @param propertyValue The property value
@@ -440,6 +440,22 @@ public class CriteriaBuilder extends GroovyObjectSupport {
         validatePropertyName(propertyName, "like");
         if(propertyValue == null) throw new IllegalArgumentException("Cannot use like expression with null value");
         return addToCriteria(Restrictions.like(propertyName, propertyValue.toString()));
+    }
+
+
+    /**
+     * Creates an rlike Criterion based on the specified property name and value.
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    @SuppressWarnings("rawtypes")
+    public Query.Criterion rlike(String propertyName, Object propertyValue) {
+        validatePropertyName(propertyName, "like");
+        if(propertyValue == null) throw new IllegalArgumentException("Cannot use like expression with null value");
+        return addToCriteria(Restrictions.rlike(propertyName, propertyValue.toString()));
     }
 
     /**

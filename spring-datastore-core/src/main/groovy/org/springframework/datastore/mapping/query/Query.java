@@ -40,8 +40,8 @@ public abstract class Query {
     protected int max = -1;
     protected int offset = 0;
     protected List<Order> orderBy = new ArrayList<Order>();
-    private Session session;
-    private boolean uniqueResult;
+    protected Session session;
+    protected boolean uniqueResult;
 
 
     /**
@@ -305,6 +305,18 @@ public abstract class Query {
     }
 
     /**
+     * Restricts the results by the given properties value
+     *
+     * @param property The name of the property
+     * @param expr The expression to restrict by
+     * @return This query instance
+     */
+    public Query rlike(String property, String expr) {
+        criteria.add(Restrictions.rlike(property, expr));
+        return this;
+    }
+
+    /**
      * Creates a conjunction using two specified criterion
      *
      * @param a The left hand side
@@ -339,6 +351,7 @@ public abstract class Query {
      * @return The results
      */
     public List list() {
+        uniqueResult = false;
         // flush before query execution in FlushModeType.AUTO
         if(session.getFlushMode() == FlushModeType.AUTO) {
             session.flush();
@@ -352,6 +365,7 @@ public abstract class Query {
      * @return The result
      */
     public Object singleResult() {
+        uniqueResult = true;
         List results = list();
         if(results.isEmpty()) return null;
         else return results.get(0);
@@ -524,6 +538,19 @@ public abstract class Query {
      */
     public static class Like extends PropertyCriterion {
         public Like(String name, String expression) {
+            super(name, expression);
+        }
+
+        public String getPattern() {
+            return getValue().toString();
+        }
+    }
+
+    /**
+     * Criterion used to restrict the results based on a regular expression pattern
+     */
+    public static class RLike extends Like {
+        public RLike(String name, String expression) {
             super(name, expression);
         }
 

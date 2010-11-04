@@ -47,7 +47,7 @@ public class GemfireSession extends AbstractSession<Cache> {
     }
 
     @Override
-    protected Transaction beginTransactionInternal() {
+    protected Transaction<CacheTransactionManager> beginTransactionInternal() {
         GemfireDatastore datastore = (GemfireDatastore) getDatastore();
         final CacheTransactionManager tm = datastore.getGemfireCache().getCacheTransactionManager();
         tm.begin();
