@@ -335,7 +335,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
     }
 
     @Override
-    public AssociationIndexer getAssociationIndexer(Association oneToMany) {
+    public AssociationIndexer getAssociationIndexer(Map nativeEntry, Association oneToMany) {
         return new RedisAssociationIndexer(redisTemplate, getMappingContext().getConversionService(), oneToMany);
     }
 

@@ -242,7 +242,7 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
                 PropertyMapping<KeyValue> associationPropertyMapping = association.getMapping();
 
                 boolean isLazy = isLazyAssociation(associationPropertyMapping);
-                AssociationIndexer indexer = getAssociationIndexer(association);
+                AssociationIndexer indexer = getAssociationIndexer(nativeEntry, association);
                 nativeKey = (Serializable) getMappingContext().getConversionService().convert(nativeKey, getPersistentEntity().getIdentity().getType());
                 if(isLazy) {
                     if(List.class.isAssignableFrom(association.getType())) {
@@ -443,13 +443,13 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
                 public void run() {
                 	if(!skipInsert)
                 		executeInsert(persistentEntity, entityAccess, updateId, e);
-                    updateOneToManyIndices(updateId, oneToManyKeys);
+                    updateOneToManyIndices(e, updateId, oneToManyKeys);
                     toIndex.put(persistentEntity.getIdentity(), updateId);
                     updatePropertyIndices(updateId, toIndex, toUnindex);
                     for (OneToMany inverseCollection : inverseCollectionUpdates.keySet()) {
                         final Serializable primaryKey = inverseCollectionUpdates.get(inverseCollection);
                         final NativeEntryEntityPersister inversePersister = (NativeEntryEntityPersister) session.getPersister(inverseCollection.getOwner());
-                        final AssociationIndexer associationIndexer = inversePersister.getAssociationIndexer(inverseCollection);
+                        final AssociationIndexer associationIndexer = inversePersister.getAssociationIndexer(e, inverseCollection);
                         associationIndexer.index(primaryKey, updateId );
                     }
                 }
@@ -465,7 +465,7 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
                             if(!interceptor.beforeUpdate(persistentEntity, entityAccess)) return;
                     }
                     updateEntry(persistentEntity, updateId, e);
-                    updateOneToManyIndices(updateId, oneToManyKeys);
+                    updateOneToManyIndices(e, updateId, oneToManyKeys);
                     updatePropertyIndices(updateId, toIndex, toUnindex);
                 }
             });
@@ -475,11 +475,11 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
 
     protected abstract K generateIdentifier(PersistentEntity persistentEntity, T entry);
 
-    private void updateOneToManyIndices(Object identifier, Map<OneToMany, List<Serializable>> oneToManyKeys) {
+    private void updateOneToManyIndices(T nativeEntry, Object identifier, Map<OneToMany, List<Serializable>> oneToManyKeys) {
         // now cascade onto one-to-many associations
         for (OneToMany oneToMany : oneToManyKeys.keySet()) {
             if(oneToMany.doesCascade(CascadeType.PERSIST)) {
-                    final AssociationIndexer indexer = getAssociationIndexer(oneToMany);
+                    final AssociationIndexer indexer = getAssociationIndexer(nativeEntry, oneToMany);
                     if(indexer != null) {
                         indexer.index(identifier, oneToManyKeys.get(oneToMany));
                     }
@@ -519,10 +519,12 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
     /**
      * Obtains an indexer for the given association
      *
+     *
+     * @param nativeEntry The native entry
      * @param association The association
      * @return An indexer
      */
-    public abstract AssociationIndexer getAssociationIndexer(Association association);
+    public abstract AssociationIndexer getAssociationIndexer(T nativeEntry, Association association);
 
     protected K readObjectIdentifier(EntityAccess entityAccess, ClassMapping cm) {
         return (K) entityAccess.getIdentifier();

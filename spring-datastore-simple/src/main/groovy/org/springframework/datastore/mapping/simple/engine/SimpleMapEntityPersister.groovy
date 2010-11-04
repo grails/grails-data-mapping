@@ -116,7 +116,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
     }
   }
 
-  AssociationIndexer getAssociationIndexer(Association association) {
+  AssociationIndexer getAssociationIndexer(Map nativeEntry, Association association) {
     return new AssociationIndexer() {
 
       private getIndexName(primaryKey) { "~${association.owner.name}:${association.name}:$primaryKey"}

@@ -18,6 +18,7 @@ import com.mongodb.*;
 import org.bson.types.ObjectId;
 import org.springframework.datastore.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.document.mongodb.MongoTemplate;
+import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
@@ -31,7 +32,10 @@ import org.springframework.datastore.mapping.mongo.query.MongoQuery;
 import org.springframework.datastore.mapping.query.Query;
 
 import java.io.Serializable;
-import java.util.List;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -117,14 +121,13 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
 	@Override
 	public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-		// TODO Auto-generated method stub
+		// We don't need to implement this for Mongo since Mongo automatically creates indexes for us
 		return null;
 	}
 
 	@Override
-	public AssociationIndexer getAssociationIndexer(Association association) {
-		// TODO Auto-generated method stub
-		return null;
+	public AssociationIndexer getAssociationIndexer(DBObject nativeEntry, Association association) {
+		return new MongoAssociationIndexer(nativeEntry, association, (MongoSession) session);
 	}
 
 	@Override
@@ -137,12 +140,40 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 		return nativeEntry.get(property);
 	}
 
-	@Override
-	protected void setEntryValue(DBObject nativeEntry, String key, Object value) {
-		nativeEntry.put(key, value);
-	}
+    private static List<Class> convertToString = new ArrayList<Class>() {{
+        add(BigDecimal.class);
+        add(BigInteger.class);
+        add(Locale.class);
+        add(TimeZone.class);
+        add(Currency.class);
+        add(URL.class);
+    }};
 
 	@Override
+	protected void setEntryValue(DBObject nativeEntry, String key, Object value) {
+
+        // test whether the value can be BSON encoded, if it can't convert to String
+        if(value != null) {
+            if(shouldConvertToString(value.getClass())) {
+                value = value.toString();
+            }
+            else if(value instanceof Calendar) {
+                value = ((Calendar)value).getTime();
+            }
+
+            nativeEntry.put(key, value);
+        }
+
+	}
+
+    private boolean shouldConvertToString(Class theClass) {
+        for (Class classToCheck : convertToString) {
+            if(classToCheck.isAssignableFrom(theClass)) return true;
+        }
+        return false;
+    }
+
+    @Override
 	protected DBObject retrieveEntry(PersistentEntity persistentEntity,
 			String family, final Serializable key) {
 		return (DBObject) mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
@@ -220,4 +251,50 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 	}
 
 
+    private class MongoAssociationIndexer implements AssociationIndexer {
+        private DBObject nativeEntry;
+        private Association assocation;
+        private MongoSession session;
+
+        public MongoAssociationIndexer(DBObject nativeEntry, Association association, MongoSession session) {
+            this.nativeEntry = nativeEntry;
+            this.assocation = association;
+            this.session = session;
+
+        }
+
+        public void index(final Object primaryKey, List foreignKeys) {
+            nativeEntry.put(assocation.getName(), foreignKeys);
+            mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
+
+                public Object doInConnection(DB db) throws Exception {
+                    final DBCollection collection = db.getCollection(mongoTemplate.getDefaultCollectionName());
+                    DBObject query = new BasicDBObject(MONGO_ID_FIELD, primaryKey);
+                    collection.update(query, nativeEntry);
+                    return null;
+                }
+            });
+        }
+
+        public List query(Object primaryKey) {
+            final Object indexed = nativeEntry.get(assocation.getName());
+            if(indexed instanceof Collection) {
+                if(indexed instanceof List) return (List) indexed;
+                else {
+                    return new ArrayList((Collection)indexed);
+                }
+            }
+            else {
+                return Collections.emptyList();
+            }
+        }
+
+        public PersistentEntity getIndexedEntity() {
+            return assocation.getAssociatedEntity();
+        }
+
+        public void index(Object primaryKey, Object foreignKey) {
+            // TODO: Implement indexing of individual entities
+        }
+    }
 }
