@@ -382,31 +382,36 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
                             ProxyFactory proxyFactory = getProxyFactory();
                             // never cascade to proxies
                             if(!proxyFactory.isProxy(associatedObject)) {
-                                Serializable associationId;
+                                Serializable associationId = null;
                                 NativeEntryEntityPersister associationPersister = (NativeEntryEntityPersister) session.getPersister(associatedObject);
                                 if(!session.contains(associatedObject)) {
                                     Serializable tempId = associationPersister.getObjectIdentifier(associatedObject);
-                                    if(tempId == null) tempId = session.persist(associatedObject);
+                                    if(tempId == null) {
+                                        if(association.isOwningSide())
+                                            tempId = session.persist(associatedObject);
+                                    }
                                     associationId = tempId;
                                 }
                                 else {
                                     associationId = associationPersister.getObjectIdentifier(associatedObject);
                                 }
 
-                                if(indexed) {
-                                    toIndex.put(prop, associationId);
-                                    if(isUpdate) {
-                                        final Object oldValue = getEntryValue(e, key);
-                                        if(oldValue != null && !oldValue.equals(associatedObject))
-                                            toUnindex.put(prop, oldValue);
+                                if(associationId != null) {
+                                    if(indexed) {
+                                        toIndex.put(prop, associationId);
+                                        if(isUpdate) {
+                                            final Object oldValue = getEntryValue(e, key);
+                                            if(oldValue != null && !oldValue.equals(associatedObject))
+                                                toUnindex.put(prop, oldValue);
+                                        }
                                     }
-                                }
-                                setEntryValue(e, key, associationId);
+                                    setEntryValue(e, key, associationId);
 
-                                if(association.isBidirectional()) {
-                                    Association inverse = association.getInverseSide();
-                                    if(inverse instanceof OneToMany) {
-                                        inverseCollectionUpdates.put((OneToMany) inverse, associationId);
+                                    if(association.isBidirectional()) {
+                                        Association inverse = association.getInverseSide();
+                                        if(inverse instanceof OneToMany) {
+                                            inverseCollectionUpdates.put((OneToMany) inverse, associationId);
+                                        }
                                     }
                                 }
 
@@ -664,7 +669,9 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
 		for (EntityInterceptor interceptor : interceptors) {
 		        if(!interceptor.beforeInsert(persistentEntity, entityAccess)) return null;
 		}
-		return storeEntry(persistentEntity, id, e);
+        final K newId = storeEntry(persistentEntity, id, e);
+        entityAccess.setIdentifier(newId);
+        return newId;
 	}
 
     protected class NativeEntryModifyingEntityAccess extends EntityAccess  {
