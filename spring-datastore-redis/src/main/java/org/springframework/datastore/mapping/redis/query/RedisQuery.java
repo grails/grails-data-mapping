@@ -304,7 +304,8 @@ public class RedisQuery extends Query {
     }
 
 
-    private final Map<Class, CriterionHandler> criterionHandlers = new HashMap() {{
+    @SuppressWarnings("unchecked")
+	private final Map<Class, CriterionHandler> criterionHandlers = new HashMap() {{
        put(Like.class,  new CriterionHandler<Like>() {
            public void handle(RedisEntityPersister entityPersister, List<String> indices, Like criterion) {
                String key = executeSubLike(entityPersister, criterion);
@@ -349,6 +350,13 @@ public class RedisQuery extends Query {
                indices.add(indexName);
            }
        });
+       put(IdEquals.class,  new CriterionHandler<IdEquals>() {
+           public void handle(RedisEntityPersister entityPersister, List<String> indices, IdEquals criterion) {
+               final Object value = criterion.getValue();
+               final String indexName = getIndexName(entityPersister, entityPersister.getPersistentEntity().getIdentity().getName(), value);
+               indices.add(indexName);
+           }
+       });       
        put(NotEquals.class,  new CriterionHandler<NotEquals>() {
            public void handle(RedisEntityPersister entityPersister, List<String> indices, NotEquals criterion) {
                final String property = criterion.getProperty();

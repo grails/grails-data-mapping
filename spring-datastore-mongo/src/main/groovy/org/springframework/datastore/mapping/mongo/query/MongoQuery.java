@@ -71,9 +71,23 @@ public class MongoQuery extends Query{
     public static final String MONGO_NIN_OPERATOR = "$nin";
 
     static {
+    	queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
+
+			@Override
+			public void handle(PersistentEntity entity, IdEquals criterion,
+					DBObject query) {
+				query.put(MongoEntityPersister.MONGO_ID_FIELD, criterion.getValue());				
+			}
+		});
         queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
             public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
-                query.put(criterion.getProperty(), criterion.getValue());
+                String propertyName = criterion.getProperty();
+                if(entity.isIdentityName(propertyName)) {
+                	query.put(MongoEntityPersister.MONGO_ID_FIELD, criterion.getValue());
+                }
+                else {                	
+                	query.put(propertyName, criterion.getValue());
+                }
             }
         });
         queryHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
@@ -88,7 +102,10 @@ public class MongoQuery extends Query{
             public void handle(PersistentEntity entity, Like like, DBObject query) {
                 Object value = like.getValue();
                 if(value == null) value = "null";
-                final String expr = value.toString().replace("%", ".*");
+                String expr = value.toString().replace("%", ".*");
+                if(!expr.startsWith(".*")) {
+                	expr = '^'+expr;
+                }
                 Pattern regex = Pattern.compile(expr);
                 query.put(like.getProperty(), regex);
             }
@@ -290,60 +307,51 @@ public class MongoQuery extends Query{
                     return wrapObjectResultInList(object);
                 }
                 else {
-                    final DBCursor cursor;
+                    DBCursor cursor;
                     DBObject query = createQueryObject(entity);
 
-                    if(criteria.isEmpty()) {
-                        cursor = collection.find(query);
-                    }
-                    else {
+                    
 
-                        populateMongoQuery(entity, query, criteria);
-
-                        cursor = collection.find(query);
-
-                    }
-
-                    if(offset > 0) {
-                        cursor.skip(offset);
-                    }
-                    if(max > -1) {
-                        cursor.limit(max);
-                    }
-
-                    for (Order order : orderBy) {
-                        DBObject orderObject = new BasicDBObject();
-                        orderObject.put(order.getProperty(), order.getDirection() == Order.Direction.DESC ? -1 : 1);
-                        cursor.sort(orderObject);
-                    }
 
                     final List<Projection> projectionList = projections().getProjectionList();
                     if(projectionList.isEmpty()) {
+                    	cursor = executeQuery(entity, criteria, collection, query);
                         return new MongoResultList(cursor, mongoEntityPersister);
                     }
                     else {
                         List projectedResults = new ArrayList();
                         for (Projection projection : projectionList) {
                             if(projection instanceof CountProjection) {
-                                projectedResults.add(cursor.size());
+                                projectedResults.add(collection.count(query));
                             }
                             else if(projection instanceof MinProjection) {
+                            	cursor = executeQuery(entity, criteria, collection, query);
                                 MinProjection mp = (MinProjection) projection;
 
                                 List results = new MongoResultList(cursor, mongoEntityPersister);
                                 projectedResults.add(manualProjections.min(results, mp.getPropertyName()));
                             }
                             else if(projection instanceof MaxProjection) {
+                            	cursor = executeQuery(entity, criteria, collection, query);
                                 MaxProjection mp = (MaxProjection) projection;
 
                                 List results = new MongoResultList(cursor, mongoEntityPersister);
                                 projectedResults.add( manualProjections.max(results, mp.getPropertyName()) );
                             }
-                            else if(projection instanceof PropertyProjection) {
-                                PropertyProjection pp = (PropertyProjection) projection;
-                                final PersistentProperty persistentProperty = entity.getPropertyByName(pp.getPropertyName());
+                            else if((projection instanceof PropertyProjection) || (projection instanceof IdProjection)) {
+                            	final PersistentProperty persistentProperty;
+                            	final String propertyName;
+                            	if(projection instanceof IdProjection) {
+                            		persistentProperty = entity.getIdentity();
+                            		propertyName = MongoEntityPersister.MONGO_ID_FIELD;
+                            	}
+                            	else {
+                                    PropertyProjection pp = (PropertyProjection) projection;
+                                    persistentProperty = entity.getPropertyByName(pp.getPropertyName());
+                            		propertyName = pp.getPropertyName();
+                            	}
                                 if(persistentProperty != null) {
-                                    List propertyResults = collection.distinct(pp.getPropertyName(), query);
+                                    List propertyResults = collection.distinct(propertyName, query);
 
                                     if(persistentProperty instanceof ToOne) {
                                         Association a = (Association) persistentProperty;
@@ -358,7 +366,7 @@ public class MongoQuery extends Query{
                                     }
                                 }
                                 else {
-                                    throw new InvalidDataAccessResourceUsageException("Cannot use ["+projection.getClass().getSimpleName()+"] projection on non-existent property: " + pp.getPropertyName());
+                                    throw new InvalidDataAccessResourceUsageException("Cannot use ["+projection.getClass().getSimpleName()+"] projection on non-existent property: " + propertyName);
                                 }
                             }
                         }
@@ -368,6 +376,43 @@ public class MongoQuery extends Query{
 
                 }
             }
+
+			protected DBCursor executeQuery(final PersistentEntity entity,
+					final Junction criteria, final DBCollection collection,
+					DBObject query) {
+				final DBCursor cursor;
+				if(criteria.isEmpty()) {
+				    cursor = executeQueryAndApplyPagination(collection, query);
+				}
+				else {
+
+				    populateMongoQuery(entity, query, criteria);
+
+				    cursor = executeQueryAndApplyPagination(collection,query);
+
+				}
+				return cursor;
+			}
+
+			protected DBCursor executeQueryAndApplyPagination(
+					final DBCollection collection, DBObject query) {
+				final DBCursor cursor;
+				cursor = collection.find(query);
+                if(offset > 0) {
+                    cursor.skip(offset);
+                }
+                if(max > -1) {
+                    cursor.limit(max);
+                }
+
+                for (Order order : orderBy) {
+                    DBObject orderObject = new BasicDBObject();
+                    orderObject.put(order.getProperty(), order.getDirection() == Order.Direction.DESC ? -1 : 1);
+                    cursor.sort(orderObject);
+                }
+				
+				return cursor;
+			}
 
         });
     }

@@ -95,6 +95,17 @@ public class GemfireQuery extends Query {
                 return appendOrEmbedValue(q, params, index, eq.getValue(), EQUALS);
             }
         });
+        queryHandlers.put(IdEquals.class, new QueryHandler() {
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, List params, int index) {
+            	IdEquals eq = (IdEquals) criterion;
+                String name = entity.getIdentity().getName();
+                validateProperty(entity, name, Equals.class);
+
+
+                q.append(calculateName(entity, name));
+                return appendOrEmbedValue(q, params, index, eq.getValue(), EQUALS);
+            }
+        });        
         queryHandlers.put(NotEquals.class, new QueryHandler() {
             public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, List params, int index) {
                 NotEquals eq = (NotEquals) criterion;

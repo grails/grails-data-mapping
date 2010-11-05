@@ -210,6 +210,20 @@ public abstract class Query {
         return this;
     }
 
+
+    /**
+     * Restricts the results by the given properties value
+     *
+     * @param property The name of the property
+     * @param value The value to restrict by
+     * @return This query instance
+     */
+    public Query idEq(Object value) {
+        value = resolveIdIfEntity(value);
+
+        criteria.add(Restrictions.idEq(value));
+        return this;
+    }    
     private Object resolveIdIfEntity(Object value) {
         // use the object id as the value if its a persistent entity
         if(session.getMappingContext().isPersistentEntity(value)) {
@@ -431,6 +445,22 @@ public abstract class Query {
             this.value = value;
         }
     }
+    
+    /**
+     * A criterion that restricts the results based on the equality of the identifier
+     */
+    public static class IdEquals extends PropertyCriterion {
+
+        private static final String ID = "id";
+
+		public IdEquals(Object value) {
+            super(ID, value);
+        }
+
+        public void setValue(Object value) {
+            this.value = value;
+        }
+    }    
 
     /**
      * A criterion that restricts the results based on equality

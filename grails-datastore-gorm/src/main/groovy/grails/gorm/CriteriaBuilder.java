@@ -355,6 +355,19 @@ public class CriteriaBuilder extends GroovyObjectSupport {
     }
 
     /**
+     * Creates an "equals" Criterion based on the specified property name and value.
+     * 
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    @SuppressWarnings("rawtypes")
+    public Query.Criterion idEq(Object propertyValue) {        
+        return addToCriteria(Restrictions.idEq(propertyValue));
+    }
+    
+    /**
      * Creates a "not equals" Criterion based on the specified property name and value.
      *
      * @param propertyName The property name

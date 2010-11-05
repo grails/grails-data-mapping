@@ -148,6 +148,10 @@ class SimpleMapQuery extends Query{
           def indexer = entityPersister.getPropertyIndexer(property)
           return indexer.query(equals.value)
         },
+		(Query.IdEquals): { Query.IdEquals equals, PersistentProperty property ->
+			def indexer = entityPersister.getPropertyIndexer(property)
+			return indexer.query(equals.value)
+		},
         (Query.NotEquals): { Query.NotEquals equals, PersistentProperty property ->
           def indexer = entityPersister.getPropertyIndexer(property)
           def indexed = indexer.query(equals.value)
