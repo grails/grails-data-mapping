@@ -35,7 +35,7 @@ class Setup {
   static riak
 
   static Session setup(classes) {
-    riak = new RiakDatastore(new KeyValueMappingContext(""))
+    riak = new RiakDatastore(new KeyValueMappingContext(""), [host: "127.0.0.1"])
     for (cls in classes) {
       riak.mappingContext.addPersistentEntity(cls)
     }

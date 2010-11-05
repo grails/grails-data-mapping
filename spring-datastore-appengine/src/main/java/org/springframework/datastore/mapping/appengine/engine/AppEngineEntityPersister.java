@@ -17,7 +17,6 @@ package org.springframework.datastore.mapping.appengine.engine;
 import com.google.appengine.api.datastore.*;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
-import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.datastore.mapping.appengine.AppEngineSession;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
@@ -115,7 +114,7 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
     }
 
     @Override
-    public AssociationIndexer getAssociationIndexer(Association association) {
+    public AssociationIndexer getAssociationIndexer(Entity nativeEntry, Association association) {
         return null;  // TODO: Support one-to-many associations in GAE
     }
 

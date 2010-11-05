@@ -22,6 +22,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.mongo.MongoSession;
 import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.springframework.datastore.mapping.query.Query;
+import org.springframework.datastore.mapping.query.Restrictions;
 import org.springframework.datastore.mapping.query.projections.ManualProjections;
 
 import java.io.Serializable;
@@ -38,6 +39,7 @@ import java.util.regex.Pattern;
 public class MongoQuery extends Query{
 
     private static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
+    private static Map<Class, QueryHandler> negatedHandlers = new HashMap<Class, QueryHandler>();
 
     public static final String MONGO_IN_OPERATOR = "$in";
 
@@ -51,10 +53,22 @@ public class MongoQuery extends Query{
 
     public static final String MONGO_LT_OPERATOR = "$lt";
 
+    public static final String MONGO_NE_OPERATOR = "$ne";
+
+    public static final String MONGO_NIN_OPERATOR = "$nin";
+
     static {
         queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
             public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
                 query.put(criterion.getProperty(), criterion.getValue());
+            }
+        });
+        queryHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
+            public void handle(PersistentEntity entity, NotEquals criterion, DBObject query) {
+                DBObject notEqualQuery = new BasicDBObject();
+                notEqualQuery.put(MONGO_NE_OPERATOR, criterion.getValue());
+
+                query.put(criterion.getProperty(), notEqualQuery);
             }
         });
         queryHandlers.put(Like.class, new QueryHandler<Like>() {
@@ -131,6 +145,22 @@ public class MongoQuery extends Query{
             }
         });
 
+
+        queryHandlers.put(Negation.class, new QueryHandler<Negation>() {
+
+            public void handle(PersistentEntity entity, Negation criteria, DBObject query) {
+                for (Criterion criterion : criteria.getCriteria()) {
+                    final QueryHandler queryHandler = negatedHandlers.get(criterion.getClass());
+                    if(queryHandler != null) {
+                        queryHandler.handle(entity, criterion, query);
+                    }
+                    else {
+                        throw new UnsupportedOperationException("Query of type "+criterion.getClass().getSimpleName()+" cannot be negated");
+                    }
+                }
+            }
+        });
+
         queryHandlers.put(Disjunction.class, new QueryHandler<Disjunction>() {
 
             public void handle(PersistentEntity entity, Disjunction criterion, DBObject query) {
@@ -146,6 +176,56 @@ public class MongoQuery extends Query{
                 query.put(MONGO_OR_OPERATOR, orList);
             }
         });
+
+
+        negatedHandlers.put(Equals.class, new QueryHandler<Equals>() {
+            public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
+                queryHandlers.get(NotEquals.class).handle(entity, Restrictions.ne(criterion.getProperty(), criterion.getValue()), query);
+            }
+        });
+        negatedHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
+            public void handle(PersistentEntity entity, NotEquals criterion, DBObject query) {
+                queryHandlers.get(Equals.class).handle(entity, Restrictions.eq(criterion.getProperty(), criterion.getValue()), query);
+            }
+        });
+       negatedHandlers.put(In.class, new QueryHandler<In>() {
+           public void handle(PersistentEntity entity, In in, DBObject query) {
+               DBObject inQuery = new BasicDBObject();
+               inQuery.put(MONGO_NIN_OPERATOR, in.getValues());
+               query.put(in.getProperty(), inQuery);
+           }
+       });
+        negatedHandlers.put(Between.class, new QueryHandler<Between>() {
+            public void handle(PersistentEntity entity, Between between, DBObject query) {
+                DBObject betweenQuery = new BasicDBObject();
+                betweenQuery.put(MONGO_LTE_OPERATOR, between.getFrom());
+                betweenQuery.put(MONGO_GTE_OPERATOR, between.getTo());
+                query.put(between.getProperty(), betweenQuery);
+            }
+        });
+        negatedHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
+            public void handle(PersistentEntity entity, GreaterThan criterion, DBObject query) {
+                queryHandlers.get(LessThan.class).handle(entity, Restrictions.lt(criterion.getProperty(), criterion.getValue()), query);
+            }
+        });
+        negatedHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
+            public void handle(PersistentEntity entity, GreaterThanEquals criterion, DBObject query) {
+                queryHandlers.get(LessThanEquals.class).handle(entity, Restrictions.lte(criterion.getProperty(), criterion.getValue()), query);
+            }
+        });
+        negatedHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
+            public void handle(PersistentEntity entity, LessThan criterion, DBObject query) {
+                queryHandlers.get(GreaterThan.class).handle(entity, Restrictions.gt(criterion.getProperty(), criterion.getValue()), query);
+            }
+        });
+        negatedHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
+            public void handle(PersistentEntity entity, LessThanEquals criterion, DBObject query) {
+                queryHandlers.get(GreaterThanEquals.class).handle(entity, Restrictions.gte(criterion.getProperty(), criterion.getValue()), query);
+            }
+        });
+
+
+
     }
 
     private MongoSession mongoSession;
@@ -166,17 +246,33 @@ public class MongoQuery extends Query{
 
             public Object doInConnection(DB db) throws Exception {
 
-                final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
+                final DBCollection collection = db.getCollection(mongoEntityPersister.getCollectionName(entity));
                 if(uniqueResult) {
-                    final DBObject dbObject = collection.findOne();
+                    final DBObject dbObject;
+                    if(criteria.isEmpty()) {
+                        if(entity.isRoot()) {
+                            dbObject = collection.findOne();
+                        }
+                        else {
+                            DBObject query = new BasicDBObject(MongoEntityPersister.MONGO_CLASS_FIELD, entity.getDiscriminator());
+                            dbObject = collection.findOne(query);
+                        }
+                    }
+                    else {
+                        DBObject query = createQueryObject(entity);
+                        populateMongoQuery(entity, query,criteria);
+
+                        dbObject = collection.findOne(query);
+                    }
                     final Object object = createObjectFromDBObject(dbObject);
                     return wrapObjectResultInList(object);
                 }
                 else {
                     final DBCursor cursor;
-                    DBObject query = new BasicDBObject();
+                    DBObject query = createQueryObject(entity);
+
                     if(criteria.isEmpty()) {
-                        cursor = collection.find();
+                        cursor = collection.find(query);
                     }
                     else {
 
@@ -234,6 +330,17 @@ public class MongoQuery extends Query{
             }
 
         });
+    }
+
+    private DBObject createQueryObject(PersistentEntity entity) {
+        DBObject query;
+        if(entity.isRoot()) {
+            query = new BasicDBObject();
+        }
+        else {
+            query = new BasicDBObject(MongoEntityPersister.MONGO_CLASS_FIELD, entity.getDiscriminator());
+        }
+        return query;
     }
 
     public static void populateMongoQuery(PersistentEntity entity, DBObject query, Junction criteria) {

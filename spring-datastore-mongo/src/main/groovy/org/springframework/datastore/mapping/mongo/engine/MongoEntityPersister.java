@@ -18,6 +18,7 @@ import com.mongodb.*;
 import org.bson.types.ObjectId;
 import org.springframework.datastore.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.document.mongodb.MongoTemplate;
+import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
@@ -31,7 +32,10 @@ import org.springframework.datastore.mapping.mongo.query.MongoQuery;
 import org.springframework.datastore.mapping.query.Query;
 
 import java.io.Serializable;
-import java.util.List;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -44,6 +48,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, Object> {
 
     public static final String MONGO_ID_FIELD = "_id";
+    public static final String MONGO_CLASS_FIELD = "_class";
     private MongoTemplate mongoTemplate;
     private boolean hasNumericalIdentifier = false;
 
@@ -71,7 +76,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 	protected void deleteEntry(String family, final Object key) {
 		mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
 			public Object doInConnection(DB con) throws Exception {
-				DBCollection dbCollection = con.getCollection(mongoTemplate.getDefaultCollectionName());
+				DBCollection dbCollection = con.getCollection(getCollectionName(getPersistentEntity()));
 				
 				DBObject dbo = new BasicDBObject();
                 if(hasNumericalIdentifier) {
@@ -86,45 +91,24 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 		});
 	}
 
-    private AtomicInteger sessionId = new AtomicInteger(0);
 	@Override
 	protected Object generateIdentifier(final PersistentEntity persistentEntity,
 			DBObject id) {
-
-        // if the id is a Long then generate and identifier
-        if(hasNumericalIdentifier)  {
-            return mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Long>() {
-
-                public Long doInConnection(DB db) throws Exception {
-                    DBCollection idCollection = db.getCollection(mongoTemplate.getDefaultCollectionName());
-                    DBCursor result = idCollection.find().sort(new BasicDBObject(MONGO_ID_FIELD, -1)).limit(1);
-
-                    long nextId;
-                    if(result.hasNext()) {
-                       Long current = getMappingContext().getConversionService().convert(result.next().get(MONGO_ID_FIELD), Long.class);
-                       nextId = current + sessionId.incrementAndGet();
-                    }
-                    else {
-                        nextId = sessionId.incrementAndGet();
-                    }
-                    return nextId;
-                }
-            });
-
-        }
+        // We return null here to trigger an immediate insert in order to obtain an identity
+        // due to the fact that Mongo behaves much like MySQL autocommit mode with identity generation this is acceptable behavior
         return null;
 	}
 
-	@Override
+
+    @Override
 	public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-		// TODO Auto-generated method stub
+		// We don't need to implement this for Mongo since Mongo automatically creates indexes for us
 		return null;
 	}
 
 	@Override
-	public AssociationIndexer getAssociationIndexer(Association association) {
-		// TODO Auto-generated method stub
-		return null;
+	public AssociationIndexer getAssociationIndexer(DBObject nativeEntry, Association association) {
+		return new MongoAssociationIndexer(nativeEntry, association, (MongoSession) session);
 	}
 
 	@Override
@@ -137,17 +121,57 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 		return nativeEntry.get(property);
 	}
 
-	@Override
-	protected void setEntryValue(DBObject nativeEntry, String key, Object value) {
-		nativeEntry.put(key, value);
-	}
+    private static List<Class> convertToString = new ArrayList<Class>() {{
+        add(BigDecimal.class);
+        add(BigInteger.class);
+        add(Locale.class);
+        add(TimeZone.class);
+        add(Currency.class);
+        add(URL.class);
+    }};
 
 	@Override
-	protected DBObject retrieveEntry(PersistentEntity persistentEntity,
+	protected void setEntryValue(DBObject nativeEntry, String key, Object value) {
+
+        // test whether the value can be BSON encoded, if it can't convert to String
+        if(value != null) {
+            if(shouldConvertToString(value.getClass())) {
+                value = value.toString();
+            }
+            else if(value instanceof Calendar) {
+                value = ((Calendar)value).getTime();
+            }
+
+            nativeEntry.put(key, value);
+        }
+
+	}
+
+    private boolean shouldConvertToString(Class theClass) {
+        for (Class classToCheck : convertToString) {
+            if(classToCheck.isAssignableFrom(theClass)) return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected PersistentEntity discriminatePersistentEntity(PersistentEntity persistentEntity, DBObject nativeEntry) {
+        final Object o = nativeEntry.get(MONGO_CLASS_FIELD);
+        if(o != null) {
+            final String className = o.toString();
+            final PersistentEntity childEntity = getMappingContext().getChildEntityByDiscriminator(persistentEntity.getRootEntity(), className);
+            if(childEntity != null)
+                return childEntity;
+        }
+        return super.discriminatePersistentEntity(persistentEntity, nativeEntry);
+    }
+
+    @Override
+	protected DBObject retrieveEntry(final PersistentEntity persistentEntity,
 			String family, final Serializable key) {
 		return (DBObject) mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
 			public Object doInConnection(DB con) throws Exception {
-				DBCollection dbCollection = con.getCollection(mongoTemplate.getDefaultCollectionName());
+				DBCollection dbCollection = con.getCollection(getCollectionName(persistentEntity));
 				
 				DBObject dbo = new BasicDBObject();
                 if(hasNumericalIdentifier) {
@@ -167,16 +191,37 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 			final Object storeId, final DBObject nativeEntry) {
 		return mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
 			public Object doInConnection(DB con) throws Exception {
-				DBCollection dbCollection = con.getCollection(mongoTemplate.getDefaultCollectionName());
+
+                String collectionName = getCollectionName(persistentEntity, nativeEntry);
+
+                DBCollection dbCollection = con.getCollection(collectionName);
 
                 if(hasNumericalIdentifier) {
                     while (true) {
-                        try {
-                            nativeEntry.put(MONGO_ID_FIELD, storeId);
-                            dbCollection.insert(nativeEntry);
+                        DBCursor result = dbCollection.find().sort(new BasicDBObject(MONGO_ID_FIELD, -1)).limit(1);
+
+                        long nextId;
+                        if(result.hasNext()) {
+                            final Long current = getMappingContext().getConversionService().convert(result.next().get(MONGO_ID_FIELD), Long.class);
+                            nextId = current + 1;
+                        }
+                        else {
+                            nextId = 1;
+                        }
+
+                        nativeEntry.put(MONGO_ID_FIELD, nextId);
+                        final WriteResult writeResult = dbCollection.insert(nativeEntry);
+                        final CommandResult lastError = writeResult.getLastError();
+                        if(lastError.ok()) {
                             break;
-                        } catch (MongoException.DuplicateKey e) {
-                            nativeEntry.put(MONGO_ID_FIELD, generateIdentifier(persistentEntity, nativeEntry));
+                        }
+                        else {
+                            final Object code = lastError.get("code");
+                            // duplicate key error try again
+                            if(code != null && code.equals(11000)) {
+                                continue;
+                            }
+                            break;
                         }
                     }
 
@@ -191,12 +236,32 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 		});
 	}
 
-	@Override
-	protected void updateEntry(PersistentEntity persistentEntity, final Object key,
+    public String getCollectionName(PersistentEntity persistentEntity) {
+        return getCollectionName(persistentEntity, null);
+    }
+
+    private String getCollectionName(PersistentEntity persistentEntity, DBObject nativeEntry) {
+        String collectionName;
+        if(persistentEntity.isRoot()) {
+            collectionName = mongoTemplate.getDefaultCollectionName();
+        }
+        else {
+            MongoSession mongoSession = (MongoSession) getSession();
+            collectionName = mongoSession.getMongoTemplate(persistentEntity.getRootEntity()).getDefaultCollectionName();
+            if(nativeEntry != null) {
+                nativeEntry.put(MONGO_CLASS_FIELD, persistentEntity.getDiscriminator());
+            }
+        }
+        return collectionName;
+    }
+
+    @Override
+	protected void updateEntry(final PersistentEntity persistentEntity, final Object key,
 			final DBObject entry) {
 		mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
 			public Object doInConnection(DB con) throws Exception {
-				DBCollection dbCollection = con.getCollection(mongoTemplate.getDefaultCollectionName());
+                String collectionName = getCollectionName(persistentEntity, entry);
+				DBCollection dbCollection = con.getCollection(collectionName);
 				DBObject dbo = new BasicDBObject();
                 if(hasNumericalIdentifier) {
                     dbo.put(MONGO_ID_FIELD, key);
@@ -220,4 +285,50 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 	}
 
 
+    private class MongoAssociationIndexer implements AssociationIndexer {
+        private DBObject nativeEntry;
+        private Association assocation;
+        private MongoSession session;
+
+        public MongoAssociationIndexer(DBObject nativeEntry, Association association, MongoSession session) {
+            this.nativeEntry = nativeEntry;
+            this.assocation = association;
+            this.session = session;
+
+        }
+
+        public void index(final Object primaryKey, List foreignKeys) {
+            nativeEntry.put(assocation.getName(), foreignKeys);
+            mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
+
+                public Object doInConnection(DB db) throws Exception {
+                    final DBCollection collection = db.getCollection(getCollectionName(assocation.getOwner()));
+                    DBObject query = new BasicDBObject(MONGO_ID_FIELD, primaryKey);
+                    collection.update(query, nativeEntry);
+                    return null;
+                }
+            });
+        }
+
+        public List query(Object primaryKey) {
+            final Object indexed = nativeEntry.get(assocation.getName());
+            if(indexed instanceof Collection) {
+                if(indexed instanceof List) return (List) indexed;
+                else {
+                    return new ArrayList((Collection)indexed);
+                }
+            }
+            else {
+                return Collections.emptyList();
+            }
+        }
+
+        public PersistentEntity getIndexedEntity() {
+            return assocation.getAssociatedEntity();
+        }
+
+        public void index(Object primaryKey, Object foreignKey) {
+            // TODO: Implement indexing of individual entities
+        }
+    }
 }

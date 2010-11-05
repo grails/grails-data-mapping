@@ -35,6 +35,13 @@ public class BasicTypeConverterRegistrar {
                 return String.valueOf(date.getTime());
             }
         });
+      registry.addConverter(new Converter<Date, Calendar>() {
+            public Calendar convert(Date date) {
+                final GregorianCalendar calendar = new GregorianCalendar();
+                calendar.setTime(date);
+                return calendar;
+            }
+        });
 
         registry.addConverter(new Converter<Integer, Long>() {
             public Long convert(Integer integer) {

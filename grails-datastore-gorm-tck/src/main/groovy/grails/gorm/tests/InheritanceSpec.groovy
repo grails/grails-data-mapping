@@ -44,7 +44,7 @@ class InheritanceSpec extends GormDatastoreSpec {
         city.save()
         location.save()
 
-        City.withSession { session -> session.flush();session.clear() }
+        session.flush()
 
       when:
         city = City.get(city.id)

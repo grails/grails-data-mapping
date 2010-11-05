@@ -60,7 +60,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
     }
 
     @Override
-    public AssociationIndexer getAssociationIndexer(Association association) {
+    public AssociationIndexer getAssociationIndexer(KeyValueEntry nativeEntry, Association association) {
         return new CassandraAssociationIndexer(cassandraClient, association, getKeyspaceName());
     }
 
