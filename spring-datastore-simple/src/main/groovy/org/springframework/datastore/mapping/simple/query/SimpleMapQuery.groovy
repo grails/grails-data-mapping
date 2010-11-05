@@ -72,10 +72,10 @@ class SimpleMapQuery extends Query{
 
         if(p instanceof Query.IdProjection) {
            if(projectionCount == 1) {
-             results = entityMap.keySet()
+             results = entityMap.keySet().toList()
            }
           else {
-             results.add( entityMap.keySet() )
+             results.add( entityMap.keySet().toList() )
            }
         }
         else if(p instanceof Query.CountProjection) {
