@@ -15,6 +15,7 @@
 package org.springframework.datastore.mapping.mongo.engine;
 
 import com.mongodb.*;
+
 import org.bson.types.ObjectId;
 import org.springframework.datastore.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.document.mongodb.MongoTemplate;
@@ -93,10 +94,54 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
 	@Override
 	protected Object generateIdentifier(final PersistentEntity persistentEntity,
-			DBObject id) {
-        // We return null here to trigger an immediate insert in order to obtain an identity
-        // due to the fact that Mongo behaves much like MySQL autocommit mode with identity generation this is acceptable behavior
-        return null;
+			final DBObject nativeEntry) {
+		return mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
+			public Object doInConnection(DB con) throws Exception {
+
+                String collectionName = getCollectionName(persistentEntity, nativeEntry);
+
+                DBCollection dbCollection = con.getCollection(collectionName);
+
+                // If there is a numeric identifier then we need to rely on optimistic concurrency controls to obtain a unique identifer
+                // sequence. If the identifier is not numeric then we assume BSON ObjectIds.
+                if(hasNumericalIdentifier) {
+                    while (true) {
+                        DBCursor result = dbCollection.find().sort(new BasicDBObject(MONGO_ID_FIELD, -1)).limit(1);
+
+                        long nextId;
+                        if(result.hasNext()) {
+                            final Long current = getMappingContext().getConversionService().convert(result.next().get(MONGO_ID_FIELD), Long.class);
+                            nextId = current + 1;
+                        }
+                        else {
+                            nextId = 1;
+                        }
+
+                        nativeEntry.put(MONGO_ID_FIELD, nextId);
+                        final WriteResult writeResult = dbCollection.insert(nativeEntry);
+                        final CommandResult lastError = writeResult.getLastError();
+                        if(lastError.ok()) {
+                            break;
+                        }
+                        else {
+                            final Object code = lastError.get("code");
+                            // duplicate key error try again
+                            if(code != null && code.equals(11000)) {
+                                continue;
+                            }
+                            break;
+                        }
+                    }
+
+                    return nativeEntry.get(MONGO_ID_FIELD);
+                }
+                else {
+                    dbCollection.insert(nativeEntry);
+                    ObjectId id = (ObjectId) nativeEntry.get(MONGO_ID_FIELD);
+                    return id.toString();
+                }
+			}
+		});
 	}
 
 
@@ -195,43 +240,12 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
                 DBCollection dbCollection = con.getCollection(collectionName);
+                DBObject idQuery = new BasicDBObject();
+                
+                idQuery.put(MONGO_ID_FIELD, hasNumericalIdentifier ? storeId : new ObjectId(storeId.toString()));
+                dbCollection.update(idQuery, nativeEntry);
 
-                if(hasNumericalIdentifier) {
-                    while (true) {
-                        DBCursor result = dbCollection.find().sort(new BasicDBObject(MONGO_ID_FIELD, -1)).limit(1);
-
-                        long nextId;
-                        if(result.hasNext()) {
-                            final Long current = getMappingContext().getConversionService().convert(result.next().get(MONGO_ID_FIELD), Long.class);
-                            nextId = current + 1;
-                        }
-                        else {
-                            nextId = 1;
-                        }
-
-                        nativeEntry.put(MONGO_ID_FIELD, nextId);
-                        final WriteResult writeResult = dbCollection.insert(nativeEntry);
-                        final CommandResult lastError = writeResult.getLastError();
-                        if(lastError.ok()) {
-                            break;
-                        }
-                        else {
-                            final Object code = lastError.get("code");
-                            // duplicate key error try again
-                            if(code != null && code.equals(11000)) {
-                                continue;
-                            }
-                            break;
-                        }
-                    }
-
-                    return nativeEntry.get(MONGO_ID_FIELD);
-                }
-                else {
-                    dbCollection.insert(nativeEntry);
-                    ObjectId id = (ObjectId) nativeEntry.get(MONGO_ID_FIELD);
-                    return id.toString();
-                }
+                return nativeEntry.get(MONGO_ID_FIELD);
 			}
 		});
 	}
