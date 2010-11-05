@@ -78,6 +78,15 @@ class RiakGormTests extends GroovyTestCase {
     assertEquals 5, results.size()
   }
 
+  void testMapReduce() {
+    def results = GormTestEntity.mapReduce.map("""function(v){
+      var o=Riak.mapValuesJson(v);
+      ejsLog('/tmp/mapred.log', JSON.stringify(o));
+      return [v.key];
+    }""")
+    log.debug "M/R results: $results"
+  }
+
   protected void tearDown() {
     ids.each {
       log.debug "Deleting entity: $it"

@@ -274,8 +274,26 @@ public class RiakJavaClientTemplate implements RiakTemplate<RiakClient> {
       } catch (IOException e) {
         log.error(e.getMessage(), e);
       }
+    } else {
+      throw new IllegalArgumentException("Error executing M/R script. Check server logs for details.");
     }
     return null;
+  }
+
+  public void clear(final String bucket) {
+    execute(new RiakCallback<RiakClient>() {
+      public Object doInRiak(RiakClient riak) throws Exception {
+        RequestMeta meta = new RequestMeta();
+        meta.setQueryParam("keys", "true");
+        BucketResponse resp = riak.getBucketSchema(bucket, meta);
+        if (resp.isSuccess()) {
+          for (String key : resp.getBucketInfo().getKeys()) {
+            riak.delete(bucket, key);
+          }
+        }
+        return null;
+      }
+    });
   }
 
   protected String formatRelBucketName(String b, String k, String a) {
