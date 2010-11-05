@@ -14,20 +14,32 @@
  */
 package org.springframework.datastore.mapping.mongo.query;
 
-import com.mongodb.*;
+import java.io.Serializable;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.document.mongodb.MongoTemplate;
-import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.model.types.Association;
+import org.springframework.datastore.mapping.model.types.ToOne;
 import org.springframework.datastore.mapping.mongo.MongoSession;
 import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.query.Restrictions;
 import org.springframework.datastore.mapping.query.projections.ManualProjections;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.regex.Pattern;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 /**
  * A {@link org.springframework.datastore.mapping.query.Query} implementation for the Mongo document store
@@ -35,10 +47,11 @@ import java.util.regex.Pattern;
  * @author Graeme Rocher
  * @since 1.0
  */
-
+@SuppressWarnings("rawtypes")
 public class MongoQuery extends Query{
 
-    private static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
+    
+	private static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
     private static Map<Class, QueryHandler> negatedHandlers = new HashMap<Class, QueryHandler>();
 
     public static final String MONGO_IN_OPERATOR = "$in";
@@ -83,7 +96,7 @@ public class MongoQuery extends Query{
         queryHandlers.put(RLike.class, new QueryHandler<RLike>() {
             public void handle(PersistentEntity entity, RLike like, DBObject query) {
                 Object value = like.getValue();
-                if(value == null) value = "null";
+                if (value == null) value = "null";
                 final String expr = value.toString();
                 Pattern regex = Pattern.compile(expr);
                 query.put(like.getProperty(), regex);
@@ -148,7 +161,8 @@ public class MongoQuery extends Query{
 
         queryHandlers.put(Negation.class, new QueryHandler<Negation>() {
 
-            public void handle(PersistentEntity entity, Negation criteria, DBObject query) {
+            @SuppressWarnings("unchecked")
+			public void handle(PersistentEntity entity, Negation criteria, DBObject query) {
                 for (Criterion criterion : criteria.getCriteria()) {
                     final QueryHandler queryHandler = negatedHandlers.get(criterion.getClass());
                     if(queryHandler != null) {
@@ -163,7 +177,8 @@ public class MongoQuery extends Query{
 
         queryHandlers.put(Disjunction.class, new QueryHandler<Disjunction>() {
 
-            public void handle(PersistentEntity entity, Disjunction criterion, DBObject query) {
+            @SuppressWarnings("unchecked")
+			public void handle(PersistentEntity entity, Disjunction criterion, DBObject query) {
                 List orList = new ArrayList();
                 for (Criterion subCriterion : criterion.getCriteria()) {
                     final QueryHandler queryHandler = queryHandlers.get(subCriterion.getClass());
@@ -179,12 +194,14 @@ public class MongoQuery extends Query{
 
 
         negatedHandlers.put(Equals.class, new QueryHandler<Equals>() {
-            public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
+            @SuppressWarnings("unchecked")
+			public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
                 queryHandlers.get(NotEquals.class).handle(entity, Restrictions.ne(criterion.getProperty(), criterion.getValue()), query);
             }
         });
         negatedHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
-            public void handle(PersistentEntity entity, NotEquals criterion, DBObject query) {
+            @SuppressWarnings("unchecked")
+			public void handle(PersistentEntity entity, NotEquals criterion, DBObject query) {
                 queryHandlers.get(Equals.class).handle(entity, Restrictions.eq(criterion.getProperty(), criterion.getValue()), query);
             }
         });
@@ -204,22 +221,26 @@ public class MongoQuery extends Query{
             }
         });
         negatedHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
-            public void handle(PersistentEntity entity, GreaterThan criterion, DBObject query) {
+            @SuppressWarnings("unchecked")
+			public void handle(PersistentEntity entity, GreaterThan criterion, DBObject query) {
                 queryHandlers.get(LessThan.class).handle(entity, Restrictions.lt(criterion.getProperty(), criterion.getValue()), query);
             }
         });
         negatedHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
-            public void handle(PersistentEntity entity, GreaterThanEquals criterion, DBObject query) {
+            @SuppressWarnings("unchecked")
+			public void handle(PersistentEntity entity, GreaterThanEquals criterion, DBObject query) {
                 queryHandlers.get(LessThanEquals.class).handle(entity, Restrictions.lte(criterion.getProperty(), criterion.getValue()), query);
             }
         });
         negatedHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
-            public void handle(PersistentEntity entity, LessThan criterion, DBObject query) {
+            @SuppressWarnings("unchecked")
+			public void handle(PersistentEntity entity, LessThan criterion, DBObject query) {
                 queryHandlers.get(GreaterThan.class).handle(entity, Restrictions.gt(criterion.getProperty(), criterion.getValue()), query);
             }
         });
         negatedHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
-            public void handle(PersistentEntity entity, LessThanEquals criterion, DBObject query) {
+            @SuppressWarnings("unchecked")
+			public void handle(PersistentEntity entity, LessThanEquals criterion, DBObject query) {
                 queryHandlers.get(GreaterThanEquals.class).handle(entity, Restrictions.gte(criterion.getProperty(), criterion.getValue()), query);
             }
         });
@@ -244,7 +265,8 @@ public class MongoQuery extends Query{
 
         return (List) template.execute(new DocumentStoreConnectionCallback<DB, Object>(){
 
-            public Object doInConnection(DB db) throws Exception {
+            @SuppressWarnings("unchecked")
+			public Object doInConnection(DB db) throws Exception {
 
                 final DBCollection collection = db.getCollection(mongoEntityPersister.getCollectionName(entity));
                 if(uniqueResult) {
@@ -319,7 +341,25 @@ public class MongoQuery extends Query{
                             }
                             else if(projection instanceof PropertyProjection) {
                                 PropertyProjection pp = (PropertyProjection) projection;
-                                return collection.distinct(pp.getPropertyName(), query);
+                                final PersistentProperty persistentProperty = entity.getPropertyByName(pp.getPropertyName());
+                                if(persistentProperty != null) {
+                                    List propertyResults = collection.distinct(pp.getPropertyName(), query);
+
+                                    if(persistentProperty instanceof ToOne) {
+                                        Association a = (Association) persistentProperty;
+                                        propertyResults = session.retrieveAll(a.getAssociatedEntity().getJavaClass(), propertyResults);
+                                    }
+
+                                    if(projectedResults.size() == 0 && projectionList.size() == 1) {
+                                        return propertyResults;
+                                    }
+                                    else {
+                                        projectedResults.add(propertyResults);
+                                    }
+                                }
+                                else {
+                                    throw new InvalidDataAccessResourceUsageException("Cannot use ["+projection.getClass().getSimpleName()+"] projection on non-existent property: " + pp.getPropertyName());
+                                }
                             }
                         }
 
@@ -343,7 +383,8 @@ public class MongoQuery extends Query{
         return query;
     }
 
-    public static void populateMongoQuery(PersistentEntity entity, DBObject query, Junction criteria) {
+    @SuppressWarnings("unchecked")
+	public static void populateMongoQuery(PersistentEntity entity, DBObject query, Junction criteria) {
 
         List disjunction = null;
         if(criteria instanceof Disjunction) {
@@ -371,7 +412,8 @@ public class MongoQuery extends Query{
         return mongoEntityPersister.createObjectFromNativeEntry(getEntity(), (Serializable) id, dbObject);
     }
 
-    private Object wrapObjectResultInList(Object object) {
+    @SuppressWarnings("unchecked")
+	private Object wrapObjectResultInList(Object object) {
         List result = new ArrayList();
         result.add(object);
         return result;
