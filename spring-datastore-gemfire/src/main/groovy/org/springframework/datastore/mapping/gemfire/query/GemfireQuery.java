@@ -346,10 +346,7 @@ public class GemfireQuery extends Query {
                                 results.add(manualProjections.max(values,maxProjection.getPropertyName()));
                             }
                             else if(projection instanceof IdProjection) {
-                                if(values == null) {
-                                    values = region.values();
-                                }
-                                results.add(manualProjections.property(values,entity.getIdentity().getName()));
+                                results.add(region.keySet());
                             }
                             else if(projection.getClass() ==  PropertyProjection.class) {
                                 if(values == null) {
@@ -510,6 +507,9 @@ public class GemfireQuery extends Query {
                 MaxProjection min = (MaxProjection) projection;
                 projectedResults.add(manualProjections.max(results,min.getPropertyName()));
             }
+        }
+        if(projectedResults.isEmpty()) {
+        	return results;
         }
         return projectedResults;
     }
