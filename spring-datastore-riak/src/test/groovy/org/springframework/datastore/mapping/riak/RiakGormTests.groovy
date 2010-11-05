@@ -18,6 +18,8 @@ package org.springframework.datastore.mapping.riak
 
 import grails.persistence.Entity
 import org.grails.datastore.gorm.riak.RiakGormEnhancer
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingContext
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
@@ -27,43 +29,73 @@ import org.springframework.datastore.mapping.transactions.DatastoreTransactionMa
  */
 class RiakGormTests extends GroovyTestCase {
 
+  static Logger log = LoggerFactory.getLogger(RiakGormTests)
+
   RiakDatastore riak
   RiakGormEnhancer enhancer
   RiakSession session
+  def ids
 
   protected void setUp() {
-    riak = new RiakDatastore(new KeyValueMappingContext(""), ["host": "127.0.0.1"])
-    riak.mappingContext.addPersistentEntity(GormTestEntity)
+    if (!riak) {
+      riak = new RiakDatastore(new KeyValueMappingContext(""), ["host": "127.0.0.1"])
+      riak.mappingContext.addPersistentEntity(GormTestEntity)
 
-    enhancer = new RiakGormEnhancer(riak, new DatastoreTransactionManager(datastore: riak))
-    enhancer.enhance()
+      enhancer = new RiakGormEnhancer(riak, new DatastoreTransactionManager(datastore: riak))
+      enhancer.enhance()
 
-    riak.mappingContext.addMappingContextListener({ e ->
-      enhancer.enhance(e)
-    } as MappingContext.Listener)
+      riak.mappingContext.addMappingContextListener({ e ->
+        enhancer.enhance(e)
+      } as MappingContext.Listener)
 
-    session = riak.connect()
+      session = riak.connect()
+    }
 
+    ids = []
+    def lastNames = ["Blow", "Somebody", "Loser", "Schmoe", "Lewis"]
     [1, 2, 3, 4, 5].each {
       GormTestEntity e = new GormTestEntity()
-      e.name = "Joe${it}"
-      //println "Persisting: ${e}"
-      //session.persist(e)
+      e.id = it
+      e.name = "Joe ${lastNames[it - 1]}"
+      session.persist(e)
+      session.flush()
+      log.debug "Persisted: $e"
+      ids << e.id
     }
-    //session.flush()
   }
 
-  void testFindAll() {
+  void testFindByName() {
+    def e = GormTestEntity.findByName("Joe Somebody")
+    log.debug "Joe1: $e"
+  }
+
+  void testCriteria() {
     def crit = GormTestEntity.createCriteria()
     def results = crit.list {
-      like('name', 'Joe%')
+      like('name', 'Joe %')
     }
-    println "results: ${results}"
+    log.debug "Criteria results: $results"
+    assertEquals 5, results.size()
   }
+
+  protected void tearDown() {
+    ids.each {
+      log.debug "Deleting entity: $it"
+      session.delete(GormTestEntity.get(it))
+      session.flush()
+    }
+  }
+
 }
 
 @Entity
 class GormTestEntity {
   Long id
   String name
+
+  def String toString() {
+    return "{id=$id, name=\"$name\"}"
+  }
+
+
 }
