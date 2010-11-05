@@ -16,7 +16,6 @@
 
 package org.springframework.datastore.mapping.riak;
 
-import org.codehaus.groovy.runtime.GStringImpl;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.core.Datastore;
@@ -26,6 +25,8 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.riak.engine.RiakEntityPersister;
 import org.springframework.datastore.mapping.riak.util.RiakTemplate;
 import org.springframework.datastore.mapping.transactions.Transaction;
+
+import java.math.BigInteger;
 
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
@@ -37,8 +38,7 @@ public class RiakSession extends AbstractSession {
   public RiakSession(Datastore datastore, MappingContext mappingContext, RiakTemplate riakTemplate) {
     super(datastore, mappingContext);
     this.riakTemplate = riakTemplate;
-    mappingContext.addTypeConverter(new GStringImplToLongConverter());
-    mappingContext.addTypeConverter(new IntegerToLongConverter());
+    mappingContext.addTypeConverter(new BigIntegerToLongConverter());
   }
 
   @Override
@@ -56,22 +56,16 @@ public class RiakSession extends AbstractSession {
   }
 
   public boolean isConnected() {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
+    return true;
   }
 
   public Object getNativeInterface() {
     return riakTemplate;
   }
 
-  protected class GStringImplToLongConverter implements Converter<GStringImpl, Long> {
-    public Long convert(GStringImpl gString) {
-      return Long.parseLong(gString.toString());
-    }
-  }
-
-  protected class IntegerToLongConverter implements Converter<Integer, Long> {
-    public Long convert(Integer integer) {
-      return new Long(integer);
+  protected class BigIntegerToLongConverter implements Converter<BigInteger, Long> {
+    public Long convert(BigInteger integer) {
+      return new Long(integer.longValue());
     }
   }
 

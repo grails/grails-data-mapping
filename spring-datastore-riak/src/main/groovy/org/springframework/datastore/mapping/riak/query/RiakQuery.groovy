@@ -1,5 +1,7 @@
 package org.springframework.datastore.mapping.riak.query
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.query.Query
@@ -11,6 +13,7 @@ import org.springframework.datastore.mapping.riak.util.RiakTemplate
  */
 class RiakQuery extends Query {
 
+  static Logger log = LoggerFactory.getLogger(RiakQuery)
   static def queryHandlers
   static {
     queryHandlers = [
@@ -26,11 +29,12 @@ class RiakQuery extends Query {
           buff << "($conjunc)"
         },
         (Query.Disjunction): { Query.Disjunction or, PersistentEntity entity, buff ->
-          def conjunc = RiakQuery.handleJunction(or, entity).join("||")
-          buff << "($conjunc)"
+          def disjunc = RiakQuery.handleJunction(or, entity).join("||")
+          buff << "($disjunc)"
         },
         (Query.Negation): { Query.Negation not, PersistentEntity entity, buff ->
-          buff << "&& !"
+          def neg = RiakQuery.handleJunction(not, entity).join("&&")
+          buff << "!($neg)"
         },
         (Query.In): { Query.In qin, PersistentEntity entity, buff ->
           def inClause = qin.values.collect {
@@ -54,7 +58,9 @@ class RiakQuery extends Query {
 
     def buff = []
     criteria.criteria.each { criterion ->
-      println "trying to handle: ${criterion}"
+      if (log.debugEnabled) {
+        log.debug "Found criteria: ${criterion}"
+      }
       def handler = queryHandlers[criterion.class]
       if (handler) {
         handler(criterion, entity, buff)
@@ -63,10 +69,13 @@ class RiakQuery extends Query {
       }
     }
     def ifclause = buff.join("&&") ?: "true"
-    def js = "function(v){var o=Riak.mapValuesJson(v);var r=[];for(i in o){var entry=o[i];if(${ifclause}){ejsLog('/tmp/mapred.log','pushing entry: '+JSON.stringify(entry));r.push(v.key);}} ejsLog('/tmp/mapred.log','returning: '+JSON.stringify(r)); return r;}"
-    println "js: ${js}"
+    def js = "function(v){var o=Riak.mapValuesJson(v);var r=[];for(i in o){var entry=o[i];if(${ifclause}){r.push(v.key);}} return r;}"
+    if (log.debugEnabled) {
+      log.debug "Map/Reduce: ${js}"
+    }
 
-    riak.query(entity.name, js)
+    def keys = riak.query(entity.name, js)
+    session.retrieveAll(entity.javaClass, keys)
   }
 
   static def handleJunction(Query.Junction junc, PersistentEntity entity) {
@@ -78,19 +87,6 @@ class RiakQuery extends Query {
       }
     }
     conjunc
-  }
-
-}
-
-class Condition {
-
-  String leftSide
-  String rightSide
-  String operator
-  String var = "entry"
-
-  String toString() {
-    "($var.$leftSide $operator $rightSide)"
   }
 
 }

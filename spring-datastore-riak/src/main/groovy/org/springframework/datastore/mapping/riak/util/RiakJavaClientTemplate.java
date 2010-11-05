@@ -53,9 +53,6 @@ public class RiakJavaClientTemplate implements RiakTemplate<RiakClient> {
 
   public Object execute(RiakCallback<RiakClient> callback) {
     try {
-      if (log.isDebugEnabled()) {
-        log.debug("Executing Riak callback: " + callback);
-      }
       return callback.doInRiak(riakClient);
     } catch (Exception e) {
       log.error(e.getMessage(), e);
