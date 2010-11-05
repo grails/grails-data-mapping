@@ -46,7 +46,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
     this.datastore = datastore.backingMap;
     this.indices = datastore.indices
     family = getFamily(entity, entity.getMapping())
-    this.datastore[family] = [:]
+    if(this.datastore[family] == null) this.datastore[family] = [:]
   }
 
   protected PersistentEntity discriminatePersistentEntity(PersistentEntity persistentEntity, Map nativeEntry) {
@@ -93,7 +93,8 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
           indexed = []
           indices[index] = indexed
         }
-        indexed << primaryKey
+		if(!indexed.contains(primaryKey))
+        	indexed << primaryKey
       }
 
       List query(Object value) {
@@ -123,8 +124,11 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
 
       void index(Object primaryKey, List foreignKeys) {
         def indexed = getIndex(primaryKey)
+		
         indexed.addAll(foreignKeys)
-
+		def index = getIndexName(primaryKey)
+		indexed = indexed.unique()
+		indices[index] = indexed
       }
 
       private List getIndex(primaryKey) {
@@ -139,7 +143,8 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
 
       void index(Object primaryKey, Object foreignKey) {
         def indexed = getIndex(primaryKey)
-        indexed.add(foreignKey)
+		if(!indexed.contains(foreignKey))
+        	indexed.add(foreignKey)
 
       }
 
@@ -177,7 +182,9 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
   }
 
   protected Map retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
-    return datastore[family].get(key)
+    def entry = datastore[family].get(key)
+
+    return entry
   }
 
   protected Object generateIdentifier(PersistentEntity persistentEntity, Map id) {
