@@ -29,12 +29,11 @@ CriteriaBuilderSpec,
 //  CommonTypesPersistenceSpec,
 //  GormEnhancerSpec,
 //  NegationSpec,
-//
 //  ValidationSpec,
 //  UpdateWithProxyPresentSpec,
 //  AttachMethodSpec,
 //  WithTransactionSpec,
-CrudOperationsSpec
+//  CrudOperationsSpec
 ])
 class RiakSuite {
 }

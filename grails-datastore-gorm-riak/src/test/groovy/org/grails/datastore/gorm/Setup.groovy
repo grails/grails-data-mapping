@@ -22,6 +22,7 @@ import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingCon
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.riak.RiakDatastore
+import org.springframework.datastore.mapping.riak.util.RiakTemplate
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
@@ -61,7 +62,11 @@ class Setup {
     } as MappingContext.Listener)
 
 
-    def con = riak.connect()
+    Session con = riak.connect()
+    RiakTemplate riakTmpl = con.nativeInterface
+    ["grails.gorm.tests.TestEntity", "grails.gorm.tests.ChildEntity"].each {
+      riakTmpl.clear(it)
+    }
 
     return con
 

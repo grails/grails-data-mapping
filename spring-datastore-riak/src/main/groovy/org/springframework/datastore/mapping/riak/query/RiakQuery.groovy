@@ -20,9 +20,27 @@ class RiakQuery extends Query {
         (Query.Equals): { Query.Equals equals, PersistentEntity entity, buff ->
           buff << "(entry.${equals.name} == \"${equals.value}\")"
         },
+        (Query.NotEquals): { Query.Equals notEquals, PersistentEntity entity, buff ->
+          buff << "(entry.${notEquals.name} != \"${notEquals.value}\")"
+        },
+        (Query.GreaterThan): { Query.GreaterThan gt, PersistentEntity entity, buff ->
+          buff << "(entry.${gt.name} > ${gt.value})"
+        },
+        (Query.GreaterThanEquals): { Query.GreaterThanEquals gte, PersistentEntity entity, buff ->
+          buff << "(entry.${gte.name} >= ${gte.value})"
+        },
+        (Query.LessThan): { Query.LessThan lt, PersistentEntity entity, buff ->
+          buff << "(entry.${lt.name} < ${lt.value})"
+        },
+        (Query.LessThanEquals): { Query.LessThanEquals lte, PersistentEntity entity, buff ->
+          buff << "(entry.${lte.name} <= ${lte.value})"
+        },
+        (Query.Between): { Query.Between between, PersistentEntity entity, buff ->
+          buff << "((entry.${between.property} < ${between.to})&&(entry.${between.property} > ${between.from}))"
+        },
         (Query.Like): { Query.Like like, PersistentEntity entity, buff ->
           def regexp = like.value.toString().replaceAll("%", "(.*)")
-          buff << "(entry.${like.name}.match(/$regexp/))"
+          buff << "(\"\"+entry.${like.name}.match(/$regexp/))"
         },
         (Query.Conjunction): { Query.Conjunction and, PersistentEntity entity, buff ->
           def conjunc = RiakQuery.handleJunction(and, entity).join("&&")
@@ -53,7 +71,7 @@ class RiakQuery extends Query {
 
   protected List executeQuery(PersistentEntity entity, Query.Junction criteria) {
     if (criteria.empty) {
-      return new RiakEntityIndex(riak, entity.name)
+      return session.retrieveAll(entity.javaClass, new RiakEntityIndex(riak, entity.name))
     }
 
     def buff = []
@@ -69,13 +87,49 @@ class RiakQuery extends Query {
       }
     }
     def ifclause = buff.join("&&") ?: "true"
-    def js = "function(v){var o=Riak.mapValuesJson(v);var r=[];for(i in o){var entry=o[i];if(${ifclause}){r.push(v.key);}} return r;}"
-    if (log.debugEnabled) {
-      log.debug "Map/Reduce: ${js}"
+    def mapJs = "function(v){var o=Riak.mapValuesJson(v);var r=[];for(i in o){var entry=o[i];if(${ifclause}){r.push(v.key);}} return r;}"
+    if (mapJs && log.debugEnabled) {
+      log.debug "Map: ${mapJs}"
     }
 
-    def keys = riak.query(entity.name, js)
-    session.retrieveAll(entity.javaClass, keys)
+    def reduceJs
+    def projectionList = projections()
+    if (projectionList) {
+      StringBuilder jsbuff = new StringBuilder("function(v){var r=[];")
+      projectionList.projectionList.each { proj ->
+        if (proj instanceof Query.CountProjection) {
+          jsbuff << "r.push(v.length);"
+        }
+      }
+      jsbuff << " return r;}"
+      reduceJs = jsbuff.toString()
+    }
+
+    def results = reduceJs ? riak.mapReduce(entity.name, mapJs, reduceJs) : session.retrieveAll(entity.javaClass, riak.query(entity.name, mapJs))
+    // This portion shamelessly absconded from Graeme's RedisQuery.java
+    if (results) {
+      final def total = results.size()
+      if (offset > total) {
+        return Collections.emptyList()
+      }
+      def max = this.max // 20
+      def from = offset // 10
+      def to = max == -1 ? -1 : (offset + max) - 1      // 15
+      if (to >= total) {
+        to = -1
+      }
+      def finalResult = results[from..to]
+      if (orderBy) {
+        orderBy.each { Query.Order order ->
+          def sorted = finalResult.sort { it."${order.property}"}
+          final def os = order.direction.toString()
+          finalResult = os == "DESC" ? sorted.reverse() : sorted
+        }
+      }
+      return finalResult
+    } else {
+      return Collections.emptyList()
+    }
   }
 
   static def handleJunction(Query.Junction junc, PersistentEntity entity) {

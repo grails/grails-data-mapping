@@ -280,6 +280,41 @@ public class RiakJavaClientTemplate implements RiakTemplate<RiakClient> {
     return null;
   }
 
+  public List<Object> mapReduce(String bucket, String mapJs, String reduceJs) {
+    MapReduceBuilder mapred = new MapReduceBuilder(riakClient);
+    JavascriptFunction map = JavascriptFunction.anon(mapJs);
+    JavascriptFunction reduce = JavascriptFunction.anon(reduceJs);
+    if (null != mapJs) {
+      mapred.map(map, false);
+      if (log.isDebugEnabled()) {
+        log.debug("Mapping with: " + mapJs);
+      }
+    }
+    if (null != reduceJs) {
+      mapred.reduce(reduce, true);
+      if (log.isDebugEnabled()) {
+        log.debug("Reducing with: " + reduceJs);
+      }
+    }
+    mapred.setBucket(bucket);
+    MapReduceResponse resp = null;
+    try {
+      resp = mapred.submit();
+    } catch (JSONException e) {
+      log.error(e.getMessage(), e);
+    }
+    if (null != resp && resp.isSuccess()) {
+      try {
+        return mapper.readValue(resp.getBodyAsString(), List.class);
+      } catch (IOException e) {
+        log.error(e.getMessage(), e);
+      }
+    } else {
+      throw new IllegalArgumentException("Error executing M/R script. Check server logs for details.");
+    }
+    return null;
+  }
+
   public void clear(final String bucket) {
     execute(new RiakCallback<RiakClient>() {
       public Object doInRiak(RiakClient riak) throws Exception {
