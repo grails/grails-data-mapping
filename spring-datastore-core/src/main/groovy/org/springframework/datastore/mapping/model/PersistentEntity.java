@@ -134,4 +134,11 @@ public interface PersistentEntity extends Initializable {
      * @return True if it does
      */
     boolean hasProperty(String name, Class type);
+
+    /**
+     * True if the given property is the identifier
+     * @param propertyName the property name
+     * @return True if it is the identifier
+     */
+	boolean isIdentityName(String propertyName);
 }

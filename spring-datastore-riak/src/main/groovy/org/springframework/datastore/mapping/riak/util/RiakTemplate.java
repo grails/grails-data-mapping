@@ -56,4 +56,7 @@ public interface RiakTemplate<T> {
 
   List<Object> query(String bucket, String js);
 
+  void clear(String bucket);
+
+  List<Object> mapReduce(String bucket, String map, String reduce);
 }

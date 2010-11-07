@@ -30,6 +30,16 @@ public class Restrictions {
     public static Query.Equals eq(String property, Object value) {
         return new Query.Equals(property, value);
     }
+    
+    /**
+     * Restricts the property to be equal to the given value
+     * @param property The property
+     * @param value The value
+     * @return An instance of Query.Equals
+     */
+    public static Query.IdEquals idEq(Object value) {
+        return new Query.IdEquals(value);
+    }    
 
     /**
      * Restricts the property to be not equal to the given value

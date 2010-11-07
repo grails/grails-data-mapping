@@ -72,10 +72,10 @@ class SimpleMapQuery extends Query{
 
         if(p instanceof Query.IdProjection) {
            if(projectionCount == 1) {
-             results = entityMap.keySet()
+             results = entityMap.keySet().toList()
            }
           else {
-             results.add( entityMap.keySet() )
+             results.add( entityMap.keySet().toList() )
            }
         }
         else if(p instanceof Query.CountProjection) {
@@ -148,6 +148,10 @@ class SimpleMapQuery extends Query{
           def indexer = entityPersister.getPropertyIndexer(property)
           return indexer.query(equals.value)
         },
+		(Query.IdEquals): { Query.IdEquals equals, PersistentProperty property ->
+			def indexer = entityPersister.getPropertyIndexer(property)
+			return indexer.query(equals.value)
+		},
         (Query.NotEquals): { Query.NotEquals equals, PersistentProperty property ->
           def indexer = entityPersister.getPropertyIndexer(property)
           def indexed = indexer.query(equals.value)

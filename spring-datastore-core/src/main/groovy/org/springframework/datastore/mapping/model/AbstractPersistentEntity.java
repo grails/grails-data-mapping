@@ -87,6 +87,11 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
         final PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(getJavaClass(), name);
         return pd != null && pd.getPropertyType().equals(type);
     }
+    
+    @Override
+    public boolean isIdentityName(String propertyName) {
+    	return getIdentity().getName().equals(propertyName);
+    }
 
     public PersistentEntity getParentEntity() {
         return parentEntity;

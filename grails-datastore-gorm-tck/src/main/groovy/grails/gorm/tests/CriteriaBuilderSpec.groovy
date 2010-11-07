@@ -5,6 +5,32 @@ package grails.gorm.tests
  */
 class CriteriaBuilderSpec extends GormDatastoreSpec {
 
+  def "Test id projection"() {
+	  given:
+	  	def entity = new TestEntity(name:"Bob", age: 44, child:new ChildEntity(name:"Child")).save(flush:true)
+	  
+	  when:
+		  def result = TestEntity.createCriteria().get {
+			  projections { id() } 
+			  idEq entity.id 
+		  }
+		  
+	  then:
+	  	result != null
+		result == entity.id 
+  }
+  def "Test idEq method"() {
+		given:
+			def entity = new TestEntity(name:"Bob", age: 44, child:new ChildEntity(name:"Child")).save(flush:true)
+			
+		when:
+			def result = TestEntity.createCriteria().get { idEq entity.id }
+			
+		then:
+			result != null
+			result.name == 'Bob'
+  }
+  
   def "Test disjunction query"() {
     given:
     def age = 40
