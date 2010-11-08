@@ -16,6 +16,7 @@ package org.springframework.datastore.mapping.mongo.query;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -335,15 +336,15 @@ public class MongoQuery extends Query{
                             	cursor = executeQuery(entity, criteria, collection, query);
                                 MinProjection mp = (MinProjection) projection;
 
-                                List results = new MongoResultList(cursor, mongoEntityPersister);
-                                projectedResults.add(manualProjections.min(results, mp.getPropertyName()));
+                                MongoResultList results = new MongoResultList(cursor, mongoEntityPersister);
+                                projectedResults.add(manualProjections.min((Collection) results.clone(), mp.getPropertyName()));
                             }
                             else if(projection instanceof MaxProjection) {
                             	cursor = executeQuery(entity, criteria, collection, query);
                                 MaxProjection mp = (MaxProjection) projection;
 
-                                List results = new MongoResultList(cursor, mongoEntityPersister);
-                                projectedResults.add( manualProjections.max(results, mp.getPropertyName()) );
+                                MongoResultList results = new MongoResultList(cursor, mongoEntityPersister);
+                                projectedResults.add( manualProjections.max((Collection) results.clone(), mp.getPropertyName()) );
                             }
                             else if((projection instanceof PropertyProjection) || (projection instanceof IdProjection)) {
                             	final PersistentProperty persistentProperty;
@@ -493,20 +494,41 @@ public class MongoQuery extends Query{
         	super.addAll(cursor.toArray());
             this.mongoEntityPersister = mongoEntityPersister;
         }
+        
+        
 
         @Override
         public Object get(int index) {
         	Object object = super.get(index);
             
             if(object instanceof DBObject) {
-                final DBObject dbObject = (DBObject) object;
-                Object id = dbObject.get(MongoEntityPersister.MONGO_ID_FIELD);
-                object = mongoEntityPersister.createObjectFromNativeEntry(mongoEntityPersister.getPersistentEntity(), (Serializable) id, dbObject);
+                object = convertDBObject(object);
                 
                 set(index, object);            		
             }
             return  object;
 
+        }
+
+
+
+		protected Object convertDBObject(Object object) {
+			final DBObject dbObject = (DBObject) object;
+			Object id = dbObject.get(MongoEntityPersister.MONGO_ID_FIELD);
+			object = mongoEntityPersister.createObjectFromNativeEntry(mongoEntityPersister.getPersistentEntity(), (Serializable) id, dbObject);
+			return object;
+		}
+        
+        @Override
+        public Object clone() {
+        	List arrayList = new ArrayList();
+        	for (Object object : this) {
+        		if(object instanceof DBObject) {
+        			object = convertDBObject(object);
+        		}
+				arrayList.add(object);
+			}
+        	return arrayList;
         }
 
     }
