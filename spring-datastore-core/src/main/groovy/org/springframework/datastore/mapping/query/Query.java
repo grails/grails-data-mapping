@@ -479,11 +479,12 @@ public abstract class Query {
     /**
      * Criterion used to restrict the results based on a list of values
      */
-    public static class In extends Criterion {
+    public static class In extends PropertyCriterion {
         private String name;
         private Collection values = Collections.emptyList();
 
         public In(String name, Collection values) {
+        	super(name, values);
             this.name = name;
             this.values = values;
         }
@@ -539,12 +540,13 @@ public abstract class Query {
     /**
      * Criterion used to restrict the result to be between values (range query)
      */
-    public static class Between extends Criterion {
+    public static class Between extends PropertyCriterion {
         private String property;
         private Object from; 
         private Object to;
 
         public Between(String property, Object from, Object to) {
+        	super(property, from);
             this.property = property;
             this.from = from;
             this.to = to;

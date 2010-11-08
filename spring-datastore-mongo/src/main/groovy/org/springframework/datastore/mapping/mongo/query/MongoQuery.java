@@ -15,7 +15,6 @@
 package org.springframework.datastore.mapping.mongo.query;
 
 import java.io.Serializable;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,13 +80,9 @@ public class MongoQuery extends Query{
 		});
         queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
             public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
-                String propertyName = criterion.getProperty();
-                if(entity.isIdentityName(propertyName)) {
-                	query.put(MongoEntityPersister.MONGO_ID_FIELD, criterion.getValue());
-                }
-                else {                	
-                	query.put(propertyName, criterion.getValue());
-                }
+                String propertyName = getPropertyName(entity, criterion);
+                
+                query.put(propertyName, criterion.getValue());
             }
         });
         queryHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
@@ -95,7 +90,8 @@ public class MongoQuery extends Query{
                 DBObject notEqualQuery = new BasicDBObject();
                 notEqualQuery.put(MONGO_NE_OPERATOR, criterion.getValue());
 
-                query.put(criterion.getProperty(), notEqualQuery);
+                String propertyName = getPropertyName(entity, criterion);
+                query.put(propertyName, notEqualQuery);
             }
         });
         queryHandlers.put(Like.class, new QueryHandler<Like>() {
@@ -107,7 +103,8 @@ public class MongoQuery extends Query{
                 	expr = '^'+expr;
                 }
                 Pattern regex = Pattern.compile(expr);
-                query.put(like.getProperty(), regex);
+                String propertyName = getPropertyName(entity, like);
+                query.put(propertyName, regex);
             }
         });
         queryHandlers.put(RLike.class, new QueryHandler<RLike>() {
@@ -116,14 +113,16 @@ public class MongoQuery extends Query{
                 if (value == null) value = "null";
                 final String expr = value.toString();
                 Pattern regex = Pattern.compile(expr);
-                query.put(like.getProperty(), regex);
+                String propertyName = getPropertyName(entity, like);
+                query.put(propertyName, regex);
             }
         });
         queryHandlers.put(In.class, new QueryHandler<In>() {
             public void handle(PersistentEntity entity, In in, DBObject query) {
                 DBObject inQuery = new BasicDBObject();
                 inQuery.put(MONGO_IN_OPERATOR, in.getValues());
-                query.put(in.getProperty(), inQuery);
+                String propertyName = getPropertyName(entity, in);                
+                query.put(propertyName, inQuery);
             }
         });
         queryHandlers.put(Between.class, new QueryHandler<Between>() {
@@ -131,7 +130,8 @@ public class MongoQuery extends Query{
                 DBObject betweenQuery = new BasicDBObject();
                 betweenQuery.put(MONGO_GTE_OPERATOR, between.getFrom());
                 betweenQuery.put(MONGO_LTE_OPERATOR, between.getTo());
-                query.put(between.getProperty(), betweenQuery);
+                String propertyName = getPropertyName(entity, between);                
+                query.put(propertyName, betweenQuery);
             }
         });
         queryHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
@@ -139,7 +139,8 @@ public class MongoQuery extends Query{
                 DBObject greaterThanQuery = new BasicDBObject();
                 greaterThanQuery.put(MONGO_GT_OPERATOR, criterion.getValue());
 
-                query.put(criterion.getProperty(), greaterThanQuery);
+                String propertyName = getPropertyName(entity, criterion);
+                query.put(propertyName, greaterThanQuery);
             }
         });
         queryHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
@@ -147,7 +148,8 @@ public class MongoQuery extends Query{
                 DBObject greaterThanQuery = new BasicDBObject();
                 greaterThanQuery.put(MONGO_GTE_OPERATOR, criterion.getValue());
 
-                query.put(criterion.getProperty(), greaterThanQuery);
+                String propertyName = getPropertyName(entity, criterion);
+                query.put(propertyName, greaterThanQuery);
             }
         });
         queryHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
@@ -155,7 +157,8 @@ public class MongoQuery extends Query{
                 DBObject lessThanQuery = new BasicDBObject();
                 lessThanQuery.put(MONGO_LT_OPERATOR, criterion.getValue());
 
-                query.put(criterion.getProperty(), lessThanQuery);
+                String propertyName = getPropertyName(entity, criterion);
+                query.put(propertyName, lessThanQuery);
             }
         });
         queryHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
@@ -163,7 +166,8 @@ public class MongoQuery extends Query{
                 DBObject lessThanQuery = new BasicDBObject();
                 lessThanQuery.put(MONGO_LTE_OPERATOR, criterion.getValue());
 
-                query.put(criterion.getProperty(), lessThanQuery);
+                String propertyName = getPropertyName(entity, criterion);
+                query.put(propertyName, lessThanQuery);
             }
         });
 
@@ -455,7 +459,16 @@ public class MongoQuery extends Query{
         }
     }
 
-    private Object createObjectFromDBObject(DBObject dbObject) {
+    protected static String getPropertyName(PersistentEntity entity,
+			PropertyCriterion criterion) {
+		String propertyName = criterion.getProperty();
+		if(entity.isIdentityName(propertyName)) {
+			propertyName = MongoEntityPersister.MONGO_ID_FIELD;                	
+		}
+		return propertyName;
+	}
+
+	private Object createObjectFromDBObject(DBObject dbObject) {
         final Object id = dbObject.get(MongoEntityPersister.MONGO_ID_FIELD);
         return mongoEntityPersister.createObjectFromNativeEntry(getEntity(), (Serializable) id, dbObject);
     }
@@ -471,33 +484,30 @@ public class MongoQuery extends Query{
         public void handle(PersistentEntity entity, T criterion, DBObject query);
     }
 
-    public static class MongoResultList extends AbstractList{
-        private List<DBObject> results;
-        private Object[] objectResults;
+    public static class MongoResultList extends ArrayList{
+
         private MongoEntityPersister mongoEntityPersister;
 
-        public MongoResultList(DBCursor cursor, MongoEntityPersister mongoEntityPersister) {
-            this.results = cursor.toArray();
-            objectResults = new Object[results.size()];
+        @SuppressWarnings("unchecked")
+		public MongoResultList(DBCursor cursor, MongoEntityPersister mongoEntityPersister) {
+        	super.addAll(cursor.toArray());
             this.mongoEntityPersister = mongoEntityPersister;
         }
 
         @Override
         public Object get(int index) {
-            Object object = objectResults[index];
-            if(object == null) {
-                final DBObject dbObject = results.get(index);
+        	Object object = super.get(index);
+            
+            if(object instanceof DBObject) {
+                final DBObject dbObject = (DBObject) object;
                 Object id = dbObject.get(MongoEntityPersister.MONGO_ID_FIELD);
                 object = mongoEntityPersister.createObjectFromNativeEntry(mongoEntityPersister.getPersistentEntity(), (Serializable) id, dbObject);
-                objectResults[index] = object;
+                
+                set(index, object);            		
             }
             return  object;
 
         }
 
-        @Override
-        public int size() {
-            return results.size();
-        }
     }
 }

@@ -68,6 +68,42 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         return new MongoQuery((MongoSession) getSession(), getPersistentEntity());
 	}
 
+	@Override
+	protected List<Serializable> persistEntities(
+			PersistentEntity persistentEntity, Iterable objs) {
+		// TODO Auto-generated method stub
+		return super.persistEntities(persistentEntity, objs);
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	protected List<Object> retrieveAllEntities(
+			PersistentEntity persistentEntity, Iterable<Serializable> keys) {
+		
+		Query query = session.createQuery(persistentEntity.getJavaClass());
+		
+		if(keys instanceof List)
+			query.in(persistentEntity.getIdentity().getName(), (List)keys);
+		else {
+			List<Serializable> keyList = new ArrayList<Serializable>();
+			for (Serializable key : keys) {
+				keyList.add(key);
+			}
+			query.in(persistentEntity.getIdentity().getName(), keyList);
+		}
+		
+		return query.list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	protected List<Object> retrieveAllEntities(
+			PersistentEntity persistentEntity, Serializable[] keys) {
+		Query query = session.createQuery(persistentEntity.getJavaClass());
+		query.in(persistentEntity.getIdentity().getName(), Arrays.asList(keys));		
+		return query.list();
+	}
+	
     @Override
     public String getEntityFamily() {
         return mongoTemplate.getDefaultCollectionName();
@@ -77,7 +113,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 	protected void deleteEntry(String family, final Object key) {
 		mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
 			public Object doInConnection(DB con) throws Exception {
-				DBCollection dbCollection = con.getCollection(getCollectionName(getPersistentEntity()));
+				DBCollection dbCollection = getCollection(con);
 				
 				DBObject dbo = new BasicDBObject();
                 if(hasNumericalIdentifier) {
@@ -88,6 +124,11 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 }
 				dbCollection.remove(dbo);
 				return null;
+			}
+
+			protected DBCollection getCollection(DB con) {
+				DBCollection dbCollection = con.getCollection(getCollectionName(getPersistentEntity()));
+				return dbCollection;
 			}
 		});
 	}

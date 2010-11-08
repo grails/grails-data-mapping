@@ -180,6 +180,12 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
         return null;
     }
 
+    /**
+     * Subclasses should override to provide any conversion necessary to convert to a nativeKey
+     * 
+     * @param nativeKey The key
+     * @return The native key
+     */
     protected Serializable convertToNativeKey(Serializable nativeKey) {
         return nativeKey;
     }
