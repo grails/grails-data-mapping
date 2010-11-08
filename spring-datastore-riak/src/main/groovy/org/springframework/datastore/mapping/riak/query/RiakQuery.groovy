@@ -18,29 +18,48 @@ class RiakQuery extends Query {
   static {
     queryHandlers = [
         (Query.Equals): { Query.Equals equals, PersistentEntity entity, buff ->
-          buff << "(entry.${equals.name} == \"${equals.value}\")"
+          def val = equals.value.asType(entity.getPropertyByName(equals.name).getType())
+          if (val instanceof Boolean || val instanceof Integer || val instanceof Double) {
+            buff << "(entry.${equals.name} == ${val})"
+          } else {
+            buff << "(entry.${equals.name} == \"${val}\")"
+          }
+        },
+        (Query.IdEquals): { Query.IdEquals idEquals, PersistentEntity entity, buff ->
+          buff << "v.key == ${idEquals.value}"
         },
         (Query.NotEquals): { Query.Equals notEquals, PersistentEntity entity, buff ->
-          buff << "(entry.${notEquals.name} != \"${notEquals.value}\")"
+          def val = notEquals.value.asType(entity.getPropertyByName(notEquals.name).getType())
+          if (val instanceof Boolean || val instanceof Integer || val instanceof Double) {
+            buff << "(entry.${notEquals.name} != ${val})"
+          } else {
+            buff << "(entry.${notEquals.name} != \"${val}\")"
+          }
         },
         (Query.GreaterThan): { Query.GreaterThan gt, PersistentEntity entity, buff ->
-          buff << "(entry.${gt.name} > ${gt.value})"
+          def val = gt.value.asType(entity.getPropertyByName(gt.name).getType())
+          buff << "(entry.${gt.name} > ${val})"
         },
         (Query.GreaterThanEquals): { Query.GreaterThanEquals gte, PersistentEntity entity, buff ->
-          buff << "(entry.${gte.name} >= ${gte.value})"
+          def val = gte.value.asType(entity.getPropertyByName(gte.name).getType())
+          buff << "(entry.${gte.name} >= ${val})"
         },
         (Query.LessThan): { Query.LessThan lt, PersistentEntity entity, buff ->
-          buff << "(entry.${lt.name} < ${lt.value})"
+          def val = lt.value.asType(entity.getPropertyByName(lt.name).getType())
+          buff << "(entry.${lt.name} < ${val})"
         },
         (Query.LessThanEquals): { Query.LessThanEquals lte, PersistentEntity entity, buff ->
-          buff << "(entry.${lte.name} <= ${lte.value})"
+          def val = lte.value.asType(entity.getPropertyByName(lte.name).getType())
+          buff << "(entry.${lte.name} <= ${val})"
         },
         (Query.Between): { Query.Between between, PersistentEntity entity, buff ->
-          buff << "((entry.${between.property} < ${between.to})&&(entry.${between.property} > ${between.from}))"
+          def to = between.to.value.asType(entity.getPropertyByName(between.property).getType())
+          def from = between.from.value.asType(entity.getPropertyByName(between.property).getType())
+          buff << "(entry.${between.property} <= ${to}) && (entry.${between.property} >= ${from})"
         },
         (Query.Like): { Query.Like like, PersistentEntity entity, buff ->
-          def regexp = like.value.toString().replaceAll("%", "(.*)")
-          buff << "(\"\"+entry.${like.name}.match(/$regexp/))"
+          def regexp = like.value.toString().replaceAll("%", "(.+)")
+          buff << "/^$regexp/.test(\"\"+entry.${like.name})"
         },
         (Query.Conjunction): { Query.Conjunction and, PersistentEntity entity, buff ->
           def conjunc = RiakQuery.handleJunction(and, entity).join("&&")
@@ -70,10 +89,6 @@ class RiakQuery extends Query {
   }
 
   protected List executeQuery(PersistentEntity entity, Query.Junction criteria) {
-    if (criteria.empty) {
-      return session.retrieveAll(entity.javaClass, new RiakEntityIndex(riak, entity.name))
-    }
-
     def buff = []
     criteria.criteria.each { criterion ->
       if (log.debugEnabled) {
@@ -86,26 +101,36 @@ class RiakQuery extends Query {
         return []
       }
     }
-    def ifclause = buff.join("&&") ?: "true"
-    def mapJs = "function(v){var o=Riak.mapValuesJson(v);var r=[];for(i in o){var entry=o[i];if(${ifclause}){r.push(v.key);}} return r;}"
-    if (mapJs && log.debugEnabled) {
-      log.debug "Map: ${mapJs}"
-    }
-
+    def joinStr = (criteria && criteria instanceof Query.Disjunction ? "||" : "&&")
+    def ifclause = buff.join(joinStr) ?: "true"
+    def mapJs = "function(v){var o=Riak.mapValuesJson(v);var r=[];for(i in o){var entry=o[i];if(${ifclause}){o[i].id=v.key;r.push(o[i]);}} return r;}"
     def reduceJs
+    // Property projections
+    List<Query.PropertyProjection> propProjs = new ArrayList<Query.PropertyProjection>()
     def projectionList = projections()
-    if (projectionList) {
-      StringBuilder jsbuff = new StringBuilder("function(v){var r=[];")
+    if (projectionList.projections) {
+      StringBuilder jsbuff = new StringBuilder("function(v){ var r=[];")
       projectionList.projectionList.each { proj ->
         if (proj instanceof Query.CountProjection) {
           jsbuff << "r.push(v.length);"
+        } else if (proj instanceof Query.AvgProjection) {
+          jsbuff << "if(v.length>0){ var total=0.0;for(i in v){ total += 1*v[i].${proj.propertyName}; } r.push(total/v.length); } else { r.push(0.0); }"
+        } else if (proj instanceof Query.MaxProjection) {
+          jsbuff << "if(v.length>0){ var max=1*v[0].${proj.propertyName};for(i in v){ if(i>0){ if(1*v[i].${proj.propertyName} > max){ max=1*v[i].${proj.propertyName}; }}} r.push(max);}"
+        } else if (proj instanceof Query.MinProjection) {
+          jsbuff << "if(v.length>0){ var min=1*v[0].${proj.propertyName};for(i in v){ if(i>0){ if(1*v[i].${proj.propertyName} < min){ min=1*v[i].${proj.propertyName}; }}} r.push(min);}"
+        } else if (proj instanceof Query.IdProjection) {
+          jsbuff << "if(v.length>0){ for(i in v){ r.push(1*v[i].id); }}"
+        } else if (proj instanceof Query.PropertyProjection) {
+          propProjs << proj
+          jsbuff << "return v;"
         }
       }
       jsbuff << " return r;}"
       reduceJs = jsbuff.toString()
     }
 
-    def results = reduceJs ? riak.mapReduce(entity.name, mapJs, reduceJs) : session.retrieveAll(entity.javaClass, riak.query(entity.name, mapJs))
+    def results = riak.mapReduce(entity.name, mapJs, reduceJs)
     // This portion shamelessly absconded from Graeme's RedisQuery.java
     if (results) {
       final def total = results.size()
@@ -121,12 +146,28 @@ class RiakQuery extends Query {
       def finalResult = results[from..to]
       if (orderBy) {
         orderBy.each { Query.Order order ->
-          def sorted = finalResult.sort { it."${order.property}"}
+          def sorted = finalResult.sort {
+            it."${order.property}"
+          }
           final def os = order.direction.toString()
           finalResult = os == "DESC" ? sorted.reverse() : sorted
         }
       }
-      return finalResult
+
+      if (projectionList.projections) {
+        if (propProjs) {
+          if (propProjs.size() != 1) {
+            log.warn "Only the first PropertyProjection is used: " + propProjs[0]
+          }
+          finalResult.collect { entry ->
+            entry."${propProjs[0].propertyName}"
+          }
+        } else {
+          finalResult
+        }
+      } else {
+        getSession().retrieveAll(getEntity().getJavaClass(), finalResult.collect { it.id.toLong() })
+      }
     } else {
       return Collections.emptyList()
     }
