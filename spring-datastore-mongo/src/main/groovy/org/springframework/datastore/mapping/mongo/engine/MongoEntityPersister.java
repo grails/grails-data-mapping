@@ -67,6 +67,11 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 	public Query createQuery() {
         return new MongoQuery((MongoSession) getSession(), getPersistentEntity());
 	}
+	
+	@Override
+	protected boolean doesRequirePropertyIndexing() {
+		return false;
+	}
 
 	@Override
 	protected List<Serializable> persistEntities(
@@ -272,6 +277,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 		});
 	}
 
+    
 	@Override
 	protected Object storeEntry(final PersistentEntity persistentEntity,
 			final Object storeId, final DBObject nativeEntry) {
@@ -311,7 +317,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @Override
-	protected void updateEntry(final PersistentEntity persistentEntity, final Object key,
+	public void updateEntry(final PersistentEntity persistentEntity, final Object key,
 			final DBObject entry) {
 		mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
 			public Object doInConnection(DB con) throws Exception {

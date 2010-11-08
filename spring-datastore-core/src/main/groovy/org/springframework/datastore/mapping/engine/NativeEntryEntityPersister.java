@@ -20,6 +20,9 @@ import org.springframework.datastore.mapping.collection.PersistentList;
 import org.springframework.datastore.mapping.collection.PersistentSet;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.core.SessionImplementor;
+import org.springframework.datastore.mapping.core.impl.PendingInsert;
+import org.springframework.datastore.mapping.core.impl.PendingInsertAdapter;
+import org.springframework.datastore.mapping.core.impl.PendingUpdateAdapter;
 // TODO: Shouldn't be importing KeyValue here but need to introduce further abstraction
 import org.springframework.datastore.mapping.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.model.*;
@@ -44,6 +47,7 @@ import java.util.*;
  */
 public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPersister{
     protected ClassMapping classMapping;
+    
 
     public NativeEntryEntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
         super(mappingContext, entity, session);
@@ -56,6 +60,12 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
         return classMapping;
     }
 
+    /**
+     * Subclasses should override to optimize away manual property indexing if it is not required
+     * 
+     * @return True if property indexing is required (the default)
+     */
+    protected boolean doesRequirePropertyIndexing() { return true; } 
     @Override
     protected void deleteEntity(PersistentEntity persistentEntity, Object obj) {
         if(obj != null) {
@@ -301,7 +311,8 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
         return true;
     }
 
-    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+	@Override
     protected final Serializable persistEntity(final PersistentEntity persistentEntity, Object obj) {
         ClassMapping cm = persistentEntity.getMapping();
         String family = getEntityFamily();
@@ -439,45 +450,52 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
             // if the identifier is null at this point that means that datastore could not generated an identifer
             // and the identifer is generated only upon insert of the entity
         	boolean b = false;
-            if(k == null) {
-            	k = executeInsert(persistentEntity, entityAccess, null, e);
-            	if(k != null) {
-            		entityAccess.setIdentifier(k);
-            	}
-            	b = true;
-            }
 
             final K updateId = k;
-            final boolean skipInsert = b;
             SessionImplementor si = (SessionImplementor) session;
-            si.getPendingInserts().add(new Runnable() {
-                public void run() {
-                	if(!skipInsert)
-                		executeInsert(persistentEntity, entityAccess, updateId, e);
+            Runnable postOperation = new Runnable() {
+				@Override
+				public void run() {
                     updateOneToManyIndices(e, updateId, oneToManyKeys);
-                    toIndex.put(persistentEntity.getIdentity(), updateId);
-                    updatePropertyIndices(updateId, toIndex, toUnindex);
+                    if(doesRequirePropertyIndexing()) {
+                    	toIndex.put(persistentEntity.getIdentity(), updateId);
+                    	updatePropertyIndices(updateId, toIndex, toUnindex);                    	
+                    }
                     for (OneToMany inverseCollection : inverseCollectionUpdates.keySet()) {
                         final Serializable primaryKey = inverseCollectionUpdates.get(inverseCollection);
                         final NativeEntryEntityPersister inversePersister = (NativeEntryEntityPersister) session.getPersister(inverseCollection.getOwner());
                         final AssociationIndexer associationIndexer = inversePersister.getAssociationIndexer(e, inverseCollection);
                         associationIndexer.index(primaryKey, updateId );
                     }
+
+				}
+            	
+            };
+            si.addPendingInsert(new PendingInsertAdapter<T, K>(persistentEntity, updateId, e, postOperation) {
+                public void run() {
+              		executeInsert(persistentEntity, entityAccess, updateId, e);
                 }
             });
         }
         else {
             SessionImplementor si = (SessionImplementor) session;
             final K updateId = k;
-            si.getPendingUpdates().add(new Runnable() {
-
+            
+            Runnable postOperation = new Runnable() {
+				@Override
+				public void run() {
+				      updateOneToManyIndices(e, updateId, oneToManyKeys);
+				      if(doesRequirePropertyIndexing())
+				    	  updatePropertyIndices(updateId, toIndex, toUnindex);	              
+				}
+            	
+            };            
+            si.addPendingUpdate(new PendingUpdateAdapter<T, K>(persistentEntity, k, e, postOperation) {
                 public void run() {
                     for (EntityInterceptor interceptor : interceptors) {
                             if(!interceptor.beforeUpdate(persistentEntity, entityAccess)) return;
                     }
                     updateEntry(persistentEntity, updateId, e);
-                    updateOneToManyIndices(e, updateId, oneToManyKeys);
-                    updatePropertyIndices(updateId, toIndex, toUnindex);
                 }
             });
         }
