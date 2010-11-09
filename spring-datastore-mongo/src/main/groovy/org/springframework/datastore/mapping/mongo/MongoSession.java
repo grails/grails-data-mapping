@@ -15,10 +15,22 @@
 
 package org.springframework.datastore.mapping.mongo;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+
+import org.springframework.datastore.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.core.impl.PendingInsert;
+import org.springframework.datastore.mapping.core.impl.PendingOperation;
+import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
@@ -41,11 +53,53 @@ public class MongoSession extends AbstractSession<DB> {
 	}
 
 	public boolean isConnected() {
-		// TODO Auto-generated method stub
-		return false;
+		// Mongo driver doesn't have a way to check whether a connection is active so we assume it is
+		return true;
 	}
 
 
+	@Override
+	protected void flushPendingInserts(
+			final Map<PersistentEntity, Collection<PendingInsert>> inserts) {
+		
+		// Optimizes saving multipe entities at once		
+		for (final PersistentEntity entity : inserts.keySet()) {
+			final MongoTemplate template = getMongoTemplate(entity.isRoot() ? entity : entity.getRootEntity());
+			template.execute(new DocumentStoreConnectionCallback<DB, Object>() {
+
+				@Override
+				public Object doInConnection(DB db) throws Exception {
+					final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
+					
+					final Collection<PendingInsert> pendingInserts = inserts.get(entity);
+					List<DBObject> dbObjects = new LinkedList<DBObject>();
+					List<PendingOperation> postOperations = new LinkedList<PendingOperation>();
+					
+					final MongoEntityPersister persister = (MongoEntityPersister) getPersister(entity);
+					
+					for (PendingInsert pendingInsert : pendingInserts) {
+						final EntityAccess entityAccess = pendingInsert.getEntityAccess();
+						if(persister.fireBeforeInsert(entity, entityAccess)) continue;
+						
+						final List<PendingOperation> preOperations = pendingInsert.getPreOperations();
+						for (PendingOperation preOperation : preOperations) {
+							preOperation.run();
+						}
+						
+						dbObjects.add((DBObject) pendingInsert.getNativeEntry());
+						postOperations.addAll(pendingInsert.getCascadeOperations());
+					}
+					
+					
+					collection.insert(dbObjects);
+					for (PendingOperation pendingOperation : postOperations) {
+						pendingOperation.run();
+					}
+					return null;
+				}
+			});
+		}
+	}
 	public DB getNativeInterface() {
 		return ((MongoDatastore)getDatastore()).getMongo().getDB("test");
 	}

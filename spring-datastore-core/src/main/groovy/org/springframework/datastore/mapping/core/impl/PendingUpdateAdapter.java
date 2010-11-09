@@ -15,6 +15,7 @@
 
 package org.springframework.datastore.mapping.core.impl;
 
+import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
 /**
@@ -26,47 +27,18 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
  * @since 1.0
  */
 
-public abstract class PendingUpdateAdapter<E, K> implements PendingUpdate<E, K>{
+public abstract class PendingUpdateAdapter<E, K> extends PendingOperationAdapter<E, K> implements PendingUpdate<E, K>{
 
-	private PersistentEntity entity;
-	private K nativeKey;
-	private E nativeEntry;
-	private Runnable postOperation;
-	
-	public PendingUpdateAdapter(PersistentEntity entity, K nativeKey,
-			E nativeEntry) {
-		super();
-		this.entity = entity;
-		this.nativeKey = nativeKey;
-		this.nativeEntry = nativeEntry;
-	}
-	
-	
-	public PendingUpdateAdapter(PersistentEntity entity, K nativeKey,
-			E nativeEntry, Runnable postOperation) {
-		super();
-		this.entity = entity;
-		this.nativeKey = nativeKey;
-		this.nativeEntry = nativeEntry;
-		this.postOperation = postOperation;
+	private EntityAccess entityAccess;
+
+	public PendingUpdateAdapter(PersistentEntity entity, K nativeKey, E nativeEntry, EntityAccess ea) {
+		super(entity, nativeKey, nativeEntry);
+		this.entityAccess = ea;
 	}
 
-
 	@Override
-	public E getNativeEntry() {
-		return nativeEntry;
-	}
-	@Override
-	public K getNativeKey() {
-		return nativeKey;
-	}
-	@Override
-	public PersistentEntity getEntity() {
-		return entity;
-	}
-	@Override
-	public Runnable getPostOperation() {
-		return postOperation;
+	public EntityAccess getEntityAccess() {
+		return this.entityAccess;
 	}
 	
 	

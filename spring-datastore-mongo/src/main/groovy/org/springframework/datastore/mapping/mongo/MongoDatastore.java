@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.mongodb.*;
+
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.datastore.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.document.mongodb.MongoFactoryBean;
@@ -33,6 +35,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
+import org.springframework.core.convert.converter.*;
 
 /**
  * A Datastore implementation for the Mongo document store
@@ -64,6 +67,19 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 			mappingContext.addMappingContextListener(this);
 
         initializeConverters(mappingContext);
+        mappingContext.getConverterRegistry().addConverter(new Converter<String, ObjectId>() {
+			@Override
+			public ObjectId convert(String source) {
+				return new ObjectId(source);
+			}
+        });
+        mappingContext.getConverterRegistry().addConverter(new Converter<ObjectId, String>() {
+        	@Override
+        	public String convert(ObjectId source) {
+	        	return source.toString();
+        	}
+        });        
+        
 	}
 
 	public MongoDatastore(MappingContext mappingContext) {

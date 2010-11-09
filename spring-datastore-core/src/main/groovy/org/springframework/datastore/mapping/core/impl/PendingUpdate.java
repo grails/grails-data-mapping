@@ -15,7 +15,7 @@
 
 package org.springframework.datastore.mapping.core.impl;
 
-import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.engine.EntityAccess;
 
 /**
  * An update that is pending execution in a flush() operation
@@ -26,13 +26,9 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface PendingUpdate<E, K> extends Runnable{
-	
-	E getNativeEntry();
-	
-	K getNativeKey();
-
-	PersistentEntity getEntity();
-	
-	Runnable getPostOperation();
+public interface PendingUpdate<E, K> extends Runnable, PendingOperation<E, K>{
+	/**
+	 * @return The EntityAccess object for the entity to be inserted
+	 */
+	EntityAccess getEntityAccess(); 
 }

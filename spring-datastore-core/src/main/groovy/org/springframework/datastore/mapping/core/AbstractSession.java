@@ -18,6 +18,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.mapping.core.impl.PendingInsert;
 import org.springframework.datastore.mapping.core.impl.PendingOperation;
+import org.springframework.datastore.mapping.core.impl.PendingOperationExecution;
 import org.springframework.datastore.mapping.core.impl.PendingUpdate;
 import org.springframework.datastore.mapping.engine.*;
 import org.springframework.datastore.mapping.model.MappingContext;
@@ -206,7 +207,9 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
             boolean hasInserts = hasUpdates();
             if(hasInserts) {
                 flushPendingInserts(pendingInserts);
+            	pendingInserts.clear();                
                 flushPendingUpdates(pendingUpdates);
+                pendingUpdates.clear();
                 executePendings(pendingDeletes);
                 executePendings(postFlushOperations);
                 postFlush(hasInserts);
@@ -226,17 +229,8 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
      */
     protected void flushPendingUpdates(Map<PersistentEntity, Collection<PendingUpdate>> updates) {
     	for (Collection<PendingUpdate> pendingUpdates : updates.values()) {
-    		for (PendingUpdate pendingUpdate : pendingUpdates) {
-    			try {
-    				pendingUpdate.run();
-    			} catch (RuntimeException e) {
-    				exceptionOccurred = true;
-    				throw e;
-    			}
-				
-			}
+    		flushPendingOperations(pendingUpdates);
 		}
-		
 	}
 
 	/**
@@ -246,21 +240,24 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
      * 
      * @param inserts The insert operations
      */
-    protected void flushPendingInserts(Map<PersistentEntity, Collection<PendingInsert>> inserts) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	protected void flushPendingInserts(Map<PersistentEntity, Collection<PendingInsert>> inserts) {
     	for (Collection<PendingInsert> pendingInserts : inserts.values()) {
-    		for (PendingInsert pendingInsert : pendingInserts) {
-    			try {
-    				pendingInsert.run();
-    				final Runnable postOperation = pendingInsert.getPostOperation();
-    				if(postOperation != null) {
-    					postOperation.run();
-    				}
-    			} catch (RuntimeException e) {
-    				exceptionOccurred = true;
-    				throw e;
-    			}				
-			}
+    		flushPendingOperations(pendingInserts);
+		}
+	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void flushPendingOperations(
+			Collection pendingInserts) {
+		for (Object o : pendingInserts) {
+			PendingOperation pendingInsert = (PendingOperation) o;
+			try {
+				PendingOperationExecution.executePendingInsert(pendingInsert);
+			} catch (RuntimeException e) {
+				exceptionOccurred = true;
+				throw e;
+			}				
 		}
 	}
 

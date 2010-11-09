@@ -15,20 +15,26 @@
 
 package org.springframework.datastore.mapping.core.impl;
 
-import org.springframework.datastore.mapping.engine.EntityAccess;
-
+import java.util.List;
 
 /**
- * An insert that is pending execution in a flush() operation
- *
- * @param <E> The native entry to persist
+ * Provides a default implementation to execute a pending operation
  * 
  * @author Graeme Rocher
- * @since 1.0
+ *
  */
-public interface PendingInsert<E, K> extends Runnable, PendingOperation<E, K>{
-	/**
-	 * @return The EntityAccess object for the entity to be inserted
-	 */
-	EntityAccess getEntityAccess(); 
+public class PendingOperationExecution {
+	
+	public static void executePendingInsert(PendingOperation pendingInsert) {
+		List<PendingOperation> preOperations = pendingInsert.getPreOperations();
+		for (PendingOperation preOperation : preOperations) {
+			preOperation.run();
+		}
+		pendingInsert.run();
+		List<PendingOperation> cascadeOperations = pendingInsert.getCascadeOperations();
+		for (PendingOperation cascadeOperation : cascadeOperations) {
+			cascadeOperation.run();
+		}
+	}
+
 }

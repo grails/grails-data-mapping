@@ -48,7 +48,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, Object> {
 
-    public static final String MONGO_ID_FIELD = "_id";
+    private static final String NEXT_ID_SUFFIX = ".next_id";
+	public static final String MONGO_ID_FIELD = "_id";
     public static final String MONGO_CLASS_FIELD = "_class";
     private MongoTemplate mongoTemplate;
     private boolean hasNumericalIdentifier = false;
@@ -146,7 +147,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
                 String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
-                DBCollection dbCollection = con.getCollection(collectionName);
+                DBCollection dbCollection = con.getCollection(collectionName + NEXT_ID_SUFFIX);
 
                 // If there is a numeric identifier then we need to rely on optimistic concurrency controls to obtain a unique identifer
                 // sequence. If the identifier is not numeric then we assume BSON ObjectIds.
@@ -182,9 +183,12 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                     return nativeEntry.get(MONGO_ID_FIELD);
                 }
                 else {
-                    dbCollection.insert(nativeEntry);
-                    ObjectId id = (ObjectId) nativeEntry.get(MONGO_ID_FIELD);
-                    return id.toString();
+                	if(ObjectId.class.isAssignableFrom(persistentEntity.getIdentity().getType())) {
+                		return ObjectId.get();
+                	}
+                	else {
+                		return ObjectId.get().toString();
+                	}
                 }
 			}
 		});
@@ -287,10 +291,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
                 DBCollection dbCollection = con.getCollection(collectionName);
-                DBObject idQuery = new BasicDBObject();
-                
-                idQuery.put(MONGO_ID_FIELD, hasNumericalIdentifier ? storeId : new ObjectId(storeId.toString()));
-                dbCollection.update(idQuery, nativeEntry);
+                nativeEntry.put(MONGO_ID_FIELD, storeId);
+                dbCollection.insert(nativeEntry);
 
                 return nativeEntry.get(MONGO_ID_FIELD);
 			}
