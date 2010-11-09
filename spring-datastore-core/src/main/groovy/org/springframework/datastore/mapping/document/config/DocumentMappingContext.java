@@ -15,7 +15,6 @@
 
 package org.springframework.datastore.mapping.document.config;
 
-import org.springframework.datastore.mapping.config.Property;
 import org.springframework.datastore.mapping.model.AbstractMappingContext;
 import org.springframework.datastore.mapping.model.MappingConfigurationStrategy;
 import org.springframework.datastore.mapping.model.MappingContext;
@@ -31,7 +30,7 @@ import org.springframework.datastore.mapping.model.config.GormMappingConfigurati
  */
 public class DocumentMappingContext extends AbstractMappingContext{
     String defaultDatabaseName;
-	MappingFactory<Collection, Property> mappingFactory;
+	MappingFactory<Collection, Attribute> mappingFactory;
 
 	private MappingConfigurationStrategy syntaxStrategy;
 
@@ -53,7 +52,7 @@ public class DocumentMappingContext extends AbstractMappingContext{
 	}
 
 	@Override
-	public MappingFactory<Collection, Property> getMappingFactory() {
+	public MappingFactory<Collection, Attribute> getMappingFactory() {
 		return mappingFactory;
 	}
 

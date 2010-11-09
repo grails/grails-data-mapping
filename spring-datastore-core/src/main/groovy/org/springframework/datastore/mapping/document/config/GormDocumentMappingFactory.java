@@ -3,11 +3,11 @@ package org.springframework.datastore.mapping.document.config;
 import org.springframework.datastore.mapping.config.AbstractGormMappingFactory;
 import org.springframework.datastore.mapping.config.Property;
 
-public class GormDocumentMappingFactory extends AbstractGormMappingFactory<Collection, Property> {
+public class GormDocumentMappingFactory extends AbstractGormMappingFactory<Collection, Attribute> {
 
 	@Override
-	protected Class<Property> getPropertyMappedFormType() {
-		return Property.class;
+	protected Class<Attribute> getPropertyMappedFormType() {
+		return Attribute.class;
 	}
 
 	@Override
