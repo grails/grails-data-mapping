@@ -1,7 +1,7 @@
 package org.grails.datastore.gorm
 
 import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingContext
+import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.springframework.datastore.mapping.gemfire.GemfireDatastore
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.validation.Errors
