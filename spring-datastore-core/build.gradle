@@ -3,6 +3,7 @@ repositories {
 }
 
 dependencies {
+	compile "com.googlecode.concurrentlinkedhashmap:concurrentlinkedhashmap-lru:1.0_jdk5"
     compile "org.springframework:spring-core:3.0.+"
     compile "org.springframework:spring-beans:3.0.+"
     compile "org.springframework:spring-tx:3.0.+"
