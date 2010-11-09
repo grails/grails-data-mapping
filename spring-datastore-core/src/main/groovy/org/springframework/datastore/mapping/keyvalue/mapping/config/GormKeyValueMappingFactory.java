@@ -15,10 +15,9 @@
 package org.springframework.datastore.mapping.keyvalue.mapping.config;
 
 import groovy.lang.Closure;
+
+import org.springframework.datastore.mapping.config.Property;
 import org.springframework.datastore.mapping.config.groovy.MappingConfigurationBuilder;
-import org.springframework.datastore.mapping.keyvalue.mapping.Family;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValue;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingFactory;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.config.GormProperties;

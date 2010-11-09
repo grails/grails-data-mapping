@@ -18,6 +18,7 @@ import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.mapping.collection.PersistentList;
 import org.springframework.datastore.mapping.collection.PersistentSet;
+import org.springframework.datastore.mapping.config.Property;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.core.SessionImplementor;
 import org.springframework.datastore.mapping.core.impl.PendingInsert;
@@ -27,8 +28,6 @@ import org.springframework.datastore.mapping.core.impl.PendingOperationAdapter;
 import org.springframework.datastore.mapping.core.impl.PendingOperationExecution;
 import org.springframework.datastore.mapping.core.impl.PendingUpdate;
 import org.springframework.datastore.mapping.core.impl.PendingUpdateAdapter;
-// TODO: Shouldn't be importing KeyValue here but need to introduce further abstraction
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.model.*;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.model.types.OneToMany;
@@ -245,7 +244,7 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
                     final Serializable associationKey = (Serializable) getMappingContext().getConversionService().convert(tmp, associatedEntity.getIdentity().getType());
                     if(associationKey != null) {
 
-                        PropertyMapping<KeyValue> associationPropertyMapping = prop.getMapping();
+                        PropertyMapping<Property> associationPropertyMapping = prop.getMapping();
                         boolean isLazy = isLazyAssociation(associationPropertyMapping);
 
                         final Class propType = prop.getType();
@@ -261,7 +260,7 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
             }
             else if(prop instanceof OneToMany) {
                 Association association = (Association) prop;
-                PropertyMapping<KeyValue> associationPropertyMapping = association.getMapping();
+                PropertyMapping<Property> associationPropertyMapping = association.getMapping();
 
                 boolean isLazy = isLazyAssociation(associationPropertyMapping);
                 AssociationIndexer indexer = getAssociationIndexer(nativeEntry, association);
@@ -286,10 +285,10 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
     }
 
     protected String getNativePropertyKey(PersistentProperty prop) {
-        PropertyMapping<KeyValue> pm = prop.getMapping();
+        PropertyMapping<Property> pm = prop.getMapping();
         String propKey = null;
         if(pm.getMappedForm()!=null) {
-            propKey = pm.getMappedForm().getKey();
+            propKey = pm.getMappedForm().getTargetName();
         }
         if(propKey == null) {
             propKey = prop.getName();
@@ -307,9 +306,9 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
         return persistentEntity;
     }
 
-    private boolean isLazyAssociation(PropertyMapping<KeyValue> associationPropertyMapping) {
+    private boolean isLazyAssociation(PropertyMapping<Property> associationPropertyMapping) {
         if(associationPropertyMapping != null) {
-            KeyValue kv = associationPropertyMapping.getMappedForm();
+            Property kv = associationPropertyMapping.getMappedForm();
             if(kv.getFetchStrategy() != FetchType.LAZY) {
                 return false;
             }
@@ -375,13 +374,13 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
         final Map<PersistentProperty, Object> toIndex = new HashMap<PersistentProperty, Object>();
         final Map<PersistentProperty, Object> toUnindex = new HashMap<PersistentProperty, Object>();
         for (PersistentProperty prop : props) {
-            PropertyMapping<KeyValue> pm = prop.getMapping();
-            final KeyValue keyValue = pm.getMappedForm();
+            PropertyMapping<Property> pm = prop.getMapping();
+            final Property mappedProperty = pm.getMappedForm();
             String key = null;
-            if(keyValue != null) {
-                key = keyValue.getKey();
+            if(mappedProperty != null) {
+                key = mappedProperty.getTargetName();
             }
-            final boolean indexed = keyValue != null && keyValue.isIndex();
+            final boolean indexed = mappedProperty != null && mappedProperty.isIndex();
             if(key == null) key = prop.getName();
             if(prop instanceof Simple) {
                 Object propValue = entityAccess.getProperty(prop.getName());

@@ -18,7 +18,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingContext;
+import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

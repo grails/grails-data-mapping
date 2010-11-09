@@ -28,7 +28,7 @@ import org.springframework.datastore.document.mongodb.MongoFactoryBean;
 import org.springframework.datastore.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingContext;
+import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.springframework.datastore.mapping.model.DatastoreConfigurationException;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
@@ -85,6 +85,16 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 	public MongoDatastore(MappingContext mappingContext) {
 		this(mappingContext, Collections.<String, String>emptyMap());
 	}
+	
+	/**
+	 * Constructor for creating a MongoDatastore using an existing Mongo instance
+	 * @param mappingContext
+	 * @param mongo
+	 */
+	public MongoDatastore(MappingContext mappingContext, Mongo mongo) {
+		this(mappingContext, Collections.<String, String>emptyMap());
+		this.mongo = mongo;
+	}	
 
 	public MongoTemplate getMongoTemplate(PersistentEntity entity) {
 		return mongoTemplates.get(entity);
