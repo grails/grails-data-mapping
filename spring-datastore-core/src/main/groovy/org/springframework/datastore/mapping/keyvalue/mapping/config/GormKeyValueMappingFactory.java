@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.springframework.datastore.mapping.config.AbstractGormMappingFactory;
 import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.model.PersistentProperty;
 
 /**
  * @author Graeme Rocher
@@ -31,6 +32,24 @@ public class GormKeyValueMappingFactory extends AbstractGormMappingFactory<Famil
 
     public GormKeyValueMappingFactory(String keyspace) {
         this.keyspace = keyspace;
+    }
+    
+    @Override
+    public Family createMappedForm(PersistentEntity entity) {
+    	Family family = super.createMappedForm(entity);
+    	if(family.getKeyspace() == null)
+    		family.setKeyspace(keyspace);
+    	if(family.getFamily() == null) 
+    		family.setFamily(entity.getName());
+		return family;
+    }
+    
+    @Override
+    public KeyValue createMappedForm(PersistentProperty mpp) {
+    	KeyValue kv = super.createMappedForm(mpp);
+    	if(kv.getKey() == null)
+    		kv.setKey(mpp.getName());
+		return kv;
     }
 
 	@Override
