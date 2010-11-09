@@ -366,13 +366,21 @@ public abstract class Query {
      */
     public List list() {
         uniqueResult = false;
-        // flush before query execution in FlushModeType.AUTO
-        if(session.getFlushMode() == FlushModeType.AUTO) {
-            session.flush();
-        }
+        flushBeforeQuery();
 
         return executeQuery(entity, criteria);
     }
+
+
+    /**
+     * Default behavior is the flush the session before a query in the case of FlushModeType.AUTO. Subclasses can override this method to disable that
+     */
+	protected void flushBeforeQuery() {
+		// flush before query execution in FlushModeType.AUTO
+        if(session.getFlushMode() == FlushModeType.AUTO) {
+            session.flush();
+        }
+	}
 
     /**
      * Executes the query returning a single result or null

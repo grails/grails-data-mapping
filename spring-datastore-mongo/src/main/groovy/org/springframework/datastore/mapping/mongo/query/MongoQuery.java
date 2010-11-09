@@ -34,6 +34,7 @@ import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.query.Restrictions;
 import org.springframework.datastore.mapping.query.projections.ManualProjections;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -281,6 +282,14 @@ public class MongoQuery extends Query{
         this.mongoEntityPersister = (MongoEntityPersister) session.getPersister(entity);
     }
 
+    @Override
+    protected void flushBeforeQuery() {    	
+    	// with Mongo we only flush the session if a transaction is not active to allow for session-managed transactions
+    	if(!TransactionSynchronizationManager.isSynchronizationActive()) {
+    		super.flushBeforeQuery();
+    	}    	
+    }
+    
     @Override
     protected List executeQuery(final PersistentEntity entity, final Junction criteria) {
         final MongoTemplate template = mongoSession.getMongoTemplate(entity);
