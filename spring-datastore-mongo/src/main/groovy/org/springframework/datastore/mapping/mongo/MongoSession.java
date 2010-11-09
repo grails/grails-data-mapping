@@ -35,6 +35,7 @@ import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
+import org.springframework.datastore.mapping.transactions.SessionOnlyTransaction;
 import org.springframework.datastore.mapping.transactions.Transaction;
 import org.springframework.transaction.TransactionSystemException;
 
@@ -117,8 +118,8 @@ public class MongoSession extends AbstractSession<DB> {
 	
 
 	@Override
-	protected Transaction beginTransactionInternal() {
-		throw new TransactionSystemException("Transactions are not supported by Mongo. See http://www.mongodb.org/display/DOCS/Atomic+Operations");
+	protected Transaction<DB> beginTransactionInternal() {
+		return new SessionOnlyTransaction<DB>(getNativeInterface(), this);
 	}
 
     public MongoTemplate getMongoTemplate(PersistentEntity entity) {
