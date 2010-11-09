@@ -336,7 +336,7 @@ public class MongoQuery extends Query{
                         List projectedResults = new ArrayList();
                         for (Projection projection : projectionList) {
                             if(projection instanceof CountProjection) {
-                            	// TODO: For some reason the below doesn't return the expected result whilst executing the query and returning the cursor does
+                            	// For some reason the below doesn't return the expected result whilst executing the query and returning the cursor does
                                 //projectedResults.add(collection.getCount(query));
                             	cursor = executeQuery(entity, criteria, collection, query);
                             	projectedResults.add(cursor.size());

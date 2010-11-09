@@ -35,17 +35,6 @@ class GormStaticApi extends AbstractGormApi {
     super(persistentClass,datastore)
   }
 
-  /**
-   * Saves a list of objects in one go
-   * @param objectsToSave The objects to save
-   * 
-   * @return A list of object identifiers
-   */
-  List saveAll(List objectsToSave) {
-	 Session currentSession = datastore.currentSession
-
-	 currentSession.persist objectsToSave 
-  }
   
   /**
    * Saves a list of objects in one go
@@ -207,7 +196,8 @@ class GormStaticApi extends AbstractGormApi {
 
   /**
    * Execute a closure whose first argument is a reference to the current session
-   * @param callable The callable closure
+   * @param callable
+   * 
    * @return The result of the closure
    */
   def withSession(Closure callable) {

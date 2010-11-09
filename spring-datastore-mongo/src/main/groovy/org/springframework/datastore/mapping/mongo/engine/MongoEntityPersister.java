@@ -73,13 +73,6 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 	protected boolean doesRequirePropertyIndexing() {
 		return false;
 	}
-
-	@Override
-	protected List<Serializable> persistEntities(
-			PersistentEntity persistentEntity, Iterable objs) {
-		// TODO Auto-generated method stub
-		return super.persistEntities(persistentEntity, objs);
-	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
