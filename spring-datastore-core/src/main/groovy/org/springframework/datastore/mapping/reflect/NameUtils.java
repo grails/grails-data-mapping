@@ -22,6 +22,16 @@ import java.beans.Introspector;
  */
 public class NameUtils {
 
+    private static final String PROPERTY_SET_PREFIX = "set";
+
+    /**
+     * Retrieves the name of a setter for the specified property name
+     * @param propertyName The property name
+     * @return The setter equivalent
+     */
+    public static String getSetterName(String propertyName) {
+        return PROPERTY_SET_PREFIX+propertyName.substring(0,1).toUpperCase()+ propertyName.substring(1);
+    }
     /**
      * Converts class name to property name using JavaBean decaplization
      *

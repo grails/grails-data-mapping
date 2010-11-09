@@ -12,8 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.datastore.mapping.keyvalue.mapping;
+package org.springframework.datastore.mapping.keyvalue.mapping.config;
 
+import org.springframework.datastore.mapping.config.Property;
 import org.springframework.datastore.mapping.model.MappingFactory;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;

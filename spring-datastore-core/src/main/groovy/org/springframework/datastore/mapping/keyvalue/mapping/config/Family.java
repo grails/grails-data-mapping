@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.datastore.mapping.keyvalue.mapping;
+package org.springframework.datastore.mapping.keyvalue.mapping.config;
 
 /**
  * <p>A Family is a grouping of KeyValue pairs and is typically composed

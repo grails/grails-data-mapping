@@ -12,9 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.datastore.mapping.keyvalue.mapping;
+package org.springframework.datastore.mapping.keyvalue.mapping.config;
 
-import javax.persistence.FetchType;
+
+import org.springframework.datastore.mapping.config.Property;
 
 /**
  * <p>A KeyValue is a used to define the key used for a particular value</p>
@@ -22,47 +23,21 @@ import javax.persistence.FetchType;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class KeyValue {
+public class KeyValue extends Property{
 
     private String key;
-    private boolean index = false;
-    private FetchType fetchStrategy = FetchType.LAZY;
-
     public KeyValue() {
     }
 
     public KeyValue(String key) {
-        this.key = key;
+        setTargetName(key);
     }
 
     public String getKey() {
-        return key;
+        return getTargetName();
     }
 
     public void setKey(String key) {
-        this.key = key;
-    }
-
-    /**
-     * @return Whether this property is index
-     */
-    public boolean isIndex() {
-        return index;
-    }
-
-    /**
-     * Whether this property is index
-     * @param index Sets whether to index the property or not
-     */
-    public void setIndex(boolean index) {
-        this.index = index;
-    }
-
-    public FetchType getFetchStrategy() {
-        return this.fetchStrategy;
-    }
-
-    public void setFetchStrategy(FetchType fetchStrategy) {
-        this.fetchStrategy = fetchStrategy;
+        setTargetName(key);
     }
 }

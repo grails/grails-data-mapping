@@ -28,7 +28,9 @@ import org.springframework.datastore.document.mongodb.MongoFactoryBean;
 import org.springframework.datastore.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
+import org.springframework.datastore.mapping.document.config.Collection;
+import org.springframework.datastore.mapping.document.config.DocumentMappingContext;
+import org.springframework.datastore.mapping.model.ClassMapping;
 import org.springframework.datastore.mapping.model.DatastoreConfigurationException;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
@@ -49,8 +51,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 	private Map<PersistentEntity, MongoTemplate> mongoTemplates = new ConcurrentHashMap<PersistentEntity, MongoTemplate>();
 
 	public MongoDatastore() {
-		// TODO: Use DocumentMappingContext
-		this(new KeyValueMappingContext("test"), Collections.<String, String>emptyMap());
+		this(new DocumentMappingContext("test"), Collections.<String, String>emptyMap());
 	}
 	
 	
@@ -116,8 +117,13 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 	}
 
 	protected void createMongoTemplate(PersistentEntity entity, Mongo mongoInstance) {
-		KeyValueMappingContext kvmc = (KeyValueMappingContext) getMappingContext();
-		MongoTemplate mt = new MongoTemplate(mongoInstance, kvmc.getKeyspace(),entity.getDecapitalizedName());
+		DocumentMappingContext dc = (DocumentMappingContext) getMappingContext();
+		String collectionName = entity.getDecapitalizedName();
+		ClassMapping<Collection> mapping = entity.getMapping();
+		if(mapping.getMappedForm() != null && mapping.getMappedForm().getCollection() != null) {
+			collectionName = mapping.getMappedForm().getCollection();
+		}
+		MongoTemplate mt = new MongoTemplate(mongoInstance, dc.getDefaultDatabaseName(),collectionName);
 		try {
 			mt.afterPropertiesSet();
 		} catch (Exception e) {

@@ -46,7 +46,7 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
 
     public AbstractDatastore(MappingContext mappingContext, Map<String, String> connectionDetails) {
         this.mappingContext = mappingContext;
-        this.connectionDetails = connectionDetails;
+        this.connectionDetails = connectionDetails != null ? connectionDetails : Collections.<String, String>emptyMap();
         addEntityInterceptor(new ValidatingInterceptor());
     }
 

@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.datastore.mapping.keyvalue.mapping;
+package org.springframework.datastore.mapping.keyvalue.mapping.config;
 
 import org.springframework.datastore.mapping.model.*;
 
@@ -20,22 +20,23 @@ import org.springframework.datastore.mapping.model.*;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class KeyValuePersistentEntity<KeyValueMapping> extends AbstractPersistentEntity{
-    public KeyValuePersistentEntity(Class javaClass, MappingContext context) {
+public class KeyValuePersistentEntity extends AbstractPersistentEntity<Family>{
+    public KeyValuePersistentEntity(@SuppressWarnings("rawtypes") Class javaClass, MappingContext context) {
         super(javaClass, context);
     }
 
-    @Override
-    public ClassMapping<KeyValueMapping> getMapping() {
+    @SuppressWarnings("unchecked")
+	@Override
+    public ClassMapping<Family> getMapping() {
         return new KeyValueClassMapping(this, context);
     }
 
-    public class KeyValueClassMapping extends AbstractClassMapping<KeyValueMapping> {
+    public class KeyValueClassMapping extends AbstractClassMapping<Family> {
         public KeyValueClassMapping(PersistentEntity entity, MappingContext context) {
             super(entity, context);
         }
-        public KeyValueMapping getMappedForm() {
-            return (KeyValueMapping) context.getMappingFactory().createMappedForm(KeyValuePersistentEntity.this);
+        public Family getMappedForm() {
+            return (Family) context.getMappingFactory().createMappedForm(KeyValuePersistentEntity.this);
         }
     }
 }
