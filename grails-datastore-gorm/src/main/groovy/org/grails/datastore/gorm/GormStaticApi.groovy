@@ -21,7 +21,7 @@ import grails.gorm.CriteriaBuilder
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.springframework.datastore.mapping.core.AbstractDatastore
 
-import clover.retrotranslator.edu.emory.mathcs.backport.java.util.Arrays;
+
 
 /**
  *  Static methods of the GORM API
