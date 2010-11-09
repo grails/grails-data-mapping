@@ -285,7 +285,7 @@ public class RiakJavaClientTemplate implements RiakTemplate<RiakClient> {
     JavascriptFunction map = JavascriptFunction.anon(mapJs);
     JavascriptFunction reduce = JavascriptFunction.anon(reduceJs);
     if (null != mapJs) {
-      mapred.map(map, false);
+      mapred.map(map, (null != reduceJs ? false : true));
       if (log.isDebugEnabled()) {
         log.debug("Mapping with: " + mapJs);
       }
