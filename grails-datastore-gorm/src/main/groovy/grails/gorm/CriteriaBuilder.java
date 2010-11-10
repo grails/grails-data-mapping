@@ -357,7 +357,6 @@ public class CriteriaBuilder extends GroovyObjectSupport {
     /**
      * Creates an "equals" Criterion based on the specified property name and value.
      * 
-     * @param propertyName The property name
      * @param propertyValue The property value
      *
      * @return A Criterion instance

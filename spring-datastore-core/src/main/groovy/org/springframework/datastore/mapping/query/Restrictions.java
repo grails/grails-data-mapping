@@ -33,7 +33,6 @@ public class Restrictions {
     
     /**
      * Restricts the property to be equal to the given value
-     * @param property The property
      * @param value The value
      * @return An instance of Query.Equals
      */

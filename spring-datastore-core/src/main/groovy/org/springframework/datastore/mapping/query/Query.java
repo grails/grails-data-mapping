@@ -214,7 +214,6 @@ public abstract class Query {
     /**
      * Restricts the results by the given properties value
      *
-     * @param property The name of the property
      * @param value The value to restrict by
      * @return This query instance
      */
@@ -223,7 +222,8 @@ public abstract class Query {
 
         criteria.add(Restrictions.idEq(value));
         return this;
-    }    
+    }
+    
     private Object resolveIdIfEntity(Object value) {
         // use the object id as the value if its a persistent entity
         if(session.getMappingContext().isPersistentEntity(value)) {

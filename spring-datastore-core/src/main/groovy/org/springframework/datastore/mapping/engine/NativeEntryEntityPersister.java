@@ -589,7 +589,7 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
      * Reads an objects identifier using the entity access and ClassMapping instance
      * @param entityAccess
      * @param cm
-     * @return
+     * @return The object identifier
      */
     protected K readObjectIdentifier(EntityAccess entityAccess, ClassMapping cm) {
         return (K) entityAccess.getIdentifier();
@@ -736,7 +736,7 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
      * @param entityAccess
      * @param id
      * @param e
-     * @return
+     * @return The key
      */
     protected K executeInsert(final PersistentEntity persistentEntity,
                                    final NativeEntryModifyingEntityAccess entityAccess, final K id,

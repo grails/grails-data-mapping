@@ -17,7 +17,7 @@ package org.springframework.datastore.mapping.transactions;
 import org.springframework.datastore.mapping.core.Session;
 
 /**
- * <p>An implementation that provides Session only transaction management. Essentially when {@link #rollback() is called
+ * <p>An implementation that provides Session only transaction management. Essentially when {@link #rollback()} is called
  * the {@link Session}'s clear() method is called and when {@link #commit()} is called the flush() method is called.
  * </p>
  * 
