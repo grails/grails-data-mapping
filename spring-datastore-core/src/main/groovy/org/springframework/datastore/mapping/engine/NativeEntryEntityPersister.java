@@ -18,10 +18,16 @@ import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.mapping.collection.PersistentList;
 import org.springframework.datastore.mapping.collection.PersistentSet;
+import org.springframework.datastore.mapping.config.Property;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.core.SessionImplementor;
-// TODO: Shouldn't be importing KeyValue here but need to introduce further abstraction
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValue;
+import org.springframework.datastore.mapping.core.impl.PendingInsert;
+import org.springframework.datastore.mapping.core.impl.PendingInsertAdapter;
+import org.springframework.datastore.mapping.core.impl.PendingOperation;
+import org.springframework.datastore.mapping.core.impl.PendingOperationAdapter;
+import org.springframework.datastore.mapping.core.impl.PendingOperationExecution;
+import org.springframework.datastore.mapping.core.impl.PendingUpdate;
+import org.springframework.datastore.mapping.core.impl.PendingUpdateAdapter;
 import org.springframework.datastore.mapping.model.*;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.model.types.OneToMany;
@@ -44,6 +50,7 @@ import java.util.*;
  */
 public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPersister{
     protected ClassMapping classMapping;
+    
 
     public NativeEntryEntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
         super(mappingContext, entity, session);
@@ -56,6 +63,14 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
         return classMapping;
     }
 
+    /**
+     * Subclasses should override to optimize away manual property indexing if it is not required
+     * 
+     * @return True if property indexing is required (the default)
+     */
+    protected boolean doesRequirePropertyIndexing() { return true; }
+    
+    
     @Override
     protected void deleteEntity(PersistentEntity persistentEntity, Object obj) {
         if(obj != null) {
@@ -180,6 +195,12 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
         return null;
     }
 
+    /**
+     * Subclasses should override to provide any conversion necessary to convert to a nativeKey
+     * 
+     * @param nativeKey The key
+     * @return The native key
+     */
     protected Serializable convertToNativeKey(Serializable nativeKey) {
         return nativeKey;
     }
@@ -223,7 +244,7 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
                     final Serializable associationKey = (Serializable) getMappingContext().getConversionService().convert(tmp, associatedEntity.getIdentity().getType());
                     if(associationKey != null) {
 
-                        PropertyMapping<KeyValue> associationPropertyMapping = prop.getMapping();
+                        PropertyMapping<Property> associationPropertyMapping = prop.getMapping();
                         boolean isLazy = isLazyAssociation(associationPropertyMapping);
 
                         final Class propType = prop.getType();
@@ -239,7 +260,7 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
             }
             else if(prop instanceof OneToMany) {
                 Association association = (Association) prop;
-                PropertyMapping<KeyValue> associationPropertyMapping = association.getMapping();
+                PropertyMapping<Property> associationPropertyMapping = association.getMapping();
 
                 boolean isLazy = isLazyAssociation(associationPropertyMapping);
                 AssociationIndexer indexer = getAssociationIndexer(nativeEntry, association);
@@ -264,10 +285,10 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
     }
 
     protected String getNativePropertyKey(PersistentProperty prop) {
-        PropertyMapping<KeyValue> pm = prop.getMapping();
+        PropertyMapping<Property> pm = prop.getMapping();
         String propKey = null;
         if(pm.getMappedForm()!=null) {
-            propKey = pm.getMappedForm().getKey();
+            propKey = pm.getMappedForm().getTargetName();
         }
         if(propKey == null) {
             propKey = prop.getName();
@@ -285,9 +306,9 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
         return persistentEntity;
     }
 
-    private boolean isLazyAssociation(PropertyMapping<KeyValue> associationPropertyMapping) {
+    private boolean isLazyAssociation(PropertyMapping<Property> associationPropertyMapping) {
         if(associationPropertyMapping != null) {
-            KeyValue kv = associationPropertyMapping.getMappedForm();
+            Property kv = associationPropertyMapping.getMappedForm();
             if(kv.getFetchStrategy() != FetchType.LAZY) {
                 return false;
             }
@@ -295,7 +316,8 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
         return true;
     }
 
-    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+	@Override
     protected final Serializable persistEntity(final PersistentEntity persistentEntity, Object obj) {
         ClassMapping cm = persistentEntity.getMapping();
         String family = getEntityFamily();
@@ -304,17 +326,25 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
         final NativeEntryModifyingEntityAccess entityAccess = (NativeEntryModifyingEntityAccess) createEntityAccess(persistentEntity, obj, tmp );
         K k = readObjectIdentifier(entityAccess, cm);
         boolean isUpdate = k != null;
+        
+        PendingOperation<T, K> pendingOperation;
 
+        SessionImplementor<Object> si = (SessionImplementor<Object>) session;
         if(!isUpdate) {
             tmp = createNewEntry(family);
             k = generateIdentifier(persistentEntity, tmp);
+            
+            pendingOperation = new PendingInsertAdapter<T, K>(persistentEntity, k, tmp, entityAccess) {
+				@Override
+				public void run() {
+					executeInsert(persistentEntity, entityAccess, getNativeKey(), getNativeEntry());					
+				}
+			};
+            
             String id = entityAccess.getIdentifierName();
             entityAccess.setProperty(id, k);
         }
         else {
-            SessionImplementor<Object> si = (SessionImplementor<Object>) session;
-
-
             tmp = (T) si.getCachedEntry(persistentEntity, (Serializable) k);
             if(tmp == null) {
                 tmp = retrieveEntry(persistentEntity, family, (Serializable) k);
@@ -323,6 +353,14 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
                 tmp = createNewEntry(family);
             }
 
+            pendingOperation = new PendingUpdateAdapter<T, K>(persistentEntity, k, tmp, entityAccess) {
+				@Override
+				public void run() {
+                    if(fireBeforeUpdate(persistentEntity, entityAccess)) return;
+                    updateEntry(persistentEntity, getNativeKey(), getNativeEntry());
+
+				}
+			};            
         }
 
         final T e = tmp;
@@ -334,13 +372,13 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
         final Map<PersistentProperty, Object> toIndex = new HashMap<PersistentProperty, Object>();
         final Map<PersistentProperty, Object> toUnindex = new HashMap<PersistentProperty, Object>();
         for (PersistentProperty prop : props) {
-            PropertyMapping<KeyValue> pm = prop.getMapping();
-            final KeyValue keyValue = pm.getMappedForm();
+            PropertyMapping<Property> pm = prop.getMapping();
+            final Property mappedProperty = pm.getMappedForm();
             String key = null;
-            if(keyValue != null) {
-                key = keyValue.getKey();
+            if(mappedProperty != null) {
+                key = mappedProperty.getTargetName();
             }
-            final boolean indexed = keyValue != null && keyValue.isIndex();
+            final boolean indexed = mappedProperty != null && mappedProperty.isIndex();
             if(key == null) key = prop.getName();
             if(prop instanceof Simple) {
                 Object propValue = entityAccess.getProperty(prop.getName());
@@ -360,14 +398,12 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
             else if(prop instanceof OneToMany) {
                 final OneToMany oneToMany = (OneToMany) prop;
 
-                Object propValue = entityAccess.getProperty(oneToMany.getName());
+                final Object propValue = entityAccess.getProperty(oneToMany.getName());
 
                 if(propValue instanceof Collection) {
-                    Collection associatedObjects = (Collection) propValue;
-
+					Collection associatedObjects = (Collection) propValue;
                     List<Serializable> keys = session.persist(associatedObjects);
-
-                    oneToManyKeys.put(oneToMany, keys);
+                    oneToManyKeys.put(oneToMany, keys);							                	
                 }
 
             }
@@ -397,7 +433,7 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
                                 }
 
                                 if(associationId != null) {
-                                    if(indexed) {
+                                    if(indexed && doesRequirePropertyIndexing()) {
                                         toIndex.put(prop, associationId);
                                         if(isUpdate) {
                                             final Object oldValue = getEntryValue(e, key);
@@ -412,6 +448,9 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
                                         if(inverse instanceof OneToMany) {
                                             inverseCollectionUpdates.put((OneToMany) inverse, associationId);
                                         }
+                                        else if(inverse instanceof ToOne) {
+                                        	// TODO: Implement handling of bidirectional one-to-ones with foreign key in parent
+                                        }
                                     }
                                 }
 
@@ -423,6 +462,9 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
                             }
                         }
                     }
+                    else {
+                    	// TODO: Implement hasOne inverse association
+                    }
                 }
 
             }
@@ -433,51 +475,63 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
             // if the identifier is null at this point that means that datastore could not generated an identifer
             // and the identifer is generated only upon insert of the entity
         	boolean b = false;
-            if(k == null) {
-            	k = executeInsert(persistentEntity, entityAccess, null, e);
-            	if(k != null) {
-            		entityAccess.setIdentifier(k);
-            	}
-            	b = true;
-            }
 
             final K updateId = k;
-            final boolean skipInsert = b;
-            SessionImplementor si = (SessionImplementor) session;
-            si.getPendingInserts().add(new Runnable() {
-                public void run() {
-                	if(!skipInsert)
-                		executeInsert(persistentEntity, entityAccess, updateId, e);
+            PendingOperation postOperation = new PendingOperationAdapter<T, K>(persistentEntity, k, e) {
+				@Override
+				public void run() {
                     updateOneToManyIndices(e, updateId, oneToManyKeys);
-                    toIndex.put(persistentEntity.getIdentity(), updateId);
-                    updatePropertyIndices(updateId, toIndex, toUnindex);
+                    if(doesRequirePropertyIndexing()) {
+                    	toIndex.put(persistentEntity.getIdentity(), updateId);
+                    	updatePropertyIndices(updateId, toIndex, toUnindex);                    	
+                    }
                     for (OneToMany inverseCollection : inverseCollectionUpdates.keySet()) {
                         final Serializable primaryKey = inverseCollectionUpdates.get(inverseCollection);
                         final NativeEntryEntityPersister inversePersister = (NativeEntryEntityPersister) session.getPersister(inverseCollection.getOwner());
                         final AssociationIndexer associationIndexer = inversePersister.getAssociationIndexer(e, inverseCollection);
                         associationIndexer.index(primaryKey, updateId );
                     }
-                }
-            });
+
+				}
+            	
+            };
+            pendingOperation.addCascadeOperation(postOperation);
+            
+            
+            // If the key is still at this point we have to execute the pending operation now to get the key
+            if(k == null) {
+            	PendingOperationExecution.executePendingInsert(pendingOperation);
+            }
+            else {
+            	si.addPendingInsert((PendingInsert) pendingOperation);
+            }
         }
         else {
-            SessionImplementor si = (SessionImplementor) session;
             final K updateId = k;
-            si.getPendingUpdates().add(new Runnable() {
-
-                public void run() {
-                    for (EntityInterceptor interceptor : interceptors) {
-                            if(!interceptor.beforeUpdate(persistentEntity, entityAccess)) return;
-                    }
-                    updateEntry(persistentEntity, updateId, e);
-                    updateOneToManyIndices(e, updateId, oneToManyKeys);
-                    updatePropertyIndices(updateId, toIndex, toUnindex);
-                }
-            });
+            
+            PendingOperation postOperation = new PendingOperationAdapter<T, K>(persistentEntity, k, e) {
+				@Override
+				public void run() {
+				      updateOneToManyIndices(e, updateId, oneToManyKeys);
+				      if(doesRequirePropertyIndexing())
+				    	  updatePropertyIndices(updateId, toIndex, toUnindex);	              
+				}
+            	
+            };
+            pendingOperation.addCascadeOperation(postOperation);
+            si.addPendingUpdate((PendingUpdate) pendingOperation);
         }
         return (Serializable) k;
     }
 
+    /**
+     * Subclasses should override to provide id generation. If an identifier is only generated via an insert operation then this
+     * method should return null
+     * 
+     * @param persistentEntity The entity
+     * @param entry The native entry
+     * @return The identifier or null if an identifier is generated only on insert
+     */
     protected abstract K generateIdentifier(PersistentEntity persistentEntity, T entry);
 
     private void updateOneToManyIndices(T nativeEntry, Object identifier, Map<OneToMany, List<Serializable>> oneToManyKeys) {
@@ -531,10 +585,21 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
      */
     public abstract AssociationIndexer getAssociationIndexer(T nativeEntry, Association association);
 
+    /**
+     * Reads an objects identifier using the entity access and ClassMapping instance
+     * @param entityAccess
+     * @param cm
+     * @return The object identifier
+     */
     protected K readObjectIdentifier(EntityAccess entityAccess, ClassMapping cm) {
         return (K) entityAccess.getIdentifier();
     }
 
+    /**
+     * Obtains the identifier name to use. Subclasses can override to provide their own strategy for looking up an identifier name
+     * @param cm The ClassMapping instance
+     * @return The identifier name
+     */
     protected String getIdentifierName(ClassMapping cm) {
         return cm.getIdentifier().getIdentifierName()[0];
     }
@@ -663,18 +728,54 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
      */
     protected abstract void deleteEntries(String family, List<K> keys);
 
+    /**
+     * Executes an insert for the given entity, entity access, identifier and native entry.
+     * Any before interceptors will be triggered 
+     * 
+     * @param persistentEntity
+     * @param entityAccess
+     * @param id
+     * @param e
+     * @return The key
+     */
     protected K executeInsert(final PersistentEntity persistentEntity,
                                    final NativeEntryModifyingEntityAccess entityAccess, final K id,
                                    final T e) {
-		for (EntityInterceptor interceptor : interceptors) {
-		        if(!interceptor.beforeInsert(persistentEntity, entityAccess)) return null;
-		}
+		if(fireBeforeInsert(persistentEntity, entityAccess)) return null;
         final K newId = storeEntry(persistentEntity, id, e);
         entityAccess.setIdentifier(newId);
         return newId;
 	}
 
-    protected class NativeEntryModifyingEntityAccess extends EntityAccess  {
+    /**
+     * Fire the beforeInsert even on an entityAccess object and return true if the operation should be evicted
+     * @param persistentEntity The entity
+     * @param entityAccess The entity access
+     * @return True if the operation should be eviced
+     */
+	public boolean fireBeforeInsert(final PersistentEntity persistentEntity,
+			final EntityAccess entityAccess) {
+		for (EntityInterceptor interceptor : interceptors) {
+		        if(!interceptor.beforeInsert(persistentEntity, entityAccess)) return true;
+		}
+		return false;
+	}
+
+    /**
+     * Fire the beforeUpdate even on an entityAccess object and return true if the operation should be evicted
+     * @param persistentEntity The entity
+     * @param entityAccess The entity access
+     * @return True if the operation should be eviced
+     */	
+    public boolean fireBeforeUpdate(final PersistentEntity persistentEntity,
+			final EntityAccess entityAccess) {
+		for (EntityInterceptor interceptor : interceptors) {
+		    if(!interceptor.beforeUpdate(persistentEntity, entityAccess)) return true;
+		}
+		return false;
+	}
+
+	protected class NativeEntryModifyingEntityAccess extends EntityAccess  {
 
         T nativeEntry;
         public NativeEntryModifyingEntityAccess(PersistentEntity persistentEntity, Object entity) {

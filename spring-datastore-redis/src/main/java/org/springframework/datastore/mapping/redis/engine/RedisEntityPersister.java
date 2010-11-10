@@ -235,7 +235,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
     }
 
     @Override
-    protected void updateEntry(PersistentEntity persistentEntity, Long key, Map nativeEntry) {
+    public void updateEntry(PersistentEntity persistentEntity, Long key, Map nativeEntry) {
         try {
             if(!persistentEntity.isRoot()) {
                 performInsertion(getRootFamily(persistentEntity), key, nativeEntry);
@@ -249,7 +249,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
     }
 
     @Override
-    protected Long storeEntry(PersistentEntity persistentEntity, Long storeId, Map nativeEntry) {
+    public Long storeEntry(PersistentEntity persistentEntity, Long storeId, Map nativeEntry) {
         try {
             if(!persistentEntity.isRoot()) {
                 nativeEntry.put(DISCRIMINATOR, persistentEntity.getDiscriminator());

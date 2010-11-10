@@ -26,9 +26,29 @@ import java.io.Serializable;
  */
 public interface ProxyFactory {
 
+	/**
+	 * Creates a proxy
+	 * 
+	 * @param <T> The type of the proxy to create
+	 * @param session The session instance
+	 * @param type The type of the proxy to create
+	 * @param key The key to proxy
+	 * @return A proxy instance
+	 */
     <T> T createProxy(Session session, Class<T> type, Serializable key);
 
+    /**
+     * Checks whether the specified instance is a proxy
+     * 
+     * @param object The object to check
+     * @return True if it is a proxy
+     */
     boolean isProxy(Object object);
 
+    /**
+     * Obtains the identifier of an object without initializing the proxy if it is one
+     * @param obj The object
+     * @return The identifier
+     */
     Serializable getIdentifier(Object obj);
 }

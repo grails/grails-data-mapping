@@ -14,53 +14,51 @@
  */
 package org.springframework.datastore.mapping.keyvalue.mapping.config;
 
-import groovy.lang.Closure;
-import org.springframework.datastore.mapping.config.groovy.MappingConfigurationBuilder;
-import org.springframework.datastore.mapping.keyvalue.mapping.Family;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValue;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingFactory;
-import org.springframework.datastore.mapping.model.PersistentEntity;
-import org.springframework.datastore.mapping.model.PersistentProperty;
-import org.springframework.datastore.mapping.model.config.GormProperties;
-import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.datastore.mapping.config.AbstractGormMappingFactory;
+import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.model.PersistentProperty;
 
 /**
  * @author Graeme Rocher
  * @since 1.0
  */
-public class GormKeyValueMappingFactory extends KeyValueMappingFactory {
+public class GormKeyValueMappingFactory extends AbstractGormMappingFactory<Family, KeyValue> {
 
     protected Map<PersistentEntity, Map> entityToPropertyMap = new HashMap<PersistentEntity, Map>();
+	private String keyspace;
 
     public GormKeyValueMappingFactory(String keyspace) {
-        super(keyspace);
+        this.keyspace = keyspace;
     }
-
+    
     @Override
     public Family createMappedForm(PersistentEntity entity) {
-        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
-        final Closure value = cpf.getStaticPropertyValue(GormProperties.MAPPING, Closure.class);
-        if(value != null) {
-            Family family = new Family();
-            MappingConfigurationBuilder builder = new MappingConfigurationBuilder(family, KeyValue.class);
-            builder.evaluate(value);
-            entityToPropertyMap.put(entity, builder.getProperties());
-            return family;
-        }
-        else {
-            return super.createMappedForm(entity);
-        }
+    	Family family = super.createMappedForm(entity);
+    	if(family.getKeyspace() == null)
+    		family.setKeyspace(keyspace);
+    	if(family.getFamily() == null) 
+    		family.setFamily(entity.getName());
+		return family;
     }
-
+    
     @Override
     public KeyValue createMappedForm(PersistentProperty mpp) {
-        Map properties = entityToPropertyMap.get(mpp.getOwner());
-        if(properties != null && properties.containsKey(mpp.getName())) {
-            return (KeyValue) properties.get(mpp.getName());
-        }
-        return super.createMappedForm(mpp);
+    	KeyValue kv = super.createMappedForm(mpp);
+    	if(kv.getKey() == null)
+    		kv.setKey(mpp.getName());
+		return kv;
     }
+
+	@Override
+	protected Class<KeyValue> getPropertyMappedFormType() {
+		return KeyValue.class;
+	}
+
+	@Override
+	protected Class<Family> getEntityMappedFormType() {
+		return Family.class;
+	}
 }

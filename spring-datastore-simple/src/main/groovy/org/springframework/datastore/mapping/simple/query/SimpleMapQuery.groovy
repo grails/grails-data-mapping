@@ -19,7 +19,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.simple.SimpleMapSession
 import org.springframework.datastore.mapping.simple.engine.SimpleMapEntityPersister
 import org.springframework.dao.InvalidDataAccessResourceUsageException
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValue
+import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValue;
 import org.springframework.datastore.mapping.model.PersistentProperty
 
 import org.springframework.datastore.mapping.model.types.ToOne

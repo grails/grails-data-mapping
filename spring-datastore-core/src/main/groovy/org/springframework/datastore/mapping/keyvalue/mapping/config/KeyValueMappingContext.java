@@ -12,10 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.datastore.mapping.keyvalue.mapping;
+package org.springframework.datastore.mapping.keyvalue.mapping.config;
 
-import org.springframework.datastore.mapping.keyvalue.mapping.config.AnnotationKeyValueMappingFactory;
-import org.springframework.datastore.mapping.keyvalue.mapping.config.GormKeyValueMappingFactory;
 import org.springframework.datastore.mapping.model.AbstractMappingContext;
 import org.springframework.datastore.mapping.model.MappingConfigurationStrategy;
 import org.springframework.datastore.mapping.model.MappingFactory;
@@ -44,7 +42,7 @@ public class KeyValueMappingContext extends AbstractMappingContext {
     public KeyValueMappingContext(String keyspace) {
         if(keyspace == null) throw new IllegalArgumentException("Argument [keyspace] cannot be null");
         this.keyspace = keyspace;
-        initializeDefualtMappingFactory(keyspace);
+        initializeDefaultMappingFactory(keyspace);
 
 
         if(ClassUtils.isPresent(GROOVY_OBJECT_CLASS, KeyValueMappingContext.class.getClassLoader()))
@@ -62,7 +60,7 @@ public class KeyValueMappingContext extends AbstractMappingContext {
 		return keyspace;
 	}
 
-	protected void initializeDefualtMappingFactory(String keyspace) {
+	protected void initializeDefaultMappingFactory(String keyspace) {
         // TODO: Need to abstract the construction of these to support JPA syntax etc.
         if(ClassUtils.isPresent(GROOVY_OBJECT_CLASS, KeyValueMappingContext.class.getClassLoader()))
             this.mappingFactory = new GormKeyValueMappingFactory(keyspace);
@@ -88,6 +86,7 @@ public class KeyValueMappingContext extends AbstractMappingContext {
 
     @Override
     protected PersistentEntity createPersistentEntity(Class javaClass) {
-        return new KeyValuePersistentEntity(javaClass, this);
+        KeyValuePersistentEntity kvpe = new KeyValuePersistentEntity(javaClass, this);
+		return kvpe;
     }
 }

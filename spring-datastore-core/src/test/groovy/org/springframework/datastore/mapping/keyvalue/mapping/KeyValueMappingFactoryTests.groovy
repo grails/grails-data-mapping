@@ -1,6 +1,10 @@
 package org.springframework.datastore.mapping.keyvalue.mapping
 
 import org.junit.Test
+import org.springframework.datastore.mapping.keyvalue.mapping.config.Family;
+import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValue;
+import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
+import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValuePersistentEntity;
 
 /**
  * @author Graeme Rocher

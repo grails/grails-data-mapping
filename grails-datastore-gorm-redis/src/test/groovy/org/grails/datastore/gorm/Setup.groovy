@@ -8,7 +8,7 @@ import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingContext
+import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.springframework.datastore.mapping.model.MappingContext
 
 /**

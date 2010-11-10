@@ -17,8 +17,8 @@ package org.springframework.datastore.mapping.redis.query;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.datastore.mapping.config.Property;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Identity;
@@ -299,7 +299,7 @@ public class RedisQuery extends Query {
 
     private boolean isIndexed(PersistentProperty property) {
         if(property instanceof Identity) return true;
-        KeyValue kv = (KeyValue) property.getMapping().getMappedForm();
+        Property kv = (Property) property.getMapping().getMappedForm();
         return kv.isIndex();
     }
 

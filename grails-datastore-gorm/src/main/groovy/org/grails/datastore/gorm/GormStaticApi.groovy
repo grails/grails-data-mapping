@@ -15,10 +15,13 @@
 package org.grails.datastore.gorm
 
 import org.springframework.datastore.mapping.core.Datastore
+import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.query.Query
 import grails.gorm.CriteriaBuilder
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.springframework.datastore.mapping.core.AbstractDatastore
+
+
 
 /**
  *  Static methods of the GORM API
@@ -32,6 +35,18 @@ class GormStaticApi extends AbstractGormApi {
     super(persistentClass,datastore)
   }
 
+  
+  /**
+   * Saves a list of objects in one go
+   * @param objectsToSave The objects to save
+   * @return A list of object identifiers
+   */
+  List saveAll(Object...objectsToSave) {
+	  Session currentSession = datastore.currentSession
+	  
+	  currentSession.persist Arrays.asList(objectsToSave)	  
+  }
+  
   /**
    * Creates an instance of this class
    * @return The created instance
@@ -181,7 +196,8 @@ class GormStaticApi extends AbstractGormApi {
 
   /**
    * Execute a closure whose first argument is a reference to the current session
-   * @param callable The callable closure
+   * @param callable
+   * 
    * @return The result of the closure
    */
   def withSession(Closure callable) {

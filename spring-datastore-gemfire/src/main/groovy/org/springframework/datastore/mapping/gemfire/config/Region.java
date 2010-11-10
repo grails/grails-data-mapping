@@ -15,7 +15,8 @@
 package org.springframework.datastore.mapping.gemfire.config;
 
 import com.gemstone.gemfire.cache.*;
-import org.springframework.datastore.mapping.keyvalue.mapping.Family;
+
+import org.springframework.datastore.mapping.keyvalue.mapping.config.Family;
 
 import java.util.List;
 

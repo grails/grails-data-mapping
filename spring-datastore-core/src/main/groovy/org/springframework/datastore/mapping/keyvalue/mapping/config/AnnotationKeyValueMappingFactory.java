@@ -14,18 +14,18 @@
  */
 package org.springframework.datastore.mapping.keyvalue.mapping.config;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.datastore.mapping.annotation.Index;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValue;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingFactory;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.springframework.util.ReflectionUtils;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-
 /**
+ * Uses annotations to configure entity mappies
+ * 
  * @author Graeme Rocher
  * @since 1.1
  */

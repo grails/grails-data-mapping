@@ -14,13 +14,22 @@
  */
 package org.springframework.datastore.mapping.core;
 
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.datastore.mapping.core.impl.PendingInsert;
+import org.springframework.datastore.mapping.core.impl.PendingOperation;
+import org.springframework.datastore.mapping.core.impl.PendingOperationExecution;
+import org.springframework.datastore.mapping.core.impl.PendingUpdate;
 import org.springframework.datastore.mapping.engine.*;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.transactions.Transaction;
 import org.springframework.transaction.NoTransactionException;
+
+import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
+import com.googlecode.concurrentlinkedhashmap.EvictionListener;
+import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap.Builder;
 
 import javax.persistence.FlushModeType;
 import java.io.Serializable;
@@ -37,7 +46,20 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @since 1.0
  */
 public abstract class AbstractSession<N> implements Session, SessionImplementor {
-    protected Map<Class,Persister> persisters = new ConcurrentHashMap<Class,Persister>();
+    private static final EvictionListener<PersistentEntity, Collection<PendingInsert>> EXCEPTION_THROWING_INSERT_LISTENER = new EvictionListener<PersistentEntity, Collection<PendingInsert>>() {																				
+		@Override
+		public void onEviction(PersistentEntity key, Collection<PendingInsert> value) {
+			throw new DataAccessResourceFailureException("Maximum number (5000) of insert operations to flush() exceeded. Flush the session periodically to avoid this error for batch operations.");
+		}
+	};
+    private static final EvictionListener<PersistentEntity, Collection<PendingUpdate>> EXCEPTION_THROWING_UPDATE_LISTENER = new EvictionListener<PersistentEntity, Collection<PendingUpdate>>() {																				
+		@Override
+		public void onEviction(PersistentEntity key, Collection<PendingUpdate> value) {
+			throw new DataAccessResourceFailureException("Maximum number (5000) of update operations to flush() exceeded. Flush the session periodically to avoid this error for batch operations.");
+		}
+	};	
+	
+	protected Map<Class,Persister> persisters = new ConcurrentHashMap<Class,Persister>();
     private MappingContext mappingContext;
     protected List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
     protected ConcurrentLinkedQueue lockedObjects = new ConcurrentLinkedQueue();
@@ -49,8 +71,13 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
 
     protected Map<Object, Map<String, Object>> attributes = new ConcurrentHashMap<Object, Map<String, Object>>();
     protected Map<Object, Serializable> objectToKey = new ConcurrentHashMap<Object, Serializable>();
-    protected Collection<Runnable> pendingInserts = new ConcurrentLinkedQueue<Runnable>();
-    protected Collection<Runnable> pendingUpdates = new ConcurrentLinkedQueue<Runnable>();
+    private Map<PersistentEntity, Collection<PendingInsert>> pendingInserts = new Builder<PersistentEntity, Collection<PendingInsert>>()
+    																		.listener(EXCEPTION_THROWING_INSERT_LISTENER)
+    																		.maximumWeightedCapacity(5000).build();
+    private Map<PersistentEntity, Collection<PendingUpdate>> pendingUpdates = new Builder<PersistentEntity, Collection<PendingUpdate>>()
+    																		.listener(EXCEPTION_THROWING_UPDATE_LISTENER)
+    																		.maximumWeightedCapacity(5000).build();
+    
     protected Collection<Runnable> pendingDeletes = new ConcurrentLinkedQueue<Runnable>();
     protected Collection<Runnable> postFlushOperations = new ConcurrentLinkedQueue<Runnable>();
     private boolean exceptionOccurred;
@@ -69,6 +96,28 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
 
     }
 
+    @Override
+    public void addPendingInsert(PendingInsert insert) {
+    	
+    	Collection<PendingInsert> inserts = pendingInserts.get(insert.getEntity());
+    	if(inserts == null) {
+    		inserts = new ConcurrentLinkedQueue<PendingInsert>();
+    		pendingInserts.put(insert.getEntity(), inserts);
+    	}
+    	
+    	inserts.add(insert);
+    }
+    
+    @Override
+    public void addPendingUpdate(PendingUpdate update) {
+    	Collection<PendingUpdate> inserts = pendingUpdates.get(update.getEntity());
+    	if(inserts == null) {
+    		inserts = new ConcurrentLinkedQueue<PendingUpdate>();
+    		pendingUpdates.put(update.getEntity(), inserts);
+    	}
+    	
+    	inserts.add(update);
+    }
     public Object getCachedEntry(PersistentEntity entity, Serializable key) {
         if(key != null) {
             final Map<Serializable, Object> map = firstLevelEntryCache.get(entity);
@@ -115,11 +164,11 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
         return null;  
     }
 
-    public Collection<Runnable> getPendingInserts() {
+    public Map<PersistentEntity, Collection<PendingInsert>> getPendingInserts() {
         return pendingInserts;
     }
 
-    public Collection<Runnable> getPendingUpdates() {
+    public Map<PersistentEntity, Collection<PendingUpdate>> getPendingUpdates() {
         return pendingUpdates;
     }
 
@@ -157,8 +206,10 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
         if(!exceptionOccurred) {
             boolean hasInserts = hasUpdates();
             if(hasInserts) {
-                executePendings(pendingInserts);
-                executePendings(pendingUpdates);
+                flushPendingInserts(pendingInserts);
+            	pendingInserts.clear();                
+                flushPendingUpdates(pendingUpdates);
+                pendingUpdates.clear();
                 executePendings(pendingDeletes);
                 executePendings(postFlushOperations);
                 postFlush(hasInserts);
@@ -169,7 +220,48 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
         }
     }
 
-    private boolean hasUpdates() {
+    /**
+     * The default implementation of flushPendingUpdates is to iterate over each update operation and execute them one by one.
+     * This may be suboptimal for stores that support batch update operations. Subclasses can override this method to implement
+     * batch update more efficiently
+	 * 
+     * @param updates
+     */
+    protected void flushPendingUpdates(Map<PersistentEntity, Collection<PendingUpdate>> updates) {
+    	for (Collection<PendingUpdate> pendingUpdates : updates.values()) {
+    		flushPendingOperations(pendingUpdates);
+		}
+	}
+
+	/**
+     * The default implementation of flushPendingInserts is to iterate over each insert operations and execute them one by one.
+     * This may be suboptimal for stores that support batch insert operations. Subclasses can override this method to implement
+     * batch insert more efficiently
+     * 
+     * @param inserts The insert operations
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	protected void flushPendingInserts(Map<PersistentEntity, Collection<PendingInsert>> inserts) {
+    	for (Collection<PendingInsert> pendingInserts : inserts.values()) {
+    		flushPendingOperations(pendingInserts);
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void flushPendingOperations(
+			Collection pendingInserts) {
+		for (Object o : pendingInserts) {
+			PendingOperation pendingInsert = (PendingOperation) o;
+			try {
+				PendingOperationExecution.executePendingInsert(pendingInsert);
+			} catch (RuntimeException e) {
+				exceptionOccurred = true;
+				throw e;
+			}				
+		}
+	}
+
+	private boolean hasUpdates() {
         return !pendingInserts.isEmpty() || !pendingUpdates.isEmpty() || !pendingDeletes.isEmpty();
     }
 

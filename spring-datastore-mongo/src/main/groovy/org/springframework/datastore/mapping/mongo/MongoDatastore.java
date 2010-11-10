@@ -20,19 +20,24 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.mongodb.*;
+
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.datastore.document.DocumentStoreConnectionCallback;
-import org.springframework.datastore.document.mongodb.MongoFactoryBean;
-import org.springframework.datastore.document.mongodb.MongoTemplate;
+import org.springframework.data.document.mongodb.MongoTemplate;
+import org.springframework.data.document.mongodb.bean.factory.MongoFactoryBean;
+import org.springframework.data.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingContext;
+import org.springframework.datastore.mapping.document.config.Collection;
+import org.springframework.datastore.mapping.document.config.DocumentMappingContext;
+import org.springframework.datastore.mapping.model.ClassMapping;
 import org.springframework.datastore.mapping.model.DatastoreConfigurationException;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
+import org.springframework.core.convert.converter.*;
 
 /**
  * A Datastore implementation for the Mongo document store
@@ -46,8 +51,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 	private Map<PersistentEntity, MongoTemplate> mongoTemplates = new ConcurrentHashMap<PersistentEntity, MongoTemplate>();
 
 	public MongoDatastore() {
-		// TODO: Use DocumentMappingContext
-		this(new KeyValueMappingContext("test"), Collections.<String, String>emptyMap());
+		this(new DocumentMappingContext("test"), Collections.<String, String>emptyMap());
 	}
 	
 	
@@ -64,11 +68,34 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 			mappingContext.addMappingContextListener(this);
 
         initializeConverters(mappingContext);
+        mappingContext.getConverterRegistry().addConverter(new Converter<String, ObjectId>() {
+			@Override
+			public ObjectId convert(String source) {
+				return new ObjectId(source);
+			}
+        });
+        mappingContext.getConverterRegistry().addConverter(new Converter<ObjectId, String>() {
+        	@Override
+        	public String convert(ObjectId source) {
+	        	return source.toString();
+        	}
+        });        
+        
 	}
 
 	public MongoDatastore(MappingContext mappingContext) {
 		this(mappingContext, Collections.<String, String>emptyMap());
 	}
+	
+	/**
+	 * Constructor for creating a MongoDatastore using an existing Mongo instance
+	 * @param mappingContext
+	 * @param mongo
+	 */
+	public MongoDatastore(MappingContext mappingContext, Mongo mongo) {
+		this(mappingContext, Collections.<String, String>emptyMap());
+		this.mongo = mongo;
+	}	
 
 	public MongoTemplate getMongoTemplate(PersistentEntity entity) {
 		return mongoTemplates.get(entity);
@@ -90,8 +117,13 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 	}
 
 	protected void createMongoTemplate(PersistentEntity entity, Mongo mongoInstance) {
-		KeyValueMappingContext kvmc = (KeyValueMappingContext) getMappingContext();
-		MongoTemplate mt = new MongoTemplate(mongoInstance, kvmc.getKeyspace(),entity.getDecapitalizedName());
+		DocumentMappingContext dc = (DocumentMappingContext) getMappingContext();
+		String collectionName = entity.getDecapitalizedName();
+		ClassMapping<Collection> mapping = entity.getMapping();
+		if(mapping.getMappedForm() != null && mapping.getMappedForm().getCollection() != null) {
+			collectionName = mapping.getMappedForm().getCollection();
+		}
+		MongoTemplate mt = new MongoTemplate(mongoInstance, dc.getDefaultDatabaseName(),collectionName);
 		try {
 			mt.afterPropertiesSet();
 		} catch (Exception e) {

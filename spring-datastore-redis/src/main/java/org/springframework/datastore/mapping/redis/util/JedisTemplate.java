@@ -521,7 +521,12 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public List<String> hmget(final String hashKey, final String... fields) {
         return (List<String>) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
-                return redis.hmget(hashKey, fields);
+                if (pipeline != null) {
+                    pipeline.hmget(hashKey, fields);
+                    return null;
+                } else {
+                    return redis.hmget(hashKey, fields);
+                }            	
             }
         });
 
@@ -534,7 +539,13 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                     transaction.hmset(key, nativeEntry);
                 }
                 else {
-                    redis.hmset(key, nativeEntry);
+                    if (pipeline != null) {
+                    	pipeline.hmset(key, nativeEntry);
+                        return null;
+                    } else {
+                    	redis.hmset(key, nativeEntry);
+                    }                   	
+                    
                 }
 
                 return null;
@@ -810,7 +821,14 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                     return transaction.zadd(key, rank, o.toString()).equals(QUEUED);
                 }
                 else {
-                    return redis.zadd(key, rank, o.toString()) > 0;
+                	if(pipeline != null) {
+                		pipeline.zadd(key, rank, o.toString());
+                		return true;
+                	}
+                	else {
+                		return redis.zadd(key, rank, o.toString()) > 0;
+                	}
+                    
                 }
 
             }

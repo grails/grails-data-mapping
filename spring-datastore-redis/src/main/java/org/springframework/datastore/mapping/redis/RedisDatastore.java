@@ -19,12 +19,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.convert.support.GenericConversionService;
+import org.springframework.datastore.mapping.config.Property;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValue;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingContext;
+import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
@@ -176,7 +176,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
                 final List<PersistentProperty> props = entity.getPersistentProperties();
                 List<PersistentProperty> indexed = new ArrayList<PersistentProperty>();
                 for (PersistentProperty prop : props) {
-                    KeyValue kv = (KeyValue) prop.getMapping().getMappedForm();
+                    Property kv = (Property) prop.getMapping().getMappedForm();
                     if(kv != null && kv.isIndex()) {
                         indexed.add(prop);
                     }

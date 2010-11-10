@@ -1,5 +1,7 @@
 package org.springframework.datastore.mapping.config.groovy
 
+import org.springframework.datastore.mapping.reflect.NameUtils;
+
 /**
  * @author Graeme Rocher
  * @since 1.0
@@ -18,7 +20,9 @@ class MappingConfigurationBuilder {
   def invokeMethod(String name, args) {
     if(args.size()>0) {
 
-      if(target.hasProperty(name)) {
+	  def setterName = NameUtils.getSetterName(name)
+      if(target.respondsTo(setterName)) {
+		  
         target[name] = args.size() == 1 ? args[0] : args
       }
       else {

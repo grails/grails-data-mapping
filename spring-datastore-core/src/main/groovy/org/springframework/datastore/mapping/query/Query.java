@@ -214,7 +214,6 @@ public abstract class Query {
     /**
      * Restricts the results by the given properties value
      *
-     * @param property The name of the property
      * @param value The value to restrict by
      * @return This query instance
      */
@@ -223,7 +222,8 @@ public abstract class Query {
 
         criteria.add(Restrictions.idEq(value));
         return this;
-    }    
+    }
+    
     private Object resolveIdIfEntity(Object value) {
         // use the object id as the value if its a persistent entity
         if(session.getMappingContext().isPersistentEntity(value)) {
@@ -366,13 +366,21 @@ public abstract class Query {
      */
     public List list() {
         uniqueResult = false;
-        // flush before query execution in FlushModeType.AUTO
-        if(session.getFlushMode() == FlushModeType.AUTO) {
-            session.flush();
-        }
+        flushBeforeQuery();
 
         return executeQuery(entity, criteria);
     }
+
+
+    /**
+     * Default behavior is the flush the session before a query in the case of FlushModeType.AUTO. Subclasses can override this method to disable that
+     */
+	protected void flushBeforeQuery() {
+		// flush before query execution in FlushModeType.AUTO
+        if(session.getFlushMode() == FlushModeType.AUTO) {
+            session.flush();
+        }
+	}
 
     /**
      * Executes the query returning a single result or null
@@ -479,11 +487,12 @@ public abstract class Query {
     /**
      * Criterion used to restrict the results based on a list of values
      */
-    public static class In extends Criterion {
+    public static class In extends PropertyCriterion {
         private String name;
         private Collection values = Collections.emptyList();
 
         public In(String name, Collection values) {
+        	super(name, values);
             this.name = name;
             this.values = values;
         }
@@ -539,12 +548,13 @@ public abstract class Query {
     /**
      * Criterion used to restrict the result to be between values (range query)
      */
-    public static class Between extends Criterion {
+    public static class Between extends PropertyCriterion {
         private String property;
         private Object from; 
         private Object to;
 
         public Between(String property, Object from, Object to) {
+        	super(property, from);
             this.property = property;
             this.from = from;
             this.to = to;

@@ -14,12 +14,23 @@
  */
 package org.springframework.datastore.mapping.mongo.engine;
 
-import com.mongodb.*;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Currency;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.bson.types.ObjectId;
-import org.springframework.datastore.document.DocumentStoreConnectionCallback;
-import org.springframework.datastore.document.mongodb.MongoTemplate;
-import org.springframework.datastore.mapping.core.Session;
+import org.springframework.data.document.DocumentStoreConnectionCallback;
+import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
@@ -32,12 +43,13 @@ import org.springframework.datastore.mapping.mongo.MongoSession;
 import org.springframework.datastore.mapping.mongo.query.MongoQuery;
 import org.springframework.datastore.mapping.query.Query;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.mongodb.BasicDBObject;
+import com.mongodb.CommandResult;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.WriteResult;
 
 
 /**
@@ -48,7 +60,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, Object> {
 
-    public static final String MONGO_ID_FIELD = "_id";
+    private static final String NEXT_ID_SUFFIX = ".next_id";
+	public static final String MONGO_ID_FIELD = "_id";
     public static final String MONGO_CLASS_FIELD = "_class";
     private MongoTemplate mongoTemplate;
     private boolean hasNumericalIdentifier = false;
@@ -67,7 +80,41 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 	public Query createQuery() {
         return new MongoQuery((MongoSession) getSession(), getPersistentEntity());
 	}
-
+	
+	@Override
+	protected boolean doesRequirePropertyIndexing() {
+		return false;
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	protected List<Object> retrieveAllEntities(
+			PersistentEntity persistentEntity, Iterable<Serializable> keys) {
+		
+		Query query = session.createQuery(persistentEntity.getJavaClass());
+		
+		if(keys instanceof List)
+			query.in(persistentEntity.getIdentity().getName(), (List)keys);
+		else {
+			List<Serializable> keyList = new ArrayList<Serializable>();
+			for (Serializable key : keys) {
+				keyList.add(key);
+			}
+			query.in(persistentEntity.getIdentity().getName(), keyList);
+		}
+		
+		return query.list();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	protected List<Object> retrieveAllEntities(
+			PersistentEntity persistentEntity, Serializable[] keys) {
+		Query query = session.createQuery(persistentEntity.getJavaClass());
+		query.in(persistentEntity.getIdentity().getName(), Arrays.asList(keys));		
+		return query.list();
+	}
+	
     @Override
     public String getEntityFamily() {
         return mongoTemplate.getDefaultCollectionName();
@@ -77,7 +124,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 	protected void deleteEntry(String family, final Object key) {
 		mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
 			public Object doInConnection(DB con) throws Exception {
-				DBCollection dbCollection = con.getCollection(getCollectionName(getPersistentEntity()));
+				DBCollection dbCollection = getCollection(con);
 				
 				DBObject dbo = new BasicDBObject();
                 if(hasNumericalIdentifier) {
@@ -88,6 +135,11 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 }
 				dbCollection.remove(dbo);
 				return null;
+			}
+
+			protected DBCollection getCollection(DB con) {
+				DBCollection dbCollection = con.getCollection(getCollectionName(getPersistentEntity()));
+				return dbCollection;
 			}
 		});
 	}
@@ -100,7 +152,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
                 String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
-                DBCollection dbCollection = con.getCollection(collectionName);
+                DBCollection dbCollection = con.getCollection(collectionName + NEXT_ID_SUFFIX);
 
                 // If there is a numeric identifier then we need to rely on optimistic concurrency controls to obtain a unique identifer
                 // sequence. If the identifier is not numeric then we assume BSON ObjectIds.
@@ -136,9 +188,16 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                     return nativeEntry.get(MONGO_ID_FIELD);
                 }
                 else {
-                    dbCollection.insert(nativeEntry);
-                    ObjectId id = (ObjectId) nativeEntry.get(MONGO_ID_FIELD);
-                    return id.toString();
+                	ObjectId objectId = ObjectId.get();
+					if(ObjectId.class.isAssignableFrom(persistentEntity.getIdentity().getType())) {
+						nativeEntry.put(MONGO_ID_FIELD, objectId);
+                		return objectId;
+                	}
+                	else {
+                		String stringId = objectId.toString();
+                		nativeEntry.put(MONGO_ID_FIELD, stringId);
+						return stringId;
+                	}
                 }
 			}
 		});
@@ -223,7 +282,13 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                     dbo.put(MONGO_ID_FIELD, key );
                 }
                 else {
-                    dbo.put(MONGO_ID_FIELD, new ObjectId(key.toString()) );
+                	if(key instanceof ObjectId) {
+                		dbo.put(MONGO_ID_FIELD, key);
+                	}
+                	else {
+                		dbo.put(MONGO_ID_FIELD, new ObjectId(key.toString()) );
+                	}
+                    
                 }
 				return dbCollection.findOne(dbo);
 				
@@ -231,6 +296,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 		});
 	}
 
+    
 	@Override
 	protected Object storeEntry(final PersistentEntity persistentEntity,
 			final Object storeId, final DBObject nativeEntry) {
@@ -240,10 +306,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
                 DBCollection dbCollection = con.getCollection(collectionName);
-                DBObject idQuery = new BasicDBObject();
-                
-                idQuery.put(MONGO_ID_FIELD, hasNumericalIdentifier ? storeId : new ObjectId(storeId.toString()));
-                dbCollection.update(idQuery, nativeEntry);
+                nativeEntry.put(MONGO_ID_FIELD, storeId);
+                dbCollection.insert(nativeEntry);
 
                 return nativeEntry.get(MONGO_ID_FIELD);
 			}
@@ -270,7 +334,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @Override
-	protected void updateEntry(final PersistentEntity persistentEntity, final Object key,
+	public void updateEntry(final PersistentEntity persistentEntity, final Object key,
 			final DBObject entry) {
 		mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
 			public Object doInConnection(DB con) throws Exception {

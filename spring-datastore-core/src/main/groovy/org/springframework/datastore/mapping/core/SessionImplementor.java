@@ -14,10 +14,13 @@
  */
 package org.springframework.datastore.mapping.core;
 
+import org.springframework.datastore.mapping.core.impl.PendingInsert;
+import org.springframework.datastore.mapping.core.impl.PendingUpdate;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Methods for the implementation of the {@link Session} interface to implement
@@ -26,9 +29,14 @@ import java.util.Collection;
  * @since 1.0
  */
 public interface SessionImplementor<T> {
-    Collection<Runnable> getPendingInserts();
+	
+	void addPendingInsert(PendingInsert insert);
+	
+	void addPendingUpdate(PendingUpdate update);
+	
+    Map<PersistentEntity, Collection<PendingInsert>> getPendingInserts();
 
-    Collection<Runnable> getPendingUpdates();
+    Map<PersistentEntity, Collection<PendingUpdate>> getPendingUpdates();
 
     Collection<Runnable> getPendingDeletes();
 

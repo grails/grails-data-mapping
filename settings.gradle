@@ -1,5 +1,6 @@
 include "spring-datastore-core",
         "spring-datastore-gemfire",
+        "spring-datastore-mongo",
 /*        "spring-datastore-appengine",*/
         "spring-datastore-redis",
         "spring-datastore-simple",
@@ -10,6 +11,7 @@ include "spring-datastore-core",
         'grails-datastore-gorm-test',
 /*        'grails-plugins:redis',*/
         'grails-datastore-gorm-redis',
+        'grails-datastore-gorm-mongo',
 		'grails-datastore-gorm-gemfire',
         'grails-documentation-redis'
 

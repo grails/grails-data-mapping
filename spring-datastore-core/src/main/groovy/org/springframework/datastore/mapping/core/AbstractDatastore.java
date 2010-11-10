@@ -15,9 +15,9 @@
 package org.springframework.datastore.mapping.core;
 
 import org.springframework.core.convert.converter.ConverterRegistry;
+import org.springframework.datastore.mapping.config.Property;
 import org.springframework.datastore.mapping.engine.EntityInterceptor;
 import org.springframework.datastore.mapping.engine.EntityInterceptorAware;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValue;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.PropertyMapping;
@@ -46,7 +46,7 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
 
     public AbstractDatastore(MappingContext mappingContext, Map<String, String> connectionDetails) {
         this.mappingContext = mappingContext;
-        this.connectionDetails = connectionDetails;
+        this.connectionDetails = connectionDetails != null ? connectionDetails : Collections.<String, String>emptyMap();
         addEntityInterceptor(new ValidatingInterceptor());
     }
 
@@ -140,8 +140,8 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
     }
 
     protected boolean isIndexed(PersistentProperty property) {
-        PropertyMapping<KeyValue> pm = property.getMapping();
-        final KeyValue keyValue = pm.getMappedForm();
+        PropertyMapping<Property> pm = property.getMapping();
+        final Property keyValue = pm.getMappedForm();
         return keyValue != null && keyValue.isIndex();
     }
 }
