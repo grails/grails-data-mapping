@@ -20,6 +20,7 @@ import org.grails.datastore.gorm.GormEnhancer;
 import org.grails.datastore.gorm.GormStaticApi 
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.mongo.MongoDatastore;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.mongodb.DBCollection;
 
@@ -30,6 +31,15 @@ import com.mongodb.DBCollection;
  *
  */
 class MongoGormEnhancer extends GormEnhancer {
+	
+	public MongoGormEnhancer(Datastore datastore,
+			PlatformTransactionManager transactionManager) {
+		super(datastore, transactionManager);	
+	}
+
+	public MongoGormEnhancer(Datastore datastore) {
+		super(datastore);
+	}
 
 	protected GormStaticApi getStaticApi(Class cls) {
 		return new MongoGormStaticApi( cls, datastore )
