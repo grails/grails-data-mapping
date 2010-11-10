@@ -14,7 +14,7 @@ dependencies {
 		  project(":spring-datastore-core")
   testCompile project(":grails-datastore-gorm-test"),project(":grails-datastore-gorm-tck")
 }
-jar.appendix = 'gorm-gemfire'
+jar.appendix = 'gorm-mongo'
 
 sourceSets {
   main {
