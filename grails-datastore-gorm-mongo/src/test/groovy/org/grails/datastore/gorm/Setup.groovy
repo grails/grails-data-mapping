@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm
 
+import org.grails.datastore.gorm.mongo.MongoGormEnhancer 
 import org.springframework.datastore.mapping.core.Session
 
 import org.springframework.datastore.mapping.model.PersistentEntity
@@ -41,7 +42,7 @@ class Setup {
             }
     ] as Validator)
 
-    def enhancer = new GormEnhancer(mongo, new DatastoreTransactionManager(datastore: mongo))
+    def enhancer = new MongoGormEnhancer(mongo, new DatastoreTransactionManager(datastore: mongo))
     enhancer.enhance()
 
     mongo.mappingContext.addMappingContextListener({ e ->

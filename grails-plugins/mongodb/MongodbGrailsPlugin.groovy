@@ -77,26 +77,27 @@ a GORM API onto it
 				replicaSetSeeds = set
 			}
 		}
+		mongoBean(mongo:"getMongo")
 		mongoDatastore(MongoDatastoreFactoryBean) {
-			mongo = ref("mongo")
+			mongo = ref("mongoBean")
 			mappingContext = mongoMappingContext
 		}
 		
         mongoPersistenceInterceptor(DatastorePersistenceContextInterceptor, ref("mongoDatastore"))		
 
         if (manager?.hasGrailsPlugin("controllers")) {
-            datastoreOpenSessionInViewInterceptor(OpenSessionInViewInterceptor) {
-                datastore = ref("springDatastore")
+            mongoOpenSessionInViewInterceptor(OpenSessionInViewInterceptor) {
+                datastore = ref("mongoDatastore")
             }
             if (getSpringConfig().containsBean("controllerHandlerMappings")) {
-                controllerHandlerMappings.interceptors << datastoreOpenSessionInViewInterceptor
+                controllerHandlerMappings.interceptors << mongoOpenSessionInViewInterceptor
             }
             if (getSpringConfig().containsBean("annotationHandlerMapping")) {
                 if (annotationHandlerMapping.interceptors) {
-                    annotationHandlerMapping.interceptors << datastoreOpenSessionInViewInterceptor
+                    annotationHandlerMapping.interceptors << mongoOpenSessionInViewInterceptor
                 }
                 else {
-                    annotationHandlerMapping.interceptors = [datastoreOpenSessionInViewInterceptor]
+                    annotationHandlerMapping.interceptors = [mongoOpenSessionInViewInterceptor]
                 }
             }
         }
@@ -112,11 +113,10 @@ a GORM API onto it
 
    	  def isHibernateInstalled = manager.hasGrailsPlugin("hibernate")
       for(entity in datastore.mappingContext.persistentEntities) {
+        def cls = entity.javaClass	
+        def cpf = ClassPropertyFetcher.forClass(cls)	
         def mappedWith = cpf.getStaticPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY, String)	
         if(isHibernateInstalled) {
-          def cls = entity.javaClass
-          def cpf = ClassPropertyFetcher.forClass(cls)
-
           if(mappedWith == 'mongo') {
             enhancer.enhance(entity)
           }
