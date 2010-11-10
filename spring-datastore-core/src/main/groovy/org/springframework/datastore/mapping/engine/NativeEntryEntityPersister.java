@@ -356,9 +356,7 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
             pendingOperation = new PendingUpdateAdapter<T, K>(persistentEntity, k, tmp, entityAccess) {
 				@Override
 				public void run() {
-                    for (EntityInterceptor interceptor : interceptors) {
-                        if(!interceptor.beforeUpdate(persistentEntity, entityAccess)) return;
-                    }
+                    if(fireBeforeUpdate(persistentEntity, entityAccess)) return;
                     updateEntry(persistentEntity, getNativeKey(), getNativeEntry());
 
 				}
@@ -763,7 +761,21 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
 		return false;
 	}
 
-    protected class NativeEntryModifyingEntityAccess extends EntityAccess  {
+    /**
+     * Fire the beforeUpdate even on an entityAccess object and return true if the operation should be evicted
+     * @param persistentEntity The entity
+     * @param entityAccess The entity access
+     * @return True if the operation should be eviced
+     */	
+    public boolean fireBeforeUpdate(final PersistentEntity persistentEntity,
+			final EntityAccess entityAccess) {
+		for (EntityInterceptor interceptor : interceptors) {
+		    if(!interceptor.beforeUpdate(persistentEntity, entityAccess)) return true;
+		}
+		return false;
+	}
+
+	protected class NativeEntryModifyingEntityAccess extends EntityAccess  {
 
         T nativeEntry;
         public NativeEntryModifyingEntityAccess(PersistentEntity persistentEntity, Object entity) {

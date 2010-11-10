@@ -14,10 +14,22 @@
  */
 package org.springframework.datastore.mapping.redis;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.FlushModeType;
+
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.core.Datastore;
-import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.core.impl.PendingInsert;
+import org.springframework.datastore.mapping.core.impl.PendingOperation;
+import org.springframework.datastore.mapping.core.impl.PendingUpdate;
+import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.LockableEntityPersister;
 import org.springframework.datastore.mapping.engine.NonPersistentTypeException;
 import org.springframework.datastore.mapping.engine.Persister;
@@ -25,19 +37,16 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.redis.collection.RedisSet;
 import org.springframework.datastore.mapping.redis.engine.RedisEntityPersister;
+import org.springframework.datastore.mapping.redis.util.RedisCallback;
 import org.springframework.datastore.mapping.redis.util.RedisTemplate;
 import org.springframework.datastore.mapping.transactions.Transaction;
 import org.springframework.transaction.CannotCreateTransactionException;
-
-import javax.persistence.FlushModeType;
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisSession extends AbstractSession  {
+public class RedisSession extends AbstractSession<RedisTemplate>  {
 
     private RedisTemplate redisTemplate;
 
@@ -49,6 +58,83 @@ public class RedisSession extends AbstractSession  {
     }
 
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	protected void flushPendingInserts(	final Map<PersistentEntity, Collection<PendingInsert>> inserts) {
+		// Optimizes saving multipe entities at once		
+		for (final PersistentEntity entity : inserts.keySet()) {
+			final Collection<PendingInsert> pendingInserts = inserts.get(entity);
+			
+			final List<PendingOperation<RedisEntry, Long>> postOperations = new LinkedList<PendingOperation<RedisEntry, Long>>();
+			
+			final RedisEntityPersister persister = (RedisEntityPersister) getPersister(entity);
+			
+			redisTemplate.pipeline(new RedisCallback<RedisTemplate>() {
+				@Override
+				public Object doInRedis(RedisTemplate redis)
+						throws IOException {
+					for (PendingInsert<RedisEntry, Long> pendingInsert : pendingInserts) {
+						final EntityAccess entityAccess = pendingInsert.getEntityAccess();
+						if(persister.fireBeforeInsert(entity, entityAccess)) continue;
+						
+						List<PendingOperation<RedisEntry, Long>> preOperations = pendingInsert.getPreOperations();
+						for (PendingOperation<RedisEntry, Long> preOperation : preOperations) {
+							preOperation.run();
+						}
+						
+					
+						persister.storeEntry(entity, pendingInsert.getNativeKey(), pendingInsert.getNativeEntry());
+						postOperations.addAll(pendingInsert.getCascadeOperations());
+					}
+					for (PendingOperation<RedisEntry, Long> pendingOperation : postOperations) {
+						pendingOperation.run();
+					}					
+					return null;
+				}
+			});
+		
+		}
+    }
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	protected void flushPendingUpdates(
+			Map<PersistentEntity, Collection<PendingUpdate>> updates) {
+		// Optimizes saving multipe entities at once		
+		for (final PersistentEntity entity : updates.keySet()) {
+			final Collection<PendingUpdate> pendingInserts = updates.get(entity);
+			
+			final List<PendingOperation<RedisEntry, Long>> postOperations = new LinkedList<PendingOperation<RedisEntry, Long>>();
+			
+			final RedisEntityPersister persister = (RedisEntityPersister) getPersister(entity);
+			
+			redisTemplate.pipeline(new RedisCallback<RedisTemplate>() {
+				@Override
+				public Object doInRedis(RedisTemplate redis)
+						throws IOException {
+					for (PendingUpdate<RedisEntry, Long> pendingInsert : pendingInserts) {
+						final EntityAccess entityAccess = pendingInsert.getEntityAccess();
+						if(persister.fireBeforeUpdate(entity, entityAccess)) continue;
+						
+						List<PendingOperation<RedisEntry, Long>> preOperations = pendingInsert.getPreOperations();
+						for (PendingOperation<RedisEntry, Long> preOperation : preOperations) {
+							preOperation.run();
+						}
+						
+					
+						persister.updateEntry(entity, pendingInsert.getNativeKey(), pendingInsert.getNativeEntry());
+						postOperations.addAll(pendingInsert.getCascadeOperations());
+					}
+					for (PendingOperation<RedisEntry, Long> pendingOperation : postOperations) {
+						pendingOperation.run();
+					}					
+					return null;
+				}
+			});
+		
+		}
+	}
+	
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
       PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
@@ -78,7 +164,8 @@ public class RedisSession extends AbstractSession  {
         }
     }
 
-    protected Transaction beginTransactionInternal() {
+    @SuppressWarnings("rawtypes")
+	protected Transaction<RedisTemplate> beginTransactionInternal() {
         try {
             redisTemplate.multi();
         } catch (Exception e) {
