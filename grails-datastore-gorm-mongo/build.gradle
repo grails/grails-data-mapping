@@ -1,4 +1,7 @@
 dependencies {
+  compile("com.gmongo:gmongo:0.5.1") {
+  		transitive = false
+  }
   compile project(":grails-datastore-gorm"),
 		  project(":spring-datastore-mongo"),
 		  project(":spring-datastore-core")
