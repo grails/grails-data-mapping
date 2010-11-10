@@ -1,6 +1,6 @@
 package org.grails.datastore.gorm.mongo
 
-import org.springframework.datastore.document.mongodb.MongoTemplate;
+import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.document.config.Attribute;
 import org.springframework.datastore.mapping.document.config.Collection;
 import org.springframework.datastore.mapping.document.config.DocumentPersistentEntity;
