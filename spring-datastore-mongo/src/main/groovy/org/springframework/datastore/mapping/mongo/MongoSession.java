@@ -24,8 +24,8 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 
-import org.springframework.datastore.document.DocumentStoreConnectionCallback;
-import org.springframework.datastore.document.mongodb.MongoTemplate;
+import org.springframework.data.document.mongodb.MongoTemplate;
+import org.springframework.data.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.core.impl.PendingInsert;

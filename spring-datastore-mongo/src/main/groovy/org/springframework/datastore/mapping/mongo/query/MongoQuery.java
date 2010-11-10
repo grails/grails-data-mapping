@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
-import org.springframework.datastore.document.DocumentStoreConnectionCallback;
-import org.springframework.datastore.document.mongodb.MongoTemplate;
+import org.springframework.data.document.mongodb.MongoTemplate;
+import org.springframework.data.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;

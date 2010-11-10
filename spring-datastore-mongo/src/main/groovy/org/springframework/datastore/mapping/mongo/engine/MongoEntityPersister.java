@@ -14,12 +14,23 @@
  */
 package org.springframework.datastore.mapping.mongo.engine;
 
-import com.mongodb.*;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Currency;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.bson.types.ObjectId;
-import org.springframework.datastore.document.DocumentStoreConnectionCallback;
-import org.springframework.datastore.document.mongodb.MongoTemplate;
-import org.springframework.datastore.mapping.core.Session;
+import org.springframework.data.document.DocumentStoreConnectionCallback;
+import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
@@ -32,12 +43,13 @@ import org.springframework.datastore.mapping.mongo.MongoSession;
 import org.springframework.datastore.mapping.mongo.query.MongoQuery;
 import org.springframework.datastore.mapping.query.Query;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.mongodb.BasicDBObject;
+import com.mongodb.CommandResult;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.WriteResult;
 
 
 /**
@@ -176,11 +188,15 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                     return nativeEntry.get(MONGO_ID_FIELD);
                 }
                 else {
-                	if(ObjectId.class.isAssignableFrom(persistentEntity.getIdentity().getType())) {
-                		return ObjectId.get();
+                	ObjectId objectId = ObjectId.get();
+					if(ObjectId.class.isAssignableFrom(persistentEntity.getIdentity().getType())) {
+						nativeEntry.put(MONGO_ID_FIELD, objectId);
+                		return objectId;
                 	}
                 	else {
-                		return ObjectId.get().toString();
+                		String stringId = objectId.toString();
+                		nativeEntry.put(MONGO_ID_FIELD, stringId);
+						return stringId;
                 	}
                 }
 			}
@@ -266,7 +282,13 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                     dbo.put(MONGO_ID_FIELD, key );
                 }
                 else {
-                    dbo.put(MONGO_ID_FIELD, new ObjectId(key.toString()) );
+                	if(key instanceof ObjectId) {
+                		dbo.put(MONGO_ID_FIELD, key);
+                	}
+                	else {
+                		dbo.put(MONGO_ID_FIELD, new ObjectId(key.toString()) );
+                	}
+                    
                 }
 				return dbCollection.findOne(dbo);
 				

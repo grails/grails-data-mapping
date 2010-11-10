@@ -23,9 +23,9 @@ import com.mongodb.*;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.datastore.document.DocumentStoreConnectionCallback;
-import org.springframework.datastore.document.mongodb.MongoFactoryBean;
-import org.springframework.datastore.document.mongodb.MongoTemplate;
+import org.springframework.data.document.mongodb.MongoTemplate;
+import org.springframework.data.document.mongodb.bean.factory.MongoFactoryBean;
+import org.springframework.data.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.document.config.Collection;
