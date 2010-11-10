@@ -30,6 +30,7 @@ import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.core.impl.PendingInsert;
 import org.springframework.datastore.mapping.core.impl.PendingOperation;
+import org.springframework.datastore.mapping.document.config.DocumentMappingContext;
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.model.MappingContext;
@@ -48,14 +49,29 @@ import org.springframework.transaction.TransactionSystemException;
 public class MongoSession extends AbstractSession<DB> {
 
 	MongoDatastore mongoDatastore;
+	private boolean connected = true;
+	
+	
 	public MongoSession(MongoDatastore datastore, MappingContext mappingContext) {
 		super(datastore, mappingContext);
 		this.mongoDatastore = datastore;
+		getNativeInterface().requestStart();
 	}
 
+	@Override
+	public void disconnect() {	
+		super.disconnect();
+		try {
+			getNativeInterface().requestDone();
+		}
+		finally {
+			connected = false;
+		}
+		
+	}
+	
 	public boolean isConnected() {
-		// Mongo driver doesn't have a way to check whether a connection is active so we assume it is
-		return true;
+		return connected;
 	}
 
 
@@ -102,7 +118,11 @@ public class MongoSession extends AbstractSession<DB> {
 		}
 	}
 	public DB getNativeInterface() {
-		return ((MongoDatastore)getDatastore()).getMongo().getDB("test");
+		return ((MongoDatastore)getDatastore()).getMongo().getDB(getDocumentMappingContext().getDefaultDatabaseName());
+	}
+	
+	public DocumentMappingContext getDocumentMappingContext() {
+		return (DocumentMappingContext) getMappingContext();		
 	}
 
 	@Override
