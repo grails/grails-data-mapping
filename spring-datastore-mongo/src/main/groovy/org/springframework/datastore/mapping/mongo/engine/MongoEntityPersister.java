@@ -133,7 +133,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 else {
                     dbo.put(MONGO_ID_FIELD, new ObjectId(key.toString()));
                 }
-				dbCollection.remove(dbo);
+                MongoSession mongoSession = (MongoSession) session;
+				dbCollection.remove(dbo, mongoSession.getWriteConcern());
 				return null;
 			}
 
@@ -347,7 +348,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 else {
                     dbo.put(MONGO_ID_FIELD, new ObjectId(key.toString()));
                 }
-				dbCollection.update(dbo, entry);
+                MongoSession mongoSession = (MongoSession) session;
+				dbCollection.update(dbo, entry, false, false, mongoSession.getWriteConcern());
 				return null;
 			}
 		});

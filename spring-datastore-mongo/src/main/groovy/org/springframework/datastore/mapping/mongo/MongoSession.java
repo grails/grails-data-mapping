@@ -23,6 +23,7 @@ import java.util.Map;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.WriteConcern;
 
 import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.data.document.DocumentStoreConnectionCallback;
@@ -50,12 +51,23 @@ public class MongoSession extends AbstractSession<DB> {
 
 	MongoDatastore mongoDatastore;
 	private boolean connected = true;
+	private WriteConcern writeConcern = WriteConcern.NORMAL;
 	
 	
 	public MongoSession(MongoDatastore datastore, MappingContext mappingContext) {
 		super(datastore, mappingContext);
 		this.mongoDatastore = datastore;
 		getNativeInterface().requestStart();
+	}
+	
+	
+
+	public void setWriteConcern(WriteConcern writeConcern) {
+		this.writeConcern = writeConcern;
+	}
+	
+	public WriteConcern getWriteConcern() {
+		return writeConcern;
 	}
 
 	@Override
@@ -108,7 +120,7 @@ public class MongoSession extends AbstractSession<DB> {
 					}
 					
 					
-					collection.insert(dbObjects);
+					collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]), writeConcern);
 					for (PendingOperation pendingOperation : postOperations) {
 						pendingOperation.run();
 					}
