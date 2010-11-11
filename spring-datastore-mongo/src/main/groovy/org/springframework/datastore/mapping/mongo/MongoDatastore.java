@@ -206,8 +206,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 		
 		if(mongoCollection != null) {	
 			final WriteConcern writeConcern = mongoCollection.getWriteConcern();
-			final String shardPropertyName = mongoCollection.getShard();
-			if(writeConcern != null || shardPropertyName != null) {
+			if(writeConcern != null) {
 				mt.executeInSession(new DBCallback<Object>() {
 					@Override
 					public Object doInDB(DB db) throws MongoException,
@@ -217,14 +216,6 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 							DBCollection collection = db.getCollection(mt.getDefaultCollectionName());
 							collection.setWriteConcern(writeConcern);							
 						}						
-						if(shardPropertyName != null) {
-						
-							db.command(new BasicDBObject("enablesharding", db.getName()));
-							final BasicDBObject shardCollectionCommand = new BasicDBObject("shardcollection", mt.getDefaultCollectionName());
-							shardCollectionCommand.put("key", shardPropertyName);
-							
-							db.command(shardCollectionCommand);
-						}
 						return null;
 					}
 				});				

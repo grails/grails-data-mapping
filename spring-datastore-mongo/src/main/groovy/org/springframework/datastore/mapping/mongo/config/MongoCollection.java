@@ -28,23 +28,9 @@ import com.mongodb.WriteConcern;
  */
 public class MongoCollection extends Collection {
 
-	private String shard;
 	private String database;
 	private WriteConcern writeConcern;
 	
-	/**
-	 * @return The name of the property to shard by
-	 */
-	public String getShard() {
-		return shard;
-	}
-	/**
-	 * The name of the property to shard by
-	 * @param shard The name of the property to shard by
-	 */
-	public void setShard(String shard) {
-		this.shard = shard;
-	}
 	/**
 	 * The database to use
 	 * 
