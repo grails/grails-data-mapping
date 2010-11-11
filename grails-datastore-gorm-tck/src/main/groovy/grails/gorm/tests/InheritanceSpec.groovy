@@ -99,4 +99,7 @@ class City extends Location {
 
 class Country extends Location {
   Integer population
+  
+  static hasMany = [residents:Person]
+  Set residents
 }
