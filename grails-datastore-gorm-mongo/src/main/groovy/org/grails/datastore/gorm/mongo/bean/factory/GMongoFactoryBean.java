@@ -42,6 +42,7 @@ import com.mongodb.ServerAddress;
 public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean, 
 	PersistenceExceptionTranslator {
 
+	
 
 	/**
 	 * Logger, available to subclasses.
@@ -95,45 +96,26 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean,
 		// in an application context
 		if (mongo == null) {
 			
-			
-			if (host == null) {
-				logger.warn("Property host not specified. Using default configuration");
-				mongo =  new GMongo();
+			ServerAddress defaultOptions = new ServerAddress();
+			if(mongoOptions == null) mongoOptions = new MongoOptions();
+			if(replicaPair != null) {
+				if(replicaPair.size() < 2) {
+					throw new DatastoreConfigurationException("A replica pair must have two server entries");							
+				}
+				mongo = new GMongo(replicaPair.get(0), replicaPair.get(1), mongoOptions);
+			}
+			else if(replicaSetSeeds != null) {
+				initialiseReplicaSets(mongoOptions);
 			}
 			else {
-				if(mongoOptions != null) {
-					if(replicaPair != null) {
-						if(replicaPair.size() < 2) {
-							throw new DatastoreConfigurationException("A replica pair must have two server entries");							
-						}
-						mongo = new GMongo(replicaPair.get(0), replicaPair.get(1));
-					}
-					if(replicaSetSeeds != null) {
-
-						initialiseReplicaSets(mongoOptions);
-					}
-					else {
-						String mongoHost = host != null ? host : "localhost";
-						if(port != null) {
-							mongo = new GMongo(new ServerAddress(mongoHost, port), mongoOptions);
-						}
-						else {
-							mongo = new GMongo(mongoHost, mongoOptions);
-						}						
-					}					
+				String mongoHost = host != null ? host : defaultOptions.getHost();
+				if(port != null) {
+					mongo = new GMongo(new ServerAddress(mongoHost, port), mongoOptions);
 				}
 				else {
-					if(replicaSetSeeds != null) {
-						initialiseReplicaSets(new MongoOptions());
-					}
-					else if (port == null) {
-						mongo = new GMongo(host);
-					}
-					else {
-						mongo = new GMongo(host, port);					
-					}
-				}
-			}
+					mongo = new GMongo(mongoHost, mongoOptions);
+				}						
+			}					
 		}
 	}
 

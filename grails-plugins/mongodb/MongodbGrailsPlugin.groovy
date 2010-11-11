@@ -50,28 +50,43 @@ a GORM API onto it
           datastore = ref("mongoDatastore")
         }
 
+		def databaseName = mongoConfig?.databaseName ?: application.metadata.getApplicationName()	
 		mongoMappingContext(MongoMappingContextFactoryBean) {
-		  defaultDatabaseName = mongoConfig?.databaseName ?: application.metadata.getApplicationName()	
+		  defaultDatabaseName = databaseName
           grailsApplication = ref('grailsApplication')
           pluginManager = ref('pluginManager')
         }
 
 		mongoOptions(MongoOptionsFactoryBean) {
 			if(mongoConfig?.options) {
-				for(option in mongoConfig?.options) {
-					delegate."${option.key}" = option.value
+				for(option in mongoConfig.remove("options")) {
+					setProperty(option.key, option.value)
 				}
 			}
 		}
 		mongo(GMongoFactoryBean) {
 			mongoOptions = mongoOptions
-			if(mongoConfig?.host) host = mongoConfig?.host
-			if(mongoConfig?.port) host = mongoConfig?.port	
-			if(mongoConfig?.replicaPair) {
-				def piar = []
-				populateServers(pair, mongoConfig?.replicaPair.servers)
+			def mongoHost = mongoConfig?.remove("host")
+			if(mongoHost) {
+				host = mongoHost
+				def mongoPort = mongoConfig?.remove("port")
+				if(mongoPort) port = mongoPort			
+			} 
+			else if(mongoConfig?.replicaPair) {
+				def pair = []
+				for(server in mongoConfig.remove("replicaPair")) {
+						pair << new com.mongodb.DBAddress(server.indexOf("/")>0 ? server : "$server/$databaseName")
+				}
 				replicaPair = pair
-			}		
+			}	
+			else if(mongoConfig?.replicaSet) {
+				def set = []
+				for(server in mongoConfig.remove("replicaSet")) {
+						set << new com.mongodb.DBAddress(server.indexOf("/")>0 ? server : "$server/$databaseName")
+				}
+				
+				replicaSetSeeds = set				
+			}	
  		}
 		mongoBean(mongo:"getMongo")
 		mongoDatastore(MongoDatastoreFactoryBean) {
@@ -99,13 +114,6 @@ a GORM API onto it
             }
         }
     }
-
-	private static ServerAddress DEFAULT_OPTIONS = new ServerAddress()
-	private populateServers(set, servers) {
-		for(server in servers) {
-				set << new com.mongodb.ServerAddress(server.key, server.value ?: DEFAULT_OPTIONS.port)
-		}		
-	}
 
     def doWithDynamicMethods = { ctx ->
       Datastore datastore = ctx.getBean(Datastore)
