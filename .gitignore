@@ -3,6 +3,11 @@
 build
 .gradle
 grails-plugins/redis/target
+grails-plugins/mongodb/target
+grails-plugins/mongodb/web-app
+grails-plugins/checkout
 grails-plugins/redis/web-app
+eclipse-workspace/
+Servers/
 out
 stacktrace.log
