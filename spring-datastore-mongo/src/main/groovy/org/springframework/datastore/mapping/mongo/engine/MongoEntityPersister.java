@@ -365,44 +365,61 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     private class MongoAssociationIndexer implements AssociationIndexer {
         private DBObject nativeEntry;
-        private Association assocation;
+        private Association association;
         private MongoSession session;
 
         public MongoAssociationIndexer(DBObject nativeEntry, Association association, MongoSession session) {
             this.nativeEntry = nativeEntry;
-            this.assocation = association;
+            this.association = association;
             this.session = session;
 
         }
 
         public void index(final Object primaryKey, List foreignKeys) {
-            nativeEntry.put(assocation.getName(), foreignKeys);
-            mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
+        	// if the association is a unidirecitonal one-to-many we stores the keys
+        	// embedded in the owning entity, otherwise we use a foreign key
+        	if(!association.isBidirectional()) {
+                nativeEntry.put(association.getName(), foreignKeys);
+                mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
 
-                public Object doInConnection(DB db) throws Exception {
-                    final DBCollection collection = db.getCollection(getCollectionName(assocation.getOwner()));
-                    DBObject query = new BasicDBObject(MONGO_ID_FIELD, primaryKey);
-                    collection.update(query, nativeEntry);
-                    return null;
-                }
-            });
+                    public Object doInConnection(DB db) throws Exception {
+                        final DBCollection collection = db.getCollection(getCollectionName(association.getOwner()));
+                        DBObject query = new BasicDBObject(MONGO_ID_FIELD, primaryKey);
+                        collection.update(query, nativeEntry);
+                        return null;
+                    }
+                });        		
+        	}
+
         }
 
         public List query(Object primaryKey) {
-            final Object indexed = nativeEntry.get(assocation.getName());
-            if(indexed instanceof Collection) {
-                if(indexed instanceof List) return (List) indexed;
-                else {
-                    return new ArrayList((Collection)indexed);
+        	// for a unidirectional one-to-many we use the embedded keys
+        	if(!association.isBidirectional()) {
+                final Object indexed = nativeEntry.get(association.getName());
+                if(indexed instanceof Collection) {
+                    if(indexed instanceof List) return (List) indexed;
+                    else {
+                        return new ArrayList((Collection)indexed);
+                    }
                 }
-            }
-            else {
-                return Collections.emptyList();
-            }
+                else {
+                    return Collections.emptyList();
+                }        		
+        	}
+        	else {
+        		// for a bidirectional one-to-many we use the foreign key to query the inverse side of the association        		
+        		Association inverseSide = association.getInverseSide();
+        		Query query = session.createQuery(association.getAssociatedEntity().getJavaClass());
+        		query.eq(inverseSide.getName(), primaryKey);
+        		query.projections().id();
+        		return query.list();
+        	}
+
         }
 
         public PersistentEntity getIndexedEntity() {
-            return assocation.getAssociatedEntity();
+            return association.getAssociatedEntity();
         }
 
         public void index(Object primaryKey, Object foreignKey) {
