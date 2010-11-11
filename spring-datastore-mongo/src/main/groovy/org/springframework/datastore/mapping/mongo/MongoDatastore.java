@@ -36,6 +36,7 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
 import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.mongo.config.MongoMappingContext;
 import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.springframework.core.convert.converter.*;
 
@@ -51,7 +52,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 	private Map<PersistentEntity, MongoTemplate> mongoTemplates = new ConcurrentHashMap<PersistentEntity, MongoTemplate>();
 
 	public MongoDatastore() {
-		this(new DocumentMappingContext("test"), Collections.<String, String>emptyMap());
+		this(new MongoMappingContext("test"), Collections.<String, String>emptyMap());
 	}
 	
 	
@@ -60,7 +61,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 		return mongo;
 	}
 
-	public MongoDatastore(MappingContext mappingContext,
+	public MongoDatastore(MongoMappingContext mappingContext,
 			Map<String, String> connectionDetails) {
 		super(mappingContext, connectionDetails);
 		
@@ -83,7 +84,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         
 	}
 
-	public MongoDatastore(MappingContext mappingContext) {
+	public MongoDatastore(MongoMappingContext mappingContext) {
 		this(mappingContext, Collections.<String, String>emptyMap());
 	}
 	
@@ -92,7 +93,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 	 * @param mappingContext
 	 * @param mongo
 	 */
-	public MongoDatastore(MappingContext mappingContext, Mongo mongo) {
+	public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo) {
 		this(mappingContext, Collections.<String, String>emptyMap());
 		this.mongo = mongo;
 	}	

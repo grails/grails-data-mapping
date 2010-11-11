@@ -2,10 +2,12 @@ package org.grails.datastore.gorm.mongo
 
 import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.document.config.Attribute;
-import org.springframework.datastore.mapping.document.config.Collection;
 import org.springframework.datastore.mapping.document.config.DocumentPersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.mongo.MongoSession;
+import org.springframework.datastore.mapping.mongo.config.MongoCollection 
+
+import com.mongodb.WriteConcern;
 
 import grails.gorm.tests.GormDatastoreSpec;
 
@@ -22,11 +24,14 @@ class MongoEntityConfigSpec extends GormDatastoreSpec{
 			entity instanceof DocumentPersistentEntity
 			
 		when:	
-			Collection coll = entity.mapping.mappedForm
+			MongoCollection coll = entity.mapping.mappedForm
 			Attribute attr = entity.getPropertyByName("name").getMapping().getMappedForm()
 		then:
 			coll != null
 			coll.collection == 'mycollection'
+			coll.database = "mydb"
+			coll.shard == "name"
+			coll.writeConcern == WriteConcern.FSYNC_SAFE
 			attr != null
 			attr.index == true
 			attr.targetName == 'myattribute'
@@ -50,7 +55,9 @@ class MyMongoEntity {
 	
 	static mapping = {
 		collection "mycollection"
-		
+		database "mydb"
+		shard "name"
+		writeConcern WriteConcern.FSYNC_SAFE
 		name index:true, attr:"myattribute"
 	}
 }

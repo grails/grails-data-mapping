@@ -38,8 +38,12 @@ public class DocumentMappingContext extends AbstractMappingContext{
 		super();
         if(defaultDatabaseName == null) throw new IllegalArgumentException("Argument [defaultDatabaseName] cannot be null");
 		this.defaultDatabaseName = defaultDatabaseName;
-		this.mappingFactory = new GormDocumentMappingFactory();
+		this.mappingFactory = createDocumentMappingFactory();
 		this.syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
+	}
+
+	protected MappingFactory createDocumentMappingFactory() {
+		return new GormDocumentMappingFactory();
 	}
 	
 	public String getDefaultDatabaseName() {
