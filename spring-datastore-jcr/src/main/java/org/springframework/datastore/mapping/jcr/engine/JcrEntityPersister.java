@@ -19,8 +19,10 @@ import javax.jcr.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.List;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.*;
 
 
 /**
@@ -161,7 +163,8 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                 public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
                     try {
                         return session.getNodeByUUID(getString(key));
-                    } catch (ItemNotFoundException ex) { // Always throw ItemNotFoundException when the requested Node doesn't exist
+                    } catch (ItemNotFoundException ex) {
+                        //Force to return null when ItemNotFoundException occurred
                         return null;
                     }
                 }
@@ -171,6 +174,10 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
 
     private String getString(Object key) {
         return typeConverter.convertIfNecessary(key, String.class);
+    }
+
+    private Long getLong(Object value){
+        return typeConverter.convertIfNecessary(value, Long.class);
     }
 
     @Override
@@ -217,8 +224,6 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     @Override
     protected void setEntryValue(Node nativeEntry, String propertyName, Object value) {
         //Possible property should be only String, Boolean, Calendar, Double, InputStream and Long
-        System.out.println(propertyName);
-        System.out.println(value);
         if (value != null) {
             try {
                 if (value instanceof String)
@@ -233,8 +238,18 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                     nativeEntry.setProperty(propertyName, (InputStream) value);
                 else if (value instanceof Long)
                     nativeEntry.setProperty(propertyName, (Long) value);
-                            } catch (RepositoryException e) {
+                else if (value instanceof Integer)
+                    nativeEntry.setProperty(propertyName, getLong(value));
+                else{
+                    //Marshaling all unsupported data types into String
+                    value = value.toString();
+                    nativeEntry.setProperty(propertyName, (String)value);
+                }
+              } catch (RepositoryException e) {
                 throw new DataAccessResourceFailureException("Exception occurred set a property value to Node: " + e.getMessage(), e);
+
+
+
             }
         }
     }

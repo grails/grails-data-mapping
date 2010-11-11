@@ -18,6 +18,12 @@ import java.util.Map;
  */
 public class JcrDatastore  extends AbstractDatastore {
 
+    private static String REPOSITORY_CONF = "classpath:repository.xml";
+    private static String REPOSITORY_HOME = "/temp/repo";  //TODO: must change the directory to root classpath
+    private static String DEFAULT_WORKSPACE = "default";
+    private static String DEFAULT_USERNAME = "username";
+    private static String DEFAULT_PASSWORD = "password";
+
     public JcrDatastore(MappingContext mappingContext) {
         super(mappingContext);
     }
@@ -27,19 +33,36 @@ public class JcrDatastore  extends AbstractDatastore {
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
-        System.setProperty("org.apache.jackrabbit.repository.conf", connectionDetails.get("configuration"));
-        System.setProperty("org.apache.jackrabbit.repository.home", connectionDetails.get("homeDir"));
+        String workspace = null;
+        String username = null;
+        String password = null;
+        if(connectionDetails != null){
+           if(connectionDetails.get("configuration") != null)
+                System.setProperty("org.apache.jackrabbit.repository.conf", connectionDetails.get("configuration"));
+           else
+               System.setProperty("org.apache.jackrabbit.repository.conf", REPOSITORY_CONF);
+           if(connectionDetails.get("homeDir") != null)
+               System.setProperty("org.apache.jackrabbit.repository.home", connectionDetails.get("homeDir"));
+           else
+               System.setProperty("org.apache.jackrabbit.repository.home", REPOSITORY_HOME);
+            workspace = connectionDetails.get("workspace");
+            username = connectionDetails.get("username");
+            password = connectionDetails.get("password");            
+        }else{
+            System.setProperty("org.apache.jackrabbit.repository.conf", REPOSITORY_CONF);
+            System.setProperty("org.apache.jackrabbit.repository.home", REPOSITORY_HOME);
+            workspace = DEFAULT_WORKSPACE;
+            username = DEFAULT_USERNAME;
+            password = DEFAULT_PASSWORD;
+        }
         Repository repository = null;
         JcrSessionFactory jcrSessionFactory = null;
         try {
             repository = new TransientRepository();
-            jcrSessionFactory = new JcrSessionFactory(repository, connectionDetails.get("workspace"),
-                    new SimpleCredentials(connectionDetails.get("username"), connectionDetails.get("password").toCharArray()));
-
-
+            jcrSessionFactory = new JcrSessionFactory(repository, workspace, new SimpleCredentials(username, password.toCharArray()));
             jcrSessionFactory.afterPropertiesSet();
         } catch (Exception e) {
-            throw new DataAccessResourceFailureException("Exception occurred cannot getProperty from Node: " + e.getMessage(), e);
+            throw new DataAccessResourceFailureException("Exception occurred cannot create Session: " + e.getMessage(), e);
         }
         return new JcrSession(this, getMappingContext(),jcrSessionFactory);
     }
