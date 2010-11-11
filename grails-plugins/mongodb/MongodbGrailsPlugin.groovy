@@ -50,7 +50,13 @@ a GORM API onto it
           datastore = ref("mongoDatastore")
         }
 
-		def databaseName = mongoConfig?.databaseName ?: application.metadata.getApplicationName()	
+		def databaseName = mongoConfig?.remove("databaseName") ?: application.metadata.getApplicationName()	
+		"${databaseName}DB"(org.springframework.beans.factory.config.MethodInvokingFactoryBean) { bean ->
+			bean.scope = "request"
+			targetObject = ref("mongo")
+			targetMethod = "getDB"
+			arguments = [databaseName]
+		}
 		mongoMappingContext(MongoMappingContextFactoryBean) {
 		  defaultDatabaseName = databaseName
           grailsApplication = ref('grailsApplication')
@@ -92,7 +98,7 @@ a GORM API onto it
 		mongoDatastore(MongoDatastoreFactoryBean) {
 			mongo = ref("mongoBean")
 			mappingContext = mongoMappingContext
-			config = mongoConfig
+			config = mongoConfig.toProperties()
 		}
 		
         mongoPersistenceInterceptor(DatastorePersistenceContextInterceptor, ref("mongoDatastore"))		
