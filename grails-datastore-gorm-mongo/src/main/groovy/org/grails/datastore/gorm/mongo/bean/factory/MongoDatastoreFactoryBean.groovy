@@ -47,6 +47,7 @@ class MongoDatastoreFactoryBean implements FactoryBean<MongoDatastore>{
 		
 		datastore.addEntityInterceptor(new DomainEventInterceptor())
 		datastore.addEntityInterceptor(new AutoTimestampInterceptor())
+		datastore.afterPropertiesSet()
 		return datastore;
 	}
 
