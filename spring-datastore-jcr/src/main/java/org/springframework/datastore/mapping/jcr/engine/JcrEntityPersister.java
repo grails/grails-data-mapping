@@ -19,8 +19,10 @@ import javax.jcr.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.List;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URL;
+import java.util.*;
 
 
 /**
@@ -157,16 +159,16 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     @Override
     protected Node retrieveEntry(final PersistentEntity persistentEntity, final Serializable key) {
         if(key != null){
-            return jcrTemplate.getNodeByUUID(getString(key));/*
             return (Node) jcrTemplate.execute(new JcrCallback() {
                 public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
                     try {
                         return session.getNodeByUUID(getString(key));
-                    } catch (ItemNotFoundException ex) { // Always throw ItemNotFoundException when the requested Node doesn't exist
+                    } catch (ItemNotFoundException ex) {
+                        //Force to return null when ItemNotFoundException occurred
                         return null;
                     }
                 }
-            });*/
+            });
         }else return null;
     }
 
@@ -238,8 +240,16 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                     nativeEntry.setProperty(propertyName, (Long) value);
                 else if (value instanceof Integer)
                     nativeEntry.setProperty(propertyName, getLong(value));
-               } catch (RepositoryException e) {
+                else{
+                    //Marshaling all unsupported data types into String
+                    value = value.toString();
+                    nativeEntry.setProperty(propertyName, (String)value);
+                }
+              } catch (RepositoryException e) {
                 throw new DataAccessResourceFailureException("Exception occurred set a property value to Node: " + e.getMessage(), e);
+
+
+
             }
         }
     }

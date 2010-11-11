@@ -41,14 +41,14 @@ import grails.gorm.tests.RangeQuerySpec
 //  FindByMethodSpec,
 //  ListOrderBySpec,
 //  GroovyProxySpec, // passed
-//  CommonTypesPersistenceSpec, // JCR Doesn't support all type probably
+//  CommonTypesPersistenceSpec, // passed
 //  GormEnhancerSpec,
 //  CriteriaBuilderSpec,
 //  NegationSpec,
 //  NamedQuerySpec,
 //  OrderBySpec,
 //  RangeQuerySpec,
-  ValidationSpec,
+//  ValidationSpec,
 //  UpdateWithProxyPresentSpec,
 //  AttachMethodSpec, // passed
 //  WithTransactionSpec,
