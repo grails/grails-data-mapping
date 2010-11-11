@@ -116,6 +116,7 @@ public class JcrQuery extends Query {
     }
 
     private List<String> paginateResults(String jcrNode) {
+        System.out.println("paginateResults");
         StringBuffer query = new StringBuffer();
         query.append("//")
                 .append(jcrNode);
@@ -132,6 +133,10 @@ public class JcrQuery extends Query {
             throw new InvalidDataAccessResourceUsageException("Cannot execute query. Entity [" + getEntity() + "] does not exist in the repository");
         }
 
+        System.out.println("max: " + max);
+        System.out.println("result: " + results.size());
+
+
         final int total = results.size();
         if (offset > total) return Collections.emptyList();
         // 0..3
@@ -143,6 +148,7 @@ public class JcrQuery extends Query {
         if (to >= total) to = -1;
         if (max != -1) {
             List<String> finalResult = results.subList(from, max);
+            System.out.println("finalREsult: " + finalResult);
             return finalResult;
         }
         return results;
@@ -205,19 +211,15 @@ public class JcrQuery extends Query {
                                 .append(value)
                                 .append("'");
                     } else {
-                        q.append(value);                          
+                        q.append(value);
                     }
                     q.append("]");
-
-                    System.out.println(q.toString());
-                    System.out.println("-----------------");
                     QueryResult qr = jcrTemplate.query(q.toString(), javax.jcr.query.Query.XPATH);
                     try {
                         NodeIterator itr = qr.getNodes();
                         while (itr.hasNext()) {
                             String uuid = itr.nextNode().getUUID();
                             uuids.add(uuid);
-                            System.out.println(jcrTemplate.dump(jcrTemplate.getNodeByUUID(uuid)));
                         }
                     } catch (RepositoryException e) {
                         e.printStackTrace();
@@ -238,18 +240,23 @@ public class JcrQuery extends Query {
                     for (Object value : criterion.getValues()) {
                         dis.add(Restrictions.eq(property, value));
                     }
-                    System.out.println("In");
+                    List<String> results = executeSubQuery(dis, dis.getCriteria());
+                    for (String uuid : results) uuids.add(uuid);
                 }
 
             });
             put(Conjunction.class, new CriterionHandler<Junction>() {
                 public void handle(JcrEntityPersister entityPersister, List<String> uuids, Junction criterion) {
                     System.out.println("Conjunction");
+                    List<String> results = executeSubQuery(criterion, criterion.getCriteria());
+                    for (String uuid : results) uuids.add(uuid);
                 }
             });
             put(Disjunction.class, new CriterionHandler<Junction>() {
                 public void handle(JcrEntityPersister entityPersister, List<String> uuids, Junction criterion) {
                     System.out.println("Disjunction");
+                    List<String> results = executeSubQuery(criterion, criterion.getCriteria());
+                    for (String uuid : results) uuids.add(uuid);
                 }
             });
             put(Negation.class, new CriterionHandler<Negation>() {
@@ -262,30 +269,73 @@ public class JcrQuery extends Query {
     };
 
     protected String executeLessThanEquals(JcrEntityPersister entityPersister, PropertyCriterion criterion) {
+        System.out.println("executeLessThanEquals");
         return null;  //To change body of created methods use File | Settings | File Templates.
     }
 
     protected String executeGreaterThanEquals(JcrEntityPersister entityPersister, PropertyCriterion criterion) {
+        System.out.println("executeGreaterThanEquals");
         return null;  //To change body of created methods use File | Settings | File Templates.
     }
 
     protected String executeSubBetween(JcrEntityPersister entityPersister, Between criterion) {
+        System.out.println("executeSubBetween");
         return null;  //To change body of created methods use File | Settings | File Templates.
     }
 
     protected String executeSubLike(JcrEntityPersister entityPersister, Like criterion) {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+        System.out.println("executeSubLiket");
+        final String property = criterion.getProperty();
+        String pattern = criterion.getPattern();
+        System.out.println("property: " + property);
+        System.out.println("pattern: " + pattern);
+        System.out.println("value: " + criterion.getValue());
+        StringBuilder q = new StringBuilder();
+        //*[jcr:like( @title, '%Ho%' )]
+        q.append("//")
+                 .append(getEntity().getJavaClass().getSimpleName())
+                .append("[jcr:like(@")
+                .append(property)
+                .append(",")
+                .append("'")
+                .append(pattern)
+                .append("'")
+                .append(")]");
+        System.out.println(q.toString());
+        QueryResult qr = jcrTemplate.query(q.toString(), javax.jcr.query.Query.XPATH);
+        List<String> uuids = new ArrayList<String>();
+        try {
+            NodeIterator itr = qr.getNodes();
+            while (itr.hasNext()) {
+                String uuid = itr.nextNode().getUUID();
+                uuids.add(uuid);
+            }
+        } catch (RepositoryException e) {
+            e.printStackTrace();
+        }
+        if(uuids.size()>= 1)
+            return uuids.get(0);
+        else return null;  
+    }
+
+    private PersistentProperty getAndValidateProperty(JcrEntityPersister entityPersister, String property) {
+        final PersistentEntity entity = entityPersister.getPersistentEntity();
+        PersistentProperty prop = entity.getPropertyByName(property);
+        if (prop == null) {
+            throw new InvalidDataAccessResourceUsageException("Cannot execute between query on property [" + property + "] of class [" + entity + "]. Property does not exist.");
+        }
+        return prop;
     }
 
     private List<String> getUUIDs(Junction criteria, JcrEntityPersister entityPersister) {
         List<Criterion> criteriaList = criteria.getCriteria();
         List<String> uuids = new ArrayList<String>();
         for (Criterion criterion : criteriaList) {
+            System.out.println("criterion.getClass()" + criterion.getClass());
             CriterionHandler handler = criterionHandlers.get(criterion.getClass());
             if (handler != null) {
                 handler.handle(entityPersister, uuids, criterion);
             }
-
         }
         System.out.println("uuids size: " + uuids.size());
         return uuids;

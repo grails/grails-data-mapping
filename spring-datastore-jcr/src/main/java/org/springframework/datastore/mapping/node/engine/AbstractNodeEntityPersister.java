@@ -5,6 +5,7 @@ import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.core.SessionImplementor;
+import org.springframework.datastore.mapping.core.impl.*;
 import org.springframework.datastore.mapping.engine.*;
 import org.springframework.datastore.mapping.model.*;
 import org.springframework.datastore.mapping.model.types.Association;
@@ -182,7 +183,7 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
         final EntityAccess entityAccess = new EntityAccess(persistentEntity, obj);
         K k = readObjectIdentifier(entityAccess, cm);
         boolean isUpdate = k != null;
-        if (!isUpdate) {
+      /*  if (!isUpdate) {
             tmp = createNewEntry(persistentEntity);
             k = generateIdentifier(persistentEntity, tmp);
             String id = entityAccess.getIdentifierName();
@@ -196,6 +197,42 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
             if (tmp == null) {
                 tmp = createNewEntry(persistentEntity);
             }
+        }*/
+
+        PendingOperation<T, K> pendingOperation;
+
+        SessionImplementor<Object> si = (SessionImplementor<Object>) session;
+        if(!isUpdate) {
+            tmp = createNewEntry(persistentEntity);
+            k = generateIdentifier(persistentEntity, tmp);
+
+            pendingOperation = new PendingInsertAdapter<T, K>(persistentEntity, k, tmp, entityAccess) {
+				@Override
+				public void run() {
+					executeInsert(persistentEntity, entityAccess, getNativeKey(), getNativeEntry());
+				}
+			};
+
+            String id = entityAccess.getIdentifierName();
+            entityAccess.setProperty(id, k);
+        }
+        else {
+            tmp = (T) si.getCachedEntry(persistentEntity, (Serializable) k);
+            if(tmp == null) {
+                tmp = retrieveEntry(persistentEntity, (Serializable) k);
+            }
+            if(tmp == null) {
+                tmp = createNewEntry(persistentEntity);
+            }
+
+            pendingOperation = new PendingUpdateAdapter<T, K>(persistentEntity, k, tmp, entityAccess) {
+				@Override
+				public void run() {
+                    if(fireBeforeUpdate(persistentEntity, entityAccess)) return;
+                    updateEntry(persistentEntity, getNativeKey(), getNativeEntry());
+
+				}
+			};
         }
 
         final T e = tmp;
@@ -287,7 +324,69 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
             }// End
         }
 
-        if (!isUpdate) {
+          if(!isUpdate) {
+            // if the identifier is null at this point that means that datastore could not generated an identifer
+            // and the identifer is generated only upon insert of the entity
+        	boolean b = false;
+
+            final K updateId = k;
+            PendingOperation postOperation = new PendingOperationAdapter<T, K>(persistentEntity, k, e) {
+				@Override
+				public void run() {
+                    //updateOneToManyIndices(e, updateId, oneToManyKeys);
+                    //if(doesRequirePropertyIndexing()) {
+                    //	toIndex.put(persistentEntity.getIdentity(), updateId);
+                   /// 	updatePropertyIndices(updateId, toIndex, toUnindex);
+                   /// }
+                    for (EntityInterceptor interceptor : interceptors) {
+                        if (!interceptor.beforeInsert(persistentEntity, entityAccess)) return;
+                    }
+                    storeEntry(persistentEntity, updateId, e);
+                    for (OneToMany inverseCollection : inverseCollectionUpdates.keySet()) {
+                        final Serializable primaryKey = inverseCollectionUpdates.get(inverseCollection);
+                        final AbstractNodeEntityPersister inversePersister = (AbstractNodeEntityPersister) session.getPersister(inverseCollection.getOwner());
+                        //final AssociationIndexer associationIndexer = inversePersister.getAssociationIndexer(e, inverseCollection);
+                        //associationIndexer.index(primaryKey, updateId );
+                    }
+
+
+
+				}
+
+            };
+            pendingOperation.addCascadeOperation(postOperation);
+
+
+            // If the key is still at this point we have to execute the pending operation now to get the key
+            if(k == null) {
+            	PendingOperationExecution.executePendingInsert(pendingOperation);
+            }
+            else {
+            	si.addPendingInsert((PendingInsert) pendingOperation);
+            }
+        }
+        else {
+            final K updateId = k;
+
+            PendingOperation postOperation = new PendingOperationAdapter<T, K>(persistentEntity, k, e) {
+				@Override
+				public void run() {
+				     // updateOneToManyIndices(e, updateId, oneToManyKeys);
+				     // if(doesRequirePropertyIndexing())
+				    //	  updatePropertyIndices(updateId, toIndex, toUnindex);
+                    
+                    for (EntityInterceptor interceptor : interceptors) {
+                        if (!interceptor.beforeUpdate(persistentEntity, entityAccess)) return;
+                    }
+                    updateEntry(persistentEntity, updateId, e);
+				}
+
+            };
+            pendingOperation.addCascadeOperation(postOperation);
+            si.addPendingUpdate((PendingUpdate) pendingOperation);
+        }
+
+       /* if (!isUpdate) {
             SessionImplementor si = (SessionImplementor) session;
             final K updateId = k;
             si.getPendingInserts().add(new Runnable() {
@@ -309,7 +408,7 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
                     updateEntry(persistentEntity, updateId, e);
                 }
             });
-        }
+        }*/
         return (Serializable) k;
     }
 
@@ -394,12 +493,16 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
     }
 
 
-    public Object proxy(Serializable key) {
-        return null;
-    }
-
-
     public Serializable refresh(Object o) {
+        final PersistentEntity entity = getPersistentEntity();
+        EntityAccess ea = createEntityAccess(entity, o);
+
+        Serializable identifier = (Serializable) ea.getIdentifier();
+        if(identifier != null) {
+            final T entry = retrieveEntry(entity, identifier);
+            refreshObjectStateFromNativeEntry(entity, o, identifier, entry);
+            return identifier;
+        }
         return null;
     }
 
@@ -482,4 +585,52 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
      * @param entry            The entry
      */
     protected abstract void updateEntry(PersistentEntity persistentEntity, K id, T entry);
+
+
+    /**
+     * Executes an insert for the given entity, entity access, identifier and native entry.
+     * Any before interceptors will be triggered
+     *
+     * @param persistentEntity
+     * @param entityAccess
+     * @param id
+     * @param e
+     * @return The key
+     */
+    protected K executeInsert(final PersistentEntity persistentEntity,
+                                   final EntityAccess entityAccess, final K id,
+                                   final T e) {
+		if(fireBeforeInsert(persistentEntity, entityAccess)) return null;
+        final K newId = storeEntry(persistentEntity, id, e);
+        entityAccess.setIdentifier(newId);
+        return newId;
+	}
+
+    /**
+     * Fire the beforeInsert even on an entityAccess object and return true if the operation should be evicted
+     * @param persistentEntity The entity
+     * @param entityAccess The entity access
+     * @return True if the operation should be eviced
+     */
+	public boolean fireBeforeInsert(final PersistentEntity persistentEntity,
+			final EntityAccess entityAccess) {
+		for (EntityInterceptor interceptor : interceptors) {
+		        if(!interceptor.beforeInsert(persistentEntity, entityAccess)) return true;
+		}
+		return false;
+	}
+
+    /**
+     * Fire the beforeUpdate even on an entityAccess object and return true if the operation should be evicted
+     * @param persistentEntity The entity
+     * @param entityAccess The entity access
+     * @return True if the operation should be eviced
+     */
+    public boolean fireBeforeUpdate(final PersistentEntity persistentEntity,
+			final EntityAccess entityAccess) {
+		for (EntityInterceptor interceptor : interceptors) {
+		    if(!interceptor.beforeUpdate(persistentEntity, entityAccess)) return true;
+		}
+		return false;
+	}
 }

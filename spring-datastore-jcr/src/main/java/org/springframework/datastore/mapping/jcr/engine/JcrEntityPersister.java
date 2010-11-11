@@ -157,6 +157,7 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     @Override
     protected Node retrieveEntry(final PersistentEntity persistentEntity, final Serializable key) {
         if(key != null){
+            return jcrTemplate.getNodeByUUID(getString(key));/*
             return (Node) jcrTemplate.execute(new JcrCallback() {
                 public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
                     try {
@@ -165,7 +166,7 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                         return null;
                     }
                 }
-            });
+            });*/
         }else return null;
     }
 

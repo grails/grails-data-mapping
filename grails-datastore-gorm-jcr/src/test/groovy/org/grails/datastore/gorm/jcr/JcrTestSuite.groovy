@@ -6,6 +6,23 @@ import org.junit.runners.Suite.SuiteClasses
 
 import grails.gorm.tests.CrudOperationsSpec
 import grails.gorm.tests.GormEnhancerSpec
+import grails.gorm.tests.ProxyLoadingSpec
+import grails.gorm.tests.FindByMethodSpec
+import grails.gorm.tests.DomainEventsSpec
+import grails.gorm.tests.QueryAfterPropertyChangeSpec
+import grails.gorm.tests.GroovyProxySpec
+import grails.gorm.tests.CriteriaBuilderSpec
+import grails.gorm.tests.CommonTypesPersistenceSpec
+import grails.gorm.tests.CircularOneToManySpec
+import grails.gorm.tests.InheritanceSpec
+import grails.gorm.tests.ListOrderBySpec
+import grails.gorm.tests.OrderBySpec
+import grails.gorm.tests.ValidationSpec
+import grails.gorm.tests.UpdateWithProxyPresentSpec
+import grails.gorm.tests.AttachMethodSpec
+import grails.gorm.tests.WithTransactionSpec
+import grails.gorm.tests.NegationSpec
+import grails.gorm.tests.RangeQuerySpec
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,26 +33,26 @@ import grails.gorm.tests.GormEnhancerSpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-//  DomainEventsSpec,
-//  ProxyLoadingSpec,
+//  DomainEventsSpec, - cannot be tested
+//  ProxyLoadingSpec, // passed
 //  QueryAfterPropertyChangeSpec,
-//  CircularOneToManySpec,
+//  CircularOneToManySpec, // StackOverflow
 //  InheritanceSpec,
 //  FindByMethodSpec,
 //  ListOrderBySpec,
-//  GroovyProxySpec,
-//  CommonTypesPersistenceSpec,
- GormEnhancerSpec,
+//  GroovyProxySpec, // passed
+//  CommonTypesPersistenceSpec, // JCR Doesn't support all type probably
+//  GormEnhancerSpec,
 //  CriteriaBuilderSpec,
 //  NegationSpec,
 //  NamedQuerySpec,
 //  OrderBySpec,
 //  RangeQuerySpec,
-//  ValidationSpec,
+  ValidationSpec,
 //  UpdateWithProxyPresentSpec,
-//  AttachMethodSpec,
+//  AttachMethodSpec, // passed
 //  WithTransactionSpec,
-//  CrudOperationsSpec - Done
+//  CrudOperationsSpec // passed
 ])
 class JcrTestSuite {
 }
