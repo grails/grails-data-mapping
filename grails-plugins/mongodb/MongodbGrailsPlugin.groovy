@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationContext
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.transaction.PlatformTransactionManager
 import org.grails.datastore.gorm.utils.InstanceProxy
+import com.mongodb.ServerAddress
 
 class MongodbGrailsPlugin {
     // the plugin version
@@ -65,18 +66,13 @@ a GORM API onto it
 		mongo(GMongoFactoryBean) {
 			mongoOptions = mongoOptions
 			if(mongoConfig?.host) host = mongoConfig?.host
-			if(mongoConfig?.port) host = mongoConfig?.port			
-			if(mongoConfig?.replicaSets) {
-				def set = []
-				for(server in mongoConfig?.replicaSets) {
-					if(server.host && server.port)
-						set << new com.mongodb.ServerAddress(server.host, server.port)
-					else
-						set << new com.mongodb.ServerAddress(server.host)
-				}
-				replicaSetSeeds = set
-			}
-		}
+			if(mongoConfig?.port) host = mongoConfig?.port	
+			if(mongoConfig?.replicaPair) {
+				def piar = []
+				populateServers(pair, mongoConfig?.replicaPair.servers)
+				replicaPair = pair
+			}		
+ 		}
 		mongoBean(mongo:"getMongo")
 		mongoDatastore(MongoDatastoreFactoryBean) {
 			mongo = ref("mongoBean")
@@ -103,6 +99,13 @@ a GORM API onto it
             }
         }
     }
+
+	private static ServerAddress DEFAULT_OPTIONS = new ServerAddress()
+	private populateServers(set, servers) {
+		for(server in servers) {
+				set << new com.mongodb.ServerAddress(server.key, server.value ?: DEFAULT_OPTIONS.port)
+		}		
+	}
 
     def doWithDynamicMethods = { ctx ->
       Datastore datastore = ctx.getBean(Datastore)
