@@ -29,7 +29,9 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.bson.types.ObjectId;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.document.DocumentStoreConnectionCallback;
+import org.springframework.data.document.mongodb.DBCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister;
@@ -49,6 +51,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.MongoException;
 import com.mongodb.WriteResult;
 
 
@@ -122,8 +125,10 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     @Override
 	protected void deleteEntry(String family, final Object key) {
-		mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
-			public Object doInConnection(DB con) throws Exception {
+		mongoTemplate.execute(new DBCallback<Object>() {
+			@Override
+			public Object doInDB(DB con) throws MongoException,
+					DataAccessException {
 				DBCollection dbCollection = getCollection(con);
 				
 				DBObject dbo = new BasicDBObject();
@@ -137,19 +142,21 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 				dbCollection.remove(dbo, mongoSession.getWriteConcern());
 				return null;
 			}
-
+			
 			protected DBCollection getCollection(DB con) {
 				DBCollection dbCollection = con.getCollection(getCollectionName(getPersistentEntity()));
 				return dbCollection;
-			}
+			}			
 		});
 	}
 
 	@Override
 	protected Object generateIdentifier(final PersistentEntity persistentEntity,
 			final DBObject nativeEntry) {
-		return mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
-			public Object doInConnection(DB con) throws Exception {
+		return mongoTemplate.execute(new DBCallback<Object>() {
+			@Override
+			public Object doInDB(DB con) throws MongoException,
+					DataAccessException {
 
                 String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
@@ -274,8 +281,10 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     @Override
 	protected DBObject retrieveEntry(final PersistentEntity persistentEntity,
 			String family, final Serializable key) {
-		return (DBObject) mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
-			public Object doInConnection(DB con) throws Exception {
+		return mongoTemplate.execute(new DBCallback<DBObject>() {
+			@Override
+			public DBObject doInDB(DB con) throws MongoException,
+					DataAccessException {
 				DBCollection dbCollection = con.getCollection(getCollectionName(persistentEntity));
 				
 				DBObject dbo = new BasicDBObject();
@@ -301,8 +310,10 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 	@Override
 	protected Object storeEntry(final PersistentEntity persistentEntity,
 			final Object storeId, final DBObject nativeEntry) {
-		return mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
-			public Object doInConnection(DB con) throws Exception {
+		return mongoTemplate.execute(new DBCallback<Object>() {
+			@Override
+			public Object doInDB(DB con) throws MongoException,
+					DataAccessException {
 
                 String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
@@ -337,8 +348,10 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     @Override
 	public void updateEntry(final PersistentEntity persistentEntity, final Object key,
 			final DBObject entry) {
-		mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
-			public Object doInConnection(DB con) throws Exception {
+		mongoTemplate.execute(new DBCallback<Object>() {
+			@Override
+			public Object doInDB(DB con) throws MongoException,
+					DataAccessException {
                 String collectionName = getCollectionName(persistentEntity, entry);
 				DBCollection dbCollection = con.getCollection(collectionName);
 				DBObject dbo = new BasicDBObject();
@@ -356,12 +369,24 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 	}
 
 	@Override
-	protected void deleteEntries(String family, List<Object> keys) {
-		// TODO: Suboptimal. Fix me.
-		for (Object key : keys) {
-			deleteEntry(family, key);
-		}
-		
+	protected void deleteEntries(String family, final List<Object> keys) {
+		mongoTemplate.execute(new DBCallback<Object>() {
+			@Override
+			public Object doInDB(DB con) throws MongoException,
+					DataAccessException {
+				
+                String collectionName = getCollectionName(getPersistentEntity());
+				DBCollection dbCollection = con.getCollection(collectionName);
+
+				MongoSession mongoSession = (MongoSession) getSession();
+				MongoQuery query = mongoSession.createQuery(getPersistentEntity().getJavaClass());
+				query.in(getPersistentEntity().getIdentity().getName(), keys);
+				
+				dbCollection.remove(query.getMongoQuery());
+				
+				return null;
+			}
+		});		
 	}
 
 

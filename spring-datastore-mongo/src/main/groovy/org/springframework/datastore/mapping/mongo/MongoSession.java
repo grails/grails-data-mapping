@@ -37,6 +37,8 @@ import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
+import org.springframework.datastore.mapping.mongo.query.MongoQuery;
+import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.transactions.SessionOnlyTransaction;
 import org.springframework.datastore.mapping.transactions.Transaction;
 import org.springframework.transaction.TransactionSystemException;
@@ -60,6 +62,10 @@ public class MongoSession extends AbstractSession<DB> {
 		getNativeInterface().requestStart();
 	}
 	
+	@Override
+	public MongoQuery createQuery(Class type) {
+		return (MongoQuery) super.createQuery(type);
+	}
 	
 	/**
 	 * Sets the WriteConcern to use for the session
