@@ -40,7 +40,7 @@ class MongoDatastoreFactoryBean implements FactoryBean<MongoDatastore>{
 		
 		MongoDatastore datastore
 		if(mongo != null)
-		 	datastore = new MongoDatastore(mappingContext, mongo)
+		 	datastore = new MongoDatastore(mappingContext, mongo,config)
 		else {
 			datastore = new MongoDatastore(mappingContext, config)
 		}
