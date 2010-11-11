@@ -290,6 +290,17 @@ public class MongoQuery extends Query{
     	}    	
     }
     
+    /**
+     * Gets the Mongo query for this query instance
+     * 
+     * @return The Mongo query
+     */
+    public DBObject getMongoQuery() {
+        DBObject query = createQueryObject(entity);
+        populateMongoQuery(entity, query,criteria);
+        return query;
+    }
+    
     @Override
     protected List executeQuery(final PersistentEntity entity, final Junction criteria) {
         final MongoTemplate template = mongoSession.getMongoTemplate(entity);
@@ -312,8 +323,7 @@ public class MongoQuery extends Query{
                         }
                     }
                     else {
-                        DBObject query = createQueryObject(entity);
-                        populateMongoQuery(entity, query,criteria);
+                        DBObject query = getMongoQuery();
 
                         dbObject = collection.findOne(query);
                     }

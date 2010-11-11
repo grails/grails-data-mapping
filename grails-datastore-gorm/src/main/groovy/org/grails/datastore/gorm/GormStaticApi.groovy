@@ -48,6 +48,16 @@ class GormStaticApi extends AbstractGormApi {
   }
   
   /**
+  * Deletes a list of objects in one go
+  * @param objectsToDelete The objects to delete
+  */
+  void deleteAll(Object...objectsToDelete) {
+	  Session currentSession = datastore.currentSession
+	  
+	  currentSession.delete objectsToDelete
+  }
+  
+  /**
    * Creates an instance of this class
    * @return The created instance
    */

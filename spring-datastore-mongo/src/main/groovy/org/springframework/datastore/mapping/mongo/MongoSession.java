@@ -23,6 +23,7 @@ import java.util.Map;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.WriteConcern;
 
 import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.data.document.DocumentStoreConnectionCallback;
@@ -36,6 +37,8 @@ import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
+import org.springframework.datastore.mapping.mongo.query.MongoQuery;
+import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.transactions.SessionOnlyTransaction;
 import org.springframework.datastore.mapping.transactions.Transaction;
 import org.springframework.transaction.TransactionSystemException;
@@ -50,6 +53,7 @@ public class MongoSession extends AbstractSession<DB> {
 
 	MongoDatastore mongoDatastore;
 	private boolean connected = true;
+	private WriteConcern writeConcern = WriteConcern.NORMAL;
 	
 	
 	public MongoSession(MongoDatastore datastore, MappingContext mappingContext) {
@@ -57,7 +61,46 @@ public class MongoSession extends AbstractSession<DB> {
 		this.mongoDatastore = datastore;
 		getNativeInterface().requestStart();
 	}
+	
+	@Override
+	public MongoQuery createQuery(Class type) {
+		return (MongoQuery) super.createQuery(type);
+	}
+	
+	/**
+	 * Sets the WriteConcern to use for the session
+	 * 
+	 * @param writeConcern The WriteConcern to use
+	 */
+	public void setWriteConcern(WriteConcern writeConcern) {
+		this.writeConcern = writeConcern;
+	}
+	
+	/**
+	 * Obtains the WriteConcern to use for the session
+	 * @return
+	 */
+	public WriteConcern getWriteConcern() {
+		return writeConcern;
+	}
 
+	/**
+	 * Execute a flush using the given WriteConcern
+	 * 
+	 * @param writeConcern The WriteConcern to use
+	 */
+	public void flush(WriteConcern writeConcern) {
+		WriteConcern current = this.writeConcern;
+		
+		this.writeConcern = writeConcern;
+		
+		try {
+			super.flush();
+		}
+		finally {
+			this.writeConcern = current;
+		}
+	}
 	@Override
 	public void disconnect() {	
 		super.disconnect();
@@ -108,7 +151,7 @@ public class MongoSession extends AbstractSession<DB> {
 					}
 					
 					
-					collection.insert(dbObjects);
+					collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]), writeConcern);
 					for (PendingOperation pendingOperation : postOperations) {
 						pendingOperation.run();
 					}
