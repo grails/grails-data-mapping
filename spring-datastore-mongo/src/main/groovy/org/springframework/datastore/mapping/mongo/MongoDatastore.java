@@ -15,33 +15,41 @@
 
 package org.springframework.datastore.mapping.mongo;
 
+import static org.springframework.datastore.mapping.config.utils.ConfigUtils.read;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.mongodb.*;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.document.DocumentStoreConnectionCallback;
 import org.springframework.data.document.mongodb.DBCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.data.document.mongodb.bean.factory.MongoFactoryBean;
-import org.springframework.data.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.document.config.Collection;
 import org.springframework.datastore.mapping.document.config.DocumentMappingContext;
 import org.springframework.datastore.mapping.model.ClassMapping;
 import org.springframework.datastore.mapping.model.DatastoreConfigurationException;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
-
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.mongo.config.MongoCollection;
 import org.springframework.datastore.mapping.mongo.config.MongoMappingContext;
 import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
-import org.springframework.core.convert.converter.*;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+import com.mongodb.MongoException;
+import com.mongodb.MongoOptions;
+import com.mongodb.ServerAddress;
+import com.mongodb.WriteConcern;
 
 /**
  * A Datastore implementation for the Mongo document store
@@ -51,19 +59,41 @@ import org.springframework.core.convert.converter.*;
  */
 public class MongoDatastore extends AbstractDatastore implements InitializingBean, MappingContext.Listener{
 
+	public static final String MONGO_PORT = "port";
+	public static final String MONGO_HOST = "host";
+	
 	private Mongo mongo;
+	private MongoOptions mongoOptions = new MongoOptions();
 	private Map<PersistentEntity, MongoTemplate> mongoTemplates = new ConcurrentHashMap<PersistentEntity, MongoTemplate>();
 
+	/**
+	 * Constructs a MongoDatastore using the default database name of "test" and defaults for the host and port.
+	 * Typically used during testing. 
+	 */
 	public MongoDatastore() {
 		this(new MongoMappingContext("test"), Collections.<String, String>emptyMap());
 	}
 	
-	
+	/**
+	 * Constructs a MongoDatastore using the given MappingContext and connection details map.
+	 * 
+	 * @param mappingContext The MongoMappingContext
+	 * @param connectionDetails The connection details containing the {@link #MONGO_HOST} and {@link #MONGO_PORT} settings 
+	 */	
+	public MongoDatastore(MongoMappingContext mappingContext,
+			Map<String, String> connectionDetails, MongoOptions mongoOptions) {
 
-	public Mongo getMongo() {
-		return mongo;
+		this(mappingContext, connectionDetails);
+		if(mongoOptions != null)
+			this.mongoOptions = mongoOptions;
 	}
-
+	
+	/**
+	 * Constructs a MongoDatastore using the given MappingContext and connection details map.
+	 * 
+	 * @param mappingContext The MongoMappingContext
+	 * @param connectionDetails The connection details containing the {@link #MONGO_HOST} and {@link #MONGO_PORT} settings 
+	 */
 	public MongoDatastore(MongoMappingContext mappingContext,
 			Map<String, String> connectionDetails) {
 		super(mappingContext, connectionDetails);
@@ -93,27 +123,43 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 	
 	/**
 	 * Constructor for creating a MongoDatastore using an existing Mongo instance
-	 * @param mappingContext
-	 * @param mongo
+	 * @param mappingContext The MappingContext
+	 * @param mongo The existing Mongo instance
 	 */
 	public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo) {
 		this(mappingContext, Collections.<String, String>emptyMap());
 		this.mongo = mongo;
 	}	
 
+	
+	public Mongo getMongo() {
+		return mongo;
+	}
+
 	public MongoTemplate getMongoTemplate(PersistentEntity entity) {
 		return mongoTemplates.get(entity);
 	}
+	
 	@Override
 	protected Session createSession(Map<String, String> connectionDetails) {
 		return new MongoSession(this, getMappingContext());
 	}
 
 	public void afterPropertiesSet() throws Exception {
-		MongoFactoryBean dbFactory = new MongoFactoryBean();
-		dbFactory.afterPropertiesSet();
+		if(this.mongo == null) {
+			ServerAddress defaults = new ServerAddress();
+			MongoFactoryBean dbFactory = new MongoFactoryBean();
+			dbFactory.setHost( read(String.class, MONGO_HOST, connectionDetails, defaults.getHost()) );
+			dbFactory.setPort( read(Integer.class, MONGO_PORT, connectionDetails, defaults.getPort()) );
+			if(mongoOptions != null ) {
+				dbFactory.setMongoOptions(mongoOptions);
+			}
+			dbFactory.afterPropertiesSet();
+			
+			this.mongo = dbFactory.getObject();
+		}
 		
-		this.mongo = dbFactory.getObject();
+		
 		
 		for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
 			createMongoTemplate(entity, mongo);
