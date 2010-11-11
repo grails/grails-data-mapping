@@ -25,6 +25,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.document.mongodb.MongoDbUtils;
+import org.springframework.datastore.mapping.model.DatastoreConfigurationException;
 import org.springframework.util.Assert;
 
 import com.gmongo.GMongo;
@@ -52,8 +53,14 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean,
 	private String host;
 	private Integer port;
 	private List<ServerAddress> replicaSetSeeds;
+	private List<ServerAddress> replicaPair;
 	
+		
 	
+	public void setReplicaPair(List<ServerAddress> replicaPair) {
+		this.replicaPair = replicaPair;
+	}
+
 	public void setReplicaSetSeeds(List<ServerAddress> replicaSetSeeds) {
 		this.replicaSetSeeds = replicaSetSeeds;
 	}
@@ -95,6 +102,12 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean,
 			}
 			else {
 				if(mongoOptions != null) {
+					if(replicaPair != null) {
+						if(replicaPair.size() < 2) {
+							throw new DatastoreConfigurationException("A replica pair must have two server entries");							
+						}
+						mongo = new GMongo(replicaPair.get(0), replicaPair.get(1));
+					}
 					if(replicaSetSeeds != null) {
 
 						initialiseReplicaSets(mongoOptions);
@@ -125,7 +138,7 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean,
 	}
 
 	public void initialiseReplicaSets(MongoOptions mo) {
-		// TODO: Awful hack since GMonto doesn't support replicaSets
+		// TODO: Awful hack since GMongo doesn't support replicaSets
 		Mongo mongoInstance = new Mongo(replicaSetSeeds, mo);
 		mongo = new GMongo(replicaSetSeeds.get(0), mo);
 		mongo.getMongo().close();
