@@ -59,6 +59,8 @@ import com.mongodb.WriteConcern;
  */
 public class MongoDatastore extends AbstractDatastore implements InitializingBean, MappingContext.Listener{
 
+	public static final String PASSWORD = "password";
+	public static final String USERNAME = "username";
 	public static final String MONGO_PORT = "port";
 	public static final String MONGO_HOST = "host";
 	
@@ -130,6 +132,18 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 		this(mappingContext, Collections.<String, String>emptyMap());
 		this.mongo = mongo;
 	}	
+	
+	/**
+	 * Constructor for creating a MongoDatastore using an existing Mongo instance. In this case
+	 * the connection details are only used to supply a USERNAME and PASSWORD
+	 * 
+	 * @param mappingContext The MappingContext
+	 * @param mongo The existing Mongo instance
+	 */
+	public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo, Map<String, String> connectionDetails) {
+		this(mappingContext, connectionDetails);
+		this.mongo = mongo;
+	}		
 
 	
 	public Mongo getMongo() {
@@ -181,6 +195,15 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 			
 		}
 		final MongoTemplate mt = new MongoTemplate(mongoInstance, databaseName,collectionName);
+		
+		String username = read(String.class, USERNAME, connectionDetails, null);
+		String password = read(String.class, PASSWORD, connectionDetails, null);
+		
+		if(username != null && password != null) {
+			mt.setUsername(username);
+			mt.setPassword(password.toCharArray());
+		}
+		
 		if(mongoCollection != null) {	
 			final WriteConcern writeConcern = mongoCollection.getWriteConcern();
 			final String shardPropertyName = mongoCollection.getShard();
