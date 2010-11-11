@@ -50,7 +50,7 @@ a GORM API onto it
         }
 
 		mongoMappingContext(MongoMappingContextFactoryBean) {
-		  defaultDatabaseName = mongoConfig?.defaultDatabase ?: application.metadata.getApplicationName()	
+		  defaultDatabaseName = mongoConfig?.databaseName ?: application.metadata.getApplicationName()	
           grailsApplication = ref('grailsApplication')
           pluginManager = ref('pluginManager')
         }
@@ -66,9 +66,9 @@ a GORM API onto it
 			mongoOptions = mongoOptions
 			if(mongoConfig?.host) host = mongoConfig?.host
 			if(mongoConfig?.port) host = mongoConfig?.port			
-			if(mongoConfig?.replicaSet) {
+			if(mongoConfig?.replicaSets) {
 				def set = []
-				for(server in mongoConfig?.replicaSet) {
+				for(server in mongoConfig?.replicaSets) {
 					if(server.host && server.port)
 						set << new com.mongodb.ServerAddress(server.host, server.port)
 					else
@@ -81,6 +81,7 @@ a GORM API onto it
 		mongoDatastore(MongoDatastoreFactoryBean) {
 			mongo = ref("mongoBean")
 			mappingContext = mongoMappingContext
+			config = mongoConfig
 		}
 		
         mongoPersistenceInterceptor(DatastorePersistenceContextInterceptor, ref("mongoDatastore"))		
