@@ -23,6 +23,8 @@ import com.mongodb.*;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.document.mongodb.DBCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.data.document.mongodb.bean.factory.MongoFactoryBean;
 import org.springframework.data.document.DocumentStoreConnectionCallback;
@@ -36,6 +38,7 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
 import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.mongo.config.MongoCollection;
 import org.springframework.datastore.mapping.mongo.config.MongoMappingContext;
 import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.springframework.core.convert.converter.*;
@@ -120,11 +123,46 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 	protected void createMongoTemplate(PersistentEntity entity, Mongo mongoInstance) {
 		DocumentMappingContext dc = (DocumentMappingContext) getMappingContext();
 		String collectionName = entity.getDecapitalizedName();
-		ClassMapping<Collection> mapping = entity.getMapping();
-		if(mapping.getMappedForm() != null && mapping.getMappedForm().getCollection() != null) {
-			collectionName = mapping.getMappedForm().getCollection();
+		String databaseName = dc.getDefaultDatabaseName();
+		ClassMapping<MongoCollection> mapping = entity.getMapping();
+		final MongoCollection mongoCollection = mapping.getMappedForm() != null ? mapping.getMappedForm() : null;
+		
+		if(mongoCollection != null) {
+			if(mongoCollection.getCollection() != null)
+				collectionName = mongoCollection.getCollection();
+			if(mongoCollection.getDatabase() != null)
+				databaseName = mongoCollection.getDatabase();
+			
 		}
-		MongoTemplate mt = new MongoTemplate(mongoInstance, dc.getDefaultDatabaseName(),collectionName);
+		final MongoTemplate mt = new MongoTemplate(mongoInstance, databaseName,collectionName);
+		if(mongoCollection != null) {	
+			final WriteConcern writeConcern = mongoCollection.getWriteConcern();
+			final String shardPropertyName = mongoCollection.getShard();
+			if(writeConcern != null || shardPropertyName != null) {
+				mt.executeInSession(new DBCallback<Object>() {
+					@Override
+					public Object doInDB(DB db) throws MongoException,
+							DataAccessException {
+						
+						if(writeConcern != null) {
+							DBCollection collection = db.getCollection(mt.getDefaultCollectionName());
+							collection.setWriteConcern(writeConcern);							
+						}						
+						if(shardPropertyName != null) {
+						
+							db.command(new BasicDBObject("enablesharding", db.getName()));
+							final BasicDBObject shardCollectionCommand = new BasicDBObject("shardcollection", mt.getDefaultCollectionName());
+							shardCollectionCommand.put("key", shardPropertyName);
+							
+							db.command(shardCollectionCommand);
+						}
+						return null;
+					}
+				});				
+			}
+			
+		}
+
 		try {
 			mt.afterPropertiesSet();
 		} catch (Exception e) {
