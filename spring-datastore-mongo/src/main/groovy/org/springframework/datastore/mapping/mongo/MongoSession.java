@@ -61,15 +61,40 @@ public class MongoSession extends AbstractSession<DB> {
 	}
 	
 	
-
+	/**
+	 * Sets the WriteConcern to use for the session
+	 * 
+	 * @param writeConcern The WriteConcern to use
+	 */
 	public void setWriteConcern(WriteConcern writeConcern) {
 		this.writeConcern = writeConcern;
 	}
 	
+	/**
+	 * Obtains the WriteConcern to use for the session
+	 * @return
+	 */
 	public WriteConcern getWriteConcern() {
 		return writeConcern;
 	}
 
+	/**
+	 * Execute a flush using the given WriteConcern
+	 * 
+	 * @param writeConcern The WriteConcern to use
+	 */
+	public void flush(WriteConcern writeConcern) {
+		WriteConcern current = this.writeConcern;
+		
+		this.writeConcern = writeConcern;
+		
+		try {
+			super.flush();
+		}
+		finally {
+			this.writeConcern = current;
+		}
+	}
 	@Override
 	public void disconnect() {	
 		super.disconnect();
