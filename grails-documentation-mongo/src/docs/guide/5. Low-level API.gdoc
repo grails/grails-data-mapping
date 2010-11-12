@@ -1,0 +1,49 @@
+A lower level API is provided by the plugin that is based on the [GMongo|https://github.com/poiati/gmongo] project. An example of GMongo usage can be seen below:
+
+{code:java}
+// Get a db reference in the old fashion way
+def db = mongo.getDB("gmongo")
+
+// Collections can be accessed as a db property (like the javascript API)
+assert db.myCollection instanceof com.mongodb.DBCollection
+// They also can be accessed with array notation 
+assert db['my.collection'] instanceof com.mongodb.DBCollection
+
+// Insert a document
+db.languages.insert([name: 'Groovy'])
+// A less verbose way to do it
+db.languages.insert(name: 'Ruby')
+// Yet another way
+db.languages << [name: 'Python']
+
+// Insert a list of documents
+db.languages << [[name: 'Javascript', type: 'prototyped'], [name: 'Ioke', type: 'prototyped']]
+{code}
+
+
+To get hold of the @mongo@ instance inside a controller or service simple define a @mongo@ property:
+
+{code:java}
+def mongo
+def myAction = {
+	def db = mongo.getDB("mongo")
+	db.languages.insert([name: 'Groovy'])	
+}
+{code}
+
+A request scoped bean is also available for the default database (typically the name of your application, unless specified by the @databaseName@ config option, plus the suffix "DB"). 
+
+{code:java}
+def peopleDB
+def myAction = {
+	peopleDB.languages.insert([name: 'Fred'])	
+}
+{code}
+
+Each domain class you define also has a @collection@ property that allows easy access to the underlying @DBCollection@ instance and hence the GMongo API:
+
+{code:java}
+Person.collection.count() == 1
+Person.collection.findOne(firstName:"Fred").lastName == "Flintstone"
+{code}
+

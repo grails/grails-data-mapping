@@ -1,0 +1,25 @@
+The way GORM for Mongo works is to map each domain class to a Mongo collection. For example given a domain class such as:
+
+{code:java}
+class Person {
+  String firstName
+  String lastName
+  static hasMany = [pets:Pet]
+}
+{code}
+
+This will map onto a Mongo [DBCollection|http://api.mongodb.org/java/current/com/mongodb/DBCollection.html] called "person".
+
+You may wish to customize how a domain class maps onto a @DBCollection@. This is possible using the @mapping@ block as follows:
+
+{code:java}
+class Person {
+	..
+	static mapping = {
+		collection "mycollection"
+		database "mydb"
+	}
+}
+{code}
+
+In this example we see that the @Person@ entity has been mapped to a collection called "mycollection" in a database called "mydb".

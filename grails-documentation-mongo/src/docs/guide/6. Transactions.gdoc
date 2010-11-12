@@ -1,0 +1,13 @@
+Mongo doesn't support transactions directly, however GORM for Mongo does batch up inserts and updates until the session is flushed. This makes it possible to support some rollback options. 
+
+{code:java}
+Person.withTransaction { status ->
+  new Person(name:"Bob", age:50).save()
+  throw new RuntimeException("bad")
+  new Person(name:"Fred", age:45).save()
+}
+{code}
+
+For example in this case neither @Person@ object will be persisted to the database, because underneath the surface a persistence session is being used to batch up both insert operations into a single insert. When the exception is thrown neither insert is ever executed, hence we allow for some transactional semantics are the GORM-level.
+
+Using the lower level API you can of course also take advantage of Mongo's support for [Atomic operations|http://www.mongodb.org/display/DOCS/Atomic+Operations].
