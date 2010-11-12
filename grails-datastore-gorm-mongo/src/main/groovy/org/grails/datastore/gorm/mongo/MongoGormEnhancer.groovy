@@ -22,6 +22,7 @@ import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.mongo.MongoDatastore;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.gmongo.internal.DBCollectionPatcher;
 import com.mongodb.DBCollection;
 
 /**
@@ -72,6 +73,9 @@ class MongoGormStaticApi extends GormStaticApi {
 		MongoDatastore ms = datastore
 		def template = ms.getMongoTemplate(persistentEntity)
 
-		template.getCollection(template.getDefaultCollectionName())
+		
+		def coll = template.getCollection(template.getDefaultCollectionName())
+		DBCollectionPatcher.patch(coll)
+		return coll
 	}
 }

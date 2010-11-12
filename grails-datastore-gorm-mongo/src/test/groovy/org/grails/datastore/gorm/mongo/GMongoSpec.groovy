@@ -41,6 +41,9 @@ class GMongoSpec extends Specification{
 			
 		then:	
 			Person.count() == 1
+			Person.collection.count() == 1
+			Person.collection.findOne(firstName:"Fred").lastName == "Flintstone"
+
 			db[Person.collectionName].count() == 1
 			db[Person.collectionName].findOne(firstName:"Fred").lastName == "Flintstone"
 			
