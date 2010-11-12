@@ -380,6 +380,7 @@ public class MongoQuery extends Query{
                             		propertyName = pp.getPropertyName();
                             	}
                                 if(persistentProperty != null) {
+                                	populateMongoQuery(entity, query, criteria);
                                     List propertyResults = collection.distinct(propertyName, query);
 
                                     if(persistentProperty instanceof ToOne) {

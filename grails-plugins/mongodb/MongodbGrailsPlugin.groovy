@@ -43,10 +43,8 @@ a GORM API onto it
     def doWithSpring = {
         def mongoConfig = application.config?.grails?.mongo
 
-        def existingTransactionManager = manager?.hasGrailsPlugin("hibernate") || getSpringConfig().containsBean("transactionManager")
-        def txManagerName = existingTransactionManager ? 'mongoTransactionManager' : 'transactionManager'
 
-        "$txManagerName"(DatastoreTransactionManager) {
+        mongoTransactionManager(DatastoreTransactionManager) {
           datastore = ref("mongoDatastore")
         }
 
@@ -122,8 +120,9 @@ a GORM API onto it
     }
 
     def doWithDynamicMethods = { ctx ->
-      Datastore datastore = ctx.getBean(Datastore)
-      PlatformTransactionManager transactionManager = ctx.getBean(DatastoreTransactionManager)
+	
+      Datastore datastore = ctx.getBean("mongoDatastore")
+      PlatformTransactionManager transactionManager = ctx.getBean("mongoTransactionManager")
       def enhancer = transactionManager ?
                           new MongoGormEnhancer(datastore, transactionManager) :
                           new MongoGormEnhancer(datastore)
