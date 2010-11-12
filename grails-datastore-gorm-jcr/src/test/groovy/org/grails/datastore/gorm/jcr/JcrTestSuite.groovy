@@ -33,7 +33,7 @@ import grails.gorm.tests.RangeQuerySpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-//  DomainEventsSpec, - cannot be tested
+//  DomainEventsSpec, // not yet passed
 //  ProxyLoadingSpec, // passed
 //  QueryAfterPropertyChangeSpec,
 //  CircularOneToManySpec, // StackOverflow
@@ -42,7 +42,7 @@ import grails.gorm.tests.RangeQuerySpec
 //  ListOrderBySpec,
 //  GroovyProxySpec, // passed
 //  CommonTypesPersistenceSpec, // passed
-//  GormEnhancerSpec,
+  GormEnhancerSpec,
 //  CriteriaBuilderSpec,
 //  NegationSpec,
 //  NamedQuerySpec,

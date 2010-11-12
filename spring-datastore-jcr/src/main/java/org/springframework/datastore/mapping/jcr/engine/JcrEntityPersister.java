@@ -40,6 +40,7 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
 */
     private JcrTemplate jcrTemplate;
     private SimpleTypeConverter typeConverter;
+    
 
     public JcrEntityPersister(MappingContext context, PersistentEntity entity, Session session, JcrTemplate jcrTemplate) {
         super(context, entity, session);
@@ -179,6 +180,7 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     private Long getLong(Object value){
         return typeConverter.convertIfNecessary(value, Long.class);
     }
+
 
     @Override
     protected Node createNewEntry(final PersistentEntity persistentEntity) {

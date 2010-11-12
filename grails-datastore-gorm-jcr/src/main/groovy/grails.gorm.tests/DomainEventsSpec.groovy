@@ -4,26 +4,45 @@ import org.grails.datastore.gorm.events.DomainEventInterceptor
 import org.grails.datastore.gorm.events.AutoTimestampInterceptor
 import org.springframework.datastore.mapping.core.Session
 
+
 /**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: Sep 3, 2010
- * Time: 12:15:38 PM
- * To change this template use File | Settings | File Templates.
+ * Override from GORM TCK to test JCR datastore
+ *
+ * @author Erawat Chamanont
+ * @since 1.0
  */
 class DomainEventsSpec extends GormDatastoreSpec{
 
+   def cleanup() {
+    def nativeSession  = session.nativeInterface
+    def wp = nativeSession.getWorkspace();
+    def qm = wp.getQueryManager();
 
+    def q = qm.createQuery("//ModifyPerson", javax.jcr.query.Query.XPATH);
+    def qr = q.execute()
+    def itr = qr.getNodes();
+    itr.each { it.remove() }
+
+    q = qm.createQuery("//PersonEvent", javax.jcr.query.Query.XPATH);
+    qr = q.execute()
+    itr = qr.getNodes();
+    itr.each { it.remove() }
+    nativeSession.save()
+
+  }
 
   Session setupEventsSession() {
     def datastore = session.datastore
     datastore.addEntityInterceptor(new DomainEventInterceptor())
     datastore.addEntityInterceptor(new AutoTimestampInterceptor())
+    session;
+    /*
     session= datastore.connect([username:"username",
                               password:"password",
                               workspace:"default",
                               configuration:"classpath:repository.xml",
                               homeDir:"/temp/repo"])
+    */
   }
 
   void "Test modify property before save"() {

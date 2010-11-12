@@ -271,7 +271,6 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
 
                 if (propValue instanceof Collection) {
                     Collection associatedObjects = (Collection) propValue;
-
                     List<Serializable> keys = session.persist(associatedObjects);
 
                     oneToManyKeys.put(oneToMany, keys);
@@ -304,7 +303,6 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
                                             toUnindex.put(prop, oldValue);
                                     }
                                 }*/
-                                //setEntryAssociatedValue(e, propName, associationId);
                                 setEntryValue(e, propName, associationId);
                                 if (association.isBidirectional()) {
                                     Association inverse = association.getInverseSide();
@@ -312,7 +310,6 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
                                         inverseCollectionUpdates.put((OneToMany) inverse, associationId);
                                     }
                                 }
-
                             }
                         } else {
                             if (!association.isNullable() && !association.isCircular()) {
@@ -333,11 +330,6 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
             PendingOperation postOperation = new PendingOperationAdapter<T, K>(persistentEntity, k, e) {
 				@Override
 				public void run() {
-                    //updateOneToManyIndices(e, updateId, oneToManyKeys);
-                    //if(doesRequirePropertyIndexing()) {
-                    //	toIndex.put(persistentEntity.getIdentity(), updateId);
-                   /// 	updatePropertyIndices(updateId, toIndex, toUnindex);
-                   /// }
                     for (EntityInterceptor interceptor : interceptors) {
                         if (!interceptor.beforeInsert(persistentEntity, entityAccess)) return;
                     }
@@ -355,7 +347,6 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
 
             };
             pendingOperation.addCascadeOperation(postOperation);
-
 
             // If the key is still at this point we have to execute the pending operation now to get the key
             if(k == null) {

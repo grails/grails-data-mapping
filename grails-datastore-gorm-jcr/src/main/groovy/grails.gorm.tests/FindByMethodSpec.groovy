@@ -9,6 +9,7 @@ package grails.gorm.tests
 class FindByMethodSpec extends GormDatastoreSpec{
 
   def cleanup() {
+    super      
     def nativeSession  = session.nativeInterface
     def wp = nativeSession.getWorkspace();
     def qm = wp.getQueryManager();

@@ -76,6 +76,7 @@ public class JcrSession extends AbstractSession<JcrSessionFactory> {
 
     @Override
     protected Transaction beginTransactionInternal() {
+        System.out.println("beging Tx");
         return new JcrTransaction(jcrSessionFactory);
     }
 

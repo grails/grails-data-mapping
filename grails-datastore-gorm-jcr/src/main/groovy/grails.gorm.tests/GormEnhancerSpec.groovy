@@ -138,7 +138,6 @@ class GormEnhancerSpec extends GormDatastoreSpec {
       4 == total
 
       2 == TestEntity.findAllByNameOrAge("Barney", 40).size()
-      print 'test';
       1 == TestEntity.findAllByNameOrAge("Barney", 40, [max:1]).size()
   }
 
