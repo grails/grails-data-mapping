@@ -47,3 +47,6 @@ Person.collection.count() == 1
 Person.collection.findOne(firstName:"Fred").lastName == "Flintstone"
 {code}
 
+{note}
+If you are using Hibernate entities with Mongo then the collection will be scoped in the @mongo@ namespace. Example: Person.mongo.collection.count()
+{note}
