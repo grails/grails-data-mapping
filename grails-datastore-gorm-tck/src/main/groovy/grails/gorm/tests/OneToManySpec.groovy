@@ -45,6 +45,11 @@ class OneToManySpec extends GormDatastoreSpec{
       Person p = new Person(firstName: "Fred", lastName: "Flinstone")
       p.addToPets(new Pet(name: "Dino", type: new PetType(name: "Dinosaur")))
       p.save(flush:true)
+	  
+	  new Person(firstName: "Barney", lastName: "Rubble")
+		  .addToPets(new Pet(name: "T Rex", type: new PetType(name: "Dinosaur")))
+		  .addToPets(new Pet(name: "Stego", type: new PetType(name: "Dinosaur")))
+		  .save(flush:true)
 
       session.clear()
 
@@ -76,7 +81,11 @@ class OneToManySpec extends GormDatastoreSpec{
   void "test update inverse side of bidirectional one to many collection"() {
 	  given:
 	  	Person p = new Person(firstName: "Fred", lastName: "Flinstone").save()
-		new Pet(name: "Dino", type: new PetType(name: "Dinosaur"), owner:p).save(flush:true)
+		new Pet(name: "Dino", type: new PetType(name: "Dinosaur"), owner:p).save()
+		Person p2 = new Person(firstName: "Barney", lastName: "Rubble").save()
+		new Pet(name: "T Rex", type: new PetType(name: "Dinosaur"), owner:p2).save()
+		new Pet(name: "Stego", type: new PetType(name: "Dinosaur"), owner:p2).save(flush:true)
+  
 		session.clear()
 	 when:
 	 	p = Person.findByFirstName("Fred")
