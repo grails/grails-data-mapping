@@ -16,12 +16,12 @@ import grails.datastore.test.DatastoreUnitTestMixin
 class PersonTests extends GroovyTestCase {
     void testPersist() {
         mockDomain(Person)
-        def s = new Simple(name:"Bob")
+        def s = new Person(name:"Bob")
         s.save()
 		
         assert s.id != null
 		
-        s = Simple.get(s.id)
+        s = Person.get(s.id)
             
         assert s != null
     }
