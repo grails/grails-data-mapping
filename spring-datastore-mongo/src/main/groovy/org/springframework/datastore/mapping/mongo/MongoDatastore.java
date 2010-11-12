@@ -243,9 +243,6 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         template.execute(new DocumentStoreConnectionCallback<DB, Object>() {
             public Object doInConnection(DB db) throws Exception {
                 final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
-                DBObject dbo = new BasicDBObject();
-                dbo.put(MongoEntityPersister.MONGO_ID_FIELD, 1);
-                collection.ensureIndex(dbo, entity.getIdentity().toString(), true);
 
                 for (PersistentProperty property : entity.getPersistentProperties()) {
                     final boolean indexed = isIndexed(property) && Comparable.class.isAssignableFrom(property.getType());
