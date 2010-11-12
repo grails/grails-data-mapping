@@ -14,16 +14,9 @@ grails.project.dependency.resolution = {
         grailsHome()
         grailsCentral()
 
-	 	mavenRepo 'http://maven.springframework.org/milestone'
-        mavenRepo 'http://repository.codehaus.org'
-        // uncomment the below to enable remote dependency resolution
-        // from public Maven repositories
-        mavenLocal()
         mavenCentral()
-        //mavenRepo "http://snapshots.repository.codehaus.org"
-        //mavenRepo "http://repository.codehaus.org"
-        //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
+	 	mavenRepo 'http://maven.springframework.org/snapshot'
+        mavenRepo 'http://repository.codehaus.org'
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
@@ -35,9 +28,9 @@ grails.project.dependency.resolution = {
 	    }
 		runtime("org.springframework.data:spring-data-mongodb:1.0.0.BUILD-SNAPSHOT", excludes)
 		runtime("com.gmongo:gmongo:0.5.1", excludes)
-      	runtime("org.grails:grails-datastore-gorm:1.0.0.BUILD-SNAPSHOT", excludes)	
-      	runtime("org.grails:grails-datastore-gorm-mongo:1.0.0.BUILD-SNAPSHOT", excludes)
-      	runtime( "org.springframework:spring-datastore-web:1.0.0.BUILD-SNAPSHOT", excludes)
-      	test("org.grails:grails-datastore-gorm-test:1.0.0.BUILD-SNAPSHOT", excludes)
+      	runtime("org.grails:grails-datastore-gorm:1.0.0.M3", excludes)	
+      	runtime("org.grails:grails-datastore-gorm-mongo:1.0.0.M3", excludes)
+      	runtime( "org.springframework:spring-datastore-web:1.0.0.M3", excludes)
+      	test("org.grails:grails-datastore-gorm-test:1.0.0.M3", excludes)
     }
 }
