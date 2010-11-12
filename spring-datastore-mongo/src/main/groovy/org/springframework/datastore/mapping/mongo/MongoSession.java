@@ -23,8 +23,11 @@ import java.util.Map;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.MongoException;
 import com.mongodb.WriteConcern;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.document.mongodb.DBCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.data.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.mapping.core.AbstractSession;
@@ -125,10 +128,10 @@ public class MongoSession extends AbstractSession<DB> {
 		// Optimizes saving multipe entities at once		
 		for (final PersistentEntity entity : inserts.keySet()) {
 			final MongoTemplate template = getMongoTemplate(entity.isRoot() ? entity : entity.getRootEntity());
-			template.execute(new DocumentStoreConnectionCallback<DB, Object>() {
-
+			template.execute(new DBCallback<Object>() {
 				@Override
-				public Object doInConnection(DB db) throws Exception {
+				public Object doInDB(DB db) throws MongoException,
+						DataAccessException {
 					final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
 					
 					final Collection<PendingInsert> pendingInserts = inserts.get(entity);
@@ -157,6 +160,7 @@ public class MongoSession extends AbstractSession<DB> {
 					}
 					return null;
 				}
+
 			});
 		}
 	}

@@ -30,7 +30,6 @@ import java.util.TimeZone;
 
 import org.bson.types.ObjectId;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.document.DocumentStoreConnectionCallback;
 import org.springframework.data.document.mongodb.DBCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
@@ -407,9 +406,10 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         	// embedded in the owning entity, otherwise we use a foreign key
         	if(!association.isBidirectional()) {
                 nativeEntry.put(association.getName(), foreignKeys);
-                mongoTemplate.execute(new DocumentStoreConnectionCallback<DB, Object>() {
-
-                    public Object doInConnection(DB db) throws Exception {
+    			mongoTemplate.execute(new DBCallback<Object>() {
+    				@Override
+    				public Object doInDB(DB db) throws MongoException,
+    						DataAccessException {
                         final DBCollection collection = db.getCollection(getCollectionName(association.getOwner()));
                         DBObject query = new BasicDBObject(MONGO_ID_FIELD, primaryKey);
                         collection.update(query, nativeEntry);

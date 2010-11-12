@@ -22,9 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.data.document.mongodb.DBCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
-import org.springframework.data.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
@@ -41,6 +42,7 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.MongoException;
 
 /**
  * A {@link org.springframework.datastore.mapping.query.Query} implementation for the Mongo document store
@@ -305,10 +307,10 @@ public class MongoQuery extends Query{
     protected List executeQuery(final PersistentEntity entity, final Junction criteria) {
         final MongoTemplate template = mongoSession.getMongoTemplate(entity);
 
-        return (List) template.execute(new DocumentStoreConnectionCallback<DB, Object>(){
-
-            @SuppressWarnings("unchecked")
-			public Object doInConnection(DB db) throws Exception {
+		return template.execute(new DBCallback<List>() {
+			@Override
+			public List doInDB(DB db) throws MongoException,
+					DataAccessException {
 
                 final DBCollection collection = db.getCollection(mongoEntityPersister.getCollectionName(entity));
                 if(uniqueResult) {
@@ -494,7 +496,7 @@ public class MongoQuery extends Query{
     }
 
     @SuppressWarnings("unchecked")
-	private Object wrapObjectResultInList(Object object) {
+	private List wrapObjectResultInList(Object object) {
         List result = new ArrayList();
         result.add(object);
         return result;
