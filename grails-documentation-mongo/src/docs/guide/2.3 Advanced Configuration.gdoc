@@ -29,7 +29,7 @@ grails {
 
 Available options and their descriptions are defined in the [MongoOptions|http://api.mongodb.org/java/current/com/mongodb/MongoOptions.html] javadoc.
 
-In production scenarios you will typically use more than one Mongo server in either master/slave or replication scenarios. The plugin allows you to configure replica pairs:
+In production scenarios you will typically use more than one Mongo server in either [master/slave|http://www.mongodb.org/display/DOCS/Master+Slave] or [replication|http://www.mongodb.org/display/DOCS/Replication] scenarios. The plugin allows you to configure [replica pairs|http://www.mongodb.org/display/DOCS/Replica+Pairs]:
 
 {code:java}
 grails {
@@ -39,7 +39,7 @@ grails {
 }
 {code}
 
-Or sets:
+Or [replica sets|http://www.mongodb.org/display/DOCS/Replica+Sets]:
 
 {code:java}
 grails {
