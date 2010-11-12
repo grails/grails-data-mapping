@@ -26,8 +26,8 @@ To get hold of the @mongo@ instance inside a controller or service simple define
 {code:java}
 def mongo
 def myAction = {
-	def db = mongo.getDB("mongo")
-	db.languages.insert([name: 'Groovy'])	
+  def db = mongo.getDB("mongo")
+  db.languages.insert([name: 'Groovy'])	
 }
 {code}
 
@@ -36,7 +36,7 @@ A request scoped bean is also available for the default database (typically the 
 {code:java}
 def peopleDB
 def myAction = {
-	peopleDB.languages.insert([name: 'Fred'])	
+  peopleDB.languages.insert([name: 'Fred'])	
 }
 {code}
 

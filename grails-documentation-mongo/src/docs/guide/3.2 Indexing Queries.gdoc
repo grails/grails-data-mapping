@@ -4,10 +4,10 @@ With that in mind it is important to specify the properties you plan to query us
 
 {code:java}
 class Person {
-	String name
-	static mapping = {
-		name index:true
-	}
+  String name
+  static mapping = {
+    name index:true
+  }
 }
 {code}
 

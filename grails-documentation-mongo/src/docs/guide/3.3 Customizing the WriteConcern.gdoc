@@ -6,9 +6,9 @@ If you wish to customize the @WriteConcern@ for a domain class you can do so in 
 import com.mongodb.WriteConcern
 
 class Person {
-	String name
-	static mapping = {
-		writeConcern WriteConcern.FSYNC_SAFE	
-	}	
+  String name
+  static mapping = {
+    writeConcern WriteConcern.FSYNC_SAFE	
+  }	
 }
 {code}

@@ -14,11 +14,11 @@ You may wish to customize how a domain class maps onto a @DBCollection@. This is
 
 {code:java}
 class Person {
-	..
-	static mapping = {
-		collection "mycollection"
-		database "mydb"
-	}
+   ..
+  static mapping = {
+    collection "mycollection"
+    database "mydb"
+  }
 }
 {code}
 

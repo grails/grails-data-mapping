@@ -23,16 +23,16 @@ Thu Nov 11 16:54:08 [websvr] web admin interface listening on port 28017
 
 As you can see the server is running on port 27017, but don't worry the Mongodb plugin for Grails will automatically configure itself to look for Mongodb on that port by default. 
 
-If you want to configure how Grails connects to Mongo then you can do so using the following settings in @grails-app/conf/Config.groovy@:
+If you want to configure how Grails connects to Mongo then you can do so using the following settings in @grails-app/conf/DataSource.groovy@:
 
 {code:java}
 grails {
-	mongo {
-		host = "localhost"
-		port = 27107
-		username = "blah"
-		password = "blah"
-		databaseName = "foo"
-	}
+  mongo {
+    host = "localhost"
+    port = 27107
+    username = "blah"
+    password = "blah"
+    databaseName = "foo"
+  }
 }
 {code}

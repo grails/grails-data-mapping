@@ -10,7 +10,7 @@ However, sequence based integer identifiers are not ideal for environments that 
 
 {code:java}
 class Person {
-	String id
+    String id
 }
 {code}
 
@@ -20,7 +20,7 @@ Or a native BSON [ObjectId|http://api.mongodb.org/java/current/org/bson/types/Ob
 import  org.bson.types.ObjectId
 
 class Person {
-	ObjectId id
+    ObjectId id
 }
 {code}
 
