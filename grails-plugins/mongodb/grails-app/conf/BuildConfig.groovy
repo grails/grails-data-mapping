@@ -15,7 +15,8 @@ grails.project.dependency.resolution = {
         grailsCentral()
 
         mavenCentral()
-	 	mavenRepo 'http://maven.springframework.org/snapshot'
+	 	mavenRepo 'http://maven.springframework.org/milestone'
+	 	mavenRepo 'http://maven.springframework.org/snapshot'	
         mavenRepo 'http://repository.codehaus.org'
     }
     dependencies {
@@ -24,7 +25,7 @@ grails.project.dependency.resolution = {
 
 	    def excludes = {
 	        excludes "slf4j-simple", "persistence-api", "commons-logging", "jcl-over-slf4j", "slf4j-api", "jta"
-	        excludes "spring-core", "spring-beans", "spring-aop", "spring-tx", "spring-context", "spring-web", "log4j", "slf4j-log4j12"
+	        excludes "spring-core", "spring-beans", "spring-aop", "spring-asm","spring-webmvc","spring-tx", "spring-context", "spring-web", "log4j", "slf4j-log4j12"
 	    }
 		runtime("org.springframework.data:spring-data-mongodb:1.0.0.BUILD-SNAPSHOT", excludes)
 		runtime("com.gmongo:gmongo:0.5.1", excludes)
