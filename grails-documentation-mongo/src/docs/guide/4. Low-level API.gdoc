@@ -1,4 +1,4 @@
-A lower level API is provided by the plugin that is based on the [GMongo|https://github.com/poiati/gmongo] project. An example of GMongo usage can be seen below:
+A lower level API is provided by the plugin that is based on the [GMongo|http://github.com/poiati/gmongo] project. An example of GMongo usage can be seen below:
 
 {code:java}
 // Get a db reference in the old fashion way
