@@ -10,9 +10,9 @@ import org.junit.runners.Suite.SuiteClasses
  */
 @RunWith(Suite)
 @SuiteClasses([
-//  RangeQuerySpec,
-//  NamedQuerySpec,
-CriteriaBuilderSpec,
+//+  RangeQuerySpec,
+  NamedQuerySpec,
+//+  CriteriaBuilderSpec,
 //  OrderBySpec,
 //  CommonTypesPersistenceSpec,
 //  QueryAfterPropertyChangeSpec,
@@ -33,7 +33,7 @@ CriteriaBuilderSpec,
 //  UpdateWithProxyPresentSpec,
 //  AttachMethodSpec,
 //  WithTransactionSpec,
-//  CrudOperationsSpec
+//+  CrudOperationsSpec
 ])
 class RiakSuite {
 }

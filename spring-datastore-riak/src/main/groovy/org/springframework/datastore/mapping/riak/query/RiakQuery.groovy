@@ -1,11 +1,11 @@
 package org.springframework.datastore.mapping.riak.query
 
+import org.antlr.stringtemplate.StringTemplate
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.query.Query
-import org.springframework.datastore.mapping.riak.collection.RiakEntityIndex
 import org.springframework.datastore.mapping.riak.util.RiakTemplate
 
 /**
@@ -15,51 +15,51 @@ class RiakQuery extends Query {
 
   static Logger log = LoggerFactory.getLogger(RiakQuery)
   static def queryHandlers
+  static def jsTemplates
+  static def ifClauseTemplates
+  static def unquotedClasses = [Long, Integer, Double, Date, Calendar, BigDecimal, BigInteger, Boolean]
   static {
+    jsTemplates = [
+        eq: new StringTemplate()
+    ]
+    ifClauseTemplates = [
+        eq: "(entry.%s == %s)",
+        ne: "(entry.%s != %s)",
+        gt: "(entry.%s > %s)",
+        lt: "(entry.%s < %s)",
+        gte: "(entry.%s >= %s)",
+        lte: "(entry.%s <= %s)",
+        between: "(entry.%s <= %s) && (entry.%s >= %s)",
+        like: "/^%s/.test(\"\"+entry.%s)"
+    ]
     queryHandlers = [
         (Query.Equals): { Query.Equals equals, PersistentEntity entity, buff ->
-          def val = equals.value.asType(entity.getPropertyByName(equals.name).getType())
-          if (val instanceof Boolean || val instanceof Integer || val instanceof Double) {
-            buff << "(entry.${equals.name} == ${val})"
-          } else {
-            buff << "(entry.${equals.name} == \"${val}\")"
-          }
+          buff << String.format(ifClauseTemplates.eq, equals.name, getQuotedValue(equals.value))
         },
         (Query.IdEquals): { Query.IdEquals idEquals, PersistentEntity entity, buff ->
           buff << "v.key == ${idEquals.value}"
         },
         (Query.NotEquals): { Query.Equals notEquals, PersistentEntity entity, buff ->
-          def val = notEquals.value.asType(entity.getPropertyByName(notEquals.name).getType())
-          if (val instanceof Boolean || val instanceof Integer || val instanceof Double) {
-            buff << "(entry.${notEquals.name} != ${val})"
-          } else {
-            buff << "(entry.${notEquals.name} != \"${val}\")"
-          }
+          buff << String.format(ifClauseTemplates.ne, notEquals.name, getQuotedValue(notEquals.value))
         },
         (Query.GreaterThan): { Query.GreaterThan gt, PersistentEntity entity, buff ->
-          def val = gt.value.asType(entity.getPropertyByName(gt.name).getType())
-          buff << "(entry.${gt.name} > ${val})"
+          buff << String.format(ifClauseTemplates.gt, gt.name, getQuotedValue(gt.value))
         },
         (Query.GreaterThanEquals): { Query.GreaterThanEquals gte, PersistentEntity entity, buff ->
-          def val = gte.value.asType(entity.getPropertyByName(gte.name).getType())
-          buff << "(entry.${gte.name} >= ${val})"
+          buff << String.format(ifClauseTemplates.gte, gte.name, getQuotedValue(gte.value))
         },
         (Query.LessThan): { Query.LessThan lt, PersistentEntity entity, buff ->
-          def val = lt.value.asType(entity.getPropertyByName(lt.name).getType())
-          buff << "(entry.${lt.name} < ${val})"
+          buff << String.format(ifClauseTemplates.lt, lt.name, getQuotedValue(lt.value))
         },
         (Query.LessThanEquals): { Query.LessThanEquals lte, PersistentEntity entity, buff ->
-          def val = lte.value.asType(entity.getPropertyByName(lte.name).getType())
-          buff << "(entry.${lte.name} <= ${val})"
+          buff << String.format(ifClauseTemplates.lte, lte.name, getQuotedValue(lte.value))
         },
         (Query.Between): { Query.Between between, PersistentEntity entity, buff ->
-          def to = between.to.value.asType(entity.getPropertyByName(between.property).getType())
-          def from = between.from.value.asType(entity.getPropertyByName(between.property).getType())
-          buff << "(entry.${between.property} <= ${to}) && (entry.${between.property} >= ${from})"
+          buff << String.format(ifClauseTemplates.between, between.property, getQuotedValue(between.to), between.property, getQuotedValue(between.from))
         },
         (Query.Like): { Query.Like like, PersistentEntity entity, buff ->
           def regexp = like.value.toString().replaceAll("%", "(.+)")
-          buff << "/^$regexp/.test(\"\"+entry.${like.name})"
+          buff << String.format(ifClauseTemplates.like, regexp, like.name)
         },
         (Query.Conjunction): { Query.Conjunction and, PersistentEntity entity, buff ->
           def conjunc = RiakQuery.handleJunction(and, entity).join("&&")
@@ -75,7 +75,7 @@ class RiakQuery extends Query {
         },
         (Query.In): { Query.In qin, PersistentEntity entity, buff ->
           def inClause = qin.values.collect {
-            "(entry.${qin.name} == " + (it.isInteger() ? it : "\"$it\"") + ")"
+            String.format(ifClauseTemplates.eq, qin.name, getQuotedValue(it))
           }.join("||")
           buff << "($inClause)"
         }
@@ -102,35 +102,40 @@ class RiakQuery extends Query {
       }
     }
     def joinStr = (criteria && criteria instanceof Query.Disjunction ? "||" : "&&")
-    def ifclause = buff.join(joinStr) ?: "true"
-    def mapJs = "function(v){var o=Riak.mapValuesJson(v);var r=[];for(i in o){var entry=o[i];if(${ifclause}){o[i].id=v.key;r.push(o[i]);}} return r;}"
+    def ifclause = buff.join(joinStr) ?: "1 == 1"
+    def mapJs = "function(v){ejsLog('/tmp/mapred.log','v='+JSON.stringify(v));var o=Riak.mapValuesJson(v);var r=[];for(i in o){var entry=o[i];if(${ifclause}){if(typeof v['push'] == 'function'){o[i].id=entry.id;}else{o[i].id=v.key;};r.push(o[i]);}} return r;}"
+    boolean hasReduce = false
     def reduceJs
     // Property projections
     List<Query.PropertyProjection> propProjs = new ArrayList<Query.PropertyProjection>()
     def projectionList = projections()
     if (projectionList.projections) {
-      StringBuilder jsbuff = new StringBuilder("function(v){ var r=[];")
+      StringBuilder jsbuff = new StringBuilder("function(values){ var r=[];")
       projectionList.projectionList.each { proj ->
         if (proj instanceof Query.CountProjection) {
-          jsbuff << "r.push(v.length);"
+          jsbuff << "r.push(values.length);"
+          hasReduce = true
         } else if (proj instanceof Query.AvgProjection) {
-          jsbuff << "if(v.length>0){ var total=0.0;for(i in v){ total += 1*v[i].${proj.propertyName}; } r.push(total/v.length); } else { r.push(0.0); }"
+          jsbuff << "if(values.length>0){ var total=0.0;for(i in values){ total += 1*values[i].${proj.propertyName}; } r.push(total/values.length); } else { r.push(0.0); }"
+          hasReduce = true
         } else if (proj instanceof Query.MaxProjection) {
-          jsbuff << "if(v.length>0){ var max=1*v[0].${proj.propertyName};for(i in v){ if(i>0){ if(1*v[i].${proj.propertyName} > max){ max=1*v[i].${proj.propertyName}; }}} r.push(max);}"
+          jsbuff << "if(values.length>0){ var max=1*values[0].${proj.propertyName};for(i in values){ if(i>0){ if(1*values[i].${proj.propertyName} > max){ max=1*values[i].${proj.propertyName}; }}} r.push(max);}"
+          hasReduce = true
         } else if (proj instanceof Query.MinProjection) {
-          jsbuff << "if(v.length>0){ var min=1*v[0].${proj.propertyName};for(i in v){ if(i>0){ if(1*v[i].${proj.propertyName} < min){ min=1*v[i].${proj.propertyName}; }}} r.push(min);}"
+          jsbuff << "if(values.length>0){ var min=1*values[0].${proj.propertyName};for(i in values){ if(i>0){ if(1*values[i].${proj.propertyName} < min){ min=1*values[i].${proj.propertyName}; }}} r.push(min);}"
+          hasReduce = true
         } else if (proj instanceof Query.IdProjection) {
-          jsbuff << "if(v.length>0){ for(i in v){ r.push(1*v[i].id); }}"
+          jsbuff << "if(values.length>0){ for(i in values){ r.push(1*values[i].id); }}"
+          hasReduce = true
         } else if (proj instanceof Query.PropertyProjection) {
           propProjs << proj
-          jsbuff << "return v;"
         }
       }
       jsbuff << " return r;}"
       reduceJs = jsbuff.toString()
     }
 
-    def results = riak.mapReduce(entity.name, mapJs, reduceJs)
+    def results = riak.mapReduce(entity.name, "function(data, keyData, args){ log(arguments); return []; }", (hasReduce ? reduceJs : null))
     // This portion shamelessly absconded from Graeme's RedisQuery.java
     if (results) {
       final def total = results.size()
@@ -160,7 +165,7 @@ class RiakQuery extends Query {
             log.warn "Only the first PropertyProjection is used: " + propProjs[0]
           }
           finalResult.collect { entry ->
-            entry."${propProjs[0].propertyName}"
+            getSession().retrieve(getEntity().getJavaClass(), entry.id)?."${propProjs[0].propertyName}"
           }
         } else {
           finalResult
@@ -184,4 +189,17 @@ class RiakQuery extends Query {
     conjunc
   }
 
+  static def getQuotedValue(obj) {
+    if (unquotedClasses.contains(obj.class)) {
+      if (obj instanceof Date) {
+        obj.time
+      } else if (obj instanceof Calendar) {
+        obj.time.time
+      } else {
+        obj
+      }
+    } else {
+      "\"${obj}\""
+    }
+  }
 }

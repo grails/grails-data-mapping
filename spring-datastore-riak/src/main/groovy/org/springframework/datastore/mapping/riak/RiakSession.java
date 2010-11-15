@@ -27,6 +27,8 @@ import org.springframework.datastore.mapping.riak.util.RiakTemplate;
 import org.springframework.datastore.mapping.transactions.Transaction;
 
 import java.math.BigInteger;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
@@ -39,6 +41,7 @@ public class RiakSession extends AbstractSession {
     super(datastore, mappingContext);
     this.riakTemplate = riakTemplate;
     mappingContext.addTypeConverter(new BigIntegerToLongConverter());
+    mappingContext.addTypeConverter(new LongToDateConveter());
   }
 
   @Override
@@ -68,5 +71,14 @@ public class RiakSession extends AbstractSession {
       return new Long(integer.longValue());
     }
   }
+
+  protected class LongToDateConveter implements Converter<Long, Date> {
+    public Date convert(Long source) {
+      Calendar c = Calendar.getInstance();
+      c.setTimeInMillis(source);
+      return c.getTime();
+    }
+  }
+
 
 }

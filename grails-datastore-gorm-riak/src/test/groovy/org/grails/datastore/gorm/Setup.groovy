@@ -64,7 +64,7 @@ class Setup {
 
     Session con = riak.connect()
     RiakTemplate riakTmpl = con.nativeInterface
-    ["grails.gorm.tests.TestEntity", "grails.gorm.tests.ChildEntity"].each {
+    ["grails.gorm.tests.TestEntity", "grails.gorm.tests.ChildEntity", "grails.gorm.tests.Publication"].each {
       riakTmpl.clear(it)
     }
 

@@ -16,7 +16,6 @@
 
 package org.springframework.datastore.mapping.riak.engine;
 
-import org.springframework.core.convert.ConversionService;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
@@ -33,9 +32,7 @@ import org.springframework.datastore.mapping.riak.query.RiakQuery;
 import org.springframework.datastore.mapping.riak.util.RiakTemplate;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
@@ -86,9 +83,15 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
   @Override
   protected void setEntryValue(Map nativeEntry, String key, Object value) {
     if (null != value) {
-      if (shouldConvert(value)) {
-        final ConversionService conversionService = getMappingContext().getConversionService();
-        nativeEntry.put(key, conversionService.convert(value, String.class));
+      if (value instanceof Calendar) {
+        nativeEntry.put(key, ((Calendar) value).getTime().getTime());
+      } else if (value instanceof Date) {
+        nativeEntry.put(key, ((Date) value).getTime());
+        //} else if (shouldConvert(value)) {
+        //final ConversionService conversionService = getMappingContext().getConversionService();
+        //nativeEntry.put(key, conversionService.convert(value, getPersistentEntity().getPropertyByName(key).getType()));
+      } else {
+        nativeEntry.put(key, value);
       }
     }
   }
