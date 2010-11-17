@@ -7,6 +7,7 @@ import org.springframework.datastore.mapping.jcr.JcrSession;
 import org.springframework.datastore.mapping.jcr.engine.JcrEntityPersister;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.query.projections.ManualProjections;
 import org.springframework.extensions.jcr.JcrTemplate;
 
 import javax.jcr.Node;
@@ -23,6 +24,8 @@ public class JcrQuery extends Query {
     private JcrEntityPersister entityPersister;
     private JcrTemplate jcrTemplate;
     private ConversionService conversionService;
+    private ManualProjections manualProjections;
+    
 
     public static String DEFAULT_NODE_TYPE = "nt:unstructured";
 
@@ -100,11 +103,10 @@ public class JcrQuery extends Query {
                         results.add(finalResults.size());
                     } else if (projection instanceof MinProjection) {
                         MinProjection min = (MinProjection) projection;
-                        return unsupportedProjection(projectionType);
-
+                        results.add(manualProjections.min(results,min.getPropertyName()));
                     } else if (projection instanceof MaxProjection) {
-                        return unsupportedProjection(projectionType);
-
+                        MinProjection max = (MinProjection) projection;
+                        results.add(manualProjections.min(results,max.getPropertyName()));
                     } else if (projection instanceof IdProjection) {
                         results.add(uuids);
                     } else if (projection.getClass() == PropertyProjection.class) {
@@ -116,7 +118,6 @@ public class JcrQuery extends Query {
         } else {
             final List params = new ArrayList();
             final String queryString = getQueryString(params, true);
-            //final String queryString = "//Book[@title != 'The Stand' and @author != 'James Patterson']";
             QueryResult qr = jcrTemplate.query(queryString.toString(), javax.jcr.query.Query.XPATH);
             try {
                 NodeIterator itr = qr.getNodes();
@@ -140,11 +141,11 @@ public class JcrQuery extends Query {
                             System.out.println("count projection2");
                             projectionResults.add(finalResults.size());
                         } else if (projection instanceof MaxProjection) {
-                            MaxProjection max = (MaxProjection) projection;
-                            return unsupportedProjection(projectionType);
+                            MaxProjection min = (MaxProjection) projection;
+                            finalResults.add(manualProjections.min(finalResults,min.getPropertyName()));
                         } else if (projection instanceof MinProjection) {
                             MinProjection min = (MinProjection) projection;
-                            return unsupportedProjection(projectionType);
+                            finalResults.add(manualProjections.min(finalResults,min.getPropertyName()));
                         } else {
                             if (projection instanceof SumProjection) {
                                 return unsupportedProjection(projectionType);
@@ -183,14 +184,36 @@ public class JcrQuery extends Query {
 
     }
 
+    private List applyProjections(List results, ProjectionList projections) {
+        List projectedResults = new ArrayList();
+        for (Projection projection : projections.getProjectionList()) {
+            if(projection instanceof CountProjection) {
+                projectedResults.add(results.size());
+            }
+            else if(projection instanceof MinProjection) {
+                MinProjection min = (MinProjection) projection;
+                projectedResults.add(manualProjections.min(results,min.getPropertyName()));
+            }
+           else if(projection instanceof MaxProjection) {
+                MaxProjection min = (MaxProjection) projection;
+                projectedResults.add(manualProjections.max(results,min.getPropertyName()));
+            }
+        }
+        if(projectedResults.isEmpty()) {
+        	return results;
+        }
+        return projectedResults;
+    }
+
+
     protected String getQueryString(List params, boolean distinct) {
         ProjectionList projectionList = projections();
         final StringBuilder q = new StringBuilder();
         q.append(ROOT_NODE);
-
         q.append(getEntity().getJavaClass().getSimpleName());
         //TODO Re-implement this to support XPATH
-        if (!projectionList.isEmpty()) {
+        /*if (!projectionList.isEmpty()) {
+            System.out.println("building Query and projectList != Empty");
             boolean modifiedQuery = false;
             for (Projection projection : projectionList.getProjectionList()) {
                 if (projection.getClass() == PropertyProjection.class) {
@@ -201,12 +224,21 @@ public class JcrQuery extends Query {
                     modifiedQuery = true;
                 }
             }
-        }
+        }*/
         if (!criteria.isEmpty()) {
             q.append("[");
             buildCondition(entity, criteria, q, 0, params);
             q.append("]");
         }
+
+        String tmp = q.toString();
+        int length = tmp.length();
+        Character c = tmp.charAt(length-2);
+        if(c.equals('[')){
+            tmp.subSequence(0,length -2 );
+            q.delete(length-2,length);
+        }
+
         for (Order order : orderBy) {
             String direction = null;
             if (order.getDirection().equals(Order.Direction.ASC))
@@ -227,13 +259,10 @@ public class JcrQuery extends Query {
 
 
     private static int buildCondition(PersistentEntity entity, Junction criteria, StringBuilder q, int index, List params) {
-        final List<Criterion> criterionList = criteria.getCriteria();
-
-        
+        final List<Criterion> criterionList = criteria.getCriteria();        
         for (Iterator<Criterion> iterator = criterionList.iterator(); iterator.hasNext();) {
-            Criterion criterion = iterator.next();
+            Criterion criterion = iterator.next();         
             final String operator = criteria instanceof Conjunction ? LOGICAL_AND : LOGICAL_OR;            
-            System.out.println(operator);
             CriterionHandler qh = criterionHandlers.get(criterion.getClass());
             if (qh != null) {
                 qh.handle(entity, criterion, q, params);

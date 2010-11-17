@@ -40,14 +40,14 @@ import grails.gorm.tests.NegationSpec
 //  ProxyLoadingSpec, // passed
 //  QueryAfterPropertyChangeSpec,
 //  CircularOneToManySpec, // StackOverflow
-//  InheritanceSpec,  still doesn't support inheritance 
+//  InheritanceSpec, // still doesn't support inheritance 
 //  FindByMethodSpec, // passed
 //  ListOrderBySpec, // passed
 //  GroovyProxySpec, // passed
 //  CommonTypesPersistenceSpec, // passed
-//  GormEnhancerSpec, //passed
-//  CriteriaBuilderSpec,
-  NegationSpec,
+// GormEnhancerSpec, //passed
+  CriteriaBuilderSpec,
+//  NegationSpec, //passes
 //  NamedQuerySpec,
 //  OrderBySpec, //passed 
 //  RangeQuerySpec,
