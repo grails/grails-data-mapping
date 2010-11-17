@@ -226,14 +226,15 @@ public class JcrQuery extends Query {
     }
 
 
-    private int buildCondition(PersistentEntity entity, Junction criteria, StringBuilder q, int index, List params) {
-         final List<Criterion> criterionList = criteria.getCriteria();
+    private static int buildCondition(PersistentEntity entity, Junction criteria, StringBuilder q, int index, List params) {
+        final List<Criterion> criterionList = criteria.getCriteria();
 
-         for (Iterator<Criterion> iterator = criterionList.iterator(); iterator.hasNext();) {
+        
+        for (Iterator<Criterion> iterator = criterionList.iterator(); iterator.hasNext();) {
             Criterion criterion = iterator.next();
-            final String operator = criteria instanceof Conjunction ? LOGICAL_AND : LOGICAL_OR;
+            final String operator = criteria instanceof Conjunction ? LOGICAL_AND : LOGICAL_OR;            
+            System.out.println(operator);
             CriterionHandler qh = criterionHandlers.get(criterion.getClass());
-            if(criteria instanceof Negation)
             if (qh != null) {
                 qh.handle(entity, criterion, q, params);
             }
@@ -249,7 +250,7 @@ public class JcrQuery extends Query {
     }
 
 
-    private final Map<Class, CriterionHandler> criterionHandlers = new HashMap() {
+    private static final Map<Class, CriterionHandler> criterionHandlers = new HashMap() {
         {
             put(Like.class, new CriterionHandler<Like>() {
                 public void handle(PersistentEntity entity, Like criterion, StringBuilder q, List params) {
@@ -370,15 +371,18 @@ public class JcrQuery extends Query {
             });
             put(Negation.class, new CriterionHandler<Negation>() {
                 public void handle(PersistentEntity entity, Negation criterion, StringBuilder q, List params) {
-                    System.out.println("Negation");
                     List<Criterion> cris = criterion.getCriteria();
-                    Disjunction dis = new Disjunction();
+                    Conjunction con = new Conjunction();
                     for (Criterion c : cris) {
+                        System.out.println(c.getClass());
                         if (c instanceof Equals) {
-                            dis.add(Restrictions.ne(((Equals) c).getProperty(), ((Equals) c).getValue()));
+                            con.add(Restrictions.ne(((Equals) c).getProperty(), ((Equals) c).getValue()));
+                        }
+                        if(c instanceof Conjunction){
+                            con.add(c);
                         }
                     }
-                    buildCondition(entity, dis, q, 0, params);
+                    buildCondition(entity, con, q, 0, params);
                 }
             });
         }

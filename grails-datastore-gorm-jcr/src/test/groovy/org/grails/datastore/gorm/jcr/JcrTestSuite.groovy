@@ -21,11 +21,11 @@ import grails.gorm.tests.ValidationSpec
 import grails.gorm.tests.UpdateWithProxyPresentSpec
 import grails.gorm.tests.AttachMethodSpec
 import grails.gorm.tests.WithTransactionSpec
-import grails.gorm.tests.NegationSpec
 import grails.gorm.tests.RangeQuerySpec
 import grails.gorm.tests.NamedQuerySpec
 import grails.gorm.tests.OneToManySpec
 import grails.gorm.tests.SaveAllSpec
+import grails.gorm.tests.NegationSpec
 
 /**
  * Created by IntelliJ IDEA.
@@ -47,7 +47,7 @@ import grails.gorm.tests.SaveAllSpec
 //  CommonTypesPersistenceSpec, // passed
 //  GormEnhancerSpec, //passed
 //  CriteriaBuilderSpec,
-//  NegationSpec,
+  NegationSpec,
 //  NamedQuerySpec,
 //  OrderBySpec, //passed 
 //  RangeQuerySpec,
