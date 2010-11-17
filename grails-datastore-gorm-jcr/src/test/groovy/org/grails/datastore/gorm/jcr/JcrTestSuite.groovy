@@ -41,7 +41,7 @@ import grails.gorm.tests.SaveAllSpec
 //  QueryAfterPropertyChangeSpec,
 //  CircularOneToManySpec, // StackOverflow
 //  InheritanceSpec,  still doesn't support inheritance 
-//  FindByMethodSpec,
+//  FindByMethodSpec, // passed
 //  ListOrderBySpec, // passed
 //  GroovyProxySpec, // passed
 //  CommonTypesPersistenceSpec, // passed

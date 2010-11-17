@@ -346,7 +346,7 @@ public class JcrQuery extends Query {
                     q.append(AT_SIGN)
                             .append(name)
                             .append(EQUALS);
-                    if (value instanceof String) {
+                    if (value instanceof String || value  instanceof Boolean) {
                         q.append("'")
                                 .append(value)
                                 .append("'");
@@ -361,7 +361,7 @@ public class JcrQuery extends Query {
                     q.append(AT_SIGN)
                             .append(name)
                             .append(NOT_EQUALS);
-                    if (value instanceof String) {
+                    if (value instanceof String || value  instanceof Boolean) {
                         q.append("'")
                                 .append(value)
                                 .append("'");
