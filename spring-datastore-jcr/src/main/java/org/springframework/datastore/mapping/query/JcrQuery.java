@@ -87,8 +87,17 @@ public class JcrQuery extends Query {
 
         if (criteria.isEmpty() && !(max != -1)) {
             //List finalResults = null;
-            uuids = paginateResults(getEntity().getJavaClass().getSimpleName());
-            finalResults = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
+            final String queryString = getQueryString();
+            QueryResult qr = jcrTemplate.query(queryString.toString(), javax.jcr.query.Query.XPATH);
+            try {
+                NodeIterator itr = qr.getNodes();
+                while (itr.hasNext()) {
+                    Node node = itr.nextNode();
+                    uuids.add(node.getUUID());
+                }
+            } catch (RepositoryException e) {
+                throw new InvalidDataAccessResourceUsageException("Cannot execute query. Entity [" + getEntity() + "] does not exist in the repository");
+            }            finalResults = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
             if (projectionList.isEmpty()) {
                 return finalResults;
             } else {
@@ -355,6 +364,14 @@ public class JcrQuery extends Query {
             });*/
         }
     };
+
+      /**
+     * Obtains the query string with variables embedded within the Query
+     * @return The query string
+     */
+    public String getQueryString() {
+        return getQueryString(null, false);
+    }
 
 
     private static void validateProperty(PersistentEntity entity, String name, Class criterionType) {
