@@ -24,15 +24,9 @@ public class JcrQuery extends Query {
     private JcrTemplate jcrTemplate;
     private ConversionService conversionService;
 
-    //    "/jcr:root/nodes//element(ex:nodeName,my:type)"
-
-
     public static String DEFAULT_NODE_TYPE = "nt:unstructured";
 
-    //public static String ROOT_NODE = "/jcr:root/nodes//element";
-
     public static String ROOT_NODE = "//";
-
 
     public static final String GREATER_THAN_EQUALS = " >= ";
 
@@ -41,8 +35,6 @@ public class JcrQuery extends Query {
     public static final String LOGICAL_AND = " and ";
 
     public static final String GREATER_THAN = " > ";
-
-    public static final String WILDCARD = " * ";
 
     public static final char SPACE = ' ';
 
@@ -54,15 +46,11 @@ public class JcrQuery extends Query {
 
     public static final String NOT_EQUALS = " != ";
 
-    public static final String LIKE = " [jcr:like] ";
-
     public static final String ASCENDING = "ascending";
 
     public static final String DESCENDING = "descending";
 
-    public static final String LIMIT_CLAUSE = " LIMIT ";
-
-    public static final String NOT_CLAUSE = " NOT ";
+    public static final String NOT_CLAUSE = " !";
 
     public static final String LOGICAL_OR = " or ";
 
@@ -97,7 +85,8 @@ public class JcrQuery extends Query {
                 }
             } catch (RepositoryException e) {
                 throw new InvalidDataAccessResourceUsageException("Cannot execute query. Entity [" + getEntity() + "] does not exist in the repository");
-            }            finalResults = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
+            }
+            finalResults = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
             if (projectionList.isEmpty()) {
                 return finalResults;
             } else {
@@ -107,7 +96,7 @@ public class JcrQuery extends Query {
                     Collection values = null;
                     if (projection instanceof CountProjection) {
                         System.out.println("count projection1");
-                        
+
                         results.add(finalResults.size());
                     } else if (projection instanceof MinProjection) {
                         MinProjection min = (MinProjection) projection;
@@ -127,6 +116,7 @@ public class JcrQuery extends Query {
         } else {
             final List params = new ArrayList();
             final String queryString = getQueryString(params, true);
+            //final String queryString = "//Book[@title != 'The Stand' and @author != 'James Patterson']";
             QueryResult qr = jcrTemplate.query(queryString.toString(), javax.jcr.query.Query.XPATH);
             try {
                 NodeIterator itr = qr.getNodes();
@@ -170,11 +160,11 @@ public class JcrQuery extends Query {
                             }
                         }
                     }
-                     if (!projectionResults.isEmpty()) {
+                    if (!projectionResults.isEmpty()) {
                         return projectionResults;
-                      } else if (idProjection != null) {
-                          return uuids;
-                      } 
+                    } else if (idProjection != null) {
+                        return uuids;
+                    }
                 }
             }
             final int total = finalResults.size();
@@ -188,7 +178,7 @@ public class JcrQuery extends Query {
                     finalResults = finalResults.subList(from, max);
                 }
             }
-         }
+        }
         return finalResults;
 
     }
@@ -197,71 +187,56 @@ public class JcrQuery extends Query {
         ProjectionList projectionList = projections();
         final StringBuilder q = new StringBuilder();
         q.append(ROOT_NODE);
-        //q.append("(");
+
         q.append(getEntity().getJavaClass().getSimpleName());
-        // q.append(",");
-        //q.append(DEFAULT_NODE_TYPE);
-        // q.append(")");
-        /*if(distinct)
-            q.append(SELECT_DISTINCT);
-        if(projectionList.isEmpty()) {
-            q.append(WILDCARD);
-        }
-      */
         //TODO Re-implement this to support XPATH
         if (!projectionList.isEmpty()) {
             boolean modifiedQuery = false;
             for (Projection projection : projectionList.getProjectionList()) {
-
                 if (projection.getClass() == PropertyProjection.class) {
                     if (modifiedQuery) {
                         q.append(',');
                     }
-
                     q.append(SPACE).append(((PropertyProjection) projection).getPropertyName());
                     modifiedQuery = true;
                 }
             }
         }
-        //*[jcr:like( @title, '%Ho%' )]
         if (!criteria.isEmpty()) {
             q.append("[");
             buildCondition(entity, criteria, q, 0, params);
             q.append("]");
         }
-
-         for (Order order : orderBy) {
+        for (Order order : orderBy) {
             String direction = null;
             if (order.getDirection().equals(Order.Direction.ASC))
                 direction = ASCENDING;
             else
                 direction = DESCENDING;
-                q.append(SPACE);
-                q.append("order by @")
-                    .append(order.getProperty())
-                    .append(" ")
-                    .append(direction);
+            q.append(SPACE);
+            q.append("order by @");
+            q.append(order.getProperty());
+            q.append(SPACE);
+            q.append(direction);
 
-                }
+        }
 
         System.out.println("querystring: " + q.toString());
         return q.toString();
     }
 
 
-    private  int buildCondition(PersistentEntity entity, Junction criteria, StringBuilder q, int index, List params) {
-        final List<Criterion> criterionList = criteria.getCriteria();
-        if (criteria instanceof Negation) {
-            q.append(NOT_CLAUSE);
-        }
-        for (Iterator<Criterion> iterator = criterionList.iterator(); iterator.hasNext();) {
+    private int buildCondition(PersistentEntity entity, Junction criteria, StringBuilder q, int index, List params) {
+         final List<Criterion> criterionList = criteria.getCriteria();
+
+         for (Iterator<Criterion> iterator = criterionList.iterator(); iterator.hasNext();) {
             Criterion criterion = iterator.next();
             final String operator = criteria instanceof Conjunction ? LOGICAL_AND : LOGICAL_OR;
             CriterionHandler qh = criterionHandlers.get(criterion.getClass());
+            if(criteria instanceof Negation)
             if (qh != null) {
                 qh.handle(entity, criterion, q, params);
             }
-
             if (iterator.hasNext())
                 q.append(operator);
 
@@ -274,19 +249,19 @@ public class JcrQuery extends Query {
     }
 
 
-    private  final Map<Class, CriterionHandler> criterionHandlers = new HashMap() {
+    private final Map<Class, CriterionHandler> criterionHandlers = new HashMap() {
         {
             put(Like.class, new CriterionHandler<Like>() {
                 public void handle(PersistentEntity entity, Like criterion, StringBuilder q, List params) {
                     String property = criterion.getProperty();
                     String pattern = criterion.getPattern();
-                    validateProperty(entity,property,Like.class);
-                q.append("jcr:like(@")
-                .append(property)
-                .append(",")
-                .append("'")
-                .append(pattern)
-                .append("')");
+                    validateProperty(entity, property, Like.class);
+                    q.append("jcr:like(@")
+                            .append(property)
+                            .append(",")
+                            .append("'")
+                            .append(pattern)
+                            .append("')");
                 }
             });
             put(Between.class, new CriterionHandler<Between>() {
@@ -346,7 +321,7 @@ public class JcrQuery extends Query {
                     q.append(AT_SIGN)
                             .append(name)
                             .append(EQUALS);
-                    if (value instanceof String || value  instanceof Boolean) {
+                    if (value instanceof String || value instanceof Boolean) {
                         q.append("'")
                                 .append(value)
                                 .append("'");
@@ -361,7 +336,7 @@ public class JcrQuery extends Query {
                     q.append(AT_SIGN)
                             .append(name)
                             .append(NOT_EQUALS);
-                    if (value instanceof String || value  instanceof Boolean) {
+                    if (value instanceof String || value instanceof Boolean) {
                         q.append("'")
                                 .append(value)
                                 .append("'");
@@ -384,27 +359,34 @@ public class JcrQuery extends Query {
             });
             put(Conjunction.class, new CriterionHandler<Junction>() {
                 public void handle(PersistentEntity entity, Junction criterion, StringBuilder q, List params) {
-                    System.out.println("conjection");
-                    buildCondition(entity,  criterion, q, 0, params);
+                    buildCondition(entity, criterion, q, 0, params);
                 }
             });
             put(Disjunction.class, new CriterionHandler<Junction>() {
                 public void handle(PersistentEntity entity, Junction criterion, StringBuilder q, List params) {
-                    System.out.println("disjunction");
                     buildCondition(entity, criterion, q, 0, params);
 
                 }
             });
-            /*  put(Negation.class, new CriterionHandler<Negation>() {
+            put(Negation.class, new CriterionHandler<Negation>() {
                 public void handle(PersistentEntity entity, Negation criterion, StringBuilder q, List params) {
                     System.out.println("Negation");
+                    List<Criterion> cris = criterion.getCriteria();
+                    Disjunction dis = new Disjunction();
+                    for (Criterion c : cris) {
+                        if (c instanceof Equals) {
+                            dis.add(Restrictions.ne(((Equals) c).getProperty(), ((Equals) c).getValue()));
+                        }
+                    }
+                    buildCondition(entity, dis, q, 0, params);
                 }
-            });*/
+            });
         }
     };
 
-      /**
+    /**
      * Obtains the query string with variables embedded within the Query
+     *
      * @return The query string
      */
     public String getQueryString() {
