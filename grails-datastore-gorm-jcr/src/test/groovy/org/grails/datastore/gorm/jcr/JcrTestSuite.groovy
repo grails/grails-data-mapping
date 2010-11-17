@@ -49,7 +49,7 @@ import grails.gorm.tests.SaveAllSpec
 //  CriteriaBuilderSpec,
 //  NegationSpec,
 //  NamedQuerySpec,
-//  OrderBySpec, //passed
+//  OrderBySpec, //passed 
 //  RangeQuerySpec,
 //  ValidationSpec,
 //  UpdateWithProxyPresentSpec,

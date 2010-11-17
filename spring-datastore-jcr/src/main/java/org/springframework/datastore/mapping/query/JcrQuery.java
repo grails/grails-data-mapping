@@ -230,6 +230,20 @@ public class JcrQuery extends Query {
             q.append("]");
         }
 
+         for (Order order : orderBy) {
+            String direction = null;
+            if (order.getDirection().equals(Order.Direction.ASC))
+                direction = ASCENDING;
+            else
+                direction = DESCENDING;
+                q.append(SPACE);
+                q.append("order by @")
+                    .append(order.getProperty())
+                    .append(" ")
+                    .append(direction);
+
+                }
+
         System.out.println("querystring: " + q.toString());
         return q.toString();
     }
@@ -282,22 +296,46 @@ public class JcrQuery extends Query {
             });
             put(GreaterThanEquals.class, new CriterionHandler<GreaterThanEquals>() {
                 public void handle(PersistentEntity entity, GreaterThanEquals criterion, StringBuilder q, List params) {
-
+                    final String name = criterion.getProperty();
+                    final Object value = criterion.getValue();
+                    validateProperty(entity, name, GreaterThanEquals.class);
+                    q.append(AT_SIGN)
+                            .append(name)
+                            .append(GREATER_THAN_EQUALS);
+                    q.append(value);
                 }
             });
             put(GreaterThan.class, new CriterionHandler<GreaterThan>() {
                 public void handle(PersistentEntity entity, GreaterThan criterion, StringBuilder q, List params) {
-
+                    final String name = criterion.getProperty();
+                    final Object value = criterion.getValue();
+                    validateProperty(entity, name, GreaterThan.class);
+                    q.append(AT_SIGN)
+                            .append(name)
+                            .append(GREATER_THAN);
+                    q.append(value);
                 }
             });
             put(LessThanEquals.class, new CriterionHandler<LessThanEquals>() {
                 public void handle(PersistentEntity entity, LessThanEquals criterion, StringBuilder q, List params) {
-
+                    final String name = criterion.getProperty();
+                    final Object value = criterion.getValue();
+                    validateProperty(entity, name, LessThanEquals.class);
+                    q.append(AT_SIGN)
+                            .append(name)
+                            .append(LESS_THAN_EQUALS);
+                    q.append(value);
                 }
             });
             put(LessThan.class, new CriterionHandler<LessThan>() {
                 public void handle(PersistentEntity entity, LessThan criterion, StringBuilder q, List params) {
-
+                    final String name = criterion.getProperty();
+                    final Object value = criterion.getValue();
+                    validateProperty(entity, name, LessThan.class);
+                    q.append(AT_SIGN)
+                            .append(name)
+                            .append(LESS_THAN);
+                    q.append(value);
                 }
             });
             put(Equals.class, new CriterionHandler<Equals>() {
