@@ -24,7 +24,48 @@ public class JcrQuery extends Query {
     private JcrTemplate jcrTemplate;
     private ConversionService conversionService;
 
-    private static String DEFAULT_NODE_TYPE = "nt:unstructured";
+    //    "/jcr:root/nodes//element(ex:nodeName,my:type)"
+
+
+    public static String DEFAULT_NODE_TYPE = "nt:unstructured";
+
+    //public static String ROOT_NODE = "/jcr:root/nodes//element";
+
+    public static String ROOT_NODE = "//";
+
+
+    public static final String GREATER_THAN_EQUALS = " >= ";
+
+    public static final String LESS_THAN_EQUALS = " <= ";
+
+    public static final String LOGICAL_AND = " and ";
+
+    public static final String GREATER_THAN = " > ";
+
+    public static final String WILDCARD = " * ";
+
+    public static final char SPACE = ' ';
+
+    public static final char AT_SIGN = '@';
+
+    public static final String LESS_THAN = " < ";
+
+    public static final String EQUALS = " = ";
+
+    public static final String NOT_EQUALS = " != ";
+
+    public static final String LIKE = " [jcr:like] ";
+
+    public static final String ASCENDING = "ascending";
+
+    public static final String DESCENDING = "descending";
+
+    public static final String LIMIT_CLAUSE = " LIMIT ";
+
+    public static final String NOT_CLAUSE = " NOT ";
+
+    public static final String LOGICAL_OR = " or ";
+
 
     public JcrQuery(JcrSession session, JcrTemplate jcrTemplate, PersistentEntity persistentEntity, JcrEntityPersister entityPersister) {
         super(session, persistentEntity);
@@ -41,320 +82,288 @@ public class JcrQuery extends Query {
     protected List executeQuery(PersistentEntity entity, Junction criteria) {
         System.out.println("executeQuery");
         final ProjectionList projectionList = projections();
-        List results = null;
-        List<String> uuids = null;
-        if (!criteria.isEmpty()) {
-            System.out.println("!criteria.isEmpty");
-            List criteriaList = criteria.getCriteria();
-            uuids = executeSubQuery(criteria, criteriaList);
-            results = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
-        }
-        IdProjection idProjection = null;
-        if (projectionList.isEmpty()) {
-            System.out.println("projectionList.isEmpty");
-            if (uuids == null)
-                uuids = paginateResults(getEntity().getJavaClass().getSimpleName());
-            else if (this.max != -1)
-                uuids = paginateResults(getEntity().getJavaClass().getSimpleName());
-            results = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
-            if (results != null)
-                return results;
-        } else {
-            if (results == null) {
-                uuids = paginateResults(getEntity().getJavaClass().getSimpleName());
-                results = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
-            }
-            List projectionResults = new ArrayList();
-            for (Projection projection : projectionList.getProjectionList()) {
-                final String projectionType = projection.getClass().getSimpleName();
-                if (projection instanceof CountProjection) {
-                    projectionResults.add(results.size());
-                } else if (projection instanceof MaxProjection) {
-                    MaxProjection max = (MaxProjection) projection;
-                    return unsupportedProjection(projectionType);
-                } else if (projection instanceof MinProjection) {
-                    MinProjection min = (MinProjection) projection;
-                    return unsupportedProjection(projectionType);
-                } else {
-                    if (projection instanceof SumProjection) {
+        List<String> uuids = new ArrayList<String>();
+        List finalResults = null;
+
+        if (criteria.isEmpty() && !(max != -1)) {
+            //List finalResults = null;
+            uuids = paginateResults(getEntity().getJavaClass().getSimpleName());
+            finalResults = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
+            if (projectionList.isEmpty()) {
+                return finalResults;
+            } else {
+                List results = new ArrayList();
+                for (Projection projection : projectionList.getProjectionList()) {
+                    final String projectionType = projection.getClass().getSimpleName();
+                    Collection values = null;
+                    if (projection instanceof CountProjection) {
+                        System.out.println("count projection1");
+                        
+                        results.add(finalResults.size());
+                    } else if (projection instanceof MinProjection) {
+                        MinProjection min = (MinProjection) projection;
                         return unsupportedProjection(projectionType);
-                    } else if (projection instanceof AvgProjection) {
+
+                    } else if (projection instanceof MaxProjection) {
                         return unsupportedProjection(projectionType);
-                    } else if (projection instanceof PropertyProjection) {
-                        PropertyProjection propertyProjection = (PropertyProjection) projection;
-                        final String propName = propertyProjection.getPropertyName();
-                        PersistentProperty prop = entityPersister.getPersistentEntity().getPropertyByName(propName);
-                        return unsupportedProjection(projectionType);
+
                     } else if (projection instanceof IdProjection) {
-                        idProjection = (IdProjection) projection;
+                        results.add(uuids);
+                    } else if (projection.getClass() == PropertyProjection.class) {
+                        return unsupportedProjection(projectionType);
                     }
                 }
-            }
-            if (!projectionResults.isEmpty()) {
-                return projectionResults;
-            } else {
-                results = paginateResults(getEntity().getJavaClass().getSimpleName());
-            }
-        }
-        if (results != null) {
-            if (idProjection != null) {
-                return uuids;
-            } else {
-                return getSession().retrieveAll(getEntity().getJavaClass(), results);
+                finalResults = results;
             }
         } else {
-            return Collections.emptyList();
-        }
+            final List params = new ArrayList();
+            final String queryString = getQueryString(params, true);
+            QueryResult qr = jcrTemplate.query(queryString.toString(), javax.jcr.query.Query.XPATH);
+            try {
+                NodeIterator itr = qr.getNodes();
+                while (itr.hasNext()) {
+                    Node node = itr.nextNode();
+                    uuids.add(node.getUUID());
+                }
+            } catch (RepositoryException e) {
+                throw new InvalidDataAccessResourceUsageException("Cannot execute query. Entity [" + getEntity() + "] does not exist in the repository");
+            }
+            if (uuids.isEmpty())
+                return Collections.emptyList();
+            else {
+                finalResults = getSession().retrieveAll(getEntity().getJavaClass(), uuids);
+                IdProjection idProjection = null;
+                if (!projectionList.isEmpty()) {
+                    List projectionResults = new ArrayList();
+                    for (Projection projection : projectionList.getProjectionList()) {
+                        final String projectionType = projection.getClass().getSimpleName();
+                        if (projection instanceof CountProjection) {
+                            System.out.println("count projection2");
+                            projectionResults.add(finalResults.size());
+                        } else if (projection instanceof MaxProjection) {
+                            MaxProjection max = (MaxProjection) projection;
+                            return unsupportedProjection(projectionType);
+                        } else if (projection instanceof MinProjection) {
+                            MinProjection min = (MinProjection) projection;
+                            return unsupportedProjection(projectionType);
+                        } else {
+                            if (projection instanceof SumProjection) {
+                                return unsupportedProjection(projectionType);
+                            } else if (projection instanceof AvgProjection) {
+                                return unsupportedProjection(projectionType);
+                            } else if (projection instanceof PropertyProjection) {
+                                PropertyProjection propertyProjection = (PropertyProjection) projection;
+                                final String propName = propertyProjection.getPropertyName();
+                                PersistentProperty prop = entityPersister.getPersistentEntity().getPropertyByName(propName);
+                                return unsupportedProjection(projectionType);
+                            } else if (projection instanceof IdProjection) {
+                                idProjection = (IdProjection) projection;
+                            }
+                        }
+                    }
+                     if (!projectionResults.isEmpty()) {
+                        return projectionResults;
+                      } else if (idProjection != null) {
+                          return uuids;
+                      } 
+                }
+            }
+            final int total = finalResults.size();
+            if (offset > total) {
+                finalResults = Collections.emptyList();
+            } else {
+                int from = offset;
+                int to = max == -1 ? -1 : (offset + max) - 1;
+                if (to >= total) to = -1;
+                if (max != -1) {
+                    finalResults = finalResults.subList(from, max);
+                }
+            }
+         }
+        return finalResults;
+
     }
 
-    private List<String> executeSubQuery(Junction junction, List<Criterion> criteriaList) {
-        if (junction instanceof Conjunction) {
-            System.out.println("conjunction");
-        } else {
-            System.out.println("disjunction");
+    protected String getQueryString(List params, boolean distinct) {
+        ProjectionList projectionList = projections();
+        final StringBuilder q = new StringBuilder();
+        q.append(ROOT_NODE);
+        //q.append("(");
+        q.append(getEntity().getJavaClass().getSimpleName());
+        // q.append(",");
+        //q.append(DEFAULT_NODE_TYPE);
+        // q.append(")");
+        /*if(distinct)
+            q.append(SELECT_DISTINCT);
+        if(projectionList.isEmpty()) {
+            q.append(WILDCARD);
         }
-        return populateJcrQuery(junction, entityPersister);
-    }
+      */
+        //TODO Re-implement this to support XPATH
+        if (!projectionList.isEmpty()) {
+            boolean modifiedQuery = false;
+            for (Projection projection : projectionList.getProjectionList()) {
 
-    private List<String> populateJcrQuery(Junction criteria, JcrEntityPersister entityPersister) {
-        List<Criterion> criteriaList = criteria.getCriteria();
-        List<String> uuids = new ArrayList<String>();
-        for (Criterion criterion : criteriaList) {
-            CriterionHandler handler = criterionHandlers.get(criterion.getClass());
-            if (handler != null) {
-                handler.handle(entityPersister, uuids, criterion);
+                if (projection.getClass() == PropertyProjection.class) {
+                    if (modifiedQuery) {
+                        q.append(',');
+                    }
+
+                    q.append(SPACE).append(((PropertyProjection) projection).getPropertyName());
+                    modifiedQuery = true;
+                }
             }
         }
-        return uuids;
+        //*[jcr:like( @title, '%Ho%' )]
+        if (!criteria.isEmpty()) {
+            q.append("[");
+            buildCondition(entity, criteria, q, 0, params);
+            q.append("]");
+        }
+
+        System.out.println("querystring: " + q.toString());
+        return q.toString();
     }
 
-    private List<String> paginateResults(String jcrNode) {
-        StringBuffer query = new StringBuffer();
-        query.append("//")
-                .append(jcrNode);
-        System.out.println(query.toString());
-        QueryResult qr = jcrTemplate.query(query.toString(), javax.jcr.query.Query.XPATH);
-        
-        List<String> results = new ArrayList<String>();
-        try {
-            NodeIterator itr = qr.getNodes();
-            while (itr.hasNext()) {
-                Node node = itr.nextNode();
-                results.add(node.getUUID());
-            }
-        } catch (RepositoryException e) {
-            throw new InvalidDataAccessResourceUsageException("Cannot execute query. Entity [" + getEntity() + "] does not exist in the repository");
-        }
 
-        final int total = results.size();
-        if (offset > total) return Collections.emptyList();
-        // 0..3
-        // 0..-1
-        // 1..1
-        int max = this.max; // 20
-        int from = offset; // 10
-        int to = max == -1 ? -1 : (offset + max) - 1;     // 15
-        if (to >= total) to = -1;
-        if (max != -1) {
-            List<String> finalResult = results.subList(from, max);
-            return finalResult;
+    private  int buildCondition(PersistentEntity entity, Junction criteria, StringBuilder q, int index, List params) {
+        final List<Criterion> criterionList = criteria.getCriteria();
+        if (criteria instanceof Negation) {
+            q.append(NOT_CLAUSE);
         }
-        return results;
+        for (Iterator<Criterion> iterator = criterionList.iterator(); iterator.hasNext();) {
+            Criterion criterion = iterator.next();
+            final String operator = criteria instanceof Conjunction ? LOGICAL_AND : LOGICAL_OR;
+            CriterionHandler qh = criterionHandlers.get(criterion.getClass());
+            if (qh != null) {
+                qh.handle(entity, criterion, q, params);
+            }
+
+            if (iterator.hasNext())
+                q.append(operator);
+
+        }
+        return index;
     }
 
     private static interface CriterionHandler<T> {
-        void handle(JcrEntityPersister entityPersister, List<String> uuids, T criterion);
+        void handle(PersistentEntity entity, T criterion, StringBuilder q, List params);
     }
 
-    private final Map<Class, CriterionHandler> criterionHandlers = new HashMap() {
+
+    private  final Map<Class, CriterionHandler> criterionHandlers = new HashMap() {
         {
             put(Like.class, new CriterionHandler<Like>() {
-                public void handle(JcrEntityPersister entityPersister, List<String> uuids, Like criterion) {
-                    List<String> keys = executeSubLike(entityPersister, criterion);
-                    if(keys != null)
-                        uuids.addAll(keys);
-                }
-            });
-            put(Between.class, new CriterionHandler<Between>() {
-                public void handle(JcrEntityPersister entityPersister, List<String> uuids, Between criterion) {
-                    String key = executeSubBetween(entityPersister, criterion);
-                    uuids.add(key);
-                }
-            });
-            put(GreaterThanEquals.class, new CriterionHandler<GreaterThanEquals>() {
-                public void handle(JcrEntityPersister entityPersister, List<String> uuids, GreaterThanEquals criterion) {
-                    String key = executeGreaterThanEquals(entityPersister, criterion);
-                    uuids.add(key);
-                }
-            });
-            put(GreaterThan.class, new CriterionHandler<GreaterThan>() {
-                public void handle(JcrEntityPersister entityPersister, List<String> uuids, GreaterThan criterion) {
-                    String key = executeGreaterThanEquals(entityPersister, criterion);
-                    uuids.add(key);
-                }
-            });
-            put(LessThanEquals.class, new CriterionHandler<LessThanEquals>() {
-                public void handle(JcrEntityPersister entityPersister, List<String> uuids, LessThanEquals criterion) {
-                    String key = executeLessThanEquals(entityPersister, criterion);
-                    uuids.add(key);
-                }
-            });
-            put(LessThan.class, new CriterionHandler<LessThan>() {
-                public void handle(JcrEntityPersister entityPersister, List<String> uuids, LessThan criterion) {
-                    String key = executeLessThanEquals(entityPersister, criterion);
-                    uuids.add(key);
-                }
-            });
-            put(Equals.class, new CriterionHandler<Equals>() {
-                public void handle(JcrEntityPersister entityPersister, List<String> uuids, Equals criterion) {
-                    final String property = criterion.getProperty();
-                    final Object value = criterion.getValue();
-
-                    StringBuilder q = new StringBuilder();
-                    q.append("//")
-                            .append(getEntity().getJavaClass().getSimpleName())
-                            .append("[@")
-                            .append(property)
-                            .append(" = ");
-                    if (value instanceof String) {
-                        q.append("'")
-                                .append(value)
-                                .append("'");
-                    } else {
-                        q.append(value);
-                    }
-                    q.append("]");
-                    QueryResult qr = jcrTemplate.query(q.toString(), javax.jcr.query.Query.XPATH);
-                    try {
-                        NodeIterator itr = qr.getNodes();
-                        while (itr.hasNext()) {
-                            String uuid = itr.nextNode().getUUID();
-                            uuids.add(uuid);
-                        }
-                    } catch (RepositoryException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            put(NotEquals.class, new CriterionHandler<NotEquals>() {
-                public void handle(JcrEntityPersister entityPersister, List<String> uuids, NotEquals criterion) {
-                    final String property = criterion.getProperty();
-                    final Object value = criterion.getValue();
-                    StringBuilder q = new StringBuilder();
-                    q.append("//")
-                            .append(getEntity().getJavaClass().getSimpleName())
-                            .append("[@")
-                            .append(property)
-                            .append(" != ");
-                    if (value instanceof String) {
-                        q.append("'")
-                                .append(value)
-                                .append("'");
-                    } else {
-                        q.append(value);
-                    }
-                    q.append("]");
-                    QueryResult qr = jcrTemplate.query(q.toString(), javax.jcr.query.Query.XPATH);
-                    try {
-                        NodeIterator itr = qr.getNodes();
-                        while (itr.hasNext()) {
-                            String uuid = itr.nextNode().getUUID();
-                            uuids.add(uuid);
-                        }
-                    } catch (RepositoryException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            });
-            put(In.class, new CriterionHandler<In>() {
-                public void handle(JcrEntityPersister entityPersister, List<String> uuids, In criterion) {
-                    final String property = criterion.getName();
-                    Disjunction dis = new Disjunction();
-                    for (Object value : criterion.getValues()) {
-                        dis.add(Restrictions.eq(property, value));
-                    }
-                    List<String> results = executeSubQuery(dis, dis.getCriteria());
-                    for (String uuid : results) uuids.add(uuid);
-                }
-
-            });
-            put(Conjunction.class, new CriterionHandler<Junction>() {
-                public void handle(JcrEntityPersister entityPersister, List<String> uuids, Junction criterion) {
-                    System.out.println("Conjunction");
-                    List<String> results = executeSubQuery(criterion, criterion.getCriteria());
-                    for (String uuid : results) uuids.add(uuid);
-                }
-            });
-            put(Disjunction.class, new CriterionHandler<Junction>() {
-                public void handle(JcrEntityPersister entityPersister, List<String> uuids, Junction criterion) {
-                    System.out.println("Disjunction");
-                    List<String> results = executeSubQuery(criterion, criterion.getCriteria());
-                    for (String uuid : results) uuids.add(uuid);
-                }
-            });
-            put(Negation.class, new CriterionHandler<Negation>() {
-                public void handle(JcrEntityPersister entityPersister, List<String> uuids, Negation criterion) {
-                    System.out.println("Negation");
-                }
-            });
-        }
-
-    };
-
-    protected String executeLessThanEquals(JcrEntityPersister entityPersister, PropertyCriterion criterion) {
-        System.out.println("executeLessThanEquals");
-        return null;
-    }
-
-    protected String executeGreaterThanEquals(JcrEntityPersister entityPersister, PropertyCriterion criterion) {
-        System.out.println("executeGreaterThanEquals");
-        return null;
-    }
-
-    protected String executeSubBetween(JcrEntityPersister entityPersister, Between criterion) {
-        System.out.println("executeSubBetween");
-        return null;  
-    }
-
-    protected List<String> executeSubLike(JcrEntityPersister entityPersister, Like criterion) {
-        final String property = criterion.getProperty();
-        String pattern = criterion.getPattern();
-        StringBuilder q = new StringBuilder();
-        //*[jcr:like( @title, '%Ho%' )]
-        q.append("//")
-                .append(getEntity().getJavaClass().getSimpleName())
-                .append("[jcr:like(@")
+                public void handle(PersistentEntity entity, Like criterion, StringBuilder q, List params) {
+                    String property = criterion.getProperty();
+                    String pattern = criterion.getPattern();
+                    validateProperty(entity,property,Like.class);
+                q.append("jcr:like(@")
                 .append(property)
                 .append(",")
                 .append("'")
                 .append(pattern)
-                .append("'")
-                .append(")]");
-        QueryResult qr = jcrTemplate.query(q.toString(), javax.jcr.query.Query.XPATH);
-        List<String> uuids = new ArrayList<String>();
-        try {
-            NodeIterator itr = qr.getNodes();
-            while (itr.hasNext()) {
-                uuids.add(itr.nextNode().getUUID());
-            }
-        } catch (RepositoryException e) {
-            e.printStackTrace();
-        }
-        if (uuids.size() >= 1){
-            return uuids;
-        }else return null;
-    }
+                .append("')");
+                }
+            });
+            put(Between.class, new CriterionHandler<Between>() {
+                public void handle(PersistentEntity entity, Between criterion, StringBuilder q, List params) {
 
-    private PersistentProperty getAndValidateProperty(JcrEntityPersister entityPersister, String property) {
-        final PersistentEntity entity = entityPersister.getPersistentEntity();
-        PersistentProperty prop = entity.getPropertyByName(property);
+                }
+            });
+            put(GreaterThanEquals.class, new CriterionHandler<GreaterThanEquals>() {
+                public void handle(PersistentEntity entity, GreaterThanEquals criterion, StringBuilder q, List params) {
+
+                }
+            });
+            put(GreaterThan.class, new CriterionHandler<GreaterThan>() {
+                public void handle(PersistentEntity entity, GreaterThan criterion, StringBuilder q, List params) {
+
+                }
+            });
+            put(LessThanEquals.class, new CriterionHandler<LessThanEquals>() {
+                public void handle(PersistentEntity entity, LessThanEquals criterion, StringBuilder q, List params) {
+
+                }
+            });
+            put(LessThan.class, new CriterionHandler<LessThan>() {
+                public void handle(PersistentEntity entity, LessThan criterion, StringBuilder q, List params) {
+
+                }
+            });
+            put(Equals.class, new CriterionHandler<Equals>() {
+                public void handle(PersistentEntity entity, Equals eq, StringBuilder q, List params) {
+                    final String name = eq.getProperty();
+                    final Object value = eq.getValue();
+                    validateProperty(entity, name, Equals.class);
+                    q.append(AT_SIGN)
+                            .append(name)
+                            .append(EQUALS);
+                    if (value instanceof String) {
+                        q.append("'")
+                                .append(value)
+                                .append("'");
+                    } else q.append(value);
+                }
+            });
+            put(NotEquals.class, new CriterionHandler<NotEquals>() {
+                public void handle(PersistentEntity entity, NotEquals nqe, StringBuilder q, List params) {
+                    final String name = nqe.getProperty();
+                    final Object value = nqe.getValue();
+                    validateProperty(entity, name, Equals.class);
+                    q.append(AT_SIGN)
+                            .append(name)
+                            .append(NOT_EQUALS);
+                    if (value instanceof String) {
+                        q.append("'")
+                                .append(value)
+                                .append("'");
+                    } else q.append(value);
+
+
+                }
+            });
+            put(In.class, new CriterionHandler<In>() {
+                public void handle(PersistentEntity entity, In criterion, StringBuilder q, List params) {
+                    final String name = criterion.getName();
+                    validateProperty(entity, name, In.class);
+                    Disjunction dis = new Disjunction();
+                    for (Object value : criterion.getValues()) {
+                        dis.add(Restrictions.eq(name, value));
+                    }
+                    buildCondition(entity, dis, q, 0, params);
+                }
+
+            });
+            put(Conjunction.class, new CriterionHandler<Junction>() {
+                public void handle(PersistentEntity entity, Junction criterion, StringBuilder q, List params) {
+                    System.out.println("conjection");
+                    buildCondition(entity,  criterion, q, 0, params);
+                }
+            });
+            put(Disjunction.class, new CriterionHandler<Junction>() {
+                public void handle(PersistentEntity entity, Junction criterion, StringBuilder q, List params) {
+                    System.out.println("disjunction");
+                    buildCondition(entity, criterion, q, 0, params);
+
+                }
+            });
+            /*  put(Negation.class, new CriterionHandler<Negation>() {
+                public void handle(PersistentEntity entity, Negation criterion, StringBuilder q, List params) {
+                    System.out.println("Negation");
+                }
+            });*/
+        }
+    };
+
+
+    private static void validateProperty(PersistentEntity entity, String name, Class criterionType) {
+        if (entity.getIdentity().getName().equals(name)) return;
+        PersistentProperty prop = entity.getPropertyByName(name);
         if (prop == null) {
-            throw new InvalidDataAccessResourceUsageException("Cannot execute between query on property [" + property + "] of class [" + entity + "]. Property does not exist.");
+            throw new InvalidDataAccessResourceUsageException("Cannot use [" + criterionType.getSimpleName() + "] criterion on non-existent property: " + name);
         }
-        return prop;
     }
-
 
     private List unsupportedProjection(String projectionType) {
         throw new InvalidDataAccessResourceUsageException("Cannot use [" + projectionType + "] projection. [" + projectionType + "] projections are not currently supported.");

@@ -214,7 +214,6 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
             node.addMixin(JcrConstants.MIXIN_VERSIONABLE);
             node.addMixin(JcrConstants.MIXIN_LOCKABLE);
 
-            
             return node;
 
         } catch (RepositoryException e) {

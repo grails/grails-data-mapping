@@ -23,6 +23,9 @@ import grails.gorm.tests.AttachMethodSpec
 import grails.gorm.tests.WithTransactionSpec
 import grails.gorm.tests.NegationSpec
 import grails.gorm.tests.RangeQuerySpec
+import grails.gorm.tests.NamedQuerySpec
+import grails.gorm.tests.OneToManySpec
+import grails.gorm.tests.SaveAllSpec
 
 /**
  * Created by IntelliJ IDEA.
@@ -37,22 +40,24 @@ import grails.gorm.tests.RangeQuerySpec
 //  ProxyLoadingSpec, // passed
 //  QueryAfterPropertyChangeSpec,
 //  CircularOneToManySpec, // StackOverflow
-//  InheritanceSpec,
+//  InheritanceSpec,  still doesn't support inheritance 
 //  FindByMethodSpec,
-//  ListOrderBySpec,
+//  ListOrderBySpec, // passed
 //  GroovyProxySpec, // passed
 //  CommonTypesPersistenceSpec, // passed
-  GormEnhancerSpec,
+//  GormEnhancerSpec, //passed
 //  CriteriaBuilderSpec,
 //  NegationSpec,
 //  NamedQuerySpec,
-//  OrderBySpec,
+//  OrderBySpec, //passed
 //  RangeQuerySpec,
 //  ValidationSpec,
 //  UpdateWithProxyPresentSpec,
 //  AttachMethodSpec, // passed
 //  WithTransactionSpec,
 //  CrudOperationsSpec // passed
+//  OneToManySpec
+//  SaveAllSpec // passed
 ])
 class JcrTestSuite {
 }
