@@ -45,10 +45,10 @@ import grails.gorm.tests.NegationSpec
 //  ListOrderBySpec, // passed
 //  GroovyProxySpec, // passed
 //  CommonTypesPersistenceSpec, // passed
-// GormEnhancerSpec, //passed
-  CriteriaBuilderSpec,
+//  GormEnhancerSpec, //passed
+//  CriteriaBuilderSpec, //passed
 //  NegationSpec, //passes
-//  NamedQuerySpec,
+ NamedQuerySpec, 
 //  OrderBySpec, //passed 
 //  RangeQuerySpec,
 //  ValidationSpec,

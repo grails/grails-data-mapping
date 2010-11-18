@@ -1,5 +1,6 @@
 package org.springframework.datastore.mapping.query;
 
+import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.mapping.core.Session;
@@ -10,10 +11,9 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.query.projections.ManualProjections;
 import org.springframework.extensions.jcr.JcrTemplate;
 
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
+import javax.jcr.*;
 import javax.jcr.query.QueryResult;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -24,12 +24,11 @@ public class JcrQuery extends Query {
     private JcrEntityPersister entityPersister;
     private JcrTemplate jcrTemplate;
     private ConversionService conversionService;
+    private SimpleTypeConverter typeConverter;
+
     private ManualProjections manualProjections;
-    
 
-    public static String DEFAULT_NODE_TYPE = "nt:unstructured";
-
-    public static String ROOT_NODE = "//";
+    public static final String ROOT_NODE = "//";
 
     public static final String GREATER_THAN_EQUALS = " >= ";
 
@@ -53,9 +52,10 @@ public class JcrQuery extends Query {
 
     public static final String DESCENDING = "descending";
 
-    public static final String NOT_CLAUSE = " !";
-
     public static final String LOGICAL_OR = " or ";
+
+    public static final String XS_DATE = "xs:date";
+    
 
 
     public JcrQuery(JcrSession session, JcrTemplate jcrTemplate, PersistentEntity persistentEntity, JcrEntityPersister entityPersister) {
@@ -63,6 +63,10 @@ public class JcrQuery extends Query {
         this.entityPersister = entityPersister;
         this.jcrTemplate = jcrTemplate;
         this.conversionService = getSession().getMappingContext().getConversionService();
+        this.manualProjections = new ManualProjections(entity);
+        typeConverter = new SimpleTypeConverter();
+
+
     }
 
     protected JcrQuery(Session session, PersistentEntity entity) {
@@ -71,13 +75,10 @@ public class JcrQuery extends Query {
 
     @Override
     protected List executeQuery(PersistentEntity entity, Junction criteria) {
-        System.out.println("executeQuery");
         final ProjectionList projectionList = projections();
         List<String> uuids = new ArrayList<String>();
         List finalResults = null;
-
         if (criteria.isEmpty() && !(max != -1)) {
-            //List finalResults = null;
             final String queryString = getQueryString();
             QueryResult qr = jcrTemplate.query(queryString.toString(), javax.jcr.query.Query.XPATH);
             try {
@@ -95,22 +96,42 @@ public class JcrQuery extends Query {
             } else {
                 List results = new ArrayList();
                 for (Projection projection : projectionList.getProjectionList()) {
-                    final String projectionType = projection.getClass().getSimpleName();
-                    Collection values = null;
-                    if (projection instanceof CountProjection) {
-                        System.out.println("count projection1");
-
+                     if (projection instanceof CountProjection) {
                         results.add(finalResults.size());
                     } else if (projection instanceof MinProjection) {
                         MinProjection min = (MinProjection) projection;
-                        results.add(manualProjections.min(results,min.getPropertyName()));
+                        results.add(manualProjections.min(finalResults, min.getPropertyName()));
                     } else if (projection instanceof MaxProjection) {
-                        MinProjection max = (MinProjection) projection;
-                        results.add(manualProjections.min(results,max.getPropertyName()));
+                        MaxProjection max = (MaxProjection) projection;
+                        results.add(manualProjections.max(finalResults, max.getPropertyName()));
                     } else if (projection instanceof IdProjection) {
                         results.add(uuids);
                     } else if (projection.getClass() == PropertyProjection.class) {
-                        return unsupportedProjection(projectionType);
+                        PropertyProjection propertyProjection = (PropertyProjection) projection;
+                        final String propName = propertyProjection.getPropertyName();
+                        PersistentProperty prop = entityPersister.getPersistentEntity().getPropertyByName(propName);
+                        Class type = prop.getType();
+                        List values = new ArrayList();
+                        for (String uuid : uuids) {
+                            Node node = jcrTemplate.getNodeByUUID(uuid);
+                            try {
+                                if (node.hasProperty(propName)) {
+                                    Property nodeProp = node.getProperty(propName);
+                                    values.add(nodeProp.getString());
+                                }
+                            } catch (RepositoryException e) {
+                                throw new InvalidDataAccessResourceUsageException("Cannot execute PropertyProjection criterion on non-existent property: name[" + prop + "]");
+                            }
+                        }
+                        final PersistentEntity associatedEntity = getSession().getMappingContext().getPersistentEntity(type.getName());
+                        final boolean isEntityType = associatedEntity != null;
+                        if (isEntityType) {
+                            return getSession().retrieveAll(type, values);
+                        } else {
+                            for (Object value : values) {
+                                results.add(typeConverter.convertIfNecessary(value, type));
+                            }
+                        }
                     }
                 }
                 finalResults = results;
@@ -138,24 +159,23 @@ public class JcrQuery extends Query {
                     for (Projection projection : projectionList.getProjectionList()) {
                         final String projectionType = projection.getClass().getSimpleName();
                         if (projection instanceof CountProjection) {
-                            System.out.println("count projection2");
                             projectionResults.add(finalResults.size());
                         } else if (projection instanceof MaxProjection) {
                             MaxProjection min = (MaxProjection) projection;
-                            finalResults.add(manualProjections.min(finalResults,min.getPropertyName()));
+                            finalResults.add(manualProjections.min(finalResults, min.getPropertyName()));
                         } else if (projection instanceof MinProjection) {
                             MinProjection min = (MinProjection) projection;
-                            finalResults.add(manualProjections.min(finalResults,min.getPropertyName()));
+                            finalResults.add(manualProjections.min(finalResults, min.getPropertyName()));
                         } else {
                             if (projection instanceof SumProjection) {
                                 return unsupportedProjection(projectionType);
                             } else if (projection instanceof AvgProjection) {
                                 return unsupportedProjection(projectionType);
-                            } else if (projection instanceof PropertyProjection) {
-                                PropertyProjection propertyProjection = (PropertyProjection) projection;
-                                final String propName = propertyProjection.getPropertyName();
-                                PersistentProperty prop = entityPersister.getPersistentEntity().getPropertyByName(propName);
-                                return unsupportedProjection(projectionType);
+                                //} else if (projection instanceof PropertyProjection) {
+                                //  PropertyProjection propertyProjection = (PropertyProjection) projection;
+                                //   final String propName = propertyProjection.getPropertyName();
+                                //   PersistentProperty prop = entityPersister.getPersistentEntity().getPropertyByName(propName);
+                                //   return unsupportedProjection(projectionType);
                             } else if (projection instanceof IdProjection) {
                                 idProjection = (IdProjection) projection;
                             }
@@ -187,58 +207,36 @@ public class JcrQuery extends Query {
     private List applyProjections(List results, ProjectionList projections) {
         List projectedResults = new ArrayList();
         for (Projection projection : projections.getProjectionList()) {
-            if(projection instanceof CountProjection) {
+            if (projection instanceof CountProjection) {
                 projectedResults.add(results.size());
-            }
-            else if(projection instanceof MinProjection) {
+            } else if (projection instanceof MinProjection) {
                 MinProjection min = (MinProjection) projection;
-                projectedResults.add(manualProjections.min(results,min.getPropertyName()));
-            }
-           else if(projection instanceof MaxProjection) {
+                projectedResults.add(manualProjections.min(results, min.getPropertyName()));
+            } else if (projection instanceof MaxProjection) {
                 MaxProjection min = (MaxProjection) projection;
-                projectedResults.add(manualProjections.max(results,min.getPropertyName()));
+                projectedResults.add(manualProjections.max(results, min.getPropertyName()));
             }
         }
-        if(projectedResults.isEmpty()) {
-        	return results;
+        if (projectedResults.isEmpty()) {
+            return results;
         }
         return projectedResults;
     }
 
 
     protected String getQueryString(List params, boolean distinct) {
-        ProjectionList projectionList = projections();
         final StringBuilder q = new StringBuilder();
         q.append(ROOT_NODE);
         q.append(getEntity().getJavaClass().getSimpleName());
-        //TODO Re-implement this to support XPATH
-        /*if (!projectionList.isEmpty()) {
-            System.out.println("building Query and projectList != Empty");
-            boolean modifiedQuery = false;
-            for (Projection projection : projectionList.getProjectionList()) {
-                if (projection.getClass() == PropertyProjection.class) {
-                    if (modifiedQuery) {
-                        q.append(',');
-                    }
-                    q.append(SPACE).append(((PropertyProjection) projection).getPropertyName());
-                    modifiedQuery = true;
-                }
-            }
-        }*/
+
         if (!criteria.isEmpty()) {
             q.append("[");
             buildCondition(entity, criteria, q, 0, params);
             q.append("]");
         }
 
-        String tmp = q.toString();
-        int length = tmp.length();
-        Character c = tmp.charAt(length-2);
-        if(c.equals('[')){
-            tmp.subSequence(0,length -2 );
-            q.delete(length-2,length);
-        }
-
+        validateQuery(q);
+        
         for (Order order : orderBy) {
             String direction = null;
             if (order.getDirection().equals(Order.Direction.ASC))
@@ -252,17 +250,26 @@ public class JcrQuery extends Query {
             q.append(direction);
 
         }
-
         System.out.println("querystring: " + q.toString());
         return q.toString();
     }
 
+    private StringBuilder validateQuery(StringBuilder q) {
+        String tmp = q.toString();
+        int length = tmp.length();
+        Character c = tmp.charAt(length - 2);
+        if (c.equals('[')) {
+            tmp.subSequence(0, length - 2);
+            q.delete(length - 2, length);
+        }
+        return q;
+    }
 
     private static int buildCondition(PersistentEntity entity, Junction criteria, StringBuilder q, int index, List params) {
-        final List<Criterion> criterionList = criteria.getCriteria();        
+        final List<Criterion> criterionList = criteria.getCriteria();
         for (Iterator<Criterion> iterator = criterionList.iterator(); iterator.hasNext();) {
-            Criterion criterion = iterator.next();         
-            final String operator = criteria instanceof Conjunction ? LOGICAL_AND : LOGICAL_OR;            
+            Criterion criterion = iterator.next();
+            final String operator = criteria instanceof Conjunction ? LOGICAL_AND : LOGICAL_OR;
             CriterionHandler qh = criterionHandlers.get(criterion.getClass());
             if (qh != null) {
                 qh.handle(entity, criterion, q, params);
@@ -307,7 +314,13 @@ public class JcrQuery extends Query {
                     q.append(AT_SIGN)
                             .append(name)
                             .append(GREATER_THAN_EQUALS);
-                    q.append(value);
+                    if(value instanceof Calendar || value instanceof Date){
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                        q.append(XS_DATE);
+                        q.append("('");
+                        q.append(sdf.format((Date)value));
+                        q.append("')");
+                    }
                 }
             });
             put(GreaterThan.class, new CriterionHandler<GreaterThan>() {
@@ -318,7 +331,13 @@ public class JcrQuery extends Query {
                     q.append(AT_SIGN)
                             .append(name)
                             .append(GREATER_THAN);
-                    q.append(value);
+                    if(value instanceof Calendar || value instanceof Date){                        
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                        q.append(XS_DATE);
+                        q.append("('");
+                        q.append(sdf.format((Date)value));
+                        q.append("')");;
+                    }
                 }
             });
             put(LessThanEquals.class, new CriterionHandler<LessThanEquals>() {
@@ -329,7 +348,13 @@ public class JcrQuery extends Query {
                     q.append(AT_SIGN)
                             .append(name)
                             .append(LESS_THAN_EQUALS);
-                    q.append(value);
+                    if(value instanceof Calendar || value instanceof Date){
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                        q.append(XS_DATE);
+                        q.append("('");
+                        q.append(sdf.format((Date)value));
+                        q.append("')");
+                    }
                 }
             });
             put(LessThan.class, new CriterionHandler<LessThan>() {
@@ -340,7 +365,13 @@ public class JcrQuery extends Query {
                     q.append(AT_SIGN)
                             .append(name)
                             .append(LESS_THAN);
-                    q.append(value);
+                    if(value instanceof Calendar || value instanceof Date){
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                        q.append(XS_DATE);
+                        q.append("('");
+                        q.append(sdf.format((Date)value));
+                        q.append("')");
+                    }
                 }
             });
             put(Equals.class, new CriterionHandler<Equals>() {
@@ -371,8 +402,6 @@ public class JcrQuery extends Query {
                                 .append(value)
                                 .append("'");
                     } else q.append(value);
-
-
                 }
             });
             put(In.class, new CriterionHandler<In>() {
@@ -407,7 +436,7 @@ public class JcrQuery extends Query {
                         if (c instanceof Equals) {
                             con.add(Restrictions.ne(((Equals) c).getProperty(), ((Equals) c).getValue()));
                         }
-                        if(c instanceof Conjunction){
+                        if (c instanceof Conjunction) {
                             con.add(c);
                         }
                     }

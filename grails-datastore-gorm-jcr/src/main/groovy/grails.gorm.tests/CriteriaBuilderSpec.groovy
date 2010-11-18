@@ -22,7 +22,7 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
 
   }
 
-  def "Test id projection"() {
+ def "Test id projection"() {
 	  given:
 	  	def entity = new TestEntity(name:"Bob", age: 44, child:new ChildEntity(name:"Child")).save(flush:true)
 	  
@@ -67,6 +67,7 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
     3 == results.size()
   }
 
+  
   void "Test conjunction query"() {
     given:
       def age = 40
@@ -224,6 +225,8 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
       [43, 40] == results
   }
 
+
+
   void "Test obtain property value using projection"() {
     given:
       def age = 40
@@ -242,6 +245,9 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
     then:
       [40, 41, 42, 43] == results.sort()
   }
+
+
+
 
   void "Test obtain association entity using property projection"() {
     given:
@@ -267,4 +273,5 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
       results.find { it.name = "Frank Child"}
 
   }
+  
 }

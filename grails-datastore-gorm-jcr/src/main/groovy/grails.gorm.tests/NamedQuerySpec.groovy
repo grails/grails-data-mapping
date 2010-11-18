@@ -11,7 +11,7 @@ import spock.lang.Ignore
  */
 class NamedQuerySpec extends GormDatastoreSpec {
 
-    void "Test named query with disjunction"() {
+   void "Test named query with disjunction"() {
       given:
         def now = new Date()
         def oldDate = now - 2000
@@ -30,8 +30,8 @@ class NamedQuerySpec extends GormDatastoreSpec {
         assert 3 == publications?.size()
     }
 
-
-    void "Test max and offset parameter"() {
+    
+    /*void "Test max and offset parameter"() {
       given:
         (1..25).each {num ->
             Publication.newInstance(title: "Book Number ${num}",
@@ -557,7 +557,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
 
     void "Test referencing named query before any dynamic methods"() {
 
-        /*
+        *//*
          * currently this will work:
          *   Publication.recentPublications().list()
          * but this will not:
@@ -566,7 +566,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
          * the static property isn't being added to the class until
          * the first dynamic method (recentPublications(), save(), list() etc...) is
          * invoked
-         */
+         *//*
         given:
         when:
         def publications = Publication.recentPublications.list()
@@ -985,6 +985,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
       then:
         assert 'Book Number 2' == pub.title
     }
+    */
 }
 class PlantCategory implements Serializable{
     String id
