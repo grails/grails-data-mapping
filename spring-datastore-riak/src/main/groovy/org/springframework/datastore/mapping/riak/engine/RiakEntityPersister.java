@@ -30,16 +30,15 @@ import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.riak.RiakEntry;
 import org.springframework.datastore.mapping.riak.collection.RiakEntityIndex;
 import org.springframework.datastore.mapping.riak.query.RiakQuery;
-import org.springframework.datastore.mapping.riak.util.RiakTemplate;
+import org.springframework.datastore.riak.core.RiakTemplate;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
  */
+@SuppressWarnings({"unchecked"})
 public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Long> {
 
   private RiakTemplate riakTemplate;
@@ -51,7 +50,7 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
 
   @Override
   protected void deleteEntry(String family, Long key) {
-    riakTemplate.delete(family, key);
+    riakTemplate.deleteKeys(String.format("%s:%s", family, key));
   }
 
   @Override
@@ -80,13 +79,30 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
 
   @Override
   protected Object getEntryValue(Map nativeEntry, String property) {
-    return nativeEntry.get(property);
+    PersistentProperty prop = getPersistentEntity().getPropertyByName(property);
+    if (prop.getType() == Date.class) {
+      return new Date(Long.parseLong(nativeEntry.get(property).toString()));
+    } else if (prop.getType() == Calendar.class) {
+      Calendar c = Calendar.getInstance();
+      c.setTime(new Date(Long.parseLong(nativeEntry.get(property).toString())));
+      return c;
+    } else if (prop.getType() == Boolean.class) {
+      return new Boolean(nativeEntry.get(property).toString());
+    } else {
+      return nativeEntry.get(property);
+    }
   }
 
   @Override
   protected void setEntryValue(Map nativeEntry, String key, Object value) {
     if (null != value) {
-      if (shouldConvert(value)) {
+      if (value instanceof Date) {
+        nativeEntry.put(key, ((Date) value).getTime());
+      } else if (value instanceof Calendar) {
+        nativeEntry.put(key, ((Calendar) value).getTime().getTime());
+      } else if (value instanceof Boolean) {
+        nativeEntry.put(key, value);
+      } else if (shouldConvert(value)) {
         final ConversionService conversionService = getMappingContext().getConversionService();
         nativeEntry.put(key, conversionService.convert(value, String.class));
       }
@@ -95,25 +111,28 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
 
   @Override
   protected Map retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
-    return riakTemplate.fetch(family, Long.parseLong(key.toString()));
+    return riakTemplate.getAsType(String.format("%s:%s",
+        family,
+        (key instanceof Long ? (Long) key : Long.parseLong(key.toString()))), Map.class);
   }
 
   @Override
   protected Long storeEntry(PersistentEntity persistentEntity, Long storeId, Map nativeEntry) {
     String family = getRootFamily(persistentEntity);
-    return riakTemplate.store(family, storeId, nativeEntry);
+    riakTemplate.set(String.format("%s:%s", family, storeId), nativeEntry);
+    return storeId;
   }
 
   @Override
   protected void updateEntry(PersistentEntity persistentEntity, Long key, Map entry) {
     String family = getRootFamily(persistentEntity);
-    riakTemplate.store(family, key, entry);
+    riakTemplate.set(String.format("%s:%s", family, key), entry);
   }
 
   @Override
   protected void deleteEntries(String family, List<Long> keys) {
     for (Long key : keys) {
-      riakTemplate.delete(family, key);
+      riakTemplate.deleteKeys(String.format("%s:%s", family, key));
     }
   }
 

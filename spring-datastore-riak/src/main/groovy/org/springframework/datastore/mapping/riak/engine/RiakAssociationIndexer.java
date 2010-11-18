@@ -22,9 +22,12 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.types.Association;
-import org.springframework.datastore.mapping.riak.util.RiakTemplate;
+import org.springframework.datastore.riak.core.RiakTemplate;
+import org.springframework.datastore.riak.core.SimpleBucketKeyPair;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
@@ -57,15 +60,19 @@ public class RiakAssociationIndexer implements AssociationIndexer<Long, Long> {
   }
 
   protected void link(Long childKey, Long ownerKey) {
-    riakTemplate.link(child.getName(),
-        childKey,
-        owner.getName(),
-        ownerKey,
-        association.getName());
+    SimpleBucketKeyPair<String, Long> bkpChild = new SimpleBucketKeyPair<String, Long>(child.getName(), childKey);
+    SimpleBucketKeyPair<String, Long> bkpOwner = new SimpleBucketKeyPair<String, Long>(owner.getName(), ownerKey);
+    riakTemplate.link(bkpChild, bkpOwner, association.getName());
   }
 
   public List<Long> query(Long primaryKey) {
-    return riakTemplate.findChildKeysByOwner(owner.getName(), primaryKey, association.getName());
+    String bucketName = String.format("%s.%s.%s", owner.getName(), primaryKey, association.getName());
+    Map<String, Object> schema = riakTemplate.getBucketSchema(bucketName, true);
+    List<Long> keys = new ArrayList<Long>();
+    for (Object key : (List) schema.get("keys")) {
+      keys.add(Long.parseLong(key.toString()));
+    }
+    return keys;
   }
 
   public PersistentEntity getIndexedEntity() {

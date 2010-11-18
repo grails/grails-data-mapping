@@ -16,14 +16,15 @@
 
 package org.springframework.datastore.mapping.riak;
 
-import com.basho.riak.client.RiakConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingContext;
+import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.springframework.datastore.mapping.model.MappingContext;
-import org.springframework.datastore.mapping.riak.util.RiakJavaClientTemplate;
+import org.springframework.datastore.riak.core.RiakTemplate;
 
 import java.util.Map;
 
@@ -32,17 +33,16 @@ import java.util.Map;
  */
 public class RiakDatastore extends AbstractDatastore implements InitializingBean, DisposableBean {
 
-  public static final String CONFIG_HOST = "host";
-  public static final String CONFIG_PORT = "port";
-  public static final String CONFIG_PREFIX = "prefix";
+  public static final String CONFIG_DEFAULT_URI = "defaultUri";
+  public static final String CONFIG_MAPRED_URI = "mapReduceUri";
 
-  public static final String DEFAULT_HOST = "localhost";
-  public static final String DEFAULT_PORT = "8098";
-  public static final String DEFAULT_PREFIX = "/riak";
+  public static final String DEFAULT_URI = "http://localhost:8098/riak/{bucket}/{key}";
+  public static final String DEFAULT_MAPRED_URI = "http://localhost:8098/mapred";
 
-  private String host = DEFAULT_HOST;
-  private String port = DEFAULT_PORT;
-  private String prefix = DEFAULT_PREFIX;
+  private final Logger log = LoggerFactory.getLogger(getClass());
+
+  private String defaultUri = DEFAULT_URI;
+  private String mapReduceUri = DEFAULT_MAPRED_URI;
 
   public RiakDatastore() {
     this(new KeyValueMappingContext(""));
@@ -56,24 +56,25 @@ public class RiakDatastore extends AbstractDatastore implements InitializingBean
     super(mappingContext, connectionDetails);
     initializeConverters(mappingContext);
     if (connectionDetails != null) {
-      host = connectionDetails.containsKey(CONFIG_HOST) ? connectionDetails.get(CONFIG_HOST) : DEFAULT_HOST;
-      port = connectionDetails.containsKey(CONFIG_PORT) ? connectionDetails.get(CONFIG_PORT) : DEFAULT_PORT;
-      prefix = connectionDetails.containsKey(CONFIG_PREFIX) ? connectionDetails.get(CONFIG_PREFIX) : DEFAULT_PREFIX;
+      defaultUri = connectionDetails.containsKey(CONFIG_DEFAULT_URI) ? connectionDetails.get(CONFIG_DEFAULT_URI) : DEFAULT_URI;
+      mapReduceUri = connectionDetails.containsKey(CONFIG_MAPRED_URI) ? connectionDetails.get(CONFIG_MAPRED_URI) : DEFAULT_MAPRED_URI;
     }
   }
 
   @Override
   protected Session createSession(Map<String, String> connectionDetails) {
-    String host = this.host;
-    String port = this.port;
-    String prefix = this.prefix;
+    String defaultUri = this.defaultUri;
     if (connectionDetails != null) {
-      host = connectionDetails.containsKey(CONFIG_HOST) ? connectionDetails.get(CONFIG_HOST) : DEFAULT_HOST;
-      port = connectionDetails.containsKey(CONFIG_PORT) ? connectionDetails.get(CONFIG_PORT) : DEFAULT_PORT;
-      prefix = connectionDetails.containsKey(CONFIG_PREFIX) ? connectionDetails.get(CONFIG_PREFIX) : DEFAULT_PREFIX;
+      defaultUri = connectionDetails.containsKey(CONFIG_DEFAULT_URI) ? connectionDetails.get(CONFIG_DEFAULT_URI) : DEFAULT_URI;
+      mapReduceUri = connectionDetails.containsKey(CONFIG_MAPRED_URI) ? connectionDetails.get(CONFIG_MAPRED_URI) : DEFAULT_MAPRED_URI;
     }
-    RiakConfig riakConfig = new RiakConfig(host, port, prefix);
-    return new RiakSession(this, mappingContext, new RiakJavaClientTemplate(riakConfig));
+    RiakTemplate riak = new RiakTemplate(defaultUri, mapReduceUri);
+    try {
+      riak.afterPropertiesSet();
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+    }
+    return new RiakSession(this, mappingContext, riak);
   }
 
   public void destroy() throws Exception {

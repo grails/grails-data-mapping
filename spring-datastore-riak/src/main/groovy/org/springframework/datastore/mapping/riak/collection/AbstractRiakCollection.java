@@ -16,9 +16,11 @@
 
 package org.springframework.datastore.mapping.riak.collection;
 
-import org.springframework.datastore.mapping.riak.util.RiakTemplate;
+
+import org.springframework.datastore.riak.core.RiakTemplate;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
@@ -38,7 +40,8 @@ public abstract class AbstractRiakCollection<T> implements Collection, RiakColle
   }
 
   public int size() {
-    return riakTemplate.count(bucket);
+    List<?> keys = (List<?>) riakTemplate.getBucketSchema(bucket, true).get("keys");
+    return keys.size();
   }
 
   public boolean isEmpty() {

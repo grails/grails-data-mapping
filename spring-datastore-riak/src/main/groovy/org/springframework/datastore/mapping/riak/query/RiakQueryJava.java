@@ -20,7 +20,7 @@ import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.riak.collection.RiakEntityIndex;
-import org.springframework.datastore.mapping.riak.util.RiakTemplate;
+import org.springframework.datastore.riak.core.RiakTemplate;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

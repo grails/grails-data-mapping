@@ -1,12 +1,13 @@
 package org.springframework.datastore.mapping.riak.query
 
+import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.query.Query
-import org.springframework.datastore.mapping.riak.collection.RiakEntityIndex
-import org.springframework.datastore.mapping.riak.util.RiakTemplate
+import org.springframework.datastore.riak.core.RiakTemplate
+import org.springframework.datastore.riak.mapreduce.*
 
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
@@ -18,43 +19,51 @@ class RiakQuery extends Query {
   static {
     queryHandlers = [
         (Query.Equals): { Query.Equals equals, PersistentEntity entity, buff ->
-          def val = equals.value.asType(entity.getPropertyByName(equals.name).getType())
-          if (val instanceof Boolean || val instanceof Integer || val instanceof Double) {
-            buff << "(entry.${equals.name} == ${val})"
+          def val = checkForDate(equals.value)
+          if (val instanceof Boolean) {
+            buff << "(Boolean(entry.${equals.name}) == ${val})"
+          } else if (val instanceof Integer || val instanceof Double || val instanceof Long) {
+            if ("id" == equals.name) {
+              buff << "(v.key == \"${val}\")"
+            } else {
+              buff << "(entry.${equals.name} == ${val})"
+            }
           } else {
             buff << "(entry.${equals.name} == \"${val}\")"
           }
         },
         (Query.IdEquals): { Query.IdEquals idEquals, PersistentEntity entity, buff ->
-          buff << "v.key == ${idEquals.value}"
+          buff << "v.key == \"${idEquals.value}\""
         },
         (Query.NotEquals): { Query.Equals notEquals, PersistentEntity entity, buff ->
-          def val = notEquals.value.asType(entity.getPropertyByName(notEquals.name).getType())
-          if (val instanceof Boolean || val instanceof Integer || val instanceof Double) {
+          def val = checkForDate(notEquals.value)
+          if (val instanceof Boolean) {
+            buff << "(Boolean(entry.${notEquals.name}) != ${val})"
+          } else if (val instanceof Integer || val instanceof Double || val instanceof Long) {
             buff << "(entry.${notEquals.name} != ${val})"
           } else {
             buff << "(entry.${notEquals.name} != \"${val}\")"
           }
         },
         (Query.GreaterThan): { Query.GreaterThan gt, PersistentEntity entity, buff ->
-          def val = gt.value.asType(entity.getPropertyByName(gt.name).getType())
+          def val = checkForDate(gt.value)
           buff << "(entry.${gt.name} > ${val})"
         },
         (Query.GreaterThanEquals): { Query.GreaterThanEquals gte, PersistentEntity entity, buff ->
-          def val = gte.value.asType(entity.getPropertyByName(gte.name).getType())
+          def val = checkForDate(gte.value)
           buff << "(entry.${gte.name} >= ${val})"
         },
         (Query.LessThan): { Query.LessThan lt, PersistentEntity entity, buff ->
-          def val = lt.value.asType(entity.getPropertyByName(lt.name).getType())
+          def val = checkForDate(lt.value)
           buff << "(entry.${lt.name} < ${val})"
         },
         (Query.LessThanEquals): { Query.LessThanEquals lte, PersistentEntity entity, buff ->
-          def val = lte.value.asType(entity.getPropertyByName(lte.name).getType())
+          def val = checkForDate(lte.value)
           buff << "(entry.${lte.name} <= ${val})"
         },
         (Query.Between): { Query.Between between, PersistentEntity entity, buff ->
-          def to = between.to.value.asType(entity.getPropertyByName(between.property).getType())
-          def from = between.from.value.asType(entity.getPropertyByName(between.property).getType())
+          def to = checkForDate(between.to)
+          def from = checkForDate(between.from)
           buff << "(entry.${between.property} <= ${to}) && (entry.${between.property} >= ${from})"
         },
         (Query.Like): { Query.Like like, PersistentEntity entity, buff ->
@@ -114,13 +123,13 @@ class RiakQuery extends Query {
         if (proj instanceof Query.CountProjection) {
           jsbuff << "r.push(v.length);"
         } else if (proj instanceof Query.AvgProjection) {
-          jsbuff << "if(v.length>0){ var total=0.0;for(i in v){ total += 1*v[i].${proj.propertyName}; } r.push(total/v.length); } else { r.push(0.0); }"
+          jsbuff << "if(v.length>0){ var total=0.0;for(i in v){ total += 1*(v[i].${proj.propertyName}); } r.push(total/v.length); } else { r.push(0.0); }"
         } else if (proj instanceof Query.MaxProjection) {
-          jsbuff << "if(v.length>0){ var max=1*v[0].${proj.propertyName};for(i in v){ if(i>0){ if(1*v[i].${proj.propertyName} > max){ max=1*v[i].${proj.propertyName}; }}} r.push(max);}"
+          jsbuff << "if(v.length>0){ var max=1*v[0].${proj.propertyName};for(i in v){ if(i>0){ if(1*(v[i].${proj.propertyName}) > max){ max=1*(v[i].${proj.propertyName}); }}} r.push(max);}"
         } else if (proj instanceof Query.MinProjection) {
-          jsbuff << "if(v.length>0){ var min=1*v[0].${proj.propertyName};for(i in v){ if(i>0){ if(1*v[i].${proj.propertyName} < min){ min=1*v[i].${proj.propertyName}; }}} r.push(min);}"
+          jsbuff << "if(v.length>0){ var min=1*v[0].${proj.propertyName};for(i in v){ if(i>0){ if(1*(v[i].${proj.propertyName}) < min){ min=1*(v[i].${proj.propertyName}); }}} r.push(min);}"
         } else if (proj instanceof Query.IdProjection) {
-          jsbuff << "if(v.length>0){ for(i in v){ r.push(1*v[i].id); }}"
+          jsbuff << "if(v.length>0){ for(i in v){ r.push(1*(v[i].id)); }}"
         } else if (proj instanceof Query.PropertyProjection) {
           propProjs << proj
           jsbuff << "return v;"
@@ -130,7 +139,19 @@ class RiakQuery extends Query {
       reduceJs = jsbuff.toString()
     }
 
-    def results = riak.mapReduce(entity.name, mapJs, reduceJs)
+    MapReduceJob mr = riak.createMapReduceJob()
+    mr.addInputs([entity.name])
+    MapReduceOperation mapOper = new JavascriptMapReduceOperation(mapJs)
+    MapReducePhase mapPhase = new RiakMapReducePhase(MapReducePhase.Phase.MAP, "javascript", mapOper)
+    mr.addPhase(mapPhase)
+
+    if (reduceJs) {
+      MapReduceOperation reduceOper = new JavascriptMapReduceOperation(reduceJs)
+      MapReducePhase reducePhase = new RiakMapReducePhase(MapReducePhase.Phase.REDUCE, "javascript", reduceOper)
+      mr.addPhase(reducePhase)
+    }
+
+    def results = riak.execute(mr)
     // This portion shamelessly absconded from Graeme's RedisQuery.java
     if (results) {
       final def total = results.size()
@@ -159,8 +180,17 @@ class RiakQuery extends Query {
           if (propProjs.size() != 1) {
             log.warn "Only the first PropertyProjection is used: " + propProjs[0]
           }
+          String propName = propProjs[0].propertyName
           finalResult.collect { entry ->
-            entry."${propProjs[0].propertyName}"
+            try {
+              entry."${propName}".asType(entity.getPropertyByName(propName).type)
+            } catch (GroovyCastException e) {
+              if (entry."${propName}".isLong()) {
+                getSession().retrieve(entity.getPropertyByName(propName).type, entry."${propName}".toLong())
+              } else {
+                entry."${propName}"
+              }
+            }
           }
         } else {
           finalResult
@@ -182,6 +212,16 @@ class RiakQuery extends Query {
       }
     }
     conjunc
+  }
+
+  static def checkForDate(val) {
+    if (val instanceof Date) {
+      ((Date) val).time
+    } else if (val instanceof Calendar) {
+      ((Calendar) val).time.time
+    } else {
+      val
+    }
   }
 
 }

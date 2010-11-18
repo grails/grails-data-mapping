@@ -18,12 +18,12 @@ package org.grails.datastore.gorm
 
 import org.grails.datastore.gorm.riak.RiakGormEnhancer
 import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingContext
+import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.riak.RiakDatastore
-import org.springframework.datastore.mapping.riak.util.RiakTemplate
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
+import org.springframework.datastore.riak.core.RiakTemplate
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
@@ -64,8 +64,13 @@ class Setup {
 
     Session con = riak.connect()
     RiakTemplate riakTmpl = con.nativeInterface
-    ["grails.gorm.tests.TestEntity", "grails.gorm.tests.ChildEntity"].each {
-      riakTmpl.clear(it)
+    ["grails.gorm.tests.TestEntity", "grails.gorm.tests.ChildEntity", "grails.gorm.tests.Publication"].each { type ->
+      riakTmpl.getBucketSchema(type, true)["keys"].each { key ->
+        try {
+          riakTmpl.deleteKeys("$type:$key")
+        } catch (err) {
+        }
+      }
     }
 
     return con

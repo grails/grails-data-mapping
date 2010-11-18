@@ -23,8 +23,8 @@ import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.riak.engine.RiakEntityPersister;
-import org.springframework.datastore.mapping.riak.util.RiakTemplate;
 import org.springframework.datastore.mapping.transactions.Transaction;
+import org.springframework.datastore.riak.core.RiakTemplate;
 
 import java.math.BigInteger;
 

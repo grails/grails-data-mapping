@@ -21,9 +21,11 @@ import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.riak.RiakDatastore
-import org.springframework.datastore.mapping.riak.util.RiakTemplate
+import org.springframework.datastore.riak.core.RiakTemplate
+import org.springframework.datastore.riak.mapreduce.JavascriptMapReduceOperation
+import org.springframework.datastore.riak.mapreduce.RiakMapReduceJob
+import org.springframework.datastore.riak.mapreduce.RiakMapReducePhase
 
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
@@ -83,11 +85,19 @@ class MapReduceApi {
   }
 
   def invokeMethod(String methodName, args) {
-    Session session = datastore.currentSession
     RiakTemplate riak = datastore.currentSession.nativeInterface
     log.debug "Invoking $methodName with ${args}"
-    if (methodName == "map") {
-      session.retrieveAll(type, riak.query(type.name, args[0]))
+    RiakMapReduceJob mr = new RiakMapReduceJob(riak)
+    mr.addInputs([type.name])
+    if (methodName == "execute") {
+      def params = args[0]
+      if (params["map"]) {
+        mr.addPhase(new RiakMapReducePhase("map", params["map"]["language"] ?: "javascript", new JavascriptMapReduceOperation(params["map"]["source"])))
+      }
+      if (params["reduce"]) {
+        mr.addPhase(new RiakMapReducePhase("reduce", params["map"]["language"] ?: "javascript", new JavascriptMapReduceOperation(params["map"]["source"])))
+      }
+      riak.execute(mr)
     }
   }
 }

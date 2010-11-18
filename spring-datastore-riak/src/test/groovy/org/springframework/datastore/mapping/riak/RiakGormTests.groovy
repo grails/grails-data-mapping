@@ -20,7 +20,7 @@ import grails.persistence.Entity
 import org.grails.datastore.gorm.riak.RiakGormEnhancer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingContext
+import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 
