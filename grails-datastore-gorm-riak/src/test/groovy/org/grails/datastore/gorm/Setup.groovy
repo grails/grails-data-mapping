@@ -36,7 +36,10 @@ class Setup {
   static riak
 
   static Session setup(classes) {
-    riak = new RiakDatastore(new KeyValueMappingContext(""), [host: "127.0.0.1"])
+    riak = new RiakDatastore(new KeyValueMappingContext(""), [
+        defaultUri: "http://172.20.16.21:8098/riak/{bucket}/{key}",
+        mapReduceUri: "http://172.20.16.21:8098/mapred"
+    ])
     for (cls in classes) {
       riak.mappingContext.addPersistentEntity(cls)
     }
@@ -64,7 +67,16 @@ class Setup {
 
     Session con = riak.connect()
     RiakTemplate riakTmpl = con.nativeInterface
-    ["grails.gorm.tests.TestEntity", "grails.gorm.tests.ChildEntity", "grails.gorm.tests.Publication"].each { type ->
+    [
+        "grails.gorm.tests.TestEntity",
+        "grails.gorm.tests.ChildEntity",
+        "grails.gorm.tests.Publication",
+        "grails.gorm.tests.Location",
+        "grails.gorm.tests.City",
+        "grails.gorm.tests.Country",
+        "grails.gorm.tests.Highway",
+        "grails.gorm.tests.Book"
+    ].each { type ->
       riakTmpl.getBucketSchema(type, true)["keys"].each { key ->
         try {
           riakTmpl.deleteKeys("$type:$key")

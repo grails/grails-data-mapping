@@ -21,13 +21,13 @@ import org.junit.runners.Suite.SuiteClasses
 //  DomainEventsSpec,
 //  ProxyLoadingSpec,
 //  QueryAfterPropertyChangeSpec,
-//  CircularOneToManySpec,
-//  InheritanceSpec,
+//  CircularOneToManySpec, // kills server
+//  InheritanceSpec, // .5 FAILED
 //  FindByMethodSpec,
 //  ListOrderBySpec,
 //  GroovyProxySpec,
 //  CommonTypesPersistenceSpec,
-//  GormEnhancerSpec,
+  GormEnhancerSpec,
 //  NegationSpec,
 //  ValidationSpec,
 //  UpdateWithProxyPresentSpec,

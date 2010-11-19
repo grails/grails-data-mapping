@@ -35,14 +35,17 @@ public class RiakDatastore extends AbstractDatastore implements InitializingBean
 
   public static final String CONFIG_DEFAULT_URI = "defaultUri";
   public static final String CONFIG_MAPRED_URI = "mapReduceUri";
+  public static final String CONFIG_USE_CACHE = "useCache";
 
   public static final String DEFAULT_URI = "http://localhost:8098/riak/{bucket}/{key}";
   public static final String DEFAULT_MAPRED_URI = "http://localhost:8098/mapred";
+  public static final boolean DEFAULT_USE_CACHE = true;
 
   private final Logger log = LoggerFactory.getLogger(getClass());
 
   private String defaultUri = DEFAULT_URI;
   private String mapReduceUri = DEFAULT_MAPRED_URI;
+  private boolean useCache = DEFAULT_USE_CACHE;
 
   public RiakDatastore() {
     this(new KeyValueMappingContext(""));
@@ -58,6 +61,8 @@ public class RiakDatastore extends AbstractDatastore implements InitializingBean
     if (connectionDetails != null) {
       defaultUri = connectionDetails.containsKey(CONFIG_DEFAULT_URI) ? connectionDetails.get(CONFIG_DEFAULT_URI) : DEFAULT_URI;
       mapReduceUri = connectionDetails.containsKey(CONFIG_MAPRED_URI) ? connectionDetails.get(CONFIG_MAPRED_URI) : DEFAULT_MAPRED_URI;
+      useCache = connectionDetails.containsKey(CONFIG_USE_CACHE) ? Boolean.parseBoolean(connectionDetails.get(
+          CONFIG_USE_CACHE).toString()) : DEFAULT_USE_CACHE;
     }
   }
 
@@ -67,8 +72,11 @@ public class RiakDatastore extends AbstractDatastore implements InitializingBean
     if (connectionDetails != null) {
       defaultUri = connectionDetails.containsKey(CONFIG_DEFAULT_URI) ? connectionDetails.get(CONFIG_DEFAULT_URI) : DEFAULT_URI;
       mapReduceUri = connectionDetails.containsKey(CONFIG_MAPRED_URI) ? connectionDetails.get(CONFIG_MAPRED_URI) : DEFAULT_MAPRED_URI;
+      useCache = connectionDetails.containsKey(CONFIG_USE_CACHE) ? Boolean.parseBoolean(connectionDetails.get(
+          CONFIG_USE_CACHE).toString()) : DEFAULT_USE_CACHE;
     }
     RiakTemplate riak = new RiakTemplate(defaultUri, mapReduceUri);
+    riak.setUseCache(useCache);
     try {
       riak.afterPropertiesSet();
     } catch (Exception e) {

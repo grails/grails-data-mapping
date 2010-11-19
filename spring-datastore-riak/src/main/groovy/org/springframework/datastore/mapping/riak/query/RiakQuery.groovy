@@ -21,45 +21,45 @@ class RiakQuery extends Query {
         (Query.Equals): { Query.Equals equals, PersistentEntity entity, buff ->
           def val = checkForDate(equals.value)
           if (val instanceof Boolean) {
-            buff << "(Boolean(entry.${equals.name}) == ${val})"
+            buff << "Boolean(entry.${equals.name}) == ${val}"
           } else if (val instanceof Integer || val instanceof Double || val instanceof Long) {
             if ("id" == equals.name) {
-              buff << "(v.key == \"${val}\")"
+              buff << "v.key == \"${val}\""
             } else {
-              buff << "(entry.${equals.name} == ${val})"
+              buff << "entry.${equals.name} == ${val}"
             }
           } else {
-            buff << "(entry.${equals.name} == \"${val}\")"
+            buff << "entry.${equals.name} == \"${val}\""
           }
         },
         (Query.IdEquals): { Query.IdEquals idEquals, PersistentEntity entity, buff ->
           buff << "v.key == \"${idEquals.value}\""
         },
-        (Query.NotEquals): { Query.Equals notEquals, PersistentEntity entity, buff ->
+        (Query.NotEquals): { Query.NotEquals notEquals, PersistentEntity entity, buff ->
           def val = checkForDate(notEquals.value)
           if (val instanceof Boolean) {
-            buff << "(Boolean(entry.${notEquals.name}) != ${val})"
+            buff << "Boolean(entry.${notEquals.name}) != ${val}"
           } else if (val instanceof Integer || val instanceof Double || val instanceof Long) {
-            buff << "(entry.${notEquals.name} != ${val})"
+            buff << "entry.${notEquals.name} != ${val}"
           } else {
-            buff << "(entry.${notEquals.name} != \"${val}\")"
+            buff << "entry.${notEquals.name} != \"${val}\""
           }
         },
         (Query.GreaterThan): { Query.GreaterThan gt, PersistentEntity entity, buff ->
           def val = checkForDate(gt.value)
-          buff << "(entry.${gt.name} > ${val})"
+          buff << "entry.${gt.name} > ${val}"
         },
         (Query.GreaterThanEquals): { Query.GreaterThanEquals gte, PersistentEntity entity, buff ->
           def val = checkForDate(gte.value)
-          buff << "(entry.${gte.name} >= ${val})"
+          buff << "entry.${gte.name} >= ${val}"
         },
         (Query.LessThan): { Query.LessThan lt, PersistentEntity entity, buff ->
           def val = checkForDate(lt.value)
-          buff << "(entry.${lt.name} < ${val})"
+          buff << "entry.${lt.name} < ${val}"
         },
         (Query.LessThanEquals): { Query.LessThanEquals lte, PersistentEntity entity, buff ->
           def val = checkForDate(lte.value)
-          buff << "(entry.${lte.name} <= ${val})"
+          buff << "entry.${lte.name} <= ${val}"
         },
         (Query.Between): { Query.Between between, PersistentEntity entity, buff ->
           def to = checkForDate(between.to)
@@ -71,15 +71,15 @@ class RiakQuery extends Query {
           buff << "/^$regexp/.test(\"\"+entry.${like.name})"
         },
         (Query.Conjunction): { Query.Conjunction and, PersistentEntity entity, buff ->
-          def conjunc = RiakQuery.handleJunction(and, entity).join("&&")
+          def conjunc = RiakQuery.handleJunction(and, entity).collect { "(" + it + ")"}.join("&&")
           buff << "($conjunc)"
         },
         (Query.Disjunction): { Query.Disjunction or, PersistentEntity entity, buff ->
-          def disjunc = RiakQuery.handleJunction(or, entity).join("||")
+          def disjunc = RiakQuery.handleJunction(or, entity).collect { "(" + it + ")"}.join("||")
           buff << "($disjunc)"
         },
         (Query.Negation): { Query.Negation not, PersistentEntity entity, buff ->
-          def neg = RiakQuery.handleJunction(not, entity).join("&&")
+          def neg = RiakQuery.handleJunction(not, entity).collect { "(" + it + ")"}.join("&&")
           buff << "!($neg)"
         },
         (Query.In): { Query.In qin, PersistentEntity entity, buff ->
@@ -112,7 +112,15 @@ class RiakQuery extends Query {
     }
     def joinStr = (criteria && criteria instanceof Query.Disjunction ? "||" : "&&")
     def ifclause = buff.join(joinStr) ?: "true"
-    def mapJs = "function(v){var o=Riak.mapValuesJson(v);var r=[];for(i in o){var entry=o[i];if(${ifclause}){o[i].id=v.key;r.push(o[i]);}} return r;}"
+    StringBuilder mapJs = new StringBuilder("function(v){var o=Riak.mapValuesJson(v);var r=[];for(i in o){var entry=o[i];")
+    if (ifclause != "true") {
+      mapJs << "if(${ifclause}){"
+    }
+    mapJs << "o[i].id=v.key;r.push(o[i]);"
+    if (ifclause != "true") {
+      mapJs << "}"
+    }
+    mapJs << "} return r;}"
     def reduceJs
     // Property projections
     List<Query.PropertyProjection> propProjs = new ArrayList<Query.PropertyProjection>()
@@ -141,7 +149,7 @@ class RiakQuery extends Query {
 
     MapReduceJob mr = riak.createMapReduceJob()
     mr.addInputs([entity.name])
-    MapReduceOperation mapOper = new JavascriptMapReduceOperation(mapJs)
+    MapReduceOperation mapOper = new JavascriptMapReduceOperation(mapJs.toString())
     MapReducePhase mapPhase = new RiakMapReducePhase(MapReducePhase.Phase.MAP, "javascript", mapOper)
     mr.addPhase(mapPhase)
 
@@ -151,6 +159,7 @@ class RiakQuery extends Query {
       mr.addPhase(reducePhase)
     }
 
+    log.debug("Running M/R: \n${mr.toJson()}")
     def results = riak.execute(mr)
     // This portion shamelessly absconded from Graeme's RedisQuery.java
     if (results) {
@@ -196,7 +205,7 @@ class RiakQuery extends Query {
           finalResult
         }
       } else {
-        getSession().retrieveAll(getEntity().getJavaClass(), finalResult.collect { it.id.toLong() })
+        getSession().retrieveAll(getEntity().getJavaClass(), finalResult.collect { it.id?.toLong() })
       }
     } else {
       return Collections.emptyList()
@@ -204,14 +213,14 @@ class RiakQuery extends Query {
   }
 
   static def handleJunction(Query.Junction junc, PersistentEntity entity) {
-    def conjunc = []
+    def buff = []
     junc.criteria.each { crit ->
       def handler = queryHandlers[crit.class]
       if (handler) {
-        handler(crit, entity, conjunc)
+        handler(crit, entity, buff)
       }
     }
-    conjunc
+    buff
   }
 
   static def checkForDate(val) {

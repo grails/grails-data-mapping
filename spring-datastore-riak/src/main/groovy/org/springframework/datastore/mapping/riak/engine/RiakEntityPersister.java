@@ -87,7 +87,7 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
       c.setTime(new Date(Long.parseLong(nativeEntry.get(property).toString())));
       return c;
     } else if (prop.getType() == Boolean.class) {
-      return new Boolean(nativeEntry.get(property).toString());
+      return (nativeEntry.containsKey(property) ? new Boolean(nativeEntry.get(property).toString()) : false);
     } else {
       return nativeEntry.get(property);
     }
@@ -111,6 +111,7 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
 
   @Override
   protected Map retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
+    //String family = getRootFamily(persistentEntity);
     return riakTemplate.getAsType(String.format("%s:%s",
         family,
         (key instanceof Long ? (Long) key : Long.parseLong(key.toString()))), Map.class);
@@ -118,15 +119,15 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
 
   @Override
   protected Long storeEntry(PersistentEntity persistentEntity, Long storeId, Map nativeEntry) {
-    String family = getRootFamily(persistentEntity);
-    riakTemplate.set(String.format("%s:%s", family, storeId), nativeEntry);
+    //String family = getRootFamily(persistentEntity);
+    riakTemplate.set(String.format("%s:%s", persistentEntity.getName(), storeId), nativeEntry);
     return storeId;
   }
 
   @Override
   protected void updateEntry(PersistentEntity persistentEntity, Long key, Map entry) {
-    String family = getRootFamily(persistentEntity);
-    riakTemplate.set(String.format("%s:%s", family, key), entry);
+    //String family = getRootFamily(persistentEntity);
+    riakTemplate.set(String.format("%s:%s", persistentEntity.getName(), key), entry);
   }
 
   @Override

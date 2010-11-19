@@ -214,14 +214,12 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
             node.addMixin(JcrConstants.MIXIN_VERSIONABLE);
             node.addMixin(JcrConstants.MIXIN_LOCKABLE);
 
-            
             return node;
 
         } catch (RepositoryException e) {
             throw new DataAccessResourceFailureException("Exception occurred cannot create Node: " + e.getMessage(), e);
         }
     }
-
 
     @Override
     protected void setEntryValue(Node nativeEntry, String propertyName, Object value) {
@@ -232,9 +230,9 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                     nativeEntry.setProperty(propertyName, (String) value);
                 else if (value instanceof Boolean)
                     nativeEntry.setProperty(propertyName, (Boolean) value);
-                else if (value instanceof Calendar)
+                else if (value instanceof Calendar){
                     nativeEntry.setProperty(propertyName, (Calendar) value);
-                else if (value instanceof Double)
+                }else if (value instanceof Double)
                     nativeEntry.setProperty(propertyName, (Double) value);
                 else if (value instanceof InputStream)
                     nativeEntry.setProperty(propertyName, (InputStream) value);
@@ -244,6 +242,7 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                     nativeEntry.setProperty(propertyName, getLong(value));
                 else{
                     //Marshaling all unsupported data types into String
+                    System.out.println(value.getClass());
                     value = value.toString();
                     nativeEntry.setProperty(propertyName, (String)value);
                 }
