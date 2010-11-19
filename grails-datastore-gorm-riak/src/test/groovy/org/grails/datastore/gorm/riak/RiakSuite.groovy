@@ -10,30 +10,29 @@ import org.junit.runners.Suite.SuiteClasses
  */
 @RunWith(Suite)
 @SuiteClasses([
-//  RangeQuerySpec,
-//  NamedQuerySpec,
-//  CriteriaBuilderSpec,
-//  OrderBySpec,
-//  CommonTypesPersistenceSpec,
-//  QueryAfterPropertyChangeSpec,
-//  QueryByAssociationSpec,
-//  UpdateWithProxyPresentSpec, // FAILED
-//  DomainEventsSpec,
-//  ProxyLoadingSpec,
-//  QueryAfterPropertyChangeSpec,
-//  CircularOneToManySpec, // kills server
-//  InheritanceSpec, // .5 FAILED
-//  FindByMethodSpec,
-//  ListOrderBySpec,
-//  GroovyProxySpec,
-//  CommonTypesPersistenceSpec,
-  GormEnhancerSpec,
-//  NegationSpec,
-//  ValidationSpec,
-//  UpdateWithProxyPresentSpec,
-//  AttachMethodSpec,
-//  WithTransactionSpec,
-//  CrudOperationsSpec
+//  AttachMethodSpec, +
+//  CircularOneToManySpec, +
+//  CommonTypesPersistenceSpec, +
+//  CriteriaBuilderSpec, +
+//  CrudOperationsSpec, +
+//  DomainEventsSpec, +
+//  FindByMethodSpec, +
+//  GormEnhancerSpec, +
+//  GroovyProxySpec, +
+//  InheritanceSpec, -1
+//  ListOrderBySpec, +
+//  NamedQuerySpec, +
+//  NegationSpec, +
+//  OneToManySpec, +
+//  OrderBySpec, +
+//  ProxyLoadingSpec, +
+//  QueryAfterPropertyChangeSpec, +
+//  QueryByAssociationSpec, +
+//  RangeQuerySpec, +
+//  SaveAllSpec, +
+//  UpdateWithProxyPresentSpec, +
+//  ValidationSpec, +
+//  WithTransactionSpec +
 ])
 class RiakSuite {
 }

@@ -52,7 +52,7 @@ public class RiakSession extends AbstractSession {
 
   @Override
   protected Transaction beginTransactionInternal() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return new RiakTransaction(riakTemplate);
   }
 
   public boolean isConnected() {

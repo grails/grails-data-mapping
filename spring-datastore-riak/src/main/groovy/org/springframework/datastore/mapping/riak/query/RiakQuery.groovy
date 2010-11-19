@@ -79,8 +79,8 @@ class RiakQuery extends Query {
           buff << "($disjunc)"
         },
         (Query.Negation): { Query.Negation not, PersistentEntity entity, buff ->
-          def neg = RiakQuery.handleJunction(not, entity).collect { "(" + it + ")"}.join("&&")
-          buff << "!($neg)"
+          def neg = RiakQuery.handleJunction(not, entity).collect { "!(" + it + ")"}.join("&&")
+          buff << neg
         },
         (Query.In): { Query.In qin, PersistentEntity entity, buff ->
           def inClause = qin.values.collect {
@@ -112,7 +112,7 @@ class RiakQuery extends Query {
     }
     def joinStr = (criteria && criteria instanceof Query.Disjunction ? "||" : "&&")
     def ifclause = buff.join(joinStr) ?: "true"
-    StringBuilder mapJs = new StringBuilder("function(v){var o=Riak.mapValuesJson(v);var r=[];for(i in o){var entry=o[i];")
+    StringBuilder mapJs = new StringBuilder("function(v){try{if(typeof v['values'] == \"undefined\" || v.values[0].data == \"\"){return [];}}catch(e){return [];};var o=Riak.mapValuesJson(v);var r=[];for(i in o){var entry=o[i];")
     if (ifclause != "true") {
       mapJs << "if(${ifclause}){"
     }
@@ -126,21 +126,21 @@ class RiakQuery extends Query {
     List<Query.PropertyProjection> propProjs = new ArrayList<Query.PropertyProjection>()
     def projectionList = projections()
     if (projectionList.projections) {
-      StringBuilder jsbuff = new StringBuilder("function(v){ var r=[];")
+      StringBuilder jsbuff = new StringBuilder("function(reduced){ var r=[];")
       projectionList.projectionList.each { proj ->
         if (proj instanceof Query.CountProjection) {
-          jsbuff << "r.push(v.length);"
+          jsbuff << "r.push(reduced.length);"
         } else if (proj instanceof Query.AvgProjection) {
-          jsbuff << "if(v.length>0){ var total=0.0;for(i in v){ total += 1*(v[i].${proj.propertyName}); } r.push(total/v.length); } else { r.push(0.0); }"
+          jsbuff << "if(reduced.length>0){ var total=0.0;for(i in reduced){ total += 1*(reduced[i].${proj.propertyName}); } r.push(total/reduced.length); } else { r.push(0.0); }"
         } else if (proj instanceof Query.MaxProjection) {
-          jsbuff << "if(v.length>0){ var max=1*v[0].${proj.propertyName};for(i in v){ if(i>0){ if(1*(v[i].${proj.propertyName}) > max){ max=1*(v[i].${proj.propertyName}); }}} r.push(max);}"
+          jsbuff << "if(reduced.length>0){ var max=1*reduced[0].${proj.propertyName};for(i in reduced){ if(i>0){ if(1*(reduced[i].${proj.propertyName}) > max){ max=1*(reduced[i].${proj.propertyName}); }}} r.push(max);}"
         } else if (proj instanceof Query.MinProjection) {
-          jsbuff << "if(v.length>0){ var min=1*v[0].${proj.propertyName};for(i in v){ if(i>0){ if(1*(v[i].${proj.propertyName}) < min){ min=1*(v[i].${proj.propertyName}); }}} r.push(min);}"
+          jsbuff << "if(reduced.length>0){ var min=1*reduced[0].${proj.propertyName};for(i in reduced){ if(i>0){ if(1*(reduced[i].${proj.propertyName}) < min){ min=1*(reduced[i].${proj.propertyName}); }}} r.push(min);}"
         } else if (proj instanceof Query.IdProjection) {
-          jsbuff << "if(v.length>0){ for(i in v){ r.push(1*(v[i].id)); }}"
+          jsbuff << "if(reduced.length>0){ for(i in reduced){ r.push(1*(reduced[i].id)); }}"
         } else if (proj instanceof Query.PropertyProjection) {
           propProjs << proj
-          jsbuff << "return v;"
+          jsbuff << "return reduced;"
         }
       }
       jsbuff << " return r;}"

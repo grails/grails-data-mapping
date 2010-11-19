@@ -75,7 +75,9 @@ class Setup {
         "grails.gorm.tests.City",
         "grails.gorm.tests.Country",
         "grails.gorm.tests.Highway",
-        "grails.gorm.tests.Book"
+        "grails.gorm.tests.Book",
+        "grails.gorm.tests.Pet",
+        "grails.gorm.tests.Person"
     ].each { type ->
       riakTmpl.getBucketSchema(type, true)["keys"].each { key ->
         try {

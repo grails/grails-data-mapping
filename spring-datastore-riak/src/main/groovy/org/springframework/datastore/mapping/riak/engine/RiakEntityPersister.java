@@ -16,6 +16,8 @@
 
 package org.springframework.datastore.mapping.riak.engine;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
@@ -33,6 +35,7 @@ import org.springframework.datastore.mapping.riak.query.RiakQuery;
 import org.springframework.datastore.riak.core.RiakTemplate;
 
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -41,6 +44,7 @@ import java.util.*;
 @SuppressWarnings({"unchecked"})
 public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Long> {
 
+  private final Logger log = LoggerFactory.getLogger(getClass());
   private RiakTemplate riakTemplate;
 
   public RiakEntityPersister(MappingContext context, PersistentEntity entity, Session session, final RiakTemplate riakTemplate) {
@@ -111,23 +115,53 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
 
   @Override
   protected Map retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
-    //String family = getRootFamily(persistentEntity);
-    return riakTemplate.getAsType(String.format("%s:%s",
+    if (!persistentEntity.isRoot()) {
+      String rootFamily = getRootFamily(persistentEntity);
+      if (log.isDebugEnabled()) {
+        log.debug("Retrieving entity ancestor: " + rootFamily);
+      }
+    }
+    Map m = riakTemplate.getAsType(String.format("%s:%s",
         family,
         (key instanceof Long ? (Long) key : Long.parseLong(key.toString()))), Map.class);
+    if (log.isDebugEnabled()) {
+      log.debug(String.format("retrieveEntry(): entity=%s, family=%s, key=%s, values=%s",
+          persistentEntity.getName(),
+          family,
+          key,
+          m));
+    }
+    return m;
   }
 
   @Override
   protected Long storeEntry(PersistentEntity persistentEntity, Long storeId, Map nativeEntry) {
-    //String family = getRootFamily(persistentEntity);
-    riakTemplate.set(String.format("%s:%s", persistentEntity.getName(), storeId), nativeEntry);
+    Map<String, String> metaData = null;
+    if (!persistentEntity.isRoot()) {
+      List<String> ancestors = getAncestors(persistentEntity);
+      if (log.isDebugEnabled()) {
+        log.debug("Storing entity ancestor(s): " + ancestors);
+      }
+      StringWriter metaHdr = new StringWriter();
+      boolean needsComma = false;
+      for (String s : ancestors) {
+        if (needsComma) {
+          metaHdr.write(",");
+        } else {
+          needsComma = true;
+        }
+        metaHdr.write(s);
+      }
+      metaData = new LinkedHashMap<String, String>();
+      metaData.put("X-Riak-Meta-Ancestors", metaHdr.toString());
+    }
+    riakTemplate.setWithMetaData(String.format("%s:%s", persistentEntity.getName(), storeId), nativeEntry, metaData);
     return storeId;
   }
 
   @Override
   protected void updateEntry(PersistentEntity persistentEntity, Long key, Map entry) {
-    //String family = getRootFamily(persistentEntity);
-    riakTemplate.set(String.format("%s:%s", persistentEntity.getName(), key), entry);
+    storeEntry(persistentEntity, key, entry);
   }
 
   @Override
@@ -152,5 +186,15 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
       family = getFamily(root, root.getMapping());
     }
     return family;
+  }
+
+  protected List<String> getAncestors(PersistentEntity entity) {
+    List<String> ancestors = new LinkedList<String>();
+    PersistentEntity parent = entity.getParentEntity();
+    ancestors.add(parent.getName());
+    if (!parent.isRoot()) {
+      ancestors.addAll(getAncestors(parent));
+    }
+    return ancestors;
   }
 }

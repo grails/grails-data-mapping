@@ -27,13 +27,14 @@ import org.springframework.datastore.riak.core.SimpleBucketKeyPair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
  */
 public class RiakAssociationIndexer implements AssociationIndexer<Long, Long> {
 
+  private static final Pattern linkPattern = Pattern.compile("^<(.+)/(.+)/(.+)>; riaktag=\"(.+)\"");
   private final Logger log = LoggerFactory.getLogger(getClass());
   private RiakTemplate riakTemplate;
   private ConversionService conversionService;
@@ -60,17 +61,23 @@ public class RiakAssociationIndexer implements AssociationIndexer<Long, Long> {
   }
 
   protected void link(Long childKey, Long ownerKey) {
-    SimpleBucketKeyPair<String, Long> bkpChild = new SimpleBucketKeyPair<String, Long>(child.getName(), childKey);
-    SimpleBucketKeyPair<String, Long> bkpOwner = new SimpleBucketKeyPair<String, Long>(owner.getName(), ownerKey);
-    riakTemplate.link(bkpChild, bkpOwner, association.getName());
+    String bucketName = String.format("%s.%s.%s", owner.getName(), association.getName(), ownerKey);
+    SimpleBucketKeyPair<String, Long> bkpChild = new SimpleBucketKeyPair<String, Long>(bucketName, childKey);
+    SimpleBucketKeyPair<String, Long> bkpRealChild = new SimpleBucketKeyPair<String, Long>(child.getName(), childKey);
+    riakTemplate.set(bkpChild, "");
+    riakTemplate.link(bkpRealChild, bkpChild, "target");
+    //SimpleBucketKeyPair<String, Long> bkpOwner = new SimpleBucketKeyPair<String, Long>(owner.getName(), ownerKey);
+    //riakTemplate.link(bkpChild, bkpOwner, "owner");
   }
 
   public List<Long> query(Long primaryKey) {
-    String bucketName = String.format("%s.%s.%s", owner.getName(), primaryKey, association.getName());
-    Map<String, Object> schema = riakTemplate.getBucketSchema(bucketName, true);
+    String bucketName = String.format("%s.%s.%s", owner.getName(), association.getName(), primaryKey);
+    Object obj = riakTemplate.getBucketSchema(bucketName, true).get("keys");
     List<Long> keys = new ArrayList<Long>();
-    for (Object key : (List) schema.get("keys")) {
-      keys.add(Long.parseLong(key.toString()));
+    if (null != obj && obj instanceof List) {
+      for (String key : (List<String>) obj) {
+        keys.add(Long.parseLong(key));
+      }
     }
     return keys;
   }
