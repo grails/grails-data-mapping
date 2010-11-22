@@ -23,9 +23,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.datastore.mapping.riak.RiakDatastore
 import org.springframework.datastore.riak.core.RiakTemplate
-import org.springframework.datastore.riak.mapreduce.JavascriptMapReduceOperation
-import org.springframework.datastore.riak.mapreduce.RiakMapReduceJob
-import org.springframework.datastore.riak.mapreduce.RiakMapReducePhase
+import org.springframework.datastore.riak.core.SimpleBucketKeyPair
+import org.springframework.datastore.riak.mapreduce.*
 
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
@@ -66,7 +65,7 @@ class RiakGormStaticApi extends GormStaticApi {
     mapReduceApi = new MapReduceApi(persistentClass, datastore)
   }
 
-  MapReduceApi getMapReduce() {
+  MapReduceApi getMapreduce() {
     mapReduceApi
   }
 
@@ -92,12 +91,30 @@ class MapReduceApi {
     if (methodName == "execute") {
       def params = args[0]
       if (params["map"]) {
-        mr.addPhase(new RiakMapReducePhase("map", params["map"]["language"] ?: "javascript", new JavascriptMapReduceOperation(params["map"]["source"])))
+        def oper = extractMapReduceOperation(params["map"])
+        mr.addPhase(new RiakMapReducePhase(MapReducePhase.Phase.MAP, params["map"]["language"] ?: "javascript", oper))
       }
       if (params["reduce"]) {
-        mr.addPhase(new RiakMapReducePhase("reduce", params["map"]["language"] ?: "javascript", new JavascriptMapReduceOperation(params["map"]["source"])))
+        def oper = extractMapReduceOperation(params["reduce"])
+        mr.addPhase(new RiakMapReducePhase(MapReducePhase.Phase.REDUCE, params["map"]["language"] ?: "javascript", oper))
       }
       riak.execute(mr)
     }
+  }
+
+  protected MapReduceOperation extractMapReduceOperation(param) {
+    def oper = null
+    def lang = param.language ?: "javascript"
+    if (lang == "javascript") {
+      if (param.source) {
+        oper = new JavascriptMapReduceOperation(param.source)
+      } else if (param.bucket && param.key) {
+        def bkp = new SimpleBucketKeyPair(param.bucket, param.key)
+        oper = new JavascriptMapReduceOperation(bkp)
+      }
+    } else if (lang == "erlang") {
+      oper = new ErlangMapReduceOperation(param.module, param.function)
+    }
+    oper
   }
 }
