@@ -3,11 +3,11 @@ package org.springframework.datastore.mapping.riak.query
 import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.data.riak.core.RiakTemplate
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.query.Query
-import org.springframework.datastore.riak.core.RiakTemplate
-import org.springframework.datastore.riak.mapreduce.*
+import org.springframework.data.riak.mapreduce.*
 
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
@@ -148,7 +148,6 @@ class RiakQuery extends Query {
     }
 
     MapReduceJob mr = riak.createMapReduceJob()
-    mr.addInputs([entity.name])
     MapReduceOperation mapOper = new JavascriptMapReduceOperation(mapJs.toString())
     MapReducePhase mapPhase = new RiakMapReducePhase(MapReducePhase.Phase.MAP, "javascript", mapOper)
     mr.addPhase(mapPhase)
@@ -159,8 +158,21 @@ class RiakQuery extends Query {
       mr.addPhase(reducePhase)
     }
 
+    def inputBuckets = [entity.name]
+    def descendants = riak.getAsType(entity.name + ".metadata:descendants", List)
+    if (descendants) {
+      inputBuckets.addAll(descendants)
+    }
     log.debug("Running M/R: \n${mr.toJson()}")
-    def results = riak.execute(mr)
+    def results = []
+    inputBuckets.each {
+      mr.getInputs().clear()
+      mr.getInputs().add(it)
+      def l = riak.execute(mr)
+      if (l) {
+        results.addAll(l)
+      }
+    }
     // This portion shamelessly absconded from Graeme's RedisQuery.java
     if (results) {
       final def total = results.size()
@@ -202,7 +214,18 @@ class RiakQuery extends Query {
             }
           }
         } else {
-          finalResult
+          def projResult = projectionList.projectionList.collect { proj ->
+            if (proj instanceof Query.CountProjection) {
+              return finalResult.sum()
+            } else if (proj instanceof Query.AvgProjection) {
+              return finalResult.sum() / finalResult.size()
+            } else if (proj instanceof Query.MaxProjection) {
+              return finalResult.max()
+            } else if (proj instanceof Query.MinProjection) {
+              return finalResult.min()
+            }
+          }
+          return projResult ?: finalResult
         }
       } else {
         getSession().retrieveAll(getEntity().getJavaClass(), finalResult.collect { it.id?.toLong() })

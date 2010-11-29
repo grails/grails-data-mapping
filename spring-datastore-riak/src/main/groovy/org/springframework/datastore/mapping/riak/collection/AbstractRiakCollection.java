@@ -17,7 +17,7 @@
 package org.springframework.datastore.mapping.riak.collection;
 
 
-import org.springframework.datastore.riak.core.RiakTemplate;
+import org.springframework.data.riak.core.RiakTemplate;
 
 import java.util.Collection;
 import java.util.List;

@@ -19,7 +19,7 @@ import org.junit.runners.Suite.SuiteClasses
 //  FindByMethodSpec, +
 //  GormEnhancerSpec, +
 //  GroovyProxySpec, +
-//  InheritanceSpec, -1
+  InheritanceSpec, 
 //  ListOrderBySpec, +
 //  NamedQuerySpec, +
 //  NegationSpec, +

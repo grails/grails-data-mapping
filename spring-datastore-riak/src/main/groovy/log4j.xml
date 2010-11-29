@@ -8,16 +8,13 @@
     </layout>
   </appender>
 
-  <category name="org.apache.commons.httpclient">
-    <level value="INFO"/>
-  </category>
   <category name="org.springframework">
     <level value="INFO"/>
   </category>
-  <category name="org.springframework.datastore.riak">
+  <category name="org.springframework.data.riak">
     <level value="DEBUG"/>
   </category>
-  <category name="org.springframework.datastore.mapping.riak">
+  <category name="org.springframework.data.mapping.riak">
     <level value="DEBUG"/>
   </category>
 

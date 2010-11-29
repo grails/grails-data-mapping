@@ -17,13 +17,13 @@
 package org.grails.datastore.gorm
 
 import org.grails.datastore.gorm.riak.RiakGormEnhancer
+import org.springframework.datastore.mapping.riak.RiakDatastore
+import org.springframework.data.riak.core.RiakTemplate
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.riak.RiakDatastore
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
-import org.springframework.datastore.riak.core.RiakTemplate
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
@@ -37,8 +37,8 @@ class Setup {
 
   static Session setup(classes) {
     riak = new RiakDatastore(new KeyValueMappingContext(""), [
-        defaultUri: "http://172.20.16.21:8098/riak/{bucket}/{key}",
-        mapReduceUri: "http://172.20.16.21:8098/mapred"
+        defaultUri: "http://localhost:8098/riak/{bucket}/{key}",
+        mapReduceUri: "http://localhost:8098/mapred"
     ])
     for (cls in classes) {
       riak.mappingContext.addPersistentEntity(cls)

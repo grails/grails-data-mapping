@@ -22,8 +22,8 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.types.Association;
-import org.springframework.datastore.riak.core.RiakTemplate;
-import org.springframework.datastore.riak.core.SimpleBucketKeyPair;
+import org.springframework.data.riak.core.RiakTemplate;
+import org.springframework.data.riak.core.SimpleBucketKeyPair;
 
 import java.util.ArrayList;
 import java.util.List;

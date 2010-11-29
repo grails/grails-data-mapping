@@ -3,8 +3,8 @@ package org.grails.datastore.gorm.riak
 import org.grails.datastore.gorm.events.AutoTimestampInterceptor
 import org.grails.datastore.gorm.events.DomainEventInterceptor
 import org.springframework.beans.factory.FactoryBean
-import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.riak.RiakDatastore
+import org.springframework.datastore.mapping.model.MappingContext
 
 /**
  * @author J. Brisbin <jon@jbrisbin.com>

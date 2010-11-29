@@ -19,6 +19,11 @@ package org.springframework.datastore.mapping.riak.engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.datastore.mapping.riak.RiakEntry;
+import org.springframework.datastore.mapping.riak.collection.RiakEntityIndex;
+import org.springframework.datastore.mapping.riak.query.RiakQuery;
+import org.springframework.data.riak.core.RiakTemplate;
+import org.springframework.data.riak.core.RiakValue;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
@@ -29,13 +34,8 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.proxy.EntityProxy;
 import org.springframework.datastore.mapping.query.Query;
-import org.springframework.datastore.mapping.riak.RiakEntry;
-import org.springframework.datastore.mapping.riak.collection.RiakEntityIndex;
-import org.springframework.datastore.mapping.riak.query.RiakQuery;
-import org.springframework.datastore.riak.core.RiakTemplate;
 
 import java.io.Serializable;
-import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -44,6 +44,7 @@ import java.util.*;
 @SuppressWarnings({"unchecked"})
 public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Long> {
 
+  private final static String DISCRIMINATOR = "__entity__";
   private final Logger log = LoggerFactory.getLogger(getClass());
   private RiakTemplate riakTemplate;
 
@@ -73,7 +74,9 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
 
   @Override
   public AssociationIndexer getAssociationIndexer(Map nativeEntry, Association association) {
-    return new RiakAssociationIndexer(riakTemplate, getMappingContext().getConversionService(), association);
+    return new RiakAssociationIndexer(riakTemplate,
+        getMappingContext().getConversionService(),
+        association);
   }
 
   @Override
@@ -84,17 +87,18 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
   @Override
   protected Object getEntryValue(Map nativeEntry, String property) {
     PersistentProperty prop = getPersistentEntity().getPropertyByName(property);
-    if (prop.getType() == Date.class) {
-      return new Date(Long.parseLong(nativeEntry.get(property).toString()));
-    } else if (prop.getType() == Calendar.class) {
-      Calendar c = Calendar.getInstance();
-      c.setTime(new Date(Long.parseLong(nativeEntry.get(property).toString())));
-      return c;
-    } else if (prop.getType() == Boolean.class) {
-      return (nativeEntry.containsKey(property) ? new Boolean(nativeEntry.get(property).toString()) : false);
-    } else {
-      return nativeEntry.get(property);
+    if (null != prop) {
+      if (prop.getType() == Date.class) {
+        return new Date(Long.parseLong(nativeEntry.get(property).toString()));
+      } else if (prop.getType() == Calendar.class) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date(Long.parseLong(nativeEntry.get(property).toString())));
+        return c;
+      } else if (prop.getType() == Boolean.class) {
+        return (nativeEntry.containsKey(property) ? new Boolean(nativeEntry.get(property).toString()) : false);
+      }
     }
+    return nativeEntry.get(property);
   }
 
   @Override
@@ -114,14 +118,24 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
   }
 
   @Override
-  protected Map retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
-    if (!persistentEntity.isRoot()) {
-      String rootFamily = getRootFamily(persistentEntity);
-      if (log.isDebugEnabled()) {
-        log.debug("Retrieving entity ancestor: " + rootFamily);
+  protected PersistentEntity discriminatePersistentEntity(PersistentEntity persistentEntity, Map nativeEntry) {
+    if (nativeEntry.containsKey(DISCRIMINATOR)) {
+      PersistentEntity e = getMappingContext().getChildEntityByDiscriminator(persistentEntity.getRootEntity(),
+          nativeEntry.get(DISCRIMINATOR).toString());
+      if (null != e) {
+        return e;
+      } else {
+        return persistentEntity;
       }
     }
-    Map m = riakTemplate.getAsType(String.format("%s:%s",
+    return persistentEntity;
+  }
+
+  @Override
+  protected Map retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
+    Set<String> descendants = riakTemplate.getAsType(persistentEntity.getName() + ".metadata:descendants",
+        Set.class);
+    RiakValue<Map> v = riakTemplate.getWithMetaData(String.format("%s:%s",
         family,
         (key instanceof Long ? (Long) key : Long.parseLong(key.toString()))), Map.class);
     if (log.isDebugEnabled()) {
@@ -129,9 +143,20 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
           persistentEntity.getName(),
           family,
           key,
-          m));
+          v));
     }
-    return m;
+    if (null == v && null != descendants) {
+      // Search descendants
+      for (String d : descendants) {
+        v = riakTemplate.getWithMetaData(String.format("%s:%s",
+            d,
+            (key instanceof Long ? (Long) key : Long.parseLong(key.toString()))), Map.class);
+        if (null != v) {
+          break;
+        }
+      }
+    }
+    return v.get();
   }
 
   @Override
@@ -140,22 +165,24 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
     if (!persistentEntity.isRoot()) {
       List<String> ancestors = getAncestors(persistentEntity);
       if (log.isDebugEnabled()) {
-        log.debug("Storing entity ancestor(s): " + ancestors);
+        log.debug("Storing entity ancestor metadata for " + ancestors);
       }
-      StringWriter metaHdr = new StringWriter();
-      boolean needsComma = false;
       for (String s : ancestors) {
-        if (needsComma) {
-          metaHdr.write(",");
-        } else {
-          needsComma = true;
+        Set<String> descendants = riakTemplate.getAsType(s + ".metadata:descendants",
+            Set.class);
+        if (null == descendants) {
+          descendants = new LinkedHashSet<String>();
         }
-        metaHdr.write(s);
+        descendants.add(persistentEntity.getName());
+        riakTemplate.set(s + ".metadata:descendants", descendants);
       }
       metaData = new LinkedHashMap<String, String>();
-      metaData.put("X-Riak-Meta-Ancestors", metaHdr.toString());
+      metaData.put("X-Riak-Meta-Entity", persistentEntity.getName());
+      nativeEntry.put(DISCRIMINATOR, persistentEntity.getDiscriminator());
     }
-    riakTemplate.setWithMetaData(String.format("%s:%s", persistentEntity.getName(), storeId), nativeEntry, metaData);
+    riakTemplate.setWithMetaData(String.format("%s:%s", persistentEntity.getName(), storeId),
+        nativeEntry,
+        metaData);
     return storeId;
   }
 

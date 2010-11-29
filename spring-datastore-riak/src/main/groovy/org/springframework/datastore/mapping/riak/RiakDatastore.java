@@ -24,7 +24,7 @@ import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.springframework.datastore.mapping.model.MappingContext;
-import org.springframework.datastore.riak.core.RiakTemplate;
+import org.springframework.data.riak.core.RiakTemplate;
 
 import java.util.Map;
 

@@ -22,9 +22,9 @@ import org.grails.datastore.gorm.GormStaticApi
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.datastore.mapping.riak.RiakDatastore
-import org.springframework.datastore.riak.core.RiakTemplate
-import org.springframework.datastore.riak.core.SimpleBucketKeyPair
-import org.springframework.datastore.riak.mapreduce.*
+import org.springframework.data.riak.core.RiakTemplate
+import org.springframework.data.riak.core.SimpleBucketKeyPair
+import org.springframework.data.riak.mapreduce.*
 
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>

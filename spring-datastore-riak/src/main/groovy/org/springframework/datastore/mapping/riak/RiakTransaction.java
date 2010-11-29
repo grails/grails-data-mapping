@@ -1,7 +1,7 @@
 package org.springframework.datastore.mapping.riak;
 
 import org.springframework.datastore.mapping.transactions.Transaction;
-import org.springframework.datastore.riak.core.RiakTemplate;
+import org.springframework.data.riak.core.RiakTemplate;
 import org.springframework.transaction.IllegalTransactionStateException;
 
 /**
