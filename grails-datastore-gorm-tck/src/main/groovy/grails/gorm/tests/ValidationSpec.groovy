@@ -30,7 +30,7 @@ class ValidationSpec extends GormDatastoreSpec{
     then:
       t.id != null
       !t.hasErrors()
-      
+
   }
 
 
@@ -79,6 +79,6 @@ class ValidationSpec extends GormDatastoreSpec{
 
     then:
       t != null
-      1 == TestEntity.count()    
+      1 == TestEntity.count()
   }
 }

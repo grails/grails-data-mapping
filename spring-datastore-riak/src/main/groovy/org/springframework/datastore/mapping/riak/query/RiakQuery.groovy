@@ -24,16 +24,16 @@ class RiakQuery extends Query {
             buff << "Boolean(entry.${equals.name}) == ${val}"
           } else if (val instanceof Integer || val instanceof Double || val instanceof Long) {
             if ("id" == equals.name) {
-              buff << "v.key == \"${val}\""
+              buff << "v.key === \"${val}\""
             } else {
               buff << "entry.${equals.name} == ${val}"
             }
           } else {
-            buff << "entry.${equals.name} == \"${val}\""
+            buff << "entry.${equals.name} === \"${val}\""
           }
         },
         (Query.IdEquals): { Query.IdEquals idEquals, PersistentEntity entity, buff ->
-          buff << "v.key == \"${idEquals.value}\""
+          buff << "v.key === \"${idEquals.value}\""
         },
         (Query.NotEquals): { Query.NotEquals notEquals, PersistentEntity entity, buff ->
           def val = checkForDate(notEquals.value)
@@ -42,7 +42,7 @@ class RiakQuery extends Query {
           } else if (val instanceof Integer || val instanceof Double || val instanceof Long) {
             buff << "entry.${notEquals.name} != ${val}"
           } else {
-            buff << "entry.${notEquals.name} != \"${val}\""
+            buff << "entry.${notEquals.name} !== \"${val}\""
           }
         },
         (Query.GreaterThan): { Query.GreaterThan gt, PersistentEntity entity, buff ->
@@ -84,7 +84,7 @@ class RiakQuery extends Query {
         },
         (Query.In): { Query.In qin, PersistentEntity entity, buff ->
           def inClause = qin.values.collect {
-            "(entry.${qin.name} == " + (it.isInteger() ? it : "\"$it\"") + ")"
+            "(entry.${qin.name} === " + (it.isInteger() ? it : "\"$it\"") + ")"
           }.join("||")
           buff << "($inClause)"
         }
@@ -112,36 +112,51 @@ class RiakQuery extends Query {
     }
     def joinStr = (criteria && criteria instanceof Query.Disjunction ? "||" : "&&")
     def ifclause = buff.join(joinStr) ?: "true"
-    StringBuilder mapJs = new StringBuilder("function(v){try{if(typeof v['values'] == \"undefined\" || v.values[0].data == \"\"){return [];}}catch(e){return [];};var o=Riak.mapValuesJson(v);var r=[];for(i in o){var entry=o[i];")
-    if (ifclause != "true") {
-      mapJs << "if(${ifclause}){"
+    StringBuilder mapJs = new StringBuilder("function(v){")
+    if (log.debugEnabled) {
+      mapJs << "ejsLog('/tmp/mapred.log', 'map input: '+JSON.stringify(v));"
     }
-    mapJs << "o[i].id=v.key;r.push(o[i]);"
     if (ifclause != "true") {
-      mapJs << "}"
+      mapJs << "try{if(typeof v['values'] === \"undefined\" || v.values[0].data === \"\"){return [];}}catch(e){return [];};var o=Riak.mapValuesJson(v);var r=[];for(i in o){var entry=o[i];"
+      if (ifclause != "true") {
+        mapJs << "if(${ifclause}){"
+      }
+      mapJs << "o[i].id=v.key;r.push(o[i]);}"
+      if (log.debugEnabled) {
+        mapJs << "} ejsLog('/tmp/mapred.log', 'map return: '+JSON.stringify(r)); return r;}"
+      } else {
+        mapJs << "} return r;}"
+      }
+    } else {
+      mapJs << " var row = Riak.mapValuesJson(v); row[0].id = v.key; return row; }"
     }
-    mapJs << "} return r;}"
     def reduceJs
     // Property projections
     List<Query.PropertyProjection> propProjs = new ArrayList<Query.PropertyProjection>()
     def projectionList = projections()
     if (projectionList.projections) {
       StringBuilder jsbuff = new StringBuilder("function(reduced){ var r=[];")
+      if (log.debugEnabled) {
+        jsbuff << "ejsLog('/tmp/mapred.log', 'reduce input: '+JSON.stringify(reduced));"
+      }
       projectionList.projectionList.each { proj ->
         if (proj instanceof Query.CountProjection) {
-          jsbuff << "r.push(reduced.length);"
+          jsbuff << "var count=0; for(i in reduced){ if(typeof reduced[i] === 'object'){ count += 1; } else { count += reduced[i]; }} r.push(count);"
         } else if (proj instanceof Query.AvgProjection) {
-          jsbuff << "if(reduced.length>0){ var total=0.0;for(i in reduced){ total += 1*(reduced[i].${proj.propertyName}); } r.push(total/reduced.length); } else { r.push(0.0); }"
+          jsbuff << "var total=0.0; var count=0; for(i in reduced) { if(typeof reduced[i]['age'] !== 'undefined') { count += 1; total += parseFloat(reduced[i].age); } else { total += reduced[i].total; count += reduced[i].count; } } r.push({total: total, count: count});"
         } else if (proj instanceof Query.MaxProjection) {
-          jsbuff << "if(reduced.length>0){ var max=1*reduced[0].${proj.propertyName};for(i in reduced){ if(i>0){ if(1*(reduced[i].${proj.propertyName}) > max){ max=1*(reduced[i].${proj.propertyName}); }}} r.push(max);}"
+          jsbuff << "var max = false; for(i in reduced){ var d = parseFloat(reduced[i].${proj.propertyName}); if(!max || d > max){ max = d; }} if(!max === false){ r.push(max); }"
         } else if (proj instanceof Query.MinProjection) {
-          jsbuff << "if(reduced.length>0){ var min=1*reduced[0].${proj.propertyName};for(i in reduced){ if(i>0){ if(1*(reduced[i].${proj.propertyName}) < min){ min=1*(reduced[i].${proj.propertyName}); }}} r.push(min);}"
+          jsbuff << "var min = false; for(i in reduced){ var d = parseFloat(reduced[i].${proj.propertyName}); if(!min || d < min){ min = d; }} if(!min === false){ r.push(min); }"
         } else if (proj instanceof Query.IdProjection) {
-          jsbuff << "if(reduced.length>0){ for(i in reduced){ r.push(1*(reduced[i].id)); }}"
+          jsbuff << "for(i in reduced){ if(typeof reduced[i] === 'object'){ r.push(parseFloat(reduced[i].id)); }else{ r.push(reduced[i]); }}"
         } else if (proj instanceof Query.PropertyProjection) {
           propProjs << proj
-          jsbuff << "return reduced;"
+          jsbuff << "r = reduced;"
         }
+      }
+      if (log.debugEnabled) {
+        jsbuff << "ejsLog('/tmp/mapred.log', 'reduce return: '+JSON.stringify(r));"
       }
       jsbuff << " return r;}"
       reduceJs = jsbuff.toString()
@@ -163,13 +178,15 @@ class RiakQuery extends Query {
     if (descendants) {
       inputBuckets.addAll(descendants)
     }
-    log.debug("Running M/R: \n${mr.toJson()}")
     def results = []
     inputBuckets.each {
       mr.getInputs().clear()
       mr.getInputs().add(it)
+      if (log.debugEnabled) {
+        log.debug("Running M/R: \n${mr.toJson()}")
+      }
       def l = riak.execute(mr)
-      if (l) {
+      if (l && l.size() > 0) {
         results.addAll(l)
       }
     }
@@ -218,14 +235,20 @@ class RiakQuery extends Query {
             if (proj instanceof Query.CountProjection) {
               return finalResult.sum()
             } else if (proj instanceof Query.AvgProjection) {
-              return finalResult.sum() / finalResult.size()
+              return finalResult.collect { it.total / it.count }
             } else if (proj instanceof Query.MaxProjection) {
               return finalResult.max()
             } else if (proj instanceof Query.MinProjection) {
               return finalResult.min()
+            } else {
+              return finalResult
             }
           }
-          return projResult ?: finalResult
+          if (projResult && projResult.size() == 1 && projResult.get(0) instanceof List) {
+            return projResult.get(0)
+          } else {
+            return projResult ?: finalResult
+          }
         }
       } else {
         getSession().retrieveAll(getEntity().getJavaClass(), finalResult.collect { it.id?.toLong() })

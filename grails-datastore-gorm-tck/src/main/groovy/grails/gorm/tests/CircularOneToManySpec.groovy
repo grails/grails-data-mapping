@@ -26,7 +26,7 @@ class CircularOneToManySpec extends GormDatastoreSpec{
 
 
   }
-  
+
 }
 
 @Entity

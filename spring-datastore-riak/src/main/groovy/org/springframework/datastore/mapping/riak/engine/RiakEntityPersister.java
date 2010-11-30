@@ -19,9 +19,6 @@ package org.springframework.datastore.mapping.riak.engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.datastore.mapping.riak.RiakEntry;
-import org.springframework.datastore.mapping.riak.collection.RiakEntityIndex;
-import org.springframework.datastore.mapping.riak.query.RiakQuery;
 import org.springframework.data.riak.core.RiakTemplate;
 import org.springframework.data.riak.core.RiakValue;
 import org.springframework.datastore.mapping.core.Session;
@@ -34,6 +31,9 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.proxy.EntityProxy;
 import org.springframework.datastore.mapping.query.Query;
+import org.springframework.datastore.mapping.riak.RiakEntry;
+import org.springframework.datastore.mapping.riak.collection.RiakEntityIndex;
+import org.springframework.datastore.mapping.riak.query.RiakQuery;
 
 import java.io.Serializable;
 import java.util.*;
@@ -133,6 +133,9 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
 
   @Override
   protected Map retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
+    if (null == key) {
+      return null;
+    }
     Set<String> descendants = riakTemplate.getAsType(persistentEntity.getName() + ".metadata:descendants",
         Set.class);
     RiakValue<Map> v = riakTemplate.getWithMetaData(String.format("%s:%s",
@@ -156,7 +159,7 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
         }
       }
     }
-    return v.get();
+    return (null != v ? v.get() : null);
   }
 
   @Override

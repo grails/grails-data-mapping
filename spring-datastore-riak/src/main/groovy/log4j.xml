@@ -14,7 +14,7 @@
   <category name="org.springframework.data.riak">
     <level value="DEBUG"/>
   </category>
-  <category name="org.springframework.data.mapping.riak">
+  <category name="org.springframework.datastore.mapping.riak">
     <level value="DEBUG"/>
   </category>
 
