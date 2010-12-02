@@ -4,10 +4,13 @@ import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.riak.core.RiakTemplate
+import org.springframework.data.riak.mapreduce.JavascriptMapReduceOperation
+import org.springframework.data.riak.mapreduce.MapReduceJob
+import org.springframework.data.riak.mapreduce.MapReducePhase
+import org.springframework.data.riak.mapreduce.RiakMapReducePhase
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.query.Query
-import org.springframework.data.riak.mapreduce.*
 
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
@@ -21,7 +24,9 @@ class RiakQuery extends Query {
         (Query.Equals): { Query.Equals equals, PersistentEntity entity, buff ->
           def val = checkForDate(equals.value)
           if (val instanceof Boolean) {
-            buff << "Boolean(entry.${equals.name}) == ${val}"
+            buff << "(typeof entry.${equals.name} === 'boolean' ? "  \
+              + (val ? "entry.${equals.name}" : "!entry.${equals.name}") + " : "  \
+              + (val ? "Boolean(entry.${equals.name})" : "!Boolean(entry.${equals.name})") + ")"
           } else if (val instanceof Integer || val instanceof Double || val instanceof Long) {
             if ("id" == equals.name) {
               buff << "v.key === \"${val}\""
@@ -38,9 +43,15 @@ class RiakQuery extends Query {
         (Query.NotEquals): { Query.NotEquals notEquals, PersistentEntity entity, buff ->
           def val = checkForDate(notEquals.value)
           if (val instanceof Boolean) {
-            buff << "Boolean(entry.${notEquals.name}) != ${val}"
+            buff << "(typeof entry.${notEquals.name} === 'boolean' ? "  \
+              + (val ? "entry.${notEquals.name}" : "!entry.${notEquals.name}") + " : "  \
+              + (val ? "Boolean(entry.${notEquals.name})" : "!Boolean(entry.${notEquals.name})") + ")"
           } else if (val instanceof Integer || val instanceof Double || val instanceof Long) {
-            buff << "entry.${notEquals.name} != ${val}"
+            if ("id" == equals.name) {
+              buff << "v.key !== \"${val}\""
+            } else {
+              buff << "entry.${notEquals.name} != ${val}"
+            }
           } else {
             buff << "entry.${notEquals.name} !== \"${val}\""
           }
@@ -112,12 +123,12 @@ class RiakQuery extends Query {
     }
     def joinStr = (criteria && criteria instanceof Query.Disjunction ? "||" : "&&")
     def ifclause = buff.join(joinStr) ?: "true"
-    StringBuilder mapJs = new StringBuilder("function(v){")
+    StringBuilder mapJs = new StringBuilder("function(v){ var r=[];")
     if (log.debugEnabled) {
       mapJs << "ejsLog('/tmp/mapred.log', 'map input: '+JSON.stringify(v));"
     }
     if (ifclause != "true") {
-      mapJs << "try{if(typeof v['values'] === \"undefined\" || v.values[0].data === \"\"){return [];}}catch(e){return [];};var o=Riak.mapValuesJson(v);var r=[];for(i in o){var entry=o[i];"
+      mapJs << "try{if(typeof v['values'] === \"undefined\" || v.values[0].data === \"\"){return [];}}catch(e){return [];};var o=Riak.mapValuesJson(v);for(i in o){var entry=o[i];"
       if (ifclause != "true") {
         mapJs << "if(${ifclause}){"
       }
@@ -128,7 +139,7 @@ class RiakQuery extends Query {
         mapJs << "} return r;}"
       }
     } else {
-      mapJs << " var row = Riak.mapValuesJson(v); row[0].id = v.key; return row; }"
+      mapJs << " var row = Riak.mapValuesJson(v); row[0].id = v.key; ejsLog('/tmp/mapred.log', 'map return: '+JSON.stringify(row)); return row; }"
     }
     def reduceJs
     // Property projections
@@ -145,9 +156,9 @@ class RiakQuery extends Query {
         } else if (proj instanceof Query.AvgProjection) {
           jsbuff << "var total=0.0; var count=0; for(i in reduced) { if(typeof reduced[i]['age'] !== 'undefined') { count += 1; total += parseFloat(reduced[i].age); } else { total += reduced[i].total; count += reduced[i].count; } } r.push({total: total, count: count});"
         } else if (proj instanceof Query.MaxProjection) {
-          jsbuff << "var max = false; for(i in reduced){ var d = parseFloat(reduced[i].${proj.propertyName}); if(!max || d > max){ max = d; }} if(!max === false){ r.push(max); }"
+          jsbuff << "var max = false; for(i in reduced){ var d; if(typeof reduced[i] === 'object'){ d = parseFloat(reduced[i].${proj.propertyName}); }else{ d = reduced[i]; } if(!max || d > max){ max = d; }} if(!max === false){ r.push(max); }"
         } else if (proj instanceof Query.MinProjection) {
-          jsbuff << "var min = false; for(i in reduced){ var d = parseFloat(reduced[i].${proj.propertyName}); if(!min || d < min){ min = d; }} if(!min === false){ r.push(min); }"
+          jsbuff << "var min = false; for(i in reduced){ var d; if(typeof reduced[i] === 'object'){ d = parseFloat(reduced[i].${proj.propertyName}); }else{ d = reduced[i]; } if(!min || d < min){ min = d; }} if(!min === false){ r.push(min); }"
         } else if (proj instanceof Query.IdProjection) {
           jsbuff << "for(i in reduced){ if(typeof reduced[i] === 'object'){ r.push(parseFloat(reduced[i].id)); }else{ r.push(reduced[i]); }}"
         } else if (proj instanceof Query.PropertyProjection) {
@@ -163,18 +174,19 @@ class RiakQuery extends Query {
     }
 
     MapReduceJob mr = riak.createMapReduceJob()
-    MapReduceOperation mapOper = new JavascriptMapReduceOperation(mapJs.toString())
+    JavascriptMapReduceOperation mapOper = new JavascriptMapReduceOperation(mapJs.toString())
     MapReducePhase mapPhase = new RiakMapReducePhase(MapReducePhase.Phase.MAP, "javascript", mapOper)
     mr.addPhase(mapPhase)
 
+    JavascriptMapReduceOperation reduceOper
     if (reduceJs) {
-      MapReduceOperation reduceOper = new JavascriptMapReduceOperation(reduceJs)
+      reduceOper = new JavascriptMapReduceOperation(reduceJs)
       MapReducePhase reducePhase = new RiakMapReducePhase(MapReducePhase.Phase.REDUCE, "javascript", reduceOper)
       mr.addPhase(reducePhase)
     }
 
     def inputBuckets = [entity.name]
-    def descendants = riak.getAsType(entity.name + ".metadata:descendants", List)
+    def descendants = riak.getAsType(entity.name + ".metadata:descendants", Set)
     if (descendants) {
       inputBuckets.addAll(descendants)
     }
@@ -192,6 +204,9 @@ class RiakQuery extends Query {
     }
     // This portion shamelessly absconded from Graeme's RedisQuery.java
     if (results) {
+      if (log.debugEnabled) {
+        log.debug("Got results: \n" + results)
+      }
       final def total = results.size()
       if (offset > total) {
         return Collections.emptyList()

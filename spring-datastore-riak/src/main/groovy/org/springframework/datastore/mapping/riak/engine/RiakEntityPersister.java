@@ -31,6 +31,7 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.proxy.EntityProxy;
 import org.springframework.datastore.mapping.query.Query;
+import org.springframework.datastore.mapping.riak.RiakDatastore;
 import org.springframework.datastore.mapping.riak.RiakEntry;
 import org.springframework.datastore.mapping.riak.collection.RiakEntityIndex;
 import org.springframework.datastore.mapping.riak.query.RiakQuery;
@@ -177,15 +178,20 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
           descendants = new LinkedHashSet<String>();
         }
         descendants.add(persistentEntity.getName());
-        riakTemplate.set(s + ".metadata:descendants", descendants);
+        riakTemplate.setDurable(s + ".metadata:descendants",
+            descendants,
+            ((RiakDatastore) getSession().getDatastore()).getDurableWriteQuorum());
       }
       metaData = new LinkedHashMap<String, String>();
       metaData.put("X-Riak-Meta-Entity", persistentEntity.getName());
       nativeEntry.put(DISCRIMINATOR, persistentEntity.getDiscriminator());
     }
-    riakTemplate.setWithMetaData(String.format("%s:%s", persistentEntity.getName(), storeId),
+    riakTemplate.setWithMetaDataDurable(String.format("%s:%s",
+        persistentEntity.getName(),
+        storeId),
         nativeEntry,
-        metaData);
+        metaData,
+        ((RiakDatastore) getSession().getDatastore()).getDurableWriteQuorum());
     return storeId;
   }
 

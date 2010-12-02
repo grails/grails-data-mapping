@@ -20,11 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.data.riak.core.RiakTemplate;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.springframework.datastore.mapping.model.MappingContext;
-import org.springframework.data.riak.core.RiakTemplate;
 
 import java.util.Map;
 
@@ -46,6 +46,8 @@ public class RiakDatastore extends AbstractDatastore implements InitializingBean
   private String defaultUri = DEFAULT_URI;
   private String mapReduceUri = DEFAULT_MAPRED_URI;
   private boolean useCache = DEFAULT_USE_CACHE;
+  private Object writeQuorum = "all";
+  private Object durableWriteQuorum = "all";
 
   public RiakDatastore() {
     this(new KeyValueMappingContext(""));
@@ -59,21 +61,43 @@ public class RiakDatastore extends AbstractDatastore implements InitializingBean
     super(mappingContext, connectionDetails);
     initializeConverters(mappingContext);
     if (connectionDetails != null) {
-      defaultUri = connectionDetails.containsKey(CONFIG_DEFAULT_URI) ? connectionDetails.get(CONFIG_DEFAULT_URI) : DEFAULT_URI;
-      mapReduceUri = connectionDetails.containsKey(CONFIG_MAPRED_URI) ? connectionDetails.get(CONFIG_MAPRED_URI) : DEFAULT_MAPRED_URI;
-      useCache = connectionDetails.containsKey(CONFIG_USE_CACHE) ? Boolean.parseBoolean(connectionDetails.get(
-          CONFIG_USE_CACHE).toString()) : DEFAULT_USE_CACHE;
+      defaultUri = connectionDetails.containsKey(CONFIG_DEFAULT_URI) ? connectionDetails.get(
+          CONFIG_DEFAULT_URI) : DEFAULT_URI;
+      mapReduceUri = connectionDetails.containsKey(CONFIG_MAPRED_URI) ? connectionDetails.get(
+          CONFIG_MAPRED_URI) : DEFAULT_MAPRED_URI;
+      useCache = connectionDetails.containsKey(CONFIG_USE_CACHE) ? Boolean.parseBoolean(
+          connectionDetails.get(
+              CONFIG_USE_CACHE).toString()) : DEFAULT_USE_CACHE;
     }
+  }
+
+  public Object getWriteQuorum() {
+    return writeQuorum;
+  }
+
+  public void setWriteQuorum(Object writeQuorum) {
+    this.writeQuorum = writeQuorum;
+  }
+
+  public Object getDurableWriteQuorum() {
+    return durableWriteQuorum;
+  }
+
+  public void setDurableWriteQuorum(Object durableWriteQuorum) {
+    this.durableWriteQuorum = durableWriteQuorum;
   }
 
   @Override
   protected Session createSession(Map<String, String> connectionDetails) {
     String defaultUri = this.defaultUri;
     if (connectionDetails != null) {
-      defaultUri = connectionDetails.containsKey(CONFIG_DEFAULT_URI) ? connectionDetails.get(CONFIG_DEFAULT_URI) : DEFAULT_URI;
-      mapReduceUri = connectionDetails.containsKey(CONFIG_MAPRED_URI) ? connectionDetails.get(CONFIG_MAPRED_URI) : DEFAULT_MAPRED_URI;
-      useCache = connectionDetails.containsKey(CONFIG_USE_CACHE) ? Boolean.parseBoolean(connectionDetails.get(
-          CONFIG_USE_CACHE).toString()) : DEFAULT_USE_CACHE;
+      defaultUri = connectionDetails.containsKey(CONFIG_DEFAULT_URI) ? connectionDetails.get(
+          CONFIG_DEFAULT_URI) : DEFAULT_URI;
+      mapReduceUri = connectionDetails.containsKey(CONFIG_MAPRED_URI) ? connectionDetails.get(
+          CONFIG_MAPRED_URI) : DEFAULT_MAPRED_URI;
+      useCache = connectionDetails.containsKey(CONFIG_USE_CACHE) ? Boolean.parseBoolean(
+          connectionDetails.get(
+              CONFIG_USE_CACHE).toString()) : DEFAULT_USE_CACHE;
     }
     RiakTemplate riak = new RiakTemplate(defaultUri, mapReduceUri);
     riak.setUseCache(useCache);

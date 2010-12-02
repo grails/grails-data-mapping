@@ -21,9 +21,9 @@ import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.datastore.mapping.riak.RiakDatastore
 import org.springframework.data.riak.core.RiakTemplate
 import org.springframework.data.riak.core.SimpleBucketKeyPair
+import org.springframework.datastore.mapping.riak.RiakDatastore
 import org.springframework.data.riak.mapreduce.*
 
 /**
@@ -54,6 +54,28 @@ class RiakGormInstanceApi extends GormInstanceApi {
   RiakGormInstanceApi(persistentClass, datastore) {
     super(persistentClass, datastore);
   }
+
+  def Object save(Object instance, Map params) {
+    def writeQuorum
+    def durableWriteQuorum
+    if (params?.writeQuorum) {
+      writeQuorum = datastore.writeQuorum
+      datastore.writeQuorum = params?.writeQuorum
+    }
+    if (params?.durableWriteQuorum) {
+      durableWriteQuorum = datastore.durableWriteQuorum
+      datastore.durableWriteQuorum = params?.durableWriteQuorum
+    }
+    Object obj = super.save(instance, params);
+    if (params?.writeQuorum) {
+      datastore.writeQuorum = writeQuorum
+    }
+    if (params?.durableWriteQuorum) {
+      datastore.durableWriteQuorum = durableWriteQuorum
+    }
+    return obj
+  }
+
 }
 
 class RiakGormStaticApi extends GormStaticApi {

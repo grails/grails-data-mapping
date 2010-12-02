@@ -17,12 +17,12 @@
 package org.grails.datastore.gorm
 
 import org.grails.datastore.gorm.riak.RiakGormEnhancer
-import org.springframework.datastore.mapping.riak.RiakDatastore
 import org.springframework.data.riak.core.RiakTemplate
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.model.PersistentEntity
+import org.springframework.datastore.mapping.riak.RiakDatastore
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
@@ -67,6 +67,7 @@ class Setup {
 
     Session con = riak.connect()
     RiakTemplate riakTmpl = con.nativeInterface
+    riakTmpl.useCache = false
     [
         "grails.gorm.tests.TestEntity",
         "grails.gorm.tests.ChildEntity",
@@ -79,7 +80,10 @@ class Setup {
         "grails.gorm.tests.Pet",
         "grails.gorm.tests.Person"
     ].each { type ->
-      riakTmpl.getBucketSchema(type, true)["keys"].each { key ->
+      def schema = riakTmpl.getBucketSchema(type, true)
+      riakTmpl.updateBucketSchema(type, [n_val: 3, w: 3, dw: 3])
+      riakTmpl.updateBucketSchema(type + ".metadata", [n_val: 3, w: 3, dw: 3])
+      schema.keys.each { key ->
         try {
           riakTmpl.deleteKeys("$type:$key")
         } catch (err) {
