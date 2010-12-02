@@ -16,7 +16,7 @@ import org.junit.runners.Suite.SuiteClasses
 //  CriteriaBuilderSpec,
 //  CrudOperationsSpec,
 //  DomainEventsSpec,
-  FindByMethodSpec,
+//  FindByMethodSpec,
 //  GormEnhancerSpec,
 //  GroovyProxySpec,
 //  InheritanceSpec,

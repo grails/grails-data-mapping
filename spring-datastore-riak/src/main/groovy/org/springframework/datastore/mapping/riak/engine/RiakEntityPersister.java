@@ -178,20 +178,15 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
           descendants = new LinkedHashSet<String>();
         }
         descendants.add(persistentEntity.getName());
-        riakTemplate.setDurable(s + ".metadata:descendants",
-            descendants,
-            ((RiakDatastore) getSession().getDatastore()).getDurableWriteQuorum());
+        riakTemplate.set(s + ".metadata:descendants", descendants);
       }
       metaData = new LinkedHashMap<String, String>();
       metaData.put("X-Riak-Meta-Entity", persistentEntity.getName());
       nativeEntry.put(DISCRIMINATOR, persistentEntity.getDiscriminator());
     }
-    riakTemplate.setWithMetaDataDurable(String.format("%s:%s",
-        persistentEntity.getName(),
-        storeId),
+    riakTemplate.setWithMetaData(String.format("%s:%s", persistentEntity.getName(), storeId),
         nativeEntry,
-        metaData,
-        ((RiakDatastore) getSession().getDatastore()).getDurableWriteQuorum());
+        metaData);
     return storeId;
   }
 
