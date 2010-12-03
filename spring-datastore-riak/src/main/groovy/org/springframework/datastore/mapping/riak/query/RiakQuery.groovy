@@ -47,7 +47,7 @@ class RiakQuery extends Query {
         (Query.Equals): { Query.Equals equals, PersistentEntity entity, buff ->
           def val = checkForDate(equals.value)
           if (val instanceof Boolean) {
-            // If we're comparing booleans, we need to see what format the entry propery
+            // If we're comparing booleans, we need to see what format the entry property
             // is in. If it's not already a boolean, make it one.
             buff << "(typeof entry.${equals.name} === 'boolean' ? " + (val ? "entry.${equals.name}" : "!entry.${equals.name}") + " : " + (val ? "Boolean(entry.${equals.name})" : "!Boolean(entry.${equals.name})") + ")"
           } else if (val instanceof Integer || val instanceof Double || val instanceof Long) {
@@ -227,12 +227,15 @@ class RiakQuery extends Query {
 
     // For sure process the bucket of the entity I'm working with...
     def inputBuckets = [entity.name]
-    def descendants = riak.getAsType(entity.name + ".metadata:descendants", Set)
-    if (descendants) {
-      // ...but I might also need to run this M/R against the buckets of any descendants
-      // I might have.
-      inputBuckets.addAll(descendants)
+    // Check for any descendants I also need to be aware of...
+    if (riak.containsKey(entity.name + ".metadata:descendants")) {
+      def descendants = riak.getAsType(entity.name + ".metadata:descendants", Set)
+      if (descendants) {
+        // ...and run this M/R against the buckets of any descendants I might have.
+        inputBuckets.addAll(descendants)
+      }
     }
+
     def results = []
     inputBuckets.each {
       mr.getInputs().clear()
@@ -241,7 +244,7 @@ class RiakQuery extends Query {
         log.debug("Running M/R: \n${mr.toJson()}")
       }
       def l = riak.execute(mr)
-      if (l && l.size() > 0) {
+      if (l) {
         results.addAll(l)
       }
     }
@@ -272,11 +275,11 @@ class RiakQuery extends Query {
       }
 
       if (projectionList.projections) {
-        // I don't really like checking for projections again, but there's no way
-        // around it at the moment.
+        // I don't really like checking for projections again...
         if (propProjs) {
-          // Pull out the property they need here.
+          // Pull out the property needed here.
           if (propProjs.size() != 1) {
+            // Is this necessary?
             log.warn "Only the first PropertyProjection is used: " + propProjs[0]
           }
           String propName = propProjs[0].propertyName
@@ -287,10 +290,10 @@ class RiakQuery extends Query {
             } catch (GroovyCastException e) {
               // If I can't do that...
               if (entry."${propName}".isLong()) {
-                // I must have an object ID. Try to look it up.
+                // Maybe I have an object ID? Try to look it up.
                 getSession().retrieve(entity.getPropertyByName(propName).type, entry."${propName}".toLong())
               } else {
-                // Just return it as I'm guessing this will be fine.
+                // Otherwise, just return it, as I'm guessing this will be fine.
                 entry."${propName}"
               }
             }
@@ -312,7 +315,7 @@ class RiakQuery extends Query {
             }
           }
           // I might have a List of Lists because of the way I'm processing the
-          // projections. If so, I need a flat list.
+          // projections and descendants. If so, I need a flat list.
           if (projResult && projResult.size() == 1 && projResult.get(0) instanceof List) {
             return projResult.get(0)
           } else {

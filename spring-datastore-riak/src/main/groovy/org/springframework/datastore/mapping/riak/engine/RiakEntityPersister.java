@@ -106,7 +106,8 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
         c.setTime(new Date(Long.parseLong(nativeEntry.get(property).toString())));
         return c;
       } else if (prop.getType() == Boolean.class) {
-        return (nativeEntry.containsKey(property) ? new Boolean(nativeEntry.get(property).toString()) : false);
+        return (nativeEntry.containsKey(property) ? new Boolean(nativeEntry.get(property)
+            .toString()) : false);
       }
     }
     return nativeEntry.get(property);
@@ -151,19 +152,26 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
     if (null == key) {
       return null;
     }
+
+    Set<String> descendants = null;
+    RiakValue<Map> v = null;
+
     // Check for any descendants this entity might have.
-    Set<String> descendants = riakTemplate.getAsType(persistentEntity.getName() + ".metadata:descendants",
-        Set.class);
-    RiakValue<Map> v = riakTemplate.getWithMetaData(String.format("%s:%s",
-        family,
-        (key instanceof Long ? (Long) key : Long.parseLong(key.toString()))), Map.class);
-    if (log.isDebugEnabled()) {
-      log.debug(String.format("retrieveEntry(): entity=%s, family=%s, key=%s, values=%s",
-          persistentEntity.getName(),
+    String descendantsKey = persistentEntity.getName() + ".metadata:descendants";
+    if (riakTemplate.containsKey(descendantsKey)) {
+      descendants = riakTemplate.getAsType(descendantsKey, Set.class);
+      v = riakTemplate.getWithMetaData(String.format("%s:%s",
           family,
-          key,
-          v));
+          (key instanceof Long ? (Long) key : Long.parseLong(key.toString()))), Map.class);
+      if (log.isDebugEnabled()) {
+        log.debug(String.format("retrieveEntry(): entity=%s, family=%s, key=%s, values=%s",
+            persistentEntity.getName(),
+            family,
+            key,
+            v));
+      }
     }
+
     if (null == v && null != descendants) {
       // Search through all descendants, as well.
       for (String d : descendants) {
@@ -175,40 +183,51 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
         }
       }
     }
+
     return (null != v ? v.get() : null);
   }
 
   @Override
   protected Long storeEntry(PersistentEntity persistentEntity, Long storeId, Map nativeEntry) {
     Map<String, String> metaData = null;
+
     // Quality Of Service parameters (r, w, dw)
     QosParameters qosParams = ((RiakSession) getSession()).getQosParameters();
+
     if (!persistentEntity.isRoot()) {
       // This is a subclass, find our ancestry.
       List<String> ancestors = getAncestors(persistentEntity);
       if (log.isDebugEnabled()) {
         log.debug("Storing entity ancestor metadata for " + ancestors);
       }
+
       for (String s : ancestors) {
-        // Build up a list of our ancestors and store it with the special metadata on this
-        // entity.
-        Set<String> descendants = riakTemplate.getAsType(s + ".metadata:descendants",
-            Set.class);
-        if (null == descendants) {
-          descendants = new LinkedHashSet<String>();
+        String descendantsKey = s + ".metadata:descendants";
+        if (riakTemplate.containsKey(descendantsKey)) {
+          // Build up a list of our ancestors and store it with the special metadata on this entity.
+          Set<String> descendants = riakTemplate.getAsType(descendantsKey, Set.class);
+          if (null == descendants) {
+            descendants = new LinkedHashSet<String>();
+          }
+          descendants.add(persistentEntity.getName());
+
+          riakTemplate.set(descendantsKey, descendants);
         }
-        descendants.add(persistentEntity.getName());
-        riakTemplate.set(s + ".metadata:descendants", descendants);
       }
+
       metaData = new LinkedHashMap<String, String>();
+
       // Also save this information into a metadata entry for use down the road.
       metaData.put("X-Riak-Meta-Entity", persistentEntity.getName());
+      // Save discriminator information
       nativeEntry.put(DISCRIMINATOR, persistentEntity.getDiscriminator());
     }
+
     riakTemplate.setWithMetaData(String.format("%s:%s", persistentEntity.getName(), storeId),
         nativeEntry,
         metaData,
         qosParams);
+
     return storeId;
   }
 
