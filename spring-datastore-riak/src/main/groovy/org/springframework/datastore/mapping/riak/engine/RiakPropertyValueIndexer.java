@@ -3,7 +3,7 @@ package org.springframework.datastore.mapping.riak.engine;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentProperty;
-import org.springframework.data.riak.core.RiakTemplate;
+import org.springframework.data.keyvalue.riak.core.RiakTemplate;
 
 import java.util.ArrayList;
 import java.util.List;

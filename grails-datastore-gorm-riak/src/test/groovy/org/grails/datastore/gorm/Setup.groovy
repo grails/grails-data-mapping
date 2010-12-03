@@ -17,7 +17,7 @@
 package org.grails.datastore.gorm
 
 import org.grails.datastore.gorm.riak.RiakGormEnhancer
-import org.springframework.data.riak.core.RiakTemplate
+import org.springframework.data.keyvalue.riak.core.RiakTemplate
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.springframework.datastore.mapping.model.MappingContext

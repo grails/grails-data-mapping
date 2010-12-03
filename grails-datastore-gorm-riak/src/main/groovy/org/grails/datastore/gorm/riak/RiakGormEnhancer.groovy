@@ -21,10 +21,12 @@ import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.data.riak.core.RiakTemplate
-import org.springframework.data.riak.core.SimpleBucketKeyPair
+import org.springframework.data.keyvalue.riak.core.QosParameters
+import org.springframework.data.keyvalue.riak.core.RiakQosParameters
+import org.springframework.data.keyvalue.riak.core.RiakTemplate
+import org.springframework.data.keyvalue.riak.core.SimpleBucketKeyPair
 import org.springframework.datastore.mapping.riak.RiakDatastore
-import org.springframework.data.riak.mapreduce.*
+import org.springframework.data.keyvalue.riak.mapreduce.*
 
 /**
  * @author Jon Brisbin <jon.brisbin@npcinternational.com>
@@ -56,22 +58,16 @@ class RiakGormInstanceApi extends GormInstanceApi {
   }
 
   def Object save(Object instance, Map params) {
-    def writeQuorum
-    def durableWriteQuorum
-    if (params?.writeQuorum) {
-      writeQuorum = datastore.writeQuorum
-      datastore.writeQuorum = params?.writeQuorum
-    }
-    if (params?.durableWriteQuorum) {
-      durableWriteQuorum = datastore.durableWriteQuorum
-      datastore.durableWriteQuorum = params?.durableWriteQuorum
+    def currentQosParams = datastore.currentSession.qosParameters
+    if (params?.w || params?.dw) {
+      QosParameters qos = new RiakQosParameters()
+      qos.durableWriteThreshold = params?.dw
+      qos.writeThreshold = params?.w
+      datastore.currentSession.qosParameters = qos
     }
     Object obj = super.save(instance, params);
-    if (params?.writeQuorum) {
-      datastore.writeQuorum = writeQuorum
-    }
-    if (params?.durableWriteQuorum) {
-      datastore.durableWriteQuorum = durableWriteQuorum
+    if (params?.w || params?.dw) {
+      datastore.currentSession.qosParameters = currentQosParams
     }
     return obj
   }

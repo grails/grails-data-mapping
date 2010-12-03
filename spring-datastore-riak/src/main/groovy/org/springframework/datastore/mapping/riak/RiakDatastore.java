@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.data.riak.core.RiakTemplate;
+import org.springframework.data.keyvalue.riak.core.RiakTemplate;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
@@ -46,8 +46,6 @@ public class RiakDatastore extends AbstractDatastore implements InitializingBean
   private String defaultUri = DEFAULT_URI;
   private String mapReduceUri = DEFAULT_MAPRED_URI;
   private boolean useCache = DEFAULT_USE_CACHE;
-  private Object writeQuorum = "all";
-  private Object durableWriteQuorum = "all";
 
   public RiakDatastore() {
     this(new KeyValueMappingContext(""));
@@ -69,22 +67,6 @@ public class RiakDatastore extends AbstractDatastore implements InitializingBean
           connectionDetails.get(
               CONFIG_USE_CACHE).toString()) : DEFAULT_USE_CACHE;
     }
-  }
-
-  public Object getWriteQuorum() {
-    return writeQuorum;
-  }
-
-  public void setWriteQuorum(Object writeQuorum) {
-    this.writeQuorum = writeQuorum;
-  }
-
-  public Object getDurableWriteQuorum() {
-    return durableWriteQuorum;
-  }
-
-  public void setDurableWriteQuorum(Object durableWriteQuorum) {
-    this.durableWriteQuorum = durableWriteQuorum;
   }
 
   @Override

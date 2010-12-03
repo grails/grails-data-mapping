@@ -16,8 +16,8 @@
 
 package org.springframework.datastore.mapping.riak.collection;
 
-import org.springframework.data.riak.core.RiakTemplate;
-import org.springframework.data.riak.mapreduce.*;
+import org.springframework.data.keyvalue.riak.core.RiakTemplate;
+import org.springframework.data.keyvalue.riak.mapreduce.*;
 
 import java.util.AbstractList;
 import java.util.Iterator;

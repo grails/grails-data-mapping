@@ -12,6 +12,7 @@ include "spring-datastore-core",
         'grails-datastore-gorm-test',
 /*        'grails-plugins:redis',*/
         'grails-datastore-gorm-redis',
+        'grails-datastore-gorm-riak',
         'grails-datastore-gorm-mongo',
         'grails-datastore-gorm-riak',
 		'grails-datastore-gorm-gemfire',

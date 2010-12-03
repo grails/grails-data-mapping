@@ -3,11 +3,11 @@ package org.springframework.datastore.mapping.riak.query
 import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.data.riak.core.RiakTemplate
-import org.springframework.data.riak.mapreduce.JavascriptMapReduceOperation
-import org.springframework.data.riak.mapreduce.MapReduceJob
-import org.springframework.data.riak.mapreduce.MapReducePhase
-import org.springframework.data.riak.mapreduce.RiakMapReducePhase
+import org.springframework.data.keyvalue.riak.core.RiakTemplate
+import org.springframework.data.keyvalue.riak.mapreduce.JavascriptMapReduceOperation
+import org.springframework.data.keyvalue.riak.mapreduce.MapReduceJob
+import org.springframework.data.keyvalue.riak.mapreduce.MapReducePhase
+import org.springframework.data.keyvalue.riak.mapreduce.RiakMapReducePhase
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.query.Query

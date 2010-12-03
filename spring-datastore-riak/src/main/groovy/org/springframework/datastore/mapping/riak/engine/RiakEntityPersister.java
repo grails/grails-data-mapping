@@ -19,8 +19,9 @@ package org.springframework.datastore.mapping.riak.engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.data.riak.core.RiakTemplate;
-import org.springframework.data.riak.core.RiakValue;
+import org.springframework.data.keyvalue.riak.core.QosParameters;
+import org.springframework.data.keyvalue.riak.core.RiakTemplate;
+import org.springframework.data.keyvalue.riak.core.RiakValue;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
@@ -31,8 +32,8 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.proxy.EntityProxy;
 import org.springframework.datastore.mapping.query.Query;
-import org.springframework.datastore.mapping.riak.RiakDatastore;
 import org.springframework.datastore.mapping.riak.RiakEntry;
+import org.springframework.datastore.mapping.riak.RiakSession;
 import org.springframework.datastore.mapping.riak.collection.RiakEntityIndex;
 import org.springframework.datastore.mapping.riak.query.RiakQuery;
 
@@ -166,6 +167,7 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
   @Override
   protected Long storeEntry(PersistentEntity persistentEntity, Long storeId, Map nativeEntry) {
     Map<String, String> metaData = null;
+    QosParameters qosParams = ((RiakSession) getSession()).getQosParameters();
     if (!persistentEntity.isRoot()) {
       List<String> ancestors = getAncestors(persistentEntity);
       if (log.isDebugEnabled()) {
@@ -186,7 +188,8 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
     }
     riakTemplate.setWithMetaData(String.format("%s:%s", persistentEntity.getName(), storeId),
         nativeEntry,
-        metaData);
+        metaData,
+        qosParams);
     return storeId;
   }
 

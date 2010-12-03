@@ -11,8 +11,8 @@ import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
-import org.springframework.datastore.riak.core.RiakTemplate
 import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.data.keyvalue.riak.core.RiakTemplate
 
 class RiakGrailsPlugin {
   // the plugin version
