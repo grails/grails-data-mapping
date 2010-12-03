@@ -15,7 +15,7 @@
     <level value="INFO"/>
   </category>
   <category name="org.springframework.datastore.mapping.riak">
-    <level value="INFO"/>
+    <level value="DEBUG"/>
   </category>
 
   <root>

@@ -29,7 +29,7 @@ import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 
 /**
- * @author Jon Brisbin <jon.brisbin@npcinternational.com>
+ * @author J. Brisbin <jon@jbrisbin.com>
  */
 class Setup {
 

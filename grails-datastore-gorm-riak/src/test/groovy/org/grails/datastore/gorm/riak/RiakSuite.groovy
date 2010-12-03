@@ -6,7 +6,7 @@ import org.junit.runners.Suite
 import org.junit.runners.Suite.SuiteClasses
 
 /**
- * @author Jon Brisbin <jon.brisbin@npcinternational.com>
+ * @author J. Brisbin <jon@jbrisbin.com>
  */
 @RunWith(Suite)
 @SuiteClasses([
@@ -16,7 +16,7 @@ import org.junit.runners.Suite.SuiteClasses
 //  CriteriaBuilderSpec,
 //  CrudOperationsSpec,
 //  DomainEventsSpec,
-//  FindByMethodSpec,
+  FindByMethodSpec,
 //  GormEnhancerSpec,
 //  GroovyProxySpec,
 //  InheritanceSpec,

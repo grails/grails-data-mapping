@@ -1,11 +1,13 @@
 /*
- * Copyright (c) 2010 by NPC International, Inc.
+ * Copyright (c) 2010 by J. Brisbin <jon@jbrisbin.com>
+ *     Portions (c) 2010 by NPC International, Inc. or the
+ *     original author(s).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,13 +19,13 @@
 package org.springframework.datastore.mapping.riak.collection;
 
 
-import org.springframework.data.riak.core.RiakTemplate;
+import org.springframework.data.keyvalue.riak.core.RiakTemplate;
 
 import java.util.Collection;
 import java.util.List;
 
 /**
- * @author Jon Brisbin <jon.brisbin@npcinternational.com>
+ * @author J. Brisbin <jon@jbrisbin.com>
  */
 public abstract class AbstractRiakCollection<T> implements Collection, RiakCollection {
 

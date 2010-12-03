@@ -16,21 +16,34 @@
  * limitations under the License.
  */
 
-package org.springframework.datastore.mapping.riak.collection;
+package org.springframework.datastore.mapping.riak.util;
 
-import java.util.AbstractList;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.DefaultResponseErrorHandler;
+
+import java.io.IOException;
 
 /**
  * @author J. Brisbin <jon@jbrisbin.com>
  */
-public class RiakList extends AbstractList {
+public class Ignore404sErrorHandler extends DefaultResponseErrorHandler {
+
   @Override
-  public Object get(int i) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  protected boolean hasError(HttpStatus statusCode) {
+    if (statusCode != HttpStatus.NOT_FOUND) {
+      return super.hasError(statusCode);
+    } else {
+      return false;
+    }
   }
 
   @Override
-  public int size() {
-    return 0;  //To change body of implemented methods use File | Settings | File Templates.
+  public void handleError(ClientHttpResponse response) throws IOException {
+    // Ignore 404s entirely
+    if (response.getStatusCode() != HttpStatus.NOT_FOUND) {
+      super.handleError(response);
+    }
   }
+
 }

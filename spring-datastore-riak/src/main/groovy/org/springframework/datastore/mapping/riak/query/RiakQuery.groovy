@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2010 by J. Brisbin <jon@jbrisbin.com>
+ *     Portions (c) 2010 by NPC International, Inc. or the
+ *     original author(s).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.datastore.mapping.riak.query
 
 import org.codehaus.groovy.runtime.typehandling.GroovyCastException
@@ -13,7 +31,12 @@ import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.query.Query
 
 /**
- * @author Jon Brisbin <jon.brisbin@npcinternational.com>
+ * A {@link Query} implementation for the Riak Key/Value store.
+ * <p/>
+ * This query implementation relies heavily on Riak's native Map/Reduce functionality. It
+ * expects data to be stored as JSON documents, which is how GORM stores objects into Riak.
+ *
+ * @author J. Brisbin <jon@jbrisbin.com>
  */
 class RiakQuery extends Query {
 
@@ -24,16 +47,19 @@ class RiakQuery extends Query {
         (Query.Equals): { Query.Equals equals, PersistentEntity entity, buff ->
           def val = checkForDate(equals.value)
           if (val instanceof Boolean) {
-            buff << "(typeof entry.${equals.name} === 'boolean' ? "  \
-              + (val ? "entry.${equals.name}" : "!entry.${equals.name}") + " : "  \
-              + (val ? "Boolean(entry.${equals.name})" : "!Boolean(entry.${equals.name})") + ")"
+            // If we're comparing booleans, we need to see what format the entry propery
+            // is in. If it's not already a boolean, make it one.
+            buff << "(typeof entry.${equals.name} === 'boolean' ? " + (val ? "entry.${equals.name}" : "!entry.${equals.name}") + " : " + (val ? "Boolean(entry.${equals.name})" : "!Boolean(entry.${equals.name})") + ")"
           } else if (val instanceof Integer || val instanceof Double || val instanceof Long) {
             if ("id" == equals.name) {
+              // Handle object IDs by comparing to Riak's key field.
               buff << "v.key === \"${val}\""
             } else {
+              // All else must be a number, don't use quotes.
               buff << "entry.${equals.name} == ${val}"
             }
           } else {
+            // Compare with quotes.
             buff << "entry.${equals.name} === \"${val}\""
           }
         },
@@ -43,9 +69,7 @@ class RiakQuery extends Query {
         (Query.NotEquals): { Query.NotEquals notEquals, PersistentEntity entity, buff ->
           def val = checkForDate(notEquals.value)
           if (val instanceof Boolean) {
-            buff << "(typeof entry.${notEquals.name} === 'boolean' ? "  \
-              + (val ? "entry.${notEquals.name}" : "!entry.${notEquals.name}") + " : "  \
-              + (val ? "Boolean(entry.${notEquals.name})" : "!Boolean(entry.${notEquals.name})") + ")"
+            buff << "(typeof entry.${notEquals.name} === 'boolean' ? " + (val ? "entry.${notEquals.name}" : "!entry.${notEquals.name}") + " : " + (val ? "Boolean(entry.${notEquals.name})" : "!Boolean(entry.${notEquals.name})") + ")"
           } else if (val instanceof Integer || val instanceof Double || val instanceof Long) {
             if ("id" == equals.name) {
               buff << "v.key !== \"${val}\""
@@ -121,6 +145,7 @@ class RiakQuery extends Query {
         return []
       }
     }
+    // If any criteria exist, join them together into a meaningful if clause.
     def joinStr = (criteria && criteria instanceof Query.Disjunction ? "||" : "&&")
     def ifclause = buff.join(joinStr) ?: "true"
     StringBuilder mapJs = new StringBuilder("function(v){ var r=[];")
@@ -128,6 +153,9 @@ class RiakQuery extends Query {
       mapJs << "ejsLog('/tmp/mapred.log', 'map input: '+JSON.stringify(v));"
     }
     if (ifclause != "true") {
+      // All this mess is to catch as many weird cases as possible. If I check for it here,
+      // I've seen it in testing and thought it prudent to catch as many errors as possible
+      // until I don't need to check for them any more.
       mapJs << "try{if(typeof v['values'] === \"undefined\" || v.values[0].data === \"\"){return [];}}catch(e){return [];};var o=Riak.mapValuesJson(v);for(i in o){var entry=o[i];"
       if (ifclause != "true") {
         mapJs << "if(${ifclause}){"
@@ -139,10 +167,11 @@ class RiakQuery extends Query {
         mapJs << "} return r;}"
       }
     } else {
+      // Just copy all values to output, adding the key as the 'id' property.
       mapJs << " var row = Riak.mapValuesJson(v); row[0].id = v.key; ejsLog('/tmp/mapred.log', 'map return: '+JSON.stringify(row)); return row; }"
     }
     def reduceJs
-    // Property projections
+    // Property projections. Implemented as Riak reduce functions.
     List<Query.PropertyProjection> propProjs = new ArrayList<Query.PropertyProjection>()
     def projectionList = projections()
     if (projectionList.projections) {
@@ -152,16 +181,27 @@ class RiakQuery extends Query {
       }
       projectionList.projectionList.each { proj ->
         if (proj instanceof Query.CountProjection) {
+          // Since I'm not emitting a [1] from the map function, I have to interrogate
+          // every input element to see whether it's a count from a previous reduce call
+          // or whether it's unprocessed data coming from a map function. The input array
+          // contains both all mixed up. Arg! :/
           jsbuff << "var count=0; for(i in reduced){ if(typeof reduced[i] === 'object'){ count += 1; } else { count += reduced[i]; }} r.push(count);"
         } else if (proj instanceof Query.AvgProjection) {
+          // I don't actually average anything until I get ready to return the value below.
           jsbuff << "var total=0.0; var count=0; for(i in reduced) { if(typeof reduced[i]['age'] !== 'undefined') { count += 1; total += parseFloat(reduced[i].age); } else { total += reduced[i].total; count += reduced[i].count; } } r.push({total: total, count: count});"
         } else if (proj instanceof Query.MaxProjection) {
+          // Find the max for this step, keeping in mind the real max won't be found until
+          // the end of the processing, right before the return below.
           jsbuff << "var max = false; for(i in reduced){ var d; if(typeof reduced[i] === 'object'){ d = parseFloat(reduced[i].${proj.propertyName}); }else{ d = reduced[i]; } if(!max || d > max){ max = d; }} if(!max === false){ r.push(max); }"
         } else if (proj instanceof Query.MinProjection) {
+          // Find the min for this step, keeping in mind the real min won't be found until
+          // the end of the processing, right before the return below.
           jsbuff << "var min = false; for(i in reduced){ var d; if(typeof reduced[i] === 'object'){ d = parseFloat(reduced[i].${proj.propertyName}); }else{ d = reduced[i]; } if(!min || d < min){ min = d; }} if(!min === false){ r.push(min); }"
         } else if (proj instanceof Query.IdProjection) {
+          // This just returns the object ID.
           jsbuff << "for(i in reduced){ if(typeof reduced[i] === 'object'){ r.push(parseFloat(reduced[i].id)); }else{ r.push(reduced[i]); }}"
         } else if (proj instanceof Query.PropertyProjection) {
+          // Property projections are handled below.
           propProjs << proj
           jsbuff << "r = reduced;"
         }
@@ -185,9 +225,12 @@ class RiakQuery extends Query {
       mr.addPhase(reducePhase)
     }
 
+    // For sure process the bucket of the entity I'm working with...
     def inputBuckets = [entity.name]
     def descendants = riak.getAsType(entity.name + ".metadata:descendants", Set)
     if (descendants) {
+      // ...but I might also need to run this M/R against the buckets of any descendants
+      // I might have.
       inputBuckets.addAll(descendants)
     }
     def results = []
@@ -229,23 +272,32 @@ class RiakQuery extends Query {
       }
 
       if (projectionList.projections) {
+        // I don't really like checking for projections again, but there's no way
+        // around it at the moment.
         if (propProjs) {
+          // Pull out the property they need here.
           if (propProjs.size() != 1) {
             log.warn "Only the first PropertyProjection is used: " + propProjs[0]
           }
           String propName = propProjs[0].propertyName
           finalResult.collect { entry ->
             try {
+              // Try to return the object as the right data type.
               entry."${propName}".asType(entity.getPropertyByName(propName).type)
             } catch (GroovyCastException e) {
+              // If I can't do that...
               if (entry."${propName}".isLong()) {
+                // I must have an object ID. Try to look it up.
                 getSession().retrieve(entity.getPropertyByName(propName).type, entry."${propName}".toLong())
               } else {
+                // Just return it as I'm guessing this will be fine.
                 entry."${propName}"
               }
             }
           }
         } else {
+          // Use the built-in Groovy functions to operate on the List returned
+          // from the Map/Reduce step.
           def projResult = projectionList.projectionList.collect { proj ->
             if (proj instanceof Query.CountProjection) {
               return finalResult.sum()
@@ -259,6 +311,8 @@ class RiakQuery extends Query {
               return finalResult
             }
           }
+          // I might have a List of Lists because of the way I'm processing the
+          // projections. If so, I need a flat list.
           if (projResult && projResult.size() == 1 && projResult.get(0) instanceof List) {
             return projResult.get(0)
           } else {
@@ -266,6 +320,7 @@ class RiakQuery extends Query {
           }
         }
       } else {
+        // I've got a list of object IDs. Go get all of them...
         getSession().retrieveAll(getEntity().getJavaClass(), finalResult.collect { it.id?.toLong() })
       }
     } else {

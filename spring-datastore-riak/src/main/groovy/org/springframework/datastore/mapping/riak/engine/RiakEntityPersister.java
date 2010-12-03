@@ -1,11 +1,13 @@
 /*
- * Copyright (c) 2010 by NPC International, Inc.
+ * Copyright (c) 2010 by J. Brisbin <jon@jbrisbin.com>
+ *     Portions (c) 2010 by NPC International, Inc. or the
+ *     original author(s).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +43,10 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * @author Jon Brisbin <jon.brisbin@npcinternational.com>
+ * An {@link org.springframework.datastore.mapping.engine.EntityPersister} implementation for
+ * the Riak Key/Value store.
+ *
+ * @author J. Brisbin <jon@jbrisbin.com>
  */
 @SuppressWarnings({"unchecked"})
 public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Long> {
@@ -91,8 +96,12 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
     PersistentProperty prop = getPersistentEntity().getPropertyByName(property);
     if (null != prop) {
       if (prop.getType() == Date.class) {
+        // If this property is a Date object, we need to handle it as a Long,
+        // otherwise it will get improperly formatted in the Query implementation.
         return new Date(Long.parseLong(nativeEntry.get(property).toString()));
       } else if (prop.getType() == Calendar.class) {
+        // If this property is a Calendar object, we need to handle it as a Long,
+        // otherwise it will get improperly formatted in the Query implementation.
         Calendar c = Calendar.getInstance();
         c.setTime(new Date(Long.parseLong(nativeEntry.get(property).toString())));
         return c;
@@ -107,8 +116,10 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
   protected void setEntryValue(Map nativeEntry, String key, Object value) {
     if (null != value) {
       if (value instanceof Date) {
+        // Date handling again, like above
         nativeEntry.put(key, ((Date) value).getTime());
       } else if (value instanceof Calendar) {
+        // Calendar handling again, like above
         nativeEntry.put(key, ((Calendar) value).getTime().getTime());
       } else if (value instanceof Boolean) {
         nativeEntry.put(key, value);
@@ -135,9 +146,12 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
 
   @Override
   protected Map retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
+    // Not sure this check is actually necessary, but I was seeing null keys being passed
+    // during tests, so handle it explicitly.
     if (null == key) {
       return null;
     }
+    // Check for any descendants this entity might have.
     Set<String> descendants = riakTemplate.getAsType(persistentEntity.getName() + ".metadata:descendants",
         Set.class);
     RiakValue<Map> v = riakTemplate.getWithMetaData(String.format("%s:%s",
@@ -151,7 +165,7 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
           v));
     }
     if (null == v && null != descendants) {
-      // Search descendants
+      // Search through all descendants, as well.
       for (String d : descendants) {
         v = riakTemplate.getWithMetaData(String.format("%s:%s",
             d,
@@ -167,13 +181,17 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
   @Override
   protected Long storeEntry(PersistentEntity persistentEntity, Long storeId, Map nativeEntry) {
     Map<String, String> metaData = null;
+    // Quality Of Service parameters (r, w, dw)
     QosParameters qosParams = ((RiakSession) getSession()).getQosParameters();
     if (!persistentEntity.isRoot()) {
+      // This is a subclass, find our ancestry.
       List<String> ancestors = getAncestors(persistentEntity);
       if (log.isDebugEnabled()) {
         log.debug("Storing entity ancestor metadata for " + ancestors);
       }
       for (String s : ancestors) {
+        // Build up a list of our ancestors and store it with the special metadata on this
+        // entity.
         Set<String> descendants = riakTemplate.getAsType(s + ".metadata:descendants",
             Set.class);
         if (null == descendants) {
@@ -183,6 +201,7 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
         riakTemplate.set(s + ".metadata:descendants", descendants);
       }
       metaData = new LinkedHashMap<String, String>();
+      // Also save this information into a metadata entry for use down the road.
       metaData.put("X-Riak-Meta-Entity", persistentEntity.getName());
       nativeEntry.put(DISCRIMINATOR, persistentEntity.getDiscriminator());
     }
