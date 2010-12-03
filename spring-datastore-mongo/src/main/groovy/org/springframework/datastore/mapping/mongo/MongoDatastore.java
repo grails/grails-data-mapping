@@ -28,7 +28,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.document.DocumentStoreConnectionCallback;
 import org.springframework.data.document.mongodb.DBCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
-import org.springframework.data.document.mongodb.bean.factory.MongoFactoryBean;
+import org.springframework.data.document.mongodb.MongoFactoryBean;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.document.config.DocumentMappingContext;
@@ -240,8 +240,8 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * @param template The template
      */
     protected void initializeIndices(final PersistentEntity entity, final MongoTemplate template) {
-        template.execute(new DocumentStoreConnectionCallback<DB, Object>() {
-            public Object doInConnection(DB db) throws Exception {
+        template.execute(new DBCallback<Object>() {
+            public Object doInDB(DB db) throws MongoException, DataAccessException {
                 final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
 
                 for (PersistentProperty property : entity.getPersistentProperties()) {
