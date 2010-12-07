@@ -303,7 +303,13 @@ public class JcrQuery extends Query {
             });
             put(Between.class, new CriterionHandler<Between>() {
                 public void handle(PersistentEntity entity, Between criterion, StringBuilder q, List params) {
-
+                    final String name = criterion.getProperty();
+                    final Object value = criterion.getValue();
+                    validateProperty(entity, name, Between.class);
+                    q.append(AT_SIGN)
+                            .append(name)
+                            .append(GREATER_THAN_EQUALS)
+                            .append(value);                                      
                 }
             });
             put(GreaterThanEquals.class, new CriterionHandler<GreaterThanEquals>() {
@@ -320,7 +326,7 @@ public class JcrQuery extends Query {
                         q.append("('");
                         q.append(sdf.format((Date)value));
                         q.append("')");
-                    }
+                    }else q.append(value);                   
                 }
             });
             put(GreaterThan.class, new CriterionHandler<GreaterThan>() {
@@ -337,7 +343,7 @@ public class JcrQuery extends Query {
                         q.append("('");
                         q.append(sdf.format((Date)value));
                         q.append("')");;
-                    }
+                    }else q.append(value);
                 }
             });
             put(LessThanEquals.class, new CriterionHandler<LessThanEquals>() {
@@ -354,7 +360,7 @@ public class JcrQuery extends Query {
                         q.append("('");
                         q.append(sdf.format((Date)value));
                         q.append("')");
-                    }
+                    }else q.append(value);
                 }
             });
             put(LessThan.class, new CriterionHandler<LessThan>() {
@@ -371,7 +377,7 @@ public class JcrQuery extends Query {
                         q.append("('");
                         q.append(sdf.format((Date)value));
                         q.append("')");
-                    }
+                    }else q.append(value);
                 }
             });
             put(Equals.class, new CriterionHandler<Equals>() {
@@ -432,7 +438,6 @@ public class JcrQuery extends Query {
                     List<Criterion> cris = criterion.getCriteria();
                     Conjunction con = new Conjunction();
                     for (Criterion c : cris) {
-                        System.out.println(c.getClass());
                         if (c instanceof Equals) {
                             con.add(Restrictions.ne(((Equals) c).getProperty(), ((Equals) c).getValue()));
                         }
