@@ -17,6 +17,8 @@
 package org.grails.datastore.gorm
 
 import org.grails.datastore.gorm.riak.RiakGormEnhancer
+import org.springframework.data.keyvalue.riak.core.QosParameters
+import org.springframework.data.keyvalue.riak.core.RiakQosParameters
 import org.springframework.data.keyvalue.riak.core.RiakTemplate
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
@@ -67,6 +69,9 @@ class Setup {
 
     Session con = riak.connect()
     RiakTemplate riakTmpl = con.nativeInterface
+    QosParameters qos = new RiakQosParameters()
+    qos.durableWriteThreshold = "all"
+    riakTmpl.defaultQosParameters = qos
     riakTmpl.useCache = false
     [
         "grails.gorm.tests.TestEntity",
@@ -81,8 +86,6 @@ class Setup {
         "grails.gorm.tests.Person"
     ].each { type ->
       def schema = riakTmpl.getBucketSchema(type, true)
-      riakTmpl.updateBucketSchema(type, [n_val: 3, w: 3, dw: 3])
-      riakTmpl.updateBucketSchema(type + ".metadata", [n_val: 3, w: 3, dw: 3])
       schema.keys.each { key ->
         try {
           riakTmpl.deleteKeys("$type:$key")

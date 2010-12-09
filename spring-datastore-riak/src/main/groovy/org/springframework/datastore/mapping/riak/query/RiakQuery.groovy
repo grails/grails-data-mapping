@@ -31,7 +31,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.query.Query
 
 /**
- * A {@link Query} implementation for the Riak Key/Value store.
+ * A  {@link Query}  implementation for the Riak Key/Value store.
  * <p/>
  * This query implementation relies heavily on Riak's native Map/Reduce functionality. It
  * expects data to be stored as JSON documents, which is how GORM stores objects into Riak.
@@ -228,8 +228,8 @@ class RiakQuery extends Query {
     // For sure process the bucket of the entity I'm working with...
     def inputBuckets = [entity.name]
     // Check for any descendants I also need to be aware of...
-    if (riak.containsKey(entity.name + ".metadata:descendants")) {
-      def descendants = riak.getAsType(entity.name + ".metadata:descendants", Set)
+    if (riak.containsKey(entity.name + ".metadata", "descendants")) {
+      def descendants = riak.getAsType(entity.name + ".metadata", "descendants", Set)
       if (descendants) {
         // ...and run this M/R against the buckets of any descendants I might have.
         inputBuckets.addAll(descendants)

@@ -52,6 +52,7 @@ import java.util.*;
 public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Long> {
 
   private final static String DISCRIMINATOR = "__entity__";
+  private final static String DESCENDANTS = "descendants";
   private final Logger log = LoggerFactory.getLogger(getClass());
   private RiakTemplate riakTemplate;
 
@@ -157,12 +158,12 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
     RiakValue<Map> v = null;
 
     // Check for any descendants this entity might have.
-    String descendantsKey = persistentEntity.getName() + ".metadata:descendants";
-    if (riakTemplate.containsKey(descendantsKey)) {
-      descendants = riakTemplate.getAsType(descendantsKey, Set.class);
-      v = riakTemplate.getWithMetaData(String.format("%s:%s",
-          family,
-          (key instanceof Long ? (Long) key : Long.parseLong(key.toString()))), Map.class);
+    String bucket = persistentEntity.getName() + ".metadata";
+    if (riakTemplate.containsKey(bucket, DESCENDANTS)) {
+      descendants = riakTemplate.getAsType(bucket, DESCENDANTS, Set.class);
+      v = riakTemplate.getWithMetaData(family,
+          (key instanceof Long ? (Long) key : Long.parseLong(key.toString())),
+          Map.class);
       if (log.isDebugEnabled()) {
         log.debug(String.format("retrieveEntry(): entity=%s, family=%s, key=%s, values=%s",
             persistentEntity.getName(),
@@ -175,9 +176,9 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
     if (null == v && null != descendants) {
       // Search through all descendants, as well.
       for (String d : descendants) {
-        v = riakTemplate.getWithMetaData(String.format("%s:%s",
-            d,
-            (key instanceof Long ? (Long) key : Long.parseLong(key.toString()))), Map.class);
+        v = riakTemplate.getWithMetaData(d,
+            (key instanceof Long ? (Long) key : Long.parseLong(key.toString())),
+            Map.class);
         if (null != v) {
           break;
         }
@@ -202,16 +203,16 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
       }
 
       for (String s : ancestors) {
-        String descendantsKey = s + ".metadata:descendants";
-        if (riakTemplate.containsKey(descendantsKey)) {
+        String bucket = s + ".metadata";
+        if (riakTemplate.containsKey(bucket, DESCENDANTS)) {
           // Build up a list of our ancestors and store it with the special metadata on this entity.
-          Set<String> descendants = riakTemplate.getAsType(descendantsKey, Set.class);
+          Set<String> descendants = riakTemplate.getAsType(bucket, DESCENDANTS, Set.class);
           if (null == descendants) {
             descendants = new LinkedHashSet<String>();
           }
           descendants.add(persistentEntity.getName());
 
-          riakTemplate.set(descendantsKey, descendants);
+          riakTemplate.set(bucket, DESCENDANTS, descendants);
         }
       }
 
@@ -223,7 +224,8 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
       nativeEntry.put(DISCRIMINATOR, persistentEntity.getDiscriminator());
     }
 
-    riakTemplate.setWithMetaData(String.format("%s:%s", persistentEntity.getName(), storeId),
+    riakTemplate.setWithMetaData(persistentEntity.getName(),
+        storeId,
         nativeEntry,
         metaData,
         qosParams);
@@ -239,7 +241,7 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
   @Override
   protected void deleteEntries(String family, List<Long> keys) {
     for (Long key : keys) {
-      riakTemplate.deleteKeys(String.format("%s:%s", family, key));
+      riakTemplate.delete(family, key);
     }
   }
 

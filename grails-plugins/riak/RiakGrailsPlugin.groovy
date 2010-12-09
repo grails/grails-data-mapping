@@ -74,6 +74,8 @@ A plugin that integrates the Riak document/data store into Grails.
 
     riakTemplate(RiakTemplate) { bean ->
       bean.scope = "request"
+      bean.defaultUri = application.config?.grails?.riak?.defaultUri ?: "http://localhost:8098/riak/{bucket}/{key}"
+      bean.mapReduceUri = application.config?.grails?.riak?.mapReduceUri ?: "http://localhost:8098/mapred"
     }
 
     riak(ScopedProxyFactoryBean) {
