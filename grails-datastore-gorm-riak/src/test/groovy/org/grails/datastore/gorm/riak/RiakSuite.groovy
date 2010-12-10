@@ -22,7 +22,7 @@ import org.junit.runners.Suite.SuiteClasses
 //  InheritanceSpec,
 //  ListOrderBySpec,
 //  NamedQuerySpec,
-  NegationSpec,
+//  NegationSpec,
 //  OneToManySpec,
 //  OrderBySpec,
 //  ProxyLoadingSpec,

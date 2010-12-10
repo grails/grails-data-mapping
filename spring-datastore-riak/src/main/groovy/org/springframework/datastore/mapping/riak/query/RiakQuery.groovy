@@ -31,7 +31,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.query.Query
 
 /**
- * A  {@link Query}  implementation for the Riak Key/Value store.
+ * A        {@link Query}        implementation for the Riak Key/Value store.
  * <p/>
  * This query implementation relies heavily on Riak's native Map/Reduce functionality. It
  * expects data to be stored as JSON documents, which is how GORM stores objects into Riak.
@@ -148,7 +148,7 @@ class RiakQuery extends Query {
     // If any criteria exist, join them together into a meaningful if clause.
     def joinStr = (criteria && criteria instanceof Query.Disjunction ? "||" : "&&")
     def ifclause = buff.join(joinStr) ?: "true"
-    StringBuilder mapJs = new StringBuilder("function(v){ var r=[];")
+    StringBuilder mapJs = new StringBuilder("function(v){ var uuid='%UUID%'; var r=[];")
     if (log.debugEnabled) {
       mapJs << "ejsLog('/tmp/mapred.log', 'map input: '+JSON.stringify(v));"
     }
@@ -156,7 +156,7 @@ class RiakQuery extends Query {
       // All this mess is to catch as many weird cases as possible. If I check for it here,
       // I've seen it in testing and thought it prudent to catch as many errors as possible
       // until I don't need to check for them any more.
-      mapJs << "try{if(typeof v['values'] === \"undefined\" || v.values[0].data === \"\"){return [];}}catch(e){return [];};var o=Riak.mapValuesJson(v);for(i in o){var entry=o[i];"
+      mapJs << "try{if(v === [] || typeof v['values'] == \"undefined\" || v.values[0].data === \"\"){return [];}}catch(e){return [];};var o=Riak.mapValuesJson(v);for(i in o){var entry=o[i];"
       if (ifclause != "true") {
         mapJs << "if(${ifclause}){"
       }
@@ -175,7 +175,7 @@ class RiakQuery extends Query {
     List<Query.PropertyProjection> propProjs = new ArrayList<Query.PropertyProjection>()
     def projectionList = projections()
     if (projectionList.projections) {
-      StringBuilder jsbuff = new StringBuilder("function(reduced){ var r=[];")
+      StringBuilder jsbuff = new StringBuilder("function(reduced){ var uuid='%UUID%'; var r=[];")
       if (log.debugEnabled) {
         jsbuff << "ejsLog('/tmp/mapred.log', 'reduce input: '+JSON.stringify(reduced));"
       }
@@ -243,6 +243,17 @@ class RiakQuery extends Query {
       if (log.debugEnabled) {
         log.debug("Running M/R: \n${mr.toJson()}")
       }
+      // For busting internal caching
+      def uuid = UUID.randomUUID().toString()
+      if (mapOper) {
+        def js = mapOper.source.replaceAll("%UUID%", uuid)
+        mapOper.source = js
+      }
+      if (reduceOper) {
+        def js = reduceOper.source.replaceAll("%UUID%", uuid)
+        reduceOper.source = js
+      }
+
       def l = riak.execute(mr)
       if (l) {
         results.addAll(l)
