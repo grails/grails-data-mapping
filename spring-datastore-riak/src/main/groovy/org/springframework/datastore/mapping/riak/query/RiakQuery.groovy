@@ -31,7 +31,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.query.Query
 
 /**
- * A        {@link Query}        implementation for the Riak Key/Value store.
+ * A         {@link Query}         implementation for the Riak Key/Value store.
  * <p/>
  * This query implementation relies heavily on Riak's native Map/Reduce functionality. It
  * expects data to be stored as JSON documents, which is how GORM stores objects into Riak.
@@ -185,7 +185,7 @@ class RiakQuery extends Query {
           // every input element to see whether it's a count from a previous reduce call
           // or whether it's unprocessed data coming from a map function. The input array
           // contains both all mixed up. Arg! :/
-          jsbuff << "var count=0; for(i in reduced){ if(typeof reduced[i] === 'object'){ count += 1; } else { count += reduced[i]; }} r.push(count);"
+          jsbuff << "var count=0; if(typeof reduced['vclock'] != 'undefined'){return [1];} for(i in reduced){ if(typeof reduced[i] === 'object'){ count += 1; } else { count += reduced[i]; }} r.push(count);"
         } else if (proj instanceof Query.AvgProjection) {
           // I don't actually average anything until I get ready to return the value below.
           jsbuff << "var total=0.0; var count=0; for(i in reduced) { if(typeof reduced[i]['age'] !== 'undefined') { count += 1; total += parseFloat(reduced[i].age); } else { total += reduced[i].total; count += reduced[i].count; } } r.push({total: total, count: count});"
@@ -240,9 +240,6 @@ class RiakQuery extends Query {
     inputBuckets.each {
       mr.getInputs().clear()
       mr.getInputs().add(it)
-      if (log.debugEnabled) {
-        log.debug("Running M/R: \n${mr.toJson()}")
-      }
       // For busting internal caching
       def uuid = UUID.randomUUID().toString()
       if (mapOper) {
@@ -254,6 +251,9 @@ class RiakQuery extends Query {
         reduceOper.source = js
       }
 
+      if (log.debugEnabled) {
+        log.debug("Running M/R: \n${mr.toJson()}")
+      }
       def l = riak.execute(mr)
       if (l) {
         results.addAll(l)
