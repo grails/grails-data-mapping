@@ -4,10 +4,10 @@ For example, in a controller:
 
 {code:java}
 class MyController {
-    def riakTemplate
+    def riak
 
     def foo = {
-        def notifs = riakTemplate.get("notifications", "myuser")
+        def notifs = riak.get("notifications", "myuser")
         render "Notifications: $notifs"
     }
 }
