@@ -1,0 +1,16 @@
+The Riak support for GORM is actually built on top of the Riak support for [Spring Data|http://www.springsource.org/spring-data]. As such, the Riak plugin provides full access to a @org.springframework.data.keyvalue.riak.core.RiakTemplate@ object you can inject into your own components.
+
+For example, in a controller:
+
+{code:java}
+class MyController {
+    def riakTemplate
+
+    def foo = {
+        def notifs = riakTemplate.get("notifications", "myuser")
+        render "Notifications: $notifs"
+    }
+}
+{code}
+
+See the Spring Data reference for more information on the methods available and on examples of using the @RiakTemplate@ in your own code.

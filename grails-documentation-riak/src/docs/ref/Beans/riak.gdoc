@@ -1,0 +1,20 @@
+h1. riakTemplate
+
+h2. Purpose
+
+A Spring bean that provides access to the Spring Data @RiakTemplate@ API
+
+h2. Examples
+
+{code:java}
+def riak
+
+def foo = {
+  def notifs = riakTemplate.get("notifications", "myuser")
+  render "Notifications: $notifs"
+}
+{code}
+
+h2. Description
+
+See the Spring Data reference for more information on the methods available and on examples of using the @RiakTemplate@ in your own code.

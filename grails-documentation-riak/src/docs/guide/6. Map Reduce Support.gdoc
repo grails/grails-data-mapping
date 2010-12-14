@@ -1,0 +1,16 @@
+Since Map/Reduce is such an integral part of working with the Riak datastore, GORM for Riak provides access to this functionality both through the Map/Reduce operations exposed on the @RiakTemplate@ and through a special static helper called "mapreduce".
+
+To execute a Map/Reduce against all instances of a particular entity, you can do the following:
+
+{code:java}
+def result = Person.mapreduce.execute([
+    map: [
+        source: "function(v){ ...perform map operations... return [result]; }"
+    ],
+    reduce: [
+        source: "function(v){ ...perform reduce operations... return [result]; }"
+    ]
+])
+{code}
+
+This is an easy way to execute ad hoc queries in a way that is more optimized for your application than what the @Query@ implementation will generate if you use criteria projections or a finder method.
