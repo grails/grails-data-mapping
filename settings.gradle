@@ -1,3 +1,4 @@
+		// Spring Datastore Project
 include "spring-datastore-core",
         "spring-datastore-gemfire",
         "spring-datastore-mongo",
@@ -7,16 +8,21 @@ include "spring-datastore-core",
         "spring-datastore-simple",
         "spring-datastore-web",
 /*        "spring-datastore-cassandra",*/
+
+		// Core GORM Implementation projects
         'grails-datastore-gorm',
         'grails-datastore-gorm-tck',
         'grails-datastore-gorm-test',
-/*        'grails-plugins:redis',*/
-        'grails-plugins:riak',
+
+		// Grails Plugins
+//        'grails-plugins:redis',
+//        'grails-plugins:riak',
+
+		// GORM Implementations
         'grails-datastore-gorm-redis',
         'grails-datastore-gorm-riak',
         'grails-datastore-gorm-mongo',
-        'grails-datastore-gorm-riak',
-		    'grails-datastore-gorm-gemfire',
+		'grails-datastore-gorm-gemfire',
         'grails-documentation-redis',
         'grails-documentation-riak'
 
