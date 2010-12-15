@@ -3,6 +3,7 @@ include "spring-datastore-core",
         "spring-datastore-mongo",
 /*        "spring-datastore-appengine",*/
         "spring-datastore-redis",
+        "spring-datastore-riak",
         "spring-datastore-simple",
         "spring-datastore-web",
 /*        "spring-datastore-cassandra",*/
@@ -10,8 +11,12 @@ include "spring-datastore-core",
         'grails-datastore-gorm-tck',
         'grails-datastore-gorm-test',
 /*        'grails-plugins:redis',*/
+        'grails-plugins:riak',
         'grails-datastore-gorm-redis',
+        'grails-datastore-gorm-riak',
         'grails-datastore-gorm-mongo',
-		'grails-datastore-gorm-gemfire',
-        'grails-documentation-redis'
+        'grails-datastore-gorm-riak',
+		    'grails-datastore-gorm-gemfire',
+        'grails-documentation-redis',
+        'grails-documentation-riak'
 

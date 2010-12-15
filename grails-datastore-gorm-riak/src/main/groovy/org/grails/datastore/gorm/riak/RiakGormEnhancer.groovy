@@ -1,11 +1,13 @@
 /*
- * Copyright (c) 2010 by NPC International, Inc.
+ * Copyright (c) 2010 by J. Brisbin <jon@jbrisbin.com>
+ *     Portions (c) 2010 by NPC International, Inc. or the
+ *     original author(s).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,13 +23,15 @@ import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.data.keyvalue.riak.core.QosParameters
+import org.springframework.data.keyvalue.riak.core.RiakQosParameters
+import org.springframework.data.keyvalue.riak.core.RiakTemplate
+import org.springframework.data.keyvalue.riak.core.SimpleBucketKeyPair
 import org.springframework.datastore.mapping.riak.RiakDatastore
-import org.springframework.data.riak.core.RiakTemplate
-import org.springframework.data.riak.core.SimpleBucketKeyPair
-import org.springframework.data.riak.mapreduce.*
+import org.springframework.data.keyvalue.riak.mapreduce.*
 
 /**
- * @author Jon Brisbin <jon.brisbin@npcinternational.com>
+ * @author J. Brisbin <jon@jbrisbin.com>
  */
 class RiakGormEnhancer extends GormEnhancer {
 
@@ -54,6 +58,22 @@ class RiakGormInstanceApi extends GormInstanceApi {
   RiakGormInstanceApi(persistentClass, datastore) {
     super(persistentClass, datastore);
   }
+
+  def Object save(Object instance, Map params) {
+    def currentQosParams = datastore.currentSession.qosParameters
+    if (params?.w || params?.dw) {
+      QosParameters qos = new RiakQosParameters()
+      qos.durableWriteThreshold = params?.dw
+      qos.writeThreshold = params?.w
+      datastore.currentSession.qosParameters = qos
+    }
+    Object obj = super.save(instance, params);
+    if (params?.w || params?.dw) {
+      datastore.currentSession.qosParameters = currentQosParams
+    }
+    return obj
+  }
+
 }
 
 class RiakGormStaticApi extends GormStaticApi {

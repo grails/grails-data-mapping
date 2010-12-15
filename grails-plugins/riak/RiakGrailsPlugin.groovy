@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2010 by J. Brisbin <jon@jbrisbin.com>
+ *     Portions (c) 2010 by NPC International, Inc. or the
+ *     original author(s).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.riak.RiakDatastoreFactoryBean
@@ -11,8 +29,8 @@ import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
-import org.springframework.datastore.riak.core.RiakTemplate
 import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.data.keyvalue.riak.core.RiakTemplate
 
 class RiakGrailsPlugin {
   // the plugin version
@@ -56,6 +74,12 @@ A plugin that integrates the Riak document/data store into Grails.
 
     riakTemplate(RiakTemplate) { bean ->
       bean.scope = "request"
+      bean.defaultUri = application.config?.grails?.riak?.defaultUri ?: "http://localhost:8098/riak/{bucket}/{key}"
+      bean.mapReduceUri = application.config?.grails?.riak?.mapReduceUri ?: "http://localhost:8098/mapred"
+      def useCache = application.config?.grails?.riak?.useCache
+      if(null != useCache) {
+        bean.useCache = useCache
+      }
     }
 
     riak(ScopedProxyFactoryBean) {

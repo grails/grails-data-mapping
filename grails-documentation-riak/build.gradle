@@ -1,0 +1,25 @@
+configurations {
+	documentation
+}
+dependencies {
+    documentation group: 'org.grails', name: 'grails-docs', version: '1.3.+'
+	project(":spring-datastore-core")
+}
+
+task clean << {
+	ant.delete(dir:buildDir)
+}
+
+task assemble << {
+	group = "docs"
+	ant.taskdef (name: 'docs', classname : 'grails.doc.ant.DocPublisherTask') {
+		classpath {
+			configurations.documentation.resolve().each { f ->
+				pathelement(location:f)
+			}			
+		}
+
+	}
+	ant.docs(src:"src/docs", dest:"build/docs", properties:"src/docs/doc.properties")
+}
+

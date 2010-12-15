@@ -17,19 +17,21 @@
 package org.grails.datastore.gorm
 
 import org.grails.datastore.gorm.riak.RiakGormEnhancer
-import org.springframework.datastore.mapping.riak.RiakDatastore
-import org.springframework.data.riak.core.RiakTemplate
+import org.springframework.data.keyvalue.riak.core.QosParameters
+import org.springframework.data.keyvalue.riak.core.RiakQosParameters
+import org.springframework.data.keyvalue.riak.core.RiakTemplate
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.model.PersistentEntity
+import org.springframework.datastore.mapping.riak.RiakDatastore
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 
 /**
- * @author Jon Brisbin <jon.brisbin@npcinternational.com>
+ * @author J. Brisbin <jon@jbrisbin.com>
  */
 class Setup {
 
@@ -67,6 +69,10 @@ class Setup {
 
     Session con = riak.connect()
     RiakTemplate riakTmpl = con.nativeInterface
+    QosParameters qos = new RiakQosParameters()
+    qos.durableWriteThreshold = "all"
+    riakTmpl.defaultQosParameters = qos
+    riakTmpl.useCache = false
     [
         "grails.gorm.tests.TestEntity",
         "grails.gorm.tests.ChildEntity",
@@ -79,7 +85,8 @@ class Setup {
         "grails.gorm.tests.Pet",
         "grails.gorm.tests.Person"
     ].each { type ->
-      riakTmpl.getBucketSchema(type, true)["keys"].each { key ->
+      def schema = riakTmpl.getBucketSchema(type, true)
+      schema.keys.each { key ->
         try {
           riakTmpl.deleteKeys("$type:$key")
         } catch (err) {

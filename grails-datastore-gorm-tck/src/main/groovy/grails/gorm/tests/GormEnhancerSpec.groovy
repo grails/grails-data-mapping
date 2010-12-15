@@ -114,7 +114,9 @@ class GormEnhancerSpec extends GormDatastoreSpec{
   void "Test dynamic finder with pagination parameters"() {
     given:
       def age = 40
-      ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
+      ["Bob", "Fred", "Barney", "Frank"].each {
+        new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+      }
 
     when:
       def total = TestEntity.count()

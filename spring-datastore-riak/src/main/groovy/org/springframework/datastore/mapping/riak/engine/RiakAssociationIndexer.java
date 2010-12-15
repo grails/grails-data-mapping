@@ -1,11 +1,13 @@
 /*
- * Copyright (c) 2010 by NPC International, Inc.
+ * Copyright (c) 2010 by J. Brisbin <jon@jbrisbin.com>
+ *     Portions (c) 2010 by NPC International, Inc. or the
+ *     original author(s).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,22 +21,23 @@ package org.springframework.datastore.mapping.riak.engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.keyvalue.riak.core.RiakTemplate;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.types.Association;
-import org.springframework.data.riak.core.RiakTemplate;
-import org.springframework.data.riak.core.SimpleBucketKeyPair;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * @author Jon Brisbin <jon.brisbin@npcinternational.com>
+ * @author J. Brisbin <jon@jbrisbin.com>
  */
+@SuppressWarnings({"unchecked"})
 public class RiakAssociationIndexer implements AssociationIndexer<Long, Long> {
 
-  private static final Pattern linkPattern = Pattern.compile("^<(.+)/(.+)/(.+)>; riaktag=\"(.+)\"");
+  private static final Pattern linkPattern = Pattern.compile(
+      "^<(.+)/(.+)/(.+)>; riaktag=\"(.+)\"");
   private final Logger log = LoggerFactory.getLogger(getClass());
   private RiakTemplate riakTemplate;
   private ConversionService conversionService;
@@ -61,17 +64,21 @@ public class RiakAssociationIndexer implements AssociationIndexer<Long, Long> {
   }
 
   protected void link(Long childKey, Long ownerKey) {
-    String bucketName = String.format("%s.%s.%s", owner.getName(), association.getName(), ownerKey);
-    SimpleBucketKeyPair<String, Long> bkpChild = new SimpleBucketKeyPair<String, Long>(bucketName, childKey);
-    SimpleBucketKeyPair<String, Long> bkpRealChild = new SimpleBucketKeyPair<String, Long>(child.getName(), childKey);
-    riakTemplate.set(bkpChild, "");
-    riakTemplate.link(bkpRealChild, bkpChild, "target");
+    String bucketName = String.format("%s.%s.%s",
+        owner.getName(),
+        association.getName(),
+        ownerKey);
+    riakTemplate.set(bucketName, childKey, "");
+    riakTemplate.link(child.getName(), childKey, bucketName, childKey, "target");
     //SimpleBucketKeyPair<String, Long> bkpOwner = new SimpleBucketKeyPair<String, Long>(owner.getName(), ownerKey);
     //riakTemplate.link(bkpChild, bkpOwner, "owner");
   }
 
   public List<Long> query(Long primaryKey) {
-    String bucketName = String.format("%s.%s.%s", owner.getName(), association.getName(), primaryKey);
+    String bucketName = String.format("%s.%s.%s",
+        owner.getName(),
+        association.getName(),
+        primaryKey);
     Object obj = riakTemplate.getBucketSchema(bucketName, true).get("keys");
     List<Long> keys = new ArrayList<Long>();
     if (null != obj && obj instanceof List) {

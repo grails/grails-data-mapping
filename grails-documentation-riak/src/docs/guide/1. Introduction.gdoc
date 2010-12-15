@@ -1,0 +1,7 @@
+Riak is an Internet-scale Key/Value datastore that stores arbitrary data based on Content-Type, has an [efficient HTTP REST API|https://wiki.basho.com/display/RIAK/REST+API], and supports queries and data filtering via [Map/Reduce operations|https://wiki.basho.com/display/RIAK/MapReduce] written in either Javascript or Erlang.
+
+This project aims to provide an object-mapping framework on top of Riak to ease common activities like:
+
+* Converting objects to/from JSON for storage in Riak
+* Easy access to custom Map/Reduce queries
+* Validating domain instances backed by the Riak datastore

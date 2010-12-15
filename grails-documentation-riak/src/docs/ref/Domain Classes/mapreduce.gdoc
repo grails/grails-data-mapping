@@ -1,0 +1,24 @@
+h1. mapreduce
+
+h2. Purpose
+
+Provides ad hoc access to Riak's Map/Reduce functionality for a given entity.
+
+h2. Examples
+
+Static method:
+
+{code:java}
+def result = Person.mapreduce.execute([
+    map: [
+        source: "function(v){ ...perform map operations... return [result]; }"
+    ],
+    reduce: [
+        source: "function(v){ ...perform reduce operations... return [result]; }"
+    ]
+])
+{code}
+
+h2. Description
+
+Allows application code to execute arbitrary Map/Reduce operations for writing custom queries, doing reduce calculations not implemented by criteria projections, or for low-level access to Map/Reduce built-ins.

@@ -125,6 +125,7 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     protected Object getEntryValue(Node nativeEntry, String property) {
         try {
             Property prop = nativeEntry.getProperty(property);
+
             if (prop.getType() == PropertyType.REFERENCE) {
                 String nodeUUID = prop.getString();
                 return jcrTemplate.getNodeByUUID(nodeUUID);
@@ -237,10 +238,14 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                 else if (value instanceof InputStream)
                     nativeEntry.setProperty(propertyName, (InputStream) value);
                 else if (value instanceof Long)
-                    nativeEntry.setProperty(propertyName, (Long) value);
+                    nativeEntry.setProperty(propertyName, getLong(value));
                 else if (value instanceof Integer)
                     nativeEntry.setProperty(propertyName, getLong(value));
-                else{
+                else if (value instanceof Date){
+                    System.out.println("property name " + propertyName);
+                    nativeEntry.setProperty(propertyName, getLong(((Date)value).getTime()));
+                    System.out.println("Dateeeeeeeeeeeeeeeeeeeeee");
+                }else{
                     //Marshaling all unsupported data types into String
                     System.out.println(value.getClass());
                     value = value.toString();
