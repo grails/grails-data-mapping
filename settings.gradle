@@ -22,7 +22,7 @@ include "spring-datastore-core",
         'grails-datastore-gorm-redis',
         'grails-datastore-gorm-riak',
         'grails-datastore-gorm-mongo',
-		'grails-datastore-gorm-gemfire',
+        'grails-datastore-gorm-gemfire',
         'grails-documentation-redis',
         'grails-documentation-riak'
 
