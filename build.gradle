@@ -33,6 +33,7 @@ subprojects {
                  urls:new File( System.getProperty("user.home" ), ".m2/repository" ).toURL().toString()
        mavenRepo name: "spock-snapshots", urls: ["http://m2repo.spockframework.org/snapshots"]
        mavenRepo name: "springAWS", urls: 'http://maven.springframework.org/release'
+       mavenRepo name: "spring-milestone", urls: 'http://maven.springframework.org/milestone'
        mavenRepo name: "jboss", urls:'http://repository.jboss.org/maven2/'
 	   mavenRepo name: "java.net", urls:"http://download.java.net/maven/2/"
        mavenCentral()
