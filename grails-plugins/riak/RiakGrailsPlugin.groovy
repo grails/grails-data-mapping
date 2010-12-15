@@ -34,7 +34,7 @@ import org.springframework.data.keyvalue.riak.core.RiakTemplate
 
 class RiakGrailsPlugin {
   // the plugin version
-  def version = "1.0.0.BUILD-SNAPSHOT"
+  def version = "1.0.0.M1"
   // the version or versions of Grails the plugin is designed for
   def grailsVersion = "1.3.5 > *"
   // the other plugins this plugin depends on
@@ -74,11 +74,11 @@ A plugin that integrates the Riak document/data store into Grails.
 
     riakTemplate(RiakTemplate) { bean ->
       bean.scope = "request"
-      bean.defaultUri = application.config?.grails?.riak?.defaultUri ?: "http://localhost:8098/riak/{bucket}/{key}"
-      bean.mapReduceUri = application.config?.grails?.riak?.mapReduceUri ?: "http://localhost:8098/mapred"
-      def useCache = application.config?.grails?.riak?.useCache
-      if(null != useCache) {
-        bean.useCache = useCache
+      defaultUri = application.config?.grails?.riak?.defaultUri ?: "http://localhost:8098/riak/{bucket}/{key}"
+      mapReduceUri = application.config?.grails?.riak?.mapReduceUri ?: "http://localhost:8098/mapred"
+      def c = application.config?.grails?.riak?.useCache.asBoolean()
+      if(null != c) {
+        useCache = c
       }
     }
 
@@ -112,6 +112,7 @@ A plugin that integrates the Riak document/data store into Grails.
     PlatformTransactionManager transactionManager = ctx.getBean("riakTransactionManager")
     def enhancer = transactionManager ? new RiakGormEnhancer(store, transactionManager) : new RiakGormEnhancer(store)
 
+    def isHibernateInstalled = manager.hasGrailsPlugin("hibernate")
     for (entity in store.mappingContext.persistentEntities) {
       if (isHibernateInstalled) {
         def cls = entity.javaClass
