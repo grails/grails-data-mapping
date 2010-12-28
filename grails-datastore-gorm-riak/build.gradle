@@ -13,7 +13,7 @@ dependencies {
       project(":spring-datastore-riak"),
       project(":spring-datastore-core")
 
-  compile 'org.springframework.data:spring-data-riak:1.0.0.M1'
+  compile 'org.springframework.data:spring-data-riak:1.0.0.M2-SNAPSHOT'
 
   testCompile project(":grails-datastore-gorm-test"),
       project(":grails-datastore-gorm-tck")

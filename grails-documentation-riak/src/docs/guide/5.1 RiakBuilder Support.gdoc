@@ -1,0 +1,19 @@
+Besides direct access to the Java-language template objects, the Riak plugin for Grails exposes a Groovy Builder object call RiakBuilder for use in your controllers and services. The builder uses a declarative, DSL-style syntax for working with Riak.
+
+For example, to delete all entries in a bucket using the RiakBuilder DSL (which is a dynamic method the plugin adds to any controller or service class):
+
+{code:java}
+riak {
+  test {
+    foreach {
+      completed { v, meta -> delete(key: meta.key) }
+      failed { it.printStackTrace() }
+    }
+  }
+}
+{code}
+
+1. The top-level node should always be "riak".
+2. The next level is optional. In this case, it sets the default bucket name to "test", so it's not necessary to specify it on operations contained within this block.
+3. When an operation is complete, if a "completed" closure is defined, the builder will call that closure, passing the results of the operation as the first parameter and optionally passing the metadata associated with that entry as the second (this might be null, depending on the context in which the completed closure is called). If no parameters are defined, the result of the operation is still available as the implicit variable "it".
+4. To handle errors, a "failed" closure should be defined, which should accept the exception just generated (the exception is also available as "it").
