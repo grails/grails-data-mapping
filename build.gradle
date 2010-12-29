@@ -36,7 +36,7 @@ subprojects {
        mavenRepo name: "spring-milestone", urls: 'http://maven.springframework.org/milestone'
        mavenRepo name: "spring-snapshot", urls: 'http://maven.springframework.org/snapshot'
        mavenRepo name: "jboss", urls:'http://repository.jboss.org/maven2/'
-	   mavenRepo name: "java.net", urls:"http://download.java.net/maven/2/"
+			 mavenRepo name: "java.net", urls:"http://download.java.net/maven/2/"
        mavenCentral()
     }
 
