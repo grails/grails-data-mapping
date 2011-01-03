@@ -34,6 +34,7 @@ grails.project.dependency.resolution = {
     runtime("org.grails:grails-datastore-gorm:1.0.0.M3", excludes)
     runtime("org.grails:grails-datastore-gorm-riak:1.0.0.M3", excludes)
     runtime("org.springframework:spring-datastore-web:1.0.0.M3", excludes)
+    runtime("org.springframework:spring-datastore-riak:1.0.0.M3", excludes)
 
     test("org.grails:grails-datastore-gorm-test:1.0.0.M3", excludes)
 
