@@ -31,7 +31,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.query.Query
 
 /**
- * A         {@link Query}         implementation for the Riak Key/Value store.
+ * A {@link Query} implementation for the Riak Key/Value store.
  * <p/>
  * This query implementation relies heavily on Riak's native Map/Reduce functionality. It
  * expects data to be stored as JSON documents, which is how GORM stores objects into Riak.
