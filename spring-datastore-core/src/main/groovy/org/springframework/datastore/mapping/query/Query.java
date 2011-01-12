@@ -421,19 +421,68 @@ public abstract class Query {
     }
 
     /**
-     * Criterion that applies to a property
+     * Restricts a property to be null
      */
-    public static class PropertyCriterion extends Criterion {
-        protected String name;
-        protected Object value;
+    public static class IsNull extends PropertyNameCriterion {
 
-        public PropertyCriterion(String name, Object value) {
+		public IsNull(String name) {
+			super(name);
+		}
+    }
+    
+    /**
+     * Restricts a property to be empty (such as a blank string)
+     */
+    public static class IsEmpty extends PropertyNameCriterion {
+		public IsEmpty(String name) {
+			super(name);
+		}
+    }    
+    
+    /**
+     * Restricts a property to be empty (such as a blank string)
+     */
+    public static class IsNotEmpty extends PropertyNameCriterion {
+		public IsNotEmpty(String name) {
+			super(name);
+		}
+    }    
+    /**
+     * Restricts a property to be not null
+     */
+    public static class IsNotNull extends PropertyNameCriterion{
+
+		public IsNotNull(String name) {
+			super(name);
+		}
+    }
+
+    /**
+     * A Criterion that applies to a property
+     */
+    public static class PropertyNameCriterion extends Criterion {
+    	protected String name;
+    	
+        public PropertyNameCriterion(String name) {
             this.name = name;
-            this.value = value;
+
         }
 
         public String getProperty() {
             return name;
+        }
+    	
+    }
+    /**
+     * Criterion that applies to a property and value
+     */
+    public static class PropertyCriterion extends PropertyNameCriterion {
+        
+        protected Object value;
+
+        public PropertyCriterion(String name, Object value) {
+            super(name);
+            this.value = value;
         }
 
         public Object getValue() {

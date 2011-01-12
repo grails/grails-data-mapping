@@ -16,6 +16,8 @@ package org.springframework.datastore.mapping.query;
 
 import java.util.Collection;
 
+import org.springframework.datastore.mapping.query.Query.Criterion;
+
 /**
  * Factory for creating {@link org.springframework.datastore.mapping.query.Query.Criterion} instances
  */
@@ -143,5 +145,45 @@ public class Restrictions {
     public static Query.LessThanEquals lte(String property, Object value) {
         return new Query.LessThanEquals(property, value);
     }
+
+    /**
+     * Used to restrict a value to be null
+     * 
+     * @param property The property name
+     * @return The IsNull instance
+     */
+	public static Query.IsNull isNull(String property) {
+		return new Query.IsNull(property);
+	}
+	
+    /**
+     * Used to restrict a value to be empty (such as a blank string)
+     * 
+     * @param property The property name
+     * @return The IsEmpty instance
+     */
+	public static Query.IsEmpty isEmpty(String property) {
+		return new Query.IsEmpty(property);
+	}
+	
+    /**
+     * Used to restrict a value to be not empty (such as a non-blank string)
+     * 
+     * @param property The property name
+     * @return The IsEmpty instance
+     */
+	public static Query.IsNotEmpty isNotEmpty(String property) {
+		return new Query.IsNotEmpty(property);
+	}		
+	
+    /**
+     * Used to restrict a value to be null
+     * 
+     * @param property The property name
+     * @return The IsNull instance
+     */
+	public static Query.IsNotNull isNotNull(String property) {
+		return new Query.IsNotNull(property);
+	}	
 
 }

@@ -314,20 +314,16 @@ public class CriteriaBuilder extends GroovyObjectSupport {
                 }
                 String propertyName = value.toString();
                 if (name.equals(IS_NULL)) {
-                    // TODO Implement isNull restriction
-//                    c = Restrictions.isNull(propertyName) ;
+                    c = Restrictions.isNull(propertyName) ;
                 }
                 else if (name.equals(IS_NOT_NULL)) {
-                    // TODO Implement isNotNull restriction
-//                    c = Restrictions.isNotNull(propertyName);
+                    c = Restrictions.isNotNull(propertyName);
                 }
                 else if (name.equals(IS_EMPTY)) {
-                    // TODO Implement isEmpty restriction
-//                    c = Restrictions.isEmpty(propertyName);
+                    c = Restrictions.isEmpty(propertyName);
                 }
                 else if (name.equals(IS_NOT_EMPTY)) {
-                    // TODO Implement isNotEmpty restriction
-//                    c = Restrictions.isNotEmpty(propertyName);
+                    c = Restrictions.isNotEmpty(propertyName);
                 }
             }
 
