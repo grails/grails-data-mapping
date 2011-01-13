@@ -29,7 +29,7 @@ class MongoEntityConfigSpec extends GormDatastoreSpec{
 		then:
 			coll != null
 			coll.collection == 'mycollection'
-			coll.database = "mydb"
+			coll.database == "mydb"
 			coll.writeConcern == WriteConcern.FSYNC_SAFE
 			attr != null
 			attr.index == true
