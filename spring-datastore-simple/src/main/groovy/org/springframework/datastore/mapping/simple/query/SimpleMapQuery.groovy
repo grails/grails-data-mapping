@@ -17,7 +17,6 @@
 package org.springframework.datastore.mapping.simple.query
 
 import org.springframework.datastore.mapping.query.AssociationQuery;
-import org.springframework.datastore.mapping.query.AssociationQuery;
 import org.springframework.datastore.mapping.query.Query
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.simple.SimpleMapSession
@@ -149,7 +148,7 @@ class SimpleMapQuery extends Query{
   }
 
   def associationQueryHandlers = [
-		(Query.Like): { allEntities, Association association, Like like ->		
+		(Query.Like): { allEntities, Association association, Query.Like like ->		
 			queryAssociation(allEntities, association ) {
 				def regexFormat = like.pattern.replaceAll('%', '.*?')
 				it[like.property] ==~ regexFormat
@@ -228,15 +227,15 @@ class SimpleMapQuery extends Query{
 	  }.keySet().toList()
   }
   
-  def executeAssociationSubQuery(Junction queryCriteria, PersistentProperty property) {
+  def executeAssociationSubQuery(Query.Junction queryCriteria, PersistentProperty property) {
 	  List resultList = []
-	  for(Criterion criterion in queryCriteria.getCriteria()) {
+	  for(Query.Criterion criterion in queryCriteria.getCriteria()) {
 		  def handler = associationQueryHandlers[criterion.getClass()]
 		  if(handler) {
 			  resultList << handler.call(datastore[family], property, criterion)
 		  }
-		  else if(criterion instanceof Junction) {
-			  Junction junction = criterion
+		  else if(criterion instanceof Query.Junction) {
+			  Query.Junction junction = criterion
 			  resultList << executeAssociationSubQuery( junction, property )
 		  }
 	  }
@@ -245,7 +244,7 @@ class SimpleMapQuery extends Query{
   
   def handlers = [
 	   (AssociationQuery): { AssociationQuery aq, PersistentProperty property ->
-		   Junction queryCriteria = aq.criteria
+		   Query.Junction queryCriteria = aq.criteria
 		   return executeAssociationSubQuery(queryCriteria, property)
 	   },
         (Query.Equals): { Query.Equals equals, PersistentProperty property ->
@@ -402,7 +401,7 @@ class SimpleMapQuery extends Query{
 	}
 
   protected PersistentProperty getValidProperty(criterion) {
-	if(criterion instanceof PropertyNameCriterion) {
+	if(criterion instanceof Query.PropertyNameCriterion) {
 		def property = entity.getPropertyByName(criterion.property)
 		if (property == null) {
 		  def identity = entity.identity
