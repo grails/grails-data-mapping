@@ -2,7 +2,7 @@ h1. riakTemplate
 
 h2. Purpose
 
-A Spring bean that provides access to the Spring Data @RiakTemplate@ API
+A Spring bean that provides access to the Spring Data @RiakTemplate@ API using a @RiakBuilder@ instance.
 
 h2. Examples
 
@@ -10,11 +10,11 @@ h2. Examples
 def riak
 
 def foo = {
-  def notifs = riakTemplate.get("notifications", "myuser")
+  def notifs = riak.foreach(bucket: "notifications")
   render "Notifications: $notifs"
 }
 {code}
 
 h2. Description
 
-See the Spring Data reference for more information on the methods available and on examples of using the @RiakTemplate@ in your own code.
+If you want to use the @RiakBuilder@ to access the datastore using a dot notation, then inject it using the @riak@ bean.

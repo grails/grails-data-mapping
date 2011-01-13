@@ -1,0 +1,24 @@
+h1. riakTemplate
+
+h2. Purpose
+
+A Spring bean that provides access to the Spring Data @AsyncRiakTemplate@ API.
+
+h2. Examples
+
+{code:java}
+def riak
+
+def foo = {
+  def callback = [
+    completed: { v, meta -> ...do something with result... },
+    failed: { err -> ...do something with error... }
+  ] as AsyncKeyValueStoreOperation
+  def future = riak.get("notifications", "mykey", callback)
+  render "Notifications: ${future.get()}"
+}
+{code}
+
+h2. Description
+
+The @asyncRiakTemplate@ bean is a singleton instance of the asynchronous @AsyncRiakTemplate@. Check the Spring Data Key/Value documentation for more information on the available methods and detailed usage instructions.
