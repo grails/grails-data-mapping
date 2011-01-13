@@ -309,15 +309,19 @@ public class CriteriaBuilder extends GroovyObjectSupport {
             
             final PersistentProperty property = persistentEntity.getPropertyByName(name);
             if(property instanceof Association) {
-            	Query oldQuery = query;
+            	Association association = (Association) property;
+            	Query previousQuery = query;
+            	PersistentEntity previousEntity = persistentEntity;
             	
             	try {            		
             		query = query.createQuery(property.getName());
+            		persistentEntity = association.getAssociatedEntity();
             		invokeClosureNode(args[0]);
             		return query;
             	}
             	finally {
-            		query = oldQuery;
+            		persistentEntity = previousEntity;
+            		query = previousQuery;
             	}
             }
         }

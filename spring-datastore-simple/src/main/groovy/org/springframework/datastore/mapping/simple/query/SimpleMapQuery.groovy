@@ -1,3 +1,5 @@
+
+
 /* Copyright (C) 2010 SpringSource
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +16,8 @@
  */
 package org.springframework.datastore.mapping.simple.query
 
+import org.springframework.datastore.mapping.query.AssociationQuery;
+import org.springframework.datastore.mapping.query.AssociationQuery;
 import org.springframework.datastore.mapping.query.Query
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.simple.SimpleMapSession
@@ -22,6 +26,7 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException
 import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValue;
 import org.springframework.datastore.mapping.model.PersistentProperty
 
+import org.springframework.datastore.mapping.model.types.Association 
 import org.springframework.datastore.mapping.model.types.ToOne
 import org.springframework.datastore.mapping.query.Restrictions
 
@@ -48,7 +53,7 @@ class SimpleMapQuery extends Query{
     def results = []
     def entityMap = [:]
     if(criteria.isEmpty()) {
-      entityMap = datastore[family]
+      populateQueryResult(datastore[family].keySet(), entityMap)
     }
     else {
       def criteriaList = criteria.getCriteria()
@@ -143,7 +148,106 @@ class SimpleMapQuery extends Query{
 
   }
 
+  def associationQueryHandlers = [
+		(Query.Like): { allEntities, Association association, Like like ->		
+			queryAssociation(allEntities, association ) {
+				def regexFormat = like.pattern.replaceAll('%', '.*?')
+				it[like.property] ==~ regexFormat
+			}
+		},  
+		(Query.Equals): { allEntities, Association association, Query.Equals eq ->
+			queryAssociation(allEntities, association ) {
+				it[eq.property] == eq.value
+			}
+		},  
+		(Query.NotEquals): { allEntities, Association association, Query.NotEquals eq ->
+			queryAssociation(allEntities, association ) {
+				it[eq.property] != eq.value
+			}
+		},  
+		(Query.IdEquals): { allEntities, Association association, Query.IdEquals eq ->
+			queryAssociation(allEntities, association ) {
+				it[eq.property] == eq.value
+			}
+		},  
+		(Query.Between): { allEntities, Association association, Query.Between between ->
+			queryAssociation(allEntities, association ) {
+				def from = between.from
+				def to = between.to
+				it[between.property]>= from && it[between.property] <= to
+			}
+		},
+		(Query.GreaterThan):{ allEntities, Association association, Query.GreaterThan gt ->
+			queryAssociation(allEntities, association ) {				
+				it[gt.property] > gt.value
+			}
+		},
+		(Query.LessThan):{ allEntities, Association association, Query.LessThan lt ->
+			queryAssociation(allEntities, association ) {				
+				it[lt.property] < lt.value
+			}
+		},
+		(Query.GreaterThanEquals):{ allEntities, Association association, Query.GreaterThanEquals gt ->
+			queryAssociation(allEntities, association ) {				
+				it[gt.property] >= gt.value
+			}
+		},
+		(Query.LessThanEquals):{ allEntities, Association association, Query.LessThanEquals lt ->
+			queryAssociation(allEntities, association ) {				
+				it[lt.property] <= lt.value
+			}
+		},
+		(Query.In):{ allEntities, Association association, Query.In inList ->
+			queryAssociation(allEntities, association ) {	
+				inList.values?.contains it[inList.property] 			
+			}
+		}
+
+  ]
+  
+  def queryAssociation(allEntities, Association association, Closure callable) {
+	  allEntities.findAll {
+		  def propertyName = association.name
+		  if(association instanceof ToOne) {
+			  
+			  def id = it.value[propertyName]
+			                    
+			  def associated = session.retrieve(association.associatedEntity.javaClass, id)
+	          if(associated) {
+	           	callable.call(associated)			  
+	          }
+		  }
+		  else {
+			  def indexer = entityPersister.getAssociationIndexer(it.value, association)
+			  def results = indexer.query(it.key)
+			  if(results) {				  
+				  def associatedEntities = session.retrieveAll(association.associatedEntity.javaClass, results)
+				  return associatedEntities.any(callable)
+			  }
+		  }
+	  }.keySet().toList()
+  }
+  
+  def executeAssociationSubQuery(Junction queryCriteria, PersistentProperty property) {
+	  List resultList = []
+	  for(Criterion criterion in queryCriteria.getCriteria()) {
+		  def handler = associationQueryHandlers[criterion.getClass()]
+		  if(handler) {
+			  resultList << handler.call(datastore[family], property, criterion)
+		  }
+		  else if(criterion instanceof Junction) {
+			  Junction junction = criterion
+			  resultList << executeAssociationSubQuery( junction, property )
+		  }
+	  }
+	  return applyJunctionToResults(queryCriteria, resultList)
+  }
+  
   def handlers = [
+	   (AssociationQuery): { AssociationQuery aq, PersistentProperty property ->
+		   Junction queryCriteria = aq.criteria
+		   return executeAssociationSubQuery(queryCriteria, property)
+	   },
         (Query.Equals): { Query.Equals equals, PersistentProperty property ->
           def indexer = entityPersister.getPropertyIndexer(property)
           return indexer.query(equals.value)
@@ -257,41 +361,45 @@ class SimpleMapQuery extends Query{
       }
 
     }
-    def finalIdentifiers = []
-    if (!resultList.isEmpty()) {
-      if (resultList.size() > 1) {
-        if (criteria instanceof Query.Conjunction) {
-          def total = resultList.size()
-          finalIdentifiers = resultList[0]
-          for (num in 1..<total) {
-            def secondList = resultList[num]
-            finalIdentifiers = finalIdentifiers.intersect(secondList)
-          }
-        }
-        else if(criteria instanceof Query.Negation) {
-          def total = resultList.size()
-          finalIdentifiers = negateResults( resultList[0] )
-          for (num in 1..<total) {
-            def secondList = negateResults( resultList[num] )
-            finalIdentifiers = finalIdentifiers.intersect(secondList)
-          }
-        }
-        else {
-          finalIdentifiers = resultList.flatten()
-        }
-      }
-      else {
-        if(criteria instanceof Query.Negation) {
-          finalIdentifiers = negateResults(resultList[0])
-        }
-        else {          
-          finalIdentifiers = resultList[0]
-        }
-
-      }
-    }
-    return finalIdentifiers
+    return applyJunctionToResults(criteria,resultList)
   }
+	
+	private List applyJunctionToResults(Query.Junction criteria, List resultList) {
+		def finalIdentifiers = []
+		if (!resultList.isEmpty()) {
+			if (resultList.size() > 1) {
+				if (criteria instanceof Query.Conjunction) {
+					def total = resultList.size()
+					finalIdentifiers = resultList[0]
+					for (num in 1..<total) {
+						def secondList = resultList[num]
+						finalIdentifiers = finalIdentifiers.intersect(secondList)
+					}
+				}
+				else if(criteria instanceof Query.Negation) {
+					def total = resultList.size()
+					finalIdentifiers = negateResults( resultList[0] )
+					for (num in 1..<total) {
+						def secondList = negateResults( resultList[num] )
+						finalIdentifiers = finalIdentifiers.intersect(secondList)
+					}
+				}
+				else {
+					finalIdentifiers = resultList.flatten()
+				}
+			}
+			else {
+				if(criteria instanceof Query.Negation) {
+					finalIdentifiers = negateResults(resultList[0])
+				}
+				else {          
+					finalIdentifiers = resultList[0]
+				}
+				
+			}
+		}
+		return finalIdentifiers
+	}
 
   protected PersistentProperty getValidProperty(criterion) {
 	if(criterion instanceof PropertyNameCriterion) {
@@ -307,6 +415,9 @@ class SimpleMapQuery extends Query{
 		  throw new InvalidDataAccessResourceUsageException("Cannot query [" + entity + "] on non-indexed property: " + property);
 		}
 		return property
+	}
+	else if(criterion instanceof AssociationQuery) {
+		return criterion.association
 	}
   }
 
