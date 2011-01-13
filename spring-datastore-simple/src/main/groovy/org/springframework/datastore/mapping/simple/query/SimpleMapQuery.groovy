@@ -294,18 +294,20 @@ class SimpleMapQuery extends Query{
   }
 
   protected PersistentProperty getValidProperty(criterion) {
-    def property = entity.getPropertyByName(criterion.property)
-    if (property == null) {
-      def identity = entity.identity
-      if(identity.name == criterion.property) return identity
-      else {        
-        throw new InvalidDataAccessResourceUsageException("Cannot query [" + entity + "] on non-existent property: " + criterion.property);
-      }
-    }
-    else if (!isIndexed(property)) {
-      throw new InvalidDataAccessResourceUsageException("Cannot query [" + entity + "] on non-indexed property: " + property);
-    }
-    return property
+	if(criterion instanceof PropertyNameCriterion) {
+		def property = entity.getPropertyByName(criterion.property)
+		if (property == null) {
+		  def identity = entity.identity
+		  if(identity.name == criterion.property) return identity
+		  else {
+			throw new InvalidDataAccessResourceUsageException("Cannot query [" + entity + "] on non-existent property: " + criterion.property);
+		  }
+		}
+		else if (!isIndexed(property)) {
+		  throw new InvalidDataAccessResourceUsageException("Cannot query [" + entity + "] on non-indexed property: " + property);
+		}
+		return property
+	}
   }
 
   private boolean isIndexed(PersistentProperty property) {

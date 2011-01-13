@@ -15,16 +15,26 @@
 
 package grails.gorm;
 
-import groovy.lang.*;
+import static org.grails.datastore.gorm.finders.DynamicFinder.populateArgumentsForCriteria;
+import groovy.lang.Closure;
+import groovy.lang.GroovyObjectSupport;
+import groovy.lang.GroovySystem;
+import groovy.lang.MetaMethod;
+import groovy.lang.MetaObjectProtocol;
+import groovy.lang.MissingMethodException;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.query.Restrictions;
-
-import java.util.*;
-
-import static org.grails.datastore.gorm.finders.DynamicFinder.*;
 
 /**
  *
@@ -296,6 +306,20 @@ public class CriteriaBuilder extends GroovyObjectSupport {
                 invokeClosureNode(args[0]);
                 return name;
             }
+            
+            final PersistentProperty property = persistentEntity.getPropertyByName(name);
+            if(property instanceof Association) {
+            	Query oldQuery = query;
+            	
+            	try {            		
+            		query = query.createQuery(property.getName());
+            		invokeClosureNode(args[0]);
+            		return query;
+            	}
+            	finally {
+            		query = oldQuery;
+            	}
+            }
         }
         else if (args.length == 1 && args[0] != null) {
             Object value = args[0];
@@ -563,6 +587,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
         }
         return o;
     }
+    
     private void validatePropertyName(String propertyName, String methodName) {
         if(propertyName == null) {
             throw new IllegalArgumentException("Cannot use ["+methodName+"] restriction with null property name");

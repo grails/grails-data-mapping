@@ -14,10 +14,13 @@
  */
 package org.springframework.datastore.mapping.query;
 
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.EntityPersister;
 import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.util.Assert;
 
 import javax.persistence.FlushModeType;
@@ -45,6 +48,13 @@ public abstract class Query {
 
 
     /**
+     * @return The criteria defined by this query
+     */
+    public Junction getCriteria() {
+		return criteria;
+	}
+
+	/**
      * The ordering of results
      *
      */
@@ -92,6 +102,11 @@ public abstract class Query {
         return projections;
     }
 
+    /**
+     * Adds the specified criterion instance to the query
+     * 
+     * @param criterion The criterion instance
+     */
     public void add(Criterion criterion) {
         if(criterion instanceof Equals) {
             final Equals eq = (Equals) criterion;
@@ -100,10 +115,16 @@ public abstract class Query {
         criteria.add(criterion);
     }
     
+    /**
+     * @return The session that created the query
+     */
     public Session getSession() {
         return session;
     }
 
+    /**
+     * @return The PersistentEntity being query 
+     */
     public PersistentEntity getEntity() {
         return entity;
     }
@@ -208,6 +229,29 @@ public abstract class Query {
 
         criteria.add(Restrictions.eq(property, value));
         return this;
+    }
+    
+    
+    /**
+     * Creates an association query
+     * 
+     * @param associationName The assocation name
+     * @return The Query instance
+     */
+    public AssociationQuery createQuery(String associationName) {
+    	final PersistentProperty property = entity.getPropertyByName(associationName);
+    	if(property != null && (property instanceof Association)) {
+    		Association association = (Association) property;
+    		
+    		final PersistentEntity associatedEntity = association.getAssociatedEntity();
+    		
+    		final AssociationQuery associationQuery = new AssociationQuery(session, associatedEntity, association);
+    		add(associationQuery);
+			return associationQuery;
+    	}
+    	else {
+    		throw new InvalidDataAccessResourceUsageException("Cannot query association ["+associationName+"] of class ["+entity+"]. The specified property is not an association.");
+    	}
     }
 
 
@@ -416,7 +460,7 @@ public abstract class Query {
     /**
      * A criterion is used to restrict the results of a query
      */
-    public static abstract class Criterion {
+    public static abstract interface Criterion {
 
     }
 
@@ -460,7 +504,7 @@ public abstract class Query {
     /**
      * A Criterion that applies to a property
      */
-    public static class PropertyNameCriterion extends Criterion {
+    public static class PropertyNameCriterion implements Criterion {
     	protected String name;
     	
         public PropertyNameCriterion(String name) {
@@ -648,7 +692,7 @@ public abstract class Query {
         }
     }
 
-    public static abstract class Junction extends Criterion {
+    public static abstract class Junction implements Criterion {
         private List<Criterion> criteria = new ArrayList<Criterion>();
 
         public Junction add(Criterion c) {
