@@ -70,7 +70,7 @@ class Setup {
     Session con = riak.connect()
     RiakTemplate riakTmpl = con.nativeInterface
     QosParameters qos = new RiakQosParameters()
-    qos.durableWriteThreshold = "all"
+    qos.durableWriteThreshold = "3"
     riakTmpl.defaultQosParameters = qos
     riakTmpl.useCache = false
     [
@@ -83,7 +83,8 @@ class Setup {
         "grails.gorm.tests.Highway",
         "grails.gorm.tests.Book",
         "grails.gorm.tests.Pet",
-        "grails.gorm.tests.Person"
+        "grails.gorm.tests.Person",
+        "grails.gorm.tests.Task"
     ].each { type ->
       def schema = riakTmpl.getBucketSchema(type, true)
       schema.keys.each { key ->

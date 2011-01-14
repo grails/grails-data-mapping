@@ -22,13 +22,10 @@ import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.keyvalue.riak.core.RiakTemplate
-import org.springframework.data.keyvalue.riak.mapreduce.JavascriptMapReduceOperation
-import org.springframework.data.keyvalue.riak.mapreduce.MapReduceJob
-import org.springframework.data.keyvalue.riak.mapreduce.MapReducePhase
-import org.springframework.data.keyvalue.riak.mapreduce.RiakMapReducePhase
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.query.Query
+import org.springframework.data.keyvalue.riak.mapreduce.*
 
 /**
  * A {@link Query} implementation for the Riak Key/Value store.
@@ -213,7 +210,7 @@ class RiakQuery extends Query {
       reduceJs = jsbuff.toString()
     }
 
-    MapReduceJob mr = riak.createMapReduceJob()
+    MapReduceJob mr = new RiakMapReduceJob(riak)
     JavascriptMapReduceOperation mapOper = new JavascriptMapReduceOperation(mapJs.toString())
     MapReducePhase mapPhase = new RiakMapReducePhase(MapReducePhase.Phase.MAP, "javascript", mapOper)
     mr.addPhase(mapPhase)

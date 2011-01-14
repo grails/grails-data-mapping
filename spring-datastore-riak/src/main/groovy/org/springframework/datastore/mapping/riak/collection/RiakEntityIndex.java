@@ -66,28 +66,37 @@ public class RiakEntityIndex<Long> extends AbstractList implements List, RiakCol
   }
 
   private MapReduceJob createFetchAtJob(int i) {
-    MapReduceJob mapReduceJob = riakTemplate.createMapReduceJob();
+    MapReduceJob mapReduceJob = new RiakMapReduceJob(riakTemplate);
     MapReduceOperation mapJs = new JavascriptMapReduceOperation(
         "function(values){ var row=Riak.mapValuesJson(values); return [row]; }");
-    MapReducePhase mapPhase = new RiakMapReducePhase(MapReducePhase.Phase.MAP, "javascript", mapJs);
+    MapReducePhase mapPhase = new RiakMapReducePhase(MapReducePhase.Phase.MAP,
+        "javascript",
+        mapJs);
     mapReduceJob.addPhase(mapPhase);
     MapReduceOperation reduceJs = new JavascriptMapReduceOperation(String.format(
         "function(values){ return values[%s]; }",
         i));
-    MapReducePhase reducePhase = new RiakMapReducePhase(MapReducePhase.Phase.REDUCE, "javascript", reduceJs);
+    MapReducePhase reducePhase = new RiakMapReducePhase(MapReducePhase.Phase.REDUCE,
+        "javascript",
+        reduceJs);
     mapReduceJob.addPhase(reducePhase);
 
     return mapReduceJob;
   }
 
   private MapReduceJob createCountJob() {
-    MapReduceJob mapReduceJob = riakTemplate.createMapReduceJob();
+    MapReduceJob mapReduceJob = new RiakMapReduceJob(riakTemplate);
     MapReduceOperation mapJs = new JavascriptMapReduceOperation(
         "function(values){ var row=Riak.mapValuesJson(values); return [row]; }");
-    MapReducePhase mapPhase = new RiakMapReducePhase(MapReducePhase.Phase.MAP, "javascript", mapJs);
+    MapReducePhase mapPhase = new RiakMapReducePhase(MapReducePhase.Phase.MAP,
+        "javascript",
+        mapJs);
     mapReduceJob.addPhase(mapPhase);
-    MapReduceOperation reduceJs = new JavascriptMapReduceOperation("function(values){ return values.length; }");
-    MapReducePhase reducePhase = new RiakMapReducePhase(MapReducePhase.Phase.REDUCE, "javascript", reduceJs);
+    MapReduceOperation reduceJs = new JavascriptMapReduceOperation(
+        "function(values){ return values.length; }");
+    MapReducePhase reducePhase = new RiakMapReducePhase(MapReducePhase.Phase.REDUCE,
+        "javascript",
+        reduceJs);
     mapReduceJob.addPhase(reducePhase);
 
     return mapReduceJob;

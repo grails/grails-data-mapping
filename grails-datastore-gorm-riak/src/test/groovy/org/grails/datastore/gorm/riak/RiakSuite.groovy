@@ -1,11 +1,11 @@
 package org.grails.datastore.gorm.riak
 
-import grails.gorm.tests.*
+import grails.gorm.tests.CriteriaBuilderSpec
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 import org.junit.runners.Suite.SuiteClasses
 
-/**
+ /**
  * @author J. Brisbin <jon@jbrisbin.com>
  */
 @RunWith(Suite)
