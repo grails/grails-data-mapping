@@ -163,8 +163,10 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                     }
                 }
                 else if (embedded.contains(propertyName)) {
-                    // TODO: Implement mapping of embedded types
-//                    establishDomainClassRelationship(descriptor, entity, context);
+                	ToOne association = propertyFactory.createEmbedded(entity, context, descriptor);
+                	PersistentEntity associatedEntity = getOrCreateAssociatedEntity(context, association.getType());
+                	association.setAssociatedEntity(associatedEntity);
+                	persistentProperties.add(association);
                 }
                 // otherwise if the type is a domain class establish relationship
                 else if (isPersistentEntity(currentPropType)) {

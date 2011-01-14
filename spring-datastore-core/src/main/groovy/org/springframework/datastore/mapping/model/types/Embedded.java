@@ -25,7 +25,7 @@ import java.beans.PropertyDescriptor;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class Embedded<T> extends Association<T> {
+public abstract class Embedded<T> extends ToOne<T> {
 
     public Embedded(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
@@ -35,5 +35,9 @@ public abstract class Embedded<T> extends Association<T> {
         super(owner, context, name, type);
     }
 
+    @Override
+    public boolean isOwningSide() {
+    	return true; // embedded instances are always owned
+    }
     
 }

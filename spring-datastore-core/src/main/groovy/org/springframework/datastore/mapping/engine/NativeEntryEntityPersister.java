@@ -14,6 +14,18 @@
  */
 package org.springframework.datastore.mapping.engine;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.mapping.collection.PersistentList;
@@ -28,17 +40,17 @@ import org.springframework.datastore.mapping.core.impl.PendingOperationAdapter;
 import org.springframework.datastore.mapping.core.impl.PendingOperationExecution;
 import org.springframework.datastore.mapping.core.impl.PendingUpdate;
 import org.springframework.datastore.mapping.core.impl.PendingUpdateAdapter;
-import org.springframework.datastore.mapping.model.*;
+import org.springframework.datastore.mapping.model.ClassMapping;
+import org.springframework.datastore.mapping.model.MappingContext;
+import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.model.PropertyMapping;
 import org.springframework.datastore.mapping.model.types.Association;
+import org.springframework.datastore.mapping.model.types.Embedded;
 import org.springframework.datastore.mapping.model.types.OneToMany;
 import org.springframework.datastore.mapping.model.types.Simple;
 import org.springframework.datastore.mapping.model.types.ToOne;
 import org.springframework.datastore.mapping.proxy.ProxyFactory;
-
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
-import java.io.Serializable;
-import java.util.*;
 
 /**
  *
@@ -238,25 +250,38 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
                 ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propKey) );
             }
             else if(prop instanceof ToOne) {
-                Serializable tmp = (Serializable) getEntryValue(nativeEntry, propKey);
-                if(tmp != null && !prop.getType().isInstance(tmp)) {
-                    PersistentEntity associatedEntity = prop.getOwner();
-                    final Serializable associationKey = (Serializable) getMappingContext().getConversionService().convert(tmp, associatedEntity.getIdentity().getType());
-                    if(associationKey != null) {
+            	if(prop instanceof Embedded) {
+            		Embedded embedded = (Embedded) prop;
+            		T embbeddedEntry = getEmbbeded(nativeEntry, propKey);
+            		
+            		if(embbeddedEntry != null) {
+                		Object embeddedInstance = embedded.getAssociatedEntity().newInstance();
+                		EntityAccess embeddedAccess = createEntityAccess(embedded.getAssociatedEntity(), embeddedInstance);
+                		refreshObjectStateFromNativeEntry(embedded.getAssociatedEntity(), embeddedInstance, null, embbeddedEntry);
+                		ea.setProperty(propKey, embeddedInstance);
+            		}
+            	}
+            	else {
+                    Serializable tmp = (Serializable) getEntryValue(nativeEntry, propKey);
+                    if(tmp != null && !prop.getType().isInstance(tmp)) {
+                        PersistentEntity associatedEntity = prop.getOwner();
+                        final Serializable associationKey = (Serializable) getMappingContext().getConversionService().convert(tmp, associatedEntity.getIdentity().getType());
+                        if(associationKey != null) {
 
-                        PropertyMapping<Property> associationPropertyMapping = prop.getMapping();
-                        boolean isLazy = isLazyAssociation(associationPropertyMapping);
+                            PropertyMapping<Property> associationPropertyMapping = prop.getMapping();
+                            boolean isLazy = isLazyAssociation(associationPropertyMapping);
 
-                        final Class propType = prop.getType();
-                        if(isLazy) {
-                            Object proxy = getProxyFactory().createProxy(session, propType, associationKey);
-                            ea.setProperty(prop.getName(), proxy);
+                            final Class propType = prop.getType();
+                            if(isLazy) {
+                                Object proxy = getProxyFactory().createProxy(session, propType, associationKey);
+                                ea.setProperty(prop.getName(), proxy);
+                            }
+                            else {
+                                ea.setProperty(prop.getName(), session.retrieve(propType, associationKey));
+                            }
                         }
-                        else {
-                            ea.setProperty(prop.getName(), session.retrieve(propType, associationKey));
-                        }
-                    }
-                }
+                    }            		
+            	}
             }
             else if(prop instanceof OneToMany) {
                 Association association = (Association) prop;
@@ -284,7 +309,18 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
         }
     }
 
-    protected String getNativePropertyKey(PersistentProperty prop) {
+    /**
+     * Implementors should override to provide support for embedded objets
+     * 
+     * @param nativeEntry The native entry to read the embedded instance from
+     * @param key The key
+     * @return The native entry of the embedded instance
+     */
+    protected T getEmbbeded(T nativeEntry, String key) {
+		return null;
+	}
+
+	protected String getNativePropertyKey(PersistentProperty prop) {
         PropertyMapping<Property> pm = prop.getMapping();
         String propKey = null;
         if(pm.getMappedForm()!=null) {
@@ -409,7 +445,26 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
             }
             else if(prop instanceof ToOne) {
                 ToOne association = (ToOne) prop;
-                if(association.doesCascade(CascadeType.PERSIST)) {
+                if(prop instanceof Embedded) {
+                	// For embedded properties simply set the entry value, the underlying implementation
+                	// will have to store the embedded entity in an appropriate way (as a sub-document in a document store for example)
+                	
+                	Object embeddedInstance = entityAccess.getProperty(prop.getName());
+                	if(embeddedInstance != null) {
+                		NativeEntryEntityPersister<T,K> embeddedPersister = (NativeEntryEntityPersister<T,K>) session.getPersister(embeddedInstance);
+                		T embeddedEntry = embeddedPersister.createNewEntry(embeddedPersister.getEntityFamily());
+                		
+                		final PersistentEntity associatedEntity = association.getAssociatedEntity();
+                		final List<PersistentProperty> embeddedProperties = associatedEntity.getPersistentProperties();
+                		final EntityAccess embeddedEntityAccess = createEntityAccess(associatedEntity, embeddedInstance);
+                		for (PersistentProperty persistentProperty : embeddedProperties) {
+							setEntryValue(embeddedEntry, persistentProperty.getName(), embeddedEntityAccess.getProperty(persistentProperty.getName()));
+						}
+                		
+                		setEmbedded(e, key, embeddedEntry );
+                	}
+                }
+                else if(association.doesCascade(CascadeType.PERSIST)) {
 
                     if(!association.isForeignKeyInChild()) {
 
@@ -525,6 +580,17 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
     }
 
     /**
+     * Implementors should override this method to provide support for embedded objects
+     * 
+     * @param nativeEntry The native entry
+     * @param key The key
+     * @param value The embedded object
+     */
+    protected void setEmbedded(T nativeEntry, String key, T embeddedEntry) {
+    	// do nothing. The default is not support for embedded instances
+    }
+
+	/**
      * Subclasses should override to provide id generation. If an identifier is only generated via an insert operation then this
      * method should return null
      * 

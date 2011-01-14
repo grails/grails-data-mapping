@@ -180,6 +180,14 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
     }
     nativeEntry[key] = value
   }
+  
+  protected void setEmbedded(Map nativeEntry, String key, Map values) {
+  	nativeEntry[key] = values		  
+  }
+  
+  protected Map getEmbbeded( Map nativeEntry, String key) {
+  	nativeEntry[key]
+  }
 
   protected Map retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
     def entry = datastore[family].get(key)

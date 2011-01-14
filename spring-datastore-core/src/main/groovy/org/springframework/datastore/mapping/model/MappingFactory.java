@@ -166,6 +166,14 @@ public abstract class MappingFactory<R,T> {
         };
     }
 
+    /**
+     * Creates a one-to-one association type used for mapping a one-to-one association between entities
+     * 
+     * @param entity The entity
+     * @param context The context
+     * @param property The property
+     * @return The ToOne instance
+     */
     public ToOne createOneToOne(PersistentEntity entity, MappingContext context, PropertyDescriptor property) {
         return new OneToOne<T>(entity, context, property) {
             public PropertyMapping getMapping() {
@@ -174,6 +182,14 @@ public abstract class MappingFactory<R,T> {
         };
     }
 
+    /**
+     * Creates a many-to-one association type used for a mapping a many-to-one association between entities
+     * 
+     * @param entity The entity
+     * @param context The context
+     * @param property The property
+     * @return The ToOne instance
+     */
     public ToOne createManyToOne(PersistentEntity entity, MappingContext context, PropertyDescriptor property) {
         return new ManyToOne<T>(entity, context, property) {
             public PropertyMapping getMapping() {
@@ -183,6 +199,14 @@ public abstract class MappingFactory<R,T> {
 
     }
 
+    /**
+     * Creates a {@link OneToMany} type used to model a one-to-many association between entities
+     * 
+     * @param entity The entity
+     * @param context The context
+     * @param property The property
+     * @return The {@link OneToMany} instance
+     */
     public OneToMany createOneToMany(PersistentEntity entity, MappingContext context, PropertyDescriptor property) {
         return new OneToMany<T>(entity, context, property) {
             public PropertyMapping getMapping() {
@@ -192,6 +216,14 @@ public abstract class MappingFactory<R,T> {
 
     }
 
+    /**
+     * Creates a {@link ManyToMany} type used to model a many-to-many association between entities
+     * 
+     * @param entity The entity
+     * @param context The context
+     * @param property The property
+     * @return The {@link ManyToMany} instance
+     */
     public ManyToMany createManyToMany(PersistentEntity entity, MappingContext context, PropertyDescriptor property) {
         return new ManyToMany<T>(entity, context, property) {
             public PropertyMapping getMapping() {
@@ -199,5 +231,22 @@ public abstract class MappingFactory<R,T> {
             }
         };
     }
+
+    /**
+     * Creates an {@link Embedded} type used to model an embedded association (composition)
+     * 
+     * @param entity The entity
+     * @param context The context
+     * @param property The property
+     * @return The {@link Embedded} instance
+     */
+	public Embedded createEmbedded(PersistentEntity entity,
+			MappingContext context, PropertyDescriptor property) {
+        return new Embedded<T>(entity, context, property) {
+            public PropertyMapping getMapping() {
+                return createPropertyMapping(this, owner);
+            }
+        };
+	}
 }
 
