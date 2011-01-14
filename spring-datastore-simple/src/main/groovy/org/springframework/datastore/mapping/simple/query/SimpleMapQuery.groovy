@@ -52,7 +52,7 @@ class SimpleMapQuery extends Query{
     def results = []
     def entityMap = [:]
     if(criteria.isEmpty()) {
-      populateQueryResult(datastore[family].keySet(), entityMap)
+      populateQueryResult(datastore[family].keySet().toList(), entityMap)
     }
     else {
       def criteriaList = criteria.getCriteria()
@@ -105,7 +105,12 @@ class SimpleMapQuery extends Query{
             PersistentProperty prop = entity.getPropertyByName(p.propertyName)
             if(prop) {
               if(prop instanceof ToOne) {
-                propertyValues = propertyValues.collect { session.retrieve(prop.type, it)}
+                propertyValues = propertyValues.collect {
+					if(prop.associatedEntity.isInstance(it))
+						return it
+					else 
+						session.retrieve(prop.type, it)
+				}
               }
               if(projectionCount == 1)
                 results.addAll(propertyValues)
@@ -277,7 +282,7 @@ class SimpleMapQuery extends Query{
             result.addAll(indexed.value)
           }
 
-          return result
+          return result.toList()
 
         },
         (Query.In): { Query.In inList, PersistentProperty property ->
