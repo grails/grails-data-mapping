@@ -24,7 +24,6 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.PersistenceExceptionTranslator;
-import org.springframework.data.document.mongodb.MongoDbUtils;
 import org.springframework.datastore.mapping.model.DatastoreConfigurationException;
 import org.springframework.util.Assert;
 
@@ -39,8 +38,8 @@ import com.mongodb.ServerAddress;
  * @author Graeme Rocher
  *
  */
-public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean, 
-	PersistenceExceptionTranslator {
+public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/*, 
+	PersistenceExceptionTranslator*/ {
 
 	
 
@@ -127,9 +126,9 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean,
 		mongo.setMongo(mongoInstance);
 	}
 	
-	public DataAccessException translateExceptionIfPossible(RuntimeException ex) {
-		logger.debug("Translating " + ex);
-		return MongoDbUtils.translateMongoExceptionIfPossible(ex);
-	}
+//	public DataAccessException translateExceptionIfPossible(RuntimeException ex) {
+//		logger.debug("Translating " + ex);
+//		return MongoDbUtils.translateMongoExceptionIfPossible(ex);
+//	}
 
 }
