@@ -16,6 +16,7 @@ package org.grails.datastore.gorm.finders;
 
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.query.Query.Criterion;
+import org.springframework.datastore.mapping.query.Query.IsEmpty;
 import org.springframework.datastore.mapping.query.Query.IsNull;
 import org.springframework.datastore.mapping.query.Restrictions;
 import org.springframework.util.StringUtils;
@@ -84,7 +85,13 @@ public abstract class MethodExpression {
         }        
         else if(expression.endsWith(IsNotNull.class.getSimpleName())) {
             return new IsNotNull(clazz, calcPropertyName(expression, IsNotNull.class.getSimpleName()));
+        } 
+        else if(expression.endsWith(IsEmpty.class.getSimpleName())) {
+            return new IsEmpty(clazz, calcPropertyName(expression, IsEmpty.class.getSimpleName()));
         }        
+        else if(expression.endsWith(IsNotEmpty.class.getSimpleName())) {
+            return new IsNotEmpty(clazz, calcPropertyName(expression, IsNotEmpty.class.getSimpleName()));
+        }            
 
 
         return new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()));  
@@ -212,7 +219,6 @@ public abstract class MethodExpression {
     }
     
     public static class IsNull extends MethodExpression {
-
 		protected IsNull(Class<?> targetClass, String propertyName) {
 			super(targetClass, propertyName);
 		}
@@ -242,6 +248,39 @@ public abstract class MethodExpression {
 		@Override
 		public Criterion createCriterion() {
 			return Restrictions.isNotNull(propertyName);
+		}    	
+    }
+
+    public static class IsEmpty extends MethodExpression {
+		protected IsEmpty(Class<?> targetClass, String propertyName) {
+			super(targetClass, propertyName);
+		}
+
+		@Override
+		public int getArgumentsRequired() {
+			return 0;
+		}
+		
+		@Override
+		public Criterion createCriterion() {
+			return Restrictions.isEmpty(propertyName);
+		}    	
+    }
+    
+    public static class IsNotEmpty extends MethodExpression {
+
+		protected IsNotEmpty(Class<?> targetClass, String propertyName) {
+			super(targetClass, propertyName);
+		}
+
+		@Override
+		public int getArgumentsRequired() {
+			return 0;
+		}
+		
+		@Override
+		public Criterion createCriterion() {
+			return Restrictions.isNotEmpty(propertyName);
 		}    	
     }
     
