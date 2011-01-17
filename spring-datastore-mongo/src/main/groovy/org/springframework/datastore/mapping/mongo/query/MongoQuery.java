@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
-import org.springframework.data.document.mongodb.DBCallback;
+import org.springframework.data.document.mongodb.DbCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
@@ -307,7 +307,7 @@ public class MongoQuery extends Query{
     protected List executeQuery(final PersistentEntity entity, final Junction criteria) {
         final MongoTemplate template = mongoSession.getMongoTemplate(entity);
 
-		return template.execute(new DBCallback<List>() {
+		return template.execute(new DbCallback<List>() {
 			@Override
 			public List doInDB(DB db) throws MongoException,
 					DataAccessException {

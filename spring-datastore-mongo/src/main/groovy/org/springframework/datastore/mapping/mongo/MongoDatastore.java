@@ -25,10 +25,9 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.document.DocumentStoreConnectionCallback;
-import org.springframework.data.document.mongodb.DBCallback;
-import org.springframework.data.document.mongodb.MongoTemplate;
+import org.springframework.data.document.mongodb.DbCallback;
 import org.springframework.data.document.mongodb.MongoFactoryBean;
+import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.document.config.DocumentMappingContext;
@@ -39,10 +38,10 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.mongo.config.MongoCollection;
 import org.springframework.datastore.mapping.mongo.config.MongoMappingContext;
-import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.mongodb.DBCallback;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
@@ -201,13 +200,13 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 		
 		if(username != null && password != null) {
 			mt.setUsername(username);
-			mt.setPassword(password.toCharArray());
+			mt.setPassword(password);
 		}
 		
 		if(mongoCollection != null) {	
 			final WriteConcern writeConcern = mongoCollection.getWriteConcern();
 			if(writeConcern != null) {
-				mt.executeInSession(new DBCallback<Object>() {
+				mt.executeInSession(new DbCallback<Object>() {
 					@Override
 					public Object doInDB(DB db) throws MongoException,
 							DataAccessException {
@@ -240,7 +239,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * @param template The template
      */
     protected void initializeIndices(final PersistentEntity entity, final MongoTemplate template) {
-        template.execute(new DBCallback<Object>() {
+        template.execute(new DbCallback<Object>() {
             public Object doInDB(DB db) throws MongoException, DataAccessException {
                 final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
 

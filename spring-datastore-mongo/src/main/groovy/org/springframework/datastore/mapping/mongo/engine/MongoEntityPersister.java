@@ -30,7 +30,7 @@ import java.util.TimeZone;
 
 import org.bson.types.ObjectId;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.document.mongodb.DBCallback;
+import org.springframework.data.document.mongodb.DbCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister;
@@ -124,7 +124,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     @Override
 	protected void deleteEntry(String family, final Object key) {
-		mongoTemplate.execute(new DBCallback<Object>() {
+		mongoTemplate.execute(new DbCallback<Object>() {
 			@Override
 			public Object doInDB(DB con) throws MongoException,
 					DataAccessException {
@@ -152,7 +152,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 	@Override
 	protected Object generateIdentifier(final PersistentEntity persistentEntity,
 			final DBObject nativeEntry) {
-		return mongoTemplate.execute(new DBCallback<Object>() {
+		return mongoTemplate.execute(new DbCallback<Object>() {
 			@Override
 			public Object doInDB(DB con) throws MongoException,
 					DataAccessException {
@@ -280,7 +280,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     @Override
 	protected DBObject retrieveEntry(final PersistentEntity persistentEntity,
 			String family, final Serializable key) {
-		return mongoTemplate.execute(new DBCallback<DBObject>() {
+		return mongoTemplate.execute(new DbCallback<DBObject>() {
 			@Override
 			public DBObject doInDB(DB con) throws MongoException,
 					DataAccessException {
@@ -309,7 +309,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 	@Override
 	protected Object storeEntry(final PersistentEntity persistentEntity,
 			final Object storeId, final DBObject nativeEntry) {
-		return mongoTemplate.execute(new DBCallback<Object>() {
+		return mongoTemplate.execute(new DbCallback<Object>() {
 			@Override
 			public Object doInDB(DB con) throws MongoException,
 					DataAccessException {
@@ -347,7 +347,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     @Override
 	public void updateEntry(final PersistentEntity persistentEntity, final Object key,
 			final DBObject entry) {
-		mongoTemplate.execute(new DBCallback<Object>() {
+		mongoTemplate.execute(new DbCallback<Object>() {
 			@Override
 			public Object doInDB(DB con) throws MongoException,
 					DataAccessException {
@@ -369,7 +369,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
 	@Override
 	protected void deleteEntries(String family, final List<Object> keys) {
-		mongoTemplate.execute(new DBCallback<Object>() {
+		mongoTemplate.execute(new DbCallback<Object>() {
 			@Override
 			public Object doInDB(DB con) throws MongoException,
 					DataAccessException {
@@ -406,7 +406,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         	// embedded in the owning entity, otherwise we use a foreign key
         	if(!association.isBidirectional()) {
                 nativeEntry.put(association.getName(), foreignKeys);
-    			mongoTemplate.execute(new DBCallback<Object>() {
+    			mongoTemplate.execute(new DbCallback<Object>() {
     				@Override
     				public Object doInDB(DB db) throws MongoException,
     						DataAccessException {

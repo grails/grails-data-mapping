@@ -20,16 +20,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.MongoException;
-import com.mongodb.WriteConcern;
-
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.document.mongodb.DBCallback;
+import org.springframework.data.document.mongodb.DbCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
-import org.springframework.data.document.DocumentStoreConnectionCallback;
 import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.core.impl.PendingInsert;
@@ -41,10 +34,14 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.springframework.datastore.mapping.mongo.query.MongoQuery;
-import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.transactions.SessionOnlyTransaction;
 import org.springframework.datastore.mapping.transactions.Transaction;
-import org.springframework.transaction.TransactionSystemException;
+
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcern;
 
 /**
  * A {@link Session} implementation for the Mongo document store
@@ -128,7 +125,7 @@ public class MongoSession extends AbstractSession<DB> {
 		// Optimizes saving multipe entities at once		
 		for (final PersistentEntity entity : inserts.keySet()) {
 			final MongoTemplate template = getMongoTemplate(entity.isRoot() ? entity : entity.getRootEntity());
-			template.execute(new DBCallback<Object>() {
+			template.execute(new DbCallback<Object>() {
 				@Override
 				public Object doInDB(DB db) throws MongoException,
 						DataAccessException {
