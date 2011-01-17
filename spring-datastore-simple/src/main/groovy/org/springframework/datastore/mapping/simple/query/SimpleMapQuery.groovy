@@ -163,12 +163,22 @@ class SimpleMapQuery extends Query{
 			queryAssociation(allEntities, association ) {
 				it[eq.property] == eq.value
 			}
-		},  
+		}, 
+		(Query.IsNull): { allEntities, Association association, Query.IsNull eq ->
+			queryAssociation(allEntities, association ) {
+				it[eq.property] == null
+			}
+		},
 		(Query.NotEquals): { allEntities, Association association, Query.NotEquals eq ->
 			queryAssociation(allEntities, association ) {
 				it[eq.property] != eq.value
 			}
 		},  
+		(Query.IsNotNull): { allEntities, Association association, Query.IsNotNull eq ->
+			queryAssociation(allEntities, association ) {
+				it[eq.property] != null
+			}
+		},
 		(Query.IdEquals): { allEntities, Association association, Query.IdEquals eq ->
 			queryAssociation(allEntities, association ) {
 				it[eq.property] == eq.value
@@ -256,6 +266,10 @@ class SimpleMapQuery extends Query{
           def indexer = entityPersister.getPropertyIndexer(property)
           return indexer.query(equals.value)
         },
+		(Query.IsNull): { Query.IsNull equals, PersistentProperty property ->
+			def indexer = entityPersister.getPropertyIndexer(property)
+			return indexer.query(null)
+		},
 		(Query.IdEquals): { Query.IdEquals equals, PersistentProperty property ->
 			def indexer = entityPersister.getPropertyIndexer(property)
 			return indexer.query(equals.value)
@@ -266,6 +280,12 @@ class SimpleMapQuery extends Query{
           ArrayList allIds = negateResults(indexed)
           return allIds
         },
+		(Query.IsNotNull): { Query.IsNotNull equals, PersistentProperty property ->
+			def indexer = entityPersister.getPropertyIndexer(property)
+			def indexed = indexer.query(null)
+			ArrayList allIds = negateResults(indexed)
+			return allIds
+		},
         (Query.Like): { Query.Like like, PersistentProperty property ->
           def indexer = entityPersister.getPropertyIndexer(property)
 
@@ -329,7 +349,6 @@ class SimpleMapQuery extends Query{
 
           allEntities.findAll { it.value[name] <= value }.collect { it.key }
         }
-
 
 
   ]

@@ -15,6 +15,8 @@
 package org.grails.datastore.gorm.finders;
 
 import org.springframework.datastore.mapping.query.Query;
+import org.springframework.datastore.mapping.query.Query.Criterion;
+import org.springframework.datastore.mapping.query.Query.IsNull;
 import org.springframework.datastore.mapping.query.Restrictions;
 import org.springframework.util.StringUtils;
 
@@ -77,6 +79,12 @@ public abstract class MethodExpression {
         else if(expression.endsWith(LessThanEquals.class.getSimpleName())) {
             return new LessThanEquals(clazz, calcPropertyName(expression, LessThanEquals.class.getSimpleName()));
         }
+        else if(expression.endsWith(IsNull.class.getSimpleName())) {
+            return new IsNull(clazz, calcPropertyName(expression, IsNull.class.getSimpleName()));
+        }        
+        else if(expression.endsWith(IsNotNull.class.getSimpleName())) {
+            return new IsNotNull(clazz, calcPropertyName(expression, IsNotNull.class.getSimpleName()));
+        }        
 
 
         return new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()));  
@@ -202,6 +210,41 @@ public abstract class MethodExpression {
             super.setArguments(arguments);
         }
     }
+    
+    public static class IsNull extends MethodExpression {
+
+		protected IsNull(Class<?> targetClass, String propertyName) {
+			super(targetClass, propertyName);
+		}
+
+		@Override
+		public int getArgumentsRequired() {
+			return 0;
+		}
+		
+		@Override
+		public Criterion createCriterion() {
+			return Restrictions.isNull(propertyName);
+		}    	
+    }
+    
+    public static class IsNotNull extends MethodExpression {
+
+		protected IsNotNull(Class<?> targetClass, String propertyName) {
+			super(targetClass, propertyName);
+		}
+
+		@Override
+		public int getArgumentsRequired() {
+			return 0;
+		}
+		
+		@Override
+		public Criterion createCriterion() {
+			return Restrictions.isNotNull(propertyName);
+		}    	
+    }
+    
     public static class Equal extends MethodExpression {
         protected Equal(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
