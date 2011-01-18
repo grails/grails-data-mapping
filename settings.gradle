@@ -2,7 +2,7 @@
 include "spring-datastore-core",
         "spring-datastore-gemfire",
         "spring-datastore-mongo",
-/*        "spring-datastore-appengine",*/
+        "spring-datastore-jpa",
         "spring-datastore-redis",
         "spring-datastore-riak",
         "spring-datastore-simple",
