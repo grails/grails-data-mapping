@@ -16,7 +16,7 @@ import org.codehaus.groovy.transform.GroovyASTTransformationClass;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@GroovyASTTransformationClass("org.springframework.datastore.mapping.config.GormToJpaTransform")
+@GroovyASTTransformationClass("org.springframework.datastore.mapping.jpa.config.GormToJpaTransform")
 public @interface JpaEntity {
 
 }

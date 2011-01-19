@@ -106,8 +106,13 @@ public abstract class MappingFactory<R,T> {
         if (propType.isArray()) {
             return isSimpleType(propType.getComponentType());
         }
-        return SIMPLE_TYPES.contains(propType.getName());
+        final String typeName = propType.getName();
+		return isSimpleType(typeName);
     }
+
+	public static boolean isSimpleType(final String typeName) {
+		return SIMPLE_TYPES.contains(typeName);
+	}
 
     /**
      * Creates the mapped form of a persistent entity

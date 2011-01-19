@@ -1,5 +1,6 @@
 package org.springframework.datastore.mapping.config
 
+import javax.persistence.Basic 
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -8,6 +9,7 @@ import javax.persistence.ManyToMany
 import javax.persistence.ManyToOne 
 import javax.persistence.OneToMany 
 import javax.persistence.OneToOne 
+import javax.persistence.Temporal 
 import javax.persistence.Transient 
 
 import org.springframework.datastore.mapping.jpa.config.JpaEntity;
@@ -32,9 +34,26 @@ class JpaTransformTest extends GroovyTestCase{
 		
 		assert ageField != null
 		
+		
 		def ageAnn = ageField.getAnnotation(Transient)
 		
 		assert ageAnn != null
+		
+		def nameField = Simple.getDeclaredField("name")
+		
+		assert nameField != null
+		
+		def nameAnn = nameField.getAnnotation(Basic)
+		
+		assert nameAnn != null
+		
+		def dateCreatedField = Simple.getDeclaredField("dateCreated")
+		
+		assert dateCreatedField != null
+		
+		def dateCreatedAnn = dateCreatedField.getAnnotation(Temporal)
+		
+		assert dateCreatedAnn != null
 		
 				
 		def addressField = Simple.class.getDeclaredField("address")
@@ -139,6 +158,8 @@ class Simple {
 	String name
 	Integer age
 	Address address
+	Date dateCreated
+	
 	static transients = ['age']
 	static embedded = ["address"]
 }
