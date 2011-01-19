@@ -42,6 +42,7 @@ public class ClassPropertyFetcher {
 	private final ReferenceInstanceCallback callback;
 	private PropertyDescriptor[] propertyDescriptors;
     private Map<String, PropertyDescriptor> propertyDescriptorsByName = new HashMap<String, PropertyDescriptor>();
+    private Map<String, Field> fieldsByName = new HashMap<String, Field>();
     private Map<Class, List<PropertyDescriptor>> typeToPropertyMap = new HashMap<Class, List<PropertyDescriptor>>();
 
 	private static Map<Class, ClassPropertyFetcher> cachedClassPropertyFetchers = new WeakHashMap<Class, ClassPropertyFetcher>();
@@ -171,21 +172,26 @@ public class ClassPropertyFetcher {
         if (field.isSynthetic())
             return;
         final int modifiers = field.getModifiers();
-        if (!Modifier.isPublic(modifiers))
-            return;
-
         final String name = field.getName();
-
-        if (name.indexOf('$') == -1) {
-            boolean staticField = Modifier.isStatic(modifiers);
-            if (staticField) {
-                staticFetchers.put(name, new FieldReaderFetcher(field,
-                        staticField));
-            } else {
-                instanceFetchers.put(name, new FieldReaderFetcher(
-                        field, staticField));
-            }
+        if (!Modifier.isPublic(modifiers)) {
+        	if (name.indexOf('$') == -1) {
+        		fieldsByName.put(name, field);
+        	}        	
         }
+        else {
+
+            if (name.indexOf('$') == -1) {
+                boolean staticField = Modifier.isStatic(modifiers);
+                if (staticField) {
+                    staticFetchers.put(name, new FieldReaderFetcher(field,
+                            staticField));
+                } else {
+                    instanceFetchers.put(name, new FieldReaderFetcher(
+                            field, staticField));
+                }
+            }        	
+        }
+            
     }
 
     private List<Class> resolveAllClasses(Class c) {
@@ -348,5 +354,9 @@ public class ClassPropertyFetcher {
 		public Class getPropertyType(String name) {
 			return field.getType();
 		}
+	}
+
+	public Field getDeclaredField(String name) {
+		return fieldsByName.get(name);
 	}
 }

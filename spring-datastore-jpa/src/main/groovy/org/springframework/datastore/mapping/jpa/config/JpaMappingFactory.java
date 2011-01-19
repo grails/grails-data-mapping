@@ -1,0 +1,46 @@
+/* Copyright (C) 2011 SpringSource
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.springframework.datastore.mapping.jpa.config;
+
+import javax.persistence.Column;
+import javax.persistence.Table;
+
+import org.springframework.datastore.mapping.model.MappingFactory;
+import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.model.PersistentProperty;
+
+/**
+ * MappingFactory for JPA that maps entities to {@link Table} instances and properties to {@link Column} instances
+ * 
+ * @author Graeme Rocher
+ * @since 1.0
+ *
+ */
+public class JpaMappingFactory extends MappingFactory<Table, Column>{
+
+	@Override
+	public Table createMappedForm(PersistentEntity entity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Column createMappedForm(PersistentProperty mpp) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}
