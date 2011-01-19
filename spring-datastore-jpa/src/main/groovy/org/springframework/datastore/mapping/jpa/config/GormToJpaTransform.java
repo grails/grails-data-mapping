@@ -1,4 +1,4 @@
-package org.springframework.datastore.mapping.config;
+package org.springframework.datastore.mapping.jpa.config;
 
 import java.util.ArrayList;
 import java.util.Collection;

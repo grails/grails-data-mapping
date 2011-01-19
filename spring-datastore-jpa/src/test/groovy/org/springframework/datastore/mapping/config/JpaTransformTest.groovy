@@ -10,6 +10,8 @@ import javax.persistence.OneToMany
 import javax.persistence.OneToOne 
 import javax.persistence.Transient 
 
+import org.springframework.datastore.mapping.jpa.config.JpaEntity;
+
 class JpaTransformTest extends GroovyTestCase{
 
 	void testSimpleAnnotatedEntity() {
