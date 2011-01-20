@@ -11,6 +11,13 @@ import javax.persistence.ManyToMany
 import javax.persistence.ManyToOne 
 import javax.persistence.OneToMany 
 import javax.persistence.OneToOne 
+import javax.persistence.PostLoad 
+import javax.persistence.PostPersist 
+import javax.persistence.PostRemove 
+import javax.persistence.PostUpdate 
+import javax.persistence.PrePersist;
+import javax.persistence.PreRemove 
+import javax.persistence.PreUpdate 
 import javax.persistence.Temporal 
 import javax.persistence.Transient 
 
@@ -156,6 +163,43 @@ class JpaTransformTest extends GroovyTestCase{
 		assert peopleAnn.targetEntity() == Person.class
 
 	}
+	
+	void testJpaEventMethods() {
+		def beforeInsert = Simple.class.getDeclaredMethod("beforeInsert", null)
+		
+		assert beforeInsert != null
+		assert beforeInsert.getAnnotation(PrePersist) != null
+		
+		def afterInsert = Simple.class.getDeclaredMethod("afterInsert", null)
+		
+		assert afterInsert != null
+		assert afterInsert.getAnnotation(PostPersist) != null
+		
+		def afterLoad = Simple.class.getDeclaredMethod("afterLoad", null)
+		
+		assert afterLoad != null
+		assert afterLoad.getAnnotation(PostLoad) != null
+		
+		def beforeUpdate = Simple.class.getDeclaredMethod("beforeUpdate", null)
+		
+		assert beforeUpdate != null
+		assert beforeUpdate.getAnnotation(PreUpdate) != null
+		
+		def afterUpdate = Simple.class.getDeclaredMethod("afterUpdate", null)
+		
+		assert afterUpdate != null
+		assert afterUpdate.getAnnotation(PostUpdate) != null
+		
+		def beforeDelete = Simple.class.getDeclaredMethod("beforeDelete", null)
+		
+		assert beforeDelete != null
+		assert beforeDelete.getAnnotation(PreRemove) != null
+		
+		def afterDelete = Simple.class.getDeclaredMethod("afterDelete", null)
+		
+		assert afterDelete != null
+		assert afterDelete.getAnnotation(PostRemove) != null
+	}
 }
 @JpaEntity
 class Simple {
@@ -169,6 +213,34 @@ class Simple {
 	
 	static transients = ['age']
 	static embedded = ["address"]
+	
+	def beforeInsert() {
+		
+	}
+	
+	def afterInsert() {
+		
+	}
+	
+	def afterLoad() {
+		
+	}
+	
+	def beforeUpdate() {
+		
+	}
+	
+	def afterUpdate() {
+		
+	}
+	
+	def beforeDelete() {
+		
+	}
+	
+	def afterDelete() {
+		
+	}
 }
 @JpaEntity
 class Address {}

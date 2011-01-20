@@ -27,12 +27,18 @@ import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PostLoad;
+import javax.persistence.PostPersist;
+import javax.persistence.PostRemove;
+import javax.persistence.PostUpdate;
+import javax.persistence.PrePersist;
+import javax.persistence.PreRemove;
+import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 import javax.persistence.Version;
@@ -42,6 +48,7 @@ import org.codehaus.groovy.ast.AnnotatedNode;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.FieldNode;
+import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.PropertyNode;
 import org.codehaus.groovy.ast.expr.ClassExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
@@ -80,6 +87,19 @@ public class GormToJpaTransform implements ASTTransformation{
     
 	private static final ClassNode MY_TYPE = new ClassNode(JpaEntity.class);
     private static final String MY_TYPE_NAME = "@" + MY_TYPE.getNameWithoutPackage();
+    
+    private static final Map<String, AnnotationNode> gormEventMethodToJpaAnnotation = new HashMap<String, AnnotationNode>() {
+    	{
+    		put("beforeInsert", new AnnotationNode(new ClassNode(PrePersist.class)));
+    		put("afterInsert", new AnnotationNode(new ClassNode(PostPersist.class)));
+    		put("beforeUpdate", new AnnotationNode(new ClassNode(PreUpdate.class)));
+    		put("afterUpdate", new AnnotationNode(new ClassNode(PostUpdate.class)));
+    		put("beforeDelete", new AnnotationNode(new ClassNode(PreRemove.class)));
+    		put("afterDelete", new AnnotationNode(new ClassNode(PostRemove.class)));
+    		put("onSave", new AnnotationNode(new ClassNode(PrePersist.class)));
+    		put("afterLoad", new AnnotationNode(new ClassNode(PostLoad.class)));
+    	}
+    };
 
 	@Override
 	public void visit(ASTNode[] astNodes, SourceUnit source) {
@@ -108,6 +128,7 @@ public class GormToJpaTransform implements ASTTransformation{
 		}
 	}
 
+	
 	public static void transformEntity(SourceUnit source, ClassNode classNode) {
 		
 		// add the JPA @Entity annotation
@@ -129,6 +150,16 @@ public class GormToJpaTransform implements ASTTransformation{
 		PropertyNode versionProperty = classNode.getProperty(GrailsDomainClassProperty.VERSION);
 		if(versionProperty != null) {
 			versionProperty.addAnnotation(ANNOTATION_VERSION);
+		}
+		
+		final List<MethodNode> methods = classNode.getMethods();
+		for (MethodNode methodNode : methods) {
+			if(!methodNode.isStatic() && methodNode.isPublic() && !methodNode.isAbstract()) {
+				final AnnotationNode annotationNode = gormEventMethodToJpaAnnotation.get(methodNode.getName());
+				if(annotationNode != null) {
+					methodNode.addAnnotation(annotationNode);
+				}				
+			}
 		}
 		
 		final List<PropertyNode> properties = classNode.getProperties();
