@@ -90,7 +90,9 @@ public class JpaSession implements Session {
 
 	@Override
 	public void disconnect() {
-		jpaTemplate.getEntityManager().close();
+		final EntityManager entityManager = jpaTemplate.getEntityManager();
+		if(entityManager != null)
+			entityManager.close();
 	}
 
 	@Override
