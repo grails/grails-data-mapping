@@ -26,6 +26,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceException;
 
+import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.core.Session;
@@ -39,6 +40,9 @@ import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.transactions.Transaction;
 import org.springframework.orm.jpa.JpaCallback;
 import org.springframework.orm.jpa.JpaTemplate;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 /**
  * Wraps a JPA EntityManager in the Datastore Session interface
@@ -51,10 +55,14 @@ public class JpaSession implements Session {
 
 	private JpaDatastore datastore;
 	private JpaTemplate jpaTemplate;
+	private JpaTransactionManager transactionManager;
 
-	public JpaSession(JpaDatastore datastore, JpaTemplate jpaTemplate) {
+	public JpaSession(JpaDatastore datastore, JpaTemplate jpaTemplate, JpaTransactionManager transactionManager) {
 		this.jpaTemplate = jpaTemplate;
 		this.datastore = datastore;
+		this.transactionManager = transactionManager;
+		setFlushMode(FlushModeType.AUTO);
+		
 	}
 	
 	public JpaTemplate getJpaTemplate() {
@@ -97,8 +105,8 @@ public class JpaSession implements Session {
 
 	@Override
 	public Transaction beginTransaction() {
-		
-		return null;
+		final TransactionStatus transaction = transactionManager.getTransaction(new DefaultTransactionDefinition());
+		return new JpaTransaction(transactionManager, transaction);
 	}
 
 	@Override
@@ -163,12 +171,24 @@ public class JpaSession implements Session {
 
 	@Override
 	public void setFlushMode(FlushModeType flushMode) {
-		jpaTemplate.getEntityManager().setFlushMode(flushMode);
+		if(flushMode == FlushModeType.AUTO) {
+			jpaTemplate.setFlushEager(true);
+		}
+		else {
+			jpaTemplate.setFlushEager(false);
+		}
 	}
 
 	@Override
 	public FlushModeType getFlushMode() {
-		return jpaTemplate.getEntityManager().getFlushMode();
+		return jpaTemplate.execute(new JpaCallback<FlushModeType>() {
+
+			@Override
+			public FlushModeType doInJpa(EntityManager em)
+					throws PersistenceException {
+				return em.getFlushMode();
+			}
+		});
 	}
 
 	@Override
@@ -209,7 +229,13 @@ public class JpaSession implements Session {
 
 	@Override
 	public <T> T retrieve(Class<T> type, Serializable key) {
-		return jpaTemplate.find(type, key);
+		final PersistentEntity persistentEntity = getPersistentEntity(type);
+		if(persistentEntity != null) {
+			final ConversionService conversionService = getMappingContext().getConversionService();
+			final Object id = conversionService.convert(key, persistentEntity.getIdentity().getType());			
+			return jpaTemplate.find(type, id);
+		}
+		return null;
 	}
 
 	@Override

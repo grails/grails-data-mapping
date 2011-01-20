@@ -18,6 +18,7 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.datastore.mapping.model.ClassMapping;
+import org.springframework.datastore.mapping.model.IdentityMapping;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.util.ReflectionUtils;
 
@@ -68,7 +69,12 @@ public class EntityAccess {
 
     public Object getIdentifier() {
         String idName = getIdentifierName(persistentEntity.getMapping());
-        return getProperty(idName);
+        if(idName != null) {        	
+        	return getProperty(idName);
+        }
+        else {
+        	return getProperty(persistentEntity.getIdentity().getName());
+        }
 
     }
 
@@ -78,7 +84,11 @@ public class EntityAccess {
     }
 
     protected String getIdentifierName(ClassMapping cm) {
-        return cm.getIdentifier().getIdentifierName()[0];
+        final IdentityMapping identifier = cm.getIdentifier();
+        if(identifier != null && identifier.getIdentifierName() != null) {        	
+        	return identifier.getIdentifierName()[0];
+        }
+        return null;
     }
 
     public String getIdentifierName() {

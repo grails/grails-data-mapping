@@ -24,6 +24,7 @@ import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.orm.jpa.JpaTemplate;
+import org.springframework.orm.jpa.JpaTransactionManager;
 
 /**
  * Wraps a JPA EntityManagerFactory in the Datastore Abstraction
@@ -35,20 +36,23 @@ import org.springframework.orm.jpa.JpaTemplate;
 public class JpaDatastore extends AbstractDatastore{
 	
 	private EntityManagerFactory entityManagerFactory;
+	private JpaTransactionManager transactionManager;
 
 	
 	
 	public JpaDatastore(MappingContext mappingContext,
-			EntityManagerFactory entityManagerFactory) {
+			EntityManagerFactory entityManagerFactory,
+			JpaTransactionManager transactionManager) {
 		super(mappingContext);
 		this.entityManagerFactory = entityManagerFactory;
+		this.transactionManager = transactionManager;
+		initializeConverters(mappingContext);
+		
 	}
-
-
 
 	@Override
 	protected Session createSession(Map<String, String> connectionDetails) {			
-		return new JpaSession(this,new JpaTemplate(entityManagerFactory));
+		return new JpaSession(this,new JpaTemplate(entityManagerFactory), transactionManager);
 	}
 
 }
