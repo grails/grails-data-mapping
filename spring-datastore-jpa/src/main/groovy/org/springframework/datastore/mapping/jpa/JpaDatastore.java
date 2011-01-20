@@ -23,6 +23,7 @@ import javax.persistence.EntityManagerFactory;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.model.MappingContext;
+import org.springframework.orm.jpa.JpaTemplate;
 
 /**
  * Wraps a JPA EntityManagerFactory in the Datastore Abstraction
@@ -46,8 +47,8 @@ public class JpaDatastore extends AbstractDatastore{
 
 
 	@Override
-	protected Session createSession(Map<String, String> connectionDetails) {		
-		return new JpaSession(this,entityManagerFactory.createEntityManager());
+	protected Session createSession(Map<String, String> connectionDetails) {			
+		return new JpaSession(this,new JpaTemplate(entityManagerFactory));
 	}
 
 }

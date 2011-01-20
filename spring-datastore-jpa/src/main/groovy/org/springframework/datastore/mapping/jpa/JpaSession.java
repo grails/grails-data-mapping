@@ -1,5 +1,3 @@
-package org.springframework.datastore.mapping.jpa;
-
 /* Copyright (C) 2011 SpringSource
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,21 +13,32 @@ package org.springframework.datastore.mapping.jpa;
 * limitations under the License.
 */
 
+package org.springframework.datastore.mapping.jpa;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
+import javax.persistence.PersistenceException;
 
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.EntityInterceptor;
 import org.springframework.datastore.mapping.engine.Persister;
+import org.springframework.datastore.mapping.jpa.query.JpaQuery;
 import org.springframework.datastore.mapping.model.MappingContext;
+import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.transactions.Transaction;
+import org.springframework.orm.jpa.JpaCallback;
+import org.springframework.orm.jpa.JpaTemplate;
 
 /**
  * Wraps a JPA EntityManager in the Datastore Session interface
@@ -40,23 +49,26 @@ import org.springframework.datastore.mapping.transactions.Transaction;
  */
 public class JpaSession implements Session {
 
-	private EntityManager entityManager;
 	private JpaDatastore datastore;
+	private JpaTemplate jpaTemplate;
 
-	public JpaSession(JpaDatastore datastore, EntityManager entityManager) {
-		this.entityManager = entityManager;
+	public JpaSession(JpaDatastore datastore, JpaTemplate jpaTemplate) {
+		this.jpaTemplate = jpaTemplate;
 		this.datastore = datastore;
+	}
+	
+	public JpaTemplate getJpaTemplate() {
+		return jpaTemplate;
 	}
 
 	@Override
 	public void setEntityInterceptors(List<EntityInterceptor> interceptors) {
-		throw new UnsupportedOperationException("Datastore interceptors not supported, use JPA interceptors via annotations");
-
+		// noop
 	}
 
 	@Override
 	public void addEntityInterceptor(EntityInterceptor interceptor) {
-		throw new UnsupportedOperationException("Datastore interceptors not supported, use JPA interceptors via annotations");
+		// noop
 	}
 
 	@Override
@@ -73,16 +85,17 @@ public class JpaSession implements Session {
 
 	@Override
 	public boolean isConnected() {
-		return entityManager.isOpen();
+		return jpaTemplate.getEntityManager().isOpen();
 	}
 
 	@Override
 	public void disconnect() {
-		entityManager.close();
+		jpaTemplate.getEntityManager().close();
 	}
 
 	@Override
 	public Transaction beginTransaction() {
+		
 		return null;
 	}
 
@@ -93,28 +106,47 @@ public class JpaSession implements Session {
 
 	@Override
 	public Serializable persist(Object o) {
-		entityManager.persist(o);
-		return null;
+		if(o != null) {			
+			final PersistentEntity persistentEntity = getMappingContext().getPersistentEntity(o.getClass().getName());
+			if(persistentEntity == null) throw new InvalidDataAccessApiUsageException("Object of class ["+o.getClass()+"] is not a persistent entity");
+				
+			jpaTemplate.persist(o);
+			return (Serializable) new EntityAccess(persistentEntity, o).getIdentifier();
+		}
+		else {
+			throw new InvalidDataAccessApiUsageException("Object to persist cannot be null");
+		}
 	}
 
 	@Override
 	public void refresh(Object o) {
-		entityManager.refresh(o);
+		if(o != null)
+			jpaTemplate.refresh(o);
 	}
 
 	@Override
 	public void attach(Object o) {
-		entityManager.merge(o);
+		if(o != null) {			
+			jpaTemplate.merge(o);
+		}
 	}
 
 	@Override
 	public void flush() {
-		entityManager.flush();
+		jpaTemplate.flush();
 	}
 
 	@Override
 	public void clear() {
-		entityManager.clear();
+		jpaTemplate.execute(new JpaCallback<Object>() {
+
+			@Override
+			public Object doInJpa(EntityManager em)
+					throws PersistenceException {
+				em.clear();
+				return null;
+			}
+		});
 	}
 
 	@Override
@@ -124,22 +156,30 @@ public class JpaSession implements Session {
 
 	@Override
 	public boolean contains(Object o) {
-		return entityManager.contains(o);
+		return jpaTemplate.contains(o);
 	}
 
 	@Override
 	public void setFlushMode(FlushModeType flushMode) {
-		entityManager.setFlushMode(flushMode);
+		jpaTemplate.getEntityManager().setFlushMode(flushMode);
 	}
 
 	@Override
 	public FlushModeType getFlushMode() {
-		return entityManager.getFlushMode();
+		return jpaTemplate.getEntityManager().getFlushMode();
 	}
 
 	@Override
-	public void lock(Object o) {
-		entityManager.lock(o, LockModeType.WRITE);
+	public void lock(final Object o) {
+		jpaTemplate.execute(new JpaCallback<Object>() {
+
+			@Override
+			public Object doInJpa(EntityManager em)
+					throws PersistenceException {
+				em.lock(o, LockModeType.WRITE);
+				return null;
+			}
+		});
 	}
 
 	@Override
@@ -149,21 +189,30 @@ public class JpaSession implements Session {
 	}
 
 	@Override
-	public List<Serializable> persist(Iterable objects) {
-		for (Object object : objects) {
-			entityManager.persist(object);
-		}
-		return null;
+	public List<Serializable> persist(final Iterable objects) {
+		return jpaTemplate.execute(new JpaCallback<List<Serializable>>() {
+
+			@Override
+			public List<Serializable> doInJpa(EntityManager em)
+					throws PersistenceException {
+				List<Serializable> identifiers = new ArrayList<Serializable>();
+				for (Object object : objects) {
+					identifiers.add(persist(object));
+				}
+				return identifiers;
+			}
+		});
+		
 	}
 
 	@Override
 	public <T> T retrieve(Class<T> type, Serializable key) {
-		return entityManager.find(type, key);
+		return jpaTemplate.find(type, key);
 	}
 
 	@Override
 	public <T> T proxy(Class<T> type, Serializable key) {
-		return entityManager.getReference(type, key);
+		return jpaTemplate.getReference(type, key);
 	}
 
 	@Override
@@ -176,42 +225,68 @@ public class JpaSession implements Session {
 	@Override
 	public void delete(Iterable objects) {
 		for (Object object : objects) {
-			entityManager.remove(object);
+			jpaTemplate.remove(object);
 		}
 	}
 
 	@Override
 	public void delete(Object obj) {
-		entityManager.remove(obj);
+		jpaTemplate.remove(obj);
 	}
 
 	@Override
 	public List retrieveAll(Class type, Iterable keys) {
-		return null;
+		if(keys instanceof List) {
+			return retrieveAll(getPersistentEntity(type), (List)keys);
+		}
+		else {
+			List identifierList = new ArrayList();
+			for (Object key : keys) {
+				identifierList.add(key);
+			}
+			return retrieveAll(getPersistentEntity(type), identifierList);
+		}
+	}
+
+	public PersistentEntity getPersistentEntity(Class type) {
+		return getMappingContext().getPersistentEntity(type.getName());
 	}
 
 	@Override
 	public List retrieveAll(Class type, Serializable... keys) {
-		// TODO Auto-generated method stub
-		return null;
+		if(type != null) {			
+			final PersistentEntity persistentEntity = getPersistentEntity(type);			
+			if(persistentEntity != null) {				
+				final List<Serializable> identifiers = Arrays.asList(keys);
+				return retrieveAll(persistentEntity, identifiers);
+			}
+		}
+		return Collections.emptyList();
+	}
+
+	public List retrieveAll(final PersistentEntity persistentEntity,
+			final List<Serializable> identifiers) {
+		return createQuery(persistentEntity.getJavaClass())
+				.in(	persistentEntity
+							.getIdentity()
+							.getName(), 
+							identifiers)
+				.list();
 	}
 
 	@Override
 	public Query createQuery(Class type) {
-		// TODO Auto-generated method stub
-		return null;
+		return new JpaQuery(this, getPersistentEntity(type));
 	}
 
 	@Override
 	public Object getNativeInterface() {
-		// TODO Auto-generated method stub
-		return null;
+		return jpaTemplate;
 	}
 
 	@Override
 	public Persister getPersister(Object o) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Method getPersister not supported");
 	}
 
 	@Override
@@ -222,8 +297,7 @@ public class JpaSession implements Session {
 
 	@Override
 	public Datastore getDatastore() {
-		// TODO Auto-generated method stub
-		return null;
+		return datastore;
 	}
 
 }

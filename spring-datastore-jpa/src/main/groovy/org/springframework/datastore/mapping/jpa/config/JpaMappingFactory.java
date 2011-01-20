@@ -15,6 +15,9 @@
 
 package org.springframework.datastore.mapping.jpa.config;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+
 import javax.persistence.Column;
 import javax.persistence.Table;
 
@@ -33,14 +36,23 @@ public class JpaMappingFactory extends MappingFactory<Table, Column>{
 
 	@Override
 	public Table createMappedForm(PersistentEntity entity) {
-		// TODO Auto-generated method stub
-		return null;
+		final Class javaClass = entity.getJavaClass();
+		
+		final Annotation annotation = javaClass.getAnnotation(Table.class);
+		return (Table) annotation;
 	}
 
 	@Override
 	public Column createMappedForm(PersistentProperty mpp) {
-		// TODO Auto-generated method stub
-		return null;
+		Field field;
+		try {
+			field = mpp.getOwner().getJavaClass().getDeclaredField(mpp.getName());
+			return field.getAnnotation(Column.class);
+		} catch (SecurityException e) {
+			return null;
+		} catch (NoSuchFieldException e) {
+			return null;
+		}		
 	}
 
 }
