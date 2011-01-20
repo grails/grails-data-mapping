@@ -17,14 +17,14 @@ class JpaMappingConfigurationSpec extends Specification{
 			def configStrategy = new JpaMappingConfigurationStrategy()
 		
 		then:
-			configStrategy.isPersistentEntity(JpaEntity.class) == true
+			configStrategy.isPersistentEntity(JpaDomain.class) == true
 			configStrategy.isPersistentEntity(JpaMappingConfigurationSpec) == false
 	}
 	
 	void "Test persistent properties are valid"() {
 		when:
 			def configStrategy = new JpaMappingConfigurationStrategy(new JpaMappingFactory())
-			def properties = configStrategy.getPersistentProperties(JpaEntity, new JpaMappingContext()).sort { it.name }
+			def properties = configStrategy.getPersistentProperties(JpaDomain, new JpaMappingContext()).sort { it.name }
 	
 		then:
 			properties.size() == 3
@@ -39,7 +39,7 @@ class JpaMappingConfigurationSpec extends Specification{
 
 }
 @org.springframework.datastore.mapping.jpa.config.JpaEntity
-class JpaEntity {
+class JpaDomain {
 	Long id
 	
 	String name

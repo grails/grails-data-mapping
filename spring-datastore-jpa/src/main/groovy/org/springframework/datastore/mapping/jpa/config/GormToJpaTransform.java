@@ -100,7 +100,12 @@ public class GormToJpaTransform implements ASTTransformation{
                     MY_TYPE_NAME + " not allowed for interfaces.");
         }
 
-        transformEntity(source, cNode);
+        try {
+			transformEntity(source, cNode);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("WARNING: Error occured transfoming GORM entity to JPA entity: " + e.getMessage());
+		}
 	}
 
 	public static void transformEntity(SourceUnit source, ClassNode classNode) {
@@ -111,8 +116,8 @@ public class GormToJpaTransform implements ASTTransformation{
 		// annotate the id property with @Id
 		PropertyNode idProperty = classNode.getProperty(GrailsDomainClassProperty.IDENTITY);
 		
-		final FieldNode idField = idProperty.getField();
 		if(idProperty != null) {
+			final FieldNode idField = idProperty.getField();
 			
 			idField.addAnnotation(ANNOTATION_ID);
 			final AnnotationNode generatedValueAnnotation = new AnnotationNode(new ClassNode(GeneratedValue.class));
