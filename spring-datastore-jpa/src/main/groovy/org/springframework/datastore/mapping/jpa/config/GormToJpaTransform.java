@@ -123,7 +123,7 @@ public class GormToJpaTransform implements ASTTransformation{
 		// annotate the version property with @Version
 		PropertyNode versionProperty = classNode.getProperty(GrailsDomainClassProperty.VERSION);
 		if(versionProperty != null) {
-			idField.addAnnotation(ANNOTATION_VERSION);
+			versionProperty.addAnnotation(ANNOTATION_VERSION);
 		}
 		
 		final List<PropertyNode> properties = classNode.getProperties();
