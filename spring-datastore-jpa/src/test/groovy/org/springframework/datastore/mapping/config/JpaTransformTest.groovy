@@ -4,6 +4,8 @@ import javax.persistence.Basic
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id 
 import javax.persistence.ManyToMany 
 import javax.persistence.ManyToOne 
@@ -29,6 +31,11 @@ class JpaTransformTest extends GroovyTestCase{
 		def idAnn = idField.getAnnotation(Id.class)
 		
 		assert idAnn != null
+		
+		GeneratedValue genAnn = idField.getAnnotation(GeneratedValue.class)
+		
+		assert genAnn != null
+		assert genAnn.strategy() == GenerationType.AUTO
 		
 		def ageField = Simple.getDeclaredField("age")
 		

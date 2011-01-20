@@ -26,6 +26,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -39,6 +41,7 @@ import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.AnnotatedNode;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
+import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.PropertyNode;
 import org.codehaus.groovy.ast.expr.ClassExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
@@ -64,12 +67,13 @@ import org.springframework.datastore.mapping.model.MappingFactory;
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
 public class GormToJpaTransform implements ASTTransformation{
 
-    private static final AnnotationNode ANNOTATION_TEMPORAL = new AnnotationNode(new ClassNode(Temporal.class));
+	private static final AnnotationNode ANNOTATION_TEMPORAL = new AnnotationNode(new ClassNode(Temporal.class));
 	private static final AnnotationNode ANNOTATION_MANY_TO_ONE = new AnnotationNode(new ClassNode(ManyToOne.class));
 	private static final AnnotationNode ANNOTATION_VERSION = new AnnotationNode(new ClassNode(Version.class));
 	private static final AnnotationNode ANNOTATION_ID = new AnnotationNode(new ClassNode(Id.class));
 	private static final AnnotationNode ANNOTATION_ENTITY = new AnnotationNode(new ClassNode(Entity.class));
 	private static final AnnotationNode ANNOTATION_BASIC = new AnnotationNode(new ClassNode(Basic.class));
+	
 	
 	private static final PropertyExpression EXPR_CASCADE_ALL = new PropertyExpression(new ClassExpression(new ClassNode(CascadeType.class)), "ALL");
     private static final PropertyExpression EXPR_CASCADE_PERSIST = new PropertyExpression(new ClassExpression(new ClassNode(CascadeType.class)), "PERSIST");
@@ -107,14 +111,19 @@ public class GormToJpaTransform implements ASTTransformation{
 		// annotate the id property with @Id
 		PropertyNode idProperty = classNode.getProperty(GrailsDomainClassProperty.IDENTITY);
 		
+		final FieldNode idField = idProperty.getField();
 		if(idProperty != null) {
-			idProperty.getField().addAnnotation(ANNOTATION_ID);
+			
+			idField.addAnnotation(ANNOTATION_ID);
+			final AnnotationNode generatedValueAnnotation = new AnnotationNode(new ClassNode(GeneratedValue.class));
+			
+			idField.addAnnotation(generatedValueAnnotation);
 		}
 		
 		// annotate the version property with @Version
 		PropertyNode versionProperty = classNode.getProperty(GrailsDomainClassProperty.VERSION);
 		if(versionProperty != null) {
-			idProperty.getField().addAnnotation(ANNOTATION_VERSION);
+			idField.addAnnotation(ANNOTATION_VERSION);
 		}
 		
 		final List<PropertyNode> properties = classNode.getProperties();
