@@ -87,6 +87,7 @@ class DomainEventsSpec extends GormDatastoreSpec{
        session.clear()
 
      when:
+	   p = PersonEvent.get(p.id)
        p.delete(flush:true)
 
      then:

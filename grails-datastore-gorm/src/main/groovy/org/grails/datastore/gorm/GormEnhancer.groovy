@@ -21,6 +21,7 @@ import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FindAllByFinder
 import org.grails.datastore.gorm.finders.CountByFinder
 import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.transaction.support.TransactionCallback
 import org.springframework.transaction.TransactionDefinition
@@ -147,6 +148,12 @@ class GormEnhancer {
               transactionTemplate.execute(callable as TransactionCallback)
             }
           }
+		  withNewTransaction { Closure callable ->
+			  if(callable) {
+				def transactionTemplate = new TransactionTemplate(tm, new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW))
+				transactionTemplate.execute(callable as TransactionCallback)
+			  }
+  		  }
           withTransaction { TransactionDefinition definition, Closure callable ->
             if(callable) {
               def transactionTemplate = new TransactionTemplate(tm, definition)

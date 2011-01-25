@@ -17,6 +17,7 @@ package org.springframework.datastore.mapping.query;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.EntityPersister;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
@@ -112,6 +113,7 @@ public abstract class Query {
             final Equals eq = (Equals) criterion;
             eq.setValue(resolveIdIfEntity(eq.getValue()));
         }
+        
         criteria.add(criterion);
     }
     
@@ -272,7 +274,19 @@ public abstract class Query {
         // use the object id as the value if its a persistent entity
         if(session.getMappingContext().isPersistentEntity(value)) {
            EntityPersister ep = (EntityPersister) session.getPersister(value);
-           value = ep.getObjectIdentifier(value);
+           if(ep != null) {        	   
+        	   value = ep.getObjectIdentifier(value);
+           }
+           else {
+        	   new EntityAccess(session
+        			   			.getMappingContext()
+        			   			.getPersistentEntity(
+        			   					value
+        			   						.getClass()
+        			   						.getName()), 
+        			   					value)
+        	   					.getIdentifier();
+           }
         }
         return value;
     }
@@ -700,10 +714,18 @@ public abstract class Query {
                 if(c instanceof Equals) {
                     final Equals eq = (Equals) c;
                     Object value = eq.getValue();
-                    Session session = AbstractDatastore.retrieveSession();
-                    if(session.getMappingContext().isPersistentEntity(value)) {
-                        EntityPersister ep = (EntityPersister) session.getPersister(value);
-                        c = new Equals(eq.getProperty(), ep.getObjectIdentifier(value));
+                    
+                    if(value != null) {
+                    	
+                    	Session session = AbstractDatastore.retrieveSession();
+                    	final PersistentEntity persistentEntity = session.getMappingContext().getPersistentEntity(value.getClass().getName());
+                    	if(persistentEntity != null) {
+                    		EntityPersister ep = (EntityPersister) session.getPersister(value);
+                    		
+                    		if(ep != null) {                    		
+                    			c = new Equals(eq.getProperty(), ep.getObjectIdentifier(value));
+                    		}
+                    	}
                     }
                 }
                 criteria.add(c);

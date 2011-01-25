@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -44,6 +46,8 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+
+
 /**
  * Wraps a JPA EntityManager in the Datastore Session interface
  * 
@@ -56,6 +60,8 @@ public class JpaSession implements Session {
 	private JpaDatastore datastore;
 	private JpaTemplate jpaTemplate;
 	private JpaTransactionManager transactionManager;
+	private Map<Object, Map<String, Object>> entityAttributes = new ConcurrentHashMap<Object, Map<String, Object>>();
+	private List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
 
 	public JpaSession(JpaDatastore datastore, JpaTemplate jpaTemplate, JpaTransactionManager transactionManager) {
 		this.jpaTemplate = jpaTemplate;
@@ -68,26 +74,37 @@ public class JpaSession implements Session {
 	public JpaTemplate getJpaTemplate() {
 		return jpaTemplate;
 	}
+	
+	public List<EntityInterceptor> getInterceptors() {
+		return interceptors;
+	}
 
 	@Override
 	public void setEntityInterceptors(List<EntityInterceptor> interceptors) {
-		// noop
+		this.interceptors  = interceptors;
 	}
 
 	@Override
 	public void addEntityInterceptor(EntityInterceptor interceptor) {
-		// noop
+		interceptors.add(interceptor);
 	}
 
 	@Override
 	public void setAttribute(Object entity, String attributeName, Object value) {
-		// TODO Auto-generated method stub
-
+		Map<String, Object> map = entityAttributes.get(entity);
+		if(map == null) {
+			map = new ConcurrentHashMap<String, Object>();
+			entityAttributes.put(entity, map);
+		}
+		map.put(attributeName, value);
 	}
 
 	@Override
 	public Object getAttribute(Object entity, String attributeName) {
-		// TODO Auto-generated method stub
+		final Map<String, Object> map = entityAttributes.get(entity);
+		if(map != null) {
+			return map.get(attributeName);
+		}
 		return null;
 	}
 
@@ -98,6 +115,7 @@ public class JpaSession implements Session {
 
 	@Override
 	public void disconnect() {
+		entityAttributes.clear();
 		final EntityManager entityManager = jpaTemplate.getEntityManager();
 		if(entityManager != null)
 			entityManager.close();
@@ -154,6 +172,7 @@ public class JpaSession implements Session {
 			public Object doInJpa(EntityManager em)
 					throws PersistenceException {
 				em.clear();
+				entityAttributes.clear();
 				return null;
 			}
 		});
@@ -314,13 +333,13 @@ public class JpaSession implements Session {
 
 	@Override
 	public Persister getPersister(Object o) {
-		throw new UnsupportedOperationException("Method getPersister not supported");
+		return null;
 	}
 
 	@Override
 	public Transaction getTransaction() {
-		// TODO Auto-generated method stub
-		return null;
+		final TransactionStatus transaction = transactionManager.getTransaction(new DefaultTransactionDefinition());
+		return new JpaTransaction(transactionManager, transaction); 
 	}
 
 	@Override

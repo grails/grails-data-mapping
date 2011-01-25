@@ -24,6 +24,8 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -47,40 +49,178 @@ public class JpaQuery extends Query{
 	public static final String LOGICAL_AND = " AND ";
 	public static final String LOGICAL_OR = " OR ";
 	
-	private static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
+	private static final Log LOG = LogFactory.getLog(org.springframework.datastore.mapping.jpa.query.JpaQuery.class); 
+	private static final Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
 	
+	static public int appendCriteriaForOperator(StringBuilder q,
+			String logicalName, final String name, int position, String operator) {
+		q
+        	.append(logicalName)
+        	.append('.')
+        	.append(name)
+        	.append(operator)
+        	.append('?')
+        	.append(++position);
+		return position;
+	}
     static {
+    	queryHandlers.put(Negation.class, new QueryHandler() {			
+			@Override
+			public int handle(PersistentEntity entity, Criterion criterion,
+					StringBuilder q, String logicalName, int position, List parameters,
+					ConversionService conversionService) {
+				q.append(NOT_CLAUSE)
+				 .append('(');
+				
+				final Negation negation = (Negation)criterion;
+				position = buildWhereClauseForCriterion(entity, negation, q, logicalName, negation.getCriteria(), position, parameters, conversionService);
+				q.append(')');
+				
+				return position;
+			}
+		});
+    	queryHandlers.put(Conjunction.class, new QueryHandler() {			
+			@Override
+			public int handle(PersistentEntity entity, Criterion criterion,
+					StringBuilder q, String logicalName, int position, List parameters,
+					ConversionService conversionService) {
+				q.append('(');
+				
+				final Conjunction conjunction = (Conjunction)criterion;
+				position = buildWhereClauseForCriterion(entity, conjunction, q, logicalName, conjunction.getCriteria(), position, parameters, conversionService);
+				q.append(')');
+				
+				return position;
+			}
+		});
+    	queryHandlers.put(Disjunction.class, new QueryHandler() {			
+			@Override
+			public int handle(PersistentEntity entity, Criterion criterion,
+					StringBuilder q, String logicalName, int position, List parameters,
+					ConversionService conversionService) {
+				q.append('(');
+				
+				final Disjunction disjunction = (Disjunction)criterion;
+				position = buildWhereClauseForCriterion(entity, disjunction, q, logicalName, disjunction.getCriteria(), position, parameters, conversionService);
+				q.append(')');
+				
+				return position;
+			}
+		});
         queryHandlers.put(Equals.class, new QueryHandler() {
             public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, String logicalName, int position, List parameters, ConversionService conversionService) {
                 Equals eq = (Equals) criterion;
                 final String name = eq.getProperty();
                 PersistentProperty prop = validateProperty(entity, name, Equals.class);
                 Class propType = prop.getType();
-                q
-                	.append(logicalName)
-                	.append('.')
-                	.append(name)
-                	.append("=?")
-                	.append(++position);
-                
+                position = appendCriteriaForOperator(q, logicalName, name, position, "=");                
                 parameters.add(conversionService.convert( eq.getValue(), propType ));
                 return position;
-                	
             }
         });
+        queryHandlers.put(IdEquals.class, new QueryHandler() {
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, String logicalName, int position, List parameters, ConversionService conversionService) {
+            	IdEquals eq = (IdEquals) criterion;
+            	PersistentProperty prop = entity.getIdentity();
+                Class propType = prop.getType();
+                position = appendCriteriaForOperator(q, logicalName, prop.getName(), position, "=");                
+                parameters.add(conversionService.convert( eq.getValue(), propType ));
+                return position;
+            }
+        });        
+        queryHandlers.put(NotEquals.class, new QueryHandler() {
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, String logicalName, int position, List parameters, ConversionService conversionService) {
+            	NotEquals eq = (NotEquals) criterion;
+                final String name = eq.getProperty();
+                PersistentProperty prop = validateProperty(entity, name, Equals.class);
+                Class propType = prop.getType();
+                position = appendCriteriaForOperator(q, logicalName, name, position, " != ");                
+                parameters.add(conversionService.convert( eq.getValue(), propType ));
+                return position;
+            }
+        });        
+        queryHandlers.put(GreaterThan.class, new QueryHandler() {
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, String logicalName, int position, List parameters, ConversionService conversionService) {
+            	GreaterThan eq = (GreaterThan) criterion;
+                final String name = eq.getProperty();
+                PersistentProperty prop = validateProperty(entity, name, GreaterThan.class);
+                Class propType = prop.getType();
+                position = appendCriteriaForOperator(q, logicalName, name, position, " > ");                
+                parameters.add(conversionService.convert( eq.getValue(), propType ));
+                return position;
+            }
+        });
+        queryHandlers.put(LessThanEquals.class, new QueryHandler() {
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, String logicalName, int position, List parameters, ConversionService conversionService) {
+            	LessThanEquals eq = (LessThanEquals) criterion;
+                final String name = eq.getProperty();
+                PersistentProperty prop = validateProperty(entity, name, LessThanEquals.class);
+                Class propType = prop.getType();
+                position = appendCriteriaForOperator(q, logicalName, name, position, " <= ");                
+                parameters.add(conversionService.convert( eq.getValue(), propType ));
+                return position;
+            }
+        });  
+        queryHandlers.put(GreaterThanEquals.class, new QueryHandler() {
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, String logicalName, int position, List parameters, ConversionService conversionService) {
+            	GreaterThanEquals eq = (GreaterThanEquals) criterion;
+                final String name = eq.getProperty();
+                PersistentProperty prop = validateProperty(entity, name, GreaterThanEquals.class);
+                Class propType = prop.getType();
+                position = appendCriteriaForOperator(q, logicalName, name, position, " >= ");                
+                parameters.add(conversionService.convert( eq.getValue(), propType ));
+                return position;
+            }
+        });  
+        queryHandlers.put(Between.class, new QueryHandler() {
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, String logicalName, int position, List parameters, ConversionService conversionService) {
+            	Between between = (Between) criterion;
+            	final Object from = between.getFrom();
+            	final Object to = between.getTo();
+            	
+                final String name = between.getProperty();
+                PersistentProperty prop = validateProperty(entity, name, Between.class);
+                Class propType = prop.getType();
+        		final String qualifiedName = logicalName + '.' + name;
+				q
+        		.append('(')
+            	.append(qualifiedName)
+            	.append(" >= ")
+            	.append('?')
+            	.append(++position)
+            	.append(" AND ")
+            	.append(qualifiedName)
+            	.append(" <= ")
+            	.append('?')
+            	.append(++position)
+            	.append(')');
+            	
+        		
+        		
+                parameters.add(conversionService.convert( from, propType ));
+                parameters.add(conversionService.convert( to, propType ));
+                return position;
+            }
+        });         
+        queryHandlers.put(LessThan.class, new QueryHandler() {
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, String logicalName, int position, List parameters, ConversionService conversionService) {
+            	LessThan eq = (LessThan) criterion;
+                final String name = eq.getProperty();
+                PersistentProperty prop = validateProperty(entity, name, LessThan.class);
+                Class propType = prop.getType();
+                position = appendCriteriaForOperator(q, logicalName, name, position, " < ");                
+                parameters.add(conversionService.convert( eq.getValue(), propType ));
+                return position;
+            }
+        });  
+                
         queryHandlers.put(Like.class, new QueryHandler() {
             public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, String logicalName, int position, List parameters, ConversionService conversionService) {
             	Like eq = (Like) criterion;
                 final String name = eq.getProperty();
                 PersistentProperty prop = validateProperty(entity, name, Like.class);
                 Class propType = prop.getType();
-                q
-                	.append(logicalName)
-                	.append('.')
-                	.append(name)
-                	.append(" like ?")
-                	.append(++position);
-                
+                position = appendCriteriaForOperator(q, logicalName, name, position, " like ");                
                 parameters.add(conversionService.convert( eq.getValue(), propType ));
                 return position;
                 	
@@ -158,13 +298,65 @@ public class JpaQuery extends Query{
 					.append(logicalName);
 				}
 				else {
-					for (Projection projection : projections.getProjectionList()) {
+					for (Iterator i = projections.getProjectionList().iterator(); i
+							.hasNext();) {
+						Projection projection = (Projection) i.next();
 						if(projection instanceof CountProjection) {
 							queryString.append("COUNT(")
 									   .append(logicalName)
 									   .append(')');
 						}
+						else if(projection instanceof IdProjection) {
+							queryString.append(logicalName)
+									   .append('.')
+									   .append(entity.getIdentity().getName());
+						}
+						else if(projection instanceof PropertyProjection) {
+							PropertyProjection pp = (PropertyProjection) projection;
+							if(projection instanceof AvgProjection) {
+								queryString
+								   .append("AVG(")
+								   .append(logicalName)
+								   .append('.')
+								   .append(pp.getPropertyName())
+								   .append(')');
+							}
+							else if(projection instanceof SumProjection) {
+								queryString
+								   .append("SUM(")
+								   .append(logicalName)
+								   .append('.')
+								   .append(pp.getPropertyName())
+								   .append(')');
+							}	
+							else if(projection instanceof MinProjection) {
+								queryString
+								   .append("MIN(")
+								   .append(logicalName)
+								   .append('.')
+								   .append(pp.getPropertyName())
+								   .append(')');
+							}	
+							else if(projection instanceof MaxProjection) {
+								queryString
+								   .append("MAX(")
+								   .append(logicalName)
+								   .append('.')
+								   .append(pp.getPropertyName())
+								   .append(')');
+							}								
+							else {
+								queryString.append(logicalName)
+								   .append('.')
+								   .append(pp.getPropertyName());								
+							}
+						}
+						
+						if(i.hasNext()) {
+							queryString.append(',');
+						}
 					}
+						
 				}
 				queryString
 						.append(" FROM " )
@@ -178,7 +370,12 @@ public class JpaQuery extends Query{
 				}
 				
 				appendOrder(queryString, logicalName);						
-				final javax.persistence.Query q = em.createQuery(queryString.toString());
+				final String queryToString = queryString.toString();
+				
+				if(LOG.isDebugEnabled()) {
+					LOG.debug("Built JPQL to execute: " + queryToString);
+				}
+				final javax.persistence.Query q = em.createQuery(queryToString);
 				
 				if(parameters != null) {
 					for (int i = 0; i < parameters.size(); i++) {
@@ -221,20 +418,28 @@ public class JpaQuery extends Query{
         q.append('(');
         int position = 0;
         List parameters = new ArrayList();
-        for (Iterator<Criterion> iterator = criterionList.iterator(); iterator.hasNext();) {
+        position = buildWhereClauseForCriterion(entity, criteria, q,
+				logicalName, criterionList, position, parameters, getSession().getMappingContext().getConversionService());
+        q.append(')');
+        return parameters;
+    }
+
+	static int buildWhereClauseForCriterion(PersistentEntity entity,
+			Junction criteria, StringBuilder q, String logicalName,
+			final List<Criterion> criterionList, int position, List parameters, ConversionService conversionService) {
+		for (Iterator<Criterion> iterator = criterionList.iterator(); iterator.hasNext();) {
             Criterion criterion = iterator.next();
 
             final String operator = criteria instanceof Conjunction ? LOGICAL_AND : LOGICAL_OR;
             QueryHandler qh = queryHandlers.get(criterion.getClass());
             if(qh != null) {
-            	position = qh.handle(entity,criterion, q, logicalName,position,parameters, getSession().getMappingContext().getConversionService());
+            	position = qh.handle(entity,criterion, q, logicalName,position,parameters, conversionService);
             }
 
             if(iterator.hasNext())
                 q.append(operator);
 
         }
-        q.append(')');
-        return parameters;
-    }	
+		return position;
+	}	
 }

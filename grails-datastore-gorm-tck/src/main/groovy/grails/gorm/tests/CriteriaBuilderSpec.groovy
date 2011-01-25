@@ -194,11 +194,11 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
 
     when:
       def results = criteria.list {
-      projections {
-        max "age"
-        min "age"
-      }
-    }
+	      projections {
+	        max "age"
+	        min "age"
+	      }
+	  }.flatten()
 
     then:
       2 == results.size()

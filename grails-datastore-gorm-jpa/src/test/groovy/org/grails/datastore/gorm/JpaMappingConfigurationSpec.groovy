@@ -1,5 +1,6 @@
-package org.springframework.datastore.mapping.config
+package org.grails.datastore.gorm
 
+import grails.gorm.JpaEntity 
 import javax.persistence.OneToMany 
 import javax.persistence.OneToOne 
 import org.springframework.datastore.mapping.jpa.config.JpaMappingConfigurationStrategy;
@@ -38,7 +39,7 @@ class JpaMappingConfigurationSpec extends Specification{
 	}
 
 }
-@org.springframework.datastore.mapping.jpa.config.JpaEntity
+@JpaEntity
 class JpaDomain {
 	Long id
 	
@@ -51,7 +52,7 @@ class JpaDomain {
 	Set<JpaOther> many
 	
 }
-@org.springframework.datastore.mapping.jpa.config.JpaEntity
+@JpaEntity
 class JpaOther {
 	Long id
 	

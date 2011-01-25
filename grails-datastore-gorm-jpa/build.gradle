@@ -1,0 +1,27 @@
+configurations {
+  grails
+}
+dependencies {
+  grails( "org.grails:grails-core:1.3.+" )
+  grails( "org.grails:grails-bootstrap:1.3.+" ) {
+    transitive = false
+  }  
+  compile project(":grails-datastore-gorm"),
+		  project(":spring-datastore-jpa"),
+		  project(":spring-datastore-core")
+		
+  testCompile 'org.hibernate:hibernate-entitymanager:3.4.0.GA',
+  			  'hsqldb:hsqldb:1.8.0.10'
+  
+  testCompile project(":grails-datastore-gorm-tck")
+}
+jar.appendix = 'gorm-jpa'
+
+sourceSets {
+  main {
+    compileClasspath += configurations.grails
+  }
+  test {
+    compileClasspath += configurations.grails
+  }  
+}

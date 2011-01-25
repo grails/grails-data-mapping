@@ -43,6 +43,7 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.MappingFactory;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.model.types.ToOne;
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher;
 
 /**
@@ -122,8 +123,10 @@ public class JpaMappingConfigurationStrategy implements MappingConfigurationStra
 						identities.put(javaClass, propertyFactory.createIdentity(owner, context, propertyDescriptor));
 					}
 					else if(field.getAnnotation(Embedded.class) != null) {
+						final org.springframework.datastore.mapping.model.types.Embedded embeddedProperty = propertyFactory.createEmbedded(owner, context, propertyDescriptor);
+						embeddedProperty.setAssociatedEntity(getOrCreateAssociatedEntity(context, field.getType()));
 						persistentProperties.add(
-								propertyFactory.createEmbedded(owner, context, propertyDescriptor)
+								embeddedProperty
 						);
 					}
 					else if(field.getAnnotation(OneToOne.class) != null) {
@@ -132,8 +135,10 @@ public class JpaMappingConfigurationStrategy implements MappingConfigurationStra
 						if(one2one.mappedBy() != null && one2one.targetEntity() != null) {
 							owners.add(one2one.targetEntity());
 						}						
+						final ToOne oneToOneProperty = propertyFactory.createOneToOne(owner, context, propertyDescriptor);
+						oneToOneProperty.setAssociatedEntity(getOrCreateAssociatedEntity(context, field.getType()));
 						persistentProperties.add(
-								propertyFactory.createOneToOne(owner, context, propertyDescriptor)
+								oneToOneProperty
 						);
 					}				
 					else if(field.getAnnotation(OneToMany.class) != null) {
@@ -142,8 +147,10 @@ public class JpaMappingConfigurationStrategy implements MappingConfigurationStra
 						if(one2m.mappedBy() != null && one2m.targetEntity() != null) {
 							owners.add(one2m.targetEntity());
 						}						
+						final org.springframework.datastore.mapping.model.types.OneToMany oneToManyProperty = propertyFactory.createOneToMany(owner, context, propertyDescriptor);
+						oneToManyProperty.setAssociatedEntity(getOrCreateAssociatedEntity(context, one2m.targetEntity()));
 						persistentProperties.add(
-								propertyFactory.createOneToMany(owner, context, propertyDescriptor)
+								oneToManyProperty
 						);
 					}				
 					else if(field.getAnnotation(ManyToMany.class) != null) {
@@ -152,13 +159,17 @@ public class JpaMappingConfigurationStrategy implements MappingConfigurationStra
 						if(m2m.mappedBy() != null && m2m.targetEntity() != null) {
 							owners.add(m2m.targetEntity());
 						}
+						final org.springframework.datastore.mapping.model.types.ManyToMany manyToManyProperty = propertyFactory.createManyToMany(owner, context, propertyDescriptor);
+						manyToManyProperty.setAssociatedEntity(getOrCreateAssociatedEntity(context, m2m.targetEntity()));
 						persistentProperties.add(
-								propertyFactory.createManyToMany(owner, context, propertyDescriptor)
+								manyToManyProperty
 						);
 					}				
 					else if(field.getAnnotation(ManyToOne.class) != null) {
+						final ToOne manyToOneProperty = propertyFactory.createManyToOne(owner, context, propertyDescriptor);
+						manyToOneProperty.setAssociatedEntity(getOrCreateAssociatedEntity(context, field.getType()));
 						persistentProperties.add(
-								propertyFactory.createManyToOne(owner, context, propertyDescriptor)
+								manyToOneProperty
 						);
 					}	
 					
@@ -167,6 +178,14 @@ public class JpaMappingConfigurationStrategy implements MappingConfigurationStra
 		}
 	}
 
+    private PersistentEntity getOrCreateAssociatedEntity(MappingContext context, Class propType) {
+        PersistentEntity associatedEntity = context.getPersistentEntity(propType.getName());
+        if(associatedEntity == null) {
+            associatedEntity = context.addPersistentEntity(propType);
+        }
+        return associatedEntity;
+    }
+	
 	@Override
 	public PersistentProperty getIdentity(Class javaClass,
 			MappingContext context) {

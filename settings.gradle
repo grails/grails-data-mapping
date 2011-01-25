@@ -6,6 +6,7 @@ include "spring-datastore-core",
         "spring-datastore-redis",
         "spring-datastore-riak",
         "spring-datastore-simple",
+/*        "spring-datastore-jcr",*/
         "spring-datastore-web",
 /*        "spring-datastore-cassandra",*/
 
@@ -19,6 +20,8 @@ include "spring-datastore-core",
 //        'grails-plugins:riak',
 
 		// GORM Implementations
+        'grails-datastore-gorm-jpa',		
+/*        'grails-datastore-gorm-jcr',		*/
         'grails-datastore-gorm-redis',
         'grails-datastore-gorm-riak',
         'grails-datastore-gorm-mongo',

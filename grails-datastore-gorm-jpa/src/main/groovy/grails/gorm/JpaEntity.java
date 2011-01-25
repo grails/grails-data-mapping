@@ -1,4 +1,4 @@
-package org.springframework.datastore.mapping.jpa.config;
+package grails.gorm;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -16,7 +16,7 @@ import org.codehaus.groovy.transform.GroovyASTTransformationClass;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@GroovyASTTransformationClass("org.springframework.datastore.mapping.jpa.config.GormToJpaTransform")
+@GroovyASTTransformationClass("org.grails.datastore.gorm.jpa.GormToJpaTransform")
 public @interface JpaEntity {
 
 }

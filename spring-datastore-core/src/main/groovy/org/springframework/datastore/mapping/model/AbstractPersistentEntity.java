@@ -72,8 +72,9 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
         }
 
         Class superClass = javaClass.getSuperclass();
-        if (!javaClass.getSuperclass().equals(Object.class) &&
-            !Modifier.isAbstract(javaClass.getSuperclass().getModifiers())) {
+        if (superClass != null &&
+        	!superClass.equals(Object.class) &&
+            !Modifier.isAbstract(superClass.getModifiers())) {
             this.parentEntity = context.addPersistentEntity(superClass);
         }
 

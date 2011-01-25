@@ -18,7 +18,7 @@ class UpdateWithProxyPresentSpec extends GormDatastoreSpec {
       def person = new Person(firstName:"Bob", lastName:"Builder")
       def petType = new PetType(name:"snake")
       def pet = new Pet(name:"Fred", type:petType, owner:person)
-      person.pets << pet
+	  person.addToPets(pet)      
       person.save(flush:true)
       session.clear()
 

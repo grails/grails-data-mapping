@@ -27,7 +27,7 @@ class WithTransactionSpec extends GormDatastoreSpec{
 
   void "Test rollback transaction"() {
     given:
-      TestEntity.withTransaction { status ->
+      TestEntity.withNewTransaction { status ->
         new TestEntity(name:"Bob", age:50, child:new ChildEntity(name:"Bob Child")).save()
         status.setRollbackOnly()
         new TestEntity(name:"Fred", age:45, child:new ChildEntity(name:"Fred Child")).save()
@@ -46,7 +46,7 @@ class WithTransactionSpec extends GormDatastoreSpec{
     given:
 
       try {
-        TestEntity.withTransaction { status ->
+        TestEntity.withNewTransaction { status ->
           new TestEntity(name:"Bob", age:50, child:new ChildEntity(name:"Bob Child")).save()
           throw new RuntimeException("bad")
           new TestEntity(name:"Fred", age:45, child:new ChildEntity(name:"Fred Child")).save()

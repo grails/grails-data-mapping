@@ -1,5 +1,6 @@
-package org.springframework.datastore.mapping.config
+package org.grails.datastore.gorm
 
+import grails.gorm.JpaEntity 
 import javax.persistence.Basic 
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
@@ -21,7 +22,6 @@ import javax.persistence.PreUpdate
 import javax.persistence.Temporal 
 import javax.persistence.Transient 
 
-import org.springframework.datastore.mapping.jpa.config.JpaEntity;
 
 class JpaTransformTest extends GroovyTestCase{
 
@@ -77,6 +77,14 @@ class JpaTransformTest extends GroovyTestCase{
 		def addressAnn = addressField.getAnnotation(Embedded)
 		
 		assert addressAnn != null
+		
+		def personField = Simple.class.getDeclaredField("person")
+		
+		assert personField != null
+		
+		def personAnn = personField.getAnnotation(ManyToOne)
+		
+		assert personAnn != null
 		
 	}
 	
@@ -209,6 +217,7 @@ class Simple {
 	String name
 	Integer age
 	Address address
+	Person person
 	Date dateCreated
 	
 	static transients = ['age']
