@@ -110,7 +110,9 @@ public class JpaSession implements Session {
 
 	@Override
 	public boolean isConnected() {
-		return jpaTemplate.getEntityManager().isOpen();
+		
+		final EntityManager entityManager = jpaTemplate.getEntityManager();
+		return entityManager != null && entityManager.isOpen();
 	}
 
 	@Override

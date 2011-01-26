@@ -49,6 +49,20 @@ public class JpaDatastore extends AbstractDatastore{
 		initializeConverters(mappingContext);
 		
 	}
+	
+	
+
+	public EntityManagerFactory getEntityManagerFactory() {
+		return entityManagerFactory;
+	}
+
+
+
+	public JpaTransactionManager getTransactionManager() {
+		return transactionManager;
+	}
+
+
 
 	@Override
 	protected Session createSession(Map<String, String> connectionDetails) {			

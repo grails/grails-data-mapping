@@ -73,7 +73,7 @@ public class OpenSessionInViewInterceptor implements WebRequestInterceptor {
         }
     }
 
-    private boolean hasSessionBound() {
+    protected boolean hasSessionBound() {
         return TransactionSynchronizationManager.hasResource(getDatastore());
     }
 

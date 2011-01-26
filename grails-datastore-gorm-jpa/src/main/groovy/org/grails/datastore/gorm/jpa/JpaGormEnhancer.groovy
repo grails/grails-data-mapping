@@ -59,6 +59,13 @@ class JpaStaticApi extends GormStaticApi {
 		super(persistentClass, datastore);	
 	}
 	
+	def withEntityManager(Closure callable) {
+		JpaTemplate jpaTemplate = datastore.currentSession.getNativeInterface()
+		jpaTemplate.execute({ EntityManager em ->
+			callable.call( em )
+	   } as JpaCallback)
+	}
+	
 	@Override
 	public Object executeQuery(String query) {
 		doQuery query
