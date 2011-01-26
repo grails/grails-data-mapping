@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm
 
+import org.grails.datastore.gorm.jpa.JpaGormEnhancer 
 import org.hibernate.dialect.HSQLDialect;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.hsqldb.jdbcDriver;
@@ -59,7 +60,7 @@ class Setup {
 					}
 			] as Validator)
 
-		def enhancer = new GormEnhancer(jpaDatastore, txMgr)
+		def enhancer = new JpaGormEnhancer(jpaDatastore, txMgr)
 		enhancer.enhance()
 		
 		jpaDatastore.mappingContext.addMappingContextListener({ e ->
