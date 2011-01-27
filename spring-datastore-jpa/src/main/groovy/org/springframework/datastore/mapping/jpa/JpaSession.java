@@ -62,13 +62,13 @@ public class JpaSession implements Session {
 	private JpaTransactionManager transactionManager;
 	private Map<Object, Map<String, Object>> entityAttributes = new ConcurrentHashMap<Object, Map<String, Object>>();
 	private List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
+	private FlushModeType flushMode;
+	private boolean connected = true;
 
 	public JpaSession(JpaDatastore datastore, JpaTemplate jpaTemplate, JpaTransactionManager transactionManager) {
 		this.jpaTemplate = jpaTemplate;
 		this.datastore = datastore;
 		this.transactionManager = transactionManager;
-		setFlushMode(FlushModeType.AUTO);
-		
 	}
 	
 	public JpaTemplate getJpaTemplate() {
@@ -110,17 +110,14 @@ public class JpaSession implements Session {
 
 	@Override
 	public boolean isConnected() {
-		
-		final EntityManager entityManager = jpaTemplate.getEntityManager();
-		return entityManager != null && entityManager.isOpen();
+		return connected;
 	}
 
 	@Override
 	public void disconnect() {
 		entityAttributes.clear();
-		final EntityManager entityManager = jpaTemplate.getEntityManager();
-		if(entityManager != null)
-			entityManager.close();
+		this.connected = false;
+		// don't handle disconnection, leave up to 
 	}
 
 	@Override
@@ -192,6 +189,7 @@ public class JpaSession implements Session {
 
 	@Override
 	public void setFlushMode(FlushModeType flushMode) {
+		this.flushMode = flushMode;
 		if(flushMode == FlushModeType.AUTO) {
 			jpaTemplate.setFlushEager(true);
 		}
@@ -202,14 +200,7 @@ public class JpaSession implements Session {
 
 	@Override
 	public FlushModeType getFlushMode() {
-		return jpaTemplate.execute(new JpaCallback<FlushModeType>() {
-
-			@Override
-			public FlushModeType doInJpa(EntityManager em)
-					throws PersistenceException {
-				return em.getFlushMode();
-			}
-		});
+		return this.flushMode;
 	}
 
 	@Override
@@ -345,7 +336,7 @@ public class JpaSession implements Session {
 	}
 
 	@Override
-	public Datastore getDatastore() {
+	public JpaDatastore getDatastore() {
 		return datastore;
 	}
 

@@ -27,8 +27,14 @@ import org.springframework.datastore.mapping.core.ConnectionNotFoundException;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.EntityInterceptor;
+import org.springframework.datastore.mapping.jpa.JpaDatastore;
 import org.springframework.datastore.mapping.jpa.JpaSession;
 import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 /**
  * Adapts JPA events to the Datastore abstraction event API
@@ -53,7 +59,8 @@ public class EntityInterceptorInvokingEntityListener {
 						for (EntityInterceptor entityInterceptor : interceptors) {
 							if(!(entityInterceptor instanceof DomainEventInterceptor)) {								
 								if(!entityInterceptor.beforeInsert(entity, entityAccess)) {
-									// TODO Throw an exception here
+									rollbackTransaction(jpaSession);
+									
 									break;
 								}
 							}
@@ -63,6 +70,22 @@ public class EntityInterceptorInvokingEntityListener {
 			}
 		} catch (ConnectionNotFoundException e) {
 			// ignore, shouldn't happen
+		}
+	}
+
+	void rollbackTransaction(JpaSession jpaSession) {
+		final JpaDatastore datastore = jpaSession.getDatastore();
+		final JpaTransactionManager transactionManager = datastore.getTransactionManager();
+		
+		if(transactionManager != null) {
+			TransactionStatus transaction;
+			try {
+				transaction = transactionManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_MANDATORY));
+				transaction.setRollbackOnly();
+			} catch (TransactionException e) {
+				// no transaction present
+			}
+			
 		}
 	}
 	
@@ -80,7 +103,7 @@ public class EntityInterceptorInvokingEntityListener {
 						for (EntityInterceptor entityInterceptor : interceptors) {
 							if(!(entityInterceptor instanceof DomainEventInterceptor)) {
 								if(!entityInterceptor.beforeUpdate(entity, entityAccess)) {
-									// TODO Throw an exception here
+									rollbackTransaction(jpaSession);
 									break;
 								}								
 							}

@@ -17,13 +17,14 @@
 package org.grails.datastore.gorm.jpa.bean.factory
 
 import javax.persistence.EntityManagerFactory 
+import org.grails.datastore.gorm.events.AutoTimestampInterceptor 
+import org.grails.datastore.gorm.events.DomainEventInterceptor 
 import org.springframework.beans.factory.FactoryBean 
 import org.springframework.context.ApplicationContext 
 import org.springframework.context.ApplicationContextAware 
 import org.springframework.datastore.mapping.jpa.JpaDatastore 
 import org.springframework.datastore.mapping.model.MappingContext 
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager 
 
 class JpaDatastoreFactoryBean implements FactoryBean<JpaDatastore>,ApplicationContextAware{
 
@@ -34,7 +35,11 @@ class JpaDatastoreFactoryBean implements FactoryBean<JpaDatastore>,ApplicationCo
 	@Override
 	public JpaDatastore getObject() throws Exception {
 		def transactionManager = applicationContext.getBean(JpaTransactionManager)
-		return new JpaDatastore( mappingContext, entityManagerFactory, transactionManager )
+		def datastore = new JpaDatastore( mappingContext, entityManagerFactory, transactionManager )
+		datastore.addEntityInterceptor(new DomainEventInterceptor())
+		datastore.addEntityInterceptor(new AutoTimestampInterceptor())
+
+		return datastore
 	}
 
 	@Override

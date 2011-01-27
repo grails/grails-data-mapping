@@ -54,7 +54,9 @@ public class OpenSessionInViewInterceptor implements WebRequestInterceptor {
 
             Session session = DatastoreUtils.getSession(datastore, true);
             session.setFlushMode(flushMode);
-            TransactionSynchronizationManager.bindResource(getDatastore(), new SessionHolder(session));            
+            if(!hasSessionBound()) {            	
+            	TransactionSynchronizationManager.bindResource(getDatastore(), new SessionHolder(session));            
+            }
         }
     }
 
@@ -74,7 +76,7 @@ public class OpenSessionInViewInterceptor implements WebRequestInterceptor {
     }
 
     protected boolean hasSessionBound() {
-        return TransactionSynchronizationManager.hasResource(getDatastore());
+        return TransactionSynchronizationManager.getResource(getDatastore()) != null;
     }
 
     public void afterCompletion(WebRequest webRequest, Exception e) throws Exception {

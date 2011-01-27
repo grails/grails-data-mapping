@@ -17,10 +17,19 @@
 package org.grails.datastore.gorm.jpa.support;
 
 
+import javax.persistence.EntityManager;
+
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor;
-import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.transactions.Transaction;
+import org.springframework.datastore.mapping.jpa.JpaDatastore;
+import org.springframework.datastore.mapping.transactions.SessionHolder;
+import org.springframework.orm.jpa.EntityManagerFactoryUtils;
+import org.springframework.orm.jpa.EntityManagerHolder;
+import org.springframework.orm.jpa.JpaTransactionManager;
+
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * 
@@ -32,28 +41,35 @@ public class JpaPersistenceContextInterceptor extends
 		DatastorePersistenceContextInterceptor {
 
 	
-	private Transaction transaction;
-	public JpaPersistenceContextInterceptor(Datastore datastore) {
+	private JpaDatastore jpaDatastore;
+	private TransactionStatus transaction;
+	
+	
+	public JpaPersistenceContextInterceptor(JpaDatastore datastore) {
 		super(datastore);
+		this.jpaDatastore = datastore;
+	
 	}
 
 	@Override
-	public void init() {
-		
-		super.init();
-		final Session currentSession = datastore.getCurrentSession();
-		this.transaction = currentSession.getTransaction();
-	}
-	@Override
-	public void flush() {
-		try {
-			super.flush();
-			transaction.commit();
-		} catch (Exception e) {
-			transaction.rollback();
+	protected Session getSession() {
+		SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(jpaDatastore);
+		if(sessionHolder == null) {
+	        Session session = jpaDatastore.connect();
+	        sessionHolder = new SessionHolder(session);
+	        TransactionSynchronizationManager.bindResource(jpaDatastore, sessionHolder);
+	        return session;
 		}
+		return sessionHolder.getSession();
 	}
-
-
-
+	
+	@Override
+	public void init() {		
+		super.init();
+	}
+	
+	@Override
+	public void flush() {	
+		// do nothing
+	}
 }
