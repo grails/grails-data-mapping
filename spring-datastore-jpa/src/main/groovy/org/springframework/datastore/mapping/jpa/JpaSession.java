@@ -144,6 +144,19 @@ public class JpaSession implements Session {
 			throw new InvalidDataAccessApiUsageException("Object to persist cannot be null");
 		}
 	}
+	
+	
+	public Object merge(Object o) {
+		if(o != null) {			
+			final PersistentEntity persistentEntity = getMappingContext().getPersistentEntity(o.getClass().getName());
+			if(persistentEntity == null) throw new InvalidDataAccessApiUsageException("Object of class ["+o.getClass()+"] is not a persistent entity");
+				
+			return jpaTemplate.merge(o);
+		}
+		else {
+			throw new InvalidDataAccessApiUsageException("Object to merge cannot be null");
+		}
+	}	
 
 	@Override
 	public void refresh(Object o) {

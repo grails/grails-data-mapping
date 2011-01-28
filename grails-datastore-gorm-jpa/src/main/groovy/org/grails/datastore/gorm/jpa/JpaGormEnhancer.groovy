@@ -73,41 +73,51 @@ class JpaInstanceApi extends GormInstanceApi {
 
 	@Override
 	public Object merge(Object instance, Map params) {
-		return super.merge(instance, params);
+		def merged
+		doSave(instance, params) { session ->
+			merged = session.merge(instance)	
+		}
+		return merged
 	}
 
 	@Override
 	public Object save(Object instance, Map params) {
-	    final session = datastore.currentSession
-	    boolean hasErrors = false
-	    boolean validate = params?.containsKey("validate") ? params.validate : true
-	    if(instance.respondsTo('validate') && validate) {
-	      session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, false)
-	      hasErrors = !instance.validate()
-	    }
-	    else {
-	      session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, true)
-	      instance.clearErrors()
-	    }
-	
-	    if(!hasErrors) {
-	      session.persist(instance)
-	      if(params?.flush) {
-	        session.flush()
-	      }
-	    }
-	    else {
-	      if(params?.failOnError)
-	        throw validationException.newInstance( "Validation error occured during call to save()", instance.errors)
-	      else {
-			  rollbackTransaction(session)
-			  return null
-	      }
-	    }
-	    return instance
+		doSave(instance, params) { session ->
+			session.persist(instance)	
+		}
 	}	
 	
-	void rollbackTransaction(JpaSession jpaSession) {
+	private doSave(instance, Map params, Closure callable) {
+		final session = datastore.currentSession
+		boolean hasErrors = false
+		boolean validate = params?.containsKey("validate") ? params.validate : true
+		if(instance.respondsTo('validate') && validate) {
+		  session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, false)
+		  hasErrors = !instance.validate()
+		}
+		else {
+		  session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, true)
+		  instance.clearErrors()
+		}
+	
+		if(!hasErrors) {
+		  callable.call(session)		  
+		  if(params?.flush) {
+			session.flush()
+		  }
+		}
+		else {
+		  if(params?.failOnError)
+			throw validationException.newInstance( "Validation error occured during call to save()", instance.errors)
+		  else {
+			  rollbackTransaction(session)
+			  return null
+		  }
+		}
+		return instance
+	}
+	
+	private void rollbackTransaction(JpaSession jpaSession) {
 		jpaSession.getTransaction().rollback()
 	}
 	
