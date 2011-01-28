@@ -17,18 +17,11 @@
 package org.grails.datastore.gorm.jpa.support;
 
 
-import javax.persistence.EntityManager;
-
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.jpa.JpaDatastore;
 import org.springframework.datastore.mapping.transactions.SessionHolder;
-import org.springframework.orm.jpa.EntityManagerFactoryUtils;
-import org.springframework.orm.jpa.EntityManagerHolder;
-import org.springframework.orm.jpa.JpaTransactionManager;
-
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
@@ -42,7 +35,6 @@ public class JpaPersistenceContextInterceptor extends
 
 	
 	private JpaDatastore jpaDatastore;
-	private TransactionStatus transaction;
 	
 	
 	public JpaPersistenceContextInterceptor(JpaDatastore datastore) {
