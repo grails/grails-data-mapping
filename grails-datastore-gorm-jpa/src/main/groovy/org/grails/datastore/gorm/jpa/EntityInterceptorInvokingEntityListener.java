@@ -74,19 +74,7 @@ public class EntityInterceptorInvokingEntityListener {
 	}
 
 	void rollbackTransaction(JpaSession jpaSession) {
-		final JpaDatastore datastore = jpaSession.getDatastore();
-		final JpaTransactionManager transactionManager = datastore.getTransactionManager();
-		
-		if(transactionManager != null) {
-			TransactionStatus transaction;
-			try {
-				transaction = transactionManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_MANDATORY));
-				transaction.setRollbackOnly();
-			} catch (TransactionException e) {
-				// no transaction present
-			}
-			
-		}
+		jpaSession.getTransaction().rollback();
 	}
 	
 	@PreUpdate

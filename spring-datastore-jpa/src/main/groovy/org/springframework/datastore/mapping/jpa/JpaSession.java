@@ -64,6 +64,7 @@ public class JpaSession implements Session {
 	private List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
 	private FlushModeType flushMode;
 	private boolean connected = true;
+	private TransactionStatus transaction;
 
 	public JpaSession(JpaDatastore datastore, JpaTemplate jpaTemplate, JpaTransactionManager transactionManager) {
 		this.jpaTemplate = jpaTemplate;
@@ -117,7 +118,6 @@ public class JpaSession implements Session {
 	public void disconnect() {
 		entityAttributes.clear();
 		this.connected = false;
-		// don't handle disconnection, leave up to 
 	}
 
 	@Override
@@ -330,14 +330,17 @@ public class JpaSession implements Session {
 	}
 
 	@Override
-	public Transaction getTransaction() {
-		final TransactionStatus transaction = transactionManager.getTransaction(new DefaultTransactionDefinition());
+	public Transaction getTransaction() {		
 		return new JpaTransaction(transactionManager, transaction); 
 	}
 
 	@Override
 	public JpaDatastore getDatastore() {
 		return datastore;
+	}
+
+	public void setTransactionStatus(TransactionStatus transaction) {
+		this.transaction = transaction;		
 	}
 
 }

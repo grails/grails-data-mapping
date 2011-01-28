@@ -16,12 +16,14 @@ public class JpaTransaction implements Transaction {
 
 	@Override
 	public void commit() {
-		transactionManager.commit(transaction);
+		if(transaction != null)
+			transactionManager.commit(transaction);
 	}
 
 	@Override
 	public void rollback() {
-		transactionManager.rollback(transaction);
+		if(transaction != null)
+			transactionManager.rollback(transaction);
 	}
 
 	@Override
@@ -31,11 +33,11 @@ public class JpaTransaction implements Transaction {
 
 	@Override
 	public boolean isActive() {
-		return !transaction.isCompleted();		
+		return transaction != null && !transaction.isCompleted();		
 	}
 
 	@Override
-	public void setTimeout(int timeout) {
+	public void setTimeout(int timeout) {		
 		transactionManager.setDefaultTimeout(timeout);
 	}
 

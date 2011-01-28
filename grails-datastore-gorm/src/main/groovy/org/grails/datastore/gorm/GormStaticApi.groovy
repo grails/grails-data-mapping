@@ -101,9 +101,9 @@ class GormStaticApi extends AbstractGormApi {
    * @return A list of identifiers
    */
   List getAll(Serializable... ids) {
-    datastore.currentSession.retrieveAll(persistentClass, ids)
+    datastore.currentSession.retrieveAll(persistentClass, ids.flatten())
   }
-
+  
   /**
    * Creates a criteria builder instance
    */
@@ -151,6 +151,13 @@ class GormStaticApi extends AbstractGormApi {
     } catch (NumberFormatException e) {
       return 0
     }
+  }
+  
+  /**
+   * Same as {@link #count()} but allows property-style syntax (Foo.count) 
+   */
+  Integer getCount() {
+  	count()
   }
 
   /**

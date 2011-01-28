@@ -22,8 +22,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
-import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.jpa.JpaDatastore;
+import org.springframework.datastore.mapping.jpa.JpaSession;
 import org.springframework.datastore.mapping.transactions.SessionHolder;
 import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -61,13 +60,18 @@ public class JpaOpenSessionInViewInterceptor extends OpenSessionInViewIntercepto
 	public void preHandle(WebRequest webRequest) throws Exception {
 		openEntityManagerInViewInterceptor.preHandle(webRequest);
 		SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(getDatastore());
+		JpaSession session = null;
 		if(sessionHolder == null) {
-	        Session session = getDatastore().connect();
+	        session = (JpaSession) getDatastore().connect();
 	        sessionHolder = new SessionHolder(session);
 	        TransactionSynchronizationManager.bindResource(getDatastore(), sessionHolder);
 		}
+		else {
+			session = (JpaSession) sessionHolder.getSession();
+		}
 		
 		this.transaction = transactionManager.getTransaction(this.transactionDefinition );
+		session.setTransactionStatus(transaction);
 	}
 
 

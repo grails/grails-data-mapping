@@ -101,25 +101,14 @@ class JpaInstanceApi extends GormInstanceApi {
 	        throw validationException.newInstance( "Validation error occured during call to save()", instance.errors)
 	      else {
 			  rollbackTransaction(session)
+			  return null
 	      }
 	    }
 	    return instance
 	}	
 	
 	void rollbackTransaction(JpaSession jpaSession) {
-		final JpaDatastore datastore = jpaSession.getDatastore();
-		final JpaTransactionManager transactionManager = datastore.getTransactionManager();
-		
-		if(transactionManager != null) {
-			TransactionStatus transaction;
-			try {
-				transaction = transactionManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_MANDATORY));
-				transaction.setRollbackOnly();
-			} catch (TransactionException e) {
-				// no transaction present
-			}
-			
-		}
+		jpaSession.getTransaction().rollback()
 	}
 	
 }
