@@ -27,6 +27,7 @@ import javax.persistence.PersistenceException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.mapping.jpa.JpaSession;
@@ -398,114 +399,34 @@ public class JpaQuery extends Query{
 		final JpaTemplate jpaTemplate = getSession().getJpaTemplate();
 		
 		
-		return jpaTemplate.execute(new JpaCallback<List>() {
+		return (List)jpaTemplate.execute(new JpaCallback<Object>() {
 
 			@Override
-			public List doInJpa(EntityManager em) throws PersistenceException {
+			public Object doInJpa(EntityManager em) throws PersistenceException {
 				
-				final String logicalName = entity.getDecapitalizedName();
-				StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
-				
-				if(projections.isEmpty()) {
-					queryString
-					.append(DISTINCT_CLAUSE)
-					.append(logicalName);
-				}
-				else {
-					for (Iterator i = projections.getProjectionList().iterator(); i
-							.hasNext();) {
-						Projection projection = (Projection) i.next();
-						if(projection instanceof CountProjection) {
-							queryString.append("COUNT(")
-									   .append(logicalName)
-									   .append(CLOSE_BRACKET);
-						}
-						else if(projection instanceof IdProjection) {
-							queryString.append(logicalName)
-									   .append(DOT)
-									   .append(entity.getIdentity().getName());
-						}
-						else if(projection instanceof PropertyProjection) {
-							PropertyProjection pp = (PropertyProjection) projection;
-							if(projection instanceof AvgProjection) {
-								queryString
-								   .append("AVG(")
-								   .append(logicalName)
-								   .append(DOT)
-								   .append(pp.getPropertyName())
-								   .append(CLOSE_BRACKET);
-							}
-							else if(projection instanceof SumProjection) {
-								queryString
-								   .append("SUM(")
-								   .append(logicalName)
-								   .append(DOT)
-								   .append(pp.getPropertyName())
-								   .append(CLOSE_BRACKET);
-							}	
-							else if(projection instanceof MinProjection) {
-								queryString
-								   .append("MIN(")
-								   .append(logicalName)
-								   .append(DOT)
-								   .append(pp.getPropertyName())
-								   .append(CLOSE_BRACKET);
-							}	
-							else if(projection instanceof MaxProjection) {
-								queryString
-								   .append("MAX(")
-								   .append(logicalName)
-								   .append(DOT)
-								   .append(pp.getPropertyName())
-								   .append(CLOSE_BRACKET);
-							}								
-							else {
-								queryString.append(logicalName)
-								   .append(DOT)
-								   .append(pp.getPropertyName());								
-							}
-						}
-						
-						if(i.hasNext()) {
-							queryString.append(COMMA);
-						}
-					}
-						
-				}
-				queryString
-						.append(FROM_CLAUSE )
-						.append(entity.getName())
-						.append(AS_CLAUSE )
-						.append(logicalName);
-				
-				List parameters = null;
-				StringBuilder whereClause= new StringBuilder();
-				if(!criteria.isEmpty()) {
-					parameters = buildWhereClause(entity, criteria, queryString, whereClause,logicalName);
-				}
-				
-				appendOrder(queryString, logicalName);						
-				final String queryToString = queryString.toString();
-				
-				if(LOG.isDebugEnabled()) {
-					LOG.debug("Built JPQL to execute: " + queryToString);
-				}
-				final javax.persistence.Query q = em.createQuery(queryToString);
-				
-				if(parameters != null) {
-					for (int i = 0; i < parameters.size(); i++) {
-						final Object value = parameters.get(i);
-						q.setParameter(i+1, value);						
-					}
-				}
-				q.setFirstResult(offset);
-				if(max > -1)
-					q.setMaxResults(max);
-									
-				return q.getResultList();				
+				return executeQuery(entity, criteria, em, false);				
 			}
 		});
 	}
+	
+	@Override
+	public Object singleResult() {
+		final JpaTemplate jpaTemplate = getSession().getJpaTemplate();
+		try {		
+			return jpaTemplate.execute(new JpaCallback<Object>() {
+	
+				@Override
+				public Object doInJpa(EntityManager em) throws PersistenceException {
+					
+						return executeQuery(entity, criteria, em, true);
+				}
+			});
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}				
+		
+	}
+	
 
 	protected void appendOrder(StringBuilder queryString, String logicalName) {
 		if(!orderBy.isEmpty()) {
@@ -546,6 +467,113 @@ public class JpaQuery extends Query{
         q.append(CLOSE_BRACKET);
         return parameters;
     }
+
+	Object executeQuery(final PersistentEntity entity, final Junction criteria,
+			EntityManager em, boolean singleResult) {
+		final String logicalName = entity.getDecapitalizedName();
+		StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
+		
+		if(projections.isEmpty()) {
+			queryString
+			.append(DISTINCT_CLAUSE)
+			.append(logicalName);
+		}
+		else {
+			for (Iterator i = projections.getProjectionList().iterator(); i
+					.hasNext();) {
+				Projection projection = (Projection) i.next();
+				if(projection instanceof CountProjection) {
+					queryString.append("COUNT(")
+							   .append(logicalName)
+							   .append(CLOSE_BRACKET);
+				}
+				else if(projection instanceof IdProjection) {
+					queryString.append(logicalName)
+							   .append(DOT)
+							   .append(entity.getIdentity().getName());
+				}
+				else if(projection instanceof PropertyProjection) {
+					PropertyProjection pp = (PropertyProjection) projection;
+					if(projection instanceof AvgProjection) {
+						queryString
+						   .append("AVG(")
+						   .append(logicalName)
+						   .append(DOT)
+						   .append(pp.getPropertyName())
+						   .append(CLOSE_BRACKET);
+					}
+					else if(projection instanceof SumProjection) {
+						queryString
+						   .append("SUM(")
+						   .append(logicalName)
+						   .append(DOT)
+						   .append(pp.getPropertyName())
+						   .append(CLOSE_BRACKET);
+					}	
+					else if(projection instanceof MinProjection) {
+						queryString
+						   .append("MIN(")
+						   .append(logicalName)
+						   .append(DOT)
+						   .append(pp.getPropertyName())
+						   .append(CLOSE_BRACKET);
+					}	
+					else if(projection instanceof MaxProjection) {
+						queryString
+						   .append("MAX(")
+						   .append(logicalName)
+						   .append(DOT)
+						   .append(pp.getPropertyName())
+						   .append(CLOSE_BRACKET);
+					}								
+					else {
+						queryString.append(logicalName)
+						   .append(DOT)
+						   .append(pp.getPropertyName());								
+					}
+				}
+				
+				if(i.hasNext()) {
+					queryString.append(COMMA);
+				}
+			}
+				
+		}
+		queryString
+				.append(FROM_CLAUSE )
+				.append(entity.getName())
+				.append(AS_CLAUSE )
+				.append(logicalName);
+		
+		List parameters = null;
+		StringBuilder whereClause= new StringBuilder();
+		if(!criteria.isEmpty()) {
+			parameters = buildWhereClause(entity, criteria, queryString, whereClause,logicalName);
+		}
+		
+		appendOrder(queryString, logicalName);						
+		final String queryToString = queryString.toString();
+		
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("Built JPQL to execute: " + queryToString);
+		}
+		final javax.persistence.Query q = em.createQuery(queryToString);
+		
+		if(parameters != null) {
+			for (int i = 0; i < parameters.size(); i++) {
+				final Object value = parameters.get(i);
+				q.setParameter(i+1, value);						
+			}
+		}
+		q.setFirstResult(offset);
+		if(max > -1)
+			q.setMaxResults(max);
+				
+		if(!singleResult)
+			return q.getResultList();
+		else
+			return q.getSingleResult();
+	}
 
 	static int buildWhereClauseForCriterion(PersistentEntity entity,
 			Junction criteria, StringBuilder q, StringBuilder whereClause, String logicalName,

@@ -118,7 +118,7 @@ class JpaInstanceApi extends GormInstanceApi {
 	}
 	
 	private void rollbackTransaction(JpaSession jpaSession) {
-		jpaSession.getTransaction().rollback()
+		jpaSession.getTransaction()?.rollback()
 	}
 	
 }

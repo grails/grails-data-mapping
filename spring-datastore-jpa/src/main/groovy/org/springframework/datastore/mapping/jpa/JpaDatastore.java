@@ -50,7 +50,10 @@ public class JpaDatastore extends AbstractDatastore{
 		
 	}
 	
-	
+	@Override
+	public JpaSession connect() {
+		return (JpaSession) super.connect();
+	}
 
 	public EntityManagerFactory getEntityManagerFactory() {
 		return entityManagerFactory;

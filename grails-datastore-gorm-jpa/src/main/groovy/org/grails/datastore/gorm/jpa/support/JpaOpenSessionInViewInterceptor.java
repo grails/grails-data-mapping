@@ -80,7 +80,7 @@ public class JpaOpenSessionInViewInterceptor extends OpenSessionInViewIntercepto
 			throws Exception {
 		super.afterCompletion(webRequest, e);
 		openEntityManagerInViewInterceptor.afterCompletion(webRequest, e);		
-		if(transaction != null) {
+		if(transaction != null && !transaction.isCompleted()) {
 			if(e != null) {
 				   transactionManager.rollback(transaction);
 			}

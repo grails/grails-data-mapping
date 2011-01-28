@@ -30,10 +30,13 @@ import org.springframework.datastore.mapping.engine.EntityInterceptor;
 import org.springframework.datastore.mapping.jpa.JpaDatastore;
 import org.springframework.datastore.mapping.jpa.JpaSession;
 import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.transactions.Transaction;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.NoTransactionException;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 /**
@@ -74,7 +77,18 @@ public class EntityInterceptorInvokingEntityListener {
 	}
 
 	void rollbackTransaction(JpaSession jpaSession) {
-		jpaSession.getTransaction().rollback();
+		final Transaction transaction = jpaSession.getTransaction();
+		if(transaction != null) {		
+			transaction.rollback();
+		}
+		else {
+			try {
+				final TransactionStatus currentTransactionStatus = TransactionAspectSupport.currentTransactionStatus();
+				currentTransactionStatus.setRollbackOnly();
+			} catch (NoTransactionException e) {
+				// ignore
+			}
+		}
 	}
 	
 	@PreUpdate

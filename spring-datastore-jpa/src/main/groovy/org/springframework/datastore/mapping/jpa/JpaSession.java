@@ -343,8 +343,12 @@ public class JpaSession implements Session {
 	}
 
 	@Override
-	public Transaction getTransaction() {		
-		return new JpaTransaction(transactionManager, transaction); 
+	public Transaction getTransaction() {
+		if(transaction != null)
+			return new JpaTransaction(transactionManager, transaction);
+		else {
+			return null;
+		}
 	}
 
 	@Override
