@@ -587,7 +587,7 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
      * @param value The embedded object
      */
     protected void setEmbedded(T nativeEntry, String key, T embeddedEntry) {
-    	// do nothing. The default is not support for embedded instances
+    	// do nothing. The default is no support for embedded instances
     }
 
 	/**

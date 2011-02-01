@@ -62,7 +62,22 @@ import com.mongodb.WriteResult;
  */
 public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, Object> {
 
-    private static final String NEXT_ID_SUFFIX = ".next_id";
+    @Override
+	protected DBObject getEmbbeded(DBObject nativeEntry, String key) {
+    	final Object embeddedDocument = nativeEntry.get(key);
+    	if(embeddedDocument instanceof DBObject) {
+    		return (DBObject) embeddedDocument;
+    	}
+		return null;
+	}
+
+	@Override
+	protected void setEmbedded(DBObject nativeEntry, String key,
+			DBObject embeddedEntry) {		
+		nativeEntry.put(key, embeddedEntry);
+	}
+
+	private static final String NEXT_ID_SUFFIX = ".next_id";
 	public static final String MONGO_ID_FIELD = "_id";
     public static final String MONGO_CLASS_FIELD = "_class";
     private MongoTemplate mongoTemplate;
