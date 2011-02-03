@@ -30,6 +30,7 @@ import javax.persistence.PersistenceException;
 
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.datastore.mapping.core.AbstractAttributeStoringSession;
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.EntityAccess;
@@ -55,12 +56,11 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
  * @since 1.0
  *
  */
-public class JpaSession implements Session {
+public class JpaSession extends AbstractAttributeStoringSession implements Session {
 
 	private JpaDatastore datastore;
 	private JpaTemplate jpaTemplate;
 	private JpaTransactionManager transactionManager;
-	private Map<Object, Map<String, Object>> entityAttributes = new ConcurrentHashMap<Object, Map<String, Object>>();
 	private List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
 	private FlushModeType flushMode;
 	private boolean connected = true;
@@ -91,33 +91,14 @@ public class JpaSession implements Session {
 	}
 
 	@Override
-	public void setAttribute(Object entity, String attributeName, Object value) {
-		Map<String, Object> map = entityAttributes.get(entity);
-		if(map == null) {
-			map = new ConcurrentHashMap<String, Object>();
-			entityAttributes.put(entity, map);
-		}
-		map.put(attributeName, value);
-	}
-
-	@Override
-	public Object getAttribute(Object entity, String attributeName) {
-		final Map<String, Object> map = entityAttributes.get(entity);
-		if(map != null) {
-			return map.get(attributeName);
-		}
-		return null;
-	}
-
-	@Override
 	public boolean isConnected() {
 		return connected;
 	}
 
 	@Override
 	public void disconnect() {
-		entityAttributes.clear();
 		this.connected = false;
+		super.disconnect();
 	}
 
 	@Override
@@ -184,7 +165,6 @@ public class JpaSession implements Session {
 			public Object doInJpa(EntityManager em)
 					throws PersistenceException {
 				em.clear();
-				entityAttributes.clear();
 				return null;
 			}
 		});

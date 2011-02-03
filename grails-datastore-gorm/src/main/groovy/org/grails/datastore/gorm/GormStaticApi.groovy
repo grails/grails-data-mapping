@@ -225,14 +225,13 @@ class GormStaticApi extends AbstractGormApi {
    * Creates and binds a new session for the scope of the given closure
    */
   def withNewSession(Closure callable) {
-    def oldSession = datastore.currentSession
 
+    def session = datastore.connect()
     try {
-      def session = datastore.connect()
       callable?.call(session)
     }
     finally {
-      AbstractDatastore.bindSession oldSession
+		session.disconnect()
     }
   }
 

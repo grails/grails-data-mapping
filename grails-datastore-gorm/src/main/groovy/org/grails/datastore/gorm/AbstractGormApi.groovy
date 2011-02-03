@@ -13,23 +13,23 @@ import org.springframework.datastore.mapping.model.PersistentEntity
  */
 abstract class AbstractGormApi {
 
+  static final EXCLUDES = ['setProperty', 'getProperty', 'getMetaClass', 'setMetaClass','invokeMethod','getMethodNames', 'wait', 'equals', 'toString', 'hashCode', 'getClass', 'notify', 'notifyAll']
+	
   protected Class persistentClass
   protected PersistentEntity persistentEntity
   protected Datastore datastore
+  private List<String> methodNames
 
   AbstractGormApi(Class persistentClass, Datastore datastore) {
     this.persistentClass = persistentClass;
     this.datastore = datastore
     this.persistentEntity = datastore.getMappingContext().getPersistentEntity(persistentClass.name)
-  }
-
-  static final EXCLUDES = ['setProperty', 'getProperty', 'getMetaClass', 'setMetaClass','invokeMethod','getMethodNames', 'wait', 'equals', 'toString', 'hashCode', 'getClass', 'notify', 'notifyAll']
-
-  List<String> getMethodNames() {
-     getClass().methods.findAll { Method m ->
+	this.methodNames =  getClass().methods.findAll { Method m ->
        def mods = m.getModifiers()
        !m.isSynthetic() && !Modifier.isStatic(mods)&& !Modifier.isPrivate(mods) && !AbstractGormApi.EXCLUDES.contains(m.name)
      }*.name
   }
+
+  List<String> getMethodNames() {  	methodNames  }
 
 }
