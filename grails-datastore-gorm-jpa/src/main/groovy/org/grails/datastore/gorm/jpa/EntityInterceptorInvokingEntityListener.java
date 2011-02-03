@@ -51,7 +51,7 @@ public class EntityInterceptorInvokingEntityListener {
 	@PrePersist
 	public void prePersist(Object o) {
 		try {
-			final Session session = AbstractDatastore.retrieveSession();
+			final Session session = AbstractDatastore.retrieveSession(JpaDatastore.class);
 			if(session instanceof JpaSession) {
 				JpaSession jpaSession = (JpaSession) session;
 				final PersistentEntity entity = session.getMappingContext().getPersistentEntity(o.getClass().getName());
@@ -94,7 +94,7 @@ public class EntityInterceptorInvokingEntityListener {
 	@PreUpdate
 	public void preUpdate(Object o) {
 		try {
-			final Session session = AbstractDatastore.retrieveSession();
+			final Session session = AbstractDatastore.retrieveSession(JpaDatastore.class);
 			if(session instanceof JpaSession) {
 				JpaSession jpaSession = (JpaSession) session;
 				final PersistentEntity entity = session.getMappingContext().getPersistentEntity(o.getClass().getName());
