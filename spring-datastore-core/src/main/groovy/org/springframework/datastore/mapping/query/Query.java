@@ -232,15 +232,54 @@ public abstract class Query {
         criteria.add(Restrictions.eq(property, value));
         return this;
     }
+
+    /**
+     * Used to restrict a value to be empty (such as a blank string or an empty collection)
+     * 
+     * @param property The property name
+    */
+    public Query isEmpty(String property) {
+    	criteria.add(Restrictions.isEmpty(property));
+    	return this;
+    }
+
+    /**
+     * Used to restrict a value to be not empty (such as a blank string or an empty collection)
+     * 
+     * @param property The property name
+    */
+    public Query isNotEmpty(String property) {
+    	criteria.add(Restrictions.isNotEmpty(property));
+    	return this;
+    }  
     
-    
+
+    /**
+     * Used to restrict a property to be null
+     * 
+     * @param property The property name
+    */
+    public Query isNull(String property) {
+    	criteria.add(Restrictions.isNull(property));
+    	return this;
+    }
+
+    /**
+     * Used to restrict a property to be not null
+     * 
+     * @param property The property name
+    */
+    public Query isNotNull(String property) {
+    	criteria.add(Restrictions.isNotNull(property));
+    	return this;
+    }      
     /**
      * Creates an association query
      * 
      * @param associationName The assocation name
      * @return The Query instance
      */
-    public AssociationQuery createQuery(String associationName) {
+    public Query createQuery(String associationName) {
     	final PersistentProperty property = entity.getPropertyByName(associationName);
     	if(property != null && (property instanceof Association)) {
     		Association association = (Association) property;
