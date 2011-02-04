@@ -106,6 +106,17 @@ class GormInstanceApi extends AbstractGormApi {
   }
 
   /**
+   * Save method that takes a boolean which indicates whether to perform validation or not
+   * 
+   * @param validate Whether to perform validation
+   * 
+   * @return The instance or null if validation fails
+   */
+  def save(boolean validate) {
+	  save(validate:validate)
+  }
+  
+  /**
    * Saves an object with the given parameters
    * @param instance The instance
    * @param params The parameters
