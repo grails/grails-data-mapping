@@ -136,10 +136,15 @@ class GormEnhancer {
       'static' {
         for(Method method in staticMethods.methods) {
 			
-		  def methodName = method.name
-		  def parameterTypes = method.parameterTypes
-		  def callable = new StaticMethodInvokingClosure(staticMethods, methodName, parameterTypes)		  
-          delegate."$methodName" = callable
+			if(method != null) {
+				def methodName = method.name
+				def parameterTypes = method.parameterTypes
+				if(parameterTypes != null) {
+					def callable = new StaticMethodInvokingClosure(staticMethods, methodName, parameterTypes)			
+					delegate."$methodName" = callable
+				}
+			}
+
         }
 
         if(tm) {
@@ -169,31 +174,6 @@ class GormEnhancer {
 	registerMethodMissing cls
   }
   
-  static class StaticMethodInvokingClosure extends Closure {
-
-	String methodName
-	Object apiDelegate
-	Class[] parameterTypes
-	
-	
-	public StaticMethodInvokingClosure(Object apiDelegate,
-			String methodName, Class[] parameterTypes) {
-		super(apiDelegate);
-		this.apiDelegate = apiDelegate;
-		this.methodName = methodName;
-		this.parameterTypes = parameterTypes;
-	}
-
-	@Override
-	public Object call(Object[] args) {
-		apiDelegate."$methodName"(*args)
-	}
-
-	@Override
-	public Class[] getParameterTypes() { parameterTypes	}
-	  
-  }
-
   protected void registerNamedQueries(PersistentEntity entity, namedQueries) {
 		def namedQueryBuilder = new NamedQueriesBuilder(entity, finders)
 		namedQueryBuilder.evaluate namedQueries
@@ -228,4 +208,28 @@ class GormEnhancer {
   protected GormValidationApi getValidationApi(Class cls) {
     return new GormValidationApi(cls, datastore)
   }
+}
+class StaticMethodInvokingClosure extends Closure {
+	
+		private String methodName
+		private Object apiDelegate
+		private Class[] parameterTypes
+		
+		
+		public StaticMethodInvokingClosure(Object apiDelegate,
+				String methodName, Class[] parameterTypes) {
+			super(apiDelegate);
+			this.apiDelegate = apiDelegate;
+			this.methodName = methodName;
+			this.parameterTypes = parameterTypes;
+		}
+	
+		@Override
+		public Object call(Object[] args) {
+			apiDelegate."$methodName"(*args)
+		}
+	
+		@Override
+		public Class[] getParameterTypes() { parameterTypes	}
+		  
 }
