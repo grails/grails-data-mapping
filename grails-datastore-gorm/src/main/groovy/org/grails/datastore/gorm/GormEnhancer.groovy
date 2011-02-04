@@ -76,12 +76,12 @@ class GormEnhancer {
     def tm = transactionManager
 
     final namedQueries = cpf.getStaticPropertyValue('namedQueries', Closure)
-    if(namedQueries) {
-      if(namedQueries instanceof Closure) {
-        def namedQueryBuilder = new NamedQueriesBuilder(e, finders)
-        namedQueryBuilder.evaluate namedQueries
-      }
-    }
+	if(namedQueries) {
+		if(namedQueries instanceof Closure) {
+			registerNamedQueries(e,  namedQueries)
+		}
+	}
+    
     cls.metaClass {
       for(apiProvider in instanceMethods) {
         for(method in apiProvider.methodNames) {
@@ -167,7 +167,11 @@ class GormEnhancer {
 	registerMethodMissing cls
   }
 
-  protected Closure registerMethodMissing(Class cls) {
+  protected void registerNamedQueries(PersistentEntity entity, namedQueries) {
+		def namedQueryBuilder = new NamedQueriesBuilder(entity, finders)
+		namedQueryBuilder.evaluate namedQueries
+  }
+  protected void registerMethodMissing(Class cls) {
 	  def mc = cls.metaClass
 	  def dynamicFinders = finders
 	  mc.static.methodMissing = {String methodName, args ->

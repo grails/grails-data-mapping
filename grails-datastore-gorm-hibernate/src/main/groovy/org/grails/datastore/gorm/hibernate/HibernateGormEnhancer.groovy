@@ -27,6 +27,7 @@ import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.metaclass.StaticMethodInvocation
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.codehaus.groovy.grails.orm.hibernate.cfg.HibernateNamedQueriesBuilder
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.CountByPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ExecuteQueryPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ExecuteUpdatePersistentMethod
@@ -51,9 +52,12 @@ import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.hibernate.criterion.Projections
 import org.hibernate.criterion.Restrictions
+import org.hibernate.engine.EntityEntry
+import org.hibernate.engine.SessionImplementor
 import org.hibernate.proxy.HibernateProxy
 import org.springframework.core.convert.ConversionService
 import org.springframework.dao.DataAccessException
+import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.orm.hibernate3.HibernateCallback
 import org.springframework.orm.hibernate3.HibernateTemplate
 import org.springframework.orm.hibernate3.SessionHolder
@@ -103,7 +107,21 @@ class HibernateGormEnhancer extends GormEnhancer{
 		return instanceApi
 	}
 	
-	protected Closure registerMethodMissing(Class cls) {
+	@Override
+	protected void registerNamedQueries( PersistentEntity entity, Closure namedQueries ) {
+		if(grailsApplication != null) {
+			SessionFactory sessionFactory = datastore.sessionFactory
+			def domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, entity.name)
+			if(domainClass != null) {
+				def builder = new HibernateNamedQueriesBuilder(domainClass, grailsApplication, sessionFactory)
+				builder.evaluate(namedQueries)
+			}
+		}
+
+	}
+	
+	@Override
+	protected void registerMethodMissing(Class cls) {
 		
 		SessionFactory sessionFactory = datastore.sessionFactory
 		
@@ -482,6 +500,7 @@ class HibernateGormInstanceApi extends GormInstanceApi {
 	private SavePersistentMethod saveMethod
 	private MergePersistentMethod mergeMethod
 	private HibernateTemplate hibernateTemplate
+	private SessionFactory sessionFactory
 	private ClassLoader classLoader = Thread.currentThread().getContextClassLoader()
 	
 	
@@ -490,7 +509,7 @@ class HibernateGormInstanceApi extends GormInstanceApi {
 	public HibernateGormInstanceApi(Class persistentClass, HibernateDatastore datastore) {
 		super(persistentClass, datastore);
 		
-		def sessionFactory = datastore.getSessionFactory()
+		sessionFactory = datastore.getSessionFactory()
 	
 		hibernateTemplate = new HibernateTemplate(sessionFactory)
 		
@@ -504,6 +523,84 @@ class HibernateGormInstanceApi extends GormInstanceApi {
 			this.mergeMethod = new MergePersistentMethod( sessionFactory, classLoader, grailsApplication, domainClass )
 		}
 	}	
+
+	/**
+	 * Checks whether a field is dirty
+	 * 	
+	 * @param instance The instance
+	 * @param fieldName The name of the field
+	 * 
+	 * @return True if the field is dirty
+	 */
+	public boolean isDirty(Object instance, String fieldName) {
+		def session = sessionFactory.currentSession
+		def entry = findEntityEntry(instance, session)
+		if (!entry) {
+			return false
+		}
+
+		Object[] values = entry.persister.getPropertyValues(instance, session.entityMode)
+		int[] dirtyProperties = entry.persister.findDirty(values, entry.loadedState, instance, session)
+		int fieldIndex = entry.persister.propertyNames.findIndexOf { fieldName == it }
+		return fieldIndex in dirtyProperties
+	}
+	
+	/**
+	 * Checks whether an entity is dirty
+	 * 
+	 * @param instance The instance
+	 * @return True if it is dirty
+	 */
+	public boolean isDirty(Object instance) {
+		def session = sessionFactory.currentSession
+		def entry = findEntityEntry(instance, session)
+		if (!entry) {
+			return false
+		}
+
+		Object[] values = entry.persister.getPropertyValues(instance, session.entityMode)
+		def dirtyProperties = entry.persister.findDirty(values, entry.loadedState, instance, session)
+		return dirtyProperties != null
+	}
+	
+	/**
+	 * Obtains a list of property names that are dirty
+	 * 
+	 * @param instance The instance
+	 * @return A list of property names that are dirty
+	 */
+	public List getDirtyPropertyNames(Object instance) {
+		def session = sessionFactory.currentSession
+		def entry = findEntityEntry(instance, session)
+		if (!entry) {
+			return []
+		}
+
+		Object[] values = entry.persister.getPropertyValues(instance, session.entityMode)
+		int[] dirtyProperties = entry.persister.findDirty(values, entry.loadedState, instance, session)
+		def names = []
+		for (index in dirtyProperties) {
+			names << entry.persister.propertyNames[index]
+		}
+		names
+	}
+	
+	/**
+	 * Gets the original persisted value of a field
+	 * 
+	 * @param fieldName The field name
+	 * @return The original persisted value
+	 */
+	public getPersistentValue(Object instance, String fieldName) {
+		def session = sessionFactory.currentSession
+		def entry = findEntityEntry(instance, session, false)
+		if (!entry) {
+			return null
+		}
+
+		int fieldIndex = entry.persister.propertyNames.findIndexOf { fieldName == it }
+		return fieldIndex == -1 ? null : entry.loadedState[fieldIndex]
+	}
 
 	@Override
 	public Object lock(Object instance) {
@@ -620,6 +717,18 @@ class HibernateGormInstanceApi extends GormInstanceApi {
 		hibernateTemplate.contains instance
 	}
 
+	private EntityEntry findEntityEntry(instance, SessionImplementor session, boolean forDirtyCheck = true) {
+		def entry = session.persistenceContext.getEntry(instance)
+		if (!entry) {
+			return null
+		}
+
+		if (forDirtyCheck && !entry.requiresDirtyCheck(instance) && entry.loadedState) {
+			return null
+		}
+
+		entry
+	}
 	/**
 	* Session should no longer be flushed after a data access exception occurs (such a constriant violation)
 	*/
