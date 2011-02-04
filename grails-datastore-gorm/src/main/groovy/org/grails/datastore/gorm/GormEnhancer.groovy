@@ -164,25 +164,28 @@ class GormEnhancer {
       }
     }
 
-    def mc = cls.metaClass
-    def dynamicFinders = finders
-    mc.static.methodMissing = {String methodName, args ->
-          def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
-          if (method) {
-              // register the method invocation for next time
-              synchronized(this) {
-                  mc.static."$methodName" = {List varArgs ->
-                      method.invoke(cls, methodName, varArgs)
-                  }
-              }
-              return method.invoke(cls, methodName, args)
-          }
-          else {
-              throw new MissingMethodException(methodName, delegate, args)
-          }
-     }
+	registerMethodMissing cls
   }
 
+  protected Closure registerMethodMissing(Class cls) {
+	  def mc = cls.metaClass
+	  def dynamicFinders = finders
+	  mc.static.methodMissing = {String methodName, args ->
+			def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
+			if (method) {
+				// register the method invocation for next time
+				synchronized(this) {
+					mc.static."$methodName" = {List varArgs ->
+						method.invoke(cls, methodName, varArgs)
+					}
+				}
+				return method.invoke(cls, methodName, args)
+			}
+			else {
+				throw new MissingMethodException(methodName, delegate, args)
+			}
+	   }
+  }
   protected GormStaticApi getStaticApi(Class cls) {
     return new GormStaticApi(cls, datastore)
   }
