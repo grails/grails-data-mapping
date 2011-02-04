@@ -14,24 +14,20 @@
  */
 package org.grails.datastore.gorm
 
+import java.lang.reflect.Method
+
+import org.grails.datastore.gorm.finders.DynamicFinder
+import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.gorm.query.NamedQueriesBuilder
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.gorm.finders.FindByFinder
-import org.grails.datastore.gorm.finders.DynamicFinder
-import org.grails.datastore.gorm.finders.FindAllByFinder
-import org.grails.datastore.gorm.finders.CountByFinder
-import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.transaction.support.TransactionTemplate
-import org.springframework.transaction.support.TransactionCallback
-import org.springframework.transaction.TransactionDefinition
-import org.grails.datastore.gorm.query.NamedQueriesBuilder
 import org.springframework.datastore.mapping.model.types.OneToMany
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
-import org.grails.datastore.gorm.finders.FindByBooleanFinder
-import org.grails.datastore.gorm.finders.FindAllByBooleanFinder
-import org.grails.datastore.gorm.finders.ListOrderByFinder
-import org.grails.datastore.gorm.finders.FinderMethod
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionDefinition
+import org.springframework.transaction.support.DefaultTransactionDefinition
+import org.springframework.transaction.support.TransactionCallback
+import org.springframework.transaction.support.TransactionTemplate
 
 /**
  * Enhances a class with GORM behavior
@@ -83,18 +79,20 @@ class GormEnhancer {
 	}
     
     cls.metaClass {
-      for(apiProvider in instanceMethods) {
-        for(method in apiProvider.methodNames) {
-          Closure methodHandle = apiProvider.&"$method"
-          if(methodHandle.parameterTypes.size()>0) {
-
+      for(currentInstanceMethods in instanceMethods) {
+		def apiProvider = currentInstanceMethods
+        for(Method method in apiProvider.methods) {
+		  def methodName = method.name
+		  def parameterTypes = method.parameterTypes
+          
+          if(parameterTypes) {
+			 parameterTypes = Arrays.copyOfRange(parameterTypes, 1, parameterTypes.length)
              // use fake object just so we have the right method signature
-             Closure curried = methodHandle.curry(new Object())
-            "$method"(new Closure(this) {
+            "$methodName"(new Closure(this) {
               def call(Object[] args) {
-                methodHandle(delegate, *args)
+                apiProvider."$methodName"(delegate, *args)
               }
-              Class[] getParameterTypes() { curried.parameterTypes }
+              Class[] getParameterTypes() { parameterTypes }
             })
           }
         }
@@ -136,8 +134,12 @@ class GormEnhancer {
         }
       }
       'static' {
-        for(method in staticMethods.methodNames) {
-          delegate."$method" = staticMethods.&"$method"
+        for(Method method in staticMethods.methods) {
+			
+		  def methodName = method.name
+		  def parameterTypes = method.parameterTypes
+		  def callable = new StaticMethodInvokingClosure(staticMethods, methodName, parameterTypes)		  
+          delegate."$methodName" = callable
         }
 
         if(tm) {
@@ -165,6 +167,31 @@ class GormEnhancer {
     }
 
 	registerMethodMissing cls
+  }
+  
+  static class StaticMethodInvokingClosure extends Closure {
+
+	String methodName
+	Object apiDelegate
+	Class[] parameterTypes
+	
+	
+	public StaticMethodInvokingClosure(Object apiDelegate,
+			String methodName, Class[] parameterTypes) {
+		super(apiDelegate);
+		this.apiDelegate = apiDelegate;
+		this.methodName = methodName;
+		this.parameterTypes = parameterTypes;
+	}
+
+	@Override
+	public Object call(Object[] args) {
+		apiDelegate."$methodName"(*args)
+	}
+
+	@Override
+	public Class[] getParameterTypes() { parameterTypes	}
+	  
   }
 
   protected void registerNamedQueries(PersistentEntity entity, namedQueries) {
