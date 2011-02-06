@@ -1,6 +1,8 @@
 package org.springframework.datastore.mapping.jcr;
 
 import org.apache.jackrabbit.core.TransientRepository;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
@@ -10,6 +12,7 @@ import org.springframework.extensions.jcr.JcrSessionFactory;
 
 import javax.jcr.Repository;
 import javax.jcr.SimpleCredentials;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -19,7 +22,7 @@ import java.util.Map;
 public class JcrDatastore  extends AbstractDatastore {
 
     private static String REPOSITORY_CONF = "classpath:repository.xml";
-    private static String REPOSITORY_HOME = "/temp/repo";  //TODO: must change the directory to root classpath
+    private static String REPOSITORY_HOME = "/tmp/repo";  //TODO: must change the directory to root classpath
     private static String DEFAULT_WORKSPACE = "default";
     private static String DEFAULT_USERNAME = "username";
     private static String DEFAULT_PASSWORD = "password";
@@ -30,6 +33,7 @@ public class JcrDatastore  extends AbstractDatastore {
     public JcrDatastore(){
         super(new NodeMappingContext());
     }
+
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
@@ -66,5 +70,10 @@ public class JcrDatastore  extends AbstractDatastore {
         }
         return new JcrSession(this, getMappingContext(),jcrSessionFactory);
     }
+
+
+
+
+
 
 }
