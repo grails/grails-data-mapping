@@ -14,28 +14,37 @@
  */
 package org.springframework.datastore.mapping.core;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import javax.persistence.FlushModeType;
+
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.mapping.core.impl.PendingInsert;
 import org.springframework.datastore.mapping.core.impl.PendingOperation;
 import org.springframework.datastore.mapping.core.impl.PendingOperationExecution;
 import org.springframework.datastore.mapping.core.impl.PendingUpdate;
-import org.springframework.datastore.mapping.engine.*;
+import org.springframework.datastore.mapping.engine.EntityInterceptor;
+import org.springframework.datastore.mapping.engine.EntityInterceptorAware;
+import org.springframework.datastore.mapping.engine.EntityPersister;
+import org.springframework.datastore.mapping.engine.NonPersistentTypeException;
+import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.transactions.Transaction;
 import org.springframework.transaction.NoTransactionException;
 
-import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
-import com.googlecode.concurrentlinkedhashmap.EvictionListener;
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap.Builder;
-
-import javax.persistence.FlushModeType;
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import com.googlecode.concurrentlinkedhashmap.EvictionListener;
 
 /**
  * Abstract implementation of the {@link org.springframework.datastore.mapping.core.Session} interface that uses
@@ -45,7 +54,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class AbstractSession<N> implements Session, SessionImplementor {
+public abstract class AbstractSession<N> extends AbstractAttributeStoringSession implements Session, SessionImplementor {
     private static final EvictionListener<PersistentEntity, Collection<PendingInsert>> EXCEPTION_THROWING_INSERT_LISTENER = new EvictionListener<PersistentEntity, Collection<PendingInsert>>() {																				
 		@Override
 		public void onEviction(PersistentEntity key, Collection<PendingInsert> value) {
@@ -69,7 +78,6 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
     protected Map<Class, Map<Serializable, Object>> firstLevelCache = new ConcurrentHashMap<Class, Map<Serializable, Object>>();
     protected Map<Class, Map<Serializable, Object>> firstLevelEntryCache = new ConcurrentHashMap<Class, Map<Serializable, Object>>();
 
-    protected Map<Object, Map<String, Object>> attributes = new ConcurrentHashMap<Object, Map<String, Object>>();
     protected Map<Object, Serializable> objectToKey = new ConcurrentHashMap<Object, Serializable>();
     private Map<PersistentEntity, Collection<PendingInsert>> pendingInserts = new Builder<PersistentEntity, Collection<PendingInsert>>()
     																		.listener(EXCEPTION_THROWING_INSERT_LISTENER)
@@ -137,31 +145,6 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
             }
             cache.put(key, entry);
         }
-    }
-
-    public void setAttribute(Object entity, String attributeName, Object value) {
-        if(entity != null) {
-            Map<String, Object> attrs = attributes.get(entity);
-            if(attrs == null) {
-                attrs = new ConcurrentHashMap<String, Object>();
-                attributes.put(entity, attrs);
-            }
-
-            if(attributeName != null && value != null) {
-                attrs.put(attributeName, value);
-            }
-
-        }
-    }
-
-    public Object getAttribute(Object entity, String attributeName) {
-        if(entity != null) {
-            final Map<String, Object> attrs = attributes.get(entity);
-            if(attrs != null && attributeName != null) {
-                return attrs.get(attributeName);
-            }
-        }
-        return null;  
     }
 
     public Map<PersistentEntity, Collection<PendingInsert>> getPendingInserts() {
@@ -477,15 +460,6 @@ public abstract class AbstractSession<N> implements Session, SessionImplementor 
                 }
             }
         }
-    }
-
-    /**
-     * Performs clear up. Subclasses should always call into this super
-     * implementation.
-     */
-    public void disconnect() {
-        clear();
-        AbstractDatastore.clearCurrentConnection();
     }
 
     public List<Serializable> persist(Iterable objects) {

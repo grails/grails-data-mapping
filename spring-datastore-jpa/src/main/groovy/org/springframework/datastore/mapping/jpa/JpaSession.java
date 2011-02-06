@@ -30,6 +30,7 @@ import javax.persistence.PersistenceException;
 
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.datastore.mapping.core.AbstractAttributeStoringSession;
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.EntityAccess;
@@ -55,20 +56,20 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
  * @since 1.0
  *
  */
-public class JpaSession implements Session {
+public class JpaSession extends AbstractAttributeStoringSession implements Session {
 
 	private JpaDatastore datastore;
 	private JpaTemplate jpaTemplate;
 	private JpaTransactionManager transactionManager;
-	private Map<Object, Map<String, Object>> entityAttributes = new ConcurrentHashMap<Object, Map<String, Object>>();
 	private List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
+	private FlushModeType flushMode;
+	private boolean connected = true;
+	private TransactionStatus transaction;
 
 	public JpaSession(JpaDatastore datastore, JpaTemplate jpaTemplate, JpaTransactionManager transactionManager) {
 		this.jpaTemplate = jpaTemplate;
 		this.datastore = datastore;
 		this.transactionManager = transactionManager;
-		setFlushMode(FlushModeType.AUTO);
-		
 	}
 	
 	public JpaTemplate getJpaTemplate() {
@@ -90,35 +91,14 @@ public class JpaSession implements Session {
 	}
 
 	@Override
-	public void setAttribute(Object entity, String attributeName, Object value) {
-		Map<String, Object> map = entityAttributes.get(entity);
-		if(map == null) {
-			map = new ConcurrentHashMap<String, Object>();
-			entityAttributes.put(entity, map);
-		}
-		map.put(attributeName, value);
-	}
-
-	@Override
-	public Object getAttribute(Object entity, String attributeName) {
-		final Map<String, Object> map = entityAttributes.get(entity);
-		if(map != null) {
-			return map.get(attributeName);
-		}
-		return null;
-	}
-
-	@Override
 	public boolean isConnected() {
-		return jpaTemplate.getEntityManager().isOpen();
+		return connected;
 	}
 
 	@Override
 	public void disconnect() {
-		entityAttributes.clear();
-		final EntityManager entityManager = jpaTemplate.getEntityManager();
-		if(entityManager != null)
-			entityManager.close();
+		this.connected = false;
+		super.disconnect();
 	}
 
 	@Override
@@ -145,6 +125,19 @@ public class JpaSession implements Session {
 			throw new InvalidDataAccessApiUsageException("Object to persist cannot be null");
 		}
 	}
+	
+	
+	public Object merge(Object o) {
+		if(o != null) {			
+			final PersistentEntity persistentEntity = getMappingContext().getPersistentEntity(o.getClass().getName());
+			if(persistentEntity == null) throw new InvalidDataAccessApiUsageException("Object of class ["+o.getClass()+"] is not a persistent entity");
+				
+			return jpaTemplate.merge(o);
+		}
+		else {
+			throw new InvalidDataAccessApiUsageException("Object to merge cannot be null");
+		}
+	}	
 
 	@Override
 	public void refresh(Object o) {
@@ -172,7 +165,6 @@ public class JpaSession implements Session {
 			public Object doInJpa(EntityManager em)
 					throws PersistenceException {
 				em.clear();
-				entityAttributes.clear();
 				return null;
 			}
 		});
@@ -190,6 +182,7 @@ public class JpaSession implements Session {
 
 	@Override
 	public void setFlushMode(FlushModeType flushMode) {
+		this.flushMode = flushMode;
 		if(flushMode == FlushModeType.AUTO) {
 			jpaTemplate.setFlushEager(true);
 		}
@@ -200,14 +193,7 @@ public class JpaSession implements Session {
 
 	@Override
 	public FlushModeType getFlushMode() {
-		return jpaTemplate.execute(new JpaCallback<FlushModeType>() {
-
-			@Override
-			public FlushModeType doInJpa(EntityManager em)
-					throws PersistenceException {
-				return em.getFlushMode();
-			}
-		});
+		return this.flushMode;
 	}
 
 	@Override
@@ -338,13 +324,20 @@ public class JpaSession implements Session {
 
 	@Override
 	public Transaction getTransaction() {
-		final TransactionStatus transaction = transactionManager.getTransaction(new DefaultTransactionDefinition());
-		return new JpaTransaction(transactionManager, transaction); 
+		if(transaction != null)
+			return new JpaTransaction(transactionManager, transaction);
+		else {
+			return null;
+		}
 	}
 
 	@Override
-	public Datastore getDatastore() {
+	public JpaDatastore getDatastore() {
 		return datastore;
+	}
+
+	public void setTransactionStatus(TransactionStatus transaction) {
+		this.transaction = transaction;		
 	}
 
 }

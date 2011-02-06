@@ -5,6 +5,7 @@ import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.jcr.JcrSession;
 import org.springframework.datastore.mapping.jcr.util.JcrConstants;
 import org.springframework.datastore.mapping.model.MappingContext;
@@ -33,11 +34,6 @@ import java.util.*;
  */
 public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String> {
 
-/*
-    private static String parentNodeUUID = null;
-    private static String rootParentUUID = null;
-    private static Class clazz = null;
-*/
     private JcrTemplate jcrTemplate;
     private SimpleTypeConverter typeConverter;
     
@@ -125,7 +121,6 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     protected Object getEntryValue(Node nativeEntry, String property) {
         try {
             Property prop = nativeEntry.getProperty(property);
-
             if (prop.getType() == PropertyType.REFERENCE) {
                 String nodeUUID = prop.getString();
                 return jcrTemplate.getNodeByUUID(nodeUUID);
@@ -189,34 +184,9 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
             Node rootNode = jcrTemplate.getRootNode();
             Node node = rootNode.addNode(persistentEntity.getJavaClass().getSimpleName(), JcrConstants.DEFAULT_JCR_TYPE);
             node.addMixin(JcrConstants.MIXIN_REFERENCEABLE);
-            /* /Hierachy model     
-            Node node = null;
-            //create a new node starting from rootNode
-            if (parentNodeUUID == null && rootParentUUID == null) {
-                Node rootNode = jcrTemplate.getRootNode();
-                node = rootNode.addNode(persistentEntity.getJavaClass().getSimpleName(), JcrConstants.DEFAULT_JCR_TYPE);
-                node.addMixin(JcrConstants.MIXIN_REFERENCEABLE);
-                rootParentUUID = node.getUUID();
-                parentNodeUUID = node.getUUID();
-            }// create association nodes in the same hierarchy for List, Map etc.
-            else if (rootParentUUID != null && parentNodeUUID != null && (clazz != null && clazz.equals(persistentEntity.getJavaClass()))) {
-                Node parentNode = jcrTemplate.getNodeByUUID(rootParentUUID);
-                node = parentNode.addNode(persistentEntity.getJavaClass().getSimpleName(), JcrConstants.DEFAULT_JCR_TYPE);
-                node.addMixin(JcrConstants.MIXIN_REFERENCEABLE);
-                parentNodeUUID = node.getUUID();
-            } else { //create an association node
-                Node parentNode = jcrTemplate.getNodeByUUID(parentNodeUUID);
-                node = parentNode.addNode(persistentEntity.getJavaClass().getSimpleName(), JcrConstants.DEFAULT_JCR_TYPE);
-                node.addMixin(JcrConstants.MIXIN_REFERENCEABLE);
-                clazz = persistentEntity.getJavaClass();
-                parentNodeUUID = node.getUUID();
-            }
-            */
             node.addMixin(JcrConstants.MIXIN_VERSIONABLE);
             node.addMixin(JcrConstants.MIXIN_LOCKABLE);
-
             return node;
-
         } catch (RepositoryException e) {
             throw new DataAccessResourceFailureException("Exception occurred cannot create Node: " + e.getMessage(), e);
         }
@@ -242,12 +212,10 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                 else if (value instanceof Integer)
                     nativeEntry.setProperty(propertyName, getLong(value));
                 else if (value instanceof Date){
-                    System.out.println("property name " + propertyName);
-                    nativeEntry.setProperty(propertyName, getLong(((Date)value).getTime()));
-                    System.out.println("Dateeeeeeeeeeeeeeeeeeeeee");
+                    //TODO: Solve date type problem.
+                    nativeEntry.setProperty(propertyName, ((Date)value).getTime());
                 }else{
                     //Marshaling all unsupported data types into String
-                    System.out.println(value.getClass());
                     value = value.toString();
                     nativeEntry.setProperty(propertyName, (String)value);
                 }
@@ -274,7 +242,8 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
             try {
                 node.checkout();
                 for (String propName : propNames) {
-                    node.setProperty(propName, entry.getProperty(propName).getValue());
+                    if(node.hasProperty(propName))
+                        node.setProperty(propName, entry.getProperty(propName).getValue());                       
                 }
                 node.save();
                 node.checkin();

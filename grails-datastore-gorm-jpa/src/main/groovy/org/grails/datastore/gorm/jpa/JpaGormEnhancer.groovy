@@ -1,3 +1,4 @@
+
 /* Copyright (C) 2011 SpringSource
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,16 +20,24 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager 
-import javax.persistence.NoResultException;
 import javax.persistence.Query 
 
 import org.grails.datastore.gorm.GormEnhancer;
+import org.grails.datastore.gorm.GormInstanceApi 
 import org.grails.datastore.gorm.GormStaticApi 
 import org.springframework.core.convert.ConversionService;
 import org.springframework.datastore.mapping.core.Datastore 
+import org.springframework.datastore.mapping.jpa.JpaDatastore;
+import org.springframework.datastore.mapping.jpa.JpaSession;
 import org.springframework.orm.jpa.JpaCallback;
 import org.springframework.orm.jpa.JpaTemplate 
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager 
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import static org.springframework.datastore.mapping.validation.ValidatingInterceptor.*
 
 /**
  * Extends the default {@link GormEnhancer} adding supporting for JPQL methods
@@ -48,15 +57,83 @@ class JpaGormEnhancer extends GormEnhancer{
 		super(datastore);
 	}
 	
+	protected GormInstanceApi getInstanceApi(Class cls) {
+		return new JpaInstanceApi(cls, datastore)
+	}
 	protected GormStaticApi getStaticApi(Class cls) {
 		return new JpaStaticApi(cls, datastore)
 	}
+}
+class JpaInstanceApi extends GormInstanceApi {
+
+	public JpaInstanceApi(Class persistentClass, Datastore datastore) {
+		super(persistentClass, datastore);
+	}
+
+
+	@Override
+	public Object merge(Object instance, Map params) {
+		def merged
+		doSave(instance, params) { session ->
+			merged = session.merge(instance)	
+		}
+		return merged
+	}
+
+	@Override
+	public Object save(Object instance, Map params) {
+		doSave(instance, params) { session ->
+			session.persist(instance)	
+		}
+	}	
+	
+	private doSave(instance, Map params, Closure callable) {
+		final session = datastore.currentSession
+		boolean hasErrors = false
+		boolean validate = params?.containsKey("validate") ? params.validate : true
+		if(instance.respondsTo('validate') && validate) {
+		  session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, false)
+		  hasErrors = !instance.validate()
+		}
+		else {
+		  session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, true)
+		  instance.clearErrors()
+		}
+	
+		if(!hasErrors) {
+		  callable.call(session)		  
+		  if(params?.flush) {
+			session.flush()
+		  }
+		}
+		else {
+		  if(params?.failOnError)
+			throw validationException.newInstance( "Validation error occured during call to save()", instance.errors)
+		  else {
+			  rollbackTransaction(session)
+			  return null
+		  }
+		}
+		return instance
+	}
+	
+	private void rollbackTransaction(JpaSession jpaSession) {
+		jpaSession.getTransaction()?.rollback()
+	}
+	
 }
 class JpaStaticApi extends GormStaticApi {
 
 	
 	public JpaStaticApi(Class persistentClass, Datastore datastore) {
 		super(persistentClass, datastore);	
+	}
+	
+	def withEntityManager(Closure callable) {
+		JpaTemplate jpaTemplate = datastore.currentSession.getNativeInterface()
+		jpaTemplate.execute({ EntityManager em ->
+			callable.call( em )
+	   } as JpaCallback)
 	}
 	
 	@Override

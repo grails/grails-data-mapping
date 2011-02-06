@@ -30,23 +30,28 @@ import javax.persistence.FlushModeType;
  */
 public class DatastorePersistenceContextInterceptor implements PersistenceContextInterceptor{
     private static final Log LOG = LogFactory.getLog(DatastorePersistenceContextInterceptor.class);
-    private Datastore datastore;
-    private boolean participate;
+    protected Datastore datastore;
+    protected boolean participate;
 
     public DatastorePersistenceContextInterceptor(Datastore datastore) {
         this.datastore = datastore;
     }
 
     public void init() {
-      if (TransactionSynchronizationManager.hasResource(datastore)) {
+      if (TransactionSynchronizationManager.getResource(datastore) != null) {
             // Do not modify the Session: just set the participate flag.
             participate = true;
         }
         else {
+        	
             LOG.debug("Opening single Datastore session in DatastorePersistenceContextInterceptor");
             Session session = getSession();
             session.setFlushMode(FlushModeType.AUTO);
-            TransactionSynchronizationManager.bindResource(datastore, new SessionHolder(session));
+            try {
+				TransactionSynchronizationManager.bindResource(datastore, new SessionHolder(session));
+			} catch (IllegalStateException e) {
+				// ignore, already bound
+			}
         }
     }
 

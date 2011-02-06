@@ -34,6 +34,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 
 import org.springframework.datastore.mapping.model.ClassMapping;
@@ -112,68 +113,81 @@ public class JpaMappingConfigurationStrategy implements MappingConfigurationStra
 			final PropertyDescriptor[] propertyDescriptors = cpf.getPropertyDescriptors();
 			
 			for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-				final Field field = cpf.getDeclaredField(propertyDescriptor.getName());
-				if(field != null) {
-					if(field.getAnnotation(Basic.class) != null || field.getAnnotation(Temporal.class) != null || field.getAnnotation(Version.class) != null) {
-						persistentProperties.add(
-								propertyFactory.createSimple(owner, context, propertyDescriptor)
-						);
+				if(propertyDescriptor.getReadMethod() != null && propertyDescriptor.getWriteMethod() != null) {
+					Field field;
+					try {
+						field = cpf.getDeclaredField(propertyDescriptor.getName());
+					} catch (Exception e) {
+						continue;
 					}
-					else if(field.getAnnotation(Id.class) != null) {
-						identities.put(javaClass, propertyFactory.createIdentity(owner, context, propertyDescriptor));
-					}
-					else if(field.getAnnotation(Embedded.class) != null) {
-						final org.springframework.datastore.mapping.model.types.Embedded embeddedProperty = propertyFactory.createEmbedded(owner, context, propertyDescriptor);
-						embeddedProperty.setAssociatedEntity(getOrCreateAssociatedEntity(context, field.getType()));
-						persistentProperties.add(
-								embeddedProperty
-						);
-					}
-					else if(field.getAnnotation(OneToOne.class) != null) {
-						OneToOne one2one = field.getAnnotation(OneToOne.class);
-						
-						if(one2one.mappedBy() != null && one2one.targetEntity() != null) {
-							owners.add(one2one.targetEntity());
-						}						
-						final ToOne oneToOneProperty = propertyFactory.createOneToOne(owner, context, propertyDescriptor);
-						oneToOneProperty.setAssociatedEntity(getOrCreateAssociatedEntity(context, field.getType()));
-						persistentProperties.add(
-								oneToOneProperty
-						);
-					}				
-					else if(field.getAnnotation(OneToMany.class) != null) {
-						OneToMany one2m = field.getAnnotation(OneToMany.class);
-						
-						if(one2m.mappedBy() != null && one2m.targetEntity() != null) {
-							owners.add(one2m.targetEntity());
-						}						
-						final org.springframework.datastore.mapping.model.types.OneToMany oneToManyProperty = propertyFactory.createOneToMany(owner, context, propertyDescriptor);
-						oneToManyProperty.setAssociatedEntity(getOrCreateAssociatedEntity(context, one2m.targetEntity()));
-						persistentProperties.add(
-								oneToManyProperty
-						);
-					}				
-					else if(field.getAnnotation(ManyToMany.class) != null) {
-						ManyToMany m2m = field.getAnnotation(ManyToMany.class);
-						
-						if(m2m.mappedBy() != null && m2m.targetEntity() != null) {
-							owners.add(m2m.targetEntity());
+					if(field != null) {
+						if(field.getAnnotation(Basic.class) != null || field.getAnnotation(Temporal.class) != null || field.getAnnotation(Version.class) != null) {
+							persistentProperties.add(
+									propertyFactory.createSimple(owner, context, propertyDescriptor)
+							);
 						}
-						final org.springframework.datastore.mapping.model.types.ManyToMany manyToManyProperty = propertyFactory.createManyToMany(owner, context, propertyDescriptor);
-						manyToManyProperty.setAssociatedEntity(getOrCreateAssociatedEntity(context, m2m.targetEntity()));
-						persistentProperties.add(
-								manyToManyProperty
-						);
-					}				
-					else if(field.getAnnotation(ManyToOne.class) != null) {
-						final ToOne manyToOneProperty = propertyFactory.createManyToOne(owner, context, propertyDescriptor);
-						manyToOneProperty.setAssociatedEntity(getOrCreateAssociatedEntity(context, field.getType()));
-						persistentProperties.add(
-								manyToOneProperty
-						);
-					}	
-					
+						else if(field.getAnnotation(Id.class) != null) {
+							identities.put(javaClass, propertyFactory.createIdentity(owner, context, propertyDescriptor));
+						}
+						else if(field.getAnnotation(Embedded.class) != null) {
+							final org.springframework.datastore.mapping.model.types.Embedded embeddedProperty = propertyFactory.createEmbedded(owner, context, propertyDescriptor);
+							embeddedProperty.setAssociatedEntity(getOrCreateAssociatedEntity(context, field.getType()));
+							persistentProperties.add(
+									embeddedProperty
+							);
+						}
+						else if(field.getAnnotation(OneToOne.class) != null) {
+							OneToOne one2one = field.getAnnotation(OneToOne.class);
+							
+							if(one2one.mappedBy() != null && one2one.targetEntity() != null) {
+								owners.add(one2one.targetEntity());
+							}						
+							final ToOne oneToOneProperty = propertyFactory.createOneToOne(owner, context, propertyDescriptor);
+							oneToOneProperty.setAssociatedEntity(getOrCreateAssociatedEntity(context, field.getType()));
+							persistentProperties.add(
+									oneToOneProperty
+							);
+						}				
+						else if(field.getAnnotation(OneToMany.class) != null) {
+							OneToMany one2m = field.getAnnotation(OneToMany.class);
+							
+							if(one2m.mappedBy() != null && one2m.targetEntity() != null) {
+								owners.add(one2m.targetEntity());
+							}						
+							final org.springframework.datastore.mapping.model.types.OneToMany oneToManyProperty = propertyFactory.createOneToMany(owner, context, propertyDescriptor);
+							oneToManyProperty.setAssociatedEntity(getOrCreateAssociatedEntity(context, one2m.targetEntity()));
+							persistentProperties.add(
+									oneToManyProperty
+							);
+						}				
+						else if(field.getAnnotation(ManyToMany.class) != null) {
+							ManyToMany m2m = field.getAnnotation(ManyToMany.class);
+							
+							if(m2m.mappedBy() != null && m2m.targetEntity() != null) {
+								owners.add(m2m.targetEntity());
+							}
+							final org.springframework.datastore.mapping.model.types.ManyToMany manyToManyProperty = propertyFactory.createManyToMany(owner, context, propertyDescriptor);
+							manyToManyProperty.setAssociatedEntity(getOrCreateAssociatedEntity(context, m2m.targetEntity()));
+							persistentProperties.add(
+									manyToManyProperty
+							);
+						}				
+						else if(field.getAnnotation(ManyToOne.class) != null) {
+							final ToOne manyToOneProperty = propertyFactory.createManyToOne(owner, context, propertyDescriptor);
+							manyToOneProperty.setAssociatedEntity(getOrCreateAssociatedEntity(context, field.getType()));
+							persistentProperties.add(
+									manyToOneProperty
+							);
+						}
+						else if(field.getAnnotation(Transient.class) == null){
+							persistentProperties.add(
+									propertyFactory.createSimple(owner, context, propertyDescriptor)
+							);							
+						}
+						
+					}					
 				}
+
 			}			
 		}
 	}

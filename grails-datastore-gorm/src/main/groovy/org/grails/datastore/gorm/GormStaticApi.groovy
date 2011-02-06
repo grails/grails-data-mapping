@@ -14,12 +14,13 @@
  */
 package org.grails.datastore.gorm
 
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.query.Query
 import grails.gorm.CriteriaBuilder
+
 import org.grails.datastore.gorm.finders.DynamicFinder
-import org.springframework.datastore.mapping.core.AbstractDatastore
+import org.springframework.beans.BeanWrapperImpl
+import org.springframework.datastore.mapping.core.Datastore
+import org.springframework.datastore.mapping.core.Session
+import org.springframework.datastore.mapping.query.Query
 
 
 
@@ -92,7 +93,7 @@ class GormStaticApi extends AbstractGormApi {
    * Retrieves and object from the datastore as a proxy. eg. Book.proxy(1)
    */
   def proxy(Serializable id) {
-    datastore.currentSession.proxy(persistentClass,id)
+  	load(id)
   }
 
   /**
@@ -101,9 +102,16 @@ class GormStaticApi extends AbstractGormApi {
    * @return A list of identifiers
    */
   List getAll(Serializable... ids) {
-    datastore.currentSession.retrieveAll(persistentClass, ids)
+    datastore.currentSession.retrieveAll(persistentClass, ids.flatten())
   }
-
+  
+  /**
+   * @return Synonym for {@link #list()}
+   */
+  List getAll() {
+	  list()
+  }
+  
   /**
    * Creates a criteria builder instance
    */
@@ -115,8 +123,23 @@ class GormStaticApi extends AbstractGormApi {
    * Creates a criteria builder instance
    */
   def withCriteria(Closure callable) {
-    return new CriteriaBuilder(persistentClass, datastore).list(callable)
+    return createCriteria().list(callable)
   }
+  
+  /**
+  * Creates a criteria builder instance
+  */
+ def withCriteria( Map builderArgs, Closure callable) {
+   def criteriaBuilder = createCriteria()
+   def builderBean = new BeanWrapperImpl(criteriaBuilder)
+   for (entry in builderArgs) {
+	   if (builderBean.isWritableProperty(entry.key)) {
+		   builderBean.setPropertyValue(entry.key, entry.value)
+	   }
+   }
+
+   return criteriaBuilder.list(callable)
+ }
 
   /**
    * Locks an instance for an update
@@ -152,6 +175,13 @@ class GormStaticApi extends AbstractGormApi {
       return 0
     }
   }
+  
+  /**
+   * Same as {@link #count()} but allows property-style syntax (Foo.count) 
+   */
+  Integer getCount() {
+  	count()
+  }
 
   /**
    * Checks whether an entity exists
@@ -170,6 +200,18 @@ class GormStaticApi extends AbstractGormApi {
     Query q = datastore.currentSession.createQuery(persistentClass)
     DynamicFinder.populateArgumentsForCriteria(persistentClass, q, params)
     q.list()
+  }
+  
+  /**
+   * List all entities
+   * 
+   * @return The list of all entities
+   */
+  List list() {
+	  datastore
+	  	.currentSession
+		  .createQuery(persistentClass)
+		  	.list()
   }
 
   /**
@@ -218,14 +260,13 @@ class GormStaticApi extends AbstractGormApi {
    * Creates and binds a new session for the scope of the given closure
    */
   def withNewSession(Closure callable) {
-    def oldSession = datastore.currentSession
 
+    def session = datastore.connect()
     try {
-      def session = datastore.connect()
       callable?.call(session)
     }
     finally {
-      AbstractDatastore.bindSession oldSession
+		session.disconnect()
     }
   }
 

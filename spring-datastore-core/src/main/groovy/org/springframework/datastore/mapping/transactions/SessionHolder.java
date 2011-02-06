@@ -14,6 +14,9 @@
  */
 package org.springframework.datastore.mapping.transactions;
 
+import java.util.Deque;
+import java.util.concurrent.LinkedBlockingDeque;
+
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.transaction.support.ResourceHolderSupport;
 
@@ -26,11 +29,11 @@ import org.springframework.transaction.support.ResourceHolderSupport;
 public class SessionHolder extends ResourceHolderSupport {
 
 
-    private Session session;
+    private Deque<Session> sessions = new LinkedBlockingDeque<Session>();
     private Transaction transaction;
 
     public SessionHolder(Session session) {
-        this.session = session;
+        sessions.add(session);
     }
 
     public Transaction getTransaction() {
@@ -42,11 +45,11 @@ public class SessionHolder extends ResourceHolderSupport {
     }
 
     public Session getSession() {
-        return session;
+        return sessions.peekLast();
     }
 
     public boolean isEmpty() {
-        return session == null;
+        return sessions.isEmpty();
     }
 
     public boolean doesNotHoldNonDefaultSession() {
@@ -54,11 +57,15 @@ public class SessionHolder extends ResourceHolderSupport {
     }
 
     public void addSession(Session session) {
-        this.session = session;
+        this.sessions.add(session);
     }
+    
+    public void removeSession(Session session) {
+        this.sessions.remove(session);
+    }    
 
     public boolean containsSession(Session session) {
-        return this.session == session;
+    	return sessions.contains(session);
     }
 
 }

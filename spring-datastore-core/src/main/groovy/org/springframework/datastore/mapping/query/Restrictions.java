@@ -157,7 +157,7 @@ public class Restrictions {
 	}
 	
     /**
-     * Used to restrict a value to be empty (such as a blank string)
+     * Used to restrict a value to be empty (such as a blank string or an empty collection)
      * 
      * @param property The property name
      * @return The IsEmpty instance

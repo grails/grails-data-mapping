@@ -135,16 +135,27 @@ public class GemfireEntityPersister extends LockableEntityPersister {
         final GemfireTemplate template = gemfireDatastore.getTemplate(persistentEntity);
         return (List<Object>) template.execute(new GemfireCallback() {
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
-                if(keys instanceof Collection)
-                    return region.getAll((Collection) keys);
-                else {
+                if(keys instanceof Collection) {
+					final Map all = region.getAll((Collection) keys);
+					return getListOfValues(all);
+				} else {
                     Collection keyList = new ArrayList();
                     for (Serializable key : keys) {
                         keyList.add(key);
                     }
-                    return region.getAll(keyList);
+                    final Map all = region.getAll(keyList);
+					return getListOfValues(all);
                 }
             }
+
+			List getListOfValues(final Map all) {
+				if(all != null) {
+					return new ArrayList(all.values());
+				}
+				else {
+					return Collections.emptyList();
+				}
+			}
         });
     }
 
