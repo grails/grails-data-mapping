@@ -21,6 +21,20 @@ class Person {
 }
 {code}
 
+You can also map lists and maps of basic types (such as strings) simply by defining the appropriate collection type:
+
+{code:java}
+class Person {
+	List<String> friends
+	Map pets
+}
+
+...
+
+new Person(friends:['Fred', 'Bob'], pets:[chuck:"Dog", eddie:'Parrot']).save(flush:true)
+{code}
+
+Basic collection types as stored as native ArrayList and BSON documents within the Mongo documents.
 
 You may wish to customize how a domain class maps onto a @DBCollection@. This is possible using the @mapping@ block as follows:
 
