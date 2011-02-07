@@ -1,6 +1,7 @@
 package org.springframework.datastore.mapping.jcr;
 
 import org.apache.jackrabbit.core.TransientRepository;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.mapping.core.AbstractSession;
@@ -24,6 +25,7 @@ import javax.jcr.SimpleCredentials;
 import javax.persistence.FlushModeType;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +41,7 @@ public class JcrSession extends AbstractSession<JcrSessionFactory> {
 
     public JcrSession(Datastore ds, MappingContext mappingContext, JcrSessionFactory jcrSessionFactory) {
         super(ds, mappingContext);
+        mappingContext.addTypeConverter(new LongToDateConverter());
         this.jcrSessionFactory = jcrSessionFactory;
         interceptor.setSessionFactory(jcrSessionFactory);
         interceptor.preHandle(null, null, null);
@@ -129,6 +132,10 @@ public class JcrSession extends AbstractSession<JcrSessionFactory> {
         }
     }
 
-
+    protected class LongToDateConverter implements Converter<Long, Date> {
+        public Date convert(Long number) {
+            return new Date(number);
+        }
+    }
 }
 
