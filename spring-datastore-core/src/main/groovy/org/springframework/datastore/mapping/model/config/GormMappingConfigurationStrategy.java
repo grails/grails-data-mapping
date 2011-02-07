@@ -215,7 +215,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         else {
             if(association instanceof OneToOne) {
                 association.setOwningSide(true);
-            } else {
+            } else if(!(association instanceof Basic)) {
                if(association.getAssociatedEntity().isOwningEntity(association.getOwner())) {
                    association.setOwningSide(true);
                }
@@ -368,6 +368,9 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             	association = propertyFactory.createBasicCollection(entity, context, property);
             }
         }
+        else {
+        	association = propertyFactory.createBasicCollection(entity, context, property);
+        }        
         return association;
     }
 

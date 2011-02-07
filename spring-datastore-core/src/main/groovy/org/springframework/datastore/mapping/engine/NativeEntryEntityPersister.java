@@ -25,7 +25,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.mapping.collection.PersistentList;
@@ -46,6 +45,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.PropertyMapping;
 import org.springframework.datastore.mapping.model.types.Association;
+import org.springframework.datastore.mapping.model.types.Basic;
 import org.springframework.datastore.mapping.model.types.Embedded;
 import org.springframework.datastore.mapping.model.types.OneToMany;
 import org.springframework.datastore.mapping.model.types.Simple;
@@ -246,7 +246,7 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
         final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
         for (final PersistentProperty prop : props) {
             String propKey = getNativePropertyKey(prop);
-            if(prop instanceof Simple) {
+            if((prop instanceof Simple) || (prop instanceof Basic)) {
                 ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propKey) );
             }
             else if(prop instanceof ToOne) {
@@ -416,7 +416,7 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
             }
             final boolean indexed = mappedProperty != null && mappedProperty.isIndex();
             if(key == null) key = prop.getName();
-            if(prop instanceof Simple) {
+            if( (prop instanceof Simple) || (prop instanceof Basic)) {
                 Object propValue = entityAccess.getProperty(prop.getName());
 
                 if(indexed) {
