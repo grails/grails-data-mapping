@@ -41,9 +41,11 @@ import org.codehaus.groovy.grails.orm.hibernate.metaclass.ListOrderByPersistentM
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ListPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.SavePersistentMethod
+import org.codehaus.groovy.grails.orm.hibernate.metaclass.ValidatePersistentMethod
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
+import org.grails.datastore.gorm.GormValidationApi
 import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
 import org.hibernate.Criteria
 import org.hibernate.FlushMode
@@ -57,6 +59,7 @@ import org.hibernate.engine.SessionImplementor
 import org.hibernate.proxy.HibernateProxy
 import org.springframework.core.convert.ConversionService
 import org.springframework.dao.DataAccessException
+import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.orm.hibernate3.HibernateCallback
 import org.springframework.orm.hibernate3.HibernateTemplate
@@ -93,6 +96,12 @@ class HibernateGormEnhancer extends GormEnhancer{
 		
 	}
 
+	protected GormValidationApi getValidationApi(Class cls) {
+		def validateApi = new HibernateGormValidationApi(cls, datastore)
+		validateApi.classLoader = classLoader
+		return validateApi
+	}
+	
 	@Override
 	protected GormStaticApi getStaticApi(Class cls) {
 		def staticApi = new HibernateGormStaticApi(cls, datastore)
@@ -158,6 +167,13 @@ class HibernateGormEnhancer extends GormEnhancer{
 	}
 	
 }
+
+/**
+ * The implementation of the GORM static method contract for Hibernate
+ * 
+ * @author Graeme Rocher
+ * @since 1.0
+ */
 class HibernateGormStaticApi extends GormStaticApi {
 	private static final EMPTY_ARRAY = [] as Object[]
 	
@@ -303,8 +319,19 @@ class HibernateGormStaticApi extends GormStaticApi {
 		listMethod.invoke persistentClass, "list", EMPTY_ARRAY
 	}
 
+		
 	@Override
-	public List findAllWhere(Map queryMap) {
+	public List findAll(Object example, Map args) {
+		findAllMethod.invoke(persistentClass, "findAll", [example, args] as Object[])
+	}
+
+	@Override
+	public Object find(Object example, Map args) {
+		findMethod.invoke(persistentClass, "find", [example, args] as Object[])
+	}
+
+	@Override
+	List findAllWhere(Map queryMap, Map args) {
         if (!queryMap) return null
         hibernateTemplate.execute({Session session ->
             Map queryArgs = filterQueryArgumentMap(queryMap)
@@ -318,21 +345,20 @@ class HibernateGormStaticApi extends GormStaticApi {
             criteria.list()
         } as HibernateCallback)
 	}
-
-	@Override
-	public Object findWhere(Map queryMap) {
-      if (!queryMap) return null
-        hibernateTemplate.execute({Session session ->
-            Map queryArgs = filterQueryArgumentMap(queryMap)
-            List<String> nullNames = removeNullNames(queryMap)
-            Criteria criteria = session.createCriteria(persistentClass)
-            criteria.add(Restrictions.allEq(queryArgs))
-            for (name in nullNames) {
-                criteria.add Restrictions.isNull(name)
-            }
-            criteria.setMaxResults(1)
-            GrailsHibernateUtil.unwrapIfProxy(criteria.uniqueResult())
-        } as HibernateCallback)
+	
+	def findWhere(Map queryMap, Map args) {
+		if (!queryMap) return null
+		hibernateTemplate.execute({Session session ->
+			Map queryArgs = filterQueryArgumentMap(queryMap)
+			List<String> nullNames = removeNullNames(queryMap)
+			Criteria criteria = session.createCriteria(persistentClass)
+			criteria.add(Restrictions.allEq(queryArgs))
+			for (name in nullNames) {
+				criteria.add Restrictions.isNull(name)
+			}
+			criteria.setMaxResults(1)
+			GrailsHibernateUtil.unwrapIfProxy(criteria.uniqueResult())
+		} as HibernateCallback)
 	}
 	
 	private Map filterQueryArgumentMap(Map query) {
@@ -494,6 +520,58 @@ class HibernateGormStaticApi extends GormStaticApi {
         findAllMethod.invoke(persistentClass, "findAll", [query, params, args] as Object[])
 	}
 }
+
+class HibernateGormValidationApi extends GormValidationApi {
+
+	private ValidatePersistentMethod validateMethod
+	private ClassLoader classLoader = Thread.currentThread().getContextClassLoader()
+	
+	public HibernateGormValidationApi(Class persistentClass, HibernateDatastore datastore) {
+		super(persistentClass, datastore);
+		
+		sessionFactory = datastore.getSessionFactory()
+				
+		def mappingContext = datastore.mappingContext
+		if(mappingContext instanceof GrailsDomainClassMappingContext) {
+			GrailsDomainClassMappingContext domainClassMappingContext = mappingContext
+			def grailsApplication = domainClassMappingContext.getGrailsApplication()
+			def domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, persistentClass.name)
+			def validator = mappingContext.getEntityValidator( mappingContext.getPersistentEntity(persistentClass.name) )
+			this.validateMethod = new ValidatePersistentMethod(sessionFactory, 
+																classLoader, 
+																grailsApplication,
+																validator)
+			
+		}
+	
+	}
+
+	@Override
+	public boolean validate(Object instance, Map arguments) {
+		if(validateMethod != null) {
+			return validateMethod.invoke(instance, "validate", [arguments] as Object[])
+		}
+		else {			
+			return super.validate(instance, arguments);
+		}
+	}
+
+	@Override
+	public boolean validate(Object instance, List fields) {
+		if(validateMethod != null) {
+			return validateMethod.invoke(instance, "validate", [fields] as Object[])
+		}
+		else {			
+			return super.validate(instance, arguments);
+		}
+	}
+}
+/**
+ * The implementation of the GORM instance API contract for Hibernate
+ * 
+ * @author Graeme Rocher
+ * @since 1.0
+ */
 class HibernateGormInstanceApi extends GormInstanceApi {
 	private static final EMPTY_ARRAY = [] as Object[]
 	
