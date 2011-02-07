@@ -10,6 +10,18 @@ class Person {
 
 This will map onto a Mongo [DBCollection|http://api.mongodb.org/java/current/com/mongodb/DBCollection.html] called "person".
 
+It is quite common in Mongo to embed documents within documents (nested documents). This can be done with GORM embedded types:
+
+{code:java}
+class Person {
+  String firstName
+  String lastName
+  Address address
+  static embedded = ['address']
+}
+{code}
+
+
 You may wish to customize how a domain class maps onto a @DBCollection@. This is possible using the @mapping@ block as follows:
 
 {code:java}

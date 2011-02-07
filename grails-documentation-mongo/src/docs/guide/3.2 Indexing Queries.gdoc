@@ -11,4 +11,13 @@ class Person {
 }
 {code}
 
-With the above mapping a Mongo index will be automatically created for you.
+With the above mapping a Mongo index will be automatically created for you. You can customize the index options using the @indexAttributes@ configuration parameter:
+
+{code:java}
+class Person {
+  String name
+  static mapping = {
+    name index:true, indexAttributes: [unique:true, dropDups:true]
+  }
+}
+{code}
