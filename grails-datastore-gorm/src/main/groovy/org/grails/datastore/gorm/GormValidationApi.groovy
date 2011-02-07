@@ -14,12 +14,15 @@
  */
 package org.grails.datastore.gorm
 
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.validation.Validator
-import org.springframework.datastore.mapping.model.MappingContext
-import org.springframework.validation.Errors
-import org.springframework.validation.BeanPropertyBindingResult
 import static org.springframework.datastore.mapping.validation.ValidatingInterceptor.*
+
+import org.springframework.datastore.mapping.core.Datastore
+import org.springframework.datastore.mapping.model.MappingContext
+import org.springframework.validation.BeanPropertyBindingResult
+import org.springframework.validation.Errors
+import org.springframework.validation.FieldError
+import org.springframework.validation.ObjectError
+import org.springframework.validation.Validator
 /**
  * Methods used for validating GORM instances
  *
@@ -38,6 +41,60 @@ class GormValidationApi extends AbstractGormApi{
     validator = context.getEntityValidator(entity)
   }
 
+  
+  /**
+   * Validates an instance for the given arguments
+   * 
+   * @param instance The instance to validate
+   * @param arguments The arguments to use
+   * @return True if the instance is valid
+   */
+  boolean validate(instance, Map arguments) {
+	  validate instance, Collections.emptyList()
+  }
+  
+  /**
+   * Validates an instance
+   *
+   * @param instance The instance to validate
+   * @param fields The list of fields to validate
+   * @return True if the instance is valid
+   */
+  boolean validate(instance, List fields) {
+	if(validator) {
+	  Errors errors = getErrors(instance)
+	  validator.validate instance, errors
+	  
+	  int oldErrorCount = errors.getErrorCount();
+	  errors = filterErrors(errors, fields as Set, instance);
+	  
+	  if (errors.getErrorCount() != oldErrorCount) {
+		  setErrors instance, errors
+	  }
+	  return !errors.hasErrors()
+	}
+	return true
+  }
+  
+  private Errors filterErrors(Errors errors, Set validatedFields, Object target) {
+	  if (validatedFields == null || validatedFields.isEmpty()) return errors;
+
+	  BeanPropertyBindingResult result = new BeanPropertyBindingResult(target, target.getClass().getName());
+
+	  final List allErrors = errors.getAllErrors();
+	  for (int i = 0; i < allErrors.size(); i++) {
+		  ObjectError error = (ObjectError) allErrors.get(i);
+
+		  if (error instanceof FieldError) {
+			  FieldError fieldError = (FieldError) error;
+			  if (!validatedFields.contains(fieldError.getField())) continue;
+		  }
+
+		  result.addError(error);
+	  }
+
+	  return result;
+  }
   /**
    * Validates an instance
    *
@@ -45,13 +102,21 @@ class GormValidationApi extends AbstractGormApi{
    * @return True if the instance is valid
    */
   boolean validate(instance) {
-    if(validator) {
-      Errors errors = getErrors(instance)
-      validator.validate instance, errors
-      return !errors.hasErrors()
-    }
-    return true
+  		validate instance, Collections.emptyList()
   }
+  
+  /**
+  * Validates an instance. Note: This signature is purely here for compatibility the
+  * evict parameter does nothing and the method should be regarded as deprecated
+  * 
+  * @param instance The instance to validate
+  * @return True if the instance is valid
+  * 
+  */
+ @Deprecated
+ boolean validate(instance, boolean evict) {
+		validate instance, Collections.emptyList()
+ }
 
   /**
    * Obtains the errors for an instance
