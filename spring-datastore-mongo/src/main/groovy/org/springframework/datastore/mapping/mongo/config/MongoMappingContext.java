@@ -31,6 +31,19 @@ import org.springframework.datastore.mapping.model.MappingFactory;
 
 public class MongoMappingContext extends DocumentMappingContext {
 
+	private final class MongoDocumentMappingFactory extends
+			AbstractGormMappingFactory<MongoCollection, MongoAttribute> {
+		@Override
+		protected Class<MongoAttribute> getPropertyMappedFormType() {
+			return MongoAttribute.class;
+		}
+
+		@Override
+		protected Class<MongoCollection> getEntityMappedFormType() {
+			return MongoCollection.class;
+		}
+	}
+
 	public MongoMappingContext(String defaultDatabaseName) {
 		super(defaultDatabaseName);
 	}
@@ -38,17 +51,7 @@ public class MongoMappingContext extends DocumentMappingContext {
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected MappingFactory createDocumentMappingFactory() {
-		return new  AbstractGormMappingFactory<MongoCollection, Attribute>() {
-			@Override
-			protected Class<Attribute> getPropertyMappedFormType() {
-				return Attribute.class;
-			}
-
-			@Override
-			protected Class<MongoCollection> getEntityMappedFormType() {
-				return MongoCollection.class;
-			}
-		};
+		return new MongoDocumentMappingFactory();
 	}
 
 

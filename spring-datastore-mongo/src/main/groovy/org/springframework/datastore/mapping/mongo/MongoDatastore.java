@@ -36,6 +36,7 @@ import org.springframework.datastore.mapping.model.DatastoreConfigurationExcepti
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.mongo.config.MongoAttribute;
 import org.springframework.datastore.mapping.mongo.config.MongoCollection;
 import org.springframework.datastore.mapping.mongo.config.MongoMappingContext;
 
@@ -243,13 +244,20 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             public Object doInDB(DB db) throws MongoException, DataAccessException {
                 final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
 
-                for (PersistentProperty property : entity.getPersistentProperties()) {
+                for (PersistentProperty<MongoAttribute> property : entity.getPersistentProperties()) {
                     final boolean indexed = isIndexed(property) && Comparable.class.isAssignableFrom(property.getType());
 
                     if(indexed) {
+                    	
+                    	final MongoAttribute mongoAttributeMapping = property.getMapping().getMappedForm();
+                    	
                         DBObject dbObject = new BasicDBObject();
                         dbObject.put(property.getName(),1);
-                        collection.ensureIndex(dbObject);
+                        DBObject options = new BasicDBObject();
+                        if(mongoAttributeMapping != null && mongoAttributeMapping.getIndexAttributes() != null) {                        	
+                        	options.putAll(mongoAttributeMapping.getIndexAttributes());
+                        }
+                        collection.ensureIndex(dbObject, options);
                     }
                 }
 

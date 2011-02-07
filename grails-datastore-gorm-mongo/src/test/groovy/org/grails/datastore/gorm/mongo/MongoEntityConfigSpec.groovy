@@ -1,15 +1,15 @@
 package org.grails.datastore.gorm.mongo
 
-import org.springframework.data.document.mongodb.MongoTemplate;
-import org.springframework.datastore.mapping.document.config.Attribute;
-import org.springframework.datastore.mapping.document.config.DocumentPersistentEntity;
-import org.springframework.datastore.mapping.model.PersistentEntity;
-import org.springframework.datastore.mapping.mongo.MongoSession;
-import org.springframework.datastore.mapping.mongo.config.MongoCollection 
+import grails.gorm.tests.GormDatastoreSpec
 
-import com.mongodb.WriteConcern;
+import org.springframework.data.document.mongodb.MongoTemplate
+import org.springframework.datastore.mapping.document.config.DocumentPersistentEntity
+import org.springframework.datastore.mapping.model.PersistentEntity
+import org.springframework.datastore.mapping.mongo.MongoSession
+import org.springframework.datastore.mapping.mongo.config.MongoAttribute
+import org.springframework.datastore.mapping.mongo.config.MongoCollection
 
-import grails.gorm.tests.GormDatastoreSpec;
+import com.mongodb.WriteConcern
 
 class MongoEntityConfigSpec extends GormDatastoreSpec{
 	
@@ -25,7 +25,7 @@ class MongoEntityConfigSpec extends GormDatastoreSpec{
 			
 		when:	
 			MongoCollection coll = entity.mapping.mappedForm
-			Attribute attr = entity.getPropertyByName("name").getMapping().getMappedForm()
+			MongoAttribute attr = entity.getPropertyByName("name").getMapping().getMappedForm()
 		then:
 			coll != null
 			coll.collection == 'mycollection'
@@ -34,6 +34,7 @@ class MongoEntityConfigSpec extends GormDatastoreSpec{
 			attr != null
 			attr.index == true
 			attr.targetName == 'myattribute'
+			attr.indexAttributes == [unique:true]
 			
 		when:
 			def t = new MyMongoEntity(name:"Bob").save(flush:true)
@@ -57,6 +58,6 @@ class MyMongoEntity {
 		database "mydb"
 		shard "name"
 		writeConcern WriteConcern.FSYNC_SAFE
-		name index:true, attr:"myattribute"
+		name index:true, attr:"myattribute", indexAttributes: [unique:true]
 	}
 }
