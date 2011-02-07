@@ -1017,6 +1017,10 @@ class Plant implements Serializable{
     boolean goesInPatch
     String name
 
+	static mapping = {
+		name index:true
+		goesInPatch index:true
+	}
 
 }
 

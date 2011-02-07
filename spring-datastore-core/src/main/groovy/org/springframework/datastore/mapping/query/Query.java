@@ -14,6 +14,14 @@
  */
 package org.springframework.datastore.mapping.query;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.FlushModeType;
+
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
@@ -23,12 +31,6 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.util.Assert;
-
-import javax.persistence.FlushModeType;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Models a query that can be executed against a data store
@@ -231,6 +233,19 @@ public abstract class Query {
 
         criteria.add(Restrictions.eq(property, value));
         return this;
+    }
+    
+    /**
+     * Shortcut to restrict the query to multiple given property values
+     * 
+     * @param values The values
+     * @return This query instance
+     */
+    public Query allEq(Map<String, Object> values) {
+    	for (String property : values.keySet()) {
+			eq(property, values.get(property));
+		}    	
+    	return this;
     }
 
     /**

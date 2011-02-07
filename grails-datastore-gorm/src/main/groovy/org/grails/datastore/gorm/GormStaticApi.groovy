@@ -1,3 +1,4 @@
+
 /* Copyright (C) 2010 SpringSource
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +22,8 @@ import org.springframework.beans.BeanWrapperImpl
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.query.Query
+import org.springframework.datastore.mapping.model.types.Association;
+import org.springframework.datastore.mapping.model.PersistentProperty;
 
 
 
@@ -213,38 +216,134 @@ class GormStaticApi extends AbstractGormApi {
 		  .createQuery(persistentClass)
 		  	.list()
   }
-
+  
   /**
-   * Finds all results matching all of the given conditions. Eg. Book.findAllWhere(author:"Stephen King", title:"The Stand")
-   *
-   * @param queryMap The map of conditions
-   * @return A list of results
+   * The same as {@link #list()}
+   * 
+   * @return The list of all entities
    */
-  List findAllWhere(Map queryMap) {
-    Query q = datastore.currentSession.createQuery(persistentClass)
-    if(queryMap) {
-      for(entry in queryMap) {
-        q.eq(entry.key, entry.value)
-      }
-    }
-    q.list()
+  List findAll() {
+	  list()
+  }
+  
+  /**
+   * Finds an object by example
+   * 
+   * @param example The example
+   * @return A list of matching results
+   */
+  List findAll(Object example) {
+	  findAll(example, Collections.emptyMap())
+  }
+  
+  /**
+   * Finds an object by example using the given arguments for pagination
+   * 
+   * @param example The example
+   * @param args The arguments
+   * 
+   * @return A list of matching results
+   */
+  List findAll(Object example, Map args) {
+	  if(persistentEntity.isInstance(example)) {
+		  def queryMap = createQueryMapForExample(persistentEntity, example)		  
+		  return findAllWhere(queryMap, args)
+	  }
+	  return Collections.emptyList()
   }
 
-  /**
-   * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
-   *
-   * @param queryMap The map of conditions
-   * @return A single result
-   */
-  def findWhere(Map queryMap) {
-    Query q = datastore.currentSession.createQuery(persistentClass)
-    if(queryMap) {
-      for(entry in queryMap) {
-        q.eq(entry.key, entry.value)
-      }
-    }
-    q.singleResult()
-  }
+	private Map createQueryMapForExample(org.springframework.datastore.mapping.model.PersistentEntity persistentEntity, example) {
+		def props = persistentEntity.persistentProperties.findAll { PersistentProperty prop ->
+			!(prop instanceof Association)
+		}
+
+		def queryMap = [:]
+		for(PersistentProperty prop in props) {
+			def val = example[prop.name]
+			if(val != null)
+				queryMap[prop.name] = val
+		}
+		return queryMap
+	}
+
+	  /**
+	   * Finds all results matching all of the given conditions. Eg. Book.findAllWhere(author:"Stephen King", title:"The Stand")
+	   *
+	   * @param queryMap The map of conditions
+	   * @return A list of results
+	   */
+	  List findAllWhere(Map queryMap) {
+	  		findAllWhere(queryMap, Collections.emptyMap())
+	  }
+  
+	  /**
+	  * Finds all results matching all of the given conditions. Eg. Book.findAllWhere(author:"Stephen King", title:"The Stand")
+	  *
+	  * @param queryMap The map of conditions
+	  * @param args The Query arguments
+	  * 
+	  * @return A list of results
+	  */
+	 List findAllWhere(Map queryMap, Map args) {
+	   Query q = datastore.currentSession.createQuery(persistentClass)
+	   q.allEq(queryMap)
+	   DynamicFinder.populateArgumentsForCriteria persistentClass, q, args
+	   q.list()
+	 }
+  
+
+	 /**
+	 * Finds an object by example
+	 *
+	 * @param example The example
+	 * @return A list of matching results
+	 */
+	def find(Object example) {
+		find(example, Collections.emptyMap())
+	}
+	
+	/**
+	 * Finds an object by example using the given arguments for pagination
+	 *
+	 * @param example The example
+	 * @param args The arguments
+	 *
+	 * @return A list of matching results
+	 */
+	def find(Object example, Map args) {
+		if(persistentEntity.isInstance(example)) {
+			def queryMap = createQueryMapForExample(persistentEntity, example)
+			return findWhere(queryMap, args)
+		}
+		return null
+	}
+	
+	/**
+	 * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
+	 *
+	 * @param queryMap The map of conditions
+	 * @return A single result
+	 */
+	def findWhere(Map queryMap) {
+		findWhere(queryMap, Collections.emptyMap())
+	}
+	  
+	/**
+	 * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
+	 *
+	 * @param queryMap The map of conditions
+	 * @param args The Query arguments
+	 * 
+	 * @return A single result
+	 */
+	def findWhere(Map queryMap, Map args) {
+	   Query q = datastore.currentSession.createQuery(persistentClass)   
+	   if(queryMap) {
+		   q.allEq(queryMap)
+	   }
+	   DynamicFinder.populateArgumentsForCriteria persistentClass, q, args
+	   q.singleResult()
+	 }
 
   /**
    * Execute a closure whose first argument is a reference to the current session
