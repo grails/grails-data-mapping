@@ -48,7 +48,7 @@ import org.springframework.util.ClassUtils
  */
 class DatastoreUnitTestMixin {
 
-  SimpleMapDatastore datastore = new SimpleMapDatastore()
+  static SimpleMapDatastore datastore = new SimpleMapDatastore()
   Session session
   PlatformTransactionManager transactionManager = new DatastoreTransactionManager(datastore:datastore)
   private mockPluginManager = [hasGrailsPlugin: { String name ->

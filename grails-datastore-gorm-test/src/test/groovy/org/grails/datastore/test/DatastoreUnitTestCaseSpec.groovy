@@ -12,8 +12,21 @@ import grails.test.GrailsUnitTestCase
  * To change this template use File | Settings | File Templates.
  */
 class DatastoreUnitTestCaseSpec extends Specification {
+ // NOTE: we run the same test twice to ensure setup/teardown is cleaning up properly
+ void "Test mock domain 1"() {
+	given:
+	 TestTests tt = new TestTests()
+	 tt.metaClass.mixin DatastoreUnitTestMixin
 
-  void "Test mock domain"() {
+	when:
+	  tt.setUp()
+	  tt.testCRUD()
+	  tt.tearDown()
+
+	then:
+	  true == true
+  }
+  void "Test mock domain 2"() {
     given:
      TestTests tt = new TestTests()
 
@@ -29,7 +42,7 @@ class DatastoreUnitTestCaseSpec extends Specification {
   }
 }
 @Mixin(DatastoreUnitTestMixin)
-class TestTests extends GrailsUnitTestCase{
+class TestTests extends GroovyTestCase{
 
   protected void setUp() {
     super.setUp();
