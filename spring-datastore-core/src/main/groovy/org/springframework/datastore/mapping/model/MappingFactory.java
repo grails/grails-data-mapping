@@ -253,5 +253,24 @@ public abstract class MappingFactory<R,T> {
             }
         };
 	}
+
+	/**
+	 * Creates a {@link Basic} collection type
+	 * 
+	 * @param entity The entity
+	 * @param context The context
+	 * @param property The property
+	 * @return The Basic collection type
+	 */
+	public Basic createBasicCollection(PersistentEntity entity,
+			MappingContext context, PropertyDescriptor property) {
+		return new Basic(entity, context, property) {
+			@Override
+			public PropertyMapping getMapping() {
+				return createPropertyMapping(this, owner);
+			}
+			
+		};
+	}
 }
 
