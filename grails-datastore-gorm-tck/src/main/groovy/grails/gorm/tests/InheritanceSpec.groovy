@@ -1,5 +1,7 @@
 package grails.gorm.tests
 
+import grails.persistence.Entity;
+
 import org.junit.Test
 
 /**
@@ -78,10 +80,12 @@ class InheritanceSpec extends GormDatastoreSpec {
   }
 }
 
+@Entity
 class Location implements Serializable{
   Long id
+  Long version
   String name
-  String code
+  String code = "DEFAULT"
 
   def namedAndCode() {
       "$name - $code"
@@ -92,11 +96,13 @@ class Location implements Serializable{
     code index:true
   }
 }
+@Entity
 class City extends Location {
     BigDecimal latitude
     BigDecimal longitude
 }
 
+@Entity
 class Country extends Location {
   Integer population
   

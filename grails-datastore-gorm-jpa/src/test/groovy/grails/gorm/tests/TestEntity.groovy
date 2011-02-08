@@ -16,5 +16,9 @@ class TestEntity {
 	  age index:true
 	  child index:true
 	}
-  
+
+	static constraints = {
+		name blank:false
+		child nullable:true
+	}
 }

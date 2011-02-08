@@ -25,6 +25,7 @@ abstract class GormDatastoreSpec extends Specification {
     Session session
     
     def setupSpec() {
+		ExpandoMetaClass.enableGlobally()
         setupClass = loadSetupClass()
     }
 
@@ -37,7 +38,9 @@ abstract class GormDatastoreSpec extends Specification {
         session?.disconnect()
         try {
           setupClass.destroy()
-        } catch(e) {}
+        } catch(e) {
+			println "ERROR: Exception during test cleanup: ${e.message}"
+		}
 
         cleanRegistry()
     }

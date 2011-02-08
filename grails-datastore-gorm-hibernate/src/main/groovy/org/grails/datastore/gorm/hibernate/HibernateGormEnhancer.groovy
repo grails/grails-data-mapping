@@ -529,7 +529,7 @@ class HibernateGormValidationApi extends GormValidationApi {
 	public HibernateGormValidationApi(Class persistentClass, HibernateDatastore datastore) {
 		super(persistentClass, datastore);
 		
-		sessionFactory = datastore.getSessionFactory()
+		def sessionFactory = datastore.getSessionFactory()
 				
 		def mappingContext = datastore.mappingContext
 		if(mappingContext instanceof GrailsDomainClassMappingContext) {

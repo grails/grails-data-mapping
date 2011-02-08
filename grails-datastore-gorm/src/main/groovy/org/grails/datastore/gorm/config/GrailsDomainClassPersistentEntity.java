@@ -27,6 +27,7 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.PropertyMapping;
+import org.springframework.datastore.mapping.model.lifecycle.Initializable;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.model.types.Embedded;
 import org.springframework.datastore.mapping.model.types.ManyToMany;
@@ -41,7 +42,7 @@ import org.springframework.datastore.mapping.model.types.OneToOne;
  * @since 1.0
  *
  */
-public class GrailsDomainClassPersistentEntity implements PersistentEntity {
+public class GrailsDomainClassPersistentEntity implements PersistentEntity, Initializable {
 
 	private GrailsDomainClass domainClass;
 	private GrailsDomainClassMappingContext mappingContext;
@@ -55,6 +56,17 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
 		super();
 		this.domainClass = domainClass;
 		this.mappingContext = mappingContext;
+	}
+
+	/**
+	 * @return The wrapped GrailsDomainClass instance
+	 */
+	public GrailsDomainClass getDomainClass() {
+		return domainClass;
+	}
+
+	@Override
+	public void initialize() {
 		final GrailsDomainClassProperty identifier = domainClass.getIdentifier();
 		this.identifier = new GrailsDomainClassPersistentProperty(this, identifier);
 		
@@ -95,21 +107,9 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
 		}
 	}
 
-	/**
-	 * @return The wrapped GrailsDomainClass instance
-	 */
-	public GrailsDomainClass getDomainClass() {
-		return domainClass;
-	}
-
-	@Override
-	public void initialize() {
-		// noop
-	}
-
 	@Override
 	public String getName() {
-		return domainClass.getName();
+		return domainClass.getFullName();
 	}
 
 	@Override
@@ -181,8 +181,14 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
 
 	@Override
 	public PersistentEntity getRootEntity() {
-		// TODO Auto-generated method stub
-		return null;
+		if(isRoot()) return this;
+		else {
+			PersistentEntity parent = getParentEntity();
+			while(!parent.isRoot()) {
+				parent = parent.getParentEntity();
+			}
+			return parent;
+		}
 	}
 
 	@Override
@@ -192,7 +198,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
 
 	@Override
 	public String getDiscriminator() {
-		return null;
+		return getName();
 	}
 
 	@Override

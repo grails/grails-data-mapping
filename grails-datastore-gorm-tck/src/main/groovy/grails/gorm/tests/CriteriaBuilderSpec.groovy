@@ -1,10 +1,13 @@
 package grails.gorm.tests
 
+import spock.lang.Ignore;
+
 /**
  * Abstract base test for criteria queries. Subclasses should do the necessary setup to configure GORM
  */
 class CriteriaBuilderSpec extends GormDatastoreSpec {
 
+  @Ignore // ignored this test because the id() projection does not actually exist in GORM for Hibernate
   def "Test id projection"() {
 	  given:
 	  	def entity = new TestEntity(name:"Bob", age: 44, child:new ChildEntity(name:"Child")).save(flush:true)
@@ -88,9 +91,10 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
       2 == results.size()
 
     when:
+	  criteria = TestEntity.createCriteria()
       results = criteria.list {
          like('name', 'B%')
-         max 1
+         maxResults 1
       }
 
     then:
@@ -152,6 +156,7 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
       "Barney" == results[1].name
 
     when:
+	  criteria = TestEntity.createCriteria()
       results = criteria.list {
          like('name', 'B%')
          order "age", "desc"
@@ -183,6 +188,7 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
       40 == result
 
     when:
+	  criteria = TestEntity.createCriteria()
       result = criteria.get {
         projections {
           max "age"
@@ -193,6 +199,7 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
       43 == result
 
     when:
+	  criteria = TestEntity.createCriteria()
       def results = criteria.list {
 	      projections {
 	        max "age"

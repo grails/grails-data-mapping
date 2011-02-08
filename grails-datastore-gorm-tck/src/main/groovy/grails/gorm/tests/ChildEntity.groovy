@@ -10,6 +10,7 @@ package grails.gorm.tests
 @grails.persistence.Entity
 class ChildEntity implements Serializable{
   Long id
+  Long version
   String name
 
   static mapping = {

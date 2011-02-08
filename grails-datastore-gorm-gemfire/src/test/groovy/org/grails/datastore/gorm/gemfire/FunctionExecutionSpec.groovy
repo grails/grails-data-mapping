@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm.gemfire
 
+import spock.lang.Ignore;
 import grails.gorm.tests.Plant
 import grails.gorm.tests.GormDatastoreSpec
 
@@ -12,6 +13,7 @@ import grails.gorm.tests.GormDatastoreSpec
  */
 class FunctionExecutionSpec extends GormDatastoreSpec {
 
+  @Ignore
   void "Test a function can be invoked"() {
     given:
       def p = new Plant(name:"cabbage", goesInPatch:true).save()
@@ -27,6 +29,7 @@ class FunctionExecutionSpec extends GormDatastoreSpec {
 
   }
 
+  @Ignore
   void "Test a function can be invoked with a filter"() {
     given:
       def p1 = new Plant(name:"cabbage", goesInPatch:true).save()

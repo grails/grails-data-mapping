@@ -157,6 +157,7 @@ class FindByMethodSpec extends GormDatastoreSpec{
 }
 class Highway implements Serializable{
     Long id
+	Long version
     Boolean bypassed
     String name
 
@@ -167,9 +168,10 @@ class Highway implements Serializable{
 }
 class Book implements Serializable{
     Long id
+	Long version
     String author
     String title
-    Boolean published
+    Boolean published = false
 
     static mapping = {
       published index:true

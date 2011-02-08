@@ -37,6 +37,7 @@ public class HibernateDatastore extends AbstractDatastore {
 			SessionFactory sessionFactory) {
 		super(mappingContext);
 		this.sessionFactory = sessionFactory;
+		super.initializeConverters(mappingContext);
 	}
 	
 	
