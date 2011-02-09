@@ -197,10 +197,6 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
         final Serializable key = convertToNativeKey(nativeKey);
         T nativeEntry = retrieveEntry(persistentEntity, getEntityFamily(), key);
         if(nativeEntry != null) {
-            SessionImplementor<Object> si = (SessionImplementor<Object>) session;
-
-            si.cacheEntry(persistentEntity,nativeKey, nativeEntry);
-
             return createObjectFromNativeEntry(persistentEntity, key, nativeEntry);
         }
 
@@ -233,9 +229,18 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
     public Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, T nativeEntry) {
         persistentEntity = discriminatePersistentEntity(persistentEntity, nativeEntry);
         Object obj = persistentEntity.newInstance();
+        
+        cacheNativeEntry(persistentEntity, nativeKey, nativeEntry);
+        
         refreshObjectStateFromNativeEntry(persistentEntity, obj, nativeKey, nativeEntry);
         return obj;
     }
+
+	protected void cacheNativeEntry(PersistentEntity persistentEntity,
+			Serializable nativeKey, T nativeEntry) {
+		SessionImplementor<Object> si = (SessionImplementor<Object>) session;
+        si.cacheEntry(persistentEntity,nativeKey, nativeEntry);
+	}
 
     protected void refreshObjectStateFromNativeEntry(PersistentEntity persistentEntity, Object obj, Serializable nativeKey, T nativeEntry) {
         EntityAccess ea = createEntityAccess(persistentEntity, obj, nativeEntry);
@@ -369,6 +374,8 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
         if(!isUpdate) {
             tmp = createNewEntry(family);
             k = generateIdentifier(persistentEntity, tmp);
+            
+            cacheNativeEntry(persistentEntity, (Serializable) k, tmp);
             
             pendingOperation = new PendingInsertAdapter<T, K>(persistentEntity, k, tmp, entityAccess) {
 				@Override

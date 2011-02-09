@@ -128,7 +128,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
     public Object getCachedEntry(PersistentEntity entity, Serializable key) {
         if(key != null) {
-            final Map<Serializable, Object> map = firstLevelEntryCache.get(entity);
+            final Map<Serializable, Object> map = firstLevelEntryCache.get(entity.getJavaClass());
             if(map != null) {
                 return map.get(key);
             }
