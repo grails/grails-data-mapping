@@ -69,9 +69,14 @@ class MongoGormInstanceApi extends GormInstanceApi {
 	* @return
 	*/
    void putAt(Object instance, String name, value) {
-	   def dbo = getDbo(instance)
-	   if(dbo != null) {
-		   dbo.put name, value
+	   if(instance.hasProperty(name)) {
+			instance.setProperty(name, value)   
+	   }
+	   else {
+		   def dbo = getDbo(instance)
+		   if(dbo != null) {
+			   dbo.put name, value
+		   }
 	   }
    }
    
@@ -83,11 +88,16 @@ class MongoGormInstanceApi extends GormInstanceApi {
 	 * @return
 	 */
 	def getAt(Object instance, String name) {
-		def dbo = getDbo(instance)
-		if(dbo != null && dbo.containsField(name)) {
-			return dbo.get(name)
+		if(instance.hasProperty(name)) {
+			return instance.getProperty(name)	
 		}
-		return null	
+		else {
+			def dbo = getDbo(instance)
+			if(dbo != null && dbo.containsField(name)) {
+				return dbo.get(name)
+			}
+			return null
+		}
 	}
 	
 	/**

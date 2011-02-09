@@ -260,7 +260,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 	protected void setEntryValue(DBObject nativeEntry, String key, Object value) {
 
         // test whether the value can be BSON encoded, if it can't convert to String
-        if(value != null) {
+        if(value != null && !getMappingContext().isPersistentEntity(value)) {
             if(shouldConvertToString(value.getClass())) {
                 value = value.toString();
             }
