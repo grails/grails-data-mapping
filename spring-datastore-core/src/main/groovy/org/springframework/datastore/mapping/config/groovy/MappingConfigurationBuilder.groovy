@@ -15,6 +15,7 @@ class MappingConfigurationBuilder {
   MappingConfigurationBuilder(target, Class propertyClass) {
     this.target = target;
     this.propertyClass = propertyClass
+	propertyClass.metaClass.propertyMissing = { String name, val -> }
   }
 
   def invokeMethod(String name, args) {
@@ -28,7 +29,7 @@ class MappingConfigurationBuilder {
       else {
         if(args[0] instanceof Map) {
 
-          properties[name] = args[0].asType(propertyClass)
+          properties[name] = propertyClass.newInstance(args[0])
         }
       }
     }

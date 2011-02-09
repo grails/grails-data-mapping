@@ -22,7 +22,7 @@ class Setup {
 
   static mongo
   static destroy() {
-    mongo?.destroy()
+   // mongo?.destroy()
   }
   static Session setup(classes) {
     mongo = new MongoDatastore()
