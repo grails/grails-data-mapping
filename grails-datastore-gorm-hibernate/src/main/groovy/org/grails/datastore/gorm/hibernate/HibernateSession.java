@@ -18,6 +18,7 @@ package org.grails.datastore.gorm.hibernate;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -41,8 +42,6 @@ import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.transactions.Transaction;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
-
-import clover.retrotranslator.edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Session implementation that wraps a Hibernate {@link org.hibernate.Session}
