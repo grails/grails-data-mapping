@@ -77,6 +77,7 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
 	    	methodExpressions.put(GreaterThan.class.getSimpleName(), GreaterThan.class.getConstructor(new Class[] { Class.class, String.class}));
 	    	methodExpressions.put(LessThan.class.getSimpleName(), LessThan.class.getConstructor(new Class[] { Class.class, String.class}));
 	    	methodExpressions.put(IsNull.class.getSimpleName(), IsNull.class.getConstructor(new Class[] { Class.class, String.class}));
+	    	methodExpressions.put(IsNotNull.class.getSimpleName(), IsNotNull.class.getConstructor(new Class[] { Class.class, String.class}));
 	    	methodExpressions.put(IsEmpty.class.getSimpleName(), IsEmpty.class.getConstructor(new Class[] { Class.class, String.class}));
 	    	methodExpressions.put(IsEmpty.class.getSimpleName(), IsEmpty.class.getConstructor(new Class[] { Class.class, String.class}));
 			methodExpressions.put(IsNotEmpty.class.getSimpleName(), IsNotEmpty.class.getConstructor(new Class[] { Class.class, String.class}));
