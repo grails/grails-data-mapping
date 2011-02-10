@@ -19,6 +19,7 @@ package org.grails.datastore.gorm.mongo
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
+import org.grails.datastore.gorm.finders.DynamicFinder;
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.mongo.MongoDatastore
 import org.springframework.datastore.mapping.mongo.MongoSession
@@ -39,11 +40,15 @@ class MongoGormEnhancer extends GormEnhancer {
 	
 	public MongoGormEnhancer(Datastore datastore,
 			PlatformTransactionManager transactionManager) {
-		super(datastore, transactionManager);	
+		super(datastore, transactionManager);
+		
+		DynamicFinder.registerNewMethodExpression(Near)
+		DynamicFinder.registerNewMethodExpression(WithinBox)
+		DynamicFinder.registerNewMethodExpression(WithinCircle)
 	}
 
 	public MongoGormEnhancer(Datastore datastore) {
-		super(datastore);
+		this(datastore, null);
 	}
 
 	protected GormStaticApi getStaticApi(Class cls) {
@@ -126,6 +131,12 @@ class MongoGormStaticApi extends GormStaticApi {
 
 	public MongoGormStaticApi(Class persistentClass, Datastore datastore) {
 		super(persistentClass, datastore);
+	}
+	
+	
+	@Override
+	public Object createCriteria() {
+		return new MongoCriteriaBuilder(persistentClass, datastore)
 	}
 	
 	/**

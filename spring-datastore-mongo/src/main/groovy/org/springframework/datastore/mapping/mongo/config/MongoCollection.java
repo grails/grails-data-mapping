@@ -15,6 +15,10 @@
 
 package org.springframework.datastore.mapping.mongo.config;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.datastore.mapping.document.config.Collection;
 
 import com.mongodb.WriteConcern;
@@ -30,6 +34,7 @@ public class MongoCollection extends Collection {
 
 	private String database;
 	private WriteConcern writeConcern;
+	private List<Map> compoundIndices = new ArrayList<Map>();
 	
 	/**
 	 * The database to use
@@ -62,5 +67,23 @@ public class MongoCollection extends Collection {
 		this.writeConcern = writeConcern;
 	}
 	
+	/**
+	 * Sets a compound index definition
+	 * 
+	 * @param compoundIndex The compount index
+	 */
+	public void setCompoundIndex(Map compoundIndex) {
+		if(compoundIndex != null)
+			compoundIndices.add(compoundIndex);
+	}
+	
+	/**
+	 * Return all defined compound indices
+	 * 
+	 * @return The compound indices to return
+	 */
+	public List<Map> getCompoundIndices() {
+		return compoundIndices;
+	}
 	
 }

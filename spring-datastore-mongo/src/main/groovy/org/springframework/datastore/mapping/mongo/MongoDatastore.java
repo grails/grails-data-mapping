@@ -36,13 +36,13 @@ import org.springframework.datastore.mapping.model.DatastoreConfigurationExcepti
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.model.PropertyMapping;
 import org.springframework.datastore.mapping.mongo.config.MongoAttribute;
 import org.springframework.datastore.mapping.mongo.config.MongoCollection;
 import org.springframework.datastore.mapping.mongo.config.MongoMappingContext;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
-import com.mongodb.DBCallback;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
@@ -116,7 +116,6 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 	        	return source.toString();
         	}
         });        
-        
 	}
 
 	public MongoDatastore(MongoMappingContext mappingContext) {
@@ -244,25 +243,62 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             public Object doInDB(DB db) throws MongoException, DataAccessException {
                 final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
 
+                final ClassMapping<MongoCollection> classMapping = entity.getMapping();
+                if(classMapping != null) {
+                	final MongoCollection mappedForm = classMapping.getMappedForm();
+                	if(mappedForm != null) {
+                		for (Map compoundIndex : mappedForm.getCompoundIndices()) {
+                			DBObject indexDef = new BasicDBObject(compoundIndex);
+                			collection.ensureIndex(indexDef);
+						}
+                		
+                	}
+                }
+                
                 for (PersistentProperty<MongoAttribute> property : entity.getPersistentProperties()) {
-                    final boolean indexed = isIndexed(property) && Comparable.class.isAssignableFrom(property.getType());
+                    final boolean indexed = isIndexed(property);
 
                     if(indexed) {
                     	
                     	final MongoAttribute mongoAttributeMapping = property.getMapping().getMappedForm();
                     	
                         DBObject dbObject = new BasicDBObject();
-                        dbObject.put(property.getName(),1);
+                        final String fieldName = getMongoFieldNameForProperty(property);
+						dbObject.put(fieldName,1);
                         DBObject options = new BasicDBObject();
-                        if(mongoAttributeMapping != null && mongoAttributeMapping.getIndexAttributes() != null) {                        	
-                        	options.putAll(mongoAttributeMapping.getIndexAttributes());
+						if(mongoAttributeMapping != null ) {                        	
+							final Map attributes = mongoAttributeMapping.getIndexAttributes();
+							if(attributes != null) {
+								if(attributes.containsKey(MongoAttribute.INDEX_TYPE)) {
+									dbObject.put(fieldName, attributes.remove(MongoAttribute.INDEX_TYPE));									
+								}
+								options.putAll(attributes);
+							}
                         }
-                        collection.ensureIndex(dbObject, options);
+						if(options.toMap().isEmpty()) {
+							collection.ensureIndex(dbObject);							
+						}
+						else {							
+							collection.ensureIndex(dbObject, options);
+						}
                     }
                 }
 
                 return null;
             }
+
+			String getMongoFieldNameForProperty(
+					PersistentProperty<MongoAttribute> property) {
+		        PropertyMapping<MongoAttribute> pm = property.getMapping();
+		        String propKey = null;
+		        if(pm.getMappedForm()!=null) {
+		            propKey = pm.getMappedForm().getField();
+		        }
+		        if(propKey == null) {
+		            propKey = property.getName();
+		        }
+		        return propKey;
+			}
         });
     }
 

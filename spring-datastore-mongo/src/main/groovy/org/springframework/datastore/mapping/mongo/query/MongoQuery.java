@@ -129,6 +129,34 @@ public class MongoQuery extends Query{
                 query.put(propertyName, inQuery);
             }
         });
+        queryHandlers.put(Near.class, new QueryHandler<Near>() {
+            public void handle(PersistentEntity entity, Near near, DBObject query) {
+                DBObject nearQuery = new BasicDBObject();
+                nearQuery.put("$near", near.getValues());
+                String propertyName = getPropertyName(entity, near);                
+                query.put(propertyName, nearQuery);
+            }
+        });     
+        queryHandlers.put(WithinBox.class, new QueryHandler<WithinBox>() {
+            public void handle(PersistentEntity entity, WithinBox withinBox, DBObject query) {
+                DBObject nearQuery = new BasicDBObject();
+                DBObject box = new BasicDBObject();
+                box.put("$box", withinBox.getValues());
+                nearQuery.put("$within", box);
+                String propertyName = getPropertyName(entity, withinBox);                
+                query.put(propertyName, nearQuery);
+            }
+        });    
+        queryHandlers.put(WithinCircle.class, new QueryHandler<WithinCircle>() {
+            public void handle(PersistentEntity entity, WithinCircle withinCentre, DBObject query) {
+                DBObject nearQuery = new BasicDBObject();
+                DBObject center = new BasicDBObject();
+                center.put("$center", withinCentre.getValues());
+                nearQuery.put("$within", center);
+                String propertyName = getPropertyName(entity, withinCentre);                
+                query.put(propertyName, nearQuery);
+            }
+        });         
         queryHandlers.put(Between.class, new QueryHandler<Between>() {
             public void handle(PersistentEntity entity, Between between, DBObject query) {
                 DBObject betweenQuery = new BasicDBObject();
@@ -502,7 +530,116 @@ public class MongoQuery extends Query{
         result.add(object);
         return result;
     }
+    
+    /**
+     * Geospacial query for values near the given two dimensional list
+     * 
+     * @param property The property
+     * @param value A two dimensional list of values
+     * @return
+     */
+    public Query near(String property, List value) {
+    	add(new Near(property, value));
+    	return this;
+    }
+    
+    /**
+     * Geospacial query for values within a given box. A box is defined as a multi-dimensional list in the form
+     * 
+     * [[40.73083, -73.99756], [40.741404,  -73.988135]]
+     * 
+     * @param property The property
+     * @param value A multi-dimensional list of values
+     * @return This query
+     */
+    public Query withinBox(String property, List value) {
+    	add(new WithinBox(property, value));
+    	return this;
+    }
+    
+    /**
+     * Geospacial query for values within a given circle. A circle is defined as a multi-dimensial list containing the position of the center and the radius:
+     * 
+     * [[50, 50], 10]
+     * 
+     * @param property The property
+     * @param value A multi-dimensional list of values
+     * @return This query
+     */
+    public Query withinCircle(String property, List value) {
+    	add(new WithinBox(property, value));
+    	return this;
+    }      
 
+    /**
+     * Used for Geospacial querying
+     * 
+     * @author Graeme Rocher
+     * @since 1.0
+     *
+     */
+    public static class Near extends PropertyCriterion {
+
+		public Near(String name, List value) {
+			super(name, value);
+		}
+		
+		public List getValues() {
+			return (List) getValue();
+		}
+
+		public void setValue(List value) {
+			this.value = value;
+		}
+    	
+    }
+    
+    /**
+     * Used for Geospacial querying of boxes
+     * 
+     * @author Graeme Rocher
+     * @since 1.0
+     *
+     */
+    public static class WithinBox extends PropertyCriterion {
+
+		public WithinBox(String name, List value) {
+			super(name, value);
+		}
+		
+		public List getValues() {
+			return (List) getValue();
+		}
+		
+		public void setValue(List matrix) {
+			this.value = matrix;
+		}
+    	
+    }   
+    
+    /**
+     * Used for Geospacial querying of circles
+     * 
+     * @author Graeme Rocher
+     * @since 1.0
+     *
+     */
+    public static class WithinCircle extends PropertyCriterion {
+
+		public WithinCircle(String name, List value) {
+			super(name, value);
+		}
+		
+		public List getValues() {
+			return (List) getValue();
+		}
+
+		public void setValue(List matrix) {
+			this.value = matrix;
+		}
+    	
+    }       
+    
     private static interface QueryHandler<T> {
         public void handle(PersistentEntity entity, T criterion, DBObject query);
     }

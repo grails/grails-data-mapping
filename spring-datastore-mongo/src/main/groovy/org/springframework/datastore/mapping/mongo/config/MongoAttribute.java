@@ -15,6 +15,7 @@
 
 package org.springframework.datastore.mapping.mongo.config;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.datastore.mapping.document.config.Attribute;
@@ -27,6 +28,7 @@ import org.springframework.datastore.mapping.document.config.Attribute;
  *
  */
 public class MongoAttribute extends Attribute {
+	public static final String INDEX_TYPE = "type";
 	private Map indexAttributes;
 
 	public Map getIndexAttributes() {
@@ -34,6 +36,34 @@ public class MongoAttribute extends Attribute {
 	}
 
 	public void setIndexAttributes(Map indexAttributes) {
-		this.indexAttributes = indexAttributes;
+		if(this.indexAttributes == null)
+			this.indexAttributes = indexAttributes;
+		else {
+			this.indexAttributes.putAll(indexAttributes);
+		}
 	}
+	
+	public void setField(String name) {
+		setTargetName(name);
+	}
+	
+	public String getField() {
+		return getTargetName();
+	}
+	
+	
+	public void setGeoIndex(boolean geoIndex) {
+		if(geoIndex) {
+			setIndex(true);
+			initIndexAttributes();
+			indexAttributes.put(INDEX_TYPE, "2d");
+		}
+	}
+
+	void initIndexAttributes() {
+		if(this.indexAttributes == null) indexAttributes = new HashMap();
+	}
+	
+
 }
+

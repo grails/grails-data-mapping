@@ -21,8 +21,9 @@ import org.springframework.datastore.mapping.mongo.MongoDatastore
 class Setup {
 
   static mongo
+  static session
   static destroy() {
-   // mongo?.destroy()
+	  session.nativeInterface.dropDatabase()
   }
   static Session setup(classes) {
     mongo = new MongoDatastore()
@@ -50,9 +51,9 @@ class Setup {
     } as MappingContext.Listener)
 
 
-    def con = mongo.connect()
-    con.nativeInterface.dropDatabase()
-    return con
+    session = mongo.connect()
+    
+    return session
   }
 
 

@@ -1,6 +1,8 @@
 package org.springframework.datastore.mapping.config.groovy
 
+import org.springframework.beans.MutablePropertyValues;
 import org.springframework.datastore.mapping.reflect.NameUtils;
+import org.springframework.validation.DataBinder;
 
 /**
  * @author Graeme Rocher
@@ -15,7 +17,8 @@ class MappingConfigurationBuilder {
   MappingConfigurationBuilder(target, Class propertyClass) {
     this.target = target;
     this.propertyClass = propertyClass
-	propertyClass.metaClass.propertyMissing = { String name, val -> }
+	propertyClass.metaClass.propertyMissing = { String name, val ->
+	}
   }
 
   def invokeMethod(String name, args) {
@@ -29,7 +32,10 @@ class MappingConfigurationBuilder {
       else {
         if(args[0] instanceof Map) {
 
-          properties[name] = propertyClass.newInstance(args[0])
+          def instance = propertyClass.newInstance()
+		  def binder = new DataBinder(instance)
+		  binder.bind(new MutablePropertyValues(args[0]))
+          properties[name] = instance
         }
       }
     }

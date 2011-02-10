@@ -592,7 +592,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
         return o;
     }
     
-    private void validatePropertyName(String propertyName, String methodName) {
+    protected void validatePropertyName(String propertyName, String methodName) {
         if(propertyName == null) {
             throw new IllegalArgumentException("Cannot use ["+methodName+"] restriction with null property name");
         }
@@ -612,7 +612,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
     * this might be either the root criteria or a currently open
     * LogicalExpression.
     */
-    private Query.Criterion addToCriteria(Query.Criterion c) {
+    protected Query.Criterion addToCriteria(Query.Criterion c) {
         if (!logicalExpressionStack.isEmpty()) {
             logicalExpressionStack.get(logicalExpressionStack.size() - 1).add(c);
         }
