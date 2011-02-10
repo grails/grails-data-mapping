@@ -22,6 +22,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -60,7 +61,7 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
     
     private static final String NOT = "Not";    
-    private static final Map<String, Constructor> methodExpressions = new HashMap<String, Constructor>();
+    private static final Map<String, Constructor> methodExpressions = new LinkedHashMap<String, Constructor>();
     
     static {
     	// populate the default method expressions
@@ -71,10 +72,10 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
 	    	methodExpressions.put(InList.class.getSimpleName(), InList.class.getConstructor(new Class[] { Class.class, String.class}));
 	    	methodExpressions.put(Between.class.getSimpleName(), Between.class.getConstructor(new Class[] { Class.class, String.class}));
 	    	methodExpressions.put(Like.class.getSimpleName(), Like.class.getConstructor(new Class[] { Class.class, String.class}));
-	    	methodExpressions.put(GreaterThan.class.getSimpleName(), GreaterThan.class.getConstructor(new Class[] { Class.class, String.class}));
-	    	methodExpressions.put(LessThan.class.getSimpleName(), LessThan.class.getConstructor(new Class[] { Class.class, String.class}));
 	    	methodExpressions.put(GreaterThanEquals.class.getSimpleName(), GreaterThanEquals.class.getConstructor(new Class[] { Class.class, String.class}));
 	    	methodExpressions.put(LessThanEquals.class.getSimpleName(), LessThanEquals.class.getConstructor(new Class[] { Class.class, String.class}));
+	    	methodExpressions.put(GreaterThan.class.getSimpleName(), GreaterThan.class.getConstructor(new Class[] { Class.class, String.class}));
+	    	methodExpressions.put(LessThan.class.getSimpleName(), LessThan.class.getConstructor(new Class[] { Class.class, String.class}));
 	    	methodExpressions.put(IsNull.class.getSimpleName(), IsNull.class.getConstructor(new Class[] { Class.class, String.class}));
 	    	methodExpressions.put(IsEmpty.class.getSimpleName(), IsEmpty.class.getConstructor(new Class[] { Class.class, String.class}));
 	    	methodExpressions.put(IsEmpty.class.getSimpleName(), IsEmpty.class.getConstructor(new Class[] { Class.class, String.class}));
