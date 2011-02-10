@@ -34,7 +34,7 @@ class Person {
 new Person(friends:['Fred', 'Bob'], pets:[chuck:"Dog", eddie:'Parrot']).save(flush:true)
 {code}
 
-Basic collection types as stored as native ArrayList and BSON documents within the Mongo documents.
+Basic collection types are stored as native ArrayList and BSON documents within the Mongo documents.
 
 You may wish to customize how a domain class maps onto a @DBCollection@. This is possible using the @mapping@ block as follows:
 
@@ -49,3 +49,15 @@ class Person {
 {code}
 
 In this example we see that the @Person@ entity has been mapped to a collection called "mycollection" in a database called "mydb".
+
+You can also control how an individual property maps onto a Mongo Document field (the default is to use the property name itself):
+
+{code:java}
+class Person {
+   ..
+  static mapping = {
+	firstName field:"first_name"
+  }
+}
+{code}
+
