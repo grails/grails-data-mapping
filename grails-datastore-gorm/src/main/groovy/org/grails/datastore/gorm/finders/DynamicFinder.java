@@ -17,15 +17,24 @@ package org.grails.datastore.gorm.finders;
 import grails.gorm.CriteriaBuilder;
 import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.datastore.mapping.core.Datastore;
-import org.springframework.datastore.mapping.query.Query;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import org.grails.datastore.gorm.finders.MethodExpression.*;
+
+import org.springframework.core.convert.ConversionService;
+import org.springframework.datastore.mapping.core.Datastore;
+import org.springframework.datastore.mapping.query.Query;
+import org.springframework.util.StringUtils;
 
 /**
  * Implementation of dynamic finders
@@ -46,7 +55,43 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
     protected Pattern pattern;
     private Pattern[] operatorPatterns;
     private String[] operators;
+    
+    private static Pattern methodExpressinPattern;
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+    
+    private static final String NOT = "Not";    
+    private static final Map<String, Constructor> methodExpressions = new HashMap<String, Constructor>();
+    
+    static {
+    	// populate the default method expressions
+    	try {
+    	
+	    	methodExpressions.put(Equal.class.getSimpleName(), Equal.class.getConstructor(new Class[] { Class.class, String.class}));
+	    	methodExpressions.put(NotEqual.class.getSimpleName(), NotEqual.class.getConstructor(new Class[] { Class.class, String.class}));
+	    	methodExpressions.put(InList.class.getSimpleName(), InList.class.getConstructor(new Class[] { Class.class, String.class}));
+	    	methodExpressions.put(Between.class.getSimpleName(), Between.class.getConstructor(new Class[] { Class.class, String.class}));
+	    	methodExpressions.put(Like.class.getSimpleName(), Like.class.getConstructor(new Class[] { Class.class, String.class}));
+	    	methodExpressions.put(GreaterThan.class.getSimpleName(), GreaterThan.class.getConstructor(new Class[] { Class.class, String.class}));
+	    	methodExpressions.put(LessThan.class.getSimpleName(), LessThan.class.getConstructor(new Class[] { Class.class, String.class}));
+	    	methodExpressions.put(GreaterThanEquals.class.getSimpleName(), GreaterThanEquals.class.getConstructor(new Class[] { Class.class, String.class}));
+	    	methodExpressions.put(LessThanEquals.class.getSimpleName(), LessThanEquals.class.getConstructor(new Class[] { Class.class, String.class}));
+	    	methodExpressions.put(IsNull.class.getSimpleName(), IsNull.class.getConstructor(new Class[] { Class.class, String.class}));
+	    	methodExpressions.put(IsEmpty.class.getSimpleName(), IsEmpty.class.getConstructor(new Class[] { Class.class, String.class}));
+	    	methodExpressions.put(IsEmpty.class.getSimpleName(), IsEmpty.class.getConstructor(new Class[] { Class.class, String.class}));
+			methodExpressions.put(IsNotEmpty.class.getSimpleName(), IsNotEmpty.class.getConstructor(new Class[] { Class.class, String.class}));
+		} catch (SecurityException e) {
+			// ignore
+		} catch (NoSuchMethodException e) {
+			// ignore
+		}
+    	
+    	resetMethodExpressionPattern();
+    }
+
+	static void resetMethodExpressionPattern() {
+		String expressionPattern = DefaultGroovyMethods.join(methodExpressions.keySet(), "|");
+    	methodExpressinPattern = Pattern.compile("\\p{Upper}[\\p{Lower}\\d]+("+expressionPattern+")");
+	}
 
     public DynamicFinder(Pattern pattern, String[] operators) {
         this.pattern = pattern;
@@ -55,9 +100,26 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
         for (int i = 0; i < operators.length; i++) {
             operatorPatterns[i] = Pattern.compile("(\\w+)("+operators[i]+")(\\p{Upper})(\\w+)");
         }
-
+        
+        
     }
 
+    /**
+     * Registers a new method expression. The Class must extends from the class {@link MethodExpression} and provide
+     * a constructor that accepts a Class parameter and a String parameter.
+     * 
+     * @param methodExpression A class that extends from {@link MethodExpression} 
+     */
+    public static void registerNewMethodExpression(Class methodExpression) {
+    	try {
+			methodExpressions.put(methodExpression.getSimpleName(), methodExpression.getConstructor(new Class[] { Class.class, String.class}));
+			resetMethodExpressionPattern();
+		} catch (SecurityException e) {
+			throw new IllegalArgumentException("Class ["+methodExpression+"] does not provide a constructor that takes parameters of type Class and String: " + e.getMessage(), e);
+		} catch (NoSuchMethodException e) {
+			throw new IllegalArgumentException("Class ["+methodExpression+"] does not provide a constructor that takes parameters of type Class and String: " + e.getMessage(), e);
+		}
+    }
 
     public void setPattern(String pattern) {
         this.pattern = Pattern.compile(pattern);
@@ -98,7 +160,7 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
                 booleanProperty = booleanProperty.substring(3);
                 arg = Boolean.FALSE;
             }
-            MethodExpression booleanExpression = MethodExpression.create(clazz, booleanProperty );
+            MethodExpression booleanExpression = findMethodExpression(clazz, booleanProperty );
             booleanExpression.setArguments(new Object[]{arg});
             expressions.add(booleanExpression);
         }
@@ -123,7 +185,7 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
                     // calculating the number of arguments required for the expression
                     int argumentCursor = 0;
                     for (String queryParameter : queryParameters) {
-                        MethodExpression currentExpression = MethodExpression.create(clazz, queryParameter);
+                        MethodExpression currentExpression = findMethodExpression(clazz, queryParameter);
                         final int requiredArgs = currentExpression.getArgumentsRequired();
                         totalRequiredArguments += requiredArgs;
                         // populate the arguments into the GrailsExpression from the argument list
@@ -145,7 +207,7 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
         }
         // otherwise there is only one expression
         if (!containsOperator && querySequence != null) {
-            MethodExpression solo = MethodExpression.create(clazz,querySequence );
+            MethodExpression solo =findMethodExpression(clazz,querySequence );
 
             final int requiredArguments = solo.getArgumentsRequired();
             if (requiredArguments  > arguments.length) {
@@ -177,7 +239,42 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
         return new DynamicFinderInvocation(clazz, methodName, remainingArguments, expressions, additionalCriteria, operatorInUse );
     }
 
-    protected abstract Object doInvokeInternal(DynamicFinderInvocation invocation);
+    protected MethodExpression findMethodExpression(Class clazz,
+			String expression) {
+		final Matcher matcher = methodExpressinPattern.matcher(expression);
+		
+		if(matcher.find()) {
+			Constructor constructor = methodExpressions.get(matcher.group(1));
+			try {				
+				return (MethodExpression) constructor.newInstance(clazz, calcPropertyName(expression, constructor.getDeclaringClass().getSimpleName()));
+			} catch (Exception e) {
+				// ignore
+			}
+		}
+		return new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()) );
+	}
+    
+    private static String calcPropertyName(String queryParameter, String clause) {
+        String propName;
+        if (clause != null && !clause.equals(Equal.class.getSimpleName())) {
+            int i = queryParameter.indexOf(clause);
+            propName = queryParameter.substring(0,i);
+        }
+        else {
+            propName = queryParameter;
+        }
+        if (propName.endsWith(NOT)) {
+            int i = propName.lastIndexOf(NOT);
+            propName = propName.substring(0, i);
+        }
+        if(StringUtils.hasLength(propName))
+            return propName.substring(0,1).toLowerCase(Locale.ENGLISH) + propName.substring(1);
+        else
+            throw new IllegalArgumentException("No property name specified in clause: " + clause);
+    }
+    
+
+	protected abstract Object doInvokeInternal(DynamicFinderInvocation invocation);
 
     public Object invoke(final Class clazz, String methodName, Object[] arguments) {
         return invoke(clazz, methodName, null, arguments);
