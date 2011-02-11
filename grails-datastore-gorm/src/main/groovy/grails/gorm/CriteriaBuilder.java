@@ -95,8 +95,11 @@ public class CriteriaBuilder extends GroovyObjectSupport {
 
     }
 
+   public void setUniqueResult(boolean uniqueResult) {
+		this.uniqueResult = uniqueResult;
+	}
 
-   public Query.ProjectionList id() {
+public Query.ProjectionList id() {
        if(projectionList != null) {
            projectionList.id();
        }

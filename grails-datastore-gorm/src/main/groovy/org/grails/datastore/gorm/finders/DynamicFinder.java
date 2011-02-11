@@ -19,9 +19,7 @@ import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -30,8 +28,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
-import org.grails.datastore.gorm.finders.MethodExpression.*;
-
+import org.grails.datastore.gorm.finders.MethodExpression.Between;
+import org.grails.datastore.gorm.finders.MethodExpression.Equal;
+import org.grails.datastore.gorm.finders.MethodExpression.GreaterThan;
+import org.grails.datastore.gorm.finders.MethodExpression.GreaterThanEquals;
+import org.grails.datastore.gorm.finders.MethodExpression.InList;
+import org.grails.datastore.gorm.finders.MethodExpression.IsEmpty;
+import org.grails.datastore.gorm.finders.MethodExpression.IsNotEmpty;
+import org.grails.datastore.gorm.finders.MethodExpression.IsNotNull;
+import org.grails.datastore.gorm.finders.MethodExpression.IsNull;
+import org.grails.datastore.gorm.finders.MethodExpression.LessThan;
+import org.grails.datastore.gorm.finders.MethodExpression.LessThanEquals;
+import org.grails.datastore.gorm.finders.MethodExpression.Like;
+import org.grails.datastore.gorm.finders.MethodExpression.NotEqual;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.query.Query;
