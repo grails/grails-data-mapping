@@ -1,0 +1,20 @@
+Below are the details of the changes across releases:
+
+h4. 1.0 Milestone 2
+
+Features added in 1.0 Milestone 2:
+
+* Embedded types
+* Support for Maps and Lists
+* Geospacial Indexing
+* Schemaless Domain Models (Dynamic Attributes)
+* Custom Index Attributes
+
+h4. 1.0 Milestone 1
+
+Features added in 1.0 Milestone 1:
+
+* Dynamic finders
+* Criteria queries
+* Named queries
+* Support for GMongo as a lower level API
