@@ -24,7 +24,24 @@ package org.grails.datastore.gorm.utils
 class InstanceProxy {
     def instance
     def target
+	
     def invokeMethod(String name, args) {
       target."$name"(instance, *args)
     }
+	
+	void setProperty(String name, val) {
+		target."$name" = val
+	}
+	
+	def getProperty(String name) {
+		target."$name"
+	}
+	
+	void putAt(String name, val) {
+		target."$name" = val
+	}
+	
+	def getAt(String name) {
+		target."$name"
+	}
 }

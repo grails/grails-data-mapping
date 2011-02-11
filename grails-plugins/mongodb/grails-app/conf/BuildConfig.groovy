@@ -11,7 +11,8 @@ grails.project.dependency.resolution = {
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     repositories {
         mavenCentral()
-	 	mavenRepo 'http://maven.springframework.org/milestone'	
+/*	 	mavenRepo 'http://maven.springframework.org/milestone'	*/
+		mavenRepo 'http://maven.springframework.org/snapshot'
         mavenRepo 'http://repository.codehaus.org'
     }
     dependencies {
@@ -19,15 +20,14 @@ grails.project.dependency.resolution = {
 
 
 	    def excludes = {
-			excludes "spring-data-mongodb"
 	        excludes "slf4j-simple", "persistence-api", "commons-logging", "jcl-over-slf4j", "slf4j-api", "jta"
 	        excludes "spring-core", "spring-beans", "spring-aop", "spring-asm","spring-webmvc","spring-tx", "spring-context", "spring-web", "log4j", "slf4j-log4j12"
 	    }
-		compile("org.mongodb:mongo-java-driver:2.1")
-		runtime("com.gmongo:gmongo:0.5.1", excludes)
-      	runtime("org.grails:grails-datastore-gorm:1.0.0.M3", excludes)	
-      	runtime("org.grails:grails-datastore-gorm-mongo:1.0.0.M3", excludes)
-      	runtime( "org.springframework:spring-datastore-web:1.0.0.M3", excludes)
-      	test("org.grails:grails-datastore-gorm-test:1.0.0.M3", excludes)
+		compile("org.mongodb:mongo-java-driver:2.4")
+		runtime("com.gmongo:gmongo:0.7", excludes)
+      	runtime("org.grails:grails-datastore-gorm:1.0.0.BUILD-SNAPSHOT", excludes)	
+      	runtime("org.grails:grails-datastore-gorm-mongo:1.0.0.BUILD-SNAPSHOT", excludes)
+      	runtime( "org.springframework:spring-datastore-web:1.0.0.BUILD-SNAPSHOT", excludes)
+      	test("org.grails:grails-datastore-gorm-test:1.0.0.BUILD-SNAPSHOT", excludes)
     }
 }

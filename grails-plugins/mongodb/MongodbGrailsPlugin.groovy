@@ -18,7 +18,7 @@ import com.mongodb.ServerAddress
 
 class MongodbGrailsPlugin {
     // the plugin version
-    def version = "1.0.0.M1"
+    def version = "1.0-M2"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.3.5 > *"
     // the other plugins this plugin depends on
@@ -139,7 +139,7 @@ a GORM API onto it
           }
           else {
             def staticApi = new MongoGormStaticApi(cls, datastore)
-            def instanceApi = new GormInstanceApi(cls, datastore)
+            def instanceApi = new MongoGormInstanceApi(cls, datastore)
             cls.metaClass.static.getMongo = {-> staticApi }
             cls.metaClass.getMongo = {-> new InstanceProxy(instance:delegate, target:instanceApi) }
           }
