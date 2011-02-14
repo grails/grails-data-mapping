@@ -42,7 +42,7 @@ public abstract class AbstractMappingContext implements MappingContext {
     protected GenericConversionService conversionService = new GenericConversionService();
     protected ProxyFactory proxyFactory;
 
-    public ConversionService getConversionService() {
+	public ConversionService getConversionService() {
         return conversionService;
     }
 
@@ -91,33 +91,53 @@ public abstract class AbstractMappingContext implements MappingContext {
         }
     }
 
+    @Override
+    public PersistentEntity addExternalPersistentEntity(Class javaClass) {
+        if(javaClass == null) throw new IllegalArgumentException("PersistentEntity class cannot be null");
+
+        PersistentEntity entity = persistentEntitiesByName.get(javaClass.getName());
+
+        if(entity == null) {
+            entity = addPersistentEntityInternal(javaClass, true);
+        }
+
+        return entity;
+    }
+    
     public final PersistentEntity addPersistentEntity(Class javaClass) {
         if(javaClass == null) throw new IllegalArgumentException("PersistentEntity class cannot be null");
 
         PersistentEntity entity = persistentEntitiesByName.get(javaClass.getName());
 
         if(entity == null) {
-            entity = createPersistentEntity(javaClass);
-
-            persistentEntities.remove(entity); persistentEntities.add(entity);
-            persistentEntitiesByName.put(entity.getName(), entity);
-            entity.initialize();
-            if(!entity.isRoot()) {
-                PersistentEntity root = entity.getRootEntity();
-                Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(root);
-                if(children == null) {
-                    children = new ConcurrentHashMap<String,PersistentEntity>();
-                    persistentEntitiesByDiscriminator.put(root, children);
-                }
-                children.put(entity.getDiscriminator(), entity);
-            }
-            for (Listener eventListener : eventListeners) {
-                eventListener.persistentEntityAdded(entity);
-            }
+            entity = addPersistentEntityInternal(javaClass, false);
         }
 
         return entity;
     }
+
+	private PersistentEntity addPersistentEntityInternal(Class javaClass, boolean isExternal) {
+		PersistentEntity entity;
+		entity = createPersistentEntity(javaClass);
+		entity.setExternal(isExternal);
+
+		persistentEntities.remove(entity); persistentEntities.add(entity);
+		persistentEntitiesByName.put(entity.getName(), entity);
+		entity.initialize();
+		if(!entity.isRoot()) {
+		    PersistentEntity root = entity.getRootEntity();
+		    Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(root);
+		    if(children == null) {
+		        children = new ConcurrentHashMap<String,PersistentEntity>();
+		        persistentEntitiesByDiscriminator.put(root, children);
+		    }
+		    children.put(entity.getDiscriminator(), entity);
+		}
+		for (Listener eventListener : eventListeners) {
+		    eventListener.persistentEntityAdded(entity);
+		}
+		return entity;
+	}
 
     public PersistentEntity getChildEntityByDiscriminator(PersistentEntity root, String discriminator) {
         final Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(root);

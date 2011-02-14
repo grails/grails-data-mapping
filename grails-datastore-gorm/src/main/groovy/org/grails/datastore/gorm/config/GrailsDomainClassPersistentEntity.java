@@ -299,5 +299,15 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Init
 		
 		return persistentProperty;
 	}
+
+	@Override
+	public boolean isExternal() {
+		return false;
+	}
+
+	@Override
+	public void setExternal(boolean external) {
+		// do nothing
+	}
 	
 }

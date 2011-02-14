@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationContextAware
 import org.springframework.context.ApplicationContext
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
@@ -36,14 +37,28 @@ abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingC
   GrailsApplication grailsApplication
   GrailsPluginManager pluginManager
   ApplicationContext applicationContext
+  String mappingStrategy
+  boolean defaultExternal
 
   MappingContext getObject() {
     def mappingContext = createMappingContext();
     mappingContext.proxyFactory = new GroovyProxyFactory()
+	
+	if(mappingStrategy == null) {
+		mappingStrategy = (getClass().simpleName - 'MappingContextFactoryBean').toLowerCase()
+	}
 
     if(grailsApplication) {
       for(GrailsDomainClass domainClass in grailsApplication.domainClasses){
-         PersistentEntity entity = mappingContext.addPersistentEntity(domainClass.clazz)
+		 def domainMappingStrategy = domainClass.getPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY)
+         PersistentEntity entity
+		 
+		 if(mappingStrategy == domainMappingStrategy || (domainMappingStrategy == 'GORM' && !defaultExternal)) {
+			 entity = mappingContext.addPersistentEntity(domainClass.clazz)
+		 }
+		 else  {
+			 entity = mappingContext.addExternalPersistentEntity(domainClass.clazz)
+		 }
          if(entity) {
             final validatorBeanName = "${domainClass.fullName}Validator"
             def validator = applicationContext.containsBean(validatorBeanName) ? applicationContext.getBean(validatorBeanName) : null

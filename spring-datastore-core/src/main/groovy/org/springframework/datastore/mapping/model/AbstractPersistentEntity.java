@@ -42,6 +42,7 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
     private String decapitalizedName;
     protected Set owners;
     private PersistentEntity parentEntity = null;
+    private boolean external;
 
     public AbstractPersistentEntity(Class javaClass, MappingContext context) {
         if(javaClass == null) throw new IllegalArgumentException("The argument [javaClass] cannot be null");
@@ -50,7 +51,17 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
         this.decapitalizedName = Introspector.decapitalize(javaClass.getSimpleName());
     }
 
-    public MappingContext getMappingContext() {
+    public boolean isExternal() {
+		return external;
+	}
+
+
+
+	public void setExternal(boolean external) {
+		this.external = external;
+	}
+
+	public MappingContext getMappingContext() {
         return this.context;
     }
 

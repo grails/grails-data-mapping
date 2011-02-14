@@ -185,7 +185,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 }
                 else if (embedded.contains(propertyName)) {
                 	ToOne association = propertyFactory.createEmbedded(entity, context, descriptor);
-                	PersistentEntity associatedEntity = getOrCreateAssociatedEntity(context, association.getType());
+                	PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity, context, association.getType());
                 	association.setAssociatedEntity(associatedEntity);
                 	persistentProperties.add(association);
                 }
@@ -287,7 +287,12 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                     // We've run out of options. The given "mappedBy"
                     // setting is invalid.
                     if (pd == null) {
-                        throw new IllegalMappingException("Non-existent mapping property ["+mappingProperty+"] specified for property ["+property.getName()+"] in class ["+entity.getJavaClass()+"]");
+                    	if(entity.isExternal()) {
+                    		return null;
+                    	}
+                    	else {                    		
+                    		throw new IllegalMappingException("Non-existent mapping property ["+mappingProperty+"] specified for property ["+property.getName()+"] in class ["+entity.getJavaClass()+"]");
+                    	}
                     }
 
                     // Tie the properties together.
@@ -333,9 +338,14 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                             String classPropertyName = entity.getDecapitalizedName();
                             PropertyDescriptor pd = findProperty(descriptors, classPropertyName);
                             if (pd == null) {
-                                throw new IllegalMappingException("Property ["+property.getName()+"] in class ["+entity.getJavaClass()+"] is a bidirectional one-to-many with two possible properties on the inverse side. "+
-                                        "Either name one of the properties on other side of the relationship ["+classPropertyName+"] or use the 'mappedBy' static to define the property " +
-                                        "that the relationship is mapped with. Example: static mappedBy = ["+property.getName()+":'myprop']");
+                            	if(entity.isExternal()) {
+                            		return null;
+                            	}
+                            	else {                            		
+                            		throw new IllegalMappingException("Property ["+property.getName()+"] in class ["+entity.getJavaClass()+"] is a bidirectional one-to-many with two possible properties on the inverse side. "+
+                            				"Either name one of the properties on other side of the relationship ["+classPropertyName+"] or use the 'mappedBy' static to define the property " +
+                            				"that the relationship is mapped with. Example: static mappedBy = ["+property.getName()+":'myprop']");
+                            	}
                             }
                             relatedClassPropertyType = pd.getPropertyType();
                             referencedPropertyName = pd.getName();
@@ -354,7 +364,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                     association = propertyFactory.createManyToMany(entity, context, property);
                 }
 
-                PersistentEntity associatedEntity = getOrCreateAssociatedEntity(context, relatedClassType);
+                PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity,context, relatedClassType);
 
                 association.setAssociatedEntity(associatedEntity);
                 if(referencedPropertyName != null) {
@@ -496,7 +506,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
         // bi-directional
         if(association != null) {
-            PersistentEntity associatedEntity = getOrCreateAssociatedEntity(context, propType);
+            PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity, context, propType);
             association.setAssociatedEntity(associatedEntity);
             if(relatedClassPropertyName != null) {
                 association.setReferencedPropertyName(relatedClassPropertyName);
@@ -506,10 +516,15 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return association;
     }
 
-    private PersistentEntity getOrCreateAssociatedEntity(MappingContext context, Class propType) {
+    private PersistentEntity getOrCreateAssociatedEntity(PersistentEntity entity, MappingContext context, Class propType) {
         PersistentEntity associatedEntity = context.getPersistentEntity(propType.getName());
         if(associatedEntity == null) {
-            associatedEntity = context.addPersistentEntity(propType);
+        	if(entity.isExternal()) {
+        		associatedEntity = context.addExternalPersistentEntity(propType);
+        	}
+        	else {        		
+        		associatedEntity = context.addPersistentEntity(propType);
+        	}
         }
         return associatedEntity;
     }
@@ -603,13 +618,18 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 return propertyFactory.createIdentity(entity, context, pd);
             }
             else {
-                throw new IllegalMappingException("Mapped identifier ["+names[0]+"] for class ["+javaClass.getName()+"] is not a valid property");
+            	if(!entity.isExternal())
+            		throw new IllegalMappingException("Mapped identifier ["+names[0]+"] for class ["+javaClass.getName()+"] is not a valid property");
+            	else
+            		return null;
             }
 
         }
         else {
-            // TODO: Support composite / natural identifiers
-            throw new UnsupportedOperationException("Mapping of composite identifiers currently not supported");
+        	if(!entity.isExternal())
+        		throw new IllegalMappingException("Mapping of composite identifiers currently not supported");
+        	else
+        		return null;
         }
     }
 

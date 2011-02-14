@@ -40,7 +40,8 @@ import java.util.Collection;
  * @since 1.0
  */
 public interface MappingContext {
-
+	
+	
     /**
      * Obtains a list of PersistentEntity instances
      *
@@ -71,6 +72,15 @@ public interface MappingContext {
      * @return The PersistentEntity instance
      */
     PersistentEntity addPersistentEntity(Class javaClass);
+    
+    /**
+     * Adds a persistent entity that is not mapped by this MappingContext instance.
+     * Used for cross store persistence
+     *
+     * @param javaClass The Java class
+     * @return The persistent entity
+     */
+    PersistentEntity addExternalPersistentEntity(Class javaClass);
 
     /**
      * Adds a validator to be used by the entity for validation
