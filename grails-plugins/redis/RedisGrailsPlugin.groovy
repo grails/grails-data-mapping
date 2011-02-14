@@ -56,53 +56,51 @@ a GORM-like API onto it
     def doWithSpring = {
         def redisConfig = application.config?.grails?.redis
 
-        def existingTransactionManager = manager?.hasGrailsPlugin("hibernate") || getSpringConfig().containsBean("transactionManager")
-        def txManagerName = existingTransactionManager ? 'datastoreTransactionManager' : 'transactionManager'
-
-        "$txManagerName"(DatastoreTransactionManager) {
-          datastore = ref("springDatastore")
+        redisDatastoreTransactionManager(DatastoreTransactionManager) {
+          datastore = ref("redisDatastore")
         }
 
-        datastoreMappingContext(RedisMappingContextFactoryBean) {
+        redisDatastoreMappingContext(RedisMappingContextFactoryBean) {
           grailsApplication = ref('grailsApplication')
           pluginManager = ref('pluginManager')
+		  defaultExternal = false // manager.hasGrailsPlugin("hibernate")
         }
-        springDatastore(RedisDatastoreFactoryBean) {
+        redisDatastore(RedisDatastoreFactoryBean) {
           config = redisConfig
-          mappingContext = ref("datastoreMappingContext")
+          mappingContext = ref("redisDatastoreMappingContext")
           pluginManager = ref('pluginManager')
         }
         redisBean(Redis) { bean ->
           bean.scope = "request"
-          datastore = ref("springDatastore")
+          datastore = ref("redisDatastore")
         }
         redis(org.springframework.aop.scope.ScopedProxyFactoryBean) {
           targetBeanName = "redisBean"
           proxyTargetClass = true
         }
-        datastorePersistenceInterceptor(DatastorePersistenceContextInterceptor, ref("springDatastore"))
+        redisDatastorePersistenceInterceptor(DatastorePersistenceContextInterceptor, ref("redisDatastore"))
 
         if (manager?.hasGrailsPlugin("controllers")) {
-            datastoreOpenSessionInViewInterceptor(OpenSessionInViewInterceptor) {
-                datastore = ref("springDatastore")
+            redisDatastoreOpenSessionInViewInterceptor(OpenSessionInViewInterceptor) {
+                datastore = ref("redisDatastore")
             }
             if (getSpringConfig().containsBean("controllerHandlerMappings")) {
-                controllerHandlerMappings.interceptors << datastoreOpenSessionInViewInterceptor
+                controllerHandlerMappings.interceptors << redisDatastoreOpenSessionInViewInterceptor
             }
             if (getSpringConfig().containsBean("annotationHandlerMapping")) {
                 if (annotationHandlerMapping.interceptors) {
-                    annotationHandlerMapping.interceptors << datastoreOpenSessionInViewInterceptor
+                    annotationHandlerMapping.interceptors << redisDatastoreOpenSessionInViewInterceptor
                 }
                 else {
-                    annotationHandlerMapping.interceptors = [datastoreOpenSessionInViewInterceptor]
+                    annotationHandlerMapping.interceptors = [redisDatastoreOpenSessionInViewInterceptor]
                 }
             }
         }
     }
 
     def doWithDynamicMethods = { ApplicationContext ctx ->
-      Datastore datastore = ctx.getBean(Datastore)
-      PlatformTransactionManager transactionManager = ctx.getBean(DatastoreTransactionManager)
+      Datastore datastore = ctx.getBean("redisDatastore")
+      PlatformTransactionManager transactionManager = ctx.getBean("redisDatastoreTransactionManager")
       def enhancer = transactionManager ?
                           new RedisGormEnhancer(datastore, transactionManager) :
                           new RedisGormEnhancer(datastore)
