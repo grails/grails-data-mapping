@@ -1,26 +1,29 @@
 package org.grails.datastore.gorm
 
-import grails.gorm.JpaEntity 
-import javax.persistence.Basic 
-import javax.persistence.CascadeType;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id 
-import javax.persistence.ManyToMany 
-import javax.persistence.ManyToOne 
-import javax.persistence.OneToMany 
-import javax.persistence.OneToOne 
-import javax.persistence.PostLoad 
-import javax.persistence.PostPersist 
-import javax.persistence.PostRemove 
-import javax.persistence.PostUpdate 
-import javax.persistence.PrePersist;
-import javax.persistence.PreRemove 
-import javax.persistence.PreUpdate 
-import javax.persistence.Temporal 
-import javax.persistence.Transient 
+import grails.gorm.JpaEntity
+
+import javax.persistence.Basic
+import javax.persistence.CascadeType
+import javax.persistence.Embedded
+import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.ManyToMany
+import javax.persistence.ManyToOne
+import javax.persistence.OneToMany
+import javax.persistence.OneToOne
+import javax.persistence.PostLoad
+import javax.persistence.PostPersist
+import javax.persistence.PostRemove
+import javax.persistence.PostUpdate
+import javax.persistence.PrePersist
+import javax.persistence.PreRemove
+import javax.persistence.PreUpdate
+import javax.persistence.Table
+import javax.persistence.Temporal
+import javax.persistence.Transient
+import javax.persistence.Version
 
 
 class JpaTransformTest extends GroovyTestCase{
@@ -208,6 +211,28 @@ class JpaTransformTest extends GroovyTestCase{
 		assert afterDelete != null
 		assert afterDelete.getAnnotation(PostRemove) != null
 	}
+	
+	void testCustomColumnMappingAndIdMapping() {
+		Table tableAnn = Force.class.getAnnotation(Table)
+		
+		assert tableAnn != null
+		assert tableAnn.name() == "the_force"
+		def myIdField = Force.class.getDeclaredField("myId")
+		
+		assert myIdField.getAnnotation(Id) != null
+		assert myIdField.getAnnotation(GeneratedValue) == null
+		
+		def versionField = Force.class.getDeclaredField("version")
+		
+		assert versionField != null
+		assert versionField.getAnnotation(Version) == null
+		
+		shouldFail {
+			Force.class.getDeclaredField("id")
+		}
+		
+				
+	}
 }
 @JpaEntity
 class Simple {
@@ -283,4 +308,22 @@ class Car {
 class Pet {
 	Person owner
 	static belongsTo = [ owner: Person ]
+}
+@JpaEntity
+class Force {
+	String myId
+	Long version
+	String name
+	
+	static constraints = {
+		name size:5..15, nullable:true
+	}
+	
+	static mapping = {
+		table "the_force"
+		id name:"myId", generator:"assigned"
+		
+		name column:"the_name"
+		version false
+	}
 }

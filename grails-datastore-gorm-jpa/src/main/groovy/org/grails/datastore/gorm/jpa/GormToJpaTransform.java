@@ -30,6 +30,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -42,6 +43,7 @@ import javax.persistence.PostUpdate;
 import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -54,13 +56,22 @@ import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.PropertyNode;
+import org.codehaus.groovy.ast.expr.ArgumentListExpression;
+import org.codehaus.groovy.ast.expr.BooleanExpression;
 import org.codehaus.groovy.ast.expr.ClassExpression;
+import org.codehaus.groovy.ast.expr.ClosureExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.ListExpression;
 import org.codehaus.groovy.ast.expr.MapEntryExpression;
 import org.codehaus.groovy.ast.expr.MapExpression;
+import org.codehaus.groovy.ast.expr.MethodCallExpression;
+import org.codehaus.groovy.ast.expr.NamedArgumentListExpression;
 import org.codehaus.groovy.ast.expr.PropertyExpression;
+import org.codehaus.groovy.ast.expr.TupleExpression;
+import org.codehaus.groovy.ast.stmt.BlockStatement;
+import org.codehaus.groovy.ast.stmt.ExpressionStatement;
+import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
@@ -142,26 +153,75 @@ public class GormToJpaTransform implements ASTTransformation{
 		entityListenersAnnotation.addMember("value", new ClassExpression(new ClassNode(EntityInterceptorInvokingEntityListener.class)));
 		classNode.addAnnotation(entityListenersAnnotation);
 		
-		// annotate the id property with @Id
-		PropertyNode idProperty = classNode.getProperty(GrailsDomainClassProperty.IDENTITY);
+		PropertyNode mappingNode = classNode.getProperty(GrailsDomainClassProperty.MAPPING);
+		Map<String, Map<String, ?>> propertyMappings = new HashMap<String, Map<String, ?>>();
+		if(mappingNode != null && mappingNode.isStatic()) {			
+			populateConfigurationMapFromClosureExpression(classNode, 
+															mappingNode,
+															propertyMappings);
+		}
+		
+		// annotate the id property with @Id	
+		String idPropertyName = GrailsDomainClassProperty.IDENTITY;
+		String generationType = GenerationType.AUTO.toString();
+		
+		if(propertyMappings.containsKey(GrailsDomainClassProperty.IDENTITY)) {
+			final Map<String, ?> idConfig = propertyMappings.get(GrailsDomainClassProperty.IDENTITY);
+			if(idConfig.containsKey("name")) {
+				idPropertyName = idConfig.get("name").toString();
+			}
+			if(idConfig.containsKey("generator")) {
+				String generatorName = idConfig.get("generator").toString();
+				if("assigned".equals(generatorName)) {
+					generationType = null;
+				}
+				else if("sequence".equals(generatorName)) {
+					generationType = GenerationType.SEQUENCE.toString();
+				}
+				else if("identity".equals(generatorName)) {
+					generationType = GenerationType.IDENTITY.toString();
+				}				
+			}
+		}
+		PropertyNode idProperty = classNode.getProperty(idPropertyName);
 		if(idProperty == null) {
 			new DefaultGrailsDomainClassInjector().performInjectionOnAnnotatedEntity(classNode);
 			idProperty = classNode.getProperty(GrailsDomainClassProperty.IDENTITY);
+		}
+		
+		if(!idPropertyName.equals(GrailsDomainClassProperty.IDENTITY)) {
+			PropertyNode toDiscard = classNode.getProperty(GrailsDomainClassProperty.IDENTITY);
+			if(toDiscard != null && toDiscard.getType().equals("java.lang.Long")) {
+				classNode.getProperties().remove(toDiscard);
+			}
 		}
 		
 		if(idProperty != null) {
 			final FieldNode idField = idProperty.getField();
 			
 			idField.addAnnotation(ANNOTATION_ID);
-			final AnnotationNode generatedValueAnnotation = new AnnotationNode(new ClassNode(GeneratedValue.class));
-			
-			idField.addAnnotation(generatedValueAnnotation);
+			if(generationType != null) {
+				final AnnotationNode generatedValueAnnotation = new AnnotationNode(new ClassNode(GeneratedValue.class));
+				generatedValueAnnotation.addMember("strategy", new PropertyExpression(new ClassExpression(new ClassNode(GenerationType.class)), generationType));
+				idField.addAnnotation(generatedValueAnnotation);				
+			}
 		}
 		
 		// annotate the version property with @Version
 		PropertyNode versionProperty = classNode.getProperty(GrailsDomainClassProperty.VERSION);
 		if(versionProperty != null) {
-			versionProperty.addAnnotation(ANNOTATION_VERSION);
+			if(propertyMappings.containsKey(GrailsDomainClassProperty.VERSION)) {
+				final Map<String, ?> versionSettings = propertyMappings.get(GrailsDomainClassProperty.VERSION);
+				final Object enabledObject = versionSettings.get("enabled");
+				if(enabledObject instanceof Boolean) {
+					if(((Boolean)enabledObject).booleanValue()) {
+						versionProperty.addAnnotation(ANNOTATION_VERSION);
+					}
+				}
+			}
+			else {				
+				versionProperty.addAnnotation(ANNOTATION_VERSION);
+			}
 		}
 		
 		final List<MethodNode> methods = classNode.getMethods();
@@ -301,6 +361,75 @@ public class GormToJpaTransform implements ASTTransformation{
 				
 			}
 
+		}
+	}
+
+
+	private static void populateConfigurationMapFromClosureExpression(ClassNode classNode,
+			PropertyNode mappingNode, Map propertyMappings) {
+		ClosureExpression ce = (ClosureExpression) mappingNode.getInitialExpression();
+		final Statement code = ce.getCode();
+		if(code instanceof BlockStatement) {
+			final List<Statement> statements = ((BlockStatement)code).getStatements();
+			for (Statement statement : statements) {
+				if(statement instanceof ExpressionStatement) {
+					ExpressionStatement es = (ExpressionStatement) statement;
+					final Expression expression = es.getExpression();
+					if(expression instanceof MethodCallExpression) {
+						MethodCallExpression mce = (MethodCallExpression) expression;
+						final String methodName = mce.getMethodAsString();
+						Map propertyMapping = new HashMap();
+						propertyMappings.put(methodName, propertyMapping);
+						
+						final Expression arguments = mce.getArguments();
+						if(arguments instanceof ArgumentListExpression) {
+							if(methodName.equals("table")) {
+								ArgumentListExpression ale = (ArgumentListExpression) arguments;
+								final List<Expression> expressions = ale.getExpressions();
+								if(expressions.size()>0) {									
+									final String tableName = expressions.get(0).getText();
+									final AnnotationNode tableAnnotation = new AnnotationNode(new ClassNode(Table.class));
+									tableAnnotation.addMember("name", new ConstantExpression(tableName));
+									classNode.addAnnotation(tableAnnotation);
+								}
+							}
+							else if(methodName.equals("version")) {
+								ArgumentListExpression ale = (ArgumentListExpression) arguments;
+								final List<Expression> expressions = ale.getExpressions();
+								if(expressions.size()>0) {		
+									final Expression expr = expressions.get(0);
+									if(expr instanceof BooleanExpression)
+										propertyMapping.put("enabled", Boolean.valueOf(expr.getText()));
+								}
+							}
+						}
+						else if(arguments instanceof TupleExpression) {
+							final List<Expression> tupleExpressions = ((TupleExpression)arguments).getExpressions();
+							for (Expression te : tupleExpressions) {
+								if(te instanceof NamedArgumentListExpression) {
+									NamedArgumentListExpression nale = (NamedArgumentListExpression) te;
+									
+									for (MapEntryExpression mee : nale.getMapEntryExpressions()) {
+										String settingName = mee.getKeyExpression().getText();
+										
+										final Expression valueExpression = mee.getValueExpression();
+										if(valueExpression instanceof ConstantExpression) {
+											if(valueExpression instanceof BooleanExpression) {
+												propertyMapping.put(settingName, Boolean.valueOf(valueExpression.getText()));
+											}
+											else {
+												propertyMapping.put(settingName, valueExpression.getText());
+											}
+										}
+									}
+									
+								}
+							}
+						}	
+						
+					}
+				}
+			}
 		}
 	}
 
