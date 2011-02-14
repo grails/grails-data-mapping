@@ -281,8 +281,14 @@ public class ClassPropertyFetcher {
         return propertyDescriptorList;
     }
 
-    public List<PropertyDescriptor> getPropertiesAssignableToType(Class<Collection> collectionClass) {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+    public List<PropertyDescriptor> getPropertiesAssignableToType(Class assignableType) {
+    	List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
+    	for (Class type : typeToPropertyMap.keySet()) {
+			if(assignableType.isAssignableFrom(type)) {
+				properties.addAll(typeToPropertyMap.get(type));
+			}
+		}
+        return properties;
     }
 
     public static interface ReferenceInstanceCallback {
