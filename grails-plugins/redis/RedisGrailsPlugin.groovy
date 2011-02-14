@@ -31,7 +31,7 @@ import org.grails.datastore.gorm.utils.InstanceProxy
 
 class RedisGrailsPlugin {
     // the plugin version
-    def version = "1.0.0.M2"
+    def version = "1.0.0.M3"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.3.4 > *"
     // the other plugins this plugin depends on
