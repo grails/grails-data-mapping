@@ -13,7 +13,7 @@ def isGroovyProject(project) {
 
 subprojects {
 
-    releaseType = "BUILD-SNAPSHOT"
+    releaseType = "M4"
     version = "1.0.0.${releaseType}"
 
     def isSpringProject = project.name.contains("spring-datastore")
@@ -42,7 +42,7 @@ subprojects {
 
     dependencies {
 		if(isStandardGroovyMavenProject) {
-	       	groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.7.4'
+	       	groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.7.5'
 
             testCompile 'junit:junit:4.8.1'
             testCompile spockDependency
@@ -132,11 +132,14 @@ subprojects {
           def isDav = System.getProperty("deploy.protocol") == 'dav'
           def protocol = isDav ? 'dav:' : ''
 //          def releaseRepositoryUrl = "https://dav.codehaus.org/repository/grails/"
-          def milestoneRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/milestone' :
+/*          def milestoneRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/milestone' :
                                                          "${protocol}https://dav.codehaus.org/repository/grails/"
           def snapshotRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/snapshot' :
                                                         "${protocol}https://dav.codehaus.org/snapshots.repository/grails/"
-
+*/
+		  def milestoneRepositoryUrl = 's3://maven.springframework.org/milestone' 
+		  def snapshotRepositoryUrl = 's3://maven.springframework.org/snapshot'
+		  
           // add a configuration with a classpath that includes our s3 maven deployer
           configurations { deployerJars }
           dependencies {
@@ -151,7 +154,7 @@ subprojects {
               deployerJars "org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-6"
             }
             else {
-              deployerJars "org.apache.maven.wagon:wagon-http:1.0-beta-6"
+              deployerJars "org.apache.maven.wagon:wagon-http-lightweight:1.0-beta-6"
             }
 
 
@@ -173,15 +176,15 @@ subprojects {
                   case 'BUILD-SNAPSHOT':
                       description += snapshotRepositoryUrl
                       def credentials
-                      if(isSpringProject) {
-                        credentials = [userName: project.properties.s3AccessKey,
+/*                      if(isSpringProject) {
+*/                        credentials = [userName: project.properties.s3AccessKey,
                                        passphrase: project.properties.s3SecretAccessKey]
-                      }
+/*                      }
                       else {
                         credentials = [userName: project.properties['codehaus.username'],
                                        password: project.properties['codehaus.password']]
                       }
-                      configuration = configurations.deployerJars
+*/                      configuration = configurations.deployerJars
                       repository(url: milestoneRepositoryUrl) {
                           authentication(credentials)
                       }
