@@ -11,9 +11,7 @@ grails.project.dependency.resolution = {
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     repositories {
         mavenCentral()
-/*	 	mavenRepo 'http://maven.springframework.org/milestone'	*/
-		mavenRepo 'http://maven.springframework.org/snapshot'
-        mavenRepo 'http://repository.codehaus.org'
+	 	mavenRepo 'http://maven.springframework.org/milestone'	
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
@@ -25,9 +23,13 @@ grails.project.dependency.resolution = {
 	    }
 		compile("org.mongodb:mongo-java-driver:2.4")
 		runtime("com.gmongo:gmongo:0.7", excludes)
-      	runtime("org.grails:grails-datastore-gorm:1.0.0.BUILD-SNAPSHOT", excludes)	
-      	runtime("org.grails:grails-datastore-gorm-mongo:1.0.0.BUILD-SNAPSHOT", excludes)
-      	runtime( "org.springframework:spring-datastore-web:1.0.0.BUILD-SNAPSHOT", excludes)
-      	test("org.grails:grails-datastore-gorm-test:1.0.0.BUILD-SNAPSHOT", excludes)
+      	runtime("org.grails:grails-datastore-gorm:1.0.0.M4", excludes)	
+      	runtime("org.grails:grails-datastore-gorm-mongo:1.0.0.M4", excludes)
+      	runtime( "org.springframework:spring-datastore-web:1.0.0.M4", excludes)
+      	test("org.grails:grails-datastore-gorm-test:1.0.0.M4", excludes)
     }
+
+	plugins {
+		build ":maven-publisher:0.7.5"
+	}
 }
