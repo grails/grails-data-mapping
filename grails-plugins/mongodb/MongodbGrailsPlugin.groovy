@@ -17,6 +17,13 @@ import org.grails.datastore.gorm.utils.InstanceProxy
 import com.mongodb.ServerAddress
 
 class MongodbGrailsPlugin {
+	def license = "Apache 2.0 License"
+	def organization = [ name: "SpringSource", url: "http://www.springsource.org/" ]
+	def developers = [
+	        [ name: "Graeme Rocher", email: "grocher@vmware.com" ] ]
+	def issueManagement = [ system: "JIRA", url: "http://jira.codehaus.org/browse/GRAILSPLUGINS" ]
+	def scm = [ url: "https://github.com/grails/inconsequential" ]
+		
     // the plugin version
     def version = "1.0-M2"
     // the version or versions of Grails the plugin is designed for
