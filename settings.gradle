@@ -10,6 +10,12 @@ include "spring-datastore-core",
         "spring-datastore-web",
 /*        "spring-datastore-cassandra",*/
 
+		// Documentation
+		'grails-documentation-mongo',
+		'grails-documentation-redis',
+        'grails-documentation-riak',
+        
+
 		// Core GORM Implementation projects
         'grails-datastore-gorm',
         'grails-datastore-gorm-tck',
@@ -21,12 +27,12 @@ include "spring-datastore-core",
 
 		// GORM Implementations
         'grails-datastore-gorm-jpa',		
-/*        'grails-datastore-gorm-hibernate',*/
+        'grails-datastore-gorm-hibernate',
 /*        'grails-datastore-gorm-jcr',		*/
         'grails-datastore-gorm-redis',
         'grails-datastore-gorm-riak',
         'grails-datastore-gorm-mongo',
-        'grails-datastore-gorm-gemfire',
-        'grails-documentation-redis',
-        'grails-documentation-riak'
+        'grails-datastore-gorm-gemfire'
+
+
 
