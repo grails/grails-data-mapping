@@ -13,7 +13,7 @@ def isGroovyProject(project) {
 
 subprojects {
 
-    releaseType = "M4"
+    releaseType = "BUILD-SNAPSHOT"
     version = "1.0.0.${releaseType}"
 
     def isSpringProject = project.name.contains("spring-datastore")
