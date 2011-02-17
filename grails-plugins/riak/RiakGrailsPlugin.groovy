@@ -35,9 +35,9 @@ import org.springframework.transaction.PlatformTransactionManager
 
 class RiakGrailsPlugin {
   // the plugin version
-  def version = "1.0.0.M2"
+  def version = "1.0.0.M3"
   // the version or versions of Grails the plugin is designed for
-  def grailsVersion = "1.3.6 > *"
+  def grailsVersion = "1.3.5 > *"
   // the other plugins this plugin depends on
   def dependsOn = [:]
   // resources that are excluded from plugin packaging
@@ -45,8 +45,8 @@ class RiakGrailsPlugin {
       "grails-app/views/error.gsp"
   ]
 
-  def author = "J. Brisbin"
-  def authorEmail = "jon@jbrisbin.com"
+  def author = "Jon Brisbin"
+  def authorEmail = "jbrisbin@vmware.com"
   def title = "Riak GORM"
   def description = '''\\
 A plugin that integrates the Riak document/data store into Grails.
