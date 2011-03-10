@@ -32,7 +32,7 @@ class MappingConfigurationBuilder {
       else {
         if(args[0] instanceof Map) {
 
-          def instance = propertyClass.newInstance()
+          def instance = properties[name] ?: propertyClass.newInstance()
 		  def binder = new DataBinder(instance)
 		  binder.bind(new MutablePropertyValues(args[0]))
           properties[name] = instance
