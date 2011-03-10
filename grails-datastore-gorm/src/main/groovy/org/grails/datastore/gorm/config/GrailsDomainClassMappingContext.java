@@ -49,12 +49,10 @@ public class GrailsDomainClassMappingContext extends AbstractMappingContext {
 		return grailsApplication;
 	}
 
-	@Override
 	public MappingConfigurationStrategy getMappingSyntaxStrategy() {
 		throw new UnsupportedOperationException("MappingConfigurationStrategy not supported by implementation. Defined by Grails itself.");
 	}
 
-	@Override
 	public MappingFactory getMappingFactory() {
 		throw new UnsupportedOperationException("MappingFactory not supported by implementation. Defined by Grails itself.");
 	}

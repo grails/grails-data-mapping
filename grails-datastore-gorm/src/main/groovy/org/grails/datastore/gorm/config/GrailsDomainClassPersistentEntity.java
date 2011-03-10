@@ -15,25 +15,16 @@
 
 package org.grails.datastore.gorm.config;
 
+import org.codehaus.groovy.grails.commons.GrailsDomainClass;
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import org.springframework.datastore.mapping.model.*;
+import org.springframework.datastore.mapping.model.lifecycle.Initializable;
+import org.springframework.datastore.mapping.model.types.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
-import org.springframework.datastore.mapping.model.ClassMapping;
-import org.springframework.datastore.mapping.model.MappingContext;
-import org.springframework.datastore.mapping.model.PersistentEntity;
-import org.springframework.datastore.mapping.model.PersistentProperty;
-import org.springframework.datastore.mapping.model.PropertyMapping;
-import org.springframework.datastore.mapping.model.lifecycle.Initializable;
-import org.springframework.datastore.mapping.model.types.Association;
-import org.springframework.datastore.mapping.model.types.Embedded;
-import org.springframework.datastore.mapping.model.types.ManyToMany;
-import org.springframework.datastore.mapping.model.types.ManyToOne;
-import org.springframework.datastore.mapping.model.types.OneToMany;
-import org.springframework.datastore.mapping.model.types.OneToOne;
 
 /**
  * Bridges the {@link GrailsDomainClass} interface into the {@link PersistentEntity} interface
@@ -65,7 +56,6 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Init
 		return domainClass;
 	}
 
-	@Override
 	public void initialize() {
 		final GrailsDomainClassProperty identifier = domainClass.getIdentifier();
 		this.identifier = new GrailsDomainClassPersistentProperty(this, identifier);
@@ -97,7 +87,6 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Init
 				else {
 					persistentProperty = new GrailsDomainClassPersistentProperty(this, grailsDomainClassProperty);
 				}
-				associations.add((Association) persistentProperty);
 			}
 			else {
 				persistentProperty = new GrailsDomainClassPersistentProperty(this, grailsDomainClassProperty);
@@ -107,67 +96,54 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Init
 		}
 	}
 
-	@Override
 	public String getName() {
 		return domainClass.getFullName();
 	}
 
-	@Override
 	public PersistentProperty getIdentity() {
 		return identifier;
 	}
 
-	@Override
 	public List<PersistentProperty> getPersistentProperties() {
 		return properties;
 	}
 
-	@Override
 	public List<Association> getAssociations() {
 		return associations;
 	}
 
-	@Override
 	public PersistentProperty getPropertyByName(String name) {
 		return propertiesByName.get(name);
 	}
 
-	@Override
 	public Class getJavaClass() {
 		return domainClass.getClazz();
 	}
 
-	@Override
 	public boolean isInstance(Object obj) {
 		return domainClass.getClazz().isInstance(obj);
 	}
 
-	@Override
 	public ClassMapping getMapping() {
 		return null;
 	}
 
-	@Override
 	public Object newInstance() {
 		return domainClass.newInstance();
 	}
 
-	@Override
 	public List<String> getPersistentPropertyNames() {
 		return new ArrayList<String>( propertiesByName.keySet() );
 	}
 
-	@Override
 	public String getDecapitalizedName() {
 		return domainClass.getLogicalPropertyName();
 	}
 
-	@Override
 	public boolean isOwningEntity(PersistentEntity owner) {
 		return domainClass.isOwningClass(owner.getJavaClass());
 	}
 
-	@Override
 	public PersistentEntity getParentEntity() {
 		if(!isRoot()) {
 			return getMappingContext()
@@ -179,9 +155,8 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Init
 		return null;
 	}
 
-	@Override
 	public PersistentEntity getRootEntity() {
-		if(isRoot()) return this;
+		if(isRoot() || getParentEntity() == null) return this;
 		else {
 			PersistentEntity parent = getParentEntity();
 			while(!parent.isRoot()) {
@@ -191,27 +166,22 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Init
 		}
 	}
 
-	@Override
 	public boolean isRoot() {
 		return domainClass.isRoot();
 	}
 
-	@Override
 	public String getDiscriminator() {
 		return getName();
 	}
 
-	@Override
 	public MappingContext getMappingContext() {
 		return mappingContext;
 	}
 
-	@Override
 	public boolean hasProperty(String name, Class type) {
 		return domainClass.hasProperty(name);
 	}
 
-	@Override
 	public boolean isIdentityName(String propertyName) {
 		return domainClass.getIdentifier().getName().equals(propertyName);
 	}
@@ -223,7 +193,6 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Init
 			GrailsDomainClassMappingContext ctx,
 			GrailsDomainClassProperty grailsDomainClassProperty) {
 		final ManyToOne oneToOne = new ManyToOne(this, ctx, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
-			@Override
 			public PropertyMapping getMapping() {
 				return null;
 			}
@@ -238,7 +207,6 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Init
 			GrailsDomainClassMappingContext ctx,
 			GrailsDomainClassProperty grailsDomainClassProperty) {
 		final ManyToMany oneToOne = new ManyToMany(this, ctx, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
-			@Override
 			public PropertyMapping getMapping() {
 				return null;
 			}
@@ -252,7 +220,6 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Init
 			GrailsDomainClassMappingContext ctx,
 			GrailsDomainClassProperty grailsDomainClassProperty) {
 		final OneToOne oneToOne = new OneToOne(this, ctx, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
-			@Override
 			public PropertyMapping getMapping() {
 				return null;
 			}
@@ -266,7 +233,6 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Init
 			GrailsDomainClassProperty grailsDomainClassProperty) {
 		final OneToMany oneToMany = new OneToMany(this, mappingContext, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
 
-			@Override
 			public PropertyMapping getMapping() {
 				return null;
 			}
@@ -288,7 +254,6 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Init
 			GrailsDomainClassMappingContext mappingContext,
 			GrailsDomainClassProperty grailsDomainClassProperty) {
 		Embedded persistentProperty = new Embedded(this, mappingContext, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getClass()) {
-			@Override
 			public PropertyMapping getMapping() {
 				return null;
 			}
@@ -300,12 +265,10 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Init
 		return persistentProperty;
 	}
 
-	@Override
 	public boolean isExternal() {
 		return false;
 	}
 
-	@Override
 	public void setExternal(boolean external) {
 		// do nothing
 	}

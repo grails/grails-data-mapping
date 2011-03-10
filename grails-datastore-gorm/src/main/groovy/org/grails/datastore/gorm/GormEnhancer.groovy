@@ -116,7 +116,7 @@ class GormEnhancer {
                   delegate[prop.name].add(obj)
               }
               else {
-                  throw new MissingMethodException("addTo${prop.capitilizedName}", associatedEntity.javaClass, [arg] as Object[])
+                  throw new MissingMethodException("addTo${prop.capitilizedName}", e.javaClass, [arg] as Object[])
               }
               if (prop.bidirectional && prop.inverseSide) {
                   def otherSide = prop.inverseSide
@@ -133,26 +133,27 @@ class GormEnhancer {
               }
               delegate
           }
-        }
-        "removeFrom${prop.capitilizedName}" {Object arg ->
-            if (associatedEntity.javaClass.isInstance(arg)) {
-                delegate[prop.name]?.remove(arg)
-                if (prop.bidirectional) {
-					def otherSide = prop.inverseSide
-                    if (otherSide instanceof ManyToMany) {
-                        String name = otherSide.name
-                        arg[name]?.remove(delegate)
-                    }
-                    else {
-                        arg[otherSide.name] = null
+          "removeFrom${prop.capitilizedName}" {Object arg ->
+                if (associatedEntity.javaClass.isInstance(arg)) {
+                    delegate[prop.name]?.remove(arg)
+                    if (prop.bidirectional) {
+                        def otherSide = prop.inverseSide
+                        if (otherSide instanceof ManyToMany) {
+                            String name = otherSide.name
+                            arg[name]?.remove(delegate)
+                        }
+                        else {
+                            arg[otherSide.name] = null
+                        }
                     }
                 }
-            }
-            else {
-                throw new MissingMethodException("removeFrom${collectionName}", dc.clazz, [arg] as Object[])
-            }
-            delegate
+                else {
+                    throw new MissingMethodException("removeFrom${prop.capitilizedName}", e.javaClass, [arg] as Object[])
+                }
+                delegate
+          }
         }
+
       }
       'static' {
         for(Method m in staticMethods.methods) {

@@ -41,32 +41,26 @@ public class GrailsDomainClassPersistentProperty implements PersistentProperty{
 		this.property = property;
 	}
 
-	@Override
 	public String getName() {
 		return property.getName();
 	}
 
-	@Override
 	public String getCapitilizedName() {
 		return NameUtils.capitalize(getName());
 	}
 
-	@Override
 	public Class getType() {
 		return property.getType();
 	}
 
-	@Override
 	public PropertyMapping getMapping() {
 		return null;
 	}
 
-	@Override
 	public PersistentEntity getOwner() {
 		return owner;
 	}
 
-	@Override
 	public boolean isNullable() {
 		return property.isOptional();
 	}
