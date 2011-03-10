@@ -14,6 +14,7 @@
  */
 package org.springframework.datastore.mapping.model;
 
+import org.springframework.datastore.mapping.config.Property;
 import org.springframework.datastore.mapping.reflect.NameUtils;
 
 import java.beans.PropertyDescriptor;
@@ -68,10 +69,9 @@ public abstract class AbstractPersistentProperty implements PersistentProperty {
     }
 
     public boolean isNullable() {
-        return nullable;
+        final Object mappedForm = getMapping().getMappedForm();
+        return mappedForm instanceof Property && ((Property) mappedForm).isNullable();
     }
 
-    public void setNullable(boolean nullable) {
-        this.nullable = nullable;
-    }
+
 }

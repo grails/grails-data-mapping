@@ -35,4 +35,5 @@ public interface GormProperties {
     String NAMED_QUERIES = "namedQueries";
     String LAST_UPDATED = "lastUpdated";
     String EMBEDDED = "embedded";
+    String CONTRAINTS = "constraints";
 }

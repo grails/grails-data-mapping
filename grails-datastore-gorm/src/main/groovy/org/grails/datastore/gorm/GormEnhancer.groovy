@@ -22,6 +22,7 @@ import org.grails.datastore.gorm.query.NamedQueriesBuilder
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.model.types.OneToMany
+import org.springframework.datastore.mapping.model.types.ManyToMany
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
@@ -97,8 +98,9 @@ class GormEnhancer {
           }
         }
       }
-      for(prop in e.associations) {
-        if(prop instanceof OneToMany) {
+      for(p in e.associations) {
+		def prop = p
+        if( (prop instanceof OneToMany) || (prop instanceof ManyToMany)) {
           def associatedEntity = prop.associatedEntity
           "addTo${prop.capitilizedName}" { arg ->
               def obj
@@ -132,10 +134,29 @@ class GormEnhancer {
               delegate
           }
         }
+        "removeFrom${prop.capitilizedName}" {Object arg ->
+            if (associatedEntity.javaClass.isInstance(arg)) {
+                delegate[prop.name]?.remove(arg)
+                if (prop.bidirectional) {
+					def otherSide = prop.inverseSide
+                    if (otherSide instanceof ManyToMany) {
+                        String name = otherSide.name
+                        arg[name]?.remove(delegate)
+                    }
+                    else {
+                        arg[otherSide.name] = null
+                    }
+                }
+            }
+            else {
+                throw new MissingMethodException("removeFrom${collectionName}", dc.clazz, [arg] as Object[])
+            }
+            delegate
+        }
       }
       'static' {
-        for(Method method in staticMethods.methods) {
-			
+        for(Method m in staticMethods.methods) {
+			def method = m
 			if(method != null) {
 				def methodName = method.name
 				def parameterTypes = method.parameterTypes

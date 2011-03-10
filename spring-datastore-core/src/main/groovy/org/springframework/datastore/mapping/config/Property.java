@@ -5,6 +5,7 @@ import javax.persistence.FetchType;
 public class Property {
 
 	private boolean index = false;
+    private boolean nullable = false;
 	private FetchType fetchStrategy = FetchType.LAZY;
 	private String targetName;
 	
@@ -43,4 +44,11 @@ public class Property {
 	    this.fetchStrategy = fetchStrategy;
 	}
 
+    public boolean isNullable() {
+        return nullable;
+    }
+
+    public void setNullable(boolean nullable) {
+        this.nullable = nullable;
+    }
 }

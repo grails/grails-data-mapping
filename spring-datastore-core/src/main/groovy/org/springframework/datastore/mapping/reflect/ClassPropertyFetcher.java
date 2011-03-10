@@ -291,6 +291,16 @@ public class ClassPropertyFetcher {
         return properties;
     }
 
+    public List<PropertyDescriptor> getPropertiesAssignableFromType(Class assignableType) {
+    	List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
+    	for (Class type : typeToPropertyMap.keySet()) {
+			if(type.isAssignableFrom( assignableType )) {
+				properties.addAll(typeToPropertyMap.get(type));
+			}
+		}
+        return properties;
+    }
+
     public static interface ReferenceInstanceCallback {
 		public Object getReferenceInstance();
 	}

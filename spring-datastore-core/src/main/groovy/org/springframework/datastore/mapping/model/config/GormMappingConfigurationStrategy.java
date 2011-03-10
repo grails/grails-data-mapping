@@ -14,37 +14,9 @@
  */
 package org.springframework.datastore.mapping.model.config;
 
-import static org.springframework.datastore.mapping.model.config.GormProperties.BELONGS_TO;
-import static org.springframework.datastore.mapping.model.config.GormProperties.EMBEDDED;
-import static org.springframework.datastore.mapping.model.config.GormProperties.HAS_MANY;
-import static org.springframework.datastore.mapping.model.config.GormProperties.HAS_ONE;
-import static org.springframework.datastore.mapping.model.config.GormProperties.MAPPED_BY;
-import static org.springframework.datastore.mapping.model.config.GormProperties.TRANSIENT;
 import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
-
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.persistence.Entity;
-
-import org.springframework.datastore.mapping.model.ClassMapping;
-import org.springframework.datastore.mapping.model.IdentityMapping;
-import org.springframework.datastore.mapping.model.IllegalMappingException;
-import org.springframework.datastore.mapping.model.MappingConfigurationStrategy;
-import org.springframework.datastore.mapping.model.MappingContext;
-import org.springframework.datastore.mapping.model.MappingFactory;
-import org.springframework.datastore.mapping.model.PersistentEntity;
-import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.model.*;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.model.types.Basic;
 import org.springframework.datastore.mapping.model.types.OneToOne;
@@ -52,6 +24,14 @@ import org.springframework.datastore.mapping.model.types.ToOne;
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.springframework.datastore.mapping.reflect.ReflectionUtils;
 import org.springframework.util.StringUtils;
+
+import javax.persistence.Entity;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
+import java.util.*;
+
+import static org.springframework.datastore.mapping.model.config.GormProperties.*;
 
 /**
  * <p>This implementation of the MappingConfigurationStrategy interface
@@ -278,7 +258,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 String mappingProperty = (String)mappedByMap.get(property.getName());
                 if ( StringUtils.hasText(mappingProperty)) {
                     // First find the specified property on the related class, if it exists.
-                    PropertyDescriptor pd = findProperty(cpf.getPropertiesOfType(entity.getJavaClass()), mappingProperty);
+                    PropertyDescriptor pd = findProperty(cpf.getPropertiesAssignableFromType(entity.getJavaClass()), mappingProperty);
 
                     // If a property of the required type does not exist, search
                     // for any collection properties on the related class.
