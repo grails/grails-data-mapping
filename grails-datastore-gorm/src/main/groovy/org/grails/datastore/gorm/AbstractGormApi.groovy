@@ -24,10 +24,17 @@ abstract class AbstractGormApi {
     this.persistentClass = persistentClass;
     this.datastore = datastore
     this.persistentEntity = datastore.getMappingContext().getPersistentEntity(persistentClass.name)
-	this.methods =  getClass().methods.findAll { Method m ->
-       def mods = m.getModifiers()
-       !m.isSynthetic() && !Modifier.isStatic(mods)&& !Modifier.isPrivate(mods) && !AbstractGormApi.EXCLUDES.contains(m.name)
-     }
+	this.methods = []
+
+    final clazz = getClass()
+    while(clazz != Object.class) {
+        methods.addAll ( clazz.declaredMethods.findAll { Method m ->
+           def mods = m.getModifiers()
+           !m.isSynthetic() && !Modifier.isStatic(mods)&& Modifier.isPublic(mods) && !AbstractGormApi.EXCLUDES.contains(m.name)
+        } )
+        clazz = clazz.getSuperclass()
+    }
+
   }
 
   List<Method> getMethods() {  	methods  }

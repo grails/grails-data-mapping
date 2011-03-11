@@ -15,14 +15,15 @@
 package org.grails.datastore.gorm
 
 import java.lang.reflect.Method
-
+import java.lang.reflect.Modifier
+import org.codehaus.groovy.runtime.metaclass.ClosureStaticMetaMethod
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.model.types.OneToMany
 import org.springframework.datastore.mapping.model.types.ManyToMany
+import org.springframework.datastore.mapping.model.types.OneToMany
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
@@ -78,31 +79,37 @@ class GormEnhancer {
 			registerNamedQueries(e,  namedQueries)
 		}
 	}
-    
-    cls.metaClass {
+
+    def ExpandoMetaClass mc = cls.metaClass
       for(currentInstanceMethods in instanceMethods) {
-		def apiProvider = currentInstanceMethods
+        def apiProvider = currentInstanceMethods
         for(Method method in apiProvider.methods) {
-		  def methodName = method.name
-		  def parameterTypes = method.parameterTypes
-          
+          def methodName = method.name
+          def parameterTypes = method.parameterTypes
+
           if(parameterTypes) {
-			 parameterTypes = Arrays.copyOfRange(parameterTypes, 1, parameterTypes.length)
+             parameterTypes = Arrays.copyOfRange(parameterTypes, 1, parameterTypes.length)
              // use fake object just so we have the right method signature
-            "$methodName"(new Closure(this) {
-              def call(Object[] args) {
-                apiProvider."$methodName"(delegate, *args)
+
+              final tooCall = new InstanceMethodInvokingClosure(apiProvider,methodName, parameterTypes)
+              def pt = parameterTypes
+              // Hack to workaround http://jira.codehaus.org/browse/GROOVY-4720
+              final closureMethod = new ClosureStaticMetaMethod(methodName, cls, tooCall, pt) {
+                  @Override
+                  int getModifiers() {
+                      return Modifier.PUBLIC
+                  }
+
               }
-              Class[] getParameterTypes() { parameterTypes }
-            })
+              mc.registerInstanceMethod(closureMethod)
           }
         }
       }
       for(p in e.associations) {
-		def prop = p
+        def prop = p
         if( (prop instanceof OneToMany) || (prop instanceof ManyToMany)) {
           def associatedEntity = prop.associatedEntity
-          "addTo${prop.capitilizedName}" { arg ->
+          mc."addTo${prop.capitilizedName}" = { arg ->
               def obj
               if (delegate[prop.name] == null) {
                   delegate[prop.name] = [].asType( prop.type )
@@ -133,7 +140,7 @@ class GormEnhancer {
               }
               delegate
           }
-          "removeFrom${prop.capitilizedName}" {Object arg ->
+          mc."removeFrom${prop.capitilizedName}" = {Object arg ->
                 if (associatedEntity.javaClass.isInstance(arg)) {
                     delegate[prop.name]?.remove(arg)
                     if (prop.bidirectional) {
@@ -155,43 +162,42 @@ class GormEnhancer {
         }
 
       }
-      'static' {
+
+      def staticScope = mc.static
         for(Method m in staticMethods.methods) {
-			def method = m
-			if(method != null) {
-				def methodName = method.name
-				def parameterTypes = method.parameterTypes
-				if(parameterTypes != null) {
-					def callable = new StaticMethodInvokingClosure(staticMethods, methodName, parameterTypes)			
-					delegate."$methodName" = callable
-				}
-			}
+            def method = m
+            if(method != null) {
+                def methodName = method.name
+                def parameterTypes = method.parameterTypes
+                if(parameterTypes != null) {
+                    def callable = new StaticMethodInvokingClosure(staticMethods, methodName, parameterTypes)
+                    staticScope."$methodName" = callable
+                }
+            }
 
         }
 
         if(tm) {
 
-          withTransaction { Closure callable ->
+          staticScope.withTransaction = { Closure callable ->
             if(callable) {
               def transactionTemplate = new TransactionTemplate(tm)
               transactionTemplate.execute(callable as TransactionCallback)
             }
           }
-		  withNewTransaction { Closure callable ->
-			  if(callable) {
-				def transactionTemplate = new TransactionTemplate(tm, new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW))
-				transactionTemplate.execute(callable as TransactionCallback)
-			  }
-  		  }
-          withTransaction { TransactionDefinition definition, Closure callable ->
+          staticScope.withNewTransaction = { Closure callable ->
+              if(callable) {
+                def transactionTemplate = new TransactionTemplate(tm, new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW))
+                transactionTemplate.execute(callable as TransactionCallback)
+              }
+          }
+          staticScope.withTransaction = { TransactionDefinition definition, Closure callable ->
             if(callable) {
               def transactionTemplate = new TransactionTemplate(tm, definition)
               transactionTemplate.execute(callable as TransactionCallback)
             }
           }
         }
-      }
-    }
 
 	registerMethodMissing cls
   }
@@ -231,6 +237,34 @@ class GormEnhancer {
     return new GormValidationApi(cls, datastore)
   }
 }
+
+class InstanceMethodInvokingClosure extends Closure {
+    private String methodName
+        private Object apiDelegate
+        private Class[] parameterTypes
+
+
+        public InstanceMethodInvokingClosure(Object apiDelegate,
+                String methodName, Class[] parameterTypes) {
+            super(apiDelegate, apiDelegate);
+            this.apiDelegate = apiDelegate;
+            this.methodName = methodName;
+            this.parameterTypes = parameterTypes;
+        }
+
+        @Override
+        public Object call(Object[] args) {
+            apiDelegate."$methodName"(delegate, *args)
+        }
+
+        public Object doCall(Object[] args) {
+            apiDelegate."$methodName"(delegate, *args)
+        }
+
+        @Override
+        public Class[] getParameterTypes() { parameterTypes	}
+
+}
 class StaticMethodInvokingClosure extends Closure {
 	
 		private String methodName
@@ -240,7 +274,7 @@ class StaticMethodInvokingClosure extends Closure {
 		
 		public StaticMethodInvokingClosure(Object apiDelegate,
 				String methodName, Class[] parameterTypes) {
-			super(apiDelegate);
+			super(apiDelegate, apiDelegate);
 			this.apiDelegate = apiDelegate;
 			this.methodName = methodName;
 			this.parameterTypes = parameterTypes;
@@ -248,6 +282,10 @@ class StaticMethodInvokingClosure extends Closure {
 	
 		@Override
 		public Object call(Object[] args) {
+			apiDelegate."$methodName"(*args)
+		}
+
+		public Object doCall(Object[] args) {
 			apiDelegate."$methodName"(*args)
 		}
 	
