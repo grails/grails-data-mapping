@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.datastore.mapping.jpa.config;
 
 import javax.persistence.Table;
@@ -22,15 +21,13 @@ import org.springframework.datastore.mapping.model.MappingContext;
 
 /**
  * Models a JPA-mapped entity
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
- *
  */
-public class JpaPersistentEntity extends AbstractPersistentEntity<Table>{
+public class JpaPersistentEntity extends AbstractPersistentEntity<Table> {
 
-	public JpaPersistentEntity(Class javaClass, MappingContext context) {
-		super(javaClass, context);
-	}
-
+    public JpaPersistentEntity(Class javaClass, MappingContext context) {
+        super(javaClass, context);
+    }
 }

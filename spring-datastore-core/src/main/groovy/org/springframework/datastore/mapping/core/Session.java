@@ -14,18 +14,19 @@
  */
 package org.springframework.datastore.mapping.core;
 
+import java.io.Serializable;
+import java.util.List;
+
+import javax.persistence.FlushModeType;
+
 import org.springframework.datastore.mapping.engine.EntityInterceptorAware;
 import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.transactions.Transaction;
 
-import javax.persistence.FlushModeType;
-import java.io.Serializable;
-import java.util.List;
-
 /**
- * The Session represents the active interaction with a datastore. 
+ * The Session represents the active interaction with a datastore.
  *
  * @author Graeme Rocher
  * @author Guillaume Laforge
@@ -53,7 +54,7 @@ public interface Session extends EntityInterceptorAware {
      * @return The attribute value
      */
     Object getAttribute(Object entity, String attributeName);
-    
+
     /**
      * @return true if connected to the datastore
      */
@@ -143,7 +144,7 @@ public interface Session extends EntityInterceptorAware {
 
     /**
      * Releases a lock, if not called all locked objects should be released by {@link #disconnect()}
-     * 
+     *
      * @param o The object to unlock
      */
     void unlock(Object o);
@@ -165,7 +166,6 @@ public interface Session extends EntityInterceptorAware {
      */
     <T> T retrieve(Class<T> type, Serializable key);
 
-
     /**
      * Retrieves a proxy for the given key
      *
@@ -182,7 +182,7 @@ public interface Session extends EntityInterceptorAware {
      * @param key The key
      * @return The object
      */
-    <T> T lock(Class<T> type, Serializable key);    
+    <T> T lock(Class<T> type, Serializable key);
 
     /**
      * Deletes one or many objects
@@ -244,6 +244,4 @@ public interface Session extends EntityInterceptorAware {
      * @return The Datastore instance
      */
     Datastore getDatastore();
-
-
 }

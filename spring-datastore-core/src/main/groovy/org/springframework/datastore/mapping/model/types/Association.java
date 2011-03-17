@@ -14,29 +14,31 @@
  */
 package org.springframework.datastore.mapping.model.types;
 
-import org.springframework.datastore.mapping.model.*;
+import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
-import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.springframework.datastore.mapping.model.AbstractPersistentProperty;
+import org.springframework.datastore.mapping.model.IllegalMappingException;
+import org.springframework.datastore.mapping.model.MappingContext;
+import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.model.PersistentProperty;
 
 /**
  * Models an association between one class and another
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
 public abstract class Association<T> extends AbstractPersistentProperty {
 
-    public static final List<CascadeType> DEFAULT_OWNER_CASCADE = new ArrayList<CascadeType>() {{
-        add(CascadeType.ALL);
-    }};
+    public static final List<CascadeType> DEFAULT_OWNER_CASCADE = Arrays.asList(CascadeType.ALL);
 
-    public static final List<CascadeType> DEFAULT_CHILD_CASCADE = new ArrayList<CascadeType>() {{
-        add(CascadeType.PERSIST);
-    }};
+    public static final List<CascadeType> DEFAULT_CHILD_CASCADE = Arrays.asList(CascadeType.PERSIST);
 
     private PersistentEntity associatedEntity;
     private String referencedPropertyName;
@@ -66,14 +68,11 @@ public abstract class Association<T> extends AbstractPersistentProperty {
 
     public Association getInverseSide() {
         final PersistentProperty associatedProperty = associatedEntity.getPropertyByName(referencedPropertyName);
-        if(associatedProperty == null) return null;
-        if(associatedProperty instanceof Association) {
+        if (associatedProperty == null) return null;
+        if (associatedProperty instanceof Association) {
             return (Association) associatedProperty;
         }
-        else {
-            throw new IllegalMappingException("The inverse side ["+associatedEntity.getName()+"." + associatedProperty.getName() +"] of the association ["+getOwner().getName()+"." + this.getName() +"] is not valid. Associations can only map to other entities and collection types.");
-        }
-
+        throw new IllegalMappingException("The inverse side ["+associatedEntity.getName()+"." + associatedProperty.getName() +"] of the association ["+getOwner().getName()+"." + this.getName() +"] is not valid. Associations can only map to other entities and collection types.");
     }
 
     /**
@@ -89,8 +88,8 @@ public abstract class Association<T> extends AbstractPersistentProperty {
 
     protected List<CascadeType> getCascadeOperations() {
         List<CascadeType> cascades;
-        if(cascadeOperations.isEmpty()) {
-            if(isOwningSide()) cascades = DEFAULT_OWNER_CASCADE;
+        if (cascadeOperations.isEmpty()) {
+            if (isOwningSide()) cascades = DEFAULT_OWNER_CASCADE;
             else {
                 cascades = DEFAULT_CHILD_CASCADE;
             }
@@ -141,6 +140,6 @@ public abstract class Association<T> extends AbstractPersistentProperty {
     }
 
     public boolean isCircular() {
-        return isBidirectional() && getAssociatedEntity().equals(getOwner());        
+        return isBidirectional() && getAssociatedEntity().equals(getOwner());
     }
 }

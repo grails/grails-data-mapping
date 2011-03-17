@@ -23,23 +23,23 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 
 public class DocumentPersistentEntity extends AbstractPersistentEntity<Collection> {
 
-	public DocumentPersistentEntity(@SuppressWarnings("rawtypes") Class javaClass, MappingContext context) {
-		super(javaClass, context);
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public ClassMapping<Collection> getMapping() {
-		return new DocumentCollectionMapping(this, context);
-	}
-	
+    public DocumentPersistentEntity(@SuppressWarnings("rawtypes") Class javaClass, MappingContext context) {
+        super(javaClass, context);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public ClassMapping<Collection> getMapping() {
+        return new DocumentCollectionMapping(this, context);
+    }
+
     public class DocumentCollectionMapping extends AbstractClassMapping<Collection> {
         public DocumentCollectionMapping(PersistentEntity entity, MappingContext context) {
             super(entity, context);
         }
+        @Override
         public Collection getMappedForm() {
             return (Collection) context.getMappingFactory().createMappedForm(DocumentPersistentEntity.this);
         }
-    }	
-
+    }
 }

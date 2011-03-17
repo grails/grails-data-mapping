@@ -6,26 +6,26 @@ import org.springframework.datastore.mapping.core.Session
 /**
  * A Spec base class that manages a Session for each feature as well as
  * meta class cleanup on the Entity classes in the TCK.
- * 
- * Users of this class need to provide a “setup” class at runtime that 
+ *
+ * Users of this class need to provide a "setup" class at runtime that
  * provides the session instance. It *must* have the following name:
- * 
+ *
  * - org.grails.datastore.gorm.Setup
- * 
- * This class must contain a static no-arg method called “setup()” 
+ *
+ * This class must contain a static no-arg method called "setup()"
  * that returns a Session instance.
  */
 abstract class GormDatastoreSpec extends Specification {
 
     static final SETUP_CLASS_NAME = 'org.grails.datastore.gorm.Setup'
     static final TEST_CLASSES = [Task,Person, ModifyPerson, Pet, PetType, PersonEvent, Book, Highway,TestEntity, ChildEntity,CommonTypes, Location, City, Country,Plant, PlantCategory, Publication]
-    
+
     @Shared Class setupClass
-    
+
     Session session
-    
+
     def setupSpec() {
-		ExpandoMetaClass.enableGlobally()
+        ExpandoMetaClass.enableGlobally()
         setupClass = loadSetupClass()
     }
 
@@ -37,10 +37,10 @@ abstract class GormDatastoreSpec extends Specification {
     def cleanup() {
         session?.disconnect()
         try {
-          setupClass.destroy()
+            setupClass.destroy()
         } catch(e) {
-			println "ERROR: Exception during test cleanup: ${e.message}"
-		}
+            println "ERROR: Exception during test cleanup: ${e.message}"
+        }
 
         cleanRegistry()
     }
@@ -50,7 +50,7 @@ abstract class GormDatastoreSpec extends Specification {
             GroovySystem.metaClassRegistry.removeMetaClass(clazz)
         }
     }
-    
+
     static private loadSetupClass() {
         try {
             getClassLoader().loadClass(SETUP_CLASS_NAME)
@@ -58,5 +58,4 @@ abstract class GormDatastoreSpec extends Specification {
             throw new RuntimeException("Datastore setup class ($SETUP_CLASS_NAME) was not found",e)
         }
     }
-    
 }

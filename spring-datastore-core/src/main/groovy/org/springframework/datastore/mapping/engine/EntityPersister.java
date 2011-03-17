@@ -14,14 +14,14 @@
  */
 package org.springframework.datastore.mapping.engine;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.proxy.ProxyFactory;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A {@link org.springframework.datastore.mapping.engine.Persister} specificly for persisting PersistentEntity instances
@@ -50,22 +50,22 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
     public Object proxy(Serializable key) {
          return getProxyFactory().createProxy(session, getPersistentEntity().getJavaClass(), key);
     }
-    
+
     public ProxyFactory getProxyFactory() {
-        if(proxyFactory == null) {
+        if (proxyFactory == null) {
             proxyFactory = mappingContext.getProxyFactory();
         }
         return proxyFactory;
     }
 
     public void addEntityInterceptor(EntityInterceptor interceptor) {
-        if(interceptor != null) {
-            this.interceptors.add(interceptor);
+        if (interceptor != null) {
+            interceptors.add(interceptor);
         }
     }
 
     public void setEntityInterceptors(List<EntityInterceptor> interceptors) {
-        if(interceptors!=null) this.interceptors = interceptors;
+        if (interceptors!=null) this.interceptors = interceptors;
     }
 
     /**
@@ -83,7 +83,7 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
     }
 
     @SuppressWarnings("rawtypes")
-	public Class getType() {
+    public Class getType() {
         return persistentEntity.getJavaClass();
     }
 
@@ -94,12 +94,10 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
      */
     public Serializable getObjectIdentifier(Object obj) {
         final ProxyFactory pf = getProxyFactory();
-        if(pf.isProxy(obj)) {
+        if (pf.isProxy(obj)) {
             return pf.getIdentifier(obj);
         }
-        else {
-            return (Serializable) new EntityAccess(getPersistentEntity(), obj).getIdentifier();
-        }
+        return (Serializable) new EntityAccess(getPersistentEntity(), obj).getIdentifier();
     }
 
     /**
@@ -109,6 +107,7 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
     public void setObjectIdentifier(Object obj, Serializable id) {
         new EntityAccess(getPersistentEntity(), obj).setIdentifier(id);
     }
+
     /**
      * Persists an object returning the identifier
      *
@@ -116,14 +115,13 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
      * @return The identifer
      */
     public final Serializable persist(Object obj) {
-        if(!persistentEntity.isInstance(obj)) {
+        if (!persistentEntity.isInstance(obj)) {
             final Persister persister = getSession().getPersister(obj);
-            if(persister != null) {
+            if (persister != null) {
                 return persister.persist(obj);
             }
-            else {
-                throw new IllegalArgumentException("Object ["+obj+"] is not an instance supported by the persister for class ["+getType().getName()+"]");
-            }
+
+            throw new IllegalArgumentException("Object ["+obj+"] is not an instance supported by the persister for class ["+getType().getName()+"]");
         }
 
         return persistEntity(getPersistentEntity(), obj);
@@ -141,54 +139,52 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
         return retrieveAllEntities(getPersistentEntity(), keys);
     }
 
-    protected abstract List<Object> retrieveAllEntities(PersistentEntity persistentEntity, Serializable[] keys);
+    protected abstract List<Object> retrieveAllEntities(PersistentEntity pe, Serializable[] keys);
 
-    protected abstract List<Object> retrieveAllEntities(PersistentEntity persistentEntity, Iterable<Serializable> keys);
+    protected abstract List<Object> retrieveAllEntities(PersistentEntity pe, Iterable<Serializable> keys);
 
-    protected abstract List<Serializable> persistEntities(PersistentEntity persistentEntity, @SuppressWarnings("rawtypes") Iterable objs);
+    protected abstract List<Serializable> persistEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objs);
 
     public final Object retrieve(Serializable key) {
-        if(key == null) return null;
+        if (key == null) return null;
         return retrieveEntity(getPersistentEntity(), key);
     }
 
     /**
      * Retrieve a PersistentEntity for the given mappingContext and key
      *
-     * @param persistentEntity The entity
+     * @param pe The entity
      * @param key The key
      * @return The object or null if it doesn't exist
      */
-    protected abstract Object retrieveEntity(PersistentEntity persistentEntity, Serializable key);
+    protected abstract Object retrieveEntity(PersistentEntity pe, Serializable key);
 
     /**
      * Persist the given persistent entity
      *
-     * @param persistentEntity The PersistentEntity
+     * @param pe The PersistentEntity
      * @param obj
      * @return The generated key
      */
-    protected abstract Serializable persistEntity(PersistentEntity persistentEntity, Object obj);
+    protected abstract Serializable persistEntity(PersistentEntity pe, Object obj);
 
     public final void delete(@SuppressWarnings("rawtypes") Iterable objects) {
-        if(objects != null) {
+        if (objects != null) {
             deleteEntities(getPersistentEntity(), objects);
         }
     }
 
     public void delete(Object obj) {
-        if(obj != null) {
+        if (obj != null) {
             deleteEntity(getPersistentEntity(), obj);
         }
     }
 
-    protected abstract void deleteEntity(PersistentEntity persistentEntity, Object obj);
+    protected abstract void deleteEntity(PersistentEntity pe, Object obj);
 
-    protected abstract void deleteEntities(PersistentEntity persistentEntity, @SuppressWarnings("rawtypes") Iterable objects);
+    protected abstract void deleteEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objects);
 
-
-    protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj) {
+    protected EntityAccess createEntityAccess(@SuppressWarnings("unused") PersistentEntity pe, Object obj) {
         return new EntityAccess(persistentEntity, obj);
     }
 }
-

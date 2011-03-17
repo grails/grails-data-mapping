@@ -7,11 +7,11 @@ import org.springframework.datastore.mapping.model.config.GormMappingConfigurati
  * @since 1.0
  */
 class TestMappingContext extends AbstractMappingContext {
-  MappingConfigurationStrategy mappingSyntaxStrategy = new GormMappingConfigurationStrategy(new TestMappedPropertyFactory())
-  MappingFactory mappingFactory = new TestMappedPropertyFactory()
+    MappingConfigurationStrategy mappingSyntaxStrategy = new GormMappingConfigurationStrategy(
+         new TestMappedPropertyFactory())
+    MappingFactory mappingFactory = new TestMappedPropertyFactory()
 
-  protected PersistentEntity createPersistentEntity(Class javaClass) {
-    return new TestPersistentEntity(javaClass, this)
-  }
-
+    protected PersistentEntity createPersistentEntity(Class javaClass) {
+        return new TestPersistentEntity(javaClass, this)
+    }
 }

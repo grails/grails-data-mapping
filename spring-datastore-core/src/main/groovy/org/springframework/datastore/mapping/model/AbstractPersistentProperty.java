@@ -14,14 +14,14 @@
  */
 package org.springframework.datastore.mapping.model;
 
+import java.beans.PropertyDescriptor;
+
 import org.springframework.datastore.mapping.config.Property;
 import org.springframework.datastore.mapping.reflect.NameUtils;
 
-import java.beans.PropertyDescriptor;
-
 /**
- * Abstract implementation of the PersistentProperty interface that
- * uses the PropertyDescriptor instance to establish name and type
+ * Abstract implementation of the PersistentProperty interface that uses the
+ * PropertyDescriptor instance to establish name and type.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -31,7 +31,6 @@ public abstract class AbstractPersistentProperty implements PersistentProperty {
     protected MappingContext context;
     protected String name;
     protected Class type;
-    private boolean nullable = false;
 
     public AbstractPersistentProperty(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         this.owner = owner;
@@ -39,13 +38,13 @@ public abstract class AbstractPersistentProperty implements PersistentProperty {
         this.name = descriptor.getName();
         this.type = descriptor.getPropertyType();
     }
+
     public AbstractPersistentProperty(PersistentEntity owner, MappingContext context, String name, Class type) {
         this.owner = owner;
         this.context = context;
         this.name = name;
         this.type = type;
     }
-
 
     public String getName() {
         return name;
@@ -70,8 +69,6 @@ public abstract class AbstractPersistentProperty implements PersistentProperty {
 
     public boolean isNullable() {
         final Object mappedForm = getMapping().getMappedForm();
-        return mappedForm instanceof Property && ((Property) mappedForm).isNullable();
+        return mappedForm instanceof Property && ((Property)mappedForm).isNullable();
     }
-
-
 }

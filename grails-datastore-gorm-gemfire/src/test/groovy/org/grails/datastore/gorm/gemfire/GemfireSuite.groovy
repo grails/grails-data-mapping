@@ -6,11 +6,7 @@ import org.junit.runners.Suite
 import org.junit.runner.RunWith
 
 /**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: Oct 5, 2010
- * Time: 3:34:07 PM
- * To change this template use File | Settings | File Templates.
+ * @author graemerocher
  */
 @RunWith(Suite)
 @SuiteClasses([

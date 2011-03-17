@@ -34,10 +34,11 @@ import org.springframework.util.Assert;
 
 /**
  * Models a query that can be executed against a data store
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("hiding")
 public abstract class Query {
 
     protected PersistentEntity entity;
@@ -49,15 +50,14 @@ public abstract class Query {
     protected Session session;
     protected boolean uniqueResult;
 
-
     /**
      * @return The criteria defined by this query
      */
     public Junction getCriteria() {
-		return criteria;
-	}
+        return criteria;
+    }
 
-	/**
+    /**
      * The ordering of results
      *
      */
@@ -85,10 +85,10 @@ public abstract class Query {
         public static Order desc(String property) {
             return new Order(property, Direction.DESC);
         }
-        
+
         public static Order asc(String property) {
             return new Order(property, Direction.ASC);
-        }        
+        }
 
         public static enum Direction {
             ASC, DESC
@@ -107,18 +107,18 @@ public abstract class Query {
 
     /**
      * Adds the specified criterion instance to the query
-     * 
+     *
      * @param criterion The criterion instance
      */
     public void add(Criterion criterion) {
-        if(criterion instanceof Equals) {
+        if (criterion instanceof Equals) {
             final Equals eq = (Equals) criterion;
             eq.setValue(resolveIdIfEntity(eq.getValue()));
         }
-        
+
         criteria.add(criterion);
     }
-    
+
     /**
      * @return The session that created the query
      */
@@ -127,7 +127,7 @@ public abstract class Query {
     }
 
     /**
-     * @return The PersistentEntity being query 
+     * @return The PersistentEntity being query
      */
     public PersistentEntity getEntity() {
         return entity;
@@ -139,14 +139,12 @@ public abstract class Query {
      */
     public Junction disjunction() {
         Disjunction dis = new Disjunction();
-        if(criteria.isEmpty()) {
+        if (criteria.isEmpty()) {
             criteria = dis;
             return criteria;
         }
-        else {
-            criteria.add(dis);
-            return dis;
-        }
+        criteria.add(dis);
+        return dis;
     }
 
     /**
@@ -155,15 +153,14 @@ public abstract class Query {
      */
     public Junction negation() {
         Negation dis = new Negation();
-        if(criteria.isEmpty()) {
+        if (criteria.isEmpty()) {
             criteria = dis;
             return criteria;
         }
-        else {
-            criteria.add(dis);
-            return dis;
-        }
+        criteria.add(dis);
+        return dis;
     }
+
     /**
      * Defines the maximum number of results to return
      * @param max The max results
@@ -208,8 +205,9 @@ public abstract class Query {
      * @return The Query instance
      */
     public Query order(Order order) {
-        if(order != null)
-            this.orderBy.add(order);
+        if (order != null) {
+            orderBy.add(order);
+        }
         return this;
     }
 
@@ -234,82 +232,79 @@ public abstract class Query {
         criteria.add(Restrictions.eq(property, value));
         return this;
     }
-    
+
     /**
      * Shortcut to restrict the query to multiple given property values
-     * 
+     *
      * @param values The values
      * @return This query instance
      */
     public Query allEq(Map<String, Object> values) {
-    	for (String property : values.keySet()) {
-			eq(property, values.get(property));
-		}    	
-    	return this;
+        for (String property : values.keySet()) {
+            eq(property, values.get(property));
+        }
+        return this;
     }
 
     /**
      * Used to restrict a value to be empty (such as a blank string or an empty collection)
-     * 
+     *
      * @param property The property name
     */
     public Query isEmpty(String property) {
-    	criteria.add(Restrictions.isEmpty(property));
-    	return this;
+        criteria.add(Restrictions.isEmpty(property));
+        return this;
     }
 
     /**
      * Used to restrict a value to be not empty (such as a blank string or an empty collection)
-     * 
+     *
      * @param property The property name
     */
     public Query isNotEmpty(String property) {
-    	criteria.add(Restrictions.isNotEmpty(property));
-    	return this;
-    }  
-    
+        criteria.add(Restrictions.isNotEmpty(property));
+        return this;
+    }
 
     /**
      * Used to restrict a property to be null
-     * 
+     *
      * @param property The property name
     */
     public Query isNull(String property) {
-    	criteria.add(Restrictions.isNull(property));
-    	return this;
+        criteria.add(Restrictions.isNull(property));
+        return this;
     }
 
     /**
      * Used to restrict a property to be not null
-     * 
+     *
      * @param property The property name
     */
     public Query isNotNull(String property) {
-    	criteria.add(Restrictions.isNotNull(property));
-    	return this;
-    }      
+        criteria.add(Restrictions.isNotNull(property));
+        return this;
+    }
+
     /**
      * Creates an association query
-     * 
+     *
      * @param associationName The assocation name
      * @return The Query instance
      */
     public Query createQuery(String associationName) {
-    	final PersistentProperty property = entity.getPropertyByName(associationName);
-    	if(property != null && (property instanceof Association)) {
-    		Association association = (Association) property;
-    		
-    		final PersistentEntity associatedEntity = association.getAssociatedEntity();
-    		
-    		final AssociationQuery associationQuery = new AssociationQuery(session, associatedEntity, association);
-    		add(associationQuery);
-			return associationQuery;
-    	}
-    	else {
-    		throw new InvalidDataAccessResourceUsageException("Cannot query association ["+associationName+"] of class ["+entity+"]. The specified property is not an association.");
-    	}
-    }
+        final PersistentProperty property = entity.getPropertyByName(associationName);
+        if (property != null && (property instanceof Association)) {
+            Association association = (Association) property;
 
+            final PersistentEntity associatedEntity = association.getAssociatedEntity();
+
+            final AssociationQuery associationQuery = new AssociationQuery(session, associatedEntity, association);
+            add(associationQuery);
+            return associationQuery;
+        }
+        throw new InvalidDataAccessResourceUsageException("Cannot query association ["+associationName+"] of class ["+entity+"]. The specified property is not an association.");
+    }
 
     /**
      * Restricts the results by the given properties value
@@ -323,24 +318,22 @@ public abstract class Query {
         criteria.add(Restrictions.idEq(value));
         return this;
     }
-    
+
     private Object resolveIdIfEntity(Object value) {
         // use the object id as the value if its a persistent entity
-        if(session.getMappingContext().isPersistentEntity(value)) {
-           EntityPersister ep = (EntityPersister) session.getPersister(value);
-           if(ep != null) {        	   
-        	   value = ep.getObjectIdentifier(value);
-           }
-           else {
-        	   new EntityAccess(session
-        			   			.getMappingContext()
-        			   			.getPersistentEntity(
-        			   					value
-        			   						.getClass()
-        			   						.getName()), 
-        			   					value)
-        	   					.getIdentifier();
-           }
+        if (session.getMappingContext().isPersistentEntity(value)) {
+            EntityPersister ep = (EntityPersister) session.getPersister(value);
+            if (ep != null) {
+                value = ep.getObjectIdentifier(value);
+            }
+            else {
+                new EntityAccess(session
+                        .getMappingContext()
+                        .getPersistentEntity(
+                                value.getClass().getName()),
+                                value)
+                        .getIdentifier();
+            }
         }
         return value;
     }
@@ -355,8 +348,8 @@ public abstract class Query {
     public Query gt(String property, Object value) {
         criteria.add(Restrictions.gt(property, value));
         return this;
-    }    
-    
+    }
+
     /**
      * Used to restrict a value to be greater than or equal to the given value
      *
@@ -367,8 +360,8 @@ public abstract class Query {
     public Query gte(String property, Object value) {
         criteria.add(Restrictions.gte(property, value));
         return this;
-    } 
-    
+    }
+
     /**
      * Used to restrict a value to be less than or equal to the given value
      *
@@ -379,8 +372,8 @@ public abstract class Query {
     public Query lte(String property, Object value) {
         criteria.add(Restrictions.lte(property, value));
         return this;
-    }     
-    
+    }
+
     /**
      * Used to restrict a value to be less than the given value
      *
@@ -391,7 +384,7 @@ public abstract class Query {
     public Query lt(String property, Object value) {
         criteria.add(Restrictions.lt(property, value));
         return this;
-    }    
+    }
 
     /**
      * Restricts the results by the given property values
@@ -417,7 +410,7 @@ public abstract class Query {
         criteria.add(Restrictions.between(property, start, end));
         return this;
     }
-    
+
     /**
      * Restricts the results by the given properties value
      *
@@ -483,16 +476,15 @@ public abstract class Query {
         return executeQuery(entity, criteria);
     }
 
-
     /**
      * Default behavior is the flush the session before a query in the case of FlushModeType.AUTO. Subclasses can override this method to disable that
      */
-	protected void flushBeforeQuery() {
-		// flush before query execution in FlushModeType.AUTO
-        if(session.getFlushMode() == FlushModeType.AUTO) {
+    protected void flushBeforeQuery() {
+        // flush before query execution in FlushModeType.AUTO
+        if (session.getFlushMode() == FlushModeType.AUTO) {
             session.flush();
         }
-	}
+    }
 
     /**
      * Executes the query returning a single result or null
@@ -501,8 +493,8 @@ public abstract class Query {
     public Object singleResult() {
         uniqueResult = true;
         List results = list();
-        if(results.isEmpty()) return null;
-        else return results.get(0);
+        if (results.isEmpty()) return null;
+        return results.get(0);
     }
 
     /**
@@ -511,6 +503,7 @@ public abstract class Query {
      * @param uniqueResult Whether it is a unique result
      * @deprecated
      */
+    @Deprecated
     public void setUniqueResult(boolean uniqueResult) {
         this.uniqueResult = uniqueResult;
     }
@@ -528,7 +521,7 @@ public abstract class Query {
     /**
      * A criterion is used to restrict the results of a query
      */
-    public static abstract interface Criterion {
+    public static interface Criterion {
 
     }
 
@@ -536,60 +529,59 @@ public abstract class Query {
      * Restricts a property to be null
      */
     public static class IsNull extends PropertyNameCriterion {
-
-		public IsNull(String name) {
-			super(name);
-		}
+        public IsNull(String name) {
+            super(name);
+        }
     }
-    
+
     /**
      * Restricts a property to be empty (such as a blank string)
      */
     public static class IsEmpty extends PropertyNameCriterion {
-		public IsEmpty(String name) {
-			super(name);
-		}
-    }    
-    
+        public IsEmpty(String name) {
+            super(name);
+        }
+    }
+
     /**
      * Restricts a property to be empty (such as a blank string)
      */
     public static class IsNotEmpty extends PropertyNameCriterion {
-		public IsNotEmpty(String name) {
-			super(name);
-		}
-    }    
+        public IsNotEmpty(String name) {
+            super(name);
+        }
+    }
+
     /**
      * Restricts a property to be not null
      */
     public static class IsNotNull extends PropertyNameCriterion{
 
-		public IsNotNull(String name) {
-			super(name);
-		}
+        public IsNotNull(String name) {
+            super(name);
+        }
     }
 
     /**
      * A Criterion that applies to a property
      */
     public static class PropertyNameCriterion implements Criterion {
-    	protected String name;
-    	
+        protected String name;
+
         public PropertyNameCriterion(String name) {
             this.name = name;
-
         }
 
         public String getProperty() {
             return name;
         }
-    	
     }
+
     /**
      * Criterion that applies to a property and value
      */
     public static class PropertyCriterion extends PropertyNameCriterion {
-        
+
         protected Object value;
 
         public PropertyCriterion(String name, Object value) {
@@ -599,7 +591,7 @@ public abstract class Query {
 
         public Object getValue() {
             return value;
-        }        
+        }
     }
     /**
      * A criterion that restricts the results based on equality
@@ -614,7 +606,7 @@ public abstract class Query {
             this.value = value;
         }
     }
-    
+
     /**
      * A criterion that restricts the results based on the equality of the identifier
      */
@@ -622,14 +614,14 @@ public abstract class Query {
 
         private static final String ID = "id";
 
-		public IdEquals(Object value) {
+        public IdEquals(Object value) {
             super(ID, value);
         }
 
         public void setValue(Object value) {
             this.value = value;
         }
-    }    
+    }
 
     /**
      * A criterion that restricts the results based on equality
@@ -653,7 +645,7 @@ public abstract class Query {
         private Collection values = Collections.emptyList();
 
         public In(String name, Collection values) {
-        	super(name, values);
+            super(name, values);
             this.name = name;
             this.values = values;
         }
@@ -662,6 +654,7 @@ public abstract class Query {
             return name;
         }
 
+        @Override
         public String getProperty() {
             return getName();
         }
@@ -688,7 +681,7 @@ public abstract class Query {
             super(name, value);
         }
     }
-    
+
     /**
      * Used to restrict a value to be less than the given value
      */
@@ -696,8 +689,8 @@ public abstract class Query {
         public LessThan(String name, Object value) {
             super(name, value);
         }
-    }    
-    
+    }
+
     /**
      * Used to restrict a value to be less than the given value
      */
@@ -705,22 +698,23 @@ public abstract class Query {
         public LessThanEquals(String name, Object value) {
             super(name, value);
         }
-    }    
+    }
     /**
      * Criterion used to restrict the result to be between values (range query)
      */
     public static class Between extends PropertyCriterion {
         private String property;
-        private Object from; 
+        private Object from;
         private Object to;
 
         public Between(String property, Object from, Object to) {
-        	super(property, from);
+            super(property, from);
             this.property = property;
             this.from = from;
             this.to = to;
         }
 
+        @Override
         public String getProperty() {
             return property;
         }
@@ -733,7 +727,7 @@ public abstract class Query {
             return to;
         }
     }
-    
+
     /**
      * Criterion used to restrict the results based on a pattern (likeness)
      */
@@ -755,6 +749,7 @@ public abstract class Query {
             super(name, expression);
         }
 
+        @Override
         public String getPattern() {
             return getValue().toString();
         }
@@ -764,22 +759,22 @@ public abstract class Query {
         private List<Criterion> criteria = new ArrayList<Criterion>();
 
         public Junction add(Criterion c) {
-            if(c != null) {
-                if(c instanceof Equals) {
+            if (c != null) {
+                if (c instanceof Equals) {
                     final Equals eq = (Equals) c;
                     Object value = eq.getValue();
-                    
-                    if(value != null) {
-                    	
-                    	Session session = AbstractDatastore.retrieveSession();
-                    	final PersistentEntity persistentEntity = session.getMappingContext().getPersistentEntity(value.getClass().getName());
-                    	if(persistentEntity != null) {
-                    		EntityPersister ep = (EntityPersister) session.getPersister(value);
-                    		
-                    		if(ep != null) {                    		
-                    			c = new Equals(eq.getProperty(), ep.getObjectIdentifier(value));
-                    		}
-                    	}
+
+                    if (value != null) {
+
+                        Session session = AbstractDatastore.retrieveSession();
+                        final PersistentEntity persistentEntity = session.getMappingContext().getPersistentEntity(value.getClass().getName());
+                        if (persistentEntity != null) {
+                            EntityPersister ep = (EntityPersister) session.getPersister(value);
+
+                            if (ep != null) {
+                                c = new Equals(eq.getProperty(), ep.getObjectIdentifier(value));
+                            }
+                        }
                     }
                 }
                 criteria.add(c);
@@ -795,6 +790,7 @@ public abstract class Query {
             return criteria.isEmpty();
         }
     }
+
     /**
      * A Criterion used to combine to criterion in a logical AND
      */
@@ -849,7 +845,7 @@ public abstract class Query {
             super(propertyName);
         }
     }
-    
+
     /**
      * Computes the max value of a property
      */
@@ -858,7 +854,7 @@ public abstract class Query {
             super(propertyName);
         }
     }
-    
+
     /**
      * Computes the min value of a property
      */
@@ -867,7 +863,7 @@ public abstract class Query {
             super(propertyName);
         }
     }
-    
+
     /**
      * Computes the sum of a property
      */
@@ -876,7 +872,6 @@ public abstract class Query {
             super(propertyName);
         }
     }
-    
 
     /**
      * A list of projections
@@ -907,7 +902,7 @@ public abstract class Query {
         public boolean isEmpty() {
             return projections.isEmpty();
         }
-        
+
         /**
          * A projection that obtains the value of a property of an entity
          * @param name The name of the property
@@ -917,8 +912,7 @@ public abstract class Query {
             add(Projections.property(name));
             return this;
         }
-    
-    
+
         /**
          * Computes the sum of a property
          *
@@ -929,7 +923,7 @@ public abstract class Query {
             add(Projections.sum(name));
             return this;
         }
-    
+
         /**
          * Computes the min value of a property
          *
@@ -940,7 +934,7 @@ public abstract class Query {
             add(Projections.min(name));
             return this;
         }
-    
+
         /**
          * Computes the max value of a property
          *
@@ -951,18 +945,16 @@ public abstract class Query {
             add(Projections.max(name));
             return this;
         }
-    
-       /**
+
+        /**
          * Computes the average value of a property
          *
          * @param name The name of the property
          * @return The PropertyProjection instance
          */
         public ProjectionList avg(String name) {
-           add(Projections.avg(name));
+            add(Projections.avg(name));
             return this;
-        }        
+        }
     }
-
-
 }

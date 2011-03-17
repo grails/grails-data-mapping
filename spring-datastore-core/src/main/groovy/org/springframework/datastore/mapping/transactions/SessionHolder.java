@@ -28,7 +28,6 @@ import org.springframework.transaction.support.ResourceHolderSupport;
  */
 public class SessionHolder extends ResourceHolderSupport {
 
-
     private Deque<Session> sessions = new LinkedBlockingDeque<Session>();
     private Transaction transaction;
 
@@ -59,13 +58,12 @@ public class SessionHolder extends ResourceHolderSupport {
     public void addSession(Session session) {
         this.sessions.add(session);
     }
-    
+
     public void removeSession(Session session) {
         this.sessions.remove(session);
-    }    
-
-    public boolean containsSession(Session session) {
-    	return sessions.contains(session);
     }
 
+    public boolean containsSession(Session session) {
+        return sessions.contains(session);
+    }
 }

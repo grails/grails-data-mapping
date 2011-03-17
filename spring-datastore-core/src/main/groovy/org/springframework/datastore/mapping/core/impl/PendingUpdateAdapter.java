@@ -22,24 +22,20 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
  * Provides a default implementation for the {@link PendingUpdate} interface
  *
  * @param <E> The native entry to persist
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
-
 public abstract class PendingUpdateAdapter<E, K> extends PendingOperationAdapter<E, K> implements PendingUpdate<E, K>{
 
-	private EntityAccess entityAccess;
+    private EntityAccess entityAccess;
 
-	public PendingUpdateAdapter(PersistentEntity entity, K nativeKey, E nativeEntry, EntityAccess ea) {
-		super(entity, nativeKey, nativeEntry);
-		this.entityAccess = ea;
-	}
+    public PendingUpdateAdapter(PersistentEntity entity, K nativeKey, E nativeEntry, EntityAccess ea) {
+        super(entity, nativeKey, nativeEntry);
+        this.entityAccess = ea;
+    }
 
-	@Override
-	public EntityAccess getEntityAccess() {
-		return this.entityAccess;
-	}
-	
-	
+    public EntityAccess getEntityAccess() {
+        return entityAccess;
+    }
 }

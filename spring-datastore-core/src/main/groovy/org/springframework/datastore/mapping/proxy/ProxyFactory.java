@@ -14,32 +14,32 @@
  */
 package org.springframework.datastore.mapping.proxy;
 
-import org.springframework.datastore.mapping.core.Session;
-
 import java.io.Serializable;
+
+import org.springframework.datastore.mapping.core.Session;
 
 /**
  * The factory used to create proxies
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
 public interface ProxyFactory {
 
-	/**
-	 * Creates a proxy
-	 * 
-	 * @param <T> The type of the proxy to create
-	 * @param session The session instance
-	 * @param type The type of the proxy to create
-	 * @param key The key to proxy
-	 * @return A proxy instance
-	 */
+    /**
+     * Creates a proxy
+     *
+     * @param <T> The type of the proxy to create
+     * @param session The session instance
+     * @param type The type of the proxy to create
+     * @param key The key to proxy
+     * @return A proxy instance
+     */
     <T> T createProxy(Session session, Class<T> type, Serializable key);
 
     /**
      * Checks whether the specified instance is a proxy
-     * 
+     *
      * @param object The object to check
      * @return True if it is a proxy
      */

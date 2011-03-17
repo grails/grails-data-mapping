@@ -20,67 +20,57 @@ import org.springframework.datastore.mapping.core.Session;
  * <p>An implementation that provides Session only transaction management. Essentially when {@link #rollback()} is called
  * the {@link Session}'s clear() method is called and when {@link #commit()} is called the flush() method is called.
  * </p>
- * 
+ *
  * <p>
  * No other resource level transaction management is provided.
  * </p>
- * 
+ *
  * @author graemerocher
  *
  * @param <T>
  */
-public class SessionOnlyTransaction<T> implements Transaction<T>{
-	
-	private T nativeInterface;
-	private Session session;
-	private boolean active = true;
-	
-	
+public class SessionOnlyTransaction<T> implements Transaction<T> {
 
-	public SessionOnlyTransaction(T nativeInterface, Session session) {
-		super();
-		this.nativeInterface = nativeInterface;
-		this.session = session;
-	}
+    private T nativeInterface;
+    private Session session;
+    private boolean active = true;
 
-	@Override
-	public void commit() {
-		if(active) {
-			try {
-				session.flush();
-			}
-			finally {
-				active = false;
-			}
-		}
-		
-	}
+    public SessionOnlyTransaction(T nativeInterface, Session session) {
+        this.nativeInterface = nativeInterface;
+        this.session = session;
+    }
 
-	@Override
-	public void rollback() {
-		if(active) {
-			try {
-				session.clear();
-			}
-			finally {
-				active = false;
-			}
-		}
-	}
+    public void commit() {
+        if (active) {
+            try {
+                session.flush();
+            }
+            finally {
+                active = false;
+            }
+        }
+    }
 
-	@Override
-	public T getNativeTransaction() {
-		return nativeInterface;
-	}
+    public void rollback() {
+        if (active) {
+            try {
+                session.clear();
+            }
+            finally {
+                active = false;
+            }
+        }
+    }
 
-	@Override
-	public boolean isActive() {
-		return active;
-	}
+    public T getNativeTransaction() {
+        return nativeInterface;
+    }
 
-	@Override
-	public void setTimeout(int timeout) {
-		// do nothing
-	}
+    public boolean isActive() {
+        return active;
+    }
 
+    public void setTimeout(int timeout) {
+        // do nothing
+    }
 }

@@ -1,68 +1,66 @@
 package org.springframework.datastore.mapping.redis.collection
 
-import org.junit.Test
 import org.junit.Before
+import org.junit.Test
 import org.springframework.datastore.mapping.redis.util.JedisTemplate
+
 import redis.clients.jedis.Jedis
 
-/**
- */
 class RedisSetTests {
 
-  def template
-  @Before
-  void setupRedis() {
-    template = createTemplate()
-    template.flushdb()
-  }
+    def template
 
-  @Test
-  void testSize() {
-    
-    def set = new RedisSet(template, "test.set")
+    @Before
+    void setupRedis() {
+        template = createTemplate()
+        template.flushdb()
+    }
 
-    assert 0 == set.size()
-    assert set.empty
-    set.add("test")
+    @Test
+    void testSize() {
 
-    assert 1 == set.size()
-    assert !set.empty
+        def set = new RedisSet(template, "test.set")
 
-  }
+        assert 0 == set.size()
+        assert set.empty
+        set.add("test")
 
-  @Test
-  void testContains() {
-    def set = new RedisSet(template, "test.set")
+        assert 1 == set.size()
+        assert !set.empty
+    }
 
+    @Test
+    void testContains() {
+        def set = new RedisSet(template, "test.set")
 
-    assert !set.contains("test")
+        assert !set.contains("test")
 
-    set << "test"
+        set << "test"
 
-    assert set.contains("test")
+        assert set.contains("test")
 
-    set << 1
+        set << 1
 
-    assert !set.contains(2)
-    assert set.contains(1)
+        assert !set.contains(2)
+        assert set.contains(1)
 
-    set.remove(1)
-    assert !set.contains(1)
-  }
+        set.remove(1)
+        assert !set.contains(1)
+    }
 
-  @Test
-  void testIterator() {
-    def set = new RedisSet(template, "test.set")
+    @Test
+    void testIterator() {
+        def set = new RedisSet(template, "test.set")
 
-    set << 1 << 2 << 3
+        set << 1 << 2 << 3
 
-    def count = 0
-    set.each { count += it.toLong()}
+        def count = 0
+        set.each { count += it.toLong()}
 
-    assert 6 == count
-  }
+        assert 6 == count
+    }
 
-  private def createTemplate() {
-    return new JedisTemplate(new Jedis("localhost"))
-  }
+    private createTemplate() {
+        return new JedisTemplate(new Jedis("localhost"))
+    }
 }

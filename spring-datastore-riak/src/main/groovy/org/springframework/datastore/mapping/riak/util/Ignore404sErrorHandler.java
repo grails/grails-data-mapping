@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.datastore.mapping.riak.util;
 
 import org.springframework.http.HttpStatus;
@@ -29,21 +28,19 @@ import java.io.IOException;
  */
 public class Ignore404sErrorHandler extends DefaultResponseErrorHandler {
 
-  @Override
-  protected boolean hasError(HttpStatus statusCode) {
-    if (statusCode != HttpStatus.NOT_FOUND) {
-      return super.hasError(statusCode);
-    } else {
-      return false;
+    @Override
+    protected boolean hasError(HttpStatus statusCode) {
+        if (statusCode != HttpStatus.NOT_FOUND) {
+            return super.hasError(statusCode);
+        }
+        return false;
     }
-  }
 
-  @Override
-  public void handleError(ClientHttpResponse response) throws IOException {
-    // Ignore 404s entirely
-    if (response.getStatusCode() != HttpStatus.NOT_FOUND) {
-      super.handleError(response);
+    @Override
+    public void handleError(ClientHttpResponse response) throws IOException {
+        // Ignore 404s entirely
+        if (response.getStatusCode() != HttpStatus.NOT_FOUND) {
+            super.handleError(response);
+        }
     }
-  }
-
 }

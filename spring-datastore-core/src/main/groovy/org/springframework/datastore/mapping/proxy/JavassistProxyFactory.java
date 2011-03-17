@@ -14,17 +14,20 @@
  */
 package org.springframework.datastore.mapping.proxy;
 
-import javassist.util.proxy.*;
-import javassist.util.proxy.ProxyFactory;
-import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.reflect.ReflectionUtils;
-
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javassist.util.proxy.MethodFilter;
+import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
+
+import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.reflect.ReflectionUtils;
 
 /**
  * A proxy factory that uses Javassist to create proxies
@@ -53,24 +56,24 @@ public class JavassistProxyFactory implements org.springframework.datastore.mapp
         MethodHandler mi = new MethodHandler() {
             private Object target;
             public Object invoke(Object proxy, Method method, Method proceed, Object[] args) throws Throwable {
-                if(args.length == 0) {
+                if (args.length == 0) {
                     final String methodName = method.getName();
-                    if(methodName.equals("getId") || methodName.equals("getProxyKey")) {
+                    if (methodName.equals("getId") || methodName.equals("getProxyKey")) {
                         return id;
                     }
-                    if(methodName.equals("initialize")) {
+                    if (methodName.equals("initialize")) {
                         initialize();
                         return null;
                     }
-                    if(methodName.equals("isInitialized")) {
+                    if (methodName.equals("isInitialized")) {
                         return target != null;
                     }
-                    if(methodName.equals("getTarget")) {
+                    if (methodName.equals("getTarget")) {
                         initialize();
                         return null;
                     }
                 }
-                if(target == null) initialize();
+                if (target == null) initialize();
                 return org.springframework.util.ReflectionUtils.invokeMethod(method, target, args);
             }
 
@@ -91,29 +94,28 @@ public class JavassistProxyFactory implements org.springframework.datastore.mapp
     protected Class getProxyClass(Class type) {
 
         Class proxyClass = PROXY_FACTORIES.get(type);
-        if(proxyClass == null) {
+        if (proxyClass == null) {
             javassist.util.proxy.ProxyFactory pf = new ProxyFactory();
             pf.setSuperclass(type);
             pf.setInterfaces(new Class[]{ EntityProxy.class });
-            final List excludes = new ArrayList() {{
-                add("getMetaClass");
-                add("metaClass");
-                add("setMetaClass");
-                add("invokeMethod");
-                add("getProperty");
-                add("setProperty");
-                add("$getStaticMetaClass");
-            }};
+            final List excludes = Arrays.asList(
+                "getMetaClass",
+                "metaClass",
+                "setMetaClass",
+                "invokeMethod",
+                "getProperty",
+                "setProperty",
+                "$getStaticMetaClass");
             pf.setFilter(new MethodFilter() {
                 public boolean isHandled(Method method) {
                     final String methodName = method.getName();
-                    if(methodName.indexOf("super$") > -1) {
+                    if (methodName.indexOf("super$") > -1) {
                         return false;
                     }
-                    else if(method.getParameterTypes().length == 0 && (methodName.equals("finalize"))) {
+                    if (method.getParameterTypes().length == 0 && (methodName.equals("finalize"))) {
                         return false;
                     }
-                    else if(excludes.contains(methodName) || method.isSynthetic() || method.isBridge()) {
+                    if (excludes.contains(methodName) || method.isSynthetic() || method.isBridge()) {
                         return false;
                     }
                     return true;

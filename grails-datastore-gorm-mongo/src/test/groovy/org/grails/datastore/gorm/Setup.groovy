@@ -1,60 +1,56 @@
 package org.grails.datastore.gorm
 
-import org.grails.datastore.gorm.mongo.MongoGormEnhancer 
+import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.springframework.datastore.mapping.core.Session
-
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.validation.Errors
-import org.springframework.util.StringUtils
-import org.springframework.validation.Validator
-import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.datastore.mapping.model.MappingContext
+import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.mongo.MongoDatastore
+import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
+import org.springframework.util.StringUtils
+import org.springframework.validation.Errors
+import org.springframework.validation.Validator
 
 /**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 03/11/2010
- * Time: 09:54
- * To change this template use File | Settings | File Templates.
+ * @author graemerocher
  */
 class Setup {
 
-  static mongo
-  static session
-  static destroy() {
-	  session.nativeInterface.dropDatabase()
-  }
-  static Session setup(classes) {
-    mongo = new MongoDatastore()
-    mongo.afterPropertiesSet()
-    for(cls in classes) {
-      mongo.mappingContext.addPersistentEntity(cls)
+    static mongo
+    static session
+
+    static destroy() {
+        session.nativeInterface.dropDatabase()
     }
 
-    PersistentEntity entity = mongo.mappingContext.persistentEntities.find { PersistentEntity e -> e.name.contains("TestEntity")}
+    static Session setup(classes) {
+        mongo = new MongoDatastore()
+        mongo.afterPropertiesSet()
 
-    mongo.mappingContext.addEntityValidator(entity, [
+        for (cls in classes) {
+            mongo.mappingContext.addPersistentEntity(cls)
+        }
+
+        PersistentEntity entity = mongo.mappingContext.persistentEntities.find { PersistentEntity e -> e.name.contains("TestEntity")}
+
+        mongo.mappingContext.addEntityValidator(entity, [
             supports: { Class c -> true },
             validate: { Object o, Errors errors ->
-                if(!StringUtils.hasText(o.name)) {
-                  errors.rejectValue("name", "name.is.blank")
+                if (!StringUtils.hasText(o.name)) {
+                    errors.rejectValue("name", "name.is.blank")
                 }
             }
-    ] as Validator)
+        ] as Validator)
 
-    def enhancer = new MongoGormEnhancer(mongo, new DatastoreTransactionManager(datastore: mongo))
-    enhancer.enhance()
+        def enhancer = new MongoGormEnhancer(mongo, new DatastoreTransactionManager(datastore: mongo))
+        enhancer.enhance()
 
-    mongo.mappingContext.addMappingContextListener({ e ->
-      enhancer.enhance e
-    } as MappingContext.Listener)
-
-
-    session = mongo.connect()
-    
-    return session
-  }
+        mongo.mappingContext.addMappingContextListener({ e ->
+            enhancer.enhance e
+        } as MappingContext.Listener)
 
 
+        session = mongo.connect()
+
+        return session
+    }
 }

@@ -1,10 +1,8 @@
 package grails.gorm.tests
 
-import grails.gorm.JpaEntity 
-import java.io.Serializable;
+import grails.gorm.JpaEntity
 
 @JpaEntity
 class PetType implements Serializable {
-	String name
+    String name
 }
-

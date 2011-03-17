@@ -1,12 +1,13 @@
 package org.springframework.datastore.mapping.model
 
+import javax.persistence.Entity
+
 import org.junit.Test
 import org.springframework.datastore.mapping.model.config.GormMappingConfigurationStrategy
-import javax.persistence.Entity
-import org.springframework.datastore.mapping.model.types.OneToOne
-import org.springframework.datastore.mapping.model.types.ManyToOne
 import org.springframework.datastore.mapping.model.types.Association
+import org.springframework.datastore.mapping.model.types.ManyToOne
 import org.springframework.datastore.mapping.model.types.OneToMany
+import org.springframework.datastore.mapping.model.types.OneToOne
 
 /**
  * @author Graeme Rocher
@@ -14,125 +15,121 @@ import org.springframework.datastore.mapping.model.types.OneToMany
  */
 class GormMappingSyntaxTests {
 
-  @Test
-  void testIsEntity() {
+    @Test
+    void testIsEntity() {
 
-    def strategy = new GormMappingConfigurationStrategy(new TestMappedPropertyFactory())
+        def strategy = new GormMappingConfigurationStrategy(new TestMappedPropertyFactory())
 
-    assert strategy.isPersistentEntity(TestEntity)
-    assert strategy.isPersistentEntity(JavaEntity)
-    assert !strategy.isPersistentEntity(GormMappingSyntaxTests)
-  }
+        assert strategy.isPersistentEntity(TestEntity)
+        assert strategy.isPersistentEntity(JavaEntity)
+        assert !strategy.isPersistentEntity(GormMappingSyntaxTests)
+    }
 
-  @Test
-  void testGetIdentity() {
-    def context = new TestMappingContext()
-    context.addPersistentEntity(TestEntity)
-    def strategy = context.mappingSyntaxStrategy
-    def id = strategy.getIdentity(TestEntity, context)
+    @Test
+    void testGetIdentity() {
+        def context = new TestMappingContext()
+        context.addPersistentEntity(TestEntity)
+        def strategy = context.mappingSyntaxStrategy
+        def id = strategy.getIdentity(TestEntity, context)
 
-    assert id != null
+        assert id != null
 
-    assert id.type == Long
-    assert id.name == 'id'
-  }
+        assert id.type == Long
+        assert id.name == 'id'
+    }
 
-  @Test
-  void testGetSimplePersistentProperties() {
-    def context = new TestMappingContext()
-    context.addPersistentEntity(TestEntity)
-    def strategy = context.mappingSyntaxStrategy
-    def props = strategy.getPersistentProperties(TestEntity,context)
-    assert props.size() == 3
+    @Test
+    void testGetSimplePersistentProperties() {
+        def context = new TestMappingContext()
+        context.addPersistentEntity(TestEntity)
+        def strategy = context.mappingSyntaxStrategy
+        def props = strategy.getPersistentProperties(TestEntity,context)
+        assert props.size() == 3
+    }
 
-  }
+    @Test
+    void testUnidirectionalOneToOneAssociation() {
+        def context = new TestMappingContext()
+        context.addPersistentEntity(TestEntity)
 
-  @Test
-  void testUnidirectionalOneToOneAssociation() {
-    def context = new TestMappingContext()
-    context.addPersistentEntity(TestEntity)
+        assert 2 == context.persistentEntities.size()
 
-    assert 2 == context.persistentEntities.size()
+        def testEntity = context.getPersistentEntity(TestEntity.name)
 
-    def testEntity = context.getPersistentEntity(TestEntity.name)
+        def association = testEntity.getPropertyByName("second")
 
-    def association = testEntity.getPropertyByName("second")
+        assert association != null
 
-    assert association != null
+        assert (association instanceof OneToOne)
 
-    assert (association instanceof OneToOne)
+        OneToOne toOne = association
+        assert toOne.foreignKeyInChild
+        assert toOne.associatedEntity != null
 
-    OneToOne toOne = association
-    assert toOne.foreignKeyInChild
-    assert toOne.associatedEntity != null
+        assert toOne.associatedEntity == context.getPersistentEntity(SecondEntity.name)
+        assert toOne.referencedPropertyName == null
+        assert toOne.bidirectional == false
+        assert toOne.owningSide == true
+    }
 
-    assert toOne.associatedEntity == context.getPersistentEntity(SecondEntity.name)
-    assert toOne.referencedPropertyName == null
-    assert toOne.bidirectional == false
-    assert toOne.owningSide == true
+    @Test
+    void testUnidirectionalOneToMany() {
+        def context = new TestMappingContext()
+        context.addPersistentEntity(Publisher)
 
-  }
+        assert 3 == context.persistentEntities.size()
 
-  @Test
-  void testUnidirectionalOneToMany() {
-    def context = new TestMappingContext()
-    context.addPersistentEntity(Publisher)
+        def publisher = context.getPersistentEntity(Publisher.name)
 
-    assert 3 == context.persistentEntities.size()
+        assert publisher != null
 
-    def publisher = context.getPersistentEntity(Publisher.name)
+        Association oneToMany = publisher.getPropertyByName("authors")
+        assert oneToMany != null
+        assert !oneToMany.bidirectional
+        assert !oneToMany.owningSide
+        assert (oneToMany instanceof OneToMany)
+    }
 
-    assert publisher != null
+    @Test
+    void testManyToOneAssociation() {
+        def context = new TestMappingContext()
+        context.addPersistentEntity(Book)
 
-    Association oneToMany = publisher.getPropertyByName("authors")
-    assert oneToMany != null
-    assert !oneToMany.bidirectional
-    assert !oneToMany.owningSide
-    assert (oneToMany instanceof OneToMany)
-  }
+        assert 2 == context.persistentEntities.size()
 
-  @Test
-  void testManyToOneAssociation() {
-    def context = new TestMappingContext()
-    context.addPersistentEntity(Book)
+        def book = context.getPersistentEntity(Book.name)
 
-    assert 2 == context.persistentEntities.size()
+        assert book != null
+        Association authorAssociation = book.getPropertyByName("author")
 
+        assert authorAssociation != null
+        assert (authorAssociation instanceof ManyToOne)
+        assert authorAssociation.bidirectional
+        assert !authorAssociation.owningSide
 
-    def book = context.getPersistentEntity(Book.name)
+        Association inverse = authorAssociation.inverseSide
+        assert inverse != null
 
-    assert book != null
-    Association authorAssociation = book.getPropertyByName("author")
+        assert "books" == inverse.name
+        assert Author == inverse.owner.javaClass
+        assert inverse.inverseSide != null
+        assert inverse.bidirectional
+        assert (inverse instanceof OneToMany)
+        assert inverse.owningSide
+    }
 
-    assert authorAssociation != null
-    assert (authorAssociation instanceof ManyToOne)
-    assert authorAssociation.bidirectional
-    assert !authorAssociation.owningSide
-
-    Association inverse = authorAssociation.inverseSide
-    assert inverse != null
-
-    assert "books" == inverse.name
-    assert Author == inverse.owner.javaClass
-    assert inverse.inverseSide != null
-    assert inverse.bidirectional
-    assert (inverse instanceof OneToMany)
-    assert inverse.owningSide
-  }
-
-
-  @Entity
-  class JavaEntity {
-
-  }
+    @Entity
+    class JavaEntity {}
 }
+
 @grails.persistence.Entity
 class Book {
     Long id
     String title
     Author author
-    static belongsTo = [author:Author]  
+    static belongsTo = [author:Author]
 }
+
 @grails.persistence.Entity
 class Author {
     Long id
@@ -140,29 +137,31 @@ class Author {
     Set books
     static hasMany = [books:Book]
 }
+
 @grails.persistence.Entity
 class Publisher {
-  Long id
-  Set authors
-  static hasMany = [authors:Author]
+    Long id
+    Set authors
+    static hasMany = [authors:Author]
 }
+
 @grails.persistence.Entity
 class TestEntity {
-  Long id
-  Long version
-  String name
-  String bar
+    Long id
+    Long version
+    String name
+    String bar
 
-  SecondEntity second
-  static hasOne = [second:SecondEntity]
-  static transients = ['bar']
+    SecondEntity second
+    static hasOne = [second:SecondEntity]
+    static transients = ['bar']
 }
+
 @grails.persistence.Entity
 class SecondEntity {
-  Long id
-  String name
-  String bar
+    Long id
+    String name
+    String bar
 
-  static transients = ['bar']
+    static transients = ['bar']
 }
-

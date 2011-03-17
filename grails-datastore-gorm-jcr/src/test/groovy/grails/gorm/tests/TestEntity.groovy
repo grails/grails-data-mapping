@@ -7,16 +7,16 @@ package grails.gorm.tests
  * @since 1.0
  */
 @grails.persistence.Entity
-class TestEntity implements Serializable{
-  String id; //for supporting String datatype such as JCR 
-  String name
-  Integer age
+class TestEntity implements Serializable {
+    String id //for supporting String datatype such as JCR
+    String name
+    Integer age
 
-  ChildEntity child
+    ChildEntity child
 
-  static mapping = {
-    name index:true
-    age index:true
-    child index:true
-  }
+    static mapping = {
+        name index:true
+        age index:true
+        child index:true
+    }
 }

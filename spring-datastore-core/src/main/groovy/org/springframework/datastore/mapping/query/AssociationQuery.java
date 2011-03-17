@@ -23,32 +23,30 @@ import org.springframework.datastore.mapping.query.Query.Criterion;
 
 /**
  * Used to capture the metadata for a query on an associated object.
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
 public class AssociationQuery extends Query implements Criterion {
 
-	private Association<?> association;
+    private Association<?> association;
 
-	protected AssociationQuery(Session session, PersistentEntity entity, Association association) {
-		super(session, entity);
-		this.association = association;
-	}
-	
-	
-	/**
-	 * The association being queried
-	 * 
-	 * @return The association
-	 */
-	public Association<?> getAssociation() {
-		return association;
-	}
-	
-	@Override
-	protected List executeQuery(PersistentEntity entity, Junction criteria) {
-		throw new UnsupportedOperationException("AssociationQuery instances are not executable and are merely metadata defined to query associations in a primary query");
-	}
+    protected AssociationQuery(Session session, PersistentEntity entity, Association association) {
+        super(session, entity);
+        this.association = association;
+    }
 
+    /**
+     * The association being queried
+     *
+     * @return The association
+     */
+    public Association<?> getAssociation() {
+        return association;
+    }
+
+    @Override
+    protected List executeQuery(PersistentEntity e, Junction j) {
+        throw new UnsupportedOperationException("AssociationQuery instances are not executable and are merely metadata defined to query associations in a primary query");
+    }
 }

@@ -81,7 +81,7 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
 
     private RedisCollection createRedisCollection(String redisKey) {
         RedisCollection col;
-        if(association.isList()) {
+        if (association.isList()) {
             col = new RedisList(template, redisKey);
         }
         else {

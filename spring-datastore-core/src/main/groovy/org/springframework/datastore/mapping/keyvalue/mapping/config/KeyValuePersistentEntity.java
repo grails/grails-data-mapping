@@ -14,7 +14,11 @@
  */
 package org.springframework.datastore.mapping.keyvalue.mapping.config;
 
-import org.springframework.datastore.mapping.model.*;
+import org.springframework.datastore.mapping.model.AbstractClassMapping;
+import org.springframework.datastore.mapping.model.AbstractPersistentEntity;
+import org.springframework.datastore.mapping.model.ClassMapping;
+import org.springframework.datastore.mapping.model.MappingContext;
+import org.springframework.datastore.mapping.model.PersistentEntity;
 
 /**
  * @author Graeme Rocher
@@ -26,7 +30,7 @@ public class KeyValuePersistentEntity extends AbstractPersistentEntity<Family>{
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     public ClassMapping<Family> getMapping() {
         return new KeyValueClassMapping(this, context);
     }
@@ -35,6 +39,7 @@ public class KeyValuePersistentEntity extends AbstractPersistentEntity<Family>{
         public KeyValueClassMapping(PersistentEntity entity, MappingContext context) {
             super(entity, context);
         }
+        @Override
         public Family getMappedForm() {
             return (Family) context.getMappingFactory().createMappedForm(KeyValuePersistentEntity.this);
         }

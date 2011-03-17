@@ -13,43 +13,42 @@
 * limitations under the License.
 */
 
-
 package org.grails.datastore.gorm.mongo;
 
 import java.util.Collection;
 import java.util.List;
 
 import org.grails.datastore.gorm.finders.MethodExpression;
+import org.springframework.datastore.mapping.mongo.query.MongoQuery;
 import org.springframework.datastore.mapping.query.Query.Criterion;
+import org.springframework.util.Assert;
 
 /**
  * Dynamic finder expression for within box queries
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
- *
  */
 public class WithinBox extends MethodExpression {
 
-	public WithinBox(Class<?> targetClass, String propertyName) {
-		super(targetClass, propertyName);
-	}
+    public WithinBox(Class<?> targetClass, String propertyName) {
+        super(targetClass, propertyName);
+    }
 
-	@Override
-	public Criterion createCriterion() {
-		return new org.springframework.datastore.mapping.mongo.query.MongoQuery.WithinBox(propertyName, (List) arguments[0]);
-	}
+    @Override
+    public Criterion createCriterion() {
+        return new MongoQuery.WithinBox(propertyName, (List) arguments[0]);
+    }
 
     @Override
     public void setArguments(Object[] arguments) {
-        if(arguments.length == 0 || !(arguments[0] instanceof List))
-            throw new IllegalArgumentException("Only a list of elements is supported in an 'withinBox' query");
-        
+        Assert.isTrue(arguments.length > 0 && arguments[0] instanceof List,
+            "Only a list of elements is supported in a 'withinBox' query");
+
         Collection argument = (Collection) arguments[0];
-        if(argument.size() != 2) {
-        	throw new IllegalArgumentException("A 'withinBox' query requires a two dimensional list of values");
-        }
-        
+        Assert.isTrue(argument.size() == 2,
+            "A 'withinBox' query requires a two dimensional list of values");
+
         super.setArguments(arguments);
-    }		
+    }
 }

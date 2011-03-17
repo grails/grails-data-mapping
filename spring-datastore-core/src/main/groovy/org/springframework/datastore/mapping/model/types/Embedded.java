@@ -14,10 +14,10 @@
  */
 package org.springframework.datastore.mapping.model.types;
 
+import java.beans.PropertyDescriptor;
+
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
-
-import java.beans.PropertyDescriptor;
 
 /**
  * Models an embedded component
@@ -37,7 +37,6 @@ public abstract class Embedded<T> extends ToOne<T> {
 
     @Override
     public boolean isOwningSide() {
-    	return true; // embedded instances are always owned
+        return true; // embedded instances are always owned
     }
-    
 }

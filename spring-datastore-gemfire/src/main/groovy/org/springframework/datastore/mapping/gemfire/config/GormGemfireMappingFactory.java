@@ -14,10 +14,8 @@
  */
 package org.springframework.datastore.mapping.gemfire.config;
 
-import com.gemstone.gemfire.cache.AttributesFactory;
-import com.gemstone.gemfire.cache.DataPolicy;
-import com.gemstone.gemfire.cache.RegionAttributes;
 import groovy.lang.Closure;
+
 import org.springframework.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.springframework.datastore.mapping.keyvalue.mapping.config.Family;
 import org.springframework.datastore.mapping.keyvalue.mapping.config.GormKeyValueMappingFactory;
@@ -25,6 +23,10 @@ import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValue;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.config.GormProperties;
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher;
+
+import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.DataPolicy;
+import com.gemstone.gemfire.cache.RegionAttributes;
 
 /**
  *
@@ -35,7 +37,6 @@ import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher;
  * @since 1.0
  */
 public class GormGemfireMappingFactory extends GormKeyValueMappingFactory {
-
 
     private DataPolicy defaultDataPolicy = DataPolicy.PARTITION;
 
@@ -51,9 +52,10 @@ public class GormGemfireMappingFactory extends GormKeyValueMappingFactory {
     public Family createMappedForm(PersistentEntity entity) {
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
         final Closure value = cpf.getStaticPropertyValue(GormProperties.MAPPING, Closure.class);
-        if(value != null) {
+        if (value != null) {
             final Region family = new Region();
             AttributesFactory factory = new AttributesFactory() {
+                @SuppressWarnings("unused")
                 public void setRegion(String name) {
                     family.setRegion(name);
                 }
@@ -70,8 +72,6 @@ public class GormGemfireMappingFactory extends GormKeyValueMappingFactory {
             family.setCacheWriter(regionAttributes.getCacheWriter());
             return family;
         }
-        else {
-            return new Region();
-        }
+        return new Region();
     }
 }

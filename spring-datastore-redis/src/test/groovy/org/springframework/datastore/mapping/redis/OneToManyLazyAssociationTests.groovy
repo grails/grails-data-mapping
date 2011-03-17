@@ -1,55 +1,57 @@
 package org.springframework.datastore.mapping.redis
 
-import org.springframework.datastore.mapping.core.Session
-import org.junit.Test
 import grails.persistence.Entity
+
+import org.junit.Test
 import org.springframework.datastore.mapping.collection.PersistentList
+import org.springframework.datastore.mapping.core.Session
 
 class OneToManyLazyAssociationTests {
-  @Test
-  void testOneToManyAssociation() {
-    return 
-    
-    def ds = new RedisDatastore()
+    @Test
+    void testOneToManyAssociation() {
+        return
 
-    ds.mappingContext.addPersistentEntity(LazyAuthor)
-    Session conn = ds.connect()
-    conn.nativeInterface.flushall()
+        def ds = new RedisDatastore()
 
-    def a = new LazyAuthor(name:"Stephen King")
-    a.books = [ new LazyBook(title:"The Stand"), new LazyBook(title:"It")]
+        ds.mappingContext.addPersistentEntity(LazyAuthor)
+        Session conn = ds.connect()
+        conn.nativeInterface.flushall()
 
-    conn.persist(a)
-    conn.flush()
+        def a = new LazyAuthor(name:"Stephen King")
+        a.books = [ new LazyBook(title:"The Stand"), new LazyBook(title:"It")]
 
-    conn.clear()
+        conn.persist(a)
+        conn.flush()
 
-    a = conn.retrieve(LazyAuthor, a.id)
+        conn.clear()
 
-    assert a != null
-    assert "Stephen King" == a.name
-    assert a.books != null
-    assert a.books instanceof PersistentList
-    assert !a.books.isInitialized()
-    assert 2 == a.books.size()
-    assert a.books.isInitialized()
+        a = conn.retrieve(LazyAuthor, a.id)
 
-    def b1 = a.books.find { it.title == 'The Stand'}
-    assert b1 != null
-    assert b1.id != null
-    assert "The Stand" == b1.title
+        assert a != null
+        assert "Stephen King" == a.name
+        assert a.books != null
+        assert a.books instanceof PersistentList
+        assert !a.books.isInitialized()
+        assert 2 == a.books.size()
+        assert a.books.isInitialized()
 
-  }
+        def b1 = a.books.find { it.title == 'The Stand'}
+        assert b1 != null
+        assert b1.id != null
+        assert "The Stand" == b1.title
+    }
 }
+
 @Entity
 class LazyAuthor {
-  Long id
-  String name
-  List books
-  static hasMany = [books:LazyBook]
+    Long id
+    String name
+    List books
+    static hasMany = [books:LazyBook]
 }
+
 @Entity
 class LazyBook {
-  Long id
-  String title
+    Long id
+    String title
 }

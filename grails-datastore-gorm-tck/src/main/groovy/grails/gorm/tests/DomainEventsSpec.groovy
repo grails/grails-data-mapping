@@ -1,163 +1,152 @@
 package grails.gorm.tests
 
-import org.grails.datastore.gorm.events.DomainEventInterceptor
 import org.grails.datastore.gorm.events.AutoTimestampInterceptor
+import org.grails.datastore.gorm.events.DomainEventInterceptor
 import org.springframework.datastore.mapping.core.Session
 
 /**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: Sep 3, 2010
- * Time: 12:15:38 PM
- * To change this template use File | Settings | File Templates.
+ * @author graemerocher
  */
-class DomainEventsSpec extends GormDatastoreSpec{
+class DomainEventsSpec extends GormDatastoreSpec {
 
+    Session setupEventsSession() {
+        def datastore = session.datastore
+        datastore.addEntityInterceptor(new DomainEventInterceptor())
+        datastore.addEntityInterceptor(new AutoTimestampInterceptor())
+        session = datastore.connect()
+    }
 
+    void "Test modify property before save"() {
+        given:
+            session = setupEventsSession()
+            session.datastore.mappingContext.addPersistentEntity(ModifyPerson)
+            def p = new ModifyPerson(name:"Bob").save(flush:true)
+            session.clear()
 
-  Session setupEventsSession() {
-    def datastore = session.datastore
-    datastore.addEntityInterceptor(new DomainEventInterceptor())
-    datastore.addEntityInterceptor(new AutoTimestampInterceptor())
-    session= datastore.connect()
-  }
+        when:
+            p = ModifyPerson.get(p.id)
 
-  void "Test modify property before save"() {
-    given:
-      session = setupEventsSession()
-      session.datastore.mappingContext.addPersistentEntity(ModifyPerson)
-      def p = new ModifyPerson(name:"Bob").save(flush:true)
-      session.clear()
+        then:
+            p.name == "Fred"
+    }
 
-    when:
-      p = ModifyPerson.get(p.id)
+    void "Test auto time stamping working"() {
 
-    then:
-      p.name == "Fred"
+        given:
+            session = setupEventsSession()
 
-  }
+            def p = new PersonEvent()
 
-  void "Test auto time stamping working"() {
+            p.name = "Fred"
+            p.save(flush:true)
+            session.clear()
 
-     given:
-       session = setupEventsSession()
-    
-       def p = new PersonEvent()
+        when:
+            p = PersonEvent.get(p.id)
 
-       p.name = "Fred"
-       p.save(flush:true)
-       session.clear()
+        then:
+            sleep(2000)
 
-     when:
-       p = PersonEvent.get(p.id)
+            p.dateCreated == p.lastUpdated
 
-     then:
-       sleep(2000)
+        when:
+            p.name = "Wilma"
+            p.save(flush:true)
 
-       p.dateCreated == p.lastUpdated
+        then:
+            p.dateCreated.before(p.lastUpdated) == true
+    }
 
-     when:
-       p.name = "Wilma"
-       p.save(flush:true)
-
-     then:
-       p.dateCreated.before(p.lastUpdated) == true
-   }
-
-//   void testOnloadEvent() {
-//       def personClass = ga.getDomainClass("PersonEvent")
-//       def p = personClass.newInstance()
+//    void testOnloadEvent() {
+//        def personClass = ga.getDomainClass("PersonEvent")
+//        def p = personClass.newInstance()
 //
-//       p.name = "Fred"
-//       p.save()
-//       session.flush()
-//       session.clear()
+//        p.name = "Fred"
+//        p.save()
+//        session.flush()
+//        session.clear()
 //
-//       p = personClass.clazz.get(1)
-//       assertEquals "Bob", p.name
-//   }
+//        p = personClass.clazz.get(1)
+//        assertEquals "Bob", p.name
+//    }
 
-   void "Test before delete event"() {
-     given:
-       session = setupEventsSession()     
-       PersonEvent.resetStore()
-       def p = new PersonEvent()
-       p.name = "Fred"
-       p.save(flush:true)
-       session.clear()
+    void "Test before delete event"() {
+        given:
+            session = setupEventsSession()
+            PersonEvent.resetStore()
+            def p = new PersonEvent()
+            p.name = "Fred"
+            p.save(flush:true)
+            session.clear()
 
-     when:
-	   p = PersonEvent.get(p.id)
-       p.delete(flush:true)
+        when:
+            p = PersonEvent.get(p.id)
+            p.delete(flush:true)
 
-     then:
-       assert PersonEvent.STORE['deleted'] == true
-   }
+        then:
+            assert PersonEvent.STORE['deleted'] == true
+    }
 
-   void "Test before update event"() {
-      given:
-        session = setupEventsSession()
-        PersonEvent.resetStore()
+    void "Test before update event"() {
+        given:
+            session = setupEventsSession()
+            PersonEvent.resetStore()
 
+            def p = new PersonEvent()
 
-       def p = new PersonEvent()
+            p.name = "Fred"
+            p.save(flush:true)
+            session.clear()
 
-       p.name = "Fred"
-       p.save(flush:true)
-       session.clear()
+        when:
+            p = PersonEvent.get(p.id)
 
-      when:
+        then:
+            "Fred" == p.name
+            0 == PersonEvent.STORE['updated']
 
-       p = PersonEvent.get(p.id)
+        when:
+            p.name = "Bob"
+            p.save(flush:true)
+            session.clear()
+            p = PersonEvent.get(p.id)
+        then:
+            "Bob" == p.name
+            1 == PersonEvent.STORE['updated']
+    }
 
-      then:
-       "Fred" == p.name
-       0 == PersonEvent.STORE['updated']
+    void "Test before insert event"() {
+        given:
+            session = setupEventsSession()
+            PersonEvent.resetStore()
+            def p = new PersonEvent()
 
+            p.name = "Fred"
+            p.save(flush:true)
+            session.clear()
 
-      when:
-       p.name = "Bob"
-       p.save(flush:true)
-       session.clear()
-       p = PersonEvent.get(p.id)
-      then:
-       "Bob" == p.name
-       1 == PersonEvent.STORE['updated']
-   }
+        when:
+            p = PersonEvent.get(p.id)
 
-   void "Test before insert event"() {
-     given:
-       session = setupEventsSession()
-       PersonEvent.resetStore()
-       def p = new PersonEvent()
+        then:
+            "Fred" == p.name
+            0 == PersonEvent.STORE['updated']
+            1 == PersonEvent.STORE['inserted']
 
-       p.name = "Fred"
-       p.save(flush:true)
-       session.clear()
+        when:
+            p.name = "Bob"
+            p.save(flush:true)
+            session.clear()
+            p = PersonEvent.get(p.id)
 
-     when:
-       p = PersonEvent.get(p.id)
-
-     then:
-       "Fred" == p.name
-       0 == PersonEvent.STORE['updated']
-       1 == PersonEvent.STORE['inserted']
-
-     when:
-       p.name = "Bob"
-       p.save(flush:true)
-       session.clear()
-       p = PersonEvent.get(p.id)
-
-     then:
-       "Bob" == p.name
-       1 == PersonEvent.STORE['updated']
-       1 == PersonEvent.STORE['inserted']
-
-   }
-  
+        then:
+            "Bob" == p.name
+            1 == PersonEvent.STORE['updated']
+            1 == PersonEvent.STORE['inserted']
+    }
 }
-class PersonEvent implements Serializable{
+
+class PersonEvent implements Serializable {
     Long id
     Long version
     String name
@@ -169,25 +158,25 @@ class PersonEvent implements Serializable{
     static void resetStore() { STORE = [updated:0, inserted:0] }
 
     def beforeDelete() {
-      STORE["deleted"] = true
-
+        STORE["deleted"] = true
     }
+
     def beforeUpdate() {
-      STORE["updated"]++
-    }
-    def beforeInsert() {
-      STORE["inserted"]++
+        STORE["updated"]++
     }
 
+    def beforeInsert() {
+        STORE["inserted"]++
+    }
 }
 
-class ModifyPerson implements Serializable{
-  Long id
-  Long version
+class ModifyPerson implements Serializable {
+    Long id
+    Long version
 
-  String name
+    String name
 
-  def beforeInsert() {
-    name = "Fred"
-  }
+    def beforeInsert() {
+        name = "Fred"
+    }
 }

@@ -24,6 +24,6 @@ package org.springframework.datastore.mapping.core;
 public class DatastoreException extends RuntimeException{
 
     public DatastoreException(String s) {
-        super(s);    
+        super(s);
     }
 }

@@ -1,20 +1,14 @@
 package org.springframework.datastore.mapping.mongo
 
-
-import org.junit.Test;
-import org.springframework.datastore.mapping.core.Session;
-
+import org.junit.Test
 
 class BasicPersistenceSpec {
 
-	@Test
-	void testBasicPersistenceOperations() {
+    @Test
+    void testBasicPersistenceOperations() {
       def md = new MongoDatastore()
       md.afterPropertiesSet()
       md.mappingContext.addPersistentEntity(TestEntity)
-
-
-
 
       MongoSession session = md.connect()
 
@@ -39,7 +33,6 @@ class BasicPersistenceSpec {
       session.flush()
       session.clear()
 
-
       te = session.retrieve(TestEntity, te.id)
       assert te != null
       assert te.id != null
@@ -48,14 +41,12 @@ class BasicPersistenceSpec {
       session.delete te
       session.flush()
 
-
       te = session.retrieve(TestEntity, te.id)
       assert te == null
-
-	}
+    }
 }
+
 class TestEntity {
-	
     Long id
-	String name
+    String name
 }

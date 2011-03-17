@@ -20,6 +20,7 @@ import org.springframework.datastore.mapping.model.MappingFactory;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.config.DefaultMappingConfigurationStrategy;
 import org.springframework.datastore.mapping.model.config.GormMappingConfigurationStrategy;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -31,7 +32,7 @@ import org.springframework.util.ClassUtils;
 public class KeyValueMappingContext extends AbstractMappingContext {
     protected MappingFactory<Family, KeyValue> mappingFactory;
     protected MappingConfigurationStrategy syntaxStrategy;
-	private String keyspace;
+    private String keyspace;
     public static final String GROOVY_OBJECT_CLASS = "groovy.lang.GroovyObject";
 
     /**
@@ -40,32 +41,30 @@ public class KeyValueMappingContext extends AbstractMappingContext {
      * @param keyspace The keyspace, this is typically the application name
      */
     public KeyValueMappingContext(String keyspace) {
-        if(keyspace == null) throw new IllegalArgumentException("Argument [keyspace] cannot be null");
+        Assert.notNull(keyspace, "Argument [keyspace] cannot be null");
         this.keyspace = keyspace;
         initializeDefaultMappingFactory(keyspace);
 
-
-        if(ClassUtils.isPresent(GROOVY_OBJECT_CLASS, KeyValueMappingContext.class.getClassLoader()))
-            this.syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
-        else
-            this.syntaxStrategy = new DefaultMappingConfigurationStrategy(mappingFactory);
-
-
-
+        if (ClassUtils.isPresent(GROOVY_OBJECT_CLASS, KeyValueMappingContext.class.getClassLoader())) {
+            syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
+        }
+        else {
+            syntaxStrategy = new DefaultMappingConfigurationStrategy(mappingFactory);
+        }
     }
-    
-    
 
     public String getKeyspace() {
-		return keyspace;
-	}
+        return keyspace;
+    }
 
-	protected void initializeDefaultMappingFactory(String keyspace) {
+    protected void initializeDefaultMappingFactory(@SuppressWarnings("hiding") String keyspace) {
         // TODO: Need to abstract the construction of these to support JPA syntax etc.
-        if(ClassUtils.isPresent(GROOVY_OBJECT_CLASS, KeyValueMappingContext.class.getClassLoader()))
-            this.mappingFactory = new GormKeyValueMappingFactory(keyspace);
-        else
-            this.mappingFactory = new AnnotationKeyValueMappingFactory(keyspace);
+        if (ClassUtils.isPresent(GROOVY_OBJECT_CLASS, KeyValueMappingContext.class.getClassLoader())) {
+            mappingFactory = new GormKeyValueMappingFactory(keyspace);
+        }
+        else {
+            mappingFactory = new AnnotationKeyValueMappingFactory(keyspace);
+        }
     }
 
     public void setMappingFactory(MappingFactory<Family, KeyValue> mappingFactory) {
@@ -81,12 +80,12 @@ public class KeyValueMappingContext extends AbstractMappingContext {
     }
 
     public MappingFactory<Family, KeyValue> getMappingFactory() {
-        return this.mappingFactory;
+        return mappingFactory;
     }
 
     @Override
     protected PersistentEntity createPersistentEntity(Class javaClass) {
         KeyValuePersistentEntity kvpe = new KeyValuePersistentEntity(javaClass, this);
-		return kvpe;
+        return kvpe;
     }
 }

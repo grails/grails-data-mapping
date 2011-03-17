@@ -28,37 +28,40 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
 public class GormKeyValueMappingFactory extends AbstractGormMappingFactory<Family, KeyValue> {
 
     protected Map<PersistentEntity, Map> entityToPropertyMap = new HashMap<PersistentEntity, Map>();
-	private String keyspace;
+    private String keyspace;
 
     public GormKeyValueMappingFactory(String keyspace) {
         this.keyspace = keyspace;
     }
-    
+
     @Override
     public Family createMappedForm(PersistentEntity entity) {
-    	Family family = super.createMappedForm(entity);
-    	if(family.getKeyspace() == null)
-    		family.setKeyspace(keyspace);
-    	if(family.getFamily() == null) 
-    		family.setFamily(entity.getName());
-		return family;
+        Family family = super.createMappedForm(entity);
+        if (family.getKeyspace() == null) {
+            family.setKeyspace(keyspace);
+        }
+        if (family.getFamily() == null) {
+            family.setFamily(entity.getName());
+        }
+        return family;
     }
-    
+
     @Override
     public KeyValue createMappedForm(PersistentProperty mpp) {
-    	KeyValue kv = super.createMappedForm(mpp);
-    	if(kv.getKey() == null)
-    		kv.setKey(mpp.getName());
-		return kv;
+        KeyValue kv = super.createMappedForm(mpp);
+        if (kv.getKey() == null) {
+            kv.setKey(mpp.getName());
+        }
+        return kv;
     }
 
-	@Override
-	protected Class<KeyValue> getPropertyMappedFormType() {
-		return KeyValue.class;
-	}
+    @Override
+    protected Class<KeyValue> getPropertyMappedFormType() {
+        return KeyValue.class;
+    }
 
-	@Override
-	protected Class<Family> getEntityMappedFormType() {
-		return Family.class;
-	}
+    @Override
+    protected Class<Family> getEntityMappedFormType() {
+        return Family.class;
+    }
 }

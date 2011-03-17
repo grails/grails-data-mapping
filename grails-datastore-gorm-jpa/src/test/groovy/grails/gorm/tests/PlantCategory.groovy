@@ -1,10 +1,9 @@
 package grails.gorm.tests
 
-import grails.gorm.JpaEntity 
-import java.io.Serializable;
+import grails.gorm.JpaEntity
 
 @JpaEntity
-class PlantCategory implements Serializable{
+class PlantCategory implements Serializable {
     String name
 
     static hasMany = [plants:Plant]

@@ -14,10 +14,23 @@
  */
 package org.springframework.datastore.mapping.cassandra.engine;
 
+import static me.prettyprint.cassandra.utils.StringUtils.bytes;
+import static me.prettyprint.cassandra.utils.StringUtils.string;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.Keyspace;
-import org.apache.cassandra.thrift.*;
-import org.apache.thrift.TException;
+
+import org.apache.cassandra.thrift.Column;
+import org.apache.cassandra.thrift.ColumnParent;
+import org.apache.cassandra.thrift.SlicePredicate;
+import org.apache.cassandra.thrift.SliceRange;
 import org.springframework.datastore.mapping.cassandra.util.HectorCallback;
 import org.springframework.datastore.mapping.cassandra.util.HectorTemplate;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
@@ -25,18 +38,13 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.reflect.NameUtils;
 
-import java.io.Serializable;
-import java.util.*;
-
-import static me.prettyprint.cassandra.utils.StringUtils.bytes;
-import static me.prettyprint.cassandra.utils.StringUtils.string;
-
 /**
  * AssociationIndexer for Cassandra one-to-many associations
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("hiding")
 public class CassandraAssociationIndexer implements AssociationIndexer<Serializable, Serializable> {
 
     private static final byte[] ZERO_LENGTH_BYTE_ARRAY = new byte[0];
@@ -45,7 +53,6 @@ public class CassandraAssociationIndexer implements AssociationIndexer<Serializa
     private Association association;
     private String keyspace;
     private String columnFamily;
-
 
     public CassandraAssociationIndexer(CassandraClient cassandraClient, Association association, String keyspace) {
         this.cassandraClient = cassandraClient;
@@ -94,22 +101,18 @@ public class CassandraAssociationIndexer implements AssociationIndexer<Serializa
                 ColumnParent cp = new ColumnParent();
                 cp.setColumn_family(columnFamily);
 
-
                 final List<Column> columns = keyspace.getSlice(primaryKey.toString(), cp, predicate);
-                if(columns== null || columns.isEmpty()) {
+                if (columns== null || columns.isEmpty()) {
                     return Collections.emptyList();
                 }
-
 
                 List<Serializable> keys = new ArrayList<Serializable>();
                 for (Column column : columns) {
                     keys.add(string(column.getName()));
                 }
                 return keys;
-
             }
         });
-
     }
 
     public PersistentEntity getIndexedEntity() {

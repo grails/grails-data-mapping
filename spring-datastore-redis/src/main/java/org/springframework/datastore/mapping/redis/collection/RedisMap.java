@@ -14,18 +14,17 @@
  */
 package org.springframework.datastore.mapping.redis.collection;
 
-import org.springframework.datastore.mapping.redis.util.RedisTemplate;
-
 import java.util.AbstractMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.datastore.mapping.redis.util.RedisTemplate;
+
 /**
  * A map that is backed onto a Redis hash
  *
  * @author Graeme Rocher
- *
  */
 public class RedisMap extends AbstractMap {
 
@@ -66,7 +65,7 @@ public class RedisMap extends AbstractMap {
     public Object put(Object key, Object value) {
         Object current = get(key);
 
-        if(key != null) {
+        if (key != null) {
             redisTemplate.hset(redisKey, key.toString(), value);
         }
         return current;
@@ -76,7 +75,7 @@ public class RedisMap extends AbstractMap {
     public Object remove(Object key) {
         Object current = get(key);
 
-        if(key != null) {
+        if (key != null) {
             redisTemplate.hdel(redisKey, key.toString());
         }
         return current;
@@ -84,16 +83,14 @@ public class RedisMap extends AbstractMap {
 
     @Override
     public Object get(Object key) {
-        if(key != null) {
+        if (key != null) {
             return redisTemplate.hget(redisKey, key.toString());
         }
         return super.get(key);
     }
 
-
     @Override
     public int size() {
-        return (int) redisTemplate.hlen(redisKey);
+        return redisTemplate.hlen(redisKey);
     }
-
 }

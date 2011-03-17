@@ -16,8 +16,6 @@ package org.springframework.datastore.mapping.query;
 
 import java.util.Collection;
 
-import org.springframework.datastore.mapping.query.Query.Criterion;
-
 /**
  * Factory for creating {@link org.springframework.datastore.mapping.query.Query.Criterion} instances
  */
@@ -32,7 +30,7 @@ public class Restrictions {
     public static Query.Equals eq(String property, Object value) {
         return new Query.Equals(property, value);
     }
-    
+
     /**
      * Restricts the property to be equal to the given value
      * @param value The value
@@ -40,7 +38,7 @@ public class Restrictions {
      */
     public static Query.IdEquals idEq(Object value) {
         return new Query.IdEquals(value);
-    }    
+    }
 
     /**
      * Restricts the property to be not equal to the given value
@@ -52,7 +50,6 @@ public class Restrictions {
     public static Query.NotEquals ne(String property, Object value) {
         return new Query.NotEquals(property, value);
     }
-
 
     /**
      * Restricts the property to be in the list of given values
@@ -101,7 +98,6 @@ public class Restrictions {
      * @param end The end of the range
      * @return The Between instance
      */
-
     public static Query.Between between(String property, Object start, Object end) {
         return new Query.Between(property, start, end);
     }
@@ -126,7 +122,7 @@ public class Restrictions {
         return new Query.LessThan(property, value);
     }
 
-  /**
+    /**
      * Used to restrict a value to be greater than or equal to the given value
      * @param property The property
      * @param value The value
@@ -136,7 +132,7 @@ public class Restrictions {
         return new Query.GreaterThanEquals(property, value);
     }
 
-  /**
+    /**
      * Used to restrict a value to be less than or equal to the given value
      * @param property The property
      * @param value The value
@@ -148,42 +144,41 @@ public class Restrictions {
 
     /**
      * Used to restrict a value to be null
-     * 
+     *
      * @param property The property name
      * @return The IsNull instance
      */
-	public static Query.IsNull isNull(String property) {
-		return new Query.IsNull(property);
-	}
-	
+    public static Query.IsNull isNull(String property) {
+        return new Query.IsNull(property);
+    }
+
     /**
      * Used to restrict a value to be empty (such as a blank string or an empty collection)
-     * 
+     *
      * @param property The property name
      * @return The IsEmpty instance
      */
-	public static Query.IsEmpty isEmpty(String property) {
-		return new Query.IsEmpty(property);
-	}
-	
+    public static Query.IsEmpty isEmpty(String property) {
+        return new Query.IsEmpty(property);
+    }
+
     /**
      * Used to restrict a value to be not empty (such as a non-blank string)
-     * 
+     *
      * @param property The property name
      * @return The IsEmpty instance
      */
-	public static Query.IsNotEmpty isNotEmpty(String property) {
-		return new Query.IsNotEmpty(property);
-	}		
-	
+    public static Query.IsNotEmpty isNotEmpty(String property) {
+        return new Query.IsNotEmpty(property);
+    }
+
     /**
      * Used to restrict a value to be null
-     * 
+     *
      * @param property The property name
      * @return The IsNull instance
      */
-	public static Query.IsNotNull isNotNull(String property) {
-		return new Query.IsNotNull(property);
-	}	
-
+    public static Query.IsNotNull isNotNull(String property) {
+        return new Query.IsNotNull(property);
+    }
 }

@@ -14,10 +14,7 @@
  */
 package org.springframework.datastore.mapping.reflect;
 
-import org.springframework.beans.BeanUtils;
-
 import java.beans.PropertyDescriptor;
-import java.lang.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,6 +23,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.springframework.beans.BeanUtils;
 
 /**
  * Provides methods to help with reflective operations
@@ -59,14 +58,13 @@ public class ReflectionUtils {
         registerPrimitiveClassPair(Double.class, double.class);
     }
 
-
    /**
     * Make the given field accessible, explicitly setting it accessible if necessary.
     * The <code>setAccessible(true)</code> method is only called when actually necessary,
     * to avoid unnecessary conflicts with a JVM SecurityManager (if active).
     *
     * Based on the same method in Spring core.
-    * 
+    *
     * @param field the field to make accessible
     * @see java.lang.reflect.Field#setAccessible
     */
@@ -147,7 +145,7 @@ public class ReflectionUtils {
      * @return The instantiated object or null if the class parameter was null
      */
     public static Object instantiate(Class clazz) {
-        if(clazz == null) return null;
+        if (clazz == null) return null;
         try {
             return clazz.getConstructor(EMPTY_CLASS_ARRAY).newInstance();
         } catch (IllegalAccessException e) {
@@ -189,9 +187,8 @@ public class ReflectionUtils {
         }
         return properties.toArray(new PropertyDescriptor[properties.size()]);
     }
-    
+
     private static boolean isTypeInstanceOfPropertyType(Class<?> type, Class<?> propertyType) {
         return propertyType.isAssignableFrom(type) && !propertyType.equals(Object.class);
     }
-
 }

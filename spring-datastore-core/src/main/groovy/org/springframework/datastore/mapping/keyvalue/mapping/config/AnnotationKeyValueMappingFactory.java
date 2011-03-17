@@ -25,7 +25,7 @@ import org.springframework.util.ReflectionUtils;
 
 /**
  * Uses annotations to configure entity mappies
- * 
+ *
  * @author Graeme Rocher
  * @since 1.1
  */
@@ -33,8 +33,6 @@ public class AnnotationKeyValueMappingFactory extends KeyValueMappingFactory{
     public AnnotationKeyValueMappingFactory(String keyspace) {
         super(keyspace);
     }
-
-
 
     @Override
     public KeyValue createMappedForm(PersistentProperty mpp) {
@@ -45,18 +43,17 @@ public class AnnotationKeyValueMappingFactory extends KeyValueMappingFactory{
         final KeyValue kv = super.createMappedForm(mpp);
         Index index = AnnotationUtils.getAnnotation(pd.getReadMethod(), Index.class);
 
-        if(index == null) {
+        if (index == null) {
             final Field field = ReflectionUtils.findField(javaClass, mpp.getName());
-            if(field != null) {
+            if (field != null) {
                 ReflectionUtils.makeAccessible(field);
                 index = field.getAnnotation(Index.class);
             }
         }
-        if(index != null) {
+        if (index != null) {
             kv.setIndex(true);
         }
 
         return kv;
-
     }
 }

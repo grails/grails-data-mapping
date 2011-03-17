@@ -1,8 +1,8 @@
 package grails.gorm.tests
 
-class AttachMethodSpec extends GormDatastoreSpec{
+class AttachMethodSpec extends GormDatastoreSpec {
 
-  void "Test attach method"() {
-  	// JPA doesn't support the attach method. Ignore
-  }
+    void "Test attach method"() {
+        // JPA doesn't support the attach method. Ignore
+    }
 }

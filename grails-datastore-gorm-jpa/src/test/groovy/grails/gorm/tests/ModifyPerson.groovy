@@ -1,15 +1,14 @@
 package grails.gorm.tests
 
-import grails.gorm.JpaEntity 
-import java.io.Serializable;
- 
+import grails.gorm.JpaEntity
+
 @JpaEntity
-class ModifyPerson implements Serializable{
-  Long version
+class ModifyPerson implements Serializable {
+    Long version
 
-  String name
+    String name
 
-  void beforeInsert() {
-    name = "Fred"
-  }
+    void beforeInsert() {
+        name = "Fred"
+    }
 }

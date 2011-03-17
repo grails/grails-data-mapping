@@ -14,21 +14,23 @@
  */
 package org.springframework.datastore.mapping.model;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.datastore.mapping.proxy.JavassistProxyFactory;
 import org.springframework.datastore.mapping.proxy.ProxyFactory;
+import org.springframework.util.Assert;
 import org.springframework.validation.Validator;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Abstract implementation of the MappingContext interface
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
@@ -42,7 +44,7 @@ public abstract class AbstractMappingContext implements MappingContext {
     protected GenericConversionService conversionService = new GenericConversionService();
     protected ProxyFactory proxyFactory;
 
-	public ConversionService getConversionService() {
+    public ConversionService getConversionService() {
         return conversionService;
     }
 
@@ -51,19 +53,19 @@ public abstract class AbstractMappingContext implements MappingContext {
     }
 
     public ProxyFactory getProxyFactory() {
-        if(this.proxyFactory == null) {
+        if (this.proxyFactory == null) {
             proxyFactory = DefaultProxyFactoryCreator.create();
         }
         return proxyFactory;
     }
 
     public void addMappingContextListener(Listener listener) {
-        if(listener != null)
+        if (listener != null)
             eventListeners.add(listener);
     }
 
     public void setProxyFactory(ProxyFactory factory) {
-        if(factory != null) {
+        if (factory != null) {
             this.proxyFactory = factory;
         }
     }
@@ -79,72 +81,71 @@ public abstract class AbstractMappingContext implements MappingContext {
     }
 
     public Validator getEntityValidator(PersistentEntity entity) {
-        if(entity != null) {
+        if (entity != null) {
             return entityValidators.get(entity);
         }
         return null;
     }
 
     public void addEntityValidator(PersistentEntity entity, Validator validator) {
-        if(entity != null && validator != null) {
+        if (entity != null && validator != null) {
             entityValidators.put(entity, validator);
         }
     }
 
-    @Override
     public PersistentEntity addExternalPersistentEntity(Class javaClass) {
-        if(javaClass == null) throw new IllegalArgumentException("PersistentEntity class cannot be null");
+        Assert.notNull(javaClass, "PersistentEntity class cannot be null");
 
         PersistentEntity entity = persistentEntitiesByName.get(javaClass.getName());
 
-        if(entity == null) {
+        if (entity == null) {
             entity = addPersistentEntityInternal(javaClass, true);
         }
 
         return entity;
     }
-    
+
     public final PersistentEntity addPersistentEntity(Class javaClass) {
-        if(javaClass == null) throw new IllegalArgumentException("PersistentEntity class cannot be null");
+        Assert.notNull(javaClass, "PersistentEntity class cannot be null");
 
         PersistentEntity entity = persistentEntitiesByName.get(javaClass.getName());
 
-        if(entity == null) {
+        if (entity == null) {
             entity = addPersistentEntityInternal(javaClass, false);
         }
 
         return entity;
     }
 
-	private PersistentEntity addPersistentEntityInternal(Class javaClass, boolean isExternal) {
-		PersistentEntity entity;
-		entity = createPersistentEntity(javaClass);
-		entity.setExternal(isExternal);
+    private PersistentEntity addPersistentEntityInternal(Class javaClass, boolean isExternal) {
+        PersistentEntity entity;
+        entity = createPersistentEntity(javaClass);
+        entity.setExternal(isExternal);
 
-		persistentEntities.remove(entity); persistentEntities.add(entity);
-		persistentEntitiesByName.put(entity.getName(), entity);
-		entity.initialize();
-		if(!entity.isRoot()) {
-		    PersistentEntity root = entity.getRootEntity();
-		    Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(root);
-		    if(children == null) {
-		        children = new ConcurrentHashMap<String,PersistentEntity>();
-		        persistentEntitiesByDiscriminator.put(root, children);
-		    }
-		    children.put(entity.getDiscriminator(), entity);
-		}
-		for (Listener eventListener : eventListeners) {
-		    eventListener.persistentEntityAdded(entity);
-		}
-		return entity;
-	}
+        persistentEntities.remove(entity); persistentEntities.add(entity);
+        persistentEntitiesByName.put(entity.getName(), entity);
+        entity.initialize();
+        if (!entity.isRoot()) {
+            PersistentEntity root = entity.getRootEntity();
+            Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(root);
+            if (children == null) {
+                children = new ConcurrentHashMap<String,PersistentEntity>();
+                persistentEntitiesByDiscriminator.put(root, children);
+            }
+            children.put(entity.getDiscriminator(), entity);
+        }
+        for (Listener eventListener : eventListeners) {
+            eventListener.persistentEntityAdded(entity);
+        }
+        return entity;
+    }
 
     public PersistentEntity getChildEntityByDiscriminator(PersistentEntity root, String discriminator) {
         final Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(root);
-        if(children != null) {
+        if (children != null) {
             return children.get(discriminator);
         }
-        return null;  
+        return null;
     }
 
     protected abstract PersistentEntity createPersistentEntity(Class javaClass);
@@ -164,10 +165,10 @@ public abstract class AbstractMappingContext implements MappingContext {
 
     public PersistentEntity getPersistentEntity(String name) {
         final int proxyIndicator = name.indexOf("_$$_");
-        if(proxyIndicator > -1) {
+        if (proxyIndicator > -1) {
             name = name.substring(0, proxyIndicator);
         }
-        
+
         return persistentEntitiesByName.get(name);
     }
 }

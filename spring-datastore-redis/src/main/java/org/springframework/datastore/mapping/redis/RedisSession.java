@@ -46,110 +46,94 @@ import org.springframework.transaction.CannotCreateTransactionException;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisSession extends AbstractSession<RedisTemplate>  {
+public class RedisSession extends AbstractSession<RedisTemplate> {
 
     private RedisTemplate redisTemplate;
 
     public RedisSession(Datastore ds, MappingContext mappingContext, RedisTemplate template) {
         super(ds, mappingContext);
-
         redisTemplate = template;
-
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    protected void flushPendingInserts(    final Map<PersistentEntity, Collection<PendingInsert>> inserts) {
+        // Optimizes saving multiple entities at once
+        for (final PersistentEntity entity : inserts.keySet()) {
+            final Collection<PendingInsert> pendingInserts = inserts.get(entity);
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	protected void flushPendingInserts(	final Map<PersistentEntity, Collection<PendingInsert>> inserts) {
-		// Optimizes saving multipe entities at once		
-		for (final PersistentEntity entity : inserts.keySet()) {
-			final Collection<PendingInsert> pendingInserts = inserts.get(entity);
-			
-			final List<PendingOperation<RedisEntry, Long>> postOperations = new LinkedList<PendingOperation<RedisEntry, Long>>();
-			
-			final RedisEntityPersister persister = (RedisEntityPersister) getPersister(entity);
-			
-			redisTemplate.pipeline(new RedisCallback<RedisTemplate>() {
-				@Override
-				public Object doInRedis(RedisTemplate redis)
-						throws IOException {
-					for (PendingInsert<RedisEntry, Long> pendingInsert : pendingInserts) {
-						final EntityAccess entityAccess = pendingInsert.getEntityAccess();
-						if(persister.fireBeforeInsert(entity, entityAccess)) continue;
-						
-						List<PendingOperation<RedisEntry, Long>> preOperations = pendingInsert.getPreOperations();
-						for (PendingOperation<RedisEntry, Long> preOperation : preOperations) {
-							preOperation.run();
-						}
-						
-					
-						persister.storeEntry(entity, pendingInsert.getNativeKey(), pendingInsert.getNativeEntry());
-						postOperations.addAll(pendingInsert.getCascadeOperations());
-					}
-					for (PendingOperation<RedisEntry, Long> pendingOperation : postOperations) {
-						pendingOperation.run();
-					}					
-					return null;
-				}
-			});
-		
-		}
+            final List<PendingOperation<RedisEntry, Long>> postOperations = new LinkedList<PendingOperation<RedisEntry, Long>>();
+
+            final RedisEntityPersister persister = (RedisEntityPersister) getPersister(entity);
+
+            redisTemplate.pipeline(new RedisCallback<RedisTemplate>() {
+                public Object doInRedis(RedisTemplate redis) throws IOException {
+                    for (PendingInsert<RedisEntry, Long> pendingInsert : pendingInserts) {
+                        final EntityAccess entityAccess = pendingInsert.getEntityAccess();
+                        if (persister.fireBeforeInsert(entity, entityAccess)) continue;
+
+                        List<PendingOperation<RedisEntry, Long>> preOperations = pendingInsert.getPreOperations();
+                        for (PendingOperation<RedisEntry, Long> preOperation : preOperations) {
+                            preOperation.run();
+                        }
+
+                        persister.storeEntry(entity, pendingInsert.getNativeKey(), pendingInsert.getNativeEntry());
+                        postOperations.addAll(pendingInsert.getCascadeOperations());
+                    }
+                    for (PendingOperation<RedisEntry, Long> pendingOperation : postOperations) {
+                        pendingOperation.run();
+                    }
+                    return null;
+                }
+            });
+        }
     }
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	protected void flushPendingUpdates(
-			Map<PersistentEntity, Collection<PendingUpdate>> updates) {
-		// Optimizes saving multipe entities at once		
-		for (final PersistentEntity entity : updates.keySet()) {
-			final Collection<PendingUpdate> pendingInserts = updates.get(entity);
-			
-			final List<PendingOperation<RedisEntry, Long>> postOperations = new LinkedList<PendingOperation<RedisEntry, Long>>();
-			
-			final RedisEntityPersister persister = (RedisEntityPersister) getPersister(entity);
-			
-			redisTemplate.pipeline(new RedisCallback<RedisTemplate>() {
-				@Override
-				public Object doInRedis(RedisTemplate redis)
-						throws IOException {
-					for (PendingUpdate<RedisEntry, Long> pendingInsert : pendingInserts) {
-						final EntityAccess entityAccess = pendingInsert.getEntityAccess();
-						if(persister.fireBeforeUpdate(entity, entityAccess)) continue;
-						
-						List<PendingOperation<RedisEntry, Long>> preOperations = pendingInsert.getPreOperations();
-						for (PendingOperation<RedisEntry, Long> preOperation : preOperations) {
-							preOperation.run();
-						}
-						
-					
-						persister.updateEntry(entity, pendingInsert.getNativeKey(), pendingInsert.getNativeEntry());
-						postOperations.addAll(pendingInsert.getCascadeOperations());
-					}
-					for (PendingOperation<RedisEntry, Long> pendingOperation : postOperations) {
-						pendingOperation.run();
-					}					
-					return null;
-				}
-			});
-		
-		}
-	}
-	
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    protected void flushPendingUpdates(Map<PersistentEntity, Collection<PendingUpdate>> updates) {
+        // Optimizes saving multiple entities at once
+        for (final PersistentEntity entity : updates.keySet()) {
+            final Collection<PendingUpdate> pendingInserts = updates.get(entity);
+
+            final List<PendingOperation<RedisEntry, Long>> postOperations = new LinkedList<PendingOperation<RedisEntry, Long>>();
+
+            final RedisEntityPersister persister = (RedisEntityPersister) getPersister(entity);
+
+            redisTemplate.pipeline(new RedisCallback<RedisTemplate>() {
+                public Object doInRedis(RedisTemplate redis) throws IOException {
+                    for (PendingUpdate<RedisEntry, Long> pendingInsert : pendingInserts) {
+                        final EntityAccess entityAccess = pendingInsert.getEntityAccess();
+                        if (persister.fireBeforeUpdate(entity, entityAccess)) continue;
+
+                        List<PendingOperation<RedisEntry, Long>> preOperations = pendingInsert.getPreOperations();
+                        for (PendingOperation<RedisEntry, Long> preOperation : preOperations) {
+                            preOperation.run();
+                        }
+
+                        persister.updateEntry(entity, pendingInsert.getNativeKey(), pendingInsert.getNativeEntry());
+                        postOperations.addAll(pendingInsert.getCascadeOperations());
+                    }
+                    for (PendingOperation<RedisEntry, Long> pendingOperation : postOperations) {
+                        pendingOperation.run();
+                    }
+                    return null;
+                }
+            });
+        }
+    }
+
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
       PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
-      if(entity != null) {
-          return new RedisEntityPersister(mappingContext,
-                                            entity,
-                                            this,
-                  redisTemplate);
+      if (entity != null) {
+          return new RedisEntityPersister(mappingContext, entity, this, redisTemplate);
       }
       return null;
-
     }
 
     public boolean isConnected() {
-        return true;        
+        return true;
     }
 
     @Override
@@ -164,8 +148,9 @@ public class RedisSession extends AbstractSession<RedisTemplate>  {
         }
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
-	protected Transaction<RedisTemplate> beginTransactionInternal() {
+    protected Transaction<RedisTemplate> beginTransactionInternal() {
         try {
             redisTemplate.multi();
         } catch (Exception e) {
@@ -177,9 +162,9 @@ public class RedisSession extends AbstractSession<RedisTemplate>  {
     @Override
     public void lock(Object o) {
         LockableEntityPersister ep = (LockableEntityPersister) getPersister(o);
-        if(ep != null) {
+        if (ep != null) {
             Serializable id = ep.getObjectIdentifier(o);
-            if(id != null) {
+            if (id != null) {
                 ep.lock(id);
             }
             else {
@@ -193,9 +178,9 @@ public class RedisSession extends AbstractSession<RedisTemplate>  {
 
     @Override
     public void unlock(Object o) {
-        if(o != null) {
+        if (o != null) {
             LockableEntityPersister ep = (LockableEntityPersister) getPersister(o);
-            if(ep != null) {
+            if (ep != null) {
                 ep.unlock(o);
                 lockedObjects.remove(o);
             }
@@ -205,19 +190,16 @@ public class RedisSession extends AbstractSession<RedisTemplate>  {
     @Override
     public Object lock(Class type, Serializable key) {
         LockableEntityPersister ep = (LockableEntityPersister) getPersister(type);
-        if(ep != null) {
+        if (ep != null) {
             final Object lockedObject = ep.lock(key);
-            if(lockedObject != null) {
+            if (lockedObject != null) {
                 cacheObject(key, lockedObject);
                 lockedObjects.add(lockedObject);
             }
             return lockedObject;
         }
-        else {
-           throw new CannotAcquireLockException("Cannot lock key ["+key+"]. It is not a persistent instance!");
-        }
+        throw new CannotAcquireLockException("Cannot lock key ["+key+"]. It is not a persistent instance!");
     }
-
 
     /**
      * Returns a random entity for the given type
@@ -228,14 +210,12 @@ public class RedisSession extends AbstractSession<RedisTemplate>  {
     public Object random(Class type) {
         flushIfNecessary();
         RedisEntityPersister ep = (RedisEntityPersister) getPersister(type);
-        if(ep != null) {
+        if (ep != null) {
             RedisSet set = (RedisSet) ep.getAllEntityIndex();
             String id = set.random();
             return retrieve(type, id);
         }
-        else {
-            throw new NonPersistentTypeException("The class ["+type+"] is not a known persistent type.");
-        }
+        throw new NonPersistentTypeException("The class ["+type+"] is not a known persistent type.");
     }
 
     /**
@@ -245,19 +225,20 @@ public class RedisSession extends AbstractSession<RedisTemplate>  {
      * @param ttl The time to live in seconds
      */
     public void expire(Object instance, int ttl) {
-        if(instance != null) {
+        if (instance != null) {
             final RedisEntityPersister ep = (RedisEntityPersister) getPersister(instance);
-            if(ep != null) {
+            if (ep != null) {
                 final Serializable key = ep.getObjectIdentifier(instance);
-                if(key != null) {
+                if (key != null) {
                     expire(instance.getClass(), key, ttl);
                 }
             }
             else {
-              throw new NonPersistentTypeException("The class ["+instance.getClass()+"] is not a known persistent type.");  
+              throw new NonPersistentTypeException("The class ["+instance.getClass()+"] is not a known persistent type.");
             }
         }
     }
+
     /**
      * Expires an entity for the given type, identifier and time to live
      *
@@ -268,7 +249,7 @@ public class RedisSession extends AbstractSession<RedisTemplate>  {
     public void expire(final Class type, final Serializable key, final int ttl) {
         final RedisEntityPersister ep = (RedisEntityPersister) getPersister(type);
 
-        if(ep != null) {
+        if (ep != null) {
             String entityKey = ep.getRedisKey(key);
             redisTemplate.expire(entityKey, ttl);
             new Thread(new Runnable() {
@@ -290,15 +271,16 @@ public class RedisSession extends AbstractSession<RedisTemplate>  {
     }
 
     private void flushIfNecessary() {
-        if(getFlushMode() == FlushModeType.AUTO) flush();
+        if (getFlushMode() == FlushModeType.AUTO) flush();
     }
 
     @Override
     protected void postFlush(boolean hasUpdates) {
-        if(hasUpdates) {
+        if (hasUpdates) {
             final List<String> keys = redisTemplate.keys("~*");
-            if(keys != null && !keys.isEmpty())
-                redisTemplate.del(keys.toArray(new String[keys.size()]));            
+            if (keys != null && !keys.isEmpty()) {
+                redisTemplate.del(keys.toArray(new String[keys.size()]));
+            }
         }
     }
 
@@ -311,7 +293,7 @@ public class RedisSession extends AbstractSession<RedisTemplate>  {
     public Object pop(Class type) {
         flushIfNecessary();
         RedisEntityPersister ep = (RedisEntityPersister) getPersister(type);
-        if(ep != null) {
+        if (ep != null) {
             RedisSet set = (RedisSet) ep.getAllEntityIndex();
             String id = set.pop();
             Object result = null;
@@ -319,18 +301,15 @@ public class RedisSession extends AbstractSession<RedisTemplate>  {
                 result = retrieve(type, id);
                 return result;
             } finally {
-                if(result != null)
+                if (result != null) {
                     delete(result);
+                }
             }
         }
-        else {
-            throw new NonPersistentTypeException("The class ["+type+"] is not a known persistent type.");
-        }
+        throw new NonPersistentTypeException("The class ["+type+"] is not a known persistent type.");
     }
 
     public RedisTemplate getNativeInterface() {
         return redisTemplate;
     }
-
-
 }

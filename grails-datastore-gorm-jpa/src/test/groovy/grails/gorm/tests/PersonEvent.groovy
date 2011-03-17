@@ -1,28 +1,28 @@
 package grails.gorm.tests
 
-import grails.gorm.JpaEntity 
-import java.io.Serializable;
-import java.util.Date;
+import grails.gorm.JpaEntity
 
 @JpaEntity
-class PersonEvent implements Serializable{
+class PersonEvent implements Serializable {
     String name
     Date dateCreated
     Date lastUpdated
 
     static STORE = [updated:0, inserted:0]
 
-    static void resetStore() { STORE = [updated:0, inserted:0] }
+    static void resetStore() {
+        STORE = [updated:0, inserted:0]
+    }
 
     void beforeDelete() {
-      STORE["deleted"] = true
-
+        STORE["deleted"] = true
     }
+
     void beforeUpdate() {
-      STORE["updated"]++
-    }
-    void beforeInsert() {
-      STORE["inserted"]++
+        STORE["updated"]++
     }
 
+    void beforeInsert() {
+        STORE["inserted"]++
+    }
 }

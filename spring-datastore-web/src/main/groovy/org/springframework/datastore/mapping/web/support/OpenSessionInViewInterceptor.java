@@ -15,6 +15,8 @@
 
 package org.springframework.datastore.mapping.web.support;
 
+import javax.persistence.FlushModeType;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.datastore.mapping.core.Datastore;
@@ -25,8 +27,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.ui.ModelMap;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.WebRequestInterceptor;
-
-import javax.persistence.FlushModeType;
 
 /**
  * A {@link org.springframework.web.context.request.WebRequestInterceptor} instance that
@@ -48,30 +48,33 @@ public class OpenSessionInViewInterceptor implements WebRequestInterceptor {
     }
 
     public void preHandle(WebRequest webRequest) throws Exception {
-        if(!hasSessionBound()) {
-            // single session mode
-            LOG.debug("Opening single Datastore Session in OpenSessionInViewInterceptor");
+        if (hasSessionBound()) {
+            return;
+        }
 
-            Session session = DatastoreUtils.getSession(datastore, true);
-            session.setFlushMode(flushMode);
-            if(!hasSessionBound()) {            	
-            	TransactionSynchronizationManager.bindResource(getDatastore(), new SessionHolder(session));            
-            }
+        // single session mode
+        LOG.debug("Opening single Datastore Session in OpenSessionInViewInterceptor");
+
+        Session session = DatastoreUtils.getSession(datastore, true);
+        session.setFlushMode(flushMode);
+        if (!hasSessionBound()) {
+            TransactionSynchronizationManager.bindResource(getDatastore(), new SessionHolder(session));
         }
     }
 
     public void postHandle(WebRequest webRequest, ModelMap modelMap) throws Exception {
-		// Only potentially flush in single session mode.
-        if(hasSessionBound()) {
+        // Only potentially flush in single session mode.
+        if (!hasSessionBound()) {
+            return;
+        }
 
-            SessionHolder sessionHolder =
-                    (SessionHolder) TransactionSynchronizationManager.getResource(getDatastore());
-            LOG.debug("Flushing single Datastore Session in OpenSessionInViewInterceptor");
-            final Session session = sessionHolder.getSession();
+        SessionHolder sessionHolder =
+                (SessionHolder) TransactionSynchronizationManager.getResource(getDatastore());
+        LOG.debug("Flushing single Datastore Session in OpenSessionInViewInterceptor");
+        final Session session = sessionHolder.getSession();
 
-            if(session.getFlushMode() == FlushModeType.AUTO) {
-                session.flush();
-            }
+        if (session.getFlushMode() == FlushModeType.AUTO) {
+            session.flush();
         }
     }
 
@@ -80,13 +83,14 @@ public class OpenSessionInViewInterceptor implements WebRequestInterceptor {
     }
 
     public void afterCompletion(WebRequest webRequest, Exception e) throws Exception {
-        if(hasSessionBound()) {
-            // single session mode
-            SessionHolder sessionHolder =
-                    (SessionHolder) TransactionSynchronizationManager.unbindResource(getDatastore());
-            LOG.debug("Closing single Datastore Session in OpenSessionInViewInterceptor");
-            DatastoreUtils.closeSession(sessionHolder.getSession());
-
+        if (!hasSessionBound()) {
+            return;
         }
+
+        // single session mode
+        SessionHolder sessionHolder =
+                (SessionHolder) TransactionSynchronizationManager.unbindResource(getDatastore());
+        LOG.debug("Closing single Datastore Session in OpenSessionInViewInterceptor");
+        DatastoreUtils.closeSession(sessionHolder.getSession());
     }
 }

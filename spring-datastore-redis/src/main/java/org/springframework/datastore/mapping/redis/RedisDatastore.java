@@ -14,11 +14,15 @@
  */
 package org.springframework.datastore.mapping.redis;
 
+import static org.springframework.datastore.mapping.config.utils.ConfigUtils.read;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.converter.ConverterRegistry;
-import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.datastore.mapping.config.Property;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
@@ -28,17 +32,13 @@ import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMap
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
-import org.springframework.datastore.mapping.model.types.BasicTypeConverterRegistrar;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.redis.engine.RedisEntityPersister;
 import org.springframework.datastore.mapping.redis.util.JedisTemplate;
 import org.springframework.datastore.mapping.redis.util.RedisTemplate;
 import org.springframework.util.ClassUtils;
+
 import redis.clients.jedis.JedisPool;
-
-import java.util.*;
-
-import static org.springframework.datastore.mapping.config.utils.ConfigUtils.read;
 
 /**
  * A Datastore implementation for the Redis key/value datastore
@@ -82,7 +82,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
         super(mappingContext, connectionDetails);
 
         int resourceCount = 10;
-        if(connectionDetails != null) {
+        if (connectionDetails != null) {
             host = read(String.class, CONFIG_HOST, connectionDetails, DEFAULT_HOST);
             port = read(Integer.class, CONFIG_PORT, connectionDetails, DEFAULT_PORT);
             timeout = read(Integer.class, CONFIG_TIMEOUT, connectionDetails, 2000);
@@ -90,7 +90,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
             password = read(String.class, CONFIG_PASSWORD, connectionDetails, null);
             resourceCount = read(Integer.class, CONFIG_RESOURCE_COUNT, connectionDetails, 10);
         }
-        if(pooled && useJedis()) {
+        if (pooled && useJedis()) {
             this.pool = JedisTemplateFactory.createPool(host, port, timeout, resourceCount);
         }
 
@@ -102,7 +102,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
     }
 
     public void destroy() throws Exception {
-        if(pool != null) {
+        if (pool != null) {
             pool.destroy();
         }
     }
@@ -117,24 +117,24 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
             pool.init();
             return pool;
         }
+
         static RedisTemplate create(String host, int port, int timeout, boolean pooled, String password) {
 
             JedisTemplate template;
 
-            if(pooled) {
+            if (pooled) {
                 template = new JedisTemplate(pool);
             }
             else {
                 template = new JedisTemplate(host, port, timeout);
             }
-            if(password != null) {
+            if (password != null) {
                 template.setPassword(password);
             }
 
             return template;
         }
     }
-
 
     /**
      * Sets whether the Redis datastore should create indices in the background instead of on startup
@@ -146,17 +146,15 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
     }
 
     @Override
-    protected Session createSession(Map<String, String> connectionDetails) {
-        if(useJedis()) {
+    protected Session createSession(Map<String, String> connDetails) {
+        if (useJedis()) {
             return new RedisSession(this, getMappingContext(), JedisTemplateFactory.create(host, port, timeout, pooled,password ));
         }
-        else {
-           throw new IllegalStateException("Cannot create RedisSession. No Redis client library found on classpath. Please make sure you have the Jedis library on your classpath");
-        }
+        throw new IllegalStateException("Cannot create RedisSession. No Redis client library found on classpath. Please make sure you have the Jedis library on your classpath");
     }
 
     public void afterPropertiesSet() throws Exception {
-        if(backgroundIndex) {
+        if (backgroundIndex) {
             new Thread(new IndexOperation()).start();
         }
         else {
@@ -177,19 +175,19 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
                 List<PersistentProperty> indexed = new ArrayList<PersistentProperty>();
                 for (PersistentProperty prop : props) {
                     Property kv = (Property) prop.getMapping().getMappedForm();
-                    if(kv != null && kv.isIndex()) {
+                    if (kv != null && kv.isIndex()) {
                         indexed.add(prop);
                     }
                 }
 
-                if(!indexed.isEmpty()) {
+                if (!indexed.isEmpty()) {
                     // page through entities indexing each one
                     final Class cls = entity.getJavaClass();
                     Query query = session.createQuery(cls);
                     query.projections().count();
                     Long total = (Long) query.singleResult();
 
-                    if(total < 100) {
+                    if (total < 100) {
                         List persistedObjects = session.createQuery(cls).list();
                         for (Object persistedObject : persistedObjects) {
                             updatedPersistedObjectIndices(session, entity, persistedObject, indexed);
@@ -208,10 +206,9 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
                             for (Object persistedObject : persistedObjects) {
                                 updatedPersistedObjectIndices(session, entity, persistedObject, indexed);
                             }
-                            
+
                             offset += max;
                         }
-
                     }
                 }
             }
@@ -222,12 +219,11 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
             Object identifier = ea.getIdentifier();
             for (PersistentProperty persistentProperty : indexed) {
                 Object value = ea.getProperty(persistentProperty.getName());
-                if(value != null) {
+                if (value != null) {
                     RedisEntityPersister persister = (RedisEntityPersister) session.getPersister(entity.getJavaClass());
                     PropertyValueIndexer indexer = persister.getPropertyIndexer(persistentProperty);
                     indexer.index(value, identifier);
                 }
-
             }
         }
     }

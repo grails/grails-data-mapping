@@ -23,46 +23,42 @@ import org.springframework.datastore.mapping.reflect.NameUtils;
 
 /**
  * Bridges a {@link GrailsDomainClassProperty} to the {@link PersistentProperty} interface
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
- *
  */
 public class GrailsDomainClassPersistentProperty implements PersistentProperty{
 
-	private PersistentEntity owner;
-	private GrailsDomainClassProperty property;
+    private PersistentEntity owner;
+    private GrailsDomainClassProperty property;
 
-	
-	public GrailsDomainClassPersistentProperty(PersistentEntity owner,
-			GrailsDomainClassProperty property) {
-		super();
-		this.owner = owner;
-		this.property = property;
-	}
+    public GrailsDomainClassPersistentProperty(PersistentEntity owner,
+            GrailsDomainClassProperty property) {
+        this.owner = owner;
+        this.property = property;
+    }
 
-	public String getName() {
-		return property.getName();
-	}
+    public String getName() {
+        return property.getName();
+    }
 
-	public String getCapitilizedName() {
-		return NameUtils.capitalize(getName());
-	}
+    public String getCapitilizedName() {
+        return NameUtils.capitalize(getName());
+    }
 
-	public Class getType() {
-		return property.getType();
-	}
+    public Class getType() {
+        return property.getType();
+    }
 
-	public PropertyMapping getMapping() {
-		return null;
-	}
+    public PropertyMapping getMapping() {
+        return null;
+    }
 
-	public PersistentEntity getOwner() {
-		return owner;
-	}
+    public PersistentEntity getOwner() {
+        return owner;
+    }
 
-	public boolean isNullable() {
-		return property.isOptional();
-	}
-
+    public boolean isNullable() {
+        return property.isOptional();
+    }
 }

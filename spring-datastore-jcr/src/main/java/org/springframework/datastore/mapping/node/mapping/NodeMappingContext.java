@@ -8,15 +8,15 @@ import org.springframework.datastore.mapping.model.config.GormMappingConfigurati
 
 /**
  * TODO: write javadoc
- * 
+ *
  * @author Erawat Chamanont
  * @since 1.0
  */
 public class NodeMappingContext extends AbstractMappingContext {
     private MappingConfigurationStrategy syntaxStrategy;
     private NodeMappingFactory mappingFactory;
-   
-    public NodeMappingContext(){
+
+    public NodeMappingContext() {
         this.mappingFactory = new NodeMappingFactory();
         this.syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
     }
@@ -27,10 +27,10 @@ public class NodeMappingContext extends AbstractMappingContext {
     }
 
     public MappingConfigurationStrategy getMappingSyntaxStrategy() {
-        return  this.syntaxStrategy;  
+        return syntaxStrategy;
     }
 
     public MappingFactory getMappingFactory() {
-        return this.mappingFactory;
+        return mappingFactory;
     }
 }

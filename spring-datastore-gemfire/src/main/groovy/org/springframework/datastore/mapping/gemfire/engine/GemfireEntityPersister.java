@@ -14,13 +14,23 @@
  */
 package org.springframework.datastore.mapping.gemfire.engine;
 
-import com.gemstone.gemfire.GemFireCheckedException;
-import com.gemstone.gemfire.GemFireException;
-import com.gemstone.gemfire.cache.Cache;
-import com.gemstone.gemfire.cache.CacheFactory;
-import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
-import com.gemstone.gemfire.internal.cache.PartitionedRegion;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+
+import javax.persistence.CascadeType;
+
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.data.gemfire.GemfireCallback;
@@ -39,20 +49,19 @@ import org.springframework.datastore.mapping.model.types.OneToMany;
 import org.springframework.datastore.mapping.model.types.ToOne;
 import org.springframework.datastore.mapping.query.Query;
 
-import javax.persistence.CascadeType;
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
+import com.gemstone.gemfire.GemFireCheckedException;
+import com.gemstone.gemfire.GemFireException;
+import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.CacheFactory;
+import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.distributed.internal.InternalDistributedSystem;
+import com.gemstone.gemfire.internal.cache.PartitionedRegion;
 
 /**
  * A persister capable of storing objects in a Gemfire region
  *
  * @author Graeme Rocher
  * @since 1.0
- *
  */
 public class GemfireEntityPersister extends LockableEntityPersister {
     private GemfireDatastore gemfireDatastore;
@@ -70,7 +79,6 @@ public class GemfireEntityPersister extends LockableEntityPersister {
     public Object lock(final Serializable id) throws CannotAcquireLockException {
         final GemfireTemplate template = gemfireDatastore.getTemplate(getPersistentEntity());
 
-
         return template.execute(new GemfireCallback() {
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
                 final Lock lock = region.getDistributedLock(id);
@@ -86,20 +94,17 @@ public class GemfireEntityPersister extends LockableEntityPersister {
     public Object lock(final Serializable id, final int timeout) throws CannotAcquireLockException {
         final GemfireTemplate template = gemfireDatastore.getTemplate(getPersistentEntity());
 
-
         return template.execute(new GemfireCallback() {
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
                 final Lock lock = region.getDistributedLock(id);
                 try {
-                    if(lock.tryLock(timeout, TimeUnit.SECONDS)) {
+                    if (lock.tryLock(timeout, TimeUnit.SECONDS)) {
 
                         final Object o = region.get(id);
                         distributedLocksHeld.put(o, lock);
                         return o;
                     }
-                    else {
-                        throw new CannotAcquireLockException("Timeout acquiring Gemfire lock on object type ["+getPersistentEntity()+"] with identifier ["+id+"]");
-                    }
+                    throw new CannotAcquireLockException("Timeout acquiring Gemfire lock on object type ["+getPersistentEntity()+"] with identifier ["+id+"]");
                 } catch (InterruptedException e) {
                     throw new CannotAcquireLockException("Cannot acquire Gemfire lock on object type ["+getPersistentEntity()+"] with identifier ["+id+"]: " + e.getMessage(), e);
                 }
@@ -115,7 +120,7 @@ public class GemfireEntityPersister extends LockableEntityPersister {
     @Override
     public void unlock(Object o) {
         final Lock lock = distributedLocksHeld.get(o);
-        if(lock != null) {
+        if (lock != null) {
             lock.unlock();
         }
     }
@@ -135,27 +140,24 @@ public class GemfireEntityPersister extends LockableEntityPersister {
         final GemfireTemplate template = gemfireDatastore.getTemplate(persistentEntity);
         return (List<Object>) template.execute(new GemfireCallback() {
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
-                if(keys instanceof Collection) {
-					final Map all = region.getAll((Collection) keys);
-					return getListOfValues(all);
-				} else {
-                    Collection keyList = new ArrayList();
-                    for (Serializable key : keys) {
-                        keyList.add(key);
-                    }
-                    final Map all = region.getAll(keyList);
-					return getListOfValues(all);
+                if (keys instanceof Collection) {
+                    final Map all = region.getAll((Collection) keys);
+                    return getListOfValues(all);
                 }
+                Collection keyList = new ArrayList();
+                for (Serializable key : keys) {
+                    keyList.add(key);
+                }
+                final Map all = region.getAll(keyList);
+                return getListOfValues(all);
             }
 
-			List getListOfValues(final Map all) {
-				if(all != null) {
-					return new ArrayList(all.values());
-				}
-				else {
-					return Collections.emptyList();
-				}
-			}
+            List getListOfValues(final Map all) {
+                if (all != null) {
+                    return new ArrayList(all.values());
+                }
+                return Collections.emptyList();
+            }
         });
     }
 
@@ -171,21 +173,21 @@ public class GemfireEntityPersister extends LockableEntityPersister {
             entityAccessObjects.put(obj, access);
             Object identifier = access.getIdentifier();
             boolean isUpdate = true;
-            if(identifier == null) {
+            if (identifier == null) {
                 identifier = generateIdentifier(persistentEntity, access);
                 isUpdate = false;
             }
 
             boolean proceed = true;
             for (EntityInterceptor interceptor : interceptors) {
-                if(isUpdate) {
+                if (isUpdate) {
                     proceed = interceptor.beforeUpdate(persistentEntity, access);
                 }
                 else {
                     proceed = interceptor.beforeInsert(persistentEntity, access);
                 }
 
-                if(!proceed) continue out;
+                if (!proceed) continue out;
             }
 
             putMap.put(identifier, obj);
@@ -196,8 +198,9 @@ public class GemfireEntityPersister extends LockableEntityPersister {
 
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
                 region.putAll(putMap);
-                if(!persistentEntity.isRoot()) {
+                if (!persistentEntity.isRoot()) {
                     doWithParents(persistentEntity, new GemfireCallback() {
+                        @SuppressWarnings("hiding")
                         public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
                             region.putAll(putMap);
                             return null;
@@ -207,14 +210,14 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                 for (Object id : putMap.keySet()) {
                     Object obj = putMap.get(id);
                     final EntityAccess access = entityAccessObjects.get(obj);
-                    if(access != null)
+                    if (access != null)
                         cascadeSaveOrUpdate(persistentEntity, obj, access);
                 }
                 return null;
             }
         });
 
-        return identifiers;        
+        return identifiers;
     }
 
     @Override
@@ -227,11 +230,11 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                 Object lookupKey = getMappingContext().getConversionService().convert(key,idType);
                 final Object entry = region.get(lookupKey);
                 for (Association association : persistentEntity.getAssociations()) {
-                    if(association instanceof OneToMany) {
+                    if (association instanceof OneToMany) {
                         final EntityAccess ea = createEntityAccess(persistentEntity, entry);
                         final String propertyName = association.getName();
                         final Object currentState = ea.getProperty(propertyName);
-                        if(currentState == null) {
+                        if (currentState == null) {
                             initializeCollectionState(association, ea, propertyName);
                         }
                     }
@@ -239,21 +242,20 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                 return entry;
             }
         });
-
     }
 
     private Object initializeCollectionState(Association association, EntityAccess ea, String propertyName) {
-        if(Set.class.isAssignableFrom(association.getType())) {
+        if (Set.class.isAssignableFrom(association.getType())) {
             final HashSet set = new HashSet();
             ea.setProperty(propertyName, set);
             return set;
         }
-        else if(List.class.isAssignableFrom(association.getType())) {
+        else if (List.class.isAssignableFrom(association.getType())) {
             final ArrayList list = new ArrayList();
             ea.setProperty(propertyName, list);
             return list;
         }
-        else if(Map.class.isAssignableFrom(association.getType())) {
+        else if (Map.class.isAssignableFrom(association.getType())) {
             final HashMap map = new HashMap();
             ea.setProperty(propertyName, map);
             return map;
@@ -266,7 +268,7 @@ public class GemfireEntityPersister extends LockableEntityPersister {
         final EntityAccess access = createEntityAccess(persistentEntity,obj);
         Object identifier = access.getIdentifier();
         boolean isUpdate = true;
-        if(identifier == null) {
+        if (identifier == null) {
             identifier = generateIdentifier(persistentEntity, access);
             isUpdate = false;
         }
@@ -280,24 +282,24 @@ public class GemfireEntityPersister extends LockableEntityPersister {
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
                 for (EntityInterceptor interceptor : interceptors) {
                     boolean proceed = true;
-                    if(finalIsUpdate) {
+                    if (finalIsUpdate) {
                         proceed = interceptor.beforeUpdate(persistentEntity, access);
                     }
                     else {
                         proceed = interceptor.beforeInsert(persistentEntity, access);
                     }
-                    if(!proceed) return finalId;
+                    if (!proceed) return finalId;
                 }
 
                 region.put(finalId, obj);
-                if(!persistentEntity.isRoot()) {
+                if (!persistentEntity.isRoot()) {
                     doWithParents(persistentEntity, new GemfireCallback() {
+                        @SuppressWarnings("hiding")
                         public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
                             region.put(finalId, obj);
                             return null;
                         }
                     });
-
                 }
 
                 cascadeSaveOrUpdate(persistentEntity, obj, access);
@@ -311,14 +313,14 @@ public class GemfireEntityPersister extends LockableEntityPersister {
     private void cascadeSaveOrUpdate(PersistentEntity persistentEntity, Object obj, EntityAccess access) {
         final List<Association> associations = persistentEntity.getAssociations();
         for (Association association : associations) {
-            if(association.doesCascade(CascadeType.PERSIST)) {
-                final Session session = getSession();
+            if (association.doesCascade(CascadeType.PERSIST)) {
+                @SuppressWarnings("hiding") final Session session = getSession();
                 String processKey = association + ">" + obj;
-                if(association instanceof ToOne) {
+                if (association instanceof ToOne) {
                     final Object associatedObject = access.getProperty(association.getName());
 
-                    if(associatedObject != null && !associatedObject.equals(obj)) {
-                        if(session.getAttribute(processKey, CASCADE_PROCESSED) == null) {
+                    if (associatedObject != null && !associatedObject.equals(obj)) {
+                        if (session.getAttribute(processKey, CASCADE_PROCESSED) == null) {
                            session.setAttribute(processKey, CASCADE_PROCESSED, true);
                            this.session.persist(associatedObject);
                            autoAssociateInverseSide(obj, association, associatedObject);
@@ -328,51 +330,45 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                        session.setAttribute(processKey, CASCADE_PROCESSED, false);
                    }
                 }
-                else if(association instanceof OneToMany) {
-                    if(session.getAttribute(processKey, CASCADE_PROCESSED) == TRUE) {
+                else if (association instanceof OneToMany) {
+                    if (session.getAttribute(processKey, CASCADE_PROCESSED) == TRUE) {
                        session.setAttribute(processKey, CASCADE_PROCESSED, TRUE);
                        Object associatedObjects = access.getProperty(association.getName());
-                       if(associatedObjects instanceof Iterable) {
+                       if (associatedObjects instanceof Iterable) {
                             final Iterable iterable = (Iterable) associatedObjects;
                             for (Object associatedObject : iterable) {
                                 autoAssociateInverseSide(obj, association, associatedObject);
                             }
                             session.persist(iterable);
-
                        }
                     }
                     else {
                        session.setAttribute(processKey, CASCADE_PROCESSED, false);
                     }
-
-
                 }
             }
-
-
         }
     }
 
     private void autoAssociateInverseSide(Object obj, Association association, Object associatedObject) {
-        if(association.isBidirectional()) {
+        if (association.isBidirectional()) {
             final Association inverseSide = association.getInverseSide();
-            if(inverseSide instanceof ToOne) {
+            if (inverseSide instanceof ToOne) {
                 final EntityAccess associationAccess = createEntityAccess(association.getAssociatedEntity(), associatedObject);
                 associationAccess.setProperty(inverseSide.getName(), obj);
             }
-            else if(inverseSide instanceof OneToMany) {
+            else if (inverseSide instanceof OneToMany) {
                 final EntityAccess associationAccess = createEntityAccess(association.getAssociatedEntity(), associatedObject);
                 Object collectionObject = associationAccess.getProperty(inverseSide.getName());
-                if(collectionObject == null) {
+                if (collectionObject == null) {
                     collectionObject = initializeCollectionState(inverseSide, associationAccess, inverseSide.getName());
                 }
 
-                if(collectionObject instanceof Collection) {
+                if (collectionObject instanceof Collection) {
                     final Collection collection = (Collection) collectionObject;
-                    if(!collection.contains(obj))
+                    if (!collection.contains(obj))
                         collection.add(obj);
                 }
-
             }
         }
     }
@@ -380,31 +376,28 @@ public class GemfireEntityPersister extends LockableEntityPersister {
     private void cascadeDelete(PersistentEntity persistentEntity, Object obj, EntityAccess access) {
         final List<Association> associations = persistentEntity.getAssociations();
         for (Association association : associations) {
-            if(association.doesCascade(CascadeType.REMOVE)) {
-                if(association instanceof ToOne) {
+            if (association.doesCascade(CascadeType.REMOVE)) {
+                if (association instanceof ToOne) {
                    ToOne toOne = (ToOne) association;
 
                    final Object associatedObject = access.getProperty(toOne.getName());
-                   if(associatedObject != null && !associatedObject.equals(obj))
+                   if (associatedObject != null && !associatedObject.equals(obj))
                         session.delete(associatedObject);
                 }
-                else if(association instanceof OneToMany) {
+                else if (association instanceof OneToMany) {
                     Object associatedObjects = access.getProperty(association.getName());
-                    if(associatedObjects instanceof Iterable) {
+                    if (associatedObjects instanceof Iterable) {
                         session.delete((Iterable)associatedObjects);
                     }
                 }
             }
-
-
         }
     }
 
     private void doWithParents(PersistentEntity persistentEntity, GemfireCallback gemfireCallback) {
-         if(!persistentEntity.isRoot()) {
+         if (!persistentEntity.isRoot()) {
             PersistentEntity parentEntity = persistentEntity.getParentEntity();
             do {
-
                 GemfireTemplate parentTemplate = gemfireDatastore.getTemplate(parentEntity);
                 parentTemplate.execute(gemfireCallback);
                 parentEntity = parentEntity.getParentEntity();
@@ -420,11 +413,11 @@ public class GemfireEntityPersister extends LockableEntityPersister {
 
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
                   Cache cache = CacheFactory.getAnyInstance();
-                  final int uuid = PartitionedRegion.generatePRId( (InternalDistributedSystem)cache.getDistributedSystem(),	cache);
+                  final int uuid = PartitionedRegion.generatePRId( (InternalDistributedSystem)cache.getDistributedSystem(),    cache);
                   if (uuid == 0) {
                     throw new DataAccessResourceFailureException("Unable to generate Gemfire UUID");
                   }
-                  long finalId = (long)(identifierGenerator.getAndIncrement() + uuid);
+                  long finalId = identifierGenerator.getAndIncrement() + uuid;
                   access.setIdentifier(finalId);
 
                   return finalId;
@@ -443,23 +436,22 @@ public class GemfireEntityPersister extends LockableEntityPersister {
 
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
                 for (EntityInterceptor interceptor : interceptors) {
-                    if(!interceptor.beforeDelete(persistentEntity, access)) return null;
+                    if (!interceptor.beforeDelete(persistentEntity, access)) return null;
                 }
                 region.remove(identifier);
-                if(!persistentEntity.isRoot()) {
+                if (!persistentEntity.isRoot()) {
                     doWithParents(persistentEntity, new GemfireCallback() {
+                        @SuppressWarnings("hiding")
                         public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
                             region.remove(identifier);
                             return null;
                         }
                     });
-
                 }
                 cascadeDelete(persistentEntity, obj, access);
                 return null;
             }
         });
-
     }
 
     @Override
@@ -476,6 +468,5 @@ public class GemfireEntityPersister extends LockableEntityPersister {
     public Serializable refresh(Object o) {
         final EntityAccess access = createEntityAccess(getPersistentEntity(),o);
         return (Serializable) access.getIdentifier();
-
     }
 }

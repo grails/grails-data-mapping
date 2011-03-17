@@ -17,17 +17,13 @@ package org.springframework.datastore.mapping.cassandra.util;
 import me.prettyprint.cassandra.model.HectorException;
 import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.Keyspace;
-import org.apache.cassandra.thrift.InvalidRequestException;
-import org.apache.cassandra.thrift.NotFoundException;
-import org.apache.cassandra.thrift.TimedOutException;
-import org.apache.cassandra.thrift.UnavailableException;
-import org.apache.thrift.TException;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 
 /**
- * A Spring style template that wraps Cassandra data access exceptions and rethrows
- * to Spring's standard exception hierarchy
+ * A Spring style template that wraps Cassandra data access exceptions and
+ * rethrows to Spring's standard exception hierarchy
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -40,24 +36,22 @@ public class HectorTemplate {
         this.cassandraClient = cassandraClient;
     }
 
-
     public Object execute(String keyspace, HectorCallback callable) throws DataAccessException {
         final Keyspace ks;
         try {
             ks = cassandraClient.getKeyspace(keyspace);
-
         }
         catch (HectorException e) {
-              throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
+            throw new DataAccessResourceFailureException(
+                    "Exception occurred invoking Cassandra: " + e.getMessage(), e);
         }
+
         try {
             return callable.doInHector(ks);
         }
         catch (HectorException e) {
-              throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
+            throw new DataAccessResourceFailureException(
+                    "Exception occurred invoking Cassandra: " + e.getMessage(), e);
         }
-
-
-
     }
 }

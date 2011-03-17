@@ -23,7 +23,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 
 /**
  * Base implementation of the {@link PendingOperation} interface
- * 
+ *
  * @author Graeme Rocher
  *
  * @param <E> The native entity type (examples could be Row, Document etc.)
@@ -31,56 +31,44 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
  */
 public abstract class PendingOperationAdapter<E, K> implements PendingOperation<E, K> {
 
-	protected PersistentEntity entity;
-	protected K nativeKey;
-	protected E nativeEntry;
-	private List<PendingOperation<E, K>> pendingOperations = new LinkedList<PendingOperation<E, K>>();
-	private List<PendingOperation<E, K>> preOperations = new LinkedList<PendingOperation<E, K>>();
+    protected PersistentEntity entity;
+    protected K nativeKey;
+    protected E nativeEntry;
+    private List<PendingOperation<E, K>> pendingOperations = new LinkedList<PendingOperation<E, K>>();
+    private List<PendingOperation<E, K>> preOperations = new LinkedList<PendingOperation<E, K>>();
 
-	
+    public PendingOperationAdapter(PersistentEntity entity,
+            K nativeKey, E nativeEntry) {
+        this.entity = entity;
+        this.nativeKey = nativeKey;
+        this.nativeEntry = nativeEntry;
+    }
 
-	public PendingOperationAdapter(PersistentEntity entity,
-			K nativeKey, E nativeEntry) {
-		super();
-		this.entity = entity;
-		this.nativeKey = nativeKey;
-		this.nativeEntry = nativeEntry;
-	}
-	
-	@Override
-	public List<PendingOperation<E, K>> getPreOperations() {
-		return Collections.unmodifiableList(preOperations);
-	}
+    public List<PendingOperation<E, K>> getPreOperations() {
+        return Collections.unmodifiableList(preOperations);
+    }
 
-	@Override
-	public void addPreOperation(PendingOperation<E, K> preOperation) {
-		preOperations.add(preOperation);
-	}
+    public void addPreOperation(PendingOperation<E, K> preOperation) {
+        preOperations.add(preOperation);
+    }
 
-	@Override
-	public List<PendingOperation<E, K>> getCascadeOperations() {
-		return Collections.unmodifiableList(pendingOperations);
-	}
+    public List<PendingOperation<E, K>> getCascadeOperations() {
+        return Collections.unmodifiableList(pendingOperations);
+    }
 
-	@Override
-	public void addCascadeOperation(PendingOperation<E, K> pendingOperation) {
-		pendingOperations.add(pendingOperation);		
-	}
+    public void addCascadeOperation(PendingOperation<E, K> pendingOperation) {
+        pendingOperations.add(pendingOperation);
+    }
 
-	@Override
-	public K getNativeKey() {
-		return nativeKey;
-	}
+    public K getNativeKey() {
+        return nativeKey;
+    }
 
-	@Override
-	public PersistentEntity getEntity() {
-		return this.entity;
-	}
+    public PersistentEntity getEntity() {
+        return entity;
+    }
 
-	@Override
-	public E getNativeEntry() {
-		return this.nativeEntry;
-	}
-
-
+    public E getNativeEntry() {
+        return nativeEntry;
+    }
 }

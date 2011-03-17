@@ -24,7 +24,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.document.mongodb.DbCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.core.AbstractSession;
-import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.core.impl.PendingInsert;
 import org.springframework.datastore.mapping.core.impl.PendingOperation;
 import org.springframework.datastore.mapping.document.config.DocumentMappingContext;
@@ -51,140 +50,130 @@ import com.mongodb.WriteConcern;
  */
 public class MongoSession extends AbstractSession<DB> {
 
-	MongoDatastore mongoDatastore;
-	private boolean connected = true;
-	private WriteConcern writeConcern = WriteConcern.NORMAL;
-	
-	
-	public MongoSession(MongoDatastore datastore, MappingContext mappingContext) {
-		super(datastore, mappingContext);
-		this.mongoDatastore = datastore;
-		getNativeInterface().requestStart();
-	}
-	
-	@Override
-	public MongoQuery createQuery(Class type) {
-		return (MongoQuery) super.createQuery(type);
-	}
-	
-	/**
-	 * Sets the WriteConcern to use for the session
-	 * 
-	 * @param writeConcern The WriteConcern to use
-	 */
-	public void setWriteConcern(WriteConcern writeConcern) {
-		this.writeConcern = writeConcern;
-	}
-	
-	/**
-	 * Obtains the WriteConcern to use for the session
-	 * @return
-	 */
-	public WriteConcern getWriteConcern() {
-		return writeConcern;
-	}
+    MongoDatastore mongoDatastore;
+    private boolean connected = true;
+    private WriteConcern writeConcern = WriteConcern.NORMAL;
 
-	/**
-	 * Execute a flush using the given WriteConcern
-	 * 
-	 * @param writeConcern The WriteConcern to use
-	 */
-	public void flush(WriteConcern writeConcern) {
-		WriteConcern current = this.writeConcern;
-		
-		this.writeConcern = writeConcern;
-		
-		try {
-			super.flush();
-		}
-		finally {
-			this.writeConcern = current;
-		}
-	}
-	@Override
-	public void disconnect() {	
-		super.disconnect();
-		try {
-			getNativeInterface().requestDone();
-		}
-		finally {
-			connected = false;
-		}
-		
-	}
-	
-	public boolean isConnected() {
-		return connected;
-	}
+    public MongoSession(MongoDatastore datastore, MappingContext mappingContext) {
+        super(datastore, mappingContext);
+        this.mongoDatastore = datastore;
+        getNativeInterface().requestStart();
+    }
 
+    @Override
+    public MongoQuery createQuery(@SuppressWarnings("rawtypes") Class type) {
+        return (MongoQuery) super.createQuery(type);
+    }
 
-	@Override
-	protected void flushPendingInserts(
-			final Map<PersistentEntity, Collection<PendingInsert>> inserts) {
-		
-		// Optimizes saving multipe entities at once		
-		for (final PersistentEntity entity : inserts.keySet()) {
-			final MongoTemplate template = getMongoTemplate(entity.isRoot() ? entity : entity.getRootEntity());
-			template.execute(new DbCallback<Object>() {
-				@Override
-				public Object doInDB(DB db) throws MongoException,
-						DataAccessException {
-					final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
-					
-					final Collection<PendingInsert> pendingInserts = inserts.get(entity);
-					List<DBObject> dbObjects = new LinkedList<DBObject>();
-					List<PendingOperation> postOperations = new LinkedList<PendingOperation>();
-					
-					final MongoEntityPersister persister = (MongoEntityPersister) getPersister(entity);
-					
-					for (PendingInsert pendingInsert : pendingInserts) {
-						final EntityAccess entityAccess = pendingInsert.getEntityAccess();
-						if(persister.fireBeforeInsert(entity, entityAccess)) continue;
-						
-						final List<PendingOperation> preOperations = pendingInsert.getPreOperations();
-						for (PendingOperation preOperation : preOperations) {
-							preOperation.run();
-						}
-						
-						dbObjects.add((DBObject) pendingInsert.getNativeEntry());
-						postOperations.addAll(pendingInsert.getCascadeOperations());
-					}
-					
-					
-					collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]), writeConcern);
-					for (PendingOperation pendingOperation : postOperations) {
-						pendingOperation.run();
-					}
-					return null;
-				}
+    /**
+     * Sets the WriteConcern to use for the session
+     *
+     * @param writeConcern The WriteConcern to use
+     */
+    public void setWriteConcern(WriteConcern writeConcern) {
+        this.writeConcern = writeConcern;
+    }
 
-			});
-		}
-	}
-	public DB getNativeInterface() {
-		return ((MongoDatastore)getDatastore()).getMongo().getDB(getDocumentMappingContext().getDefaultDatabaseName());
-	}
-	
-	public DocumentMappingContext getDocumentMappingContext() {
-		return (DocumentMappingContext) getMappingContext();		
-	}
+    /**
+     * Obtains the WriteConcern to use for the session
+     * @return
+     */
+    public WriteConcern getWriteConcern() {
+        return writeConcern;
+    }
 
-	@Override
-	protected Persister createPersister(Class cls, MappingContext mappingContext) {
+    /**
+     * Execute a flush using the given WriteConcern
+     *
+     * @param writeConcern The WriteConcern to use
+     */
+    public void flush(@SuppressWarnings("hiding") WriteConcern writeConcern) {
+        WriteConcern current = this.writeConcern;
+
+        this.writeConcern = writeConcern;
+
+        try {
+            super.flush();
+        }
+        finally {
+            this.writeConcern = current;
+        }
+    }
+    @Override
+    public void disconnect() {
+        super.disconnect();
+        try {
+            getNativeInterface().requestDone();
+        }
+        finally {
+            connected = false;
+        }
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    protected void flushPendingInserts(final Map<PersistentEntity, Collection<PendingInsert>> inserts) {
+        // Optimizes saving multipe entities at once
+        for (final PersistentEntity entity : inserts.keySet()) {
+            final MongoTemplate template = getMongoTemplate(entity.isRoot() ? entity : entity.getRootEntity());
+            template.execute(new DbCallback<Object>() {
+                public Object doInDB(DB db) throws MongoException, DataAccessException {
+                    final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
+
+                    final Collection<PendingInsert> pendingInserts = inserts.get(entity);
+                    List<DBObject> dbObjects = new LinkedList<DBObject>();
+                    List<PendingOperation> postOperations = new LinkedList<PendingOperation>();
+
+                    final MongoEntityPersister persister = (MongoEntityPersister) getPersister(entity);
+
+                    for (PendingInsert pendingInsert : pendingInserts) {
+                        final EntityAccess entityAccess = pendingInsert.getEntityAccess();
+                        if (persister.fireBeforeInsert(entity, entityAccess)) continue;
+
+                        final List<PendingOperation> preOperations = pendingInsert.getPreOperations();
+                        for (PendingOperation preOperation : preOperations) {
+                            preOperation.run();
+                        }
+
+                        dbObjects.add((DBObject) pendingInsert.getNativeEntry());
+                        postOperations.addAll(pendingInsert.getCascadeOperations());
+                    }
+
+                    collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]), writeConcern);
+                    for (PendingOperation pendingOperation : postOperations) {
+                        pendingOperation.run();
+                    }
+                    return null;
+                }
+
+            });
+        }
+    }
+    public DB getNativeInterface() {
+        return ((MongoDatastore)getDatastore()).getMongo().getDB(getDocumentMappingContext().getDefaultDatabaseName());
+    }
+
+    public DocumentMappingContext getDocumentMappingContext() {
+        return (DocumentMappingContext) getMappingContext();
+    }
+
+    @Override
+    protected Persister createPersister(@SuppressWarnings("rawtypes") Class cls, MappingContext mappingContext) {
         final PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
-        if(entity != null) {
+        if (entity != null) {
             return new MongoEntityPersister(mappingContext, entity, this);
         }
         return null;
+    }
 
-	}
-	
-	
-
-	@Override
-	protected Transaction<DB> beginTransactionInternal() {
-		return new SessionOnlyTransaction<DB>(getNativeInterface(), this);
-	}
+    @Override
+    protected Transaction<DB> beginTransactionInternal() {
+        return new SessionOnlyTransaction<DB>(getNativeInterface(), this);
+    }
 
     public MongoTemplate getMongoTemplate(PersistentEntity entity) {
         return mongoDatastore.getMongoTemplate(entity);

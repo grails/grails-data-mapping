@@ -25,34 +25,30 @@ import grails.gorm.tests.RangeQuerySpec
 import grails.gorm.tests.ValidationSpec
 
 /**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: Aug 31, 2010
- * Time: 9:19:54 AM
- * To change this template use File | Settings | File Templates.
+ * @author graemerocher
  */
 @RunWith(Suite)
 @SuiteClasses([
-  DomainEventsSpec,
-//  ProxyLoadingSpec,
-//  QueryAfterPropertyChangeSpec,
-//  CircularOneToManySpec,
-//  InheritanceSpec,
-//  FindByMethodSpec,
-//  ListOrderBySpec,
-//  GroovyProxySpec,
-//  CommonTypesPersistenceSpec,
-//  GormEnhancerSpec,
-//  CriteriaBuilderSpec,
-//  NegationSpec,
-//  NamedQuerySpec,
-//  OrderBySpec,
-//  RangeQuerySpec,
-//  ValidationSpec,
-//  UpdateWithProxyPresentSpec,
-//  AttachMethodSpec,
-//  WithTransactionSpec,
-//  CrudOperationsSpec
+    DomainEventsSpec,
+//    ProxyLoadingSpec,
+//    QueryAfterPropertyChangeSpec,
+//    CircularOneToManySpec,
+//    InheritanceSpec,
+//    FindByMethodSpec,
+//    ListOrderBySpec,
+//    GroovyProxySpec,
+//    CommonTypesPersistenceSpec,
+//    GormEnhancerSpec,
+//    CriteriaBuilderSpec,
+//    NegationSpec,
+//    NamedQuerySpec,
+//    OrderBySpec,
+//    RangeQuerySpec,
+//    ValidationSpec,
+//    UpdateWithProxyPresentSpec,
+//    AttachMethodSpec,
+//    WithTransactionSpec,
+//    CrudOperationsSpec
 ])
 class RedisSuite {
 }

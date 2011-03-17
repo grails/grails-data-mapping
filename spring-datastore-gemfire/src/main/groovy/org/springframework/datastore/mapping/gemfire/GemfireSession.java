@@ -14,16 +14,15 @@
  */
 package org.springframework.datastore.mapping.gemfire;
 
-import com.gemstone.gemfire.cache.Cache;
-import com.gemstone.gemfire.cache.CacheTransactionManager;
 import org.springframework.datastore.mapping.core.AbstractSession;
-import org.springframework.datastore.mapping.core.Datastore;
-import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.gemfire.engine.GemfireEntityPersister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.transactions.Transaction;
+
+import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.CacheTransactionManager;
 
 /**
  * Implementation of the {@link org.springframework.datastore.mapping.core.Session} interface
@@ -40,7 +39,7 @@ public class GemfireSession extends AbstractSession<Cache> {
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
         final PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
-        if(entity != null) {
+        if (entity != null) {
             return new GemfireEntityPersister(mappingContext, entity, this);
         }
         return null;
@@ -61,7 +60,6 @@ public class GemfireSession extends AbstractSession<Cache> {
     public Object getNativeInterface() {
         return ((GemfireDatastore)getDatastore()).getGemfireCache();
     }
-
 
     private class GemfireTransaction implements Transaction<CacheTransactionManager> {
 

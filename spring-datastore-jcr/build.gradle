@@ -1,19 +1,18 @@
 dependencies {
-  compile project(":spring-datastore-core")
-  compile 'javax.jcr:jcr:1.0'
-  compile 'org.springframework:se-jcr:1.0-SNAPSHOT'
-  compile 'org.apache.jackrabbit:jackrabbit-core:1.6.2'
-  compile 'org.apache.jackrabbit:jackrabbit-api:1.6.2'
-  compile 'org.apache.jackrabbit:jackrabbit-jcr-commons:1.6.2'
-  compile 'org.apache.jackrabbit:jackrabbit-spi-commons:1.6.2'
-  compile 'org.slf4j:slf4j-log4j12:1.5.3'
+    compile project(":spring-datastore-core")
+    compile 'javax.jcr:jcr:1.0'
+    compile 'org.springframework:se-jcr:1.0-SNAPSHOT'
+    compile 'org.apache.jackrabbit:jackrabbit-core:1.6.2'
+    compile 'org.apache.jackrabbit:jackrabbit-api:1.6.2'
+    compile 'org.apache.jackrabbit:jackrabbit-jcr-commons:1.6.2'
+    compile 'org.apache.jackrabbit:jackrabbit-spi-commons:1.6.2'
+    compile 'org.slf4j:slf4j-log4j12:1.5.3'
 
-  // compile 'org.apache.jackrabbit:jackrabbit-ocm:1.5.3'
+    // compile 'org.apache.jackrabbit:jackrabbit-ocm:1.5.3'
 
+    //TODO: add commons-collections, concurrent, derby, jackrabbit-text, lucence core
+    //TODO: also add dependency libraries for spring-extensions including spring-webmvc, servlet api
 
-  //TODO: add commons-collections, concurrent, derby, jackrabbit-text, lucence core
-  //TODO: also add dependency libraries for spring-extensions including spring-webmvc, servlet api
-
-  testCompile 'junit:junit:4.8.1'
+    testCompile 'junit:junit:4.8.1'
 }
 jar.appendix = 'jcr'

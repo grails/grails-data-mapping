@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2010 SpringSource
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,24 +23,24 @@ package org.grails.datastore.gorm.utils
 class InstanceProxy {
     def instance
     def target
-	
+
     def invokeMethod(String name, args) {
       target."$name"(instance, *args)
     }
-	
-	void setProperty(String name, val) {
-		target."$name" = val
-	}
-	
-	def getProperty(String name) {
-		target."$name"
-	}
-	
-	void putAt(String name, val) {
-		target."$name" = val
-	}
-	
-	def getAt(String name) {
-		target."$name"
-	}
+
+    void setProperty(String name, val) {
+        target."$name" = val
+    }
+
+    def getProperty(String name) {
+        target."$name"
+    }
+
+    void putAt(String name, val) {
+        target."$name" = val
+    }
+
+    def getAt(String name) {
+        target."$name"
+    }
 }

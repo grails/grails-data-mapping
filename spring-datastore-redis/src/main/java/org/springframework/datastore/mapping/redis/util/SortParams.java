@@ -15,13 +15,12 @@
 
 package org.springframework.datastore.mapping.redis.util;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Parameters used for sorting.
- * 
+ *
  * @author Graeme Rocher
  */
 public abstract class SortParams<T> {
@@ -74,7 +73,6 @@ public abstract class SortParams<T> {
     protected abstract T createAsc();
 
     protected abstract T createBy(String pattern);
-
 
     public T[] getParamArray() {
         return (T[])paramList.toArray();

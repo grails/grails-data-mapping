@@ -12,8 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 package org.springframework.datastore.mapping.jpa.config;
 
 import javax.persistence.Column;
@@ -26,29 +24,27 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 
 /**
  * A MappingContext for JPA compatible entities
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
- *
  */
 public class JpaMappingContext extends AbstractMappingContext{
 
-	private MappingFactory<Table, Column> mappingFactory = new JpaMappingFactory();
-	private MappingConfigurationStrategy jpaMappingSyntaxStrategy = new JpaMappingConfigurationStrategy(mappingFactory);
+    private MappingFactory<Table, Column> mappingFactory = new JpaMappingFactory();
+    private MappingConfigurationStrategy jpaMappingSyntaxStrategy = new JpaMappingConfigurationStrategy(mappingFactory);
 
-	@Override
-	public MappingConfigurationStrategy getMappingSyntaxStrategy() {
-		return jpaMappingSyntaxStrategy ;
-	}
+    @Override
+    public MappingConfigurationStrategy getMappingSyntaxStrategy() {
+        return jpaMappingSyntaxStrategy ;
+    }
 
-	@Override
-	public MappingFactory getMappingFactory() {
-		return mappingFactory;
-	}
+    @Override
+    public MappingFactory getMappingFactory() {
+        return mappingFactory;
+    }
 
-	@Override
-	protected PersistentEntity createPersistentEntity(Class javaClass) {
-		return new JpaPersistentEntity(javaClass, this);
-	}
-
+    @Override
+    protected PersistentEntity createPersistentEntity(Class javaClass) {
+        return new JpaPersistentEntity(javaClass, this);
+    }
 }

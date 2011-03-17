@@ -54,7 +54,7 @@ public class ListOrderByFinder implements FinderMethod{
 
         Query q = datastore.getCurrentSession().createQuery(clazz);
 
-        if(arguments.length > 0 && (arguments[0] instanceof Map)) {
+        if (arguments.length > 0 && (arguments[0] instanceof Map)) {
             DynamicFinder.populateArgumentsForCriteria(clazz, q, (Map) arguments[0]);
         }
 

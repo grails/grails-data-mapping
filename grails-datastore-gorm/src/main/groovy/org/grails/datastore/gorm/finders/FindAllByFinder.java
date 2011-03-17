@@ -14,13 +14,11 @@
  */
 package org.grails.datastore.gorm.finders;
 
-import groovy.lang.Closure;
+import java.util.regex.Pattern;
+
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.query.Query;
-
-import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Finder used to return multiple results. Eg. Book.findAllBy..(..)
@@ -45,15 +43,13 @@ public class FindAllByFinder extends DynamicFinder implements QueryBuildingFinde
         return invokeQuery(q);
     }
 
-
     protected Object invokeQuery(Query q) {
         return q.list();
     }
 
     private boolean firstExpressionIsRequiredBoolean() {
-        return false;  
+        return false;
     }
-
 
     public Query buildQuery(DynamicFinderInvocation invocation) {
         Session currentSession = datastore.getCurrentSession();
@@ -64,7 +60,7 @@ public class FindAllByFinder extends DynamicFinder implements QueryBuildingFinde
         configureQueryWithArguments(clazz, q, invocation.getArguments());
 
         final String operatorInUse = invocation.getOperator();
-        if(operatorInUse != null && operatorInUse.equals(OPERATOR_OR)) {
+        if (operatorInUse != null && operatorInUse.equals(OPERATOR_OR)) {
             if (firstExpressionIsRequiredBoolean()) {
                 MethodExpression expression = invocation.getExpressions().remove(0);
                 q.add(expression.createCriterion());
@@ -74,7 +70,6 @@ public class FindAllByFinder extends DynamicFinder implements QueryBuildingFinde
             for (MethodExpression expression : invocation.getExpressions()) {
                 disjunction.add(expression.createCriterion());
             }
-
         }
         else {
             for (MethodExpression expression : invocation.getExpressions()) {

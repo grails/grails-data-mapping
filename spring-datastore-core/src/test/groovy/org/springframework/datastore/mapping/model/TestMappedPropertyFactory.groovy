@@ -7,10 +7,10 @@ package org.springframework.datastore.mapping.model
 class TestMappedPropertyFactory extends MappingFactory {
 
     def createMappedForm(PersistentProperty mpp) {
-      return "${mpp.name}_mapped"
+        return "${mpp.name}_mapped"
     }
 
     def createMappedForm(PersistentEntity entity) {
-      return "${entity.name}_mapped"
+        return "${entity.name}_mapped"
     }
 }

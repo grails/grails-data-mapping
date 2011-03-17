@@ -14,9 +14,14 @@
  */
 package org.springframework.datastore.mapping.gemfire;
 
-import com.gemstone.gemfire.cache.*;
-import com.gemstone.gemfire.cache.client.Pool;
-import com.gemstone.gemfire.cache.query.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
@@ -26,11 +31,23 @@ import org.springframework.data.gemfire.GemfireTemplate;
 import org.springframework.data.gemfire.RegionFactoryBean;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.model.*;
+import org.springframework.datastore.mapping.model.DatastoreConfigurationException;
+import org.springframework.datastore.mapping.model.MappingContext;
+import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.model.PersistentProperty;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import com.gemstone.gemfire.cache.AttributesFactory;
+import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.DataPolicy;
+import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.Scope;
+import com.gemstone.gemfire.cache.client.Pool;
+import com.gemstone.gemfire.cache.query.CqQuery;
+import com.gemstone.gemfire.cache.query.Index;
+import com.gemstone.gemfire.cache.query.IndexExistsException;
+import com.gemstone.gemfire.cache.query.IndexNameConflictException;
+import com.gemstone.gemfire.cache.query.IndexType;
+import com.gemstone.gemfire.cache.query.QueryService;
 
 /**
  * Implementation of the {@link org.springframework.datastore.mapping.core.Datastore} interface
@@ -72,12 +89,11 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         return gemfirePool;
     }
 
-    protected void initializeRegions(Cache cache, MappingContext mappingContext) throws Exception {
-        for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
+    protected void initializeRegions(Cache cache, MappingContext context) throws Exception {
+        for (PersistentEntity entity : context.getPersistentEntities()) {
             Region region = initializeRegion(cache, entity);
             initializeIndices(cache, entity, region);
         }
-
     }
 
     protected void initializeIndices(Cache cache, PersistentEntity entity, Region region) throws Exception {
@@ -92,7 +108,7 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         final Collection<Index> indices = queryService.getIndexes(region);
         final String indexName = entityName + "PrimaryKeyIndex";
 
-        if(!checkIndexExists(indices, indexName)) {
+        if (!checkIndexExists(indices, indexName)) {
             try {
                 queryService.createIndex(indexName, IndexType.PRIMARY_KEY, idName, mappedRegion != null && mappedRegion.getRegion() != null ?
                         "/" + mappedRegion.getRegion() : "/"+entityName);
@@ -107,9 +123,9 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         for (PersistentProperty property : properties) {
             final boolean indexed = isIndexed(property) && Comparable.class.isAssignableFrom(property.getType());
 
-            if(indexed) {
+            if (indexed) {
                 final String propertyIndexName = entityName + property.getCapitilizedName() + "Index";
-                if(!checkIndexExists(indices, propertyIndexName)) {
+                if (!checkIndexExists(indices, propertyIndexName)) {
                     try {
                         queryService.createIndex(propertyIndexName, IndexType.FUNCTIONAL,property.getName(), "/"+entityName);
                     }
@@ -126,9 +142,9 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
 
     private boolean checkIndexExists(Collection<Index> indices, String indexName) {
         boolean indexExists = false;
-        if(indices != null) {
+        if (indices != null) {
             for (Index index : indices) {
-                if(index.getName().equals(indexName)) {
+                if (index.getName().equals(indexName)) {
                     indexExists = true;
                 }
             }
@@ -143,7 +159,7 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
 
         final boolean hasMappedRegion = mappedRegion != null;
         String regionName;
-        if(hasMappedRegion && mappedRegion.getRegion() != null) {
+        if (hasMappedRegion && mappedRegion.getRegion() != null) {
             regionName = mappedRegion.getRegion();
 
         }
@@ -153,44 +169,43 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
 
         Region region = cache.getRegion(regionName);
 
-        if(region == null) {
+        if (region == null) {
             RegionFactoryBean regionFactory = new RegionFactoryBean();
             regionFactory.setCache(cache);
 
             regionFactory.setName(regionName);
-            if(gemfirePool != null) {
+            if (gemfirePool != null) {
                 AttributesFactory factory = new AttributesFactory();
                 factory.setScope(Scope.LOCAL);
                 factory.setPoolName(gemfirePool.getName());
                 regionFactory.setAttributes(factory.create());
             }
             else {
-                if(hasMappedRegion && mappedRegion.getDataPolicy() != null) {
+                if (hasMappedRegion && mappedRegion.getDataPolicy() != null) {
                     regionFactory.setDataPolicy(mappedRegion.getDataPolicy());
                 }
                 else {
                     regionFactory.setDataPolicy(DataPolicy.PARTITION);
                 }
-                if(hasMappedRegion && mappedRegion.getRegionAttributes() != null) {
+                if (hasMappedRegion && mappedRegion.getRegionAttributes() != null) {
                     regionFactory.setAttributes(mappedRegion.getRegionAttributes());
                 }
-                if(hasMappedRegion && mappedRegion.getCacheListeners() != null) {
+                if (hasMappedRegion && mappedRegion.getCacheListeners() != null) {
                     regionFactory.setCacheListeners(mappedRegion.getCacheListeners());
                 }
-                if(hasMappedRegion && mappedRegion.getCacheLoader() != null) {
+                if (hasMappedRegion && mappedRegion.getCacheLoader() != null) {
                     regionFactory.setCacheLoader(mappedRegion.getCacheLoader());
                 }
-                if(hasMappedRegion && mappedRegion.getCacheWriter() != null) {
+                if (hasMappedRegion && mappedRegion.getCacheWriter() != null) {
                     regionFactory.setCacheWriter(mappedRegion.getCacheWriter());
                 }
             }
 
-
             regionFactory.afterPropertiesSet();
             region = regionFactory.getObject();
-			if(gemfirePool != null) {
-				region.registerInterest("ALL_KEYS");
-			}
+            if (gemfirePool != null) {
+                region.registerInterest("ALL_KEYS");
+            }
         }
 
         gemfireTemplates.put(entity, new GemfireTemplate(region) /*{
@@ -213,7 +228,7 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         final Object mappedForm = entity.getMapping().getMappedForm();
 
         org.springframework.datastore.mapping.gemfire.config.Region mappedRegion = null;
-        if(mappedForm instanceof org.springframework.datastore.mapping.gemfire.config.Region)
+        if (mappedForm instanceof org.springframework.datastore.mapping.gemfire.config.Region)
             mappedRegion = (org.springframework.datastore.mapping.gemfire.config.Region) mappedForm;
         return mappedRegion;
     }
@@ -244,20 +259,19 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
      */
     public GemfireTemplate getTemplate(Class entity) {
         final PersistentEntity e = getMappingContext().getPersistentEntity(entity.getName());
-        if(e != null) {
+        if (e != null) {
             return gemfireTemplates.get(e);
         }
         return null;
     }
 
     @Override
-    protected Session createSession(Map<String, String> connectionDetails) {
+    protected Session createSession(Map<String, String> connDetails) {
         return new GemfireSession(this, mappingContext);
     }
 
-
     public void destroy() throws Exception {
-        if(gemfireCache != null) {
+        if (gemfireCache != null) {
             gemfireCache.close();
             for (CqQuery continuousQuery : continuousQueries) {
                 continuousQuery.close();
@@ -268,10 +282,10 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
 
     public void afterPropertiesSet() throws Exception {
         CacheFactoryBean cacheFactory = new CacheFactoryBean();
-        if(connectionDetails != null) {
-            if(connectionDetails.containsKey(SETTING_CACHE_XML)) {
+        if (connectionDetails != null) {
+            if (connectionDetails.containsKey(SETTING_CACHE_XML)) {
                 Object entry = connectionDetails.remove(SETTING_CACHE_XML);
-                if(entry instanceof Resource) {
+                if (entry instanceof Resource) {
                     cacheFactory.setCacheXml((Resource) entry);
                 }
                 else {
@@ -279,12 +293,12 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
                 }
             }
 
-            if(connectionDetails.containsKey(SETTING_PROPERTIES)) {
+            if (connectionDetails.containsKey(SETTING_PROPERTIES)) {
                 Object entry = connectionDetails.get(SETTING_PROPERTIES);
-                if(entry instanceof Properties) {
+                if (entry instanceof Properties) {
                     cacheFactory.setProperties((Properties) entry);
                 }
-                else if(entry instanceof Map) {
+                else if (entry instanceof Map) {
                     final Properties props = new Properties();
                     props.putAll((Map)entry);
                     cacheFactory.setProperties(props);
@@ -293,8 +307,7 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         }
 
         try {
-
-            if(gemfireCache == null) {
+            if (gemfireCache == null) {
                 cacheFactory.afterPropertiesSet();
                 gemfireCache = cacheFactory.getObject();
             }

@@ -53,7 +53,6 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 import com.mongodb.WriteResult;
 
-
 /**
  * A {@link org.springframework.datastore.mapping.engine.EntityPersister} implementation for the Mongo document store
  *
@@ -62,115 +61,110 @@ import com.mongodb.WriteResult;
  */
 public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, Object> {
 
-    @Override
-	protected DBObject getEmbbeded(DBObject nativeEntry, String key) {
-    	final Object embeddedDocument = nativeEntry.get(key);
-    	if(embeddedDocument instanceof DBObject) {
-    		return (DBObject) embeddedDocument;
-    	}
-		return null;
-	}
-
-	@Override
-	protected void setEmbedded(DBObject nativeEntry, String key,
-			DBObject embeddedEntry) {		
-		nativeEntry.put(key, embeddedEntry);
-	}
-
-	private static final String NEXT_ID_SUFFIX = ".next_id";
-	public static final String MONGO_ID_FIELD = "_id";
-    public static final String MONGO_CLASS_FIELD = "_class";
+    private static final String NEXT_ID_SUFFIX = ".next_id";
     private MongoTemplate mongoTemplate;
     private boolean hasNumericalIdentifier = false;
 
-	
-	public MongoEntityPersister(MappingContext mappingContext,
-			PersistentEntity entity, MongoSession mongoSession) {
-		super(mappingContext, entity, mongoSession);
-		MongoDatastore datastore = (MongoDatastore) mongoSession.getDatastore();
-		this.mongoTemplate = datastore.getMongoTemplate(entity);
+    public static final String MONGO_ID_FIELD = "_id";
+    public static final String MONGO_CLASS_FIELD = "_class";
 
-        final PersistentProperty identity = entity.getIdentity();
-        hasNumericalIdentifier = Long.class.isAssignableFrom(identity.getType());
-	}
+    @Override
+    protected DBObject getEmbbeded(DBObject nativeEntry, String key) {
+        final Object embeddedDocument = nativeEntry.get(key);
+        if (embeddedDocument instanceof DBObject) {
+            return (DBObject) embeddedDocument;
+        }
+        return null;
+    }
 
-	public Query createQuery() {
+    @Override
+    protected void setEmbedded(DBObject nativeEntry, String key, DBObject embeddedEntry) {
+        nativeEntry.put(key, embeddedEntry);
+    }
+
+    public MongoEntityPersister(MappingContext mappingContext,
+            PersistentEntity entity, MongoSession mongoSession) {
+        super(mappingContext, entity, mongoSession);
+        MongoDatastore datastore = (MongoDatastore) mongoSession.getDatastore();
+        mongoTemplate = datastore.getMongoTemplate(entity);
+
+        hasNumericalIdentifier = Long.class.isAssignableFrom(entity.getIdentity().getType());
+    }
+
+    public Query createQuery() {
         return new MongoQuery((MongoSession) getSession(), getPersistentEntity());
-	}
-	
-	@Override
-	protected boolean doesRequirePropertyIndexing() {
-		return false;
-	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-	protected List<Object> retrieveAllEntities(
-			PersistentEntity persistentEntity, Iterable<Serializable> keys) {
-		
-		Query query = session.createQuery(persistentEntity.getJavaClass());
-		
-		if(keys instanceof List)
-			query.in(persistentEntity.getIdentity().getName(), (List)keys);
-		else {
-			List<Serializable> keyList = new ArrayList<Serializable>();
-			for (Serializable key : keys) {
-				keyList.add(key);
-			}
-			query.in(persistentEntity.getIdentity().getName(), keyList);
-		}
-		
-		return query.list();
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	protected List<Object> retrieveAllEntities(
-			PersistentEntity persistentEntity, Serializable[] keys) {
-		Query query = session.createQuery(persistentEntity.getJavaClass());
-		query.in(persistentEntity.getIdentity().getName(), Arrays.asList(keys));		
-		return query.list();
-	}
-	
+    }
+
+    @Override
+    protected boolean doesRequirePropertyIndexing() {
+        return false;
+    }
+
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected List<Object> retrieveAllEntities(PersistentEntity persistentEntity,
+            Iterable<Serializable> keys) {
+
+        Query query = session.createQuery(persistentEntity.getJavaClass());
+
+        if (keys instanceof List) {
+            query.in(persistentEntity.getIdentity().getName(), (List)keys);
+        }
+        else {
+            List<Serializable> keyList = new ArrayList<Serializable>();
+            for (Serializable key : keys) {
+                keyList.add(key);
+            }
+            query.in(persistentEntity.getIdentity().getName(), keyList);
+        }
+
+        return query.list();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected List<Object> retrieveAllEntities(PersistentEntity persistentEntity,
+            Serializable[] keys) {
+        Query query = session.createQuery(persistentEntity.getJavaClass());
+        query.in(persistentEntity.getIdentity().getName(), Arrays.asList(keys));
+        return query.list();
+    }
+
     @Override
     public String getEntityFamily() {
         return mongoTemplate.getDefaultCollectionName();
     }
 
     @Override
-	protected void deleteEntry(String family, final Object key) {
-		mongoTemplate.execute(new DbCallback<Object>() {
-			@Override
-			public Object doInDB(DB con) throws MongoException,
-					DataAccessException {
-				DBCollection dbCollection = getCollection(con);
-				
-				DBObject dbo = new BasicDBObject();
-                if(hasNumericalIdentifier) {
+    protected void deleteEntry(String family, final Object key) {
+        mongoTemplate.execute(new DbCallback<Object>() {
+            public Object doInDB(DB con) throws MongoException, DataAccessException {
+                DBCollection dbCollection = getCollection(con);
+
+                DBObject dbo = new BasicDBObject();
+                if (hasNumericalIdentifier) {
                     dbo.put(MONGO_ID_FIELD, key);
                 }
                 else {
                     dbo.put(MONGO_ID_FIELD, new ObjectId(key.toString()));
                 }
                 MongoSession mongoSession = (MongoSession) session;
-				dbCollection.remove(dbo, mongoSession.getWriteConcern());
-				return null;
-			}
-			
-			protected DBCollection getCollection(DB con) {
-				DBCollection dbCollection = con.getCollection(getCollectionName(getPersistentEntity()));
-				return dbCollection;
-			}			
-		});
-	}
+                dbCollection.remove(dbo, mongoSession.getWriteConcern());
+                return null;
+            }
 
-	@Override
-	protected Object generateIdentifier(final PersistentEntity persistentEntity,
-			final DBObject nativeEntry) {
-		return mongoTemplate.execute(new DbCallback<Object>() {
-			@Override
-			public Object doInDB(DB con) throws MongoException,
-					DataAccessException {
+            protected DBCollection getCollection(DB con) {
+                DBCollection dbCollection = con.getCollection(getCollectionName(getPersistentEntity()));
+                return dbCollection;
+            }
+        });
+    }
+
+    @Override
+    protected Object generateIdentifier(final PersistentEntity persistentEntity,
+            final DBObject nativeEntry) {
+        return mongoTemplate.execute(new DbCallback<Object>() {
+            public Object doInDB(DB con) throws MongoException, DataAccessException {
 
                 String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
@@ -178,12 +172,12 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
                 // If there is a numeric identifier then we need to rely on optimistic concurrency controls to obtain a unique identifer
                 // sequence. If the identifier is not numeric then we assume BSON ObjectIds.
-                if(hasNumericalIdentifier) {
+                if (hasNumericalIdentifier) {
                     while (true) {
                         DBCursor result = dbCollection.find().sort(new BasicDBObject(MONGO_ID_FIELD, -1)).limit(1);
 
                         long nextId;
-                        if(result.hasNext()) {
+                        if (result.hasNext()) {
                             final Long current = getMappingContext().getConversionService().convert(result.next().get(MONGO_ID_FIELD), Long.class);
                             nextId = current + 1;
                         }
@@ -194,88 +188,86 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                         nativeEntry.put(MONGO_ID_FIELD, nextId);
                         final WriteResult writeResult = dbCollection.insert(nativeEntry);
                         final CommandResult lastError = writeResult.getLastError();
-                        if(lastError.ok()) {
+                        if (lastError.ok()) {
                             break;
                         }
-                        else {
-                            final Object code = lastError.get("code");
-                            // duplicate key error try again
-                            if(code != null && code.equals(11000)) {
-                                continue;
-                            }
-                            break;
+
+                        final Object code = lastError.get("code");
+                        // duplicate key error try again
+                        if (code != null && code.equals(11000)) {
+                            continue;
                         }
+                        break;
                     }
 
                     return nativeEntry.get(MONGO_ID_FIELD);
                 }
-                else {
-                	ObjectId objectId = ObjectId.get();
-					if(ObjectId.class.isAssignableFrom(persistentEntity.getIdentity().getType())) {
-						nativeEntry.put(MONGO_ID_FIELD, objectId);
-                		return objectId;
-                	}
-                	else {
-                		String stringId = objectId.toString();
-                		nativeEntry.put(MONGO_ID_FIELD, stringId);
-						return stringId;
-                	}
-                }
-			}
-		});
-	}
 
+                ObjectId objectId = ObjectId.get();
+                if (ObjectId.class.isAssignableFrom(persistentEntity.getIdentity().getType())) {
+                    nativeEntry.put(MONGO_ID_FIELD, objectId);
+                    return objectId;
+                }
+
+                String stringId = objectId.toString();
+                nativeEntry.put(MONGO_ID_FIELD, stringId);
+                return stringId;
+            }
+        });
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
+        // We don't need to implement this for Mongo since Mongo automatically creates indexes for us
+        return null;
+    }
 
     @Override
-	public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-		// We don't need to implement this for Mongo since Mongo automatically creates indexes for us
-		return null;
-	}
+    @SuppressWarnings("rawtypes")
+    public AssociationIndexer getAssociationIndexer(DBObject nativeEntry, Association association) {
+        return new MongoAssociationIndexer(nativeEntry, association, (MongoSession) session);
+    }
 
-	@Override
-	public AssociationIndexer getAssociationIndexer(DBObject nativeEntry, Association association) {
-		return new MongoAssociationIndexer(nativeEntry, association, (MongoSession) session);
-	}
+    @Override
+    protected DBObject createNewEntry(String family) {
+        return new BasicDBObject();
+    }
 
-	@Override
-	protected DBObject createNewEntry(String family) {
-		return new BasicDBObject();
-	}
+    @Override
+    protected Object getEntryValue(DBObject nativeEntry, String property) {
+        return nativeEntry.get(property);
+    }
 
-	@Override
-	protected Object getEntryValue(DBObject nativeEntry, String property) {
-		return nativeEntry.get(property);
-	}
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static List<? extends Class> convertToString = Arrays.asList(
+        BigDecimal.class,
+        BigInteger.class,
+        Locale.class,
+        TimeZone.class,
+        Currency.class,
+        URL.class);
 
-    private static List<Class> convertToString = new ArrayList<Class>() {{
-        add(BigDecimal.class);
-        add(BigInteger.class);
-        add(Locale.class);
-        add(TimeZone.class);
-        add(Currency.class);
-        add(URL.class);
-    }};
-
-	@Override
-	protected void setEntryValue(DBObject nativeEntry, String key, Object value) {
+    @Override
+    protected void setEntryValue(DBObject nativeEntry, String key, Object value) {
 
         // test whether the value can be BSON encoded, if it can't convert to String
-        if(value != null && !getMappingContext().isPersistentEntity(value)) {
-            if(shouldConvertToString(value.getClass())) {
+        if (value != null && !getMappingContext().isPersistentEntity(value)) {
+            if (shouldConvertToString(value.getClass())) {
                 value = value.toString();
             }
-            else if(value instanceof Calendar) {
+            else if (value instanceof Calendar) {
                 value = ((Calendar)value).getTime();
             }
 
             nativeEntry.put(key, value);
         }
+    }
 
-	}
-
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private boolean shouldConvertToString(Class theClass) {
         for (Class classToCheck : convertToString) {
-            if(classToCheck.isAssignableFrom(theClass)) return true;
+            if (classToCheck.isAssignableFrom(theClass)) return true;
         }
         return false;
     }
@@ -283,52 +275,45 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     @Override
     protected PersistentEntity discriminatePersistentEntity(PersistentEntity persistentEntity, DBObject nativeEntry) {
         final Object o = nativeEntry.get(MONGO_CLASS_FIELD);
-        if(o != null) {
+        if (o != null) {
             final String className = o.toString();
             final PersistentEntity childEntity = getMappingContext().getChildEntityByDiscriminator(persistentEntity.getRootEntity(), className);
-            if(childEntity != null)
+            if (childEntity != null) {
                 return childEntity;
+            }
         }
         return super.discriminatePersistentEntity(persistentEntity, nativeEntry);
     }
 
     @Override
-	protected DBObject retrieveEntry(final PersistentEntity persistentEntity,
-			String family, final Serializable key) {
-		return mongoTemplate.execute(new DbCallback<DBObject>() {
-			@Override
-			public DBObject doInDB(DB con) throws MongoException,
-					DataAccessException {
-				DBCollection dbCollection = con.getCollection(getCollectionName(persistentEntity));
-				
-				DBObject dbo = new BasicDBObject();
-                if(hasNumericalIdentifier) {
+    protected DBObject retrieveEntry(final PersistentEntity persistentEntity,
+            String family, final Serializable key) {
+        return mongoTemplate.execute(new DbCallback<DBObject>() {
+            public DBObject doInDB(DB con) throws MongoException, DataAccessException {
+                DBCollection dbCollection = con.getCollection(getCollectionName(persistentEntity));
+
+                DBObject dbo = new BasicDBObject();
+                if (hasNumericalIdentifier) {
                     dbo.put(MONGO_ID_FIELD, key );
                 }
                 else {
-                	if(key instanceof ObjectId) {
-                		dbo.put(MONGO_ID_FIELD, key);
-                	}
-                	else {
-                		dbo.put(MONGO_ID_FIELD, new ObjectId(key.toString()) );
-                	}
-                    
+                    if (key instanceof ObjectId) {
+                        dbo.put(MONGO_ID_FIELD, key);
+                    }
+                    else {
+                        dbo.put(MONGO_ID_FIELD, new ObjectId(key.toString()) );
+                    }
                 }
-				return dbCollection.findOne(dbo);
-				
-			}
-		});
-	}
+                return dbCollection.findOne(dbo);
+            }
+        });
+    }
 
-    
-	@Override
-	protected Object storeEntry(final PersistentEntity persistentEntity,
-			final Object storeId, final DBObject nativeEntry) {
-		return mongoTemplate.execute(new DbCallback<Object>() {
-			@Override
-			public Object doInDB(DB con) throws MongoException,
-					DataAccessException {
-
+    @Override
+    protected Object storeEntry(final PersistentEntity persistentEntity,
+            final Object storeId, final DBObject nativeEntry) {
+        return mongoTemplate.execute(new DbCallback<Object>() {
+            public Object doInDB(DB con) throws MongoException, DataAccessException {
                 String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
                 DBCollection dbCollection = con.getCollection(collectionName);
@@ -336,9 +321,9 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 dbCollection.insert(nativeEntry);
 
                 return nativeEntry.get(MONGO_ID_FIELD);
-			}
-		});
-	}
+            }
+        });
+    }
 
     public String getCollectionName(PersistentEntity persistentEntity) {
         return getCollectionName(persistentEntity, null);
@@ -346,13 +331,13 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     private String getCollectionName(PersistentEntity persistentEntity, DBObject nativeEntry) {
         String collectionName;
-        if(persistentEntity.isRoot()) {
+        if (persistentEntity.isRoot()) {
             collectionName = mongoTemplate.getDefaultCollectionName();
         }
         else {
             MongoSession mongoSession = (MongoSession) getSession();
             collectionName = mongoSession.getMongoTemplate(persistentEntity.getRootEntity()).getDefaultCollectionName();
-            if(nativeEntry != null) {
+            if (nativeEntry != null) {
                 nativeEntry.put(MONGO_CLASS_FIELD, persistentEntity.getDiscriminator());
             }
         }
@@ -360,104 +345,89 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @Override
-	public void updateEntry(final PersistentEntity persistentEntity, final Object key,
-			final DBObject entry) {
-		mongoTemplate.execute(new DbCallback<Object>() {
-			@Override
-			public Object doInDB(DB con) throws MongoException,
-					DataAccessException {
+    public void updateEntry(final PersistentEntity persistentEntity, final Object key,
+            final DBObject entry) {
+        mongoTemplate.execute(new DbCallback<Object>() {
+            public Object doInDB(DB con) throws MongoException, DataAccessException {
                 String collectionName = getCollectionName(persistentEntity, entry);
-				DBCollection dbCollection = con.getCollection(collectionName);
-				DBObject dbo = new BasicDBObject();
-                if(hasNumericalIdentifier) {
+                DBCollection dbCollection = con.getCollection(collectionName);
+                DBObject dbo = new BasicDBObject();
+                if (hasNumericalIdentifier) {
                     dbo.put(MONGO_ID_FIELD, key);
                 }
                 else {
                     dbo.put(MONGO_ID_FIELD, new ObjectId(key.toString()));
                 }
                 MongoSession mongoSession = (MongoSession) session;
-				dbCollection.update(dbo, entry, false, false, mongoSession.getWriteConcern());
-				return null;
-			}
-		});
-	}
+                dbCollection.update(dbo, entry, false, false, mongoSession.getWriteConcern());
+                return null;
+            }
+        });
+    }
 
-	@Override
-	protected void deleteEntries(String family, final List<Object> keys) {
-		mongoTemplate.execute(new DbCallback<Object>() {
-			@Override
-			public Object doInDB(DB con) throws MongoException,
-					DataAccessException {
-				
+    @Override
+    protected void deleteEntries(String family, final List<Object> keys) {
+        mongoTemplate.execute(new DbCallback<Object>() {
+            public Object doInDB(DB con) throws MongoException, DataAccessException {
                 String collectionName = getCollectionName(getPersistentEntity());
-				DBCollection dbCollection = con.getCollection(collectionName);
+                DBCollection dbCollection = con.getCollection(collectionName);
 
-				MongoSession mongoSession = (MongoSession) getSession();
-				MongoQuery query = mongoSession.createQuery(getPersistentEntity().getJavaClass());
-				query.in(getPersistentEntity().getIdentity().getName(), keys);
-				
-				dbCollection.remove(query.getMongoQuery());
-				
-				return null;
-			}
-		});		
-	}
+                MongoSession mongoSession = (MongoSession) getSession();
+                MongoQuery query = mongoSession.createQuery(getPersistentEntity().getJavaClass());
+                query.in(getPersistentEntity().getIdentity().getName(), keys);
 
+                dbCollection.remove(query.getMongoQuery());
 
+                return null;
+            }
+        });
+    }
+
+    @SuppressWarnings("rawtypes")
     private class MongoAssociationIndexer implements AssociationIndexer {
         private DBObject nativeEntry;
         private Association association;
-        private MongoSession session;
+        @SuppressWarnings("hiding") private MongoSession session;
 
         public MongoAssociationIndexer(DBObject nativeEntry, Association association, MongoSession session) {
             this.nativeEntry = nativeEntry;
             this.association = association;
             this.session = session;
-
         }
 
         public void index(final Object primaryKey, List foreignKeys) {
-        	// if the association is a unidirecitonal one-to-many we stores the keys
-        	// embedded in the owning entity, otherwise we use a foreign key
-        	if(!association.isBidirectional()) {
+            // if the association is a unidirecitonal one-to-many we stores the keys
+            // embedded in the owning entity, otherwise we use a foreign key
+            if (!association.isBidirectional()) {
                 nativeEntry.put(association.getName(), foreignKeys);
-    			mongoTemplate.execute(new DbCallback<Object>() {
-    				@Override
-    				public Object doInDB(DB db) throws MongoException,
-    						DataAccessException {
+                mongoTemplate.execute(new DbCallback<Object>() {
+                    public Object doInDB(DB db) throws MongoException, DataAccessException {
                         final DBCollection collection = db.getCollection(getCollectionName(association.getOwner()));
                         DBObject query = new BasicDBObject(MONGO_ID_FIELD, primaryKey);
                         collection.update(query, nativeEntry);
                         return null;
                     }
-                });        		
-        	}
-
+                });
+            }
         }
 
+        @SuppressWarnings("unchecked")
         public List query(Object primaryKey) {
-        	// for a unidirectional one-to-many we use the embedded keys
-        	if(!association.isBidirectional()) {
+            // for a unidirectional one-to-many we use the embedded keys
+            if (!association.isBidirectional()) {
                 final Object indexed = nativeEntry.get(association.getName());
-                if(indexed instanceof Collection) {
-                    if(indexed instanceof List) return (List) indexed;
-                    else {
-                        return new ArrayList((Collection)indexed);
-                    }
+                if (indexed instanceof Collection) {
+                    if (indexed instanceof List) return (List) indexed;
+                    return new ArrayList((Collection)indexed);
                 }
-                else {
-                    return Collections.emptyList();
-                }        		
-        	}
-        	else {
-        		// for a bidirectional one-to-many we use the foreign key to query the inverse side of the association        		
-        		Association inverseSide = association.getInverseSide();
-        		Query query = session.createQuery(association.getAssociatedEntity().getJavaClass());
-        		query.eq(inverseSide.getName(), primaryKey);
-        		query.projections().id();
-        		return query.list();
-        	}
-
+                return Collections.emptyList();
+            }
+            // for a bidirectional one-to-many we use the foreign key to query the inverse side of the association
+            Association inverseSide = association.getInverseSide();
+            Query query = session.createQuery(association.getAssociatedEntity().getJavaClass());
+            query.eq(inverseSide.getName(), primaryKey);
+            query.projections().id();
+            return query.list();
         }
 
         public PersistentEntity getIndexedEntity() {

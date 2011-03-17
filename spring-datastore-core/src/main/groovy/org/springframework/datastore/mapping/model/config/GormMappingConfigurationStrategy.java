@@ -14,9 +14,38 @@
  */
 package org.springframework.datastore.mapping.model.config;
 
+import static org.springframework.datastore.mapping.model.config.GormProperties.BELONGS_TO;
+import static org.springframework.datastore.mapping.model.config.GormProperties.EMBEDDED;
+import static org.springframework.datastore.mapping.model.config.GormProperties.HAS_MANY;
+import static org.springframework.datastore.mapping.model.config.GormProperties.HAS_ONE;
+import static org.springframework.datastore.mapping.model.config.GormProperties.MAPPED_BY;
+import static org.springframework.datastore.mapping.model.config.GormProperties.TRANSIENT;
 import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
-import org.springframework.datastore.mapping.model.*;
+
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.Entity;
+
+import org.springframework.datastore.mapping.model.ClassMapping;
+import org.springframework.datastore.mapping.model.IdentityMapping;
+import org.springframework.datastore.mapping.model.IllegalMappingException;
+import org.springframework.datastore.mapping.model.MappingConfigurationStrategy;
+import org.springframework.datastore.mapping.model.MappingContext;
+import org.springframework.datastore.mapping.model.MappingFactory;
+import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.model.types.Basic;
 import org.springframework.datastore.mapping.model.types.OneToOne;
@@ -24,14 +53,6 @@ import org.springframework.datastore.mapping.model.types.ToOne;
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.springframework.datastore.mapping.reflect.ReflectionUtils;
 import org.springframework.util.StringUtils;
-
-import javax.persistence.Entity;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.annotation.Annotation;
-import java.util.*;
-
-import static org.springframework.datastore.mapping.model.config.GormProperties.*;
 
 /**
  * <p>This implementation of the MappingConfigurationStrategy interface
@@ -61,12 +82,9 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
     private static final String IDENTITY_PROPERTY = "id";
     private static final String VERSION_PROPERTY = "version";
     private MappingFactory propertyFactory;
-    private static final Set EXCLUDED_PROPERTIES = new HashSet() {{
-        add("class"); add("metaClass");
-    }};
+    private static final Set EXCLUDED_PROPERTIES = new HashSet(Arrays.asList("class", "metaClass"));
 
     public GormMappingConfigurationStrategy(MappingFactory propertyFactory) {
-        super();
         this.propertyFactory = propertyFactory;
     }
 
@@ -81,22 +99,22 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
     @SuppressWarnings({"unchecked"})
     public boolean isPersistentEntity(Class clazz) {
         // its not a closure
-        if(clazz == null)return false;
-        if(Closure.class.isAssignableFrom(clazz)) {
+        if (clazz == null) return false;
+        if (Closure.class.isAssignableFrom(clazz)) {
             return false;
         }
-        if(Enum.class.isAssignableFrom(clazz)) return false;
-        if(clazz.getAnnotation(Entity.class)!=null) {
+        if (Enum.class.isAssignableFrom(clazz)) return false;
+        if (clazz.isAnnotationPresent(Entity.class)) {
             return true;
         }
-        final Annotation[] annotations = clazz.getAnnotations();
         // this is done so we don't need a statically typed reference to the Grails annotation
-        for (Annotation annotation : annotations) {
-            if(annotation.toString().equals("@grails.persistence.Entity()")) return true;
+        for (Annotation annotation : clazz.getAnnotations()) {
+            if (annotation.toString().equals("@grails.persistence.Entity()")) return true;
         }
         Class testClass = clazz;
         boolean result = false;
-        while(testClass!=null&&!testClass.equals(GroovyObject.class)&&!testClass.equals(Object.class)) {
+        while (testClass != null && !testClass.equals(GroovyObject.class) &&
+                   !testClass.equals(Object.class)) {
             try {
                 // make sure the identify and version field exist
                 testClass.getDeclaredField( IDENTITY_PROPERTY );
@@ -124,84 +142,77 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
         final ArrayList<PersistentProperty> persistentProperties = new ArrayList<PersistentProperty>();
 
-        if(entity != null) {
+        if (entity != null) {
             ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
 
-            Collection tmp = cpf.getStaticPropertyValue(BELONGS_TO, Collection.class);
             // owners are the classes that own this class
             Collection embedded = cpf.getStaticPropertyValue(EMBEDDED, Collection.class);
-            if(embedded == null) embedded = Collections.emptyList();
+            if (embedded == null) embedded = Collections.emptyList();
 
             Collection transients = cpf.getStaticPropertyValue(TRANSIENT, Collection.class);
-            if(transients == null) transients = Collections.emptyList();
+            if (transients == null) transients = Collections.emptyList();
 
             // hasMany associations for defining one-to-many and many-to-many
             Map hasManyMap = getAssociationMap(cpf);
             // mappedBy for defining by which property an association is mapped
             Map mappedByMap = cpf.getStaticPropertyValue(MAPPED_BY, Map.class);
-            if(mappedByMap == null) mappedByMap = Collections.emptyMap();
+            if (mappedByMap == null) mappedByMap = Collections.emptyMap();
             // hasOne for declaring a one-to-one association with the foreign key in the child
             Map hasOneMap = cpf.getStaticPropertyValue(HAS_ONE, Map.class);
-            if(hasOneMap == null) hasOneMap = Collections.emptyMap();
+            if (hasOneMap == null) hasOneMap = Collections.emptyMap();
 
-
-
-            PropertyDescriptor[] descriptors = cpf.getPropertyDescriptors();
-
-            for (PropertyDescriptor descriptor : descriptors) {
+            for (PropertyDescriptor descriptor : cpf.getPropertyDescriptors()) {
                 final String propertyName = descriptor.getName();
-                if(isExcludedProperty(propertyName, classMapping, transients)) continue;
+                if (isExcludedProperty(propertyName, classMapping, transients)) continue;
                 Class currentPropType = descriptor.getPropertyType();
-                PersistentProperty prop;
                 // establish if the property is a one-to-many
                 // if it is a Set and there are relationships defined
                 // and it is defined as persistent
                 if (isCollectionType(currentPropType)) {
                     final Association association = establishRelationshipForCollection(descriptor, entity, context, hasManyMap, mappedByMap);
-                    if(association != null) {
+                    if (association != null) {
                         configureOwningSide(association);
                         persistentProperties.add(association);
                     }
                 }
                 else if (embedded.contains(propertyName)) {
-                	ToOne association = propertyFactory.createEmbedded(entity, context, descriptor);
-                	PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity, context, association.getType());
-                	association.setAssociatedEntity(associatedEntity);
-                	persistentProperties.add(association);
+                    ToOne association = propertyFactory.createEmbedded(entity, context, descriptor);
+                    PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity, context, association.getType());
+                    association.setAssociatedEntity(associatedEntity);
+                    persistentProperties.add(association);
                 }
                 // otherwise if the type is a domain class establish relationship
                 else if (isPersistentEntity(currentPropType)) {
                     final ToOne association = establishDomainClassRelationship(entity, descriptor, context, hasOneMap);
-                    if(association != null) {
+                    if (association != null) {
                         configureOwningSide(association);
                         persistentProperties.add(association);
                     }
                 }
-                else if(MappingFactory.isSimpleType(descriptor.getPropertyType())) {
+                else if (MappingFactory.isSimpleType(descriptor.getPropertyType())) {
                     persistentProperties.add( propertyFactory.createSimple(entity, context, descriptor) );
                 }
-
             }
         }
         return persistentProperties;
     }
 
     private void configureOwningSide(Association association) {
-        if(association.isBidirectional()) {
-            if(association.getAssociatedEntity().isOwningEntity(association.getOwner())) {
+        if (association.isBidirectional()) {
+            if (association.getAssociatedEntity().isOwningEntity(association.getOwner())) {
                 association.setOwningSide(true);
             }
         }
         else {
-            if(association instanceof OneToOne) {
+            if (association instanceof OneToOne) {
                 association.setOwningSide(true);
-            } else if(!(association instanceof Basic)) {
-               if(association.getAssociatedEntity().isOwningEntity(association.getOwner())) {
-                   association.setOwningSide(true);
-               }
-               else {
-                   association.setOwningSide(false);
-               }
+            } else if (!(association instanceof Basic)) {
+                if (association.getAssociatedEntity().isOwningEntity(association.getOwner())) {
+                    association.setOwningSide(true);
+                }
+                else {
+                    association.setOwningSide(false);
+                }
             }
         }
     }
@@ -229,7 +240,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             owners = new HashSet();
             owners.add(belongsTo);
         }
-        if(owners == null) owners = Collections.emptySet();
+        if (owners == null) owners = Collections.emptySet();
         return owners;
     }
 
@@ -267,12 +278,10 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                     // We've run out of options. The given "mappedBy"
                     // setting is invalid.
                     if (pd == null) {
-                    	if(entity.isExternal()) {
-                    		return null;
-                    	}
-                    	else {                    		
-                    		throw new IllegalMappingException("Non-existent mapping property ["+mappingProperty+"] specified for property ["+property.getName()+"] in class ["+entity.getJavaClass()+"]");
-                    	}
+                        if (entity.isExternal()) {
+                            return null;
+                        }
+                        throw new IllegalMappingException("Non-existent mapping property ["+mappingProperty+"] specified for property ["+property.getName()+"] in class ["+entity.getJavaClass()+"]");
                     }
 
                     // Tie the properties together.
@@ -285,7 +294,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                     if (isRelationshipManyToMany(entity, relatedClassType, relatedClassRelationships)) {
                         String relatedClassPropertyName = null;
                         Map relatedClassMappedBy = cpf.getStaticPropertyValue(MAPPED_BY, Map.class);
-                        if(relatedClassMappedBy == null) relatedClassMappedBy = Collections.emptyMap();
+                        if (relatedClassMappedBy == null) relatedClassMappedBy = Collections.emptyMap();
                         // retrieve the relationship property
                         for (Object o : relatedClassRelationships.keySet()) {
                             String currentKey = (String) o;
@@ -318,14 +327,12 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                             String classPropertyName = entity.getDecapitalizedName();
                             PropertyDescriptor pd = findProperty(descriptors, classPropertyName);
                             if (pd == null) {
-                            	if(entity.isExternal()) {
-                            		return null;
-                            	}
-                            	else {                            		
-                            		throw new IllegalMappingException("Property ["+property.getName()+"] in class ["+entity.getJavaClass()+"] is a bidirectional one-to-many with two possible properties on the inverse side. "+
-                            				"Either name one of the properties on other side of the relationship ["+classPropertyName+"] or use the 'mappedBy' static to define the property " +
-                            				"that the relationship is mapped with. Example: static mappedBy = ["+property.getName()+":'myprop']");
-                            	}
+                                if (entity.isExternal()) {
+                                    return null;
+                                }
+                                throw new IllegalMappingException("Property ["+property.getName()+"] in class ["+entity.getJavaClass()+"] is a bidirectional one-to-many with two possible properties on the inverse side. "+
+                                        "Either name one of the properties on other side of the relationship ["+classPropertyName+"] or use the 'mappedBy' static to define the property " +
+                                        "that the relationship is mapped with. Example: static mappedBy = ["+property.getName()+":'myprop']");
                             }
                             relatedClassPropertyType = pd.getPropertyType();
                             referencedPropertyName = pd.getName();
@@ -347,20 +354,19 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity,context, relatedClassType);
 
                 association.setAssociatedEntity(associatedEntity);
-                if(referencedPropertyName != null) {
+                if (referencedPropertyName != null) {
                     association.setReferencedPropertyName(referencedPropertyName);
-                    final PersistentProperty referencedProperty = associatedEntity.getPropertyByName(referencedPropertyName);
                 }
             }
             // otherwise set it to not persistent as you can't persist
             // relationships to non-domain classes
             else {
-            	association = propertyFactory.createBasicCollection(entity, context, property);
+                association = propertyFactory.createBasicCollection(entity, context, property);
             }
         }
         else {
-        	association = propertyFactory.createBasicCollection(entity, context, property);
-        }        
+            association = propertyFactory.createBasicCollection(entity, context, property);
+        }
         return association;
     }
 
@@ -397,7 +403,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return d;
     }
 
-
     /**
      * Establish relationship with related domain class
      *
@@ -414,9 +419,8 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
         // establish relationship to type
         Map relatedClassRelationships = getAssociationMap(cpf);
-        @SuppressWarnings("hiding")
         Map mappedBy = cpf.getStaticPropertyValue(MAPPED_BY, Map.class);
-        if(mappedBy == null) mappedBy = Collections.emptyMap();
+        if (mappedBy == null) mappedBy = Collections.emptyMap();
 
         Class<?> relatedClassPropertyType = null;
 
@@ -426,7 +430,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         if (relatedClassRelationships != null && !relatedClassRelationships.isEmpty()) {
 
             PropertyDescriptor[] descriptors = ReflectionUtils.getPropertiesOfType(entity.getJavaClass(), propType);
-            relatedClassPropertyName = findOneToManyThatMatchesType(entity, property, relatedClassRelationships);
+            relatedClassPropertyName = findOneToManyThatMatchesType(entity, relatedClassRelationships);
             // if there is only one property on many-to-one side of the relationship then
             // try to establish if it is bidirectional
             if (descriptors.length == 1 && isNotMappedToDifferentProperty(property,relatedClassPropertyName, mappedBy)) {
@@ -477,7 +481,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             if (hasOneMap.containsKey(property.getName())) {
                 association.setForeignKeyInChild(true);
             }
-
         }
         // bi-directional many-to-one
         else if (Collection.class.isAssignableFrom(relatedClassPropertyType)||Map.class.isAssignableFrom(relatedClassPropertyType)) {
@@ -485,10 +488,10 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         }
 
         // bi-directional
-        if(association != null) {
+        if (association != null) {
             PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity, context, propType);
             association.setAssociatedEntity(associatedEntity);
-            if(relatedClassPropertyName != null) {
+            if (relatedClassPropertyName != null) {
                 association.setReferencedPropertyName(relatedClassPropertyName);
             }
         }
@@ -498,21 +501,20 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
     private PersistentEntity getOrCreateAssociatedEntity(PersistentEntity entity, MappingContext context, Class propType) {
         PersistentEntity associatedEntity = context.getPersistentEntity(propType.getName());
-        if(associatedEntity == null) {
-        	if(entity.isExternal()) {
-        		associatedEntity = context.addExternalPersistentEntity(propType);
-        	}
-        	else {        		
-        		associatedEntity = context.addPersistentEntity(propType);
-        	}
+        if (associatedEntity == null) {
+            if (entity.isExternal()) {
+                associatedEntity = context.addExternalPersistentEntity(propType);
+            }
+            else {
+                associatedEntity = context.addPersistentEntity(propType);
+            }
         }
         return associatedEntity;
     }
 
-
     @SuppressWarnings("unchecked")
     private boolean isNotMappedToDifferentProperty(PropertyDescriptor property,
-            String relatedClassPropertyName, @SuppressWarnings("hiding") Map mappedBy) {
+            String relatedClassPropertyName, Map mappedBy) {
 
         String mappedByForRelation = (String)mappedBy.get(relatedClassPropertyName);
         if (mappedByForRelation == null) return true;
@@ -520,7 +522,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return true;
     }
 
-    private String findOneToManyThatMatchesType(PersistentEntity entity, PropertyDescriptor property, Map relatedClassRelationships) {
+    private String findOneToManyThatMatchesType(PersistentEntity entity, Map relatedClassRelationships) {
         String relatedClassPropertyName = null;
 
         for (Object o : relatedClassRelationships.keySet()) {
@@ -552,7 +554,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
      */
     protected Map getAssociationMap(ClassPropertyFetcher cpf) {
         Map relationshipMap = cpf.getStaticPropertyValue(HAS_MANY, Map.class);
-        if(relationshipMap == null)
+        if (relationshipMap == null)
             relationshipMap = new HashMap();
 
         Class theClass = cpf.getJavaClass();
@@ -560,7 +562,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             theClass = theClass.getSuperclass();
             ClassPropertyFetcher propertyFetcher = ClassPropertyFetcher.forClass(theClass);
             Map superRelationshipMap = propertyFetcher.getStaticPropertyValue(HAS_MANY, Map.class);
-            if(superRelationshipMap != null && !superRelationshipMap.equals(relationshipMap)) {
+            if (superRelationshipMap != null && !superRelationshipMap.equals(relationshipMap)) {
                 relationshipMap.putAll(superRelationshipMap);
             }
         }
@@ -569,12 +571,11 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
 
     private PersistentEntity getPersistentEntity(Class javaClass, MappingContext context, ClassMapping classMapping) {
-        PersistentEntity entity;
-        if(classMapping != null)
-            entity = classMapping.getEntity();
-        else
-            entity = context.getPersistentEntity(javaClass.getName());
-        return entity;
+        if (classMapping != null) {
+            return classMapping.getEntity();
+        }
+
+        return context.getPersistentEntity(javaClass.getName());
     }
 
     public Set getOwningEntities(Class javaClass, MappingContext context) {
@@ -591,26 +592,21 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
         IdentityMapping id = mapping.getIdentifier();
         final String[] names = id.getIdentifierName();
-        if(names.length==1) {
+        if (names.length==1) {
             final PropertyDescriptor pd = cpf.getPropertyDescriptor(names[0]);
 
-            if(pd != null) {
+            if (pd != null) {
                 return propertyFactory.createIdentity(entity, context, pd);
             }
-            else {
-            	if(!entity.isExternal())
-            		throw new IllegalMappingException("Mapped identifier ["+names[0]+"] for class ["+javaClass.getName()+"] is not a valid property");
-            	else
-            		return null;
+            if (!entity.isExternal()) {
+                throw new IllegalMappingException("Mapped identifier ["+names[0]+"] for class ["+javaClass.getName()+"] is not a valid property");
             }
-
+            return null;
         }
-        else {
-        	if(!entity.isExternal())
-        		throw new IllegalMappingException("Mapping of composite identifiers currently not supported");
-        	else
-        		return null;
+        if (!entity.isExternal()) {
+            throw new IllegalMappingException("Mapping of composite identifiers currently not supported");
         }
+        return null;
     }
 
     public IdentityMapping getDefaultIdentityMapping(final ClassMapping classMapping) {

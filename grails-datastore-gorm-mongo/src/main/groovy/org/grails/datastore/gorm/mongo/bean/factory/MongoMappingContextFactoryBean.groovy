@@ -14,28 +14,23 @@
  */
 package org.grails.datastore.gorm.mongo.bean.factory
 
-import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean;
-import org.springframework.datastore.mapping.model.MappingContext;
-import org.springframework.datastore.mapping.mongo.config.MongoMappingContext 
-import org.springframework.util.Assert;
+import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
+import org.springframework.datastore.mapping.model.MappingContext
+import org.springframework.datastore.mapping.mongo.config.MongoMappingContext
+import org.springframework.util.Assert
 
 /**
  * Factor bean for construction the Mongo DocumentMappingContext
- * 
- * @author Graeme Rocher
  *
+ * @author Graeme Rocher
  */
 class MongoMappingContextFactoryBean extends AbstractMappingContextFactoryBean{
 
-	
-	String defaultDatabaseName
-	
-	@Override
-	protected MappingContext createMappingContext() {
-	
-		Assert.hasText(defaultDatabaseName, "Property [defaultDatabaseName] must be set!")
-		
-		return new MongoMappingContext(defaultDatabaseName);
-	}
+    String defaultDatabaseName
 
+    @Override
+    protected MappingContext createMappingContext() {
+        Assert.hasText(defaultDatabaseName, "Property [defaultDatabaseName] must be set!")
+        return new MongoMappingContext(defaultDatabaseName);
+    }
 }

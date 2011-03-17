@@ -26,42 +26,38 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 
 /**
  * A MappingContext that adapts the Grails domain model to the Mapping API
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
- *
  */
 public class GrailsDomainClassMappingContext extends AbstractMappingContext {
 
-	private GrailsApplication grailsApplication;
-	
-	public GrailsDomainClassMappingContext(GrailsApplication grailsApplication) {
-		super();
-		this.grailsApplication = grailsApplication;
-		
-		final GrailsClass[] artefacts = grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE);
-		for (GrailsClass grailsClass : artefacts) {
-			addPersistentEntity(grailsClass.getClazz());
-		}
-	}
-	
-	public GrailsApplication getGrailsApplication() {
-		return grailsApplication;
-	}
+    private GrailsApplication grailsApplication;
 
-	public MappingConfigurationStrategy getMappingSyntaxStrategy() {
-		throw new UnsupportedOperationException("MappingConfigurationStrategy not supported by implementation. Defined by Grails itself.");
-	}
+    public GrailsDomainClassMappingContext(GrailsApplication grailsApplication) {
+        this.grailsApplication = grailsApplication;
 
-	public MappingFactory getMappingFactory() {
-		throw new UnsupportedOperationException("MappingFactory not supported by implementation. Defined by Grails itself.");
-	}
+        final GrailsClass[] artefacts = grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE);
+        for (GrailsClass grailsClass : artefacts) {
+            addPersistentEntity(grailsClass.getClazz());
+        }
+    }
 
-	@Override
-	protected PersistentEntity createPersistentEntity(Class javaClass) {
-		
-		GrailsDomainClass domainClass = (GrailsDomainClass) grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, javaClass.getName());
-		return new GrailsDomainClassPersistentEntity(domainClass, this);
-	}
+    public GrailsApplication getGrailsApplication() {
+        return grailsApplication;
+    }
 
+    public MappingConfigurationStrategy getMappingSyntaxStrategy() {
+        throw new UnsupportedOperationException("MappingConfigurationStrategy not supported by implementation. Defined by Grails itself.");
+    }
+
+    public MappingFactory getMappingFactory() {
+        throw new UnsupportedOperationException("MappingFactory not supported by implementation. Defined by Grails itself.");
+    }
+
+    @Override
+    protected PersistentEntity createPersistentEntity(Class javaClass) {
+        GrailsDomainClass domainClass = (GrailsDomainClass) grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, javaClass.getName());
+        return new GrailsDomainClassPersistentEntity(domainClass, this);
+    }
 }

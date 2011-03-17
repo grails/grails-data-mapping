@@ -28,11 +28,7 @@ import grails.gorm.tests.SaveAllSpec
 import grails.gorm.tests.NegationSpec
 
 /**
- * Created by IntelliJ IDEA.
- * User: Erawat
- * Date: 29-Oct-2010
- * Time: 01:46:23
- * To change this template use File | Settings | File Templates.
+ * @author Erawat
  */
 @RunWith(Suite)
 @SuiteClasses([
@@ -40,7 +36,7 @@ import grails.gorm.tests.NegationSpec
 //  ProxyLoadingSpec, // passed
 //  QueryAfterPropertyChangeSpec,
 //  CircularOneToManySpec, // StackOverflow
-//  InheritanceSpec, // still doesn't support inheritance 
+//  InheritanceSpec, // still doesn't support inheritance
 //  FindByMethodSpec, // passed
 //  ListOrderBySpec, // passed
 //  GroovyProxySpec, // passed
@@ -48,8 +44,8 @@ import grails.gorm.tests.NegationSpec
 //  GormEnhancerSpec, //passed
 //  CriteriaBuilderSpec, //passed
 //  NegationSpec, //passes
- NamedQuerySpec, 
-//  OrderBySpec, //passed 
+ NamedQuerySpec,
+//  OrderBySpec, //passed
 //  RangeQuerySpec,
 //  ValidationSpec,
 //  UpdateWithProxyPresentSpec,

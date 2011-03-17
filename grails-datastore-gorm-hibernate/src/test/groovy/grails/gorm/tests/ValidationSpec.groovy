@@ -1,87 +1,84 @@
 package grails.gorm.tests
 
-import org.springframework.validation.Errors
 import org.springframework.datastore.mapping.validation.ValidatingInterceptor
-import spock.lang.Ignore;
+import org.springframework.validation.Errors
+
+import spock.lang.Ignore
 
 /**
  * Abstract base class for testing validation semantics
  */
- 
 @Ignore
-class ValidationSpec extends GormDatastoreSpec{
+class ValidationSpec extends GormDatastoreSpec {
 
-  void "Test disable validation"() {
-    session.datastore.addEntityInterceptor(new ValidatingInterceptor())
-    // test assumes name cannot be blank
-    given:
-      def t
+    void "Test disable validation"() {
+        session.datastore.addEntityInterceptor(new ValidatingInterceptor())
+        // test assumes name cannot be blank
+        given:
+            def t
 
-    when:
-      t = new TestEntity(name:"", child:new ChildEntity(name:"child"))
-      Errors errors = t.errors
+        when:
+            t = new TestEntity(name:"", child:new ChildEntity(name:"child"))
+            Errors errors = t.errors
 
-    then:
-      t.validate() == false
-      t.hasErrors() == true
-      errors != null
-      errors.hasErrors() == true
+        then:
+            t.validate() == false
+            t.hasErrors() == true
+            errors != null
+            errors.hasErrors() == true
 
-    when:
-      t.save(validate:false, flush:true)
+        when:
+            t.save(validate:false, flush:true)
 
-    then:
-      t.id != null
-      !t.hasErrors()
+        then:
+            t.id != null
+            !t.hasErrors()
+    }
 
-  }
+    void "Test validate() method"() {
+        // test assumes name cannot be blank
+        given:
+            def t
 
+        when:
+            t = new TestEntity(name:"")
+            Errors errors = t.errors
 
+        then:
+            t.validate() == false
+            t.hasErrors() == true
+            errors != null
+            errors.hasErrors() == true
 
-  void "Test validate() method"() {
-    // test assumes name cannot be blank
-    given:
-      def t
+        when:
+            t.clearErrors()
 
-    when:
-      t = new TestEntity(name:"")
-      Errors errors = t.errors
+        then:
+            t.hasErrors() == false
+    }
 
-    then:
-      t.validate() == false
-      t.hasErrors() == true
-      errors != null
-      errors.hasErrors() == true
+    void "Test that validate is called on save()"() {
 
-    when:
-      t.clearErrors()
+        given:
+            def t
 
-    then:
-      t.hasErrors() == false
-  }
+        when:
+            t = new TestEntity(name:"")
 
-  void "Test that validate is called on save()"() {
+        then:
+            t.save() == null
+            t.hasErrors() == true
+            0 == TestEntity.count()
 
-    given:
-      def t
+        when:
+            t.clearErrors()
+            t.name = "Bob"
+            t.age = 45
+            t.child = new ChildEntity(name:"Fred")
+            t = t.save()
 
-    when:
-      t = new TestEntity(name:"")
-
-    then:
-      t.save() == null
-      t.hasErrors() == true
-      0 == TestEntity.count()
-
-    when:
-      t.clearErrors()
-      t.name = "Bob"
-      t.age = 45
-      t.child = new ChildEntity(name:"Fred")
-      t = t.save()
-
-    then:
-      t != null
-      1 == TestEntity.count()
-  }
+        then:
+            t != null
+            1 == TestEntity.count()
+    }
 }

@@ -25,13 +25,12 @@ public abstract class AbstractClassMapping<T> implements ClassMapping{
     protected MappingContext context;
 
     public AbstractClassMapping(PersistentEntity entity, MappingContext context) {
-        super();
         this.entity = entity;
         this.context = context;
     }
 
     public PersistentEntity getEntity() {
-        return this.entity;
+        return entity;
     }
 
     public abstract T getMappedForm();

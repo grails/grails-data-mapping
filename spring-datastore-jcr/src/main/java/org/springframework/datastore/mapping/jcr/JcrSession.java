@@ -1,5 +1,11 @@
 package org.springframework.datastore.mapping.jcr;
 
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
 import org.apache.jackrabbit.core.TransientRepository;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.dao.CannotAcquireLockException;
@@ -7,27 +13,14 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.engine.LockableEntityPersister;
-import org.springframework.datastore.mapping.engine.NonPersistentTypeException;
 import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.jcr.engine.JcrEntityPersister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
-import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.transactions.Transaction;
-import org.springframework.extensions.jcr.*;
+import org.springframework.extensions.jcr.JcrSessionFactory;
+import org.springframework.extensions.jcr.JcrTemplate;
 import org.springframework.extensions.jcr.support.OpenSessionInViewInterceptor;
-
-
-import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
-import javax.persistence.FlushModeType;
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Erawat Chamanont
@@ -127,9 +120,8 @@ public class JcrSession extends AbstractSession<JcrSessionFactory> {
                 lockedObjects.add(lockedObject);
             }
             return lockedObject;
-        } else {
-            throw new CannotAcquireLockException("Cannot lock key [" + key + "]. It is not a persistent instance!");
         }
+        throw new CannotAcquireLockException("Cannot lock key [" + key + "]. It is not a persistent instance!");
     }
 
     protected class LongToDateConverter implements Converter<Long, Date> {

@@ -14,14 +14,14 @@
  */
 package org.springframework.datastore.mapping.simple;
 
+import java.util.Map;
+
 import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.simple.engine.SimpleMapEntityPersister;
 import org.springframework.datastore.mapping.transactions.Transaction;
-
-import java.util.Map;
 
 /**
  * A simple implementation of the {@link org.springframework.datastore.mapping.core.Session} interface that backs onto an in-memory map.
@@ -43,7 +43,7 @@ public class SimpleMapSession extends AbstractSession<Map> {
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
         PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
-        if(entity != null) {
+        if (entity != null) {
             return new SimpleMapEntityPersister(mappingContext, entity, this, (SimpleMapDatastore) getDatastore());
         }
         return null;
@@ -73,7 +73,7 @@ public class SimpleMapSession extends AbstractSession<Map> {
     }
 
     private class MockTransaction implements Transaction {
-        public MockTransaction(SimpleMapSession simpleMapSession) {
+        public MockTransaction(@SuppressWarnings("unused") SimpleMapSession simpleMapSession) {
         }
 
         public void commit() {

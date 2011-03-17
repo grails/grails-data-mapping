@@ -14,28 +14,20 @@
  */
 package org.springframework.datastore.mapping.keyvalue.engine;
 
-import org.springframework.dao.CannotAcquireLockException;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.datastore.mapping.collection.PersistentList;
-import org.springframework.datastore.mapping.collection.PersistentSet;
 import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.core.SessionImplementor;
-import org.springframework.datastore.mapping.engine.*;
+import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister;
 import org.springframework.datastore.mapping.keyvalue.mapping.config.Family;
 import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValue;
-import org.springframework.datastore.mapping.model.*;
-import org.springframework.datastore.mapping.model.types.*;
-import org.springframework.datastore.mapping.proxy.ProxyFactory;
-
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
-import java.io.Serializable;
-import java.util.*;
+import org.springframework.datastore.mapping.model.ClassMapping;
+import org.springframework.datastore.mapping.model.MappingContext;
+import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.model.PropertyMapping;
 
 /**
  * Abstract implementation of the EntityPersister abstract class
  * for key/value style stores
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
@@ -47,7 +39,7 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends NativeEntryEnt
         entityFamily = getFamily(entity, classMapping);
     }
 
-
+    @Override
     public String getEntityFamily() {
         return entityFamily;
     }
@@ -61,10 +53,10 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends NativeEntryEnt
     protected String getNativePropertyKey(PersistentProperty prop) {
         PropertyMapping<KeyValue> pm = prop.getMapping();
         String propKey = null;
-        if(pm.getMappedForm()!=null) {
+        if (pm.getMappedForm()!=null) {
             propKey = pm.getMappedForm().getKey();
         }
-        if(propKey == null) {
+        if (propKey == null) {
             propKey = prop.getName();
         }
         return propKey;
@@ -72,21 +64,19 @@ public abstract class AbstractKeyValueEntityPesister<T,K> extends NativeEntryEnt
 
     protected String getFamily(PersistentEntity persistentEntity, ClassMapping<Family> cm) {
         String table = null;
-        if(cm.getMappedForm() != null) {
+        if (cm.getMappedForm() != null) {
             table = cm.getMappedForm().getFamily();
         }
-        if(table == null) table = persistentEntity.getJavaClass().getName();
+        if (table == null) table = persistentEntity.getJavaClass().getName();
         return table;
     }
 
     protected String getKeyspace(ClassMapping<Family> cm, String defaultValue) {
         String keyspace = null;
-        if(cm.getMappedForm() != null) {
+        if (cm.getMappedForm() != null) {
             keyspace = cm.getMappedForm().getKeyspace();
         }
-        if(keyspace == null) keyspace = defaultValue;
+        if (keyspace == null) keyspace = defaultValue;
         return keyspace;
     }
-
-
 }

@@ -49,14 +49,12 @@ public class RedisSet extends AbstractRedisCollection implements Set {
         return redisTemplate.srem(redisKey, o);
     }
 
-
     public Set<String> members() {
-        return redisTemplate.smembers(redisKey);  
+        return redisTemplate.smembers(redisKey);
     }
 
     public List<String> members(final int offset, final int max) {
         return redisTemplate.sort(redisKey, redisTemplate.sortParams().limit(offset, max));
-
     }
 
     public String random() {

@@ -4,9 +4,8 @@ import grails.gorm.tests.PetType
 @grails.persistence.Entity
 class Pet implements Serializable {
     String id
-	String name
-	Date birthDate = new Date()
-	PetType type
-	Person owner
-
+    String name
+    Date birthDate = new Date()
+    PetType type
+    Person owner
 }

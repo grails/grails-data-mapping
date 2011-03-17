@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2010 SpringSource
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,18 +19,16 @@ import org.springframework.datastore.mapping.config.Property;
 
 /**
  * Configures how a Java property maps to a Document attribute
- * 
- * @author Graeme Rocher
  *
+ * @author Graeme Rocher
  */
-
 public class Attribute extends Property {
 
-	public void setAttr(String name) {
-		setTargetName(name);
-	}
-	
-	public void setAttribute(String name) {
-		setTargetName(name);
-	}
+    public void setAttr(String name) {
+        setTargetName(name);
+    }
+
+    public void setAttribute(String name) {
+        setTargetName(name);
+    }
 }

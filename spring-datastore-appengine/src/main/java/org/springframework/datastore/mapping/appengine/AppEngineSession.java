@@ -33,7 +33,6 @@ public class AppEngineSession extends AbstractSession<DatastoreService> implemen
         super(ds, mappingContext);
     }
 
-
     public Key store(String table, Map object) {
         Entity entity = new Entity(table);
         Set keySet = object.keySet();
@@ -86,6 +85,7 @@ public class AppEngineSession extends AbstractSession<DatastoreService> implemen
      *
      * @return a started transaction
      */
+    @Override
     protected Transaction beginTransactionInternal() {
         AppEngineTransaction engineTransaction = new AppEngineTransaction(DatastoreServiceFactory.getDatastoreService().beginTransaction());
         this.transaction = engineTransaction;
@@ -93,17 +93,15 @@ public class AppEngineSession extends AbstractSession<DatastoreService> implemen
     }
 
     public DatastoreService getNativeInterface() {
-        return this.datastoreService;
+        return datastoreService;
     }
 
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
       PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
-        if(entity != null) {
+        if (entity != null) {
             return new AppEngineEntityPersister(mappingContext, entity,this, datastoreService);
         }
         return null;
     }
-
-
 }

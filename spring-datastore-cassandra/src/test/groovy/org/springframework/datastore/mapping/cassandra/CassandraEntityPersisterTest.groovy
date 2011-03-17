@@ -1,6 +1,5 @@
 package org.springframework.datastore.mapping.cassandra
 
-
 import org.junit.Test
 import org.springframework.datastore.mapping.cassandra.uuid.UUIDUtil
 import org.springframework.datastore.mapping.core.Session
@@ -11,42 +10,41 @@ import org.springframework.datastore.mapping.core.Session
  */
 class CassandraEntityPersisterTest extends AbstractCassandraTest {
 
-  @Test
-  void testReadWrite() {
-     def ds = new CassandraDatastore()
-     ds.mappingContext.addPersistentEntity(TestEntity)
-     Session conn = ds.connect(null)
+    @Test
+    void testReadWrite() {
+        def ds = new CassandraDatastore()
+        ds.mappingContext.addPersistentEntity(TestEntity)
+        Session conn = ds.connect(null)
 
-     def t = conn.retrieve(TestEntity, UUIDUtil.getTimeUUID())
+        def t = conn.retrieve(TestEntity, UUIDUtil.getTimeUUID())
 
-     assert t == null
+        assert t == null
 
-     t = new TestEntity(name:"Bob", age:45)
+        t = new TestEntity(name:"Bob", age:45)
 
-     conn.persist(t)
+        conn.persist(t)
 
-     assert t.id != null
+        assert t.id != null
 
-     t = conn.retrieve(TestEntity, t.id)
+        t = conn.retrieve(TestEntity, t.id)
 
-     assert t != null
-     assert "Bob" == t.name
-     assert 45 == t.age
-     assert t.id != null
+        assert t != null
+        assert "Bob" == t.name
+        assert 45 == t.age
+        assert t.id != null
 
 
-     t.age = 55
-     conn.persist(t)
+        t.age = 55
+        conn.persist(t)
 
-     t = conn.retrieve(TestEntity, t.id)
+        t = conn.retrieve(TestEntity, t.id)
 
-     assert 55 == t.age
-
-  }
-
+        assert 55 == t.age
+    }
 }
+
 class TestEntity {
-  UUID id
-  String name
-  int age
+    UUID id
+    String name
+    int age
 }

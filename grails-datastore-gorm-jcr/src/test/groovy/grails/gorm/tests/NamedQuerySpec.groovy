@@ -3,11 +3,7 @@ package grails.gorm.tests
 import spock.lang.Ignore
 
 /**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: Aug 31, 2010
- * Time: 10:07:42 AM
- * To change this template use File | Settings | File Templates.
+ * @author graemerocher
  */
 class NamedQuerySpec extends GormDatastoreSpec {
 
@@ -30,7 +26,6 @@ class NamedQuerySpec extends GormDatastoreSpec {
         assert 3 == publications?.size()
     }
 
-    
     /*void "Test max and offset parameter"() {
       given:
         (1..25).each {num ->
@@ -50,7 +45,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
       then:
         10 == pubs?.size()
     }
-  
+
     void "Test that parameter to get is converted"() {
 
       given:
@@ -70,7 +65,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
         publication != null
         'Some New Book'== publication.title
     }
-  
+
     void "Test named query with additional criteria closure"() {
 
       given:
@@ -108,16 +103,15 @@ class NamedQuerySpec extends GormDatastoreSpec {
         }
       then:
         assert 6 == cnt
-      
+
       when:
         publications = Publication.recentPublications(max: 3) {
             like 'title', 'Some%'
         }
       then:
         assert 3 == publications?.size()
-
     }
-  
+
     void "Test passing parameters to additional criteria"() {
       given:
         def now = new Date()
@@ -203,7 +197,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
       then:
         assert 0 == results?.size()
     }
-  
+
     void "Test get method followed named query chaining"() {
       given:
         def now = new Date()
@@ -239,7 +233,6 @@ class NamedQuerySpec extends GormDatastoreSpec {
 
       then:
         publication != null
-      
     }
 
     void "Test named query with findBy*() dynamic finder"() {
@@ -252,7 +245,6 @@ class NamedQuerySpec extends GormDatastoreSpec {
                     datePublished: now - 10).save(flush:true).id
         session.clear()
 
-
       when:
         def publication = Publication.recentPublications.findByTitle('Book 1')
 
@@ -260,7 +252,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
         publication != null
         recentBookId == publication.id
     }
-  
+
     void "Test named query with findAllBy*() dyamic finder"() {
       given:
         def now = new Date()
@@ -283,7 +275,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
         assert 'Some Recent Book' == publications[1].title
         assert 'Some Recent Book' == publications[2].title
     }
-  
+
     @spock.lang.Ignore  // queries on associations not yet supported
     void "Test named query with relationships in criteria"() {
 
@@ -472,7 +464,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
         def results = Publication.recentPublications().publicationsWithBookInTitle().list()
 
       then: "The result size should be 16 when returned from chained queries"
-        assert 16 == results?.size() 
+        assert 16 == results?.size()
 
       when:
         results = Publication.recentPublications().publicationsWithBookInTitle().count()
@@ -493,7 +485,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
       when:
         results = Publication.paperbacks().recentPublications().publicationsWithBookInTitle().list()
       then: "The result size should be 8 when returned from chained queries"
-        assert 8 ==  results?.size() 
+        assert 8 ==  results?.size()
 
       when:
         results = Publication.paperbacks().recentPublications().publicationsWithBookInTitle().count()
@@ -1017,11 +1009,9 @@ class Plant implements Serializable{
     Long version
     boolean goesInPatch
     String name
-
-
 }
 
-class Publication implements Serializable{
+class Publication implements Serializable {
    String id
    Long version
    String title

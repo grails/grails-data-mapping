@@ -1,7 +1,8 @@
 package org.springframework.datastore.mapping.jcr
 
-import org.junit.Test
 import javax.jcr.Session
+
+import org.junit.Test
 
 /**
  * Tests for locking
@@ -10,28 +11,24 @@ import javax.jcr.Session
  */
 class LockTests extends AbstractJcrTest{
 
-  @Test
-  void testLock() {
-    ds.mappingContext.addPersistentEntity(TestEntity)
-    def t = new TestEntity(title: "foo", body: "bar")
-    conn.persist(t)
-    conn.flush()
+    @Test
+    void testLock() {
+        ds.mappingContext.addPersistentEntity(TestEntity)
+        def t = new TestEntity(title: "foo", body: "bar")
+        conn.persist(t)
+        conn.flush()
 
-    assert null != t.id;
+        assert null != t.id
 
-    Session session = conn.getNativeInterface();
-    def node = session.getNodeByUUID(t.id)
+        Session session = conn.getNativeInterface()
+        def node = session.getNodeByUUID(t.id)
 
-    conn.lock(t);
+        conn.lock(t)
 
-    assert true  == node.isLocked()
+        assert true    == node.isLocked()
 
-    conn.unlock(t);
+        conn.unlock(t)
 
-    assert false == node.isLocked()
-
-    
-  }
+        assert false == node.isLocked()
+    }
 }
-
-

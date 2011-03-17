@@ -1,4 +1,3 @@
-
 /* Copyright (C) 2010 SpringSource
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,8 +24,6 @@ import org.springframework.datastore.mapping.query.Query
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 
-
-
 /**
  *  Static methods of the GORM API
  *
@@ -34,424 +31,422 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
  */
 class GormStaticApi extends AbstractGormApi {
 
-
-  GormStaticApi(Class persistentClass, Datastore datastore) {
-    super(persistentClass,datastore)
-  }
-
-  
-  /**
-   * Saves a list of objects in one go
-   * @param objectsToSave The objects to save
-   * @return A list of object identifiers
-   */
-  List saveAll(Object...objectsToSave) {
-	  Session currentSession = datastore.currentSession
-	  
-	  currentSession.persist Arrays.asList(objectsToSave)	  
-  }
-  
-  /**
-  * Deletes a list of objects in one go
-  * @param objectsToDelete The objects to delete
-  */
-  void deleteAll(Object...objectsToDelete) {
-	  Session currentSession = datastore.currentSession
-	  
-	  currentSession.delete objectsToDelete
-  }
-  
-  /**
-   * Creates an instance of this class
-   * @return The created instance
-   */
-  def create() {
-    persistentClass.newInstance()
-  }
-  /**
-   * Retrieves and object from the datastore. eg. Book.get(1)
-   */
-  def get(Serializable id) {
-    datastore.currentSession.retrieve(persistentClass,id)
-  }
-
-  /**
-   * Retrieves and object from the datastore. eg. Book.read(1)
-   *
-   * Since the datastore abstraction doesn't support dirty checking yet this
-   * just delegates to {@link #get(Serializable)}
-   */
-  def read(Serializable id) {
-    datastore.currentSession.retrieve(persistentClass,id)
-  }
-
-  /**
-   * Retrieves and object from the datastore as a proxy. eg. Book.load(1)
-   */
-  def load(Serializable id) {
-    datastore.currentSession.proxy(persistentClass,id)
-  }
-
-  /**
-   * Retrieves and object from the datastore as a proxy. eg. Book.proxy(1)
-   */
-  def proxy(Serializable id) {
-  	load(id)
-  }
-
-  /**
-   * Retrieve all the objects for the given identifiers
-   * @param ids The identifiers to operate against
-   * @return A list of identifiers
-   */
-  List getAll(Serializable... ids) {
-    datastore.currentSession.retrieveAll(persistentClass, ids.flatten())
-  }
-  
-  /**
-   * @return Synonym for {@link #list()}
-   */
-  List getAll() {
-	  list()
-  }
-  
-  /**
-   * Creates a criteria builder instance
-   */
-  def createCriteria() {
-    return new CriteriaBuilder(persistentClass, datastore)
-  }
-
-  /**
-   * Creates a criteria builder instance
-   */
-  def withCriteria(Closure callable) {
-    return createCriteria().list(callable)
-  }
-  
-  /**
-  * Creates a criteria builder instance
-  */
- def withCriteria( Map builderArgs, Closure callable) {
-   def criteriaBuilder = createCriteria()
-   def builderBean = new BeanWrapperImpl(criteriaBuilder)
-   for (entry in builderArgs) {
-	   if (builderBean.isWritableProperty(entry.key)) {
-		   builderBean.setPropertyValue(entry.key, entry.value)
-	   }
-   }
-
-   return criteriaBuilder.list(callable)
- }
-
-  /**
-   * Locks an instance for an update
-   * @param id The identifier
-   * @return The instance
-   */
-  def lock(Serializable id) {
-    datastore.currentSession.lock(persistentClass, id)
-  }
-
-  /**
-   * Merges an instance with the current session
-   * @param o The object to merge
-   * @return The instance
-   */
-  def merge(Object o) {
-    datastore.currentSession.persist(o)
-    return o
-  }
-
-  /**
-   * Counts the number of persisted entities
-   * @return The number of persisted entities
-   */
-  Integer count() {
-    def q = datastore.currentSession.createQuery(persistentClass)
-    q.projections().count()
-    def result = q.singleResult()
-    if(!(result instanceof Number)) result = result.toString()
-    try {
-      result as Integer
-    } catch (NumberFormatException e) {
-      return 0
+    GormStaticApi(Class persistentClass, Datastore datastore) {
+        super(persistentClass,datastore)
     }
-  }
-  
-  /**
-   * Same as {@link #count()} but allows property-style syntax (Foo.count) 
-   */
-  Integer getCount() {
-  	count()
-  }
 
-  /**
-   * Checks whether an entity exists
-   */
-  boolean exists(Serializable id) {
-    get(id) != null
-  }
+    /**
+     * Saves a list of objects in one go
+     * @param objectsToSave The objects to save
+     * @return A list of object identifiers
+     */
+    List saveAll(Object...objectsToSave) {
+        Session currentSession = datastore.currentSession
 
-  /**
-   * Lists objects in the datastore. eg. Book.list(max:10)
-   *
-   * @param params Any parameters such as offset, max etc.
-   * @return A list of results
-   */
-  List list(Map params) {
-    Query q = datastore.currentSession.createQuery(persistentClass)
-    DynamicFinder.populateArgumentsForCriteria(persistentClass, q, params)
-    q.list()
-  }
-  
-  /**
-   * List all entities
-   * 
-   * @return The list of all entities
-   */
-  List list() {
-	  datastore
-	  	.currentSession
-		  .createQuery(persistentClass)
-		  	.list()
-  }
-  
-  /**
-   * The same as {@link #list()}
-   * 
-   * @return The list of all entities
-   */
-  List findAll() {
-	  list()
-  }
-  
-  /**
-   * Finds an object by example
-   * 
-   * @param example The example
-   * @return A list of matching results
-   */
-  List findAll(Object example) {
-	  findAll(example, Collections.emptyMap())
-  }
-  
-  /**
-   * Finds an object by example using the given arguments for pagination
-   * 
-   * @param example The example
-   * @param args The arguments
-   * 
-   * @return A list of matching results
-   */
-  List findAll(Object example, Map args) {
-	  if(persistentEntity.isInstance(example)) {
-		  def queryMap = createQueryMapForExample(persistentEntity, example)		  
-		  return findAllWhere(queryMap, args)
-	  }
-	  return Collections.emptyList()
-  }
-
-	private Map createQueryMapForExample(org.springframework.datastore.mapping.model.PersistentEntity persistentEntity, example) {
-		def props = persistentEntity.persistentProperties.findAll { PersistentProperty prop ->
-			!(prop instanceof Association)
-		}
-
-		def queryMap = [:]
-		for(PersistentProperty prop in props) {
-			def val = example[prop.name]
-			if(val != null)
-				queryMap[prop.name] = val
-		}
-		return queryMap
-	}
-
-	  /**
-	   * Finds all results matching all of the given conditions. Eg. Book.findAllWhere(author:"Stephen King", title:"The Stand")
-	   *
-	   * @param queryMap The map of conditions
-	   * @return A list of results
-	   */
-	  List findAllWhere(Map queryMap) {
-	  		findAllWhere(queryMap, Collections.emptyMap())
-	  }
-  
-	  /**
-	  * Finds all results matching all of the given conditions. Eg. Book.findAllWhere(author:"Stephen King", title:"The Stand")
-	  *
-	  * @param queryMap The map of conditions
-	  * @param args The Query arguments
-	  * 
-	  * @return A list of results
-	  */
-	 List findAllWhere(Map queryMap, Map args) {
-	   Query q = datastore.currentSession.createQuery(persistentClass)
-	   q.allEq(queryMap)
-	   DynamicFinder.populateArgumentsForCriteria persistentClass, q, args
-	   q.list()
-	 }
-  
-
-	 /**
-	 * Finds an object by example
-	 *
-	 * @param example The example
-	 * @return A list of matching results
-	 */
-	def find(Object example) {
-		find(example, Collections.emptyMap())
-	}
-	
-	/**
-	 * Finds an object by example using the given arguments for pagination
-	 *
-	 * @param example The example
-	 * @param args The arguments
-	 *
-	 * @return A list of matching results
-	 */
-	def find(Object example, Map args) {
-		if(persistentEntity.isInstance(example)) {
-			def queryMap = createQueryMapForExample(persistentEntity, example)
-			return findWhere(queryMap, args)
-		}
-		return null
-	}
-	
-	/**
-	 * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
-	 *
-	 * @param queryMap The map of conditions
-	 * @return A single result
-	 */
-	def findWhere(Map queryMap) {
-		findWhere(queryMap, Collections.emptyMap())
-	}
-	  
-	/**
-	 * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
-	 *
-	 * @param queryMap The map of conditions
-	 * @param args The Query arguments
-	 * 
-	 * @return A single result
-	 */
-	def findWhere(Map queryMap, Map args) {
-	   Query q = datastore.currentSession.createQuery(persistentClass)   
-	   if(queryMap) {
-		   q.allEq(queryMap)
-	   }
-	   DynamicFinder.populateArgumentsForCriteria persistentClass, q, args
-	   q.singleResult()
-	 }
-
-  /**
-   * Execute a closure whose first argument is a reference to the current session
-   * @param callable
-   * 
-   * @return The result of the closure
-   */
-  def withSession(Closure callable) {
-    callable.call(datastore.currentSession)
-  }
-
-  /**
-   * Creates and binds a new session for the scope of the given closure
-   */
-  def withNewSession(Closure callable) {
-
-    def session = datastore.connect()
-    try {
-      callable?.call(session)
+        currentSession.persist Arrays.asList(objectsToSave)
     }
-    finally {
-		session.disconnect()
+
+    /**
+     * Deletes a list of objects in one go
+     * @param objectsToDelete The objects to delete
+     */
+    void deleteAll(Object...objectsToDelete) {
+        Session currentSession = datastore.currentSession
+
+        currentSession.delete objectsToDelete
     }
-  }
 
-  // TODO: In the first version no support will exist for String-based queries
-  def executeQuery(String query) {
-    unsupported("executeQuery")
-  }
+    /**
+     * Creates an instance of this class
+     * @return The created instance
+     */
+    def create() {
+        persistentClass.newInstance()
+    }
 
-  def executeQuery(String query, Map args) {
-    unsupported("executeQuery")
-  }
+    /**
+     * Retrieves and object from the datastore. eg. Book.get(1)
+     */
+    def get(Serializable id) {
+        datastore.currentSession.retrieve(persistentClass,id)
+    }
 
-  def executeQuery(String query, Map params, Map args) {
-    unsupported("executeQuery")
-  }
+    /**
+     * Retrieves and object from the datastore. eg. Book.read(1)
+     *
+     * Since the datastore abstraction doesn't support dirty checking yet this
+     * just delegates to {@link #get(Serializable)}
+     */
+    def read(Serializable id) {
+        datastore.currentSession.retrieve(persistentClass,id)
+    }
 
-  def executeQuery(String query, Collection params) {
-    unsupported("executeQuery")
-  }
+    /**
+     * Retrieves and object from the datastore as a proxy. eg. Book.load(1)
+     */
+    def load(Serializable id) {
+        datastore.currentSession.proxy(persistentClass,id)
+    }
 
-  def executeQuery(String query, Collection params, Map args) {
-    unsupported("executeQuery")
-  }
+    /**
+     * Retrieves and object from the datastore as a proxy. eg. Book.proxy(1)
+     */
+    def proxy(Serializable id) {
+        load(id)
+    }
 
-  def executeUpdate(String query) {
-    unsupported("executeUpdate")
-  }
+    /**
+     * Retrieve all the objects for the given identifiers
+     * @param ids The identifiers to operate against
+     * @return A list of identifiers
+     */
+    List getAll(Serializable... ids) {
+        datastore.currentSession.retrieveAll(persistentClass, ids.flatten())
+    }
 
-  def executeUpdate(String query, Map args) {
-    unsupported("executeUpdate")
-  }
+    /**
+     * @return Synonym for {@link #list()}
+     */
+    List getAll() {
+        list()
+    }
 
-  def executeUpdate(String query, Map params, Map args) {
-    unsupported("executeUpdate")
-  }
+    /**
+     * Creates a criteria builder instance
+     */
+    def createCriteria() {
+        return new CriteriaBuilder(persistentClass, datastore)
+    }
 
-  def executeUpdate(String query, Collection params) {
-    unsupported("executeUpdate")
-  }
+    /**
+     * Creates a criteria builder instance
+     */
+    def withCriteria(Closure callable) {
+        return createCriteria().list(callable)
+    }
 
-  def executeUpdate(String query, Collection params, Map args) {
-    unsupported("executeUpdate")
-  }
+    /**
+     * Creates a criteria builder instance
+     */
+    def withCriteria( Map builderArgs, Closure callable) {
+        def criteriaBuilder = createCriteria()
+        def builderBean = new BeanWrapperImpl(criteriaBuilder)
+        for (entry in builderArgs) {
+            if (builderBean.isWritableProperty(entry.key)) {
+                builderBean.setPropertyValue(entry.key, entry.value)
+            }
+        }
 
-  def find(String query) {
-    unsupported("find")
-  }
+        return criteriaBuilder.list(callable)
+    }
 
-  def find(String query, Map args) {
-    unsupported("find")
-  }
+    /**
+     * Locks an instance for an update
+     * @param id The identifier
+     * @return The instance
+     */
+    def lock(Serializable id) {
+        datastore.currentSession.lock(persistentClass, id)
+    }
 
-  def find(String query, Map params, Map args) {
-    unsupported("find")
-  }
+    /**
+     * Merges an instance with the current session
+     * @param o The object to merge
+     * @return The instance
+     */
+    def merge(Object o) {
+        datastore.currentSession.persist(o)
+        return o
+    }
 
-  def find(String query, Collection params) {
-    unsupported("find")
-  }
+    /**
+     * Counts the number of persisted entities
+     * @return The number of persisted entities
+     */
+    Integer count() {
+        def q = datastore.currentSession.createQuery(persistentClass)
+        q.projections().count()
+        def result = q.singleResult()
+        if (!(result instanceof Number)) result = result.toString()
+        try {
+            result as Integer
+        } catch (NumberFormatException e) {
+            return 0
+        }
+    }
 
-  def find(String query, Collection params, Map args) {
-    unsupported("find")
-  }
+    /**
+     * Same as {@link #count()} but allows property-style syntax (Foo.count)
+     */
+    Integer getCount() {
+        count()
+    }
 
-  List findAll(String query) {
-    unsupported("findAll")
-  }
+    /**
+     * Checks whether an entity exists
+     */
+    boolean exists(Serializable id) {
+        get(id) != null
+    }
 
-  List findAll(String query, Map args) {
-    unsupported("findAll")
-  }
+    /**
+     * Lists objects in the datastore. eg. Book.list(max:10)
+     *
+     * @param params Any parameters such as offset, max etc.
+     * @return A list of results
+     */
+    List list(Map params) {
+        Query q = datastore.currentSession.createQuery(persistentClass)
+        DynamicFinder.populateArgumentsForCriteria(persistentClass, q, params)
+        q.list()
+    }
 
-  List findAll(String query, Map params, Map args) {
-    unsupported("findAll")
-  }
+    /**
+     * List all entities
+     *
+     * @return The list of all entities
+     */
+    List list() {
+        datastore
+            .currentSession
+            .createQuery(persistentClass)
+            .list()
+    }
 
-  List findAll(String query, Collection params) {
-    unsupported("find")
-  }
+    /**
+     * The same as {@link #list()}
+     *
+     * @return The list of all entities
+     */
+    List findAll() {
+        list()
+    }
 
-  List findAll(String query, Collection params, Map args) {
-    unsupported("findAll")
-  }
+    /**
+     * Finds an object by example
+     *
+     * @param example The example
+     * @return A list of matching results
+     */
+    List findAll(Object example) {
+        findAll(example, Collections.emptyMap())
+    }
 
-  def unsupported(method) {
-    throw new UnsupportedOperationException("String-based queries like [$method] are currently not supported in this implementation of GORM. Use criteria instead.")
-  }
+    /**
+     * Finds an object by example using the given arguments for pagination
+     *
+     * @param example The example
+     * @param args The arguments
+     *
+     * @return A list of matching results
+     */
+    List findAll(Object example, Map args) {
+        if (persistentEntity.isInstance(example)) {
+            def queryMap = createQueryMapForExample(persistentEntity, example)
+            return findAllWhere(queryMap, args)
+        }
+        return Collections.emptyList()
+    }
 
+    private Map createQueryMapForExample(org.springframework.datastore.mapping.model.PersistentEntity persistentEntity, example) {
+        def props = persistentEntity.persistentProperties.findAll { PersistentProperty prop ->
+            !(prop instanceof Association)
+        }
+
+        def queryMap = [:]
+        for (PersistentProperty prop in props) {
+            def val = example[prop.name]
+            if (val != null) {
+                queryMap[prop.name] = val
+            }
+        }
+        return queryMap
+    }
+
+    /**
+     * Finds all results matching all of the given conditions. Eg. Book.findAllWhere(author:"Stephen King", title:"The Stand")
+     *
+     * @param queryMap The map of conditions
+     * @return A list of results
+     */
+    List findAllWhere(Map queryMap) {
+        findAllWhere(queryMap, Collections.emptyMap())
+    }
+
+    /**
+     * Finds all results matching all of the given conditions. Eg. Book.findAllWhere(author:"Stephen King", title:"The Stand")
+     *
+     * @param queryMap The map of conditions
+     * @param args The Query arguments
+     *
+     * @return A list of results
+     */
+    List findAllWhere(Map queryMap, Map args) {
+        Query q = datastore.currentSession.createQuery(persistentClass)
+        q.allEq(queryMap)
+        DynamicFinder.populateArgumentsForCriteria persistentClass, q, args
+        q.list()
+    }
+
+    /**
+     * Finds an object by example
+     *
+     * @param example The example
+     * @return A list of matching results
+     */
+    def find(Object example) {
+        find(example, Collections.emptyMap())
+    }
+
+    /**
+     * Finds an object by example using the given arguments for pagination
+     *
+     * @param example The example
+     * @param args The arguments
+     *
+     * @return A list of matching results
+     */
+    def find(Object example, Map args) {
+        if (persistentEntity.isInstance(example)) {
+            def queryMap = createQueryMapForExample(persistentEntity, example)
+            return findWhere(queryMap, args)
+        }
+        return null
+    }
+
+    /**
+     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
+     *
+     * @param queryMap The map of conditions
+     * @return A single result
+     */
+    def findWhere(Map queryMap) {
+        findWhere(queryMap, Collections.emptyMap())
+    }
+
+    /**
+     * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand")
+     *
+     * @param queryMap The map of conditions
+     * @param args The Query arguments
+     *
+     * @return A single result
+     */
+    def findWhere(Map queryMap, Map args) {
+        Query q = datastore.currentSession.createQuery(persistentClass)
+        if (queryMap) {
+            q.allEq(queryMap)
+        }
+        DynamicFinder.populateArgumentsForCriteria persistentClass, q, args
+        q.singleResult()
+    }
+
+    /**
+     * Execute a closure whose first argument is a reference to the current session
+     * @param callable
+     *
+     * @return The result of the closure
+     */
+    def withSession(Closure callable) {
+        callable.call(datastore.currentSession)
+    }
+
+    /**
+     * Creates and binds a new session for the scope of the given closure
+     */
+    def withNewSession(Closure callable) {
+
+        def session = datastore.connect()
+        try {
+            callable?.call(session)
+        }
+        finally {
+            session.disconnect()
+        }
+    }
+
+    // TODO: In the first version no support will exist for String-based queries
+    def executeQuery(String query) {
+        unsupported("executeQuery")
+    }
+
+    def executeQuery(String query, Map args) {
+        unsupported("executeQuery")
+    }
+
+    def executeQuery(String query, Map params, Map args) {
+        unsupported("executeQuery")
+    }
+
+    def executeQuery(String query, Collection params) {
+        unsupported("executeQuery")
+    }
+
+    def executeQuery(String query, Collection params, Map args) {
+        unsupported("executeQuery")
+    }
+
+    def executeUpdate(String query) {
+        unsupported("executeUpdate")
+    }
+
+    def executeUpdate(String query, Map args) {
+        unsupported("executeUpdate")
+    }
+
+    def executeUpdate(String query, Map params, Map args) {
+        unsupported("executeUpdate")
+    }
+
+    def executeUpdate(String query, Collection params) {
+        unsupported("executeUpdate")
+    }
+
+    def executeUpdate(String query, Collection params, Map args) {
+        unsupported("executeUpdate")
+    }
+
+    def find(String query) {
+        unsupported("find")
+    }
+
+    def find(String query, Map args) {
+        unsupported("find")
+    }
+
+    def find(String query, Map params, Map args) {
+        unsupported("find")
+    }
+
+    def find(String query, Collection params) {
+        unsupported("find")
+    }
+
+    def find(String query, Collection params, Map args) {
+        unsupported("find")
+    }
+
+    List findAll(String query) {
+        unsupported("findAll")
+    }
+
+    List findAll(String query, Map args) {
+        unsupported("findAll")
+    }
+
+    List findAll(String query, Map params, Map args) {
+        unsupported("findAll")
+    }
+
+    List findAll(String query, Collection params) {
+        unsupported("find")
+    }
+
+    List findAll(String query, Collection params, Map args) {
+        unsupported("findAll")
+    }
+
+    def unsupported(method) {
+        throw new UnsupportedOperationException("String-based queries like [$method] are currently not supported in this implementation of GORM. Use criteria instead.")
+    }
 }

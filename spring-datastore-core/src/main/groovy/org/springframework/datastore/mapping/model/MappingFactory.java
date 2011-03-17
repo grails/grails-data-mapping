@@ -14,8 +14,6 @@
  */
 package org.springframework.datastore.mapping.model;
 
-import org.springframework.datastore.mapping.model.types.*;
-
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -26,7 +24,24 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+import java.util.TimeZone;
+
+import org.springframework.datastore.mapping.model.types.Basic;
+import org.springframework.datastore.mapping.model.types.Embedded;
+import org.springframework.datastore.mapping.model.types.Identity;
+import org.springframework.datastore.mapping.model.types.ManyToMany;
+import org.springframework.datastore.mapping.model.types.ManyToOne;
+import org.springframework.datastore.mapping.model.types.OneToMany;
+import org.springframework.datastore.mapping.model.types.OneToOne;
+import org.springframework.datastore.mapping.model.types.Simple;
+import org.springframework.datastore.mapping.model.types.ToOne;
 
 /**
  * <p>An abstract factory for creating persistent property instances.</p>
@@ -52,67 +67,60 @@ public abstract class MappingFactory<R,T> {
     public static final Set<String> SIMPLE_TYPES;
 
     static {
-        Set<String> basics = new HashSet<String>();
-        basics.add(boolean.class.getName());
-        basics.add(long.class.getName());
-        basics.add(short.class.getName());
-        basics.add(int.class.getName());
-        basics.add(byte.class.getName());
-        basics.add(float.class.getName());
-        basics.add(double.class.getName());
-        basics.add(char.class.getName());
-        basics.add(Boolean.class.getName());
-        basics.add(Long.class.getName());
-        basics.add(Short.class.getName());
-        basics.add(Integer.class.getName());
-        basics.add(Byte.class.getName());
-        basics.add(Float.class.getName());
-        basics.add(Double.class.getName());
-        basics.add(Character.class.getName());
-        basics.add(String.class.getName());
-        basics.add(java.util.Date.class.getName());
-        basics.add(Time.class.getName());
-        basics.add(Timestamp.class.getName());
-        basics.add(java.sql.Date.class.getName());
-        basics.add(BigDecimal.class.getName());
-        basics.add(BigInteger.class.getName());
-        basics.add(Locale.class.getName());
-        basics.add(Calendar.class.getName());
-        basics.add(GregorianCalendar.class.getName());
-        basics.add(java.util.Currency.class.getName());
-        basics.add(TimeZone.class.getName());
-        basics.add(Object.class.getName());
-        basics.add(Class.class.getName());
-        basics.add(byte[].class.getName());
-        basics.add(Byte[].class.getName());
-        basics.add(char[].class.getName());
-        basics.add(Character[].class.getName());
-        basics.add(Blob.class.getName());
-        basics.add(Clob.class.getName());
-        basics.add(Serializable.class.getName());
-        basics.add(URI.class.getName());
-        basics.add(URL.class.getName());
-
-        SIMPLE_TYPES = Collections.unmodifiableSet(basics);
-    }
-
-
-    public MappingFactory() {
-        super();
+        SIMPLE_TYPES = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+            boolean.class.getName(),
+            long.class.getName(),
+            short.class.getName(),
+            int.class.getName(),
+            byte.class.getName(),
+            float.class.getName(),
+            double.class.getName(),
+            char.class.getName(),
+            Boolean.class.getName(),
+            Long.class.getName(),
+            Short.class.getName(),
+            Integer.class.getName(),
+            Byte.class.getName(),
+            Float.class.getName(),
+            Double.class.getName(),
+            Character.class.getName(),
+            String.class.getName(),
+            java.util.Date.class.getName(),
+            Time.class.getName(),
+            Timestamp.class.getName(),
+            java.sql.Date.class.getName(),
+            BigDecimal.class.getName(),
+            BigInteger.class.getName(),
+            Locale.class.getName(),
+            Calendar.class.getName(),
+            GregorianCalendar.class.getName(),
+            java.util.Currency.class.getName(),
+            TimeZone.class.getName(),
+            Object.class.getName(),
+            Class.class.getName(),
+            byte[].class.getName(),
+            Byte[].class.getName(),
+            char[].class.getName(),
+            Character[].class.getName(),
+            Blob.class.getName(),
+            Clob.class.getName(),
+            Serializable.class.getName(),
+            URI.class.getName(),
+            URL.class.getName())));
     }
 
     public static boolean isSimpleType(Class propType) {
-        if(propType == null) return false;
+        if (propType == null) return false;
         if (propType.isArray()) {
             return isSimpleType(propType.getComponentType());
         }
         final String typeName = propType.getName();
-		return isSimpleType(typeName);
+        return isSimpleType(typeName);
     }
 
-	public static boolean isSimpleType(final String typeName) {
-		return SIMPLE_TYPES.contains(typeName);
-	}
+    public static boolean isSimpleType(final String typeName) {
+        return SIMPLE_TYPES.contains(typeName);
+    }
 
     /**
      * Creates the mapped form of a persistent entity
@@ -121,6 +129,7 @@ public abstract class MappingFactory<R,T> {
      * @return The mapped form
      */
     public abstract R createMappedForm(PersistentEntity entity);
+
     /**
      * Creates the mapped form of a PersistentProperty instance
      * @param mpp The PersistentProperty instance
@@ -139,7 +148,7 @@ public abstract class MappingFactory<R,T> {
     public Identity<T> createIdentity(PersistentEntity owner, MappingContext context, PropertyDescriptor pd) {
         return new Identity<T>(owner, context, pd) {
             public PropertyMapping<T> getMapping() {
-               return createPropertyMapping(this, owner);
+                return createPropertyMapping(this, owner);
             }
         };
     }
@@ -173,7 +182,7 @@ public abstract class MappingFactory<R,T> {
 
     /**
      * Creates a one-to-one association type used for mapping a one-to-one association between entities
-     * 
+     *
      * @param entity The entity
      * @param context The context
      * @param property The property
@@ -189,7 +198,7 @@ public abstract class MappingFactory<R,T> {
 
     /**
      * Creates a many-to-one association type used for a mapping a many-to-one association between entities
-     * 
+     *
      * @param entity The entity
      * @param context The context
      * @param property The property
@@ -206,7 +215,7 @@ public abstract class MappingFactory<R,T> {
 
     /**
      * Creates a {@link OneToMany} type used to model a one-to-many association between entities
-     * 
+     *
      * @param entity The entity
      * @param context The context
      * @param property The property
@@ -223,7 +232,7 @@ public abstract class MappingFactory<R,T> {
 
     /**
      * Creates a {@link ManyToMany} type used to model a many-to-many association between entities
-     * 
+     *
      * @param entity The entity
      * @param context The context
      * @param property The property
@@ -239,38 +248,35 @@ public abstract class MappingFactory<R,T> {
 
     /**
      * Creates an {@link Embedded} type used to model an embedded association (composition)
-     * 
+     *
      * @param entity The entity
      * @param context The context
      * @param property The property
      * @return The {@link Embedded} instance
      */
-	public Embedded createEmbedded(PersistentEntity entity,
-			MappingContext context, PropertyDescriptor property) {
+    public Embedded createEmbedded(PersistentEntity entity,
+            MappingContext context, PropertyDescriptor property) {
         return new Embedded<T>(entity, context, property) {
             public PropertyMapping getMapping() {
                 return createPropertyMapping(this, owner);
             }
         };
-	}
+    }
 
-	/**
-	 * Creates a {@link Basic} collection type
-	 * 
-	 * @param entity The entity
-	 * @param context The context
-	 * @param property The property
-	 * @return The Basic collection type
-	 */
-	public Basic createBasicCollection(PersistentEntity entity,
-			MappingContext context, PropertyDescriptor property) {
-		return new Basic(entity, context, property) {
-			@Override
-			public PropertyMapping getMapping() {
-				return createPropertyMapping(this, owner);
-			}
-			
-		};
-	}
+    /**
+     * Creates a {@link Basic} collection type
+     *
+     * @param entity The entity
+     * @param context The context
+     * @param property The property
+     * @return The Basic collection type
+     */
+    public Basic createBasicCollection(PersistentEntity entity,
+            MappingContext context, PropertyDescriptor property) {
+        return new Basic(entity, context, property) {
+            public PropertyMapping getMapping() {
+                return createPropertyMapping(this, owner);
+            }
+        };
+    }
 }
-

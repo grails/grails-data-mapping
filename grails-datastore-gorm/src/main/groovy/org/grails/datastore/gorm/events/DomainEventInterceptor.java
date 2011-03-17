@@ -56,12 +56,12 @@ public class DomainEventInterceptor extends EmptyInterceptor implements MappingC
 
     private boolean invokeEvent(String eventName, PersistentEntity entity, EntityAccess ea) {
         final Map<String, Method> events = entityEvents.get(entity);
-        if(events != null) {
+        if (events != null) {
             final Method eventMethod = events.get(eventName);
-            if(eventMethod != null) {
+            if (eventMethod != null) {
                 final Object result = ReflectionUtils.invokeMethod(eventMethod, ea.getEntity());
                 boolean booleanResult = (result instanceof Boolean) ? (Boolean)result : true;
-                if(booleanResult) {
+                if (booleanResult) {
                     ea.refresh();
                 }
                 return booleanResult;
@@ -94,7 +94,7 @@ public class DomainEventInterceptor extends EmptyInterceptor implements MappingC
 
     private void findAndCacheEvent(String event, Class javaClass, Map<String, Method> events) {
         final Method method = ReflectionUtils.findMethod(javaClass, event);
-        if(method != null) {
+        if (method != null) {
             events.put(event, method);
         }
     }

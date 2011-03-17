@@ -14,15 +14,15 @@
  */
 package org.springframework.datastore.mapping.model.types;
 
+import java.beans.PropertyDescriptor;
+
 import org.springframework.datastore.mapping.model.AbstractPersistentProperty;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
-import java.beans.PropertyDescriptor;
-
 /**
  * Represents the identity of a persistent entity
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
  */

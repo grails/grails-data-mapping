@@ -13,7 +13,6 @@
 * limitations under the License.
 */
 
-
 package org.grails.datastore.gorm.mongo;
 
 import grails.gorm.CriteriaBuilder;
@@ -28,59 +27,57 @@ import org.springframework.datastore.mapping.query.Query;
 
 /**
  * Extends the default CriteriaBuilder implementation with Geolocation methods
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
- *
  */
 public class MongoCriteriaBuilder extends CriteriaBuilder {
 
-	public MongoCriteriaBuilder(Class targetClass, Datastore datastore,
-			Query query) {
-		super(targetClass, datastore, query);	
-	}
+    public MongoCriteriaBuilder(Class targetClass, Datastore datastore, Query query) {
+        super(targetClass, datastore, query);
+    }
 
-	public MongoCriteriaBuilder(Class targetClass, Datastore datastore) {
-		super(targetClass, datastore);
-	}
+    public MongoCriteriaBuilder(Class targetClass, Datastore datastore) {
+        super(targetClass, datastore);
+    }
 
     /**
      * Geospacial query for values near the given two dimensional list
-     * 
+     *
      * @param property The property
      * @param value A two dimensional list of values
      * @return
      */
     public Query.Criterion near(String property, List value) {
         validatePropertyName(property, "near");
-        return addToCriteria(new Near(property, value));    	
+        return addToCriteria(new Near(property, value));
     }
-    
+
     /**
      * Geospacial query for values within a given box. A box is defined as a multi-dimensional list in the form
-     * 
+     *
      * [[40.73083, -73.99756], [40.741404,  -73.988135]]
-     * 
+     *
      * @param property The property
      * @param value A multi-dimensional list of values
      * @return This Criterion
      */
     public Query.Criterion withinBox(String property, List value) {
-    	validatePropertyName(property, "withinBox");
-    	return addToCriteria(new WithinBox(property, value));  
+        validatePropertyName(property, "withinBox");
+        return addToCriteria(new WithinBox(property, value));
     }
-    
+
     /**
      * Geospacial query for values within a given circle. A circle is defined as a multi-dimensial list containing the position of the center and the radius:
-     * 
+     *
      * [[50, 50], 10]
-     * 
+     *
      * @param property The property
      * @param value A multi-dimensional list of values
      * @return This Criterion
      */
     public Query.Criterion withinCircle(String property, List value) {
-    	validatePropertyName(property, "withinBox");
-    	return addToCriteria(new WithinCircle(property, value));  
-    }   	
+        validatePropertyName(property, "withinBox");
+        return addToCriteria(new WithinCircle(property, value));
+    }
 }

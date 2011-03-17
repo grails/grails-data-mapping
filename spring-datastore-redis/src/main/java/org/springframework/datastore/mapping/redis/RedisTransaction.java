@@ -36,11 +36,11 @@ public class RedisTransaction implements Transaction<RedisTemplate> {
     }
 
     public void commit() {
-        if(rollbackCalled) {
+        if (rollbackCalled) {
             throw new IllegalTransactionStateException("Cannot call commit after rollback. Start another transaction first!");
         }
         try {
-            final Object[] objects = redisTemplate.exec();
+            /*final Object[] objects =*/ redisTemplate.exec();
             commitCalled = true;
         } catch (Exception e) {
             throw new TransactionSystemException("Exception occurred committing back Redis transaction: " + e.getMessage());
@@ -56,7 +56,7 @@ public class RedisTransaction implements Transaction<RedisTemplate> {
     }
 
     public void rollback() {
-        if(rollbackCalled) {
+        if (rollbackCalled) {
             throw new UnexpectedRollbackException("Cannot rollback Redis transaction. Transaction already rolled back!");
         }
         try {

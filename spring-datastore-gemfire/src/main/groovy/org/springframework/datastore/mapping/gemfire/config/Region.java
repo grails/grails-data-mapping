@@ -14,11 +14,13 @@
  */
 package org.springframework.datastore.mapping.gemfire.config;
 
-import com.gemstone.gemfire.cache.*;
-
 import org.springframework.datastore.mapping.keyvalue.mapping.config.Family;
 
-import java.util.List;
+import com.gemstone.gemfire.cache.CacheListener;
+import com.gemstone.gemfire.cache.CacheLoader;
+import com.gemstone.gemfire.cache.CacheWriter;
+import com.gemstone.gemfire.cache.DataPolicy;
+import com.gemstone.gemfire.cache.RegionAttributes;
 
 /**
  * Configures a Gemfire region
@@ -34,7 +36,6 @@ public class Region extends Family {
     private CacheWriter cacheWriter;
     private DataPolicy dataPolicy;
     private String regionShortcut;
-
 
     public RegionAttributes getRegionAttributes() {
         return regionAttributes;
@@ -53,7 +54,7 @@ public class Region extends Family {
     }
 
     public String getRegion() { return getFamily(); }
-    
+
     public void setRegionAttributes(RegionAttributes regionAttributes) {
         this.regionAttributes = regionAttributes;
     }
@@ -88,6 +89,5 @@ public class Region extends Family {
 
     public void setDataPolicy(DataPolicy dataPolicy) {
         this.dataPolicy = dataPolicy;
-
     }
 }

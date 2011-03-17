@@ -17,29 +17,26 @@ package org.springframework.datastore.mapping.document.config;
 
 /**
  * Configures how an entity is mapped onto a Document collection
- * 
- * @author Graeme Rocher
  *
+ * @author Graeme Rocher
  */
 public class Collection {
 
-	private String name;
+    private String name;
 
-	/**
-	 * The name of the collection
-	 * @return The name of the collection
-	 */
-	public String getCollection() {
-		return name;
-	}
+    /**
+     * The name of the collection
+     * @return The name of the collection
+     */
+    public String getCollection() {
+        return name;
+    }
 
-	/**
-	 * Sets the name of the collection
-	 * @param name The name of the collection
-	 */
-	public void setCollection(String name) {
-		this.name = name;
-	}
-	
-	
+    /**
+     * Sets the name of the collection
+     * @param name The name of the collection
+     */
+    public void setCollection(String name) {
+        this.name = name;
+    }
 }

@@ -43,15 +43,14 @@ public class DatastorePersistenceContextInterceptor implements PersistenceContex
             participate = true;
         }
         else {
-        	
             LOG.debug("Opening single Datastore session in DatastorePersistenceContextInterceptor");
             Session session = getSession();
             session.setFlushMode(FlushModeType.AUTO);
             try {
-				TransactionSynchronizationManager.bindResource(datastore, new SessionHolder(session));
-			} catch (IllegalStateException e) {
-				// ignore, already bound
-			}
+                TransactionSynchronizationManager.bindResource(datastore, new SessionHolder(session));
+            } catch (IllegalStateException e) {
+                // ignore, already bound
+            }
         }
     }
 
@@ -65,7 +64,7 @@ public class DatastorePersistenceContextInterceptor implements PersistenceContex
         }
 
         // single session mode
-        if(TransactionSynchronizationManager.getResource(datastore) != null) {
+        if (TransactionSynchronizationManager.getResource(datastore) != null) {
             SessionHolder holder = (SessionHolder)TransactionSynchronizationManager.unbindResource(datastore);
             LOG.debug("Closing single Datastore session in DatastorePersistenceContextInterceptor");
             try {

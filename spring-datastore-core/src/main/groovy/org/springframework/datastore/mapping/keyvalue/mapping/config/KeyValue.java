@@ -14,18 +14,16 @@
  */
 package org.springframework.datastore.mapping.keyvalue.mapping.config;
 
-
 import org.springframework.datastore.mapping.config.Property;
 
 /**
  * <p>A KeyValue is a used to define the key used for a particular value</p>
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
-public class KeyValue extends Property{
+public class KeyValue extends Property {
 
-    private String key;
     public KeyValue() {
     }
 

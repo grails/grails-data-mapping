@@ -1,16 +1,15 @@
 package grails.gorm.tests
 
-import grails.gorm.JpaEntity 
-import java.io.Serializable;
+import grails.gorm.JpaEntity
 
 @JpaEntity
-class Person implements Serializable{
-  String firstName
-  String lastName
-  static hasMany = [pets:Pet]
+class Person implements Serializable {
+    String firstName
+    String lastName
+    static hasMany = [pets:Pet]
 
-  static mapping = {
-    firstName index:true
-    lastName index:true
-  }
+    static mapping = {
+        firstName index:true
+        lastName index:true
+    }
 }

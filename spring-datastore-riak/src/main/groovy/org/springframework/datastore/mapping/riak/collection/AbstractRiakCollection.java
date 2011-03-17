@@ -18,37 +18,34 @@
 
 package org.springframework.datastore.mapping.riak.collection;
 
-
-import org.springframework.data.keyvalue.riak.core.RiakTemplate;
-
 import java.util.Collection;
 import java.util.List;
+
+import org.springframework.data.keyvalue.riak.core.RiakTemplate;
 
 /**
  * @author J. Brisbin <jon@jbrisbin.com>
  */
 public abstract class AbstractRiakCollection<T> implements Collection, RiakCollection {
 
-  protected RiakTemplate riakTemplate;
-  protected String bucket;
+    protected RiakTemplate riakTemplate;
+    protected String bucket;
 
-  public AbstractRiakCollection(RiakTemplate riakTemplate, String bucket) {
-    this.riakTemplate = riakTemplate;
-    this.bucket = bucket;
-  }
+    public AbstractRiakCollection(RiakTemplate riakTemplate, String bucket) {
+        this.riakTemplate = riakTemplate;
+        this.bucket = bucket;
+    }
 
-  public String getBucket() {
-    return this.bucket;
-  }
+    public String getBucket() {
+        return bucket;
+    }
 
-  public int size() {
-    List<?> keys = (List<?>) riakTemplate.getBucketSchema(bucket, true).get("keys");
-    return keys.size();
-  }
+    public int size() {
+        List<?> keys = (List<?>) riakTemplate.getBucketSchema(bucket, true).get("keys");
+        return keys.size();
+    }
 
-  public boolean isEmpty() {
-    return (size() == 0);
-  }
-
-
+    public boolean isEmpty() {
+        return size() == 0;
+    }
 }

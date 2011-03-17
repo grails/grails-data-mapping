@@ -15,7 +15,6 @@
 
 package org.springframework.datastore.mapping.jpa.config;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 import javax.persistence.Column;
@@ -27,32 +26,27 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
 
 /**
  * MappingFactory for JPA that maps entities to {@link Table} instances and properties to {@link Column} instances
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
- *
  */
-public class JpaMappingFactory extends MappingFactory<Table, Column>{
+public class JpaMappingFactory extends MappingFactory<Table, Column> {
 
-	@Override
-	public Table createMappedForm(PersistentEntity entity) {
-		final Class javaClass = entity.getJavaClass();
-		
-		final Annotation annotation = javaClass.getAnnotation(Table.class);
-		return (Table) annotation;
-	}
+    @Override
+    public Table createMappedForm(PersistentEntity entity) {
+        return (Table)entity.getJavaClass().getAnnotation(Table.class);
+    }
 
-	@Override
-	public Column createMappedForm(PersistentProperty mpp) {
-		Field field;
-		try {
-			field = mpp.getOwner().getJavaClass().getDeclaredField(mpp.getName());
-			return field.getAnnotation(Column.class);
-		} catch (SecurityException e) {
-			return null;
-		} catch (NoSuchFieldException e) {
-			return null;
-		}		
-	}
-
+    @Override
+    public Column createMappedForm(PersistentProperty mpp) {
+        Field field;
+        try {
+            field = mpp.getOwner().getJavaClass().getDeclaredField(mpp.getName());
+            return field.getAnnotation(Column.class);
+        } catch (SecurityException e) {
+            return null;
+        } catch (NoSuchFieldException e) {
+            return null;
+        }
+    }
 }

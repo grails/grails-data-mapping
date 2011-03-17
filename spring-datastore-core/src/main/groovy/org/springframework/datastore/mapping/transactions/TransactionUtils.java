@@ -33,7 +33,7 @@ public class TransactionUtils {
 
     public static Transaction currentTransaction(Datastore datastore) {
         final Transaction transaction = getTransaction(datastore);
-        if(transaction == null) {
+        if (transaction == null) {
             throw new NoTransactionException("No transaction started.");
         }
         return transaction;
@@ -42,11 +42,9 @@ public class TransactionUtils {
     public static Transaction getTransaction(Datastore datastore) {
         final SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(datastore);
 
-        if(sessionHolder != null) {
+        if (sessionHolder != null) {
             return sessionHolder.getTransaction();
         }
         return null;
     }
-
-
 }

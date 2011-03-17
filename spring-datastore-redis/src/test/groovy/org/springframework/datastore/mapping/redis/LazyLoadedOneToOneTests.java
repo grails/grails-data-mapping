@@ -1,14 +1,15 @@
 package org.springframework.datastore.mapping.redis;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+
 import org.junit.Test;
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.proxy.EntityProxy;
 
-import static junit.framework.Assert.*;
-
 public class LazyLoadedOneToOneTests {
-
 
     @Test
     public void testLazyLoadedOneToOne() {
@@ -35,10 +36,10 @@ public class LazyLoadedOneToOneTests {
         assertTrue(proxy instanceof EntityProxy);
 
         EntityProxy ep = (EntityProxy) proxy;
-        assertFalse( ep.isInitialized() );
+        assertFalse(ep.isInitialized());
         assertEquals(a.getId(), proxy.getId());
 
-        assertFalse( ep.isInitialized() );
+        assertFalse(ep.isInitialized());
         assertEquals("22", a.getNumber());
     }
 
@@ -56,17 +57,17 @@ public class LazyLoadedOneToOneTests {
         p.setAddress(a);
         conn.persist(p);
 
-        Person personProxy = (Person) conn.proxy(Person.class, p.getId());
+        Person personProxy = conn.proxy(Person.class, p.getId());
 
         EntityProxy proxy = (EntityProxy) personProxy;
 
-        assertFalse( proxy.isInitialized() );
-        assertEquals( p.getId(), personProxy.getId());
+        assertFalse(proxy.isInitialized());
+        assertEquals(p.getId(), personProxy.getId());
 
-        assertFalse( proxy.isInitialized() );
+        assertFalse(proxy.isInitialized());
 
-        assertEquals( "Bob", personProxy.getName());
+        assertEquals("Bob", personProxy.getName());
 
-        assertTrue( proxy.isInitialized() );
+        assertTrue(proxy.isInitialized());
     }
 }

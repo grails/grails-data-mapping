@@ -14,6 +14,11 @@
  */
 package org.springframework.datastore.mapping.core;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.datastore.mapping.config.Property;
 import org.springframework.datastore.mapping.engine.EntityInterceptor;
@@ -25,8 +30,6 @@ import org.springframework.datastore.mapping.model.types.BasicTypeConverterRegis
 import org.springframework.datastore.mapping.transactions.SessionHolder;
 import org.springframework.datastore.mapping.validation.ValidatingInterceptor;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import java.util.*;
 
 /**
  * Abstract Datastore implementation that deals with binding the Session to thread locale upon creation.
@@ -59,35 +62,35 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
     }
 
     public void addEntityInterceptor(EntityInterceptor interceptor) {
-        if(interceptor != null) {
+        if (interceptor != null) {
             interceptor.setDatastore(this);
             this.interceptors.add(interceptor);
         }
     }
 
     public void setEntityInterceptors(List<EntityInterceptor> interceptors) {
-        if(interceptors!=null) this.interceptors = interceptors;
+        if (interceptors!=null) this.interceptors = interceptors;
     }
 
     public AbstractDatastore() {
     }
 
-    public final Session connect(Map<String, String> connectionDetails) {
-    	SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(this);
+    public final Session connect(@SuppressWarnings("hiding") Map<String, String> connectionDetails) {
+        SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(this);
         final Session session = createSession(connectionDetails);
 
-        if(session != null) {
+        if (session != null) {
             session.setEntityInterceptors(this.interceptors);
-            if(sessionHolder != null) {
-            	sessionHolder.addSession(session);
+            if (sessionHolder != null) {
+                sessionHolder.addSession(session);
             }
-            else {            	
-            	try {
-					TransactionSynchronizationManager.bindResource(this, new SessionHolder(session));
-				} catch (IllegalStateException e) {
-					// ignore session bound by another thread
-				}
-            }            
+            else {
+                try {
+                    TransactionSynchronizationManager.bindResource(this, new SessionHolder(session));
+                } catch (IllegalStateException e) {
+                    // ignore session bound by another thread
+                }
+            }
         }
         return session;
     }
@@ -98,17 +101,17 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
      * @param connectionDetails The session details
      * @return The session object
      */
-    protected abstract Session createSession(Map<String, String> connectionDetails);
+    protected abstract Session createSession(@SuppressWarnings("hiding") Map<String, String> connectionDetails);
 
     public final Session getCurrentSession() throws ConnectionNotFoundException {
-    	SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(this);
-    	
-        Session connection = null; 
-        if(sessionHolder == null) {
+        SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(this);
+
+        Session connection = null;
+        if (sessionHolder == null) {
             connection = connect(connectionDetails);
         }
         else {
-        	connection = sessionHolder.getSession();
+            connection = sessionHolder.getSession();
         }
         return connection;
     }
@@ -119,9 +122,9 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
      * @throws ConnectionNotFoundException If no session has been created
      */
     public static Session retrieveSession() throws ConnectionNotFoundException {
-    	return retrieveSession(Datastore.class);
+        return retrieveSession(Datastore.class);
     }
-    
+
     /**
      * Static way to retrieve the session
      * @param datastoreClass The type of datastore
@@ -129,31 +132,31 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
      * @throws ConnectionNotFoundException If no session has been created
      */
     public static Session retrieveSession(Class datastoreClass) throws ConnectionNotFoundException {
-    	final Map<Object, Object> resourceMap = TransactionSynchronizationManager.getResourceMap();
+        final Map<Object, Object> resourceMap = TransactionSynchronizationManager.getResourceMap();
         Session connection = null;
-        
-        if(resourceMap != null && !resourceMap.isEmpty()) {
-        	for (Object key : resourceMap.keySet()) {
-				if(datastoreClass.isInstance(key)) {
-					SessionHolder sessionHolder = (SessionHolder) resourceMap.get(key);
-					if(sessionHolder != null) {
-						connection = sessionHolder.getSession();
-					}
-				}
-			}
+
+        if (resourceMap != null && !resourceMap.isEmpty()) {
+            for (Object key : resourceMap.keySet()) {
+                if (datastoreClass.isInstance(key)) {
+                    SessionHolder sessionHolder = (SessionHolder) resourceMap.get(key);
+                    if (sessionHolder != null) {
+                        connection = sessionHolder.getSession();
+                    }
+                }
+            }
         }
-        
-        if(connection == null) {
+
+        if (connection == null) {
             throw new ConnectionNotFoundException("Not datastore session found. Call Datastore.connect(..) before calling Datastore.getCurrentSession()");
         }
         return connection;
-    }    
+    }
 
     public MappingContext getMappingContext() {
         return mappingContext;
     }
 
-    protected void initializeConverters(MappingContext mappingContext) {
+    protected void initializeConverters(@SuppressWarnings("hiding") MappingContext mappingContext) {
         final ConverterRegistry conversionService = mappingContext.getConverterRegistry();
         BasicTypeConverterRegistrar registrar = new BasicTypeConverterRegistrar();
         registrar.register(conversionService);

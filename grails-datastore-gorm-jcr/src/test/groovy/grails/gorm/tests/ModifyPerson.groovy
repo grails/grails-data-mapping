@@ -1,11 +1,11 @@
 @grails.persistence.Entity
-class ModifyPerson implements Serializable{
-  String id
-  Long version
+class ModifyPerson implements Serializable {
+    String id
+    Long version
 
-  String name
+    String name
 
-  def beforeInsert() {
-    name = "Fred"
-  }
+    def beforeInsert() {
+        name = "Fred"
+    }
 }
