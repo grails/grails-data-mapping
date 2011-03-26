@@ -109,6 +109,12 @@ public abstract class DatastoreUtils {
                     return session;
                 }
             }
+            else {
+                session = sessionHolder.getValidatedSession();
+                if (session != null) {
+                    return session;
+                }
+            }
         }
 
         logger.debug("Opening Datastore Session");
