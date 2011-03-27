@@ -192,10 +192,13 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
 
     protected generateIdentifier(PersistentEntity persistentEntity, Map id) {
         if (persistentEntity.root) {
-            return ++lastKey
+            lastKey++
+            return persistentEntity.identity.type == String ? lastKey.toString() : lastKey 
         }
         def root = persistentEntity.rootEntity
-        return ++session.getPersister(root).lastKey
+        def key = session.getPersister(root).lastKey
+        key++
+        return root.identity.type == String ? key.toString() : key
     }
 
     protected storeEntry(PersistentEntity persistentEntity, storeId, Map nativeEntry) {
