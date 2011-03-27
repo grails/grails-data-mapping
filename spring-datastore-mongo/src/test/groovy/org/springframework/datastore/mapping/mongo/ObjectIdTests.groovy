@@ -1,30 +1,31 @@
 package org.springframework.datastore.mapping.mongo
 
+import org.bson.types.ObjectId
 import org.junit.Test
 
-class BasicPersistenceSpec {
+class ObjectIdTests {
 
     @Test
     void testBasicPersistenceOperations() {
         def md = new MongoDatastore()
         md.afterPropertiesSet()
-        md.mappingContext.addPersistentEntity(TestEntity)
+        md.mappingContext.addPersistentEntity(MongoObjectIdEntity)
 
         MongoSession session = md.connect()
 
         session.nativeInterface.dropDatabase()
 
-        def te = new TestEntity(name:"Bob")
+        def te = new MongoObjectIdEntity(name:"Bob")
 
         session.persist te
         session.flush()
 
         assert te != null
         assert te.id != null
-        assert te.id instanceof Long
+        assert te.id instanceof ObjectId
 
         session.clear()
-        te = session.retrieve(TestEntity, te.id)
+        te = session.retrieve(MongoObjectIdEntity, te.id)
 
         assert te != null
         assert te.name == "Bob"
@@ -34,7 +35,7 @@ class BasicPersistenceSpec {
         session.flush()
         session.clear()
 
-        te = session.retrieve(TestEntity, te.id)
+        te = session.retrieve(MongoObjectIdEntity, te.id)
         assert te != null
         assert te.id != null
         assert te.name == 'Fred'
@@ -42,12 +43,12 @@ class BasicPersistenceSpec {
         session.delete te
         session.flush()
 
-        te = session.retrieve(TestEntity, te.id)
+        te = session.retrieve(MongoObjectIdEntity, te.id)
         assert te == null
     }
 }
 
-class TestEntity {
-    Long id
+class MongoObjectIdEntity {
+    ObjectId id
     String name
 }

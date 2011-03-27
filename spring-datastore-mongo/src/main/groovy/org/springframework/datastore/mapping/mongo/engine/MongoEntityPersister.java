@@ -64,6 +64,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     private static final String NEXT_ID_SUFFIX = ".next_id";
     private MongoTemplate mongoTemplate;
     private boolean hasNumericalIdentifier = false;
+    private boolean hasStringIdentifier = false;
 
     public static final String MONGO_ID_FIELD = "_id";
     public static final String MONGO_CLASS_FIELD = "_class";
@@ -89,6 +90,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         mongoTemplate = datastore.getMongoTemplate(entity);
 
         hasNumericalIdentifier = Long.class.isAssignableFrom(entity.getIdentity().getType());
+        hasStringIdentifier = String.class.isAssignableFrom(entity.getIdentity().getType());
     }
 
     public Query createQuery() {
@@ -141,13 +143,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             public Object doInDB(DB con) throws MongoException, DataAccessException {
                 DBCollection dbCollection = getCollection(con);
 
-                DBObject dbo = new BasicDBObject();
-                if (hasNumericalIdentifier) {
-                    dbo.put(MONGO_ID_FIELD, key);
-                }
-                else {
-                    dbo.put(MONGO_ID_FIELD, new ObjectId(key.toString()));
-                }
+                DBObject dbo = createDBObjectWithKey(key);
                 MongoSession mongoSession = (MongoSession) session;
                 dbCollection.remove(dbo, mongoSession.getWriteConcern());
                 return null;
@@ -178,7 +174,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
                         long nextId;
                         if (result.hasNext()) {
-                            final Long current = getMappingContext().getConversionService().convert(result.next().get(MONGO_ID_FIELD), Long.class);
+                            final Long current = getMappingContext().getConversionService().convert(
+                                   result.next().get(MONGO_ID_FIELD), Long.class);
                             nextId = current + 1;
                         }
                         else {
@@ -291,19 +288,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         return mongoTemplate.execute(new DbCallback<DBObject>() {
             public DBObject doInDB(DB con) throws MongoException, DataAccessException {
                 DBCollection dbCollection = con.getCollection(getCollectionName(persistentEntity));
-
-                DBObject dbo = new BasicDBObject();
-                if (hasNumericalIdentifier) {
-                    dbo.put(MONGO_ID_FIELD, key );
-                }
-                else {
-                    if (key instanceof ObjectId) {
-                        dbo.put(MONGO_ID_FIELD, key);
-                    }
-                    else {
-                        dbo.put(MONGO_ID_FIELD, new ObjectId(key.toString()) );
-                    }
-                }
+                DBObject dbo = createDBObjectWithKey(key);
                 return dbCollection.findOne(dbo);
             }
         });
@@ -351,13 +336,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             public Object doInDB(DB con) throws MongoException, DataAccessException {
                 String collectionName = getCollectionName(persistentEntity, entry);
                 DBCollection dbCollection = con.getCollection(collectionName);
-                DBObject dbo = new BasicDBObject();
-                if (hasNumericalIdentifier) {
-                    dbo.put(MONGO_ID_FIELD, key);
-                }
-                else {
-                    dbo.put(MONGO_ID_FIELD, new ObjectId(key.toString()));
-                }
+                DBObject dbo = createDBObjectWithKey(key);
                 MongoSession mongoSession = (MongoSession) session;
                 dbCollection.update(dbo, entry, false, false, mongoSession.getWriteConcern());
                 return null;
@@ -381,6 +360,22 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 return null;
             }
         });
+    }
+
+     protected DBObject createDBObjectWithKey(Object key) {
+        DBObject dbo = new BasicDBObject();
+        if (hasNumericalIdentifier || hasStringIdentifier) {
+            dbo.put(MONGO_ID_FIELD, key);
+        }
+        else {
+            if (key instanceof ObjectId) {
+                dbo.put(MONGO_ID_FIELD, key);
+            }
+            else {
+                dbo.put(MONGO_ID_FIELD, new ObjectId(key.toString()));
+            }
+        }
+        return dbo;
     }
 
     @SuppressWarnings("rawtypes")
