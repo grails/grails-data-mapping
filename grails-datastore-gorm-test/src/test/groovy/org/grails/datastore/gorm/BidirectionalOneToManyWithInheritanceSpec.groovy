@@ -15,7 +15,7 @@ class BidirectionalOneToManyWithInheritanceSpec extends GormDatastoreSpec {
             def doc = new Documentation()
 
             doc.addToConfigurationItems(new ChangeRequest())
-              .addToConfigurationItems(new Documentation())
+                .addToConfigurationItems(new Documentation())
 
         when:
             doc.save(flush:true)

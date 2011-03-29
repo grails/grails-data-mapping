@@ -195,10 +195,12 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
             lastKey++
             return persistentEntity.identity.type == String ? lastKey.toString() : lastKey 
         }
-        def root = persistentEntity.rootEntity
-        def key = session.getPersister(root).lastKey
-        key++
-        return root.identity.type == String ? key.toString() : key
+        else {
+            def root = persistentEntity.rootEntity
+            session.getPersister(root).lastKey++
+            def key = session.getPersister(root).lastKey
+            return root.identity.type == String ? key.toString() : key
+        }
     }
 
     protected storeEntry(PersistentEntity persistentEntity, storeId, Map nativeEntry) {
