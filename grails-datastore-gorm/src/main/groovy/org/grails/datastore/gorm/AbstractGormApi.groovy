@@ -21,6 +21,7 @@ abstract class AbstractGormApi {
         'setMetaClass',
         'invokeMethod',
         'getMethods',
+        'getExtendedMethods',
         'wait',
         'equals',
         'toString',
@@ -34,24 +35,30 @@ abstract class AbstractGormApi {
     protected Class persistentClass
     protected PersistentEntity persistentEntity
     protected Datastore datastore
-    private List<Method> methods
+    private List<Method> methods = []
+    private List<Method> extendedMethods = []
 
     AbstractGormApi(Class persistentClass, Datastore datastore) {
         this.persistentClass = persistentClass;
         this.datastore = datastore
         this.persistentEntity = datastore.getMappingContext().getPersistentEntity(persistentClass.name)
-        this.methods = []
 
         final clazz = getClass()
         while(clazz != Object) {
-            methods.addAll ( clazz.declaredMethods.findAll { Method m ->
+            final methodsToAdd = clazz.declaredMethods.findAll { Method m ->
                 def mods = m.getModifiers()
                 !m.isSynthetic() && !Modifier.isStatic(mods) && Modifier.isPublic(mods) &&
-                    !AbstractGormApi.EXCLUDES.contains(m.name)
-            })
+                        !AbstractGormApi.EXCLUDES.contains(m.name)
+            }
+            methods.addAll ( methodsToAdd )
+            if(clazz != GormStaticApi && clazz != GormInstanceApi && clazz != GormValidationApi && clazz != AbstractGormApi) {
+                extendedMethods.addAll( methodsToAdd )
+            }
             clazz = clazz.getSuperclass()
         }
     }
 
     List<Method> getMethods() { methods }
+
+    List<Method> getExtendedMethods() { extendedMethods }
 }
