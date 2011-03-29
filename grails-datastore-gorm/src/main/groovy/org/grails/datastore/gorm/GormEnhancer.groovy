@@ -49,13 +49,24 @@ class GormEnhancer {
         this.transactionManager = transactionManager
     }
 
-    void enhance() {
+    /**
+     * Enhances all persistent entities
+     *
+     * @param onlyExtendedMethods If only to add additional methods provides by subclasses of the GORM APIs
+     */
+    void enhance(boolean onlyExtendedMethods = false) {
         for (PersistentEntity e in datastore.mappingContext.persistentEntities) {
             enhance e
         }
     }
 
-    void enhance(PersistentEntity e) {
+    /**
+     * Enhance and individual entity
+     *
+     * @param e The entity
+     * @param onlyExtendedMethods If only to add additional methods provides by subclasses of the GORM APIs
+     */
+    void enhance(PersistentEntity e, boolean onlyExtendedMethods = false) {
         def cls = e.javaClass
         def cpf = ClassPropertyFetcher.forClass(cls)
         def staticMethods = getStaticApi(cls)
@@ -73,7 +84,7 @@ class GormEnhancer {
         ExpandoMetaClass mc = cls.metaClass
         for (currentInstanceMethods in instanceMethods) {
             def apiProvider = currentInstanceMethods
-            for (Method method in apiProvider.methods) {
+            for (Method method in (onlyExtendedMethods ? apiProvider.extendedMethods : apiProvider.methods)) {
                 def methodName = method.name
                 def parameterTypes = method.parameterTypes
 
@@ -150,7 +161,7 @@ class GormEnhancer {
         }
 
         def staticScope = mc.static
-        for (Method m in staticMethods.methods) {
+        for (Method m in (onlyExtendedMethods ? staticMethods.extendedMethods : staticMethods.methods)) {
             def method = m
             if (method != null) {
                 def methodName = method.name
