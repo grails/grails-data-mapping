@@ -15,10 +15,11 @@
 
 package org.grails.datastore.gorm.query
 
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.gorm.finders.DynamicFinder
 import java.lang.reflect.Modifier
+
+import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
+import org.springframework.datastore.mapping.model.PersistentEntity
 
 /**
  * Handles creation of named queries
@@ -28,34 +29,32 @@ import org.grails.datastore.gorm.finders.FinderMethod
  */
 class NamedQueriesBuilder {
 
-  PersistentEntity entity
-  List finders
-  boolean initialized = false
+    PersistentEntity entity
+    List finders
+    boolean initialized = false
 
+    NamedQueriesBuilder(PersistentEntity entity, List<DynamicFinder> finders) {
+        this.entity = entity;
+        this.finders = finders;
+    }
 
-
-  NamedQueriesBuilder(PersistentEntity entity, List<DynamicFinder> finders) {
-    this.entity = entity;
-    this.finders = finders;
-  }
-
-  def evaluate(Closure namedQueriesClosure) {
+    def evaluate(Closure namedQueriesClosure) {
         def closure = namedQueriesClosure.clone()
         closure.resolveStrategy = Closure.DELEGATE_ONLY
         closure.delegate = this
         closure.call()
         initialized = true
-  }
+    }
 
-  private handleMethodMissing = {String name, args ->
-      def propertyName = name[0].toUpperCase() + name[1..-1]
-      def javaClass = entity.javaClass
-      javaClass.metaClass.static."get${propertyName}" = {->
-          // creating a new proxy each time because the proxy class has
-          // some state that cannot be shared across requests (namedCriteriaParams)
-          new NamedCriteriaProxy(criteriaClosure: args[0], entity: entity, finders: finders)
-      }
-  }
+    private handleMethodMissing = {String name, args ->
+        def propertyName = name[0].toUpperCase() + name[1..-1]
+        def javaClass = entity.javaClass
+        javaClass.metaClass.static."get${propertyName}" = {->
+            // creating a new proxy each time because the proxy class has
+            // some state that cannot be shared across requests (namedCriteriaParams)
+            new NamedCriteriaProxy(criteriaClosure: args[0], entity: entity, finders: finders)
+        }
+    }
 
     def methodMissing(String name, args) {
         if (args && args[0] instanceof Closure && !initialized) {
@@ -94,10 +93,9 @@ class NamedCriteriaProxy {
             if (paramsMap?.offset) {
                 firstResult conversionService.convert(paramsMap.offset, Integer)
             }
-            if(paramsMap) {
-              DynamicFinder.populateArgumentsForCriteria(entity.javaClass, queryBuilder.query, paramsMap)
+            if (paramsMap) {
+                DynamicFinder.populateArgumentsForCriteria(entity.javaClass, queryBuilder.query, paramsMap)
             }
-
         }
         entity.javaClass.withCriteria(listClosure)
     }
@@ -114,9 +112,9 @@ class NamedCriteriaProxy {
         if (params && params[-1] instanceof Closure) {
             def additionalCriteriaClosure = params[-1]
             params = params.length > 1 ? params[0..-2] : [:]
-            if(params) {
-                if(params[-1] instanceof Map) {
-                    if(params.length > 1) {
+            if (params) {
+                if (params[-1] instanceof Map) {
+                    if (params.length > 1) {
                         namedCriteriaParams = params[0..-2] as Object[]
                     }
                 } else {

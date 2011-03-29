@@ -14,15 +14,15 @@
  */
 package org.grails.datastore.gorm.events;
 
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.engine.EmptyInterceptor;
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
-
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An interceptor that adds support for GORM-style auto-timestamping
@@ -39,11 +39,11 @@ public class AutoTimestampInterceptor extends EmptyInterceptor implements Mappin
 
     @Override
     public boolean beforeInsert(PersistentEntity entity, EntityAccess ea) {
-     if(hasDateCreated(entity)) {
+     if (hasDateCreated(entity)) {
             final Date now = new Date();
             ea.setProperty(DATE_CREATED_PROPERTY, now);
 
-            if(hasLastupdated(entity)) {
+            if (hasLastupdated(entity)) {
                 ea.setProperty(LAST_UPDATED_PROPERTY, now);
             }
         }
@@ -52,12 +52,11 @@ public class AutoTimestampInterceptor extends EmptyInterceptor implements Mappin
 
     @Override
     public boolean beforeUpdate(PersistentEntity entity, EntityAccess ea) {
-     if(hasLastupdated(entity)) {
+        if (hasLastupdated(entity)) {
             ea.setProperty(LAST_UPDATED_PROPERTY, new Date());
         }
         return true;
     }
-
 
     private boolean hasLastupdated(PersistentEntity entity) {
         return entitiesWithLastUpdated.containsKey(entity) && entitiesWithLastUpdated.get(entity);
@@ -66,8 +65,6 @@ public class AutoTimestampInterceptor extends EmptyInterceptor implements Mappin
     private boolean hasDateCreated(PersistentEntity entity) {
         return entitiesWithDateCreated.containsKey(entity)&& entitiesWithDateCreated.get(entity);
     }
-
-
 
     @Override
     public void setDatastore(Datastore datastore) {

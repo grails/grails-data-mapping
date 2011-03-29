@@ -24,13 +24,13 @@ import java.util.AbstractList;
  * @author J. Brisbin <jon@jbrisbin.com>
  */
 public class RiakList extends AbstractList {
-  @Override
-  public Object get(int i) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
+    @Override
+    public Object get(int i) {
+        return null;
+    }
 
-  @Override
-  public int size() {
-    return 0;  //To change body of implemented methods use File | Settings | File Templates.
-  }
+    @Override
+    public int size() {
+        return 0;
+    }
 }

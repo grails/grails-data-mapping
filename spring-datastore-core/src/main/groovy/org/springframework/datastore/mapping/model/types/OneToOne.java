@@ -14,14 +14,14 @@
  */
 package org.springframework.datastore.mapping.model.types;
 
+import java.beans.PropertyDescriptor;
+
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
-import java.beans.PropertyDescriptor;
-
 /**
  * Models a one-to-one association
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
  */

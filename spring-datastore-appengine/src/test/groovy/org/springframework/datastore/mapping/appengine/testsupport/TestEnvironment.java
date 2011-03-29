@@ -1,15 +1,14 @@
 package org.springframework.datastore.mapping.appengine.testsupport;
 
-
-import com.google.apphosting.api.ApiProxy;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.google.apphosting.api.ApiProxy;
 
 /**
  * Test environment stub taken from the
  * <a href="http://code.google.com/intl/fr/appengine/docs/java/howto/unittesting.html">Google App Engine testing documentation</a>.
- * 
+ *
  * @author Guillaume Laforge
  */
 public class TestEnvironment implements ApiProxy.Environment {

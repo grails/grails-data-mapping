@@ -14,6 +14,8 @@
  */
 package org.springframework.datastore.mapping.transactions;
 
+import javax.persistence.FlushModeType;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.mapping.core.ConnectionNotFoundException;
@@ -27,8 +29,7 @@ import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.support.AbstractPlatformTransactionManager;
 import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import javax.persistence.FlushModeType;
+import org.springframework.util.Assert;
 
 /**
  * A {@link org.springframework.transaction.PlatformTransactionManager} instance that
@@ -37,6 +38,7 @@ import javax.persistence.FlushModeType;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("serial")
 public class DatastoreTransactionManager extends AbstractPlatformTransactionManager {
 
     private Datastore datastore;
@@ -47,7 +49,7 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
     }
 
     public Datastore getDatastore() {
-        if(datastore == null) throw new IllegalStateException("Cannot use DatastoreTransactionManager without a datastore set!");
+        Assert.notNull(datastore, "Cannot use DatastoreTransactionManager without a datastore set!");
         return datastore;
     }
 
@@ -57,136 +59,128 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
 
     @Override
     protected Object doGetTransaction() throws TransactionException {
-		TransactionObject txObject = new TransactionObject();
+        TransactionObject txObject = new TransactionObject();
 
-		SessionHolder sessionHolder =
-				(SessionHolder) TransactionSynchronizationManager.getResource(getDatastore());
-		if (sessionHolder != null) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Found thread-bound Session [" +
-						            sessionHolder.getSession() + "] for Datastore transaction");
-			}
-			txObject.setSessionHolder(sessionHolder);
-		}
-		else if (this.datastoreManagedSession) {
-			try {
-				Session session = getDatastore().getCurrentSession();
-				if (logger.isDebugEnabled()) {
-					logger.debug("Found Datastore-managed Session [" +
-							session + "] for Spring-managed transaction");
-				}
-				txObject.setExistingSession(session);
-			}
-			catch (ConnectionNotFoundException ex) {
-				throw new DataAccessResourceFailureException(
-						"Could not obtain Datastore-managed Session for Spring-managed transaction", ex);
-			}
-		}
+        SessionHolder sessionHolder =
+            (SessionHolder) TransactionSynchronizationManager.getResource(getDatastore());
+        if (sessionHolder != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Found thread-bound Session [" +
+                        sessionHolder.getSession() + "] for Datastore transaction");
+            }
+            txObject.setSessionHolder(sessionHolder);
+        }
+        else if (datastoreManagedSession) {
+            try {
+                Session session = getDatastore().getCurrentSession();
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Found Datastore-managed Session [" +
+                            session + "] for Spring-managed transaction");
+                }
+                txObject.setExistingSession(session);
+            }
+            catch (ConnectionNotFoundException ex) {
+                throw new DataAccessResourceFailureException(
+                        "Could not obtain Datastore-managed Session for Spring-managed transaction", ex);
+            }
+        }
         else {
             Session session = getDatastore().connect();
             txObject.setSession(session);
         }
 
-
-		return txObject;
+        return txObject;
     }
 
     @Override
     protected void doBegin(Object o, TransactionDefinition definition) throws TransactionException {
         TransactionObject txObject = (TransactionObject) o;
 
+        Session session = null;
+        try {
+            session = txObject.getSessionHolder().getSession();
 
-		Session session = null;
+            if (definition.isReadOnly()) {
+                // Just set to NEVER in case of a new Session for this transaction.
+                session.setFlushMode(FlushModeType.COMMIT);
+            }
 
-		try {
-			session = txObject.getSessionHolder().getSession();
+            Transaction tx;
+            // Register transaction timeout.
+            int timeout = determineTimeout(definition);
+            if (timeout != TransactionDefinition.TIMEOUT_DEFAULT) {
+                tx = session.beginTransaction();
+                tx.setTimeout(timeout);
+            }
+            else {
+                // Open a plain Datastore transaction without specified timeout.
+                tx = session.beginTransaction();
+            }
 
+            // Add the Datastore transaction to the session holder.
+            txObject.setTransaction(tx);
 
-			if (definition.isReadOnly()) {
-				// Just set to NEVER in case of a new Session for this transaction.
-				session.setFlushMode(FlushModeType.COMMIT);
-			}
-
-			Transaction tx;
-
-			// Register transaction timeout.
-			int timeout = determineTimeout(definition);
-			if (timeout != TransactionDefinition.TIMEOUT_DEFAULT) {
-				tx = session.beginTransaction();
-				tx.setTimeout(timeout);
-			}
-			else {
-				// Open a plain Datastore transaction without specified timeout.
-				tx = session.beginTransaction();
-			}
-
-			// Add the Datastore transaction to the session holder.
-			txObject.setTransaction(tx);
-
-
-			// Bind the session holder to the thread.
-			if (txObject.isNewSessionHolder()) {
-				TransactionSynchronizationManager.bindResource(getDatastore(), txObject.getSessionHolder());
-			}
-			txObject.getSessionHolder().setSynchronizedWithTransaction(true);
-		}
-
-		catch (Exception ex) {
-			if (txObject.isNewSession()) {
-				try {
-					if (session != null && session.getTransaction().isActive()) {
-						session.getTransaction().rollback();
-					}
-				}
-				catch (Throwable ex2) {
-					logger.debug("Could not rollback Session after failed transaction begin", ex);
-				}
-				finally {
-					DatastoreUtils.closeSession(session);
-				}
-			}
-			throw new CannotCreateTransactionException("Could not open Datastore Session for transaction", ex);
-		}
+            // Bind the session holder to the thread.
+            if (txObject.isNewSessionHolder()) {
+                TransactionSynchronizationManager.bindResource(getDatastore(), txObject.getSessionHolder());
+            }
+            txObject.getSessionHolder().setSynchronizedWithTransaction(true);
+        }
+        catch (Exception ex) {
+            if (txObject.isNewSession()) {
+                try {
+                    if (session != null && session.getTransaction().isActive()) {
+                        session.getTransaction().rollback();
+                    }
+                }
+                catch (Throwable ex2) {
+                    logger.debug("Could not rollback Session after failed transaction begin", ex);
+                }
+                finally {
+                    DatastoreUtils.closeSession(session);
+                }
+            }
+            throw new CannotCreateTransactionException("Could not open Datastore Session for transaction", ex);
+        }
     }
 
     @Override
     protected void doCommit(DefaultTransactionStatus status) throws TransactionException {
-		TransactionObject txObject = (TransactionObject) status.getTransaction();
+        TransactionObject txObject = (TransactionObject) status.getTransaction();
         final SessionHolder sessionHolder = txObject.getSessionHolder();
         if (status.isDebug()) {
-			logger.debug("Committing Datastore transaction on Session [" + sessionHolder.getSession() + "]");
-		}
-		try {
-            if(sessionHolder.getSession() != null)
+            logger.debug("Committing Datastore transaction on Session [" + sessionHolder.getSession() + "]");
+        }
+        try {
+            if (sessionHolder.getSession() != null)
                 sessionHolder.getSession().flush();
-			txObject.getTransaction().commit();
-		}
-		catch (DataAccessException ex) {
-			throw new TransactionSystemException("Could not commit Datastore transaction", ex);
-		}
-
+            txObject.getTransaction().commit();
+        }
+        catch (DataAccessException ex) {
+            throw new TransactionSystemException("Could not commit Datastore transaction", ex);
+        }
     }
 
     @Override
     protected void doRollback(DefaultTransactionStatus status) throws TransactionException {
-		TransactionObject txObject = (TransactionObject) status.getTransaction();
+        TransactionObject txObject = (TransactionObject) status.getTransaction();
         final SessionHolder sessionHolder = txObject.getSessionHolder();
         if (status.isDebug()) {
-			logger.debug("Rolling back Datastore transaction on Session [" +
-					    sessionHolder.getSession() + "]");
-		}
-		try {
-			txObject.getTransaction().rollback();
-		}
+            logger.debug("Rolling back Datastore transaction on Session [" +
+                    sessionHolder.getSession() + "]");
+        }
+        try {
+            txObject.getTransaction().rollback();
+        }
         catch (DataAccessException ex) {
             throw new TransactionSystemException("Could not rollback Datastore transaction", ex);
         }
-
-		finally {
+        finally {
             // Clear all pending inserts/updates/deletes in the Session.
             // Necessary for pre-bound Sessions, to avoid inconsistent state.
-            if(sessionHolder.getSession() != null)
+            if (sessionHolder.getSession() != null) {
                 sessionHolder.getSession().clear();
-		}
+            }
+        }
     }
 }

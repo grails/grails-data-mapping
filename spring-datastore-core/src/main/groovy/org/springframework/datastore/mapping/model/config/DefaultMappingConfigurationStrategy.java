@@ -14,15 +14,28 @@
  */
 package org.springframework.datastore.mapping.model.config;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.datastore.mapping.annotation.Entity;
 import org.springframework.datastore.mapping.annotation.Id;
-import org.springframework.datastore.mapping.model.*;
+import org.springframework.datastore.mapping.model.ClassMapping;
+import org.springframework.datastore.mapping.model.IdentityMapping;
+import org.springframework.datastore.mapping.model.IllegalMappingException;
+import org.springframework.datastore.mapping.model.MappingConfigurationStrategy;
+import org.springframework.datastore.mapping.model.MappingContext;
+import org.springframework.datastore.mapping.model.MappingFactory;
+import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher;
-
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-import java.util.*;
 
 /**
  * @author Graeme Rocher
@@ -30,9 +43,7 @@ import java.util.*;
  */
 public class DefaultMappingConfigurationStrategy implements MappingConfigurationStrategy {
 
-    private static final Set EXCLUDED_PROPERTIES = new HashSet() {{
-        add("class"); add("metaClass");
-    }};
+    private static final Set EXCLUDED_PROPERTIES = new HashSet(Arrays.asList("class", "metaClass"));
 
     private MappingFactory propertyFactory;
 
@@ -45,19 +56,17 @@ public class DefaultMappingConfigurationStrategy implements MappingConfiguration
         return id != null && id.getIdentifierName()[0].equals(propertyName) || EXCLUDED_PROPERTIES.contains(propertyName) || transients.contains(propertyName);
     }
 
-
     public boolean isPersistentEntity(Class javaClass) {
         return AnnotationUtils.findAnnotation(javaClass, Entity.class) != null;
     }
 
     public List<PersistentProperty> getPersistentProperties(Class javaClass, MappingContext context) {
         return getPersistentProperties(javaClass, context, null);
-
     }
 
     private PersistentEntity getPersistentEntity(Class javaClass, MappingContext context, ClassMapping classMapping) {
         PersistentEntity entity;
-        if(classMapping != null)
+        if (classMapping != null)
             entity = classMapping.getEntity();
         else
             entity = context.getPersistentEntity(javaClass.getName());
@@ -69,18 +78,17 @@ public class DefaultMappingConfigurationStrategy implements MappingConfiguration
 
         final ArrayList<PersistentProperty> persistentProperties = new ArrayList<PersistentProperty>();
 
-        if(entity != null) {
+        if (entity != null) {
             ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
             PropertyDescriptor[] descriptors = cpf.getPropertyDescriptors();
 
             for (PropertyDescriptor descriptor : descriptors) {
                 final String propertyName = descriptor.getName();
-                if(isExcludedProperty(propertyName, mapping, Collections.emptyList())) continue;
-                if(MappingFactory.isSimpleType(descriptor.getPropertyType())) {
+                if (isExcludedProperty(propertyName, mapping, Collections.emptyList())) continue;
+                if (MappingFactory.isSimpleType(descriptor.getPropertyType())) {
                     persistentProperties.add( propertyFactory.createSimple(entity, context, descriptor) );
                 }
             }
-
         }
 
         return persistentProperties;
@@ -91,7 +99,7 @@ public class DefaultMappingConfigurationStrategy implements MappingConfiguration
 
         for (Field field : cpf.getJavaClass().getDeclaredFields()) {
             final Id annotation = field.getAnnotation(Id.class);
-            if(annotation != null) {
+            if (annotation != null) {
                 PersistentEntity entity = context.getPersistentEntity(javaClass.getName());
                 PropertyDescriptor pd = cpf.getPropertyDescriptor(field.getName());
                 return propertyFactory.createIdentity(entity , context, pd);

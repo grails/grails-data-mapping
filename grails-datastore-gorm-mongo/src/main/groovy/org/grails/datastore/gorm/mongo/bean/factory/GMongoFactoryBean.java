@@ -12,18 +12,15 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-
-
 package org.grails.datastore.gorm.mongo.bean.factory;
 
+import java.net.UnknownHostException;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.datastore.mapping.model.DatastoreConfigurationException;
 import org.springframework.util.Assert;
 
@@ -34,101 +31,96 @@ import com.mongodb.ServerAddress;
 
 /**
  * A Factory bean for initializing a {@link GMongo} instance
- * 
- * @author Graeme Rocher
  *
+ * @author Graeme Rocher
  */
-public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/*, 
-	PersistenceExceptionTranslator*/ {
+public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/*,
+    PersistenceExceptionTranslator*/ {
 
-	
+    /**
+     * Logger, available to subclasses.
+     */
+    protected final Log logger = LogFactory.getLog(getClass());
 
-	/**
-	 * Logger, available to subclasses.
-	 */
-	protected final Log logger = LogFactory.getLog(getClass());
-	
-	private GMongo mongo;
-	private MongoOptions mongoOptions;
-	private String host;
-	private Integer port;
-	private List<ServerAddress> replicaSetSeeds;
-	private List<ServerAddress> replicaPair;
-	
-		
-	
-	public void setReplicaPair(List<ServerAddress> replicaPair) {
-		this.replicaPair = replicaPair;
-	}
+    private GMongo mongo;
+    private MongoOptions mongoOptions;
+    private String host;
+    private Integer port;
+    private List<ServerAddress> replicaSetSeeds;
+    private List<ServerAddress> replicaPair;
 
-	public void setReplicaSetSeeds(List<ServerAddress> replicaSetSeeds) {
-		this.replicaSetSeeds = replicaSetSeeds;
-	}
+    public void setReplicaPair(List<ServerAddress> replicaPair) {
+        this.replicaPair = replicaPair;
+    }
 
-	public void setMongoOptions(MongoOptions mongoOptions) {
-		this.mongoOptions = mongoOptions;
-	}
-	
-	public void setHost(String host) {
-		this.host = host;
-	}
-	
-	public void setPort(int port) {
-		this.port = port;
-	}
-	
-	public GMongo getObject() throws Exception {
-		Assert.notNull(mongo, "Mongo must not be null");
-		return mongo;
-	}
-	
-	public Class<? extends GMongo> getObjectType() {
-		return GMongo.class;
-	}
-	
-	public boolean isSingleton() {
-		return false;
-	}
-	
-	public void afterPropertiesSet() throws Exception {
-		// apply defaults - convenient when used to configure for tests 
-		// in an application context
-		if (mongo == null) {
-			
-			ServerAddress defaultOptions = new ServerAddress();
-			if(mongoOptions == null) mongoOptions = new MongoOptions();
-			if(replicaPair != null) {
-				if(replicaPair.size() < 2) {
-					throw new DatastoreConfigurationException("A replica pair must have two server entries");							
-				}
-				mongo = new GMongo(replicaPair.get(0), replicaPair.get(1), mongoOptions);
-			}
-			else if(replicaSetSeeds != null) {
-				initialiseReplicaSets(mongoOptions);
-			}
-			else {
-				String mongoHost = host != null ? host : defaultOptions.getHost();
-				if(port != null) {
-					mongo = new GMongo(new ServerAddress(mongoHost, port), mongoOptions);
-				}
-				else {
-					mongo = new GMongo(mongoHost, mongoOptions);
-				}						
-			}					
-		}
-	}
+    public void setReplicaSetSeeds(List<ServerAddress> replicaSetSeeds) {
+        this.replicaSetSeeds = replicaSetSeeds;
+    }
 
-	public void initialiseReplicaSets(MongoOptions mo) {
-		// TODO: Awful hack since GMongo doesn't support replicaSets
-		Mongo mongoInstance = new Mongo(replicaSetSeeds, mo);
-		mongo = new GMongo(replicaSetSeeds.get(0), mo);
-		mongo.getMongo().close();
-		mongo.setMongo(mongoInstance);
-	}
-	
-//	public DataAccessException translateExceptionIfPossible(RuntimeException ex) {
-//		logger.debug("Translating " + ex);
-//		return MongoDbUtils.translateMongoExceptionIfPossible(ex);
-//	}
+    public void setMongoOptions(MongoOptions mongoOptions) {
+        this.mongoOptions = mongoOptions;
+    }
 
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public GMongo getObject() throws Exception {
+        Assert.notNull(mongo, "Mongo must not be null");
+        return mongo;
+    }
+
+    public Class<? extends GMongo> getObjectType() {
+        return GMongo.class;
+    }
+
+    public boolean isSingleton() {
+        return false;
+    }
+
+    public void afterPropertiesSet() throws UnknownHostException {
+        // apply defaults - convenient when used to configure for tests
+        // in an application context
+        if (mongo != null) {
+            return;
+        }
+
+        ServerAddress defaultOptions = new ServerAddress();
+        if (mongoOptions == null) mongoOptions = new MongoOptions();
+        if (replicaPair != null) {
+            if (replicaPair.size() < 2) {
+                throw new DatastoreConfigurationException("A replica pair must have two server entries");
+            }
+            mongo = new GMongo(replicaPair.get(0), replicaPair.get(1), mongoOptions);
+        }
+        else if (replicaSetSeeds != null) {
+            initialiseReplicaSets(mongoOptions);
+        }
+        else {
+            String mongoHost = host != null ? host : defaultOptions.getHost();
+            if (port != null) {
+                mongo = new GMongo(new ServerAddress(mongoHost, port), mongoOptions);
+            }
+            else {
+                mongo = new GMongo(mongoHost, mongoOptions);
+            }
+        }
+    }
+
+    public void initialiseReplicaSets(MongoOptions mo) {
+        // TODO: Awful hack since GMongo doesn't support replicaSets
+        Mongo mongoInstance = new Mongo(replicaSetSeeds, mo);
+        mongo = new GMongo(replicaSetSeeds.get(0), mo);
+        mongo.getMongo().close();
+        mongo.setMongo(mongoInstance);
+    }
+
+//    public DataAccessException translateExceptionIfPossible(RuntimeException ex) {
+//        logger.debug("Translating " + ex);
+//        return MongoDbUtils.translateMongoExceptionIfPossible(ex);
+//    }
 }

@@ -12,47 +12,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 package org.springframework.datastore.mapping.mongo.config;
 
 import org.springframework.datastore.mapping.config.AbstractGormMappingFactory;
-import org.springframework.datastore.mapping.document.config.Attribute;
 import org.springframework.datastore.mapping.document.config.DocumentMappingContext;
-import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.MappingFactory;
 
 /**
  * Models a {@link MappingContext} for Mongo
- * 
- * @author Graeme Rocher
  *
+ * @author Graeme Rocher
  */
-
 public class MongoMappingContext extends DocumentMappingContext {
 
-	private final class MongoDocumentMappingFactory extends
-			AbstractGormMappingFactory<MongoCollection, MongoAttribute> {
-		@Override
-		protected Class<MongoAttribute> getPropertyMappedFormType() {
-			return MongoAttribute.class;
-		}
+    private final class MongoDocumentMappingFactory extends
+            AbstractGormMappingFactory<MongoCollection, MongoAttribute> {
+        @Override
+        protected Class<MongoAttribute> getPropertyMappedFormType() {
+            return MongoAttribute.class;
+        }
 
-		@Override
-		protected Class<MongoCollection> getEntityMappedFormType() {
-			return MongoCollection.class;
-		}
-	}
+        @Override
+        protected Class<MongoCollection> getEntityMappedFormType() {
+            return MongoCollection.class;
+        }
+    }
 
-	public MongoMappingContext(String defaultDatabaseName) {
-		super(defaultDatabaseName);
-	}
-	
-	@SuppressWarnings("rawtypes")
-	@Override
-	protected MappingFactory createDocumentMappingFactory() {
-		return new MongoDocumentMappingFactory();
-	}
+    public MongoMappingContext(String defaultDatabaseName) {
+        super(defaultDatabaseName);
+    }
 
-
+    @SuppressWarnings("rawtypes")
+    @Override
+    protected MappingFactory createDocumentMappingFactory() {
+        return new MongoDocumentMappingFactory();
+    }
 }

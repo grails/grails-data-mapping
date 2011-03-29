@@ -19,22 +19,20 @@ import java.util.List;
 
 /**
  * Provides a default implementation to execute a pending operation
- * 
- * @author Graeme Rocher
  *
+ * @author Graeme Rocher
  */
 public class PendingOperationExecution {
-	
-	public static void executePendingInsert(PendingOperation pendingInsert) {
-		List<PendingOperation> preOperations = pendingInsert.getPreOperations();
-		for (PendingOperation preOperation : preOperations) {
-			preOperation.run();
-		}
-		pendingInsert.run();
-		List<PendingOperation> cascadeOperations = pendingInsert.getCascadeOperations();
-		for (PendingOperation cascadeOperation : cascadeOperations) {
-			cascadeOperation.run();
-		}
-	}
 
+    public static void executePendingInsert(PendingOperation pendingInsert) {
+        List<PendingOperation> preOperations = pendingInsert.getPreOperations();
+        for (PendingOperation preOperation : preOperations) {
+            preOperation.run();
+        }
+        pendingInsert.run();
+        List<PendingOperation> cascadeOperations = pendingInsert.getCascadeOperations();
+        for (PendingOperation cascadeOperation : cascadeOperations) {
+            cascadeOperation.run();
+        }
+    }
 }

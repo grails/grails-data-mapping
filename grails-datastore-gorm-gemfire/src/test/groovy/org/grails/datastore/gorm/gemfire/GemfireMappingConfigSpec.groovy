@@ -1,41 +1,38 @@
 package org.grails.datastore.gorm.gemfire
 
 import grails.gorm.tests.GormDatastoreSpec
-import com.gemstone.gemfire.cache.DataPolicy
+
 import org.springframework.datastore.mapping.gemfire.config.Region
 
+import com.gemstone.gemfire.cache.DataPolicy
+
 /**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: Oct 13, 2010
- * Time: 2:12:35 PM
- * To change this template use File | Settings | File Templates.
+ * @author graemerocher
  */
-class GemfireMappingConfigSpec extends GormDatastoreSpec{
+class GemfireMappingConfigSpec extends GormDatastoreSpec {
 
-      void "Test custom region configuration"() {
+    void "Test custom region configuration"() {
         given:
-          session.mappingContext.addPersistentEntity(CustomConfig)
-
+            session.mappingContext.addPersistentEntity(CustomConfig)
 
         when:
-          def entity = session.mappingContext.getPersistentEntity(CustomConfig.name)
-          Region region = entity.mapping.mappedForm
+            def entity = session.mappingContext.getPersistentEntity(CustomConfig.name)
+            Region region = entity.mapping.mappedForm
 
         then:
-          region != null
-          region.dataPolicy == DataPolicy.PARTITION
-          region.region == "foo"
-      }
+            region != null
+            region.dataPolicy == DataPolicy.PARTITION
+            region.region == "foo"
+    }
 }
 
 class CustomConfig {
 
-  Long id
-  String name
+    Long id
+    String name
 
-  static mapping = {
-    dataPolicy DataPolicy.PARTITION
-    region "foo"
-  }
+    static mapping = {
+        dataPolicy DataPolicy.PARTITION
+        region "foo"
+    }
 }

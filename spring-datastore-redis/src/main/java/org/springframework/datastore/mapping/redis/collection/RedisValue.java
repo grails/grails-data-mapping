@@ -39,10 +39,10 @@ public class RedisValue {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof CharSequence) {
+        if (obj instanceof CharSequence) {
             return toString().equals(obj.toString());
         }
-        if(obj instanceof Number) {
+        if (obj instanceof Number) {
             return toLong().equals(obj);
         }
         return super.equals(obj);

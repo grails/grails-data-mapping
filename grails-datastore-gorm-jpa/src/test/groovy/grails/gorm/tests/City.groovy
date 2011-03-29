@@ -1,11 +1,9 @@
 package grails.gorm.tests
 
-import grails.gorm.JpaEntity 
-import java.math.BigDecimal;
-
+import grails.gorm.JpaEntity
 
 @JpaEntity
 class City extends Location {
-	BigDecimal latitude
-	BigDecimal longitude
+    BigDecimal latitude
+    BigDecimal longitude
 }

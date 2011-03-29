@@ -17,8 +17,6 @@ package org.springframework.datastore.mapping.redis;
 import java.util.HashMap;
 
 /**
- *
- *
  * @author Graeme Rocher
  * @since 1.0
  */
@@ -38,11 +36,9 @@ public class RedisEntry extends HashMap {
     public Object get(Object o) {
 
         final Object val = super.get(o);
-        if(val != null) {
+        if (val != null) {
             return val;
         }
-        else {
-            return null;
-        }
+        return null;
     }
 }

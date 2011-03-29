@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.datastore.mapping.riak.collection;
 
 import java.util.Collection;
@@ -24,7 +23,5 @@ import java.util.Collection;
  * @author J. Brisbin <jon@jbrisbin.com>
  */
 public interface RiakCollection<T> extends Collection {
-
-  public String getBucket();
-
+    String getBucket();
 }

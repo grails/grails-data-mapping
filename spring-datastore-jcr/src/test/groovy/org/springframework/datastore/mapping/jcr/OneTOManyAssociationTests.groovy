@@ -1,8 +1,10 @@
 package org.springframework.datastore.mapping.jcr
 
 import grails.persistence.Entity
-import org.junit.Test
+
 import javax.jcr.Session
+
+import org.junit.Test
 
 /**
  * @author Erawat Chamanont
@@ -10,62 +12,60 @@ import javax.jcr.Session
  */
 class OneToManyAssociationTests extends AbstractJcrTest {
 
-  @Test
-  void testOneToManyAssociation() {
-    ds.mappingContext.addPersistentEntity(Author)
+    @Test
+    void testOneToManyAssociation() {
+        ds.mappingContext.addPersistentEntity(Author)
 
-    def a = new Author(name: "Scott Davis")
-    a.books = [new Book(title: "Groovy Recipes"), new Book(title: "JBoss at Work")] as Set
-    conn.persist(a)
-    conn.flush()
+        def a = new Author(name: "Scott Davis")
+        a.books = [new Book(title: "Groovy Recipes"), new Book(title: "JBoss at Work")] as Set
+        conn.persist(a)
+        conn.flush()
 
-    a = conn.retrieve(Author, a.id)
+        a = conn.retrieve(Author, a.id)
 
-    assert null != a.id
-    assert "Scott Davis" == a.name
-    assert null != a.books
-    assert 2 == a.books.size()
+        assert null != a.id
+        assert "Scott Davis" == a.name
+        assert null != a.books
+        assert 2 == a.books.size()
 
-    println a.id
+        println a.id
 
-    def b1 = a.books.find { it.title == 'Groovy Recipes'}
-    assert b1 != null
-    assert b1.id != null
-    assert "Groovy Recipes" == b1.title
+        def b1 = a.books.find { it.title == 'Groovy Recipes'}
+        assert b1 != null
+        assert b1.id != null
+        assert "Groovy Recipes" == b1.title
 
-    println b1.id
+        println b1.id
 
-    def b2 = a.books.find { it.title == 'JBoss at Work'}
-    assert null != b2.id
-    assert "JBoss at Work" == b2.title
+        def b2 = a.books.find { it.title == 'JBoss at Work'}
+        assert null != b2.id
+        assert "JBoss at Work" == b2.title
 
-    println b2.id
+        println b2.id
 
-    conn.delete(a)
-    conn.flush()
+        conn.delete(a)
+        conn.flush()
 
-    Session session = conn.getNativeInterface()
-    if (session.itemExists("/Author")) {
-      session.getRootNode().getNode("Author").getNodes().each {
-        it.remove()
-      }
-      session.save()
+        Session session = conn.getNativeInterface()
+        if (session.itemExists("/Author")) {
+            session.getRootNode().getNode("Author").getNodes().each {
+                it.remove()
+            }
+            session.save()
+        }
     }
-
-  }
-
 }
 
 @Entity
 class Author {
-  String id
-  String name
-  Set books
-  static hasMany = [books: Book]
-}
-@Entity
-class Book {
-  String id
-  String title
+    String id
+    String name
+    Set books
+    static hasMany = [books: Book]
 }
 
+@Entity
+class Book {
+    String id
+    String title
+}

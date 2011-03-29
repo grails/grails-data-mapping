@@ -14,16 +14,17 @@
  */
 package org.springframework.datastore.mapping.cassandra;
 
+import java.util.Map;
+
 import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.CassandraClientPool;
 import me.prettyprint.cassandra.service.CassandraClientPoolFactory;
+
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.keyvalue.mapping.KeyValueMappingContext;
 import org.springframework.datastore.mapping.model.MappingContext;
-import org.springframework.dao.DataAccessResourceFailureException;
-
-import java.util.Map;
 
 /**
  * @author Graeme Rocher
@@ -43,7 +44,7 @@ public class CassandraDatastore extends AbstractDatastore {
     }
 
     @Override
-    protected Session createSession(Map<String, String> connectionDetails) {
+    protected Session createSession(@SuppressWarnings("hiding") Map<String, String> connectionDetails) {
         final CassandraClient client;
         try {
             client = connectionPool.borrowClient("localhost", 9160);

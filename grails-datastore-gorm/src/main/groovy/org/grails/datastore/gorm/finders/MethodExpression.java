@@ -19,19 +19,19 @@ import java.util.Collection;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.query.Query.Criterion;
 import org.springframework.datastore.mapping.query.Restrictions;
+import org.springframework.util.Assert;
 
 /**
  *  Method expression used to evaluate a dynamic finder
  */
 public abstract class MethodExpression {
 
-   protected String propertyName;
-   protected Object[] arguments;
-   protected int argumentsRequired = 1;
-   protected Class<?> targetClass;
+    protected String propertyName;
+    protected Object[] arguments;
+    protected int argumentsRequired = 1;
+    protected Class<?> targetClass;
 
-   public abstract Query.Criterion createCriterion();
-
+    public abstract Query.Criterion createCriterion();
 
     protected MethodExpression(Class<?> targetClass, String propertyName) {
         this.propertyName = propertyName;
@@ -47,7 +47,7 @@ public abstract class MethodExpression {
     }
 
     public static class GreaterThan extends MethodExpression {
-    	public GreaterThan(Class<?> targetClass, String propertyName) {
+        public GreaterThan(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
         }
 
@@ -57,9 +57,8 @@ public abstract class MethodExpression {
         }
     }
 
-
     public static class GreaterThanEquals extends MethodExpression {
-    	public GreaterThanEquals(Class<?> targetClass, String propertyName) {
+        public GreaterThanEquals(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
         }
 
@@ -70,7 +69,7 @@ public abstract class MethodExpression {
     }
 
     public static class LessThan extends MethodExpression {
-    	public LessThan(Class<?> targetClass, String propertyName) {
+        public LessThan(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
         }
 
@@ -81,7 +80,7 @@ public abstract class MethodExpression {
     }
 
     public static class LessThanEquals extends MethodExpression {
-    	public LessThanEquals(Class<?> targetClass, String propertyName) {
+        public LessThanEquals(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
         }
 
@@ -91,9 +90,8 @@ public abstract class MethodExpression {
         }
     }
 
-
     public static class Like extends MethodExpression {
-    	public Like(Class<?> targetClass, String propertyName) {
+        public Like(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
         }
 
@@ -104,7 +102,7 @@ public abstract class MethodExpression {
     }
 
     public static class InList extends MethodExpression {
-    	public InList(Class<?> targetClass, String propertyName) {
+        public InList(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
         }
 
@@ -115,15 +113,15 @@ public abstract class MethodExpression {
 
         @Override
         public void setArguments(Object[] arguments) {
-            if(arguments.length == 0 || !(arguments[0] instanceof Collection))
-                throw new IllegalArgumentException("Only a collection of elements is supported in an 'in' query");
+            Assert.isTrue(arguments.length > 0 && arguments[0] instanceof Collection,
+                "Only a collection of elements is supported in an 'in' query");
 
             super.setArguments(arguments);
         }
     }
 
     public static class Between extends MethodExpression {
-    	public Between(Class<?> targetClass, String propertyName) {
+        public Between(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
         }
 
@@ -139,81 +137,80 @@ public abstract class MethodExpression {
 
         @Override
         public void setArguments(Object[] arguments) {
-            if(arguments.length < 2 )
-                throw new IllegalArgumentException("A 'between' query requires at least two arguments");
-            if(!(arguments[0] instanceof Number) || !(arguments[0] instanceof Number))
-                throw new IllegalArgumentException("A 'between' query requires that both arguments are numbers");
+            Assert.isTrue(arguments.length > 1, "A 'between' query requires at least two arguments");
+            Assert.isTrue(arguments[0] instanceof Number && arguments[1] instanceof Number,
+                "A 'between' query requires that both arguments are numbers");
 
             super.setArguments(arguments);
         }
     }
-    
-    public static class IsNull extends MethodExpression {
-    	public IsNull(Class<?> targetClass, String propertyName) {
-			super(targetClass, propertyName);
-		}
 
-		@Override
-		public int getArgumentsRequired() {
-			return 0;
-		}
-		
-		@Override
-		public Criterion createCriterion() {
-			return Restrictions.isNull(propertyName);
-		}    	
+    public static class IsNull extends MethodExpression {
+        public IsNull(Class<?> targetClass, String propertyName) {
+            super(targetClass, propertyName);
+        }
+
+        @Override
+        public int getArgumentsRequired() {
+            return 0;
+        }
+
+        @Override
+        public Criterion createCriterion() {
+            return Restrictions.isNull(propertyName);
+        }
     }
-    
+
     public static class IsNotNull extends MethodExpression {
 
-    	public IsNotNull(Class<?> targetClass, String propertyName) {
-			super(targetClass, propertyName);
-		}
+        public IsNotNull(Class<?> targetClass, String propertyName) {
+            super(targetClass, propertyName);
+        }
 
-		@Override
-		public int getArgumentsRequired() {
-			return 0;
-		}
-		
-		@Override
-		public Criterion createCriterion() {
-			return Restrictions.isNotNull(propertyName);
-		}    	
+        @Override
+        public int getArgumentsRequired() {
+            return 0;
+        }
+
+        @Override
+        public Criterion createCriterion() {
+            return Restrictions.isNotNull(propertyName);
+        }
     }
 
     public static class IsEmpty extends MethodExpression {
-    	public IsEmpty(Class<?> targetClass, String propertyName) {
-			super(targetClass, propertyName);
-		}
+        public IsEmpty(Class<?> targetClass, String propertyName) {
+            super(targetClass, propertyName);
+        }
 
-		@Override
-		public int getArgumentsRequired() {
-			return 0;
-		}
-		
-		@Override
-		public Criterion createCriterion() {
-			return Restrictions.isEmpty(propertyName);
-		}    	
+        @Override
+        public int getArgumentsRequired() {
+            return 0;
+        }
+
+        @Override
+        public Criterion createCriterion() {
+            return Restrictions.isEmpty(propertyName);
+        }
     }
-    
+
     public static class IsNotEmpty extends MethodExpression {
 
-    	public IsNotEmpty(Class<?> targetClass, String propertyName) {
-			super(targetClass, propertyName);
-		}
+        public IsNotEmpty(Class<?> targetClass, String propertyName) {
+            super(targetClass, propertyName);
+        }
 
-		@Override
-		public int getArgumentsRequired() {
-			return 0;
-		}
-		
-		@Override
-		public Criterion createCriterion() {
-			return Restrictions.isNotEmpty(propertyName);
-		}    	
+        @Override
+        public int getArgumentsRequired() {
+            return 0;
+        }
+
+        @Override
+        public Criterion createCriterion() {
+            return Restrictions.isNotEmpty(propertyName);
+        }
     }
-    
+
     public static class Equal extends MethodExpression {
         public Equal(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
@@ -225,7 +222,7 @@ public abstract class MethodExpression {
         }
     }
     public static class NotEqual extends MethodExpression {
-    	public NotEqual(Class<?> targetClass, String propertyName) {
+        public NotEqual(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
         }
 

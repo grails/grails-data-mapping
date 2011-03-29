@@ -34,147 +34,135 @@ import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterc
 import org.springframework.transaction.PlatformTransactionManager
 
 class RiakGrailsPlugin {
-  // the plugin version
-  def version = "1.0.0.M3"
-  // the version or versions of Grails the plugin is designed for
-  def grailsVersion = "1.3.5 > *"
-  // the other plugins this plugin depends on
-  def dependsOn = [:]
-  // resources that are excluded from plugin packaging
-  def pluginExcludes = [
-      "grails-app/views/error.gsp"
-  ]
-
-  def author = "Jon Brisbin"
-  def authorEmail = "jbrisbin@vmware.com"
-  def title = "Riak GORM"
-  def description = '''\\
+    def version = "1.0.0.M3"
+    def grailsVersion = "1.3.5 > *"
+    def author = "Jon Brisbin"
+    def authorEmail = "jbrisbin@vmware.com"
+    def title = "Riak GORM"
+    def description = '''\\
 A plugin that integrates the Riak document/data store into Grails.
 '''
 
-  def observe = ['controllers', 'services']
+    def observe = ['controllers', 'services']
 
-  // URL to the plugin's documentation
-  def documentation = "http://grails.org/plugin/riak"
+    def documentation = "http://grails.org/plugin/riak"
 
-  def doWithSpring = {
-    def riakConfig = application.config?.grails?.riak
+    def doWithSpring = {
+        def riakConfig = application.config?.grails?.riak
 
-    riakTransactionManager(DatastoreTransactionManager) {
-      datastore = ref("springDatastore")
-    }
-
-    datastoreMappingContext(RiakMappingContextFactoryBean) {
-      grailsApplication = ref('grailsApplication')
-      //pluginManager = ref('pluginManager')
-    }
-
-    springDatastore(RiakDatastoreFactoryBean) {
-      config = riakConfig
-      mappingContext = ref("datastoreMappingContext")
-      //pluginManager = ref('pluginManager')
-    }
-
-    riakTemplate(RiakTemplate) { bean ->
-      def riakDefaultUri = riakConfig?.remove("defaultUri")
-      if (riakDefaultUri) {
-        defaultUri = riakDefaultUri
-      }
-      def riakMapRedUri = riakConfig?.remove("mapReduceUri")
-      if (riakMapRedUri) {
-        mapReduceUri = riakMapRedUri
-      }
-      def riakUseCache = riakConfig?.remove("useCache")
-      if (null != riakUseCache) {
-        useCache = riakUseCache
-      }
-    }
-
-    asyncRiakTemplate(AsyncRiakTemplate) { bean ->
-      def riakDefaultUri = riakConfig?.remove("defaultUri")
-      if (riakDefaultUri) {
-        defaultUri = riakDefaultUri
-      }
-      def riakMapRedUri = riakConfig?.remove("mapReduceUri")
-      if (riakMapRedUri) {
-        mapReduceUri = riakMapRedUri
-      }
-      def riakUseCache = riakConfig?.remove("useCache")
-      if (riakUseCache) {
-        useCache = riakUseCache
-      }
-    }
-
-    riak(RiakBuilder, asyncRiakTemplate) { bean ->
-      bean.scope = "prototype"
-    }
-
-    datastorePersistenceInterceptor(DatastorePersistenceContextInterceptor, ref("springDatastore"))
-    if (manager?.hasGrailsPlugin("controllers")) {
-      riakOpenSessionInViewInterceptor(OpenSessionInViewInterceptor) {
-        datastore = ref("springDatastore")
-      }
-      if (getSpringConfig().containsBean("controllerHandlerMappings")) {
-        controllerHandlerMappings.interceptors << riakOpenSessionInViewInterceptor
-      }
-      if (getSpringConfig().containsBean("annotationHandlerMapping")) {
-        if (annotationHandlerMapping.interceptors) {
-          annotationHandlerMapping.interceptors << riakOpenSessionInViewInterceptor
-        } else {
-          annotationHandlerMapping.interceptors = [riakOpenSessionInViewInterceptor]
+        riakTransactionManager(DatastoreTransactionManager) {
+            datastore = ref("springDatastore")
         }
-      }
-    }
 
-  }
-
-  def doWithDynamicMethods = { ctx ->
-
-    Datastore store = ctx.getBean("springDatastore")
-    PlatformTransactionManager transactionManager = ctx.getBean("riakTransactionManager")
-    def enhancer = transactionManager ? new RiakGormEnhancer(store, transactionManager) : new RiakGormEnhancer(store)
-
-    def isHibernateInstalled = manager.hasGrailsPlugin("hibernate")
-    for (entity in store.mappingContext.persistentEntities) {
-      if (isHibernateInstalled) {
-        def cls = entity.javaClass
-        def cpf = ClassPropertyFetcher.forClass(cls)
-        def mappedWith = cpf.getStaticPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY, String)
-        if (mappedWith == 'riak') {
-          enhancer.enhance(entity)
-        } else {
-          def staticApi = new RiakGormStaticApi(cls, store)
-          def instanceApi = new GormInstanceApi(cls, store)
-          cls.metaClass.static.getRiak = {-> staticApi }
-          cls.metaClass.getRiak = {-> new InstanceProxy(instance: delegate, target: instanceApi) }
+        datastoreMappingContext(RiakMappingContextFactoryBean) {
+            grailsApplication = ref('grailsApplication')
+            //pluginManager = ref('pluginManager')
         }
-      } else {
-        enhancer.enhance(entity)
-      }
+
+        springDatastore(RiakDatastoreFactoryBean) {
+            config = riakConfig
+            mappingContext = ref("datastoreMappingContext")
+            //pluginManager = ref('pluginManager')
+        }
+
+        riakTemplate(RiakTemplate) { bean ->
+            def riakDefaultUri = riakConfig?.remove("defaultUri")
+            if (riakDefaultUri) {
+                defaultUri = riakDefaultUri
+            }
+            def riakMapRedUri = riakConfig?.remove("mapReduceUri")
+            if (riakMapRedUri) {
+                mapReduceUri = riakMapRedUri
+            }
+            def riakUseCache = riakConfig?.remove("useCache")
+            if (null != riakUseCache) {
+                useCache = riakUseCache
+            }
+        }
+
+        asyncRiakTemplate(AsyncRiakTemplate) { bean ->
+            def riakDefaultUri = riakConfig?.remove("defaultUri")
+            if (riakDefaultUri) {
+                defaultUri = riakDefaultUri
+            }
+            def riakMapRedUri = riakConfig?.remove("mapReduceUri")
+            if (riakMapRedUri) {
+                mapReduceUri = riakMapRedUri
+            }
+            def riakUseCache = riakConfig?.remove("useCache")
+            if (riakUseCache) {
+                useCache = riakUseCache
+            }
+        }
+
+        riak(RiakBuilder, asyncRiakTemplate) { bean ->
+            bean.scope = "prototype"
+        }
+
+        datastorePersistenceInterceptor(DatastorePersistenceContextInterceptor, ref("springDatastore"))
+        if (manager?.hasGrailsPlugin("controllers")) {
+            riakOpenSessionInViewInterceptor(OpenSessionInViewInterceptor) {
+                datastore = ref("springDatastore")
+            }
+            if (getSpringConfig().containsBean("controllerHandlerMappings")) {
+                controllerHandlerMappings.interceptors << riakOpenSessionInViewInterceptor
+            }
+            if (getSpringConfig().containsBean("annotationHandlerMapping")) {
+                if (annotationHandlerMapping.interceptors) {
+                    annotationHandlerMapping.interceptors << riakOpenSessionInViewInterceptor
+                } else {
+                    annotationHandlerMapping.interceptors = [riakOpenSessionInViewInterceptor]
+                }
+            }
+        }
     }
 
-    configureRiak(application, ctx)
-  }
+    def doWithDynamicMethods = { ctx ->
 
-  def onChange = { event ->
-    configureRiak(event.application, event.ctx)
-  }
+        Datastore store = ctx.getBean("springDatastore")
+        PlatformTransactionManager transactionManager = ctx.getBean("riakTransactionManager")
+        def enhancer = transactionManager ? new RiakGormEnhancer(store, transactionManager) : new RiakGormEnhancer(store)
 
-  def configureRiak(app, ctx) {
-    app.controllerClasses.each {
-      it.metaClass.riak = { Closure cl -> doWithRiak(ctx, cl) }
+        def isHibernateInstalled = manager.hasGrailsPlugin("hibernate")
+        for (entity in store.mappingContext.persistentEntities) {
+            if (isHibernateInstalled) {
+                def cls = entity.javaClass
+                def cpf = ClassPropertyFetcher.forClass(cls)
+                def mappedWith = cpf.getStaticPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY, String)
+                if (mappedWith == 'riak') {
+                    enhancer.enhance(entity)
+                } else {
+                    def staticApi = new RiakGormStaticApi(cls, store)
+                    def instanceApi = new GormInstanceApi(cls, store)
+                    cls.metaClass.static.getRiak = {-> staticApi }
+                    cls.metaClass.getRiak = {-> new InstanceProxy(instance: delegate, target: instanceApi) }
+                }
+            } else {
+                enhancer.enhance(entity)
+            }
+        }
+
+        configureRiak(application, ctx)
     }
-    app.serviceClasses.each {
-      it.metaClass.riak = { Closure cl -> doWithRiak(ctx, cl) }
+
+    def onChange = { event ->
+        configureRiak(event.application, event.ctx)
     }
-  }
 
-  def doWithRiak(ctx, cl) {
-    def riak = new RiakBuilder(ctx.asyncRiakTemplate)
-    cl.delegate = riak
-    cl.resolveStrategy = Closure.DELEGATE_FIRST
-    cl.call()
-    return riak
-  }
+    def configureRiak(app, ctx) {
+        app.controllerClasses.each {
+            it.metaClass.riak = { Closure cl -> doWithRiak(ctx, cl) }
+        }
+        app.serviceClasses.each {
+            it.metaClass.riak = { Closure cl -> doWithRiak(ctx, cl) }
+        }
+    }
 
+    def doWithRiak(ctx, cl) {
+        def riak = new RiakBuilder(ctx.asyncRiakTemplate)
+        cl.delegate = riak
+        cl.resolveStrategy = Closure.DELEGATE_FIRST
+        cl.call()
+        return riak
+    }
 }

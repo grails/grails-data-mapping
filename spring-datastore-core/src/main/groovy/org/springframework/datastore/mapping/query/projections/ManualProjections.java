@@ -14,21 +14,20 @@
  */
 package org.springframework.datastore.mapping.query.projections;
 
-/**
- * Implements common projections in-memory given a set of results. Not all
- * NoSQL datastores support projections like SQL min(..), max(..) etc.
- * This class provides support for those that don't.
- *
- */
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.query.order.ManualEntityOrdering;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
+/**
+ * Implements common projections in-memory given a set of results. Not all
+ * NoSQL datastores support projections like SQL min(..), max(..) etc.
+ * This class provides support for those that don't.
+ */
 public class ManualProjections {
 
     PersistentEntity entity;
@@ -47,10 +46,10 @@ public class ManualProjections {
      * @return The minimum value or null if there are no results
      */
     public Object min(Collection results, String property) {
-        if(results != null && results.size()>0) {
+        if (results != null && results.size()>0) {
             final List sorted = order.applyOrder(new ArrayList(results), Query.Order.asc(property));
             final Object o = sorted.get(0);
-            if(entity.isInstance(o)) {
+            if (entity.isInstance(o)) {
                 return new EntityAccess(entity, o).getProperty(property);
             }
             return o;
@@ -66,10 +65,10 @@ public class ManualProjections {
      * @return The maximum value or null if there are no results
      */
     public Object max(Collection results, String property) {
-        if(results != null && results.size()>0) {
+        if (results != null && results.size()>0) {
             final List sorted = order.applyOrder(new ArrayList(results), Query.Order.asc(property));
             final Object o = sorted.get(results.size()-1);
-            if(entity.isInstance(o)) {
+            if (entity.isInstance(o)) {
                 return new EntityAccess(entity, o).getProperty(property);
             }
             return o;
@@ -86,17 +85,16 @@ public class ManualProjections {
      */
     public List property(Collection results, String property) {
         List projectedResults = new ArrayList();
-        if(results != null && results.size()>0) {
+        if (results != null && results.size()>0) {
             for (Object o : results) {
                 EntityAccess ea = new EntityAccess(entity, o);
-                if(entity.isInstance(o)) {
+                if (entity.isInstance(o)) {
                     projectedResults.add(ea.getProperty(property));
                 }
                 else {
                     projectedResults.add(null);
                 }
             }
-
         }
         return projectedResults;
     }

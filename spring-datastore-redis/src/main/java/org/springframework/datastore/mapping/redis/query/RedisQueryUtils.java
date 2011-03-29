@@ -29,20 +29,18 @@ import java.util.List;
  */
 public class RedisQueryUtils {
 
-
     public static List<Long> transformRedisResults(ConversionService conversionService, Collection<String> results) {
         List<Long> returnResults;
-        if(!results.isEmpty()) {
+        if (!results.isEmpty()) {
             List<Long> foreignKeys = new ArrayList<Long>();
             for (String result : results) {
                 foreignKeys.add(conversionService.convert(result, Long.class));
             }
-            returnResults=  foreignKeys;
+            returnResults = foreignKeys;
         }
         else {
-            returnResults= Collections.emptyList();
+            returnResults = Collections.emptyList();
         }
         return returnResults;
     }
-
 }

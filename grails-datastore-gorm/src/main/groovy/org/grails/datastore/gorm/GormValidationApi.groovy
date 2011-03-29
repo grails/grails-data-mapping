@@ -23,6 +23,7 @@ import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 import org.springframework.validation.Validator
+
 /**
  * Methods used for validating GORM instances
  *
@@ -31,138 +32,135 @@ import org.springframework.validation.Validator
  */
 class GormValidationApi extends AbstractGormApi{
 
+    Validator validator
 
-  Validator validator
-
-  GormValidationApi(Class persistentClass, Datastore datastore) {
-    super(persistentClass, datastore);
-    MappingContext context = datastore.mappingContext
-    def entity = context.getPersistentEntity(persistentClass.name)
-    validator = context.getEntityValidator(entity)
-  }
-
-  
-  /**
-   * Validates an instance for the given arguments
-   * 
-   * @param instance The instance to validate
-   * @param arguments The arguments to use
-   * @return True if the instance is valid
-   */
-  boolean validate(instance, Map arguments) {
-	  validate instance, Collections.emptyList()
-  }
-  
-  /**
-   * Validates an instance
-   *
-   * @param instance The instance to validate
-   * @param fields The list of fields to validate
-   * @return True if the instance is valid
-   */
-  boolean validate(instance, List fields) {
-	if(validator) {
-	  Errors errors = getErrors(instance)
-	  validator.validate instance, errors
-	  
-	  int oldErrorCount = errors.getErrorCount();
-	  errors = filterErrors(errors, fields as Set, instance);
-	  
-	  if (errors.getErrorCount() != oldErrorCount) {
-		  setErrors instance, errors
-	  }
-	  return !errors.hasErrors()
-	}
-	return true
-  }
-  
-  private Errors filterErrors(Errors errors, Set validatedFields, Object target) {
-	  if (validatedFields == null || validatedFields.isEmpty()) return errors;
-
-	  BeanPropertyBindingResult result = new BeanPropertyBindingResult(target, target.getClass().getName());
-
-	  final List allErrors = errors.getAllErrors();
-	  for (int i = 0; i < allErrors.size(); i++) {
-		  ObjectError error = (ObjectError) allErrors.get(i);
-
-		  if (error instanceof FieldError) {
-			  FieldError fieldError = (FieldError) error;
-			  if (!validatedFields.contains(fieldError.getField())) continue;
-		  }
-
-		  result.addError(error);
-	  }
-
-	  return result;
-  }
-  /**
-   * Validates an instance
-   *
-   * @param instance The instance to validate
-   * @return True if the instance is valid
-   */
-  boolean validate(instance) {
-  		validate instance, Collections.emptyList()
-  }
-  
-  /**
-  * Validates an instance. Note: This signature is purely here for compatibility the
-  * evict parameter does nothing and the method should be regarded as deprecated
-  * 
-  * @param instance The instance to validate
-  * @return True if the instance is valid
-  * 
-  */
- @Deprecated
- boolean validate(instance, boolean evict) {
-		validate instance, Collections.emptyList()
- }
-
-  /**
-   * Obtains the errors for an instance
-   * @param instance The instance to obtain errors for
-   * @return The {@link Errors} instance
-   */
-  Errors getErrors(instance) {
-    def session = datastore.currentSession
-    def errors = session.getAttribute(instance, ERRORS_ATTRIBUTE)
-    if(errors == null) {
-      errors = resetErrors(instance)
+    GormValidationApi(Class persistentClass, Datastore datastore) {
+        super(persistentClass, datastore)
+        MappingContext context = datastore.mappingContext
+        def entity = context.getPersistentEntity(persistentClass.name)
+        validator = context.getEntityValidator(entity)
     }
-    return errors
-  }
 
-  private Errors resetErrors(instance) {
-    def er = new BeanPropertyBindingResult(instance, persistentClass.name)
-    setErrors(instance, er)
-    return er
-  }
+    /**
+     * Validates an instance for the given arguments
+     *
+     * @param instance The instance to validate
+     * @param arguments The arguments to use
+     * @return True if the instance is valid
+     */
+    boolean validate(instance, Map arguments) {
+        validate instance, Collections.emptyList()
+    }
 
-  /**
-   * Sets the errors for an instance
-   * @param instance The instance
-   * @param errors The errors
-   */
-  void setErrors(instance, Errors errors) {
-    def session = datastore.currentSession
+    /**
+     * Validates an instance
+     *
+     * @param instance The instance to validate
+     * @param fields The list of fields to validate
+     * @return True if the instance is valid
+     */
+    boolean validate(instance, List fields) {
+        if (validator) {
+            Errors errors = getErrors(instance)
+            validator.validate instance, errors
 
-    session.setAttribute(instance, ERRORS_ATTRIBUTE, errors)
-  }
+            int oldErrorCount = errors.getErrorCount()
+            errors = filterErrors(errors, fields as Set, instance)
 
-  /**
-   * Clears any errors that exist on an instance
-   * @param instance The instance
-   */
-  void clearErrors(instance) {
-    resetErrors(instance)
-  }
+            if (errors.getErrorCount() != oldErrorCount) {
+                setErrors instance, errors
+            }
+            return !errors.hasErrors()
+        }
+        return true
+    }
 
-  /**
-   * Tests whether an instance has any errors
-   * @param instance The instance
-   * @return True if errors exist
-   */
-  boolean hasErrors(instance) {
-     instance.errors?.hasErrors()
-  }
+    private Errors filterErrors(Errors errors, Set validatedFields, Object target) {
+        if (validatedFields == null || validatedFields.isEmpty()) return errors
+
+        BeanPropertyBindingResult result = new BeanPropertyBindingResult(
+            target, target.getClass().getName())
+
+        for (ObjectError error : errors.getAllErrors()) {
+
+            if (error instanceof FieldError) {
+                if (!validatedFields.contains(error.getField())) continue
+            }
+
+            result.addError(error)
+        }
+
+        return result
+    }
+
+    /**
+     * Validates an instance
+     *
+     * @param instance The instance to validate
+     * @return True if the instance is valid
+     */
+    boolean validate(instance) {
+        validate instance, Collections.emptyList()
+    }
+
+    /**
+     * Validates an instance. Note: This signature is purely here for compatibility the
+     * evict parameter does nothing and the method should be regarded as deprecated
+     *
+     * @param instance The instance to validate
+     * @return True if the instance is valid
+     *
+     */
+    @Deprecated
+    boolean validate(instance, boolean evict) {
+        validate instance, Collections.emptyList()
+    }
+
+    /**
+     * Obtains the errors for an instance
+     * @param instance The instance to obtain errors for
+     * @return The {@link Errors} instance
+     */
+    Errors getErrors(instance) {
+        def session = datastore.currentSession
+        def errors = session.getAttribute(instance, ERRORS_ATTRIBUTE)
+        if (errors == null) {
+            errors = resetErrors(instance)
+        }
+        return errors
+    }
+
+    private Errors resetErrors(instance) {
+        def er = new BeanPropertyBindingResult(instance, persistentClass.name)
+        setErrors(instance, er)
+        return er
+    }
+
+    /**
+     * Sets the errors for an instance
+     * @param instance The instance
+     * @param errors The errors
+     */
+    void setErrors(instance, Errors errors) {
+        def session = datastore.currentSession
+
+        session.setAttribute(instance, ERRORS_ATTRIBUTE, errors)
+    }
+
+    /**
+     * Clears any errors that exist on an instance
+     * @param instance The instance
+     */
+    void clearErrors(instance) {
+        resetErrors(instance)
+    }
+
+    /**
+     * Tests whether an instance has any errors
+     * @param instance The instance
+     * @return True if errors exist
+     */
+    boolean hasErrors(instance) {
+        instance.errors?.hasErrors()
+    }
 }

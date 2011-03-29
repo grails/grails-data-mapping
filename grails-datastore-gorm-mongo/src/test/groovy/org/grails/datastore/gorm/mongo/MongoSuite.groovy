@@ -1,16 +1,13 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.CrudOperationsSpec
-import org.junit.runners.Suite.SuiteClasses
-import org.junit.runners.Suite
+
 import org.junit.runner.RunWith
+import org.junit.runners.Suite
+import org.junit.runners.Suite.SuiteClasses
 
 /**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 03/11/2010
- * Time: 09:58
- * To change this template use File | Settings | File Templates.
+ * @author graemerocher
  */
 @RunWith(Suite)
 @SuiteClasses([

@@ -1,29 +1,25 @@
 package grails.gorm.tests
 
 /**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: Aug 23, 2010
- * Time: 1:43:52 PM
- * To change this template use File | Settings | File Templates.
+ * @author graemerocher
  */
 @grails.persistence.Entity
-class TestEntity implements Serializable{
-  Long id
-  Long version
-  String name
-  Integer age = 30
+class TestEntity implements Serializable {
+    Long id
+    Long version
+    String name
+    Integer age = 30
 
-  ChildEntity child
+    ChildEntity child
 
-  static mapping = {
-    name index:true
-    age index:true, nullable:true
-    child index:true, nullable:true
-  }
-  
-  static constraints = {
-	  name blank:false
-	  child nullable:true
-  }
+    static mapping = {
+        name index:true
+        age index:true, nullable:true
+        child index:true, nullable:true
+    }
+
+    static constraints = {
+        name blank:false
+        child nullable:true
+    }
 }

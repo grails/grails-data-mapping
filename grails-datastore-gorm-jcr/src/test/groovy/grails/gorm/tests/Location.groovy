@@ -1,15 +1,15 @@
 @grails.persistence.Entity
-class Location implements Serializable{
-  String id
-  String name
-  String code
+class Location implements Serializable {
+    String id
+    String name
+    String code
 
-  def namedAndCode() {
-      "$name - $code"
-  }
+    def namedAndCode() {
+        "$name - $code"
+    }
 
-  static mapping = {
-    name index:true
-    code index:true
-  }
+    static mapping = {
+        name index:true
+        code index:true
+    }
 }

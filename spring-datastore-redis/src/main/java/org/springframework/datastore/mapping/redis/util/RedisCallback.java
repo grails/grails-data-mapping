@@ -16,7 +16,6 @@ package org.springframework.datastore.mapping.redis.util;
 
 import java.io.IOException;
 
-
 /**
  * @author Graeme Rocher
  * @since 1.1
@@ -27,7 +26,6 @@ public interface RedisCallback<T> {
      * Executes redis logic whilst handling exce
      * @param redis The RedisClient instance
      * @return The result of the calling jredis
-     *
      */
-    public Object doInRedis(T redis) throws IOException;
+    Object doInRedis(T redis) throws IOException;
 }

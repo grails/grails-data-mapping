@@ -27,6 +27,5 @@ import org.springframework.datastore.mapping.model.MappingContext
  */
 class RiakMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
 
-  protected MappingContext createMappingContext() { new KeyValueMappingContext("") }
-
+    protected MappingContext createMappingContext() { new KeyValueMappingContext("") }
 }

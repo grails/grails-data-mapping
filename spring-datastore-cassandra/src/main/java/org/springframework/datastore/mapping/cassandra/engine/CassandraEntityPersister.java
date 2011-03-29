@@ -14,10 +14,25 @@
  */
 package org.springframework.datastore.mapping.cassandra.engine;
 
+import static me.prettyprint.cassandra.utils.StringUtils.bytes;
+import static me.prettyprint.cassandra.utils.StringUtils.string;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import me.prettyprint.cassandra.model.HectorException;
 import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.Keyspace;
-import org.apache.cassandra.thrift.*;
+
+import org.apache.cassandra.thrift.Column;
+import org.apache.cassandra.thrift.ColumnParent;
+import org.apache.cassandra.thrift.SlicePredicate;
+import org.apache.cassandra.thrift.SliceRange;
+import org.apache.cassandra.thrift.SuperColumn;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.mapping.cassandra.CassandraDatastore;
 import org.springframework.datastore.mapping.cassandra.CassandraSession;
@@ -33,26 +48,20 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.query.Query;
 
-import java.io.Serializable;
-import java.util.*;
-
-import static me.prettyprint.cassandra.utils.StringUtils.bytes;
-import static me.prettyprint.cassandra.utils.StringUtils.string;
-
 /**
  * @author Graeme Rocher
  * @since 1.0
  */
 public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<KeyValueEntry, Object> {
+
     private CassandraClient cassandraClient;
     private static final byte[] ZERO_LENGTH_BYTE_ARRAY = new byte[0];
 
-
-    public CassandraEntityPersister(MappingContext context, PersistentEntity entity, CassandraSession conn, CassandraClient cassandraClient) {
-        super(context, entity,conn);
+    public CassandraEntityPersister(MappingContext context, PersistentEntity entity,
+            CassandraSession conn, CassandraClient cassandraClient) {
+        super(context, entity, conn);
         this.cassandraClient = cassandraClient;
     }
-
 
     @Override
     protected void deleteEntry(String family, Object key) {
@@ -66,7 +75,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
 
     @Override
     public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-        return null;  // TODO: Support querying in cassandra
+        return null; // TODO: Support querying in cassandra
     }
 
     @Override
@@ -81,7 +90,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
 
     @Override
     protected void setEntryValue(KeyValueEntry nativeEntry, String key, Object value) {
-        if(value != null) {
+        if (value != null) {
             nativeEntry.put(key, bytes(value.toString()));
         }
     }
@@ -92,37 +101,41 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
         final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
 
         final Keyspace keyspace;
-
         try {
             keyspace = cassandraClient.getKeyspace(keyspaceName);
-        } catch (HectorException e) {
-            throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
+        }
+        catch (HectorException e) {
+            throw new DataAccessResourceFailureException(
+                    "Exception occurred invoking Cassandra: " + e.getMessage(), e);
         }
 
         SuperColumn sc = getSuperColumn(keyspace, family, nativeKey);
         KeyValueEntry entry = new KeyValueEntry(family);
-        if(sc != null) {
+        if (sc != null) {
             for (Column column : sc.getColumns()) {
                 entry.put(string(column.getName()), string(column.getValue()));
             }
         }
-        if(entry.isEmpty()) return null;
-        else
-            return entry;
+
+        if (entry.isEmpty()) {
+            return null;
+        }
+
+        return entry;
     }
 
     private SuperColumn getSuperColumn(Keyspace keyspace, String family, Serializable id) {
         ColumnParent parent = new ColumnParent();
         parent.setColumn_family(family);
 
-
         final List<SuperColumn> result;
         try {
             SlicePredicate predicate = new SlicePredicate();
             predicate.setSlice_range(new SliceRange(ZERO_LENGTH_BYTE_ARRAY, ZERO_LENGTH_BYTE_ARRAY, false, 1));
             result = keyspace.getSuperSlice(id.toString(), parent, predicate);
-        } catch (HectorException e) {
-            throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
+        }
+        catch (HectorException e) {
+            throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(), e);
         }
 
         return !result.isEmpty() ? result.get(0) : null;
@@ -133,24 +146,22 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
         Keyspace keyspace = getKeyspace();
         final String family = getFamily(persistentEntity, persistentEntity.getMapping());
         SuperColumn sc = getSuperColumn(keyspace, family, (Serializable)id);
-        if(sc != null) {
+        if (sc != null) {
             updateSuperColumn(sc, entry);
 
             Map<String, List<SuperColumn>> insertMap = createInsertMap(family, sc);
 
-            performInsertion(keyspace,id.toString(),insertMap, entry);
+            performInsertion(keyspace, id.toString(), insertMap, entry);
         }
     }
 
     @Override
     protected void deleteEntries(String family, List<Object> keys) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     protected Object storeEntry(PersistentEntity persistentEntity, Object storeId, KeyValueEntry nativeEntry) {
-
-        UUID uuid = (UUID) storeId;
+        UUID uuid = (UUID)storeId;
         final Keyspace keyspace = getKeyspace();
         String family = getFamily(persistentEntity, getPersistentEntity().getMapping());
         SuperColumn sc = new SuperColumn();
@@ -166,14 +177,15 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
         return UUIDUtil.getTimeUUID();
     }
 
-    private void performInsertion(Keyspace keyspace, String key, Map<String, List<SuperColumn>> insertMap, KeyValueEntry nativeEntry) {
+    private void performInsertion(Keyspace keyspace, String key, Map<String, List<SuperColumn>> insertMap,
+            @SuppressWarnings("unused") KeyValueEntry nativeEntry) {
         try {
-            keyspace.batchInsert(key, null,insertMap);
-
-        } catch (HectorException e) {
-            throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
+            keyspace.batchInsert(key, null, insertMap);
         }
-
+        catch (HectorException e) {
+            throw new DataAccessResourceFailureException(
+                    "Exception occurred invoking Cassandra: " + e.getMessage(), e);
+        }
     }
 
     private Map<String, List<SuperColumn>> createInsertMap(String family, SuperColumn sc) {
@@ -188,24 +200,22 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
         final long time = System.currentTimeMillis() * 1000;
         for (String prop : nativeEntry.keySet()) {
             Column c = new Column();
-            c.setName( bytes(prop) );
+            c.setName(bytes(prop));
             c.setValue((byte[])nativeEntry.get(prop));
             c.setTimestamp(time);
             sc.addToColumns(c);
         }
     }
 
-
     private Keyspace getKeyspace() {
-        Keyspace keyspace;
         final String keyspaceName = getKeyspaceName();
         try {
-            keyspace = cassandraClient.getKeyspace(keyspaceName);
-        } catch (HectorException e) {
-            throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(),e);
+            return cassandraClient.getKeyspace(keyspaceName);
         }
-
-        return keyspace;
+        catch (HectorException e) {
+            throw new DataAccessResourceFailureException(
+                    "Exception occurred invoking Cassandra: " + e.getMessage(), e);
+        }
     }
 
     private String getKeyspaceName() {
@@ -213,6 +223,6 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<Key
     }
 
     public Query createQuery() {
-        return null;  // TODO: Implement querying for Cassandra
+        return null; // TODO: Implement querying for Cassandra
     }
 }

@@ -16,6 +16,8 @@ package org.springframework.datastore.mapping.cassandra;
 
 import me.prettyprint.cassandra.service.CassandraClient;
 import me.prettyprint.cassandra.service.CassandraClientPool;
+
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.mapping.cassandra.engine.CassandraEntityPersister;
 import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.core.Datastore;
@@ -23,7 +25,6 @@ import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.transactions.Transaction;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.TransactionSystemException;
 
 /**
@@ -34,7 +35,8 @@ public class CassandraSession extends AbstractSession<CassandraClient> {
     private CassandraClient cassandraClient;
     private CassandraClientPool connectionPool;
 
-    public CassandraSession(Datastore ds,MappingContext context, CassandraClientPool connectionPool, CassandraClient client) {
+    public CassandraSession(Datastore ds, MappingContext context, CassandraClientPool connectionPool,
+            CassandraClient client) {
         super(ds, context);
         this.connectionPool = connectionPool;
         this.cassandraClient = client;
@@ -42,11 +44,11 @@ public class CassandraSession extends AbstractSession<CassandraClient> {
 
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
-      PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
-      if(entity != null) {
-          return new CassandraEntityPersister(mappingContext, entity,this, cassandraClient);
-      }
-      return null;
+        PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
+        if (entity != null) {
+            return new CassandraEntityPersister(mappingContext, entity, this, cassandraClient);
+        }
+        return null;
     }
 
     public boolean isConnected() {
@@ -57,13 +59,17 @@ public class CassandraSession extends AbstractSession<CassandraClient> {
     public void disconnect() {
         try {
             connectionPool.releaseClient(cassandraClient);
-        } catch (Exception e) {
-            throw new DataAccessResourceFailureException("Failed to release Cassandra client session: " + e.getMessage(), e);
-        } finally {
+        }
+        catch (Exception e) {
+            throw new DataAccessResourceFailureException(
+                    "Failed to release Cassandra client session: " + e.getMessage(), e);
+        }
+        finally {
             super.disconnect();
         }
     }
 
+    @Override
     protected Transaction beginTransactionInternal() {
         throw new TransactionSystemException("Transactions are not supported by Cassandra");
     }
@@ -71,5 +77,4 @@ public class CassandraSession extends AbstractSession<CassandraClient> {
     public CassandraClient getNativeInterface() {
         return cassandraClient;
     }
-
 }

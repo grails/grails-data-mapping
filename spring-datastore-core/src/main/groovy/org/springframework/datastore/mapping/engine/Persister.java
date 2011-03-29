@@ -14,10 +14,10 @@
  */
 package org.springframework.datastore.mapping.engine;
 
-import org.springframework.datastore.mapping.query.Query;
-
 import java.io.Serializable;
 import java.util.List;
+
+import org.springframework.datastore.mapping.query.Query;
 
 /**
  * A Persister is responsible for persisting and retrieving an object.
@@ -55,7 +55,7 @@ public interface Persister {
      * Retrieves an object for the given context and Key
      *
      * @param key The key
-     * 
+     *
      * @return The object in question
      */
     Object retrieve(Serializable key);
@@ -88,7 +88,6 @@ public interface Persister {
      */
     void delete(Object obj);
 
-
     /**
      * Creates a query for the entity
      *
@@ -103,7 +102,6 @@ public interface Persister {
      * @return The objects in a list in the same order as the specified keys
      */
     List<Object> retrieveAll(Serializable[] keys);
-
 
     /**
      * Refreshes the given objects state

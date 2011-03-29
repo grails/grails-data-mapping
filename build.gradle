@@ -1,4 +1,3 @@
-
 def spockDependency = "org.spockframework:spock-core:0.5-groovy-1.7-SNAPSHOT"
 
 def groovyProjects() {
@@ -6,9 +5,9 @@ def groovyProjects() {
 }
 
 def isGroovyProject(project) {
-  def isGrailsPlugin = project.name.contains("grails-plugins")
-  def isDocumentation = project.name.contains("documentation")
-  !isGrailsPlugin && !isDocumentation
+    def isGrailsPlugin = project.name.contains("grails-plugins")
+    def isDocumentation = project.name.contains("documentation")
+    !isGrailsPlugin && !isDocumentation
 }
 
 apply plugin: 'idea'
@@ -19,258 +18,256 @@ subprojects {
     version = "1.0.0.${releaseType}"
 
     def isSpringProject = project.name.contains("spring-datastore")
-	def isStandardGroovyMavenProject = isGroovyProject(project)
-  
-    if(isStandardGroovyMavenProject) {
-	    apply plugin: 'groovy'
-	    apply plugin: 'eclipse'
+    def isStandardGroovyMavenProject = isGroovyProject(project)
+
+    if (isStandardGroovyMavenProject) {
+        apply plugin: 'groovy'
+        apply plugin: 'eclipse'
         apply plugin: 'maven'
 		apply plugin: 'idea'
         apply from: "file:${rootDir}/clover.gradle"
-	}
+    }
 
     def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") && !project.name.endsWith("tck")
-    
+
     repositories {
-       mavenRepo name:'mavenLocal',
-                 urls:new File( System.getProperty("user.home" ), ".m2/repository" ).toURL().toString()
-       mavenRepo name: "spock-snapshots", urls: ["http://m2repo.spockframework.org/snapshots"]
-       mavenRepo name: "springAWS", urls: 'http://maven.springframework.org/release'
-       mavenRepo name: "spring-milestone", urls: 'http://maven.springframework.org/milestone'
-       mavenRepo name: "spring-snapshot", urls: 'http://maven.springframework.org/snapshot'
-       mavenRepo name: "jboss", urls:'http://repository.jboss.org/maven2/'
-			 mavenRepo name: "java.net", urls:"http://download.java.net/maven/2/"
-       mavenCentral()
+        mavenRepo name:'mavenLocal',
+                  urls:new File(System.getProperty("user.home"), ".m2/repository").toURL().toString()
+        mavenRepo name: "spock-snapshots", urls: ["http://m2repo.spockframework.org/snapshots"]
+        mavenRepo name: "springAWS", urls: 'http://maven.springframework.org/release'
+        mavenRepo name: "spring-milestone", urls: 'http://maven.springframework.org/milestone'
+        mavenRepo name: "spring-snapshot", urls: 'http://maven.springframework.org/snapshot'
+        mavenRepo name: "jboss", urls:'http://repository.jboss.org/maven2/'
+        mavenRepo name: "java.net", urls:"http://download.java.net/maven/2/"
+        mavenCentral()
     }
 
     dependencies {
-		if(isStandardGroovyMavenProject) {
-	       	groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.7.5'
+        if (isStandardGroovyMavenProject) {
+            groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.7.5'
 
             testCompile 'junit:junit:4.8.1'
             testCompile spockDependency
         }
-        
+
         if (project.name == "grails-datastore-gorm-tck") {
-          compile spockDependency
+            compile spockDependency
         }
     }
 
     if (isGormDatasource) {
-      dependencies {
-        testCompile project(":grails-datastore-gorm-tck")
-      }
-      
-      // We need to test against the TCK. Gradle cannot find/run tests from jars
-      // without a lot of plumbing, so here we copy the class files from the TCK
-      // project into this project's test classes dir so Gradle can find the test
-      // classes and run them. See grails.gorm.tests.GormDatastoreSpec for on the TCK.
-      
-      // helper, used below.
-      def toBaseClassRelativePathWithoutExtension = { String base, String classFile ->
-        if (classFile.startsWith(base)) {
-          def sansClass = classFile[0 .. classFile.size() - ".class".size() - 1]
-          def dollarIndex = sansClass.indexOf('$')
-          def baseClass = dollarIndex > 0 ? sansClass[0..dollarIndex - 1] : sansClass
-          def relative = baseClass - base - '/'
-          relative
-        } else {
-          null
+        dependencies {
+            testCompile project(":grails-datastore-gorm-tck")
         }
-      }
 
-      test.doFirst {
-        def tckClassesDir = project(":grails-datastore-gorm-tck").sourceSets.main.classesDir
-        def thisProjectsTests =  // surely there is a less hardcoded way to do this
-        copy {
-          from tckClassesDir
-          into sourceSets.test.classesDir
-          include "**/*.class"
-          exclude { details ->
-            // Do not copy across any TCK class (or nested classes of that class)
-            // If there is a corresponding source file in the particular modules 
-            // test source tree. Allows a module to override a test/helper.
-            
-            def candidatePath = details.file.absolutePath
-            def relativePath = toBaseClassRelativePathWithoutExtension(tckClassesDir.absolutePath, candidatePath)
+        // We need to test against the TCK. Gradle cannot find/run tests from jars
+        // without a lot of plumbing, so here we copy the class files from the TCK
+        // project into this project's test classes dir so Gradle can find the test
+        // classes and run them. See grails.gorm.tests.GormDatastoreSpec for on the TCK.
 
-            if (relativePath == null) {
-              throw new IllegalStateException("$candidatePath does not appear to be in the TCK")
-            }
-            
-            project.file("src/test/groovy/${relativePath}.groovy").exists()
-          }
-        }
-      }
-    }
-
-    if(project.name.startsWith("grails-")) {
-      group = "org.grails"
-      archivesBaseName = "grails-datastore"
-    }
-    else {
-      group = "org.springframework"
-      archivesBaseName = 'spring-datastore'
-    }
-
-    if(isStandardGroovyMavenProject) {
-      configure(install.repositories.mavenInstaller) {
-          pom.whenConfigured { pom ->
-            def dependency = pom.dependencies.find { dep -> dep.artifactId == 'slf4j-simple' }
-            dependency?.optional = true
-          }
-          pom.project {
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'http://github.com/grails/inconsequential'
-                }
-            }
-          }
-      }
-
-      uploadArchives {
-          description = "Does a maven deploy of archives artifacts"
-          def isDav = System.getProperty("deploy.protocol") == 'dav'
-          def protocol = isDav ? 'dav:' : ''
-//          def releaseRepositoryUrl = "https://dav.codehaus.org/repository/grails/"
-/*          def milestoneRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/milestone' :
-                                                         "${protocol}https://dav.codehaus.org/repository/grails/"
-          def snapshotRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/snapshot' :
-                                                        "${protocol}https://dav.codehaus.org/snapshots.repository/grails/"
-*/
-		  def milestoneRepositoryUrl = 's3://maven.springframework.org/milestone' 
-		  def snapshotRepositoryUrl = 's3://maven.springframework.org/snapshot'
-		  
-          // add a configuration with a classpath that includes our s3 maven deployer
-          configurations { deployerJars }
-          dependencies {
-
-            deployerJars "org.springframework.build.aws:org.springframework.build.aws.maven:3.0.0.RELEASE"
-
-            // NOTE!!!!!: Maven deployment over webdav is broken due to SHA1 checksum issues. To deploy
-            // you first need to run ./gradlew -Ddeploy.protocol=dav uploadArchives
-            // and then ./gradlew uploadArchives a second time to get a valid deployment
-
-            if(isDav) {
-              deployerJars "org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-6"
+        // helper, used below.
+        def toBaseClassRelativePathWithoutExtension = { String base, String classFile ->
+            if (classFile.startsWith(base)) {
+                def sansClass = classFile[0 .. classFile.size() - ".class".size() - 1]
+                def dollarIndex = sansClass.indexOf('$')
+                def baseClass = dollarIndex > 0 ? sansClass[0..dollarIndex - 1] : sansClass
+                def relative = baseClass - base - '/'
+                relative
             }
             else {
-              deployerJars "org.apache.maven.wagon:wagon-http-lightweight:1.0-beta-6"
+                null
+            }
+        }
+
+        test.doFirst {
+            def tckClassesDir = project(":grails-datastore-gorm-tck").sourceSets.main.classesDir
+            def thisProjectsTests = // surely there is a less hardcoded way to do this
+            copy {
+                from tckClassesDir
+                into sourceSets.test.classesDir
+                include "**/*.class"
+                exclude { details ->
+                    // Do not copy across any TCK class (or nested classes of that class)
+                    // If there is a corresponding source file in the particular modules
+                    // test source tree. Allows a module to override a test/helper.
+
+                    def candidatePath = details.file.absolutePath
+                    def relativePath = toBaseClassRelativePathWithoutExtension(tckClassesDir.absolutePath, candidatePath)
+
+                    if (relativePath == null) {
+                        throw new IllegalStateException("$candidatePath does not appear to be in the TCK")
+                    }
+
+                    project.file("src/test/groovy/${relativePath}.groovy").exists()
+                }
+            }
+        }
+    }
+
+    if (project.name.startsWith("grails-")) {
+        group = "org.grails"
+        archivesBaseName = "grails-datastore"
+    }
+    else {
+        group = "org.springframework"
+        archivesBaseName = 'spring-datastore'
+    }
+
+    if (isStandardGroovyMavenProject) {
+        configure(install.repositories.mavenInstaller) {
+            pom.whenConfigured { pom ->
+                def dependency = pom.dependencies.find { dep -> dep.artifactId == 'slf4j-simple' }
+                dependency?.optional = true
+            }
+            pom.project {
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'http://github.com/grails/inconsequential'
+                    }
+                }
+            }
+        }
+
+        uploadArchives {
+            description = "Does a maven deploy of archives artifacts"
+            def isDav = System.getProperty("deploy.protocol") == 'dav'
+            def protocol = isDav ? 'dav:' : ''
+//            def releaseRepositoryUrl = "https://dav.codehaus.org/repository/grails/"
+/*            def milestoneRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/milestone' :
+                                                           "${protocol}https://dav.codehaus.org/repository/grails/"
+            def snapshotRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/snapshot' :
+                                                          "${protocol}https://dav.codehaus.org/snapshots.repository/grails/"
+*/
+            def milestoneRepositoryUrl = 's3://maven.springframework.org/milestone'
+            def snapshotRepositoryUrl = 's3://maven.springframework.org/snapshot'
+
+            // add a configuration with a classpath that includes our s3 maven deployer
+            configurations { deployerJars }
+            dependencies {
+
+                deployerJars "org.springframework.build.aws:org.springframework.build.aws.maven:3.0.0.RELEASE"
+
+                // NOTE!!!!!: Maven deployment over webdav is broken due to SHA1 checksum issues. To deploy
+                // you first need to run ./gradlew -Ddeploy.protocol=dav uploadArchives
+                // and then ./gradlew uploadArchives a second time to get a valid deployment
+
+                if (isDav) {
+                    deployerJars "org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-6"
+                }
+                else {
+                    deployerJars "org.apache.maven.wagon:wagon-http-lightweight:1.0-beta-6"
+                }
             }
 
-
-
-          }
-
-          repositories.mavenDeployer {
-              switch (releaseType) {
-                  case 'RELEASE':
+            repositories.mavenDeployer {
+                switch (releaseType) {
+                    case 'RELEASE':
                     // TODO: Will need to update this when doing a non-snapshot/milestone release
-//                      repository(url: releaseRepositoryUrl)
-//                      description += releaseRepositoryUrl
-                      break;
+//                        repository(url: releaseRepositoryUrl)
+//                        description += releaseRepositoryUrl
+                        break;
 
-                  case ~/M[0-9]+/:
-                      description += milestoneRepositoryUrl
-                      // fall through and pick up config below
+                    case ~/M[0-9]+/:
+                        description += milestoneRepositoryUrl
+                        // fall through and pick up config below
 
-                  case 'BUILD-SNAPSHOT':
-                      description += snapshotRepositoryUrl
-                      def credentials
-/*                      if(isSpringProject) {
+                    case 'BUILD-SNAPSHOT':
+                        description += snapshotRepositoryUrl
+                        def credentials
+/*                        if (isSpringProject) {
 */                        credentials = [userName: project.properties.s3AccessKey,
                                        passphrase: project.properties.s3SecretAccessKey]
-/*                      }
-                      else {
+/*                        }
+                        else {
                         credentials = [userName: project.properties['codehaus.username'],
                                        password: project.properties['codehaus.password']]
-                      }
-*/                      configuration = configurations.deployerJars
-                      repository(url: milestoneRepositoryUrl) {
-                          authentication(credentials)
-                      }
-                      snapshotRepository(url: snapshotRepositoryUrl) {
-                          authentication(credentials)
-                      }
+                        }
+*/                        configuration = configurations.deployerJars
+                        repository(url: milestoneRepositoryUrl) {
+                            authentication(credentials)
+                        }
+                        snapshotRepository(url: snapshotRepositoryUrl) {
+                            authentication(credentials)
+                        }
                     break;
-              }
+                }
 
-              pom.project {
-                  licenses {
-                      license {
-                          name 'The Apache Software License, Version 2.0'
-                          url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                          distribution 'repo'
-                      }
-                  }
-              }
-          }
-      }
-
+                pom.project {
+                    licenses {
+                        license {
+                            name 'The Apache Software License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution 'repo'
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 configurations {
-	build
+    build
 }
 
 repositories {
-  mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	build "com.cenqua.clover:clover:3.0.2"
-	build "org.apache.ant:ant-junit:1.8.1"
-	build "org.apache.ant:ant-nodeps:1.8.1"
+    build "com.cenqua.clover:clover:3.0.2"
+    build "org.apache.ant:ant-junit:1.8.1"
+    build "org.apache.ant:ant-nodeps:1.8.1"
 }
 
 task test(dependsOn: getTasksByName("test", true)) << {
-	def reportsDir = "${buildDir}/reports"
+    def reportsDir = "${buildDir}/reports"
 
-	// Aggregate the test results
-	ant.taskdef(
-		name: 'junitreport2',
-		classname: "org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator",
-		classpath: configurations.build.asPath
-	)
+    // Aggregate the test results
+    ant.taskdef(
+        name: 'junitreport2',
+        classname: "org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator",
+        classpath: configurations.build.asPath
+    )
 
-	def testReportsDir = new File("${reportsDir}/tests")
-	if (testReportsDir.exists()) {
-		testReportsDir.deleteDir()
-	}
-	testReportsDir.mkdirs()
+    def testReportsDir = new File("${reportsDir}/tests")
+    if (testReportsDir.exists()) {
+        testReportsDir.deleteDir()
+    }
+    testReportsDir.mkdirs()
 
-	ant.junitreport2(todir: testReportsDir) {
-		subprojects.each {
-			def testResultsDir = "${it.buildDir}/test-results"
-			if (new File(testResultsDir).exists()) {
-				fileset(dir: testResultsDir) {
-					include(name: "TEST-*.xml")
-				}
-			}
-		}
-		report(todir: testReportsDir)
-	}
+    ant.junitreport2(todir: testReportsDir) {
+        subprojects.each {
+            def testResultsDir = "${it.buildDir}/test-results"
+            if (new File(testResultsDir).exists()) {
+                fileset(dir: testResultsDir) {
+                    include(name: "TEST-*.xml")
+                }
+            }
+        }
+        report(todir: testReportsDir)
+    }
 
-	// Aggregate the coverage results
-	if (project.hasProperty("withClover")) {
-		def db = "clover/clover.db"
-		def mergedDb = "${buildDir}/${db}"
-		def cloverReportsDir = "${reportsDir}/clover"
-		ant.taskdef(resource: "cloverlib.xml", classpath: configurations.build.asPath)
-		ant."clover-merge"(initstring: mergedDb) {
-			subprojects.each {
-				def projectCloverDb = "${it.buildDir}/${db}"
-				if (new File(projectCloverDb).exists()) {
-					cloverdb(initstring: projectCloverDb)
-				}
-			}
-		}
-		ant."clover-report"(initstring: mergedDb) {
-			current(outfile:"${cloverReportsDir}/clover.xml")
-		}
-		ant."clover-html-report"(initstring: mergedDb, outdir:"${cloverReportsDir}/html")
-	}
+    // Aggregate the coverage results
+    if (project.hasProperty("withClover")) {
+        def db = "clover/clover.db"
+        def mergedDb = "${buildDir}/${db}"
+        def cloverReportsDir = "${reportsDir}/clover"
+        ant.taskdef(resource: "cloverlib.xml", classpath: configurations.build.asPath)
+        ant."clover-merge"(initstring: mergedDb) {
+            subprojects.each {
+                def projectCloverDb = "${it.buildDir}/${db}"
+                if (new File(projectCloverDb).exists()) {
+                    cloverdb(initstring: projectCloverDb)
+                }
+            }
+        }
+        ant."clover-report"(initstring: mergedDb) {
+            current(outfile:"${cloverReportsDir}/clover.xml")
+        }
+        ant."clover-html-report"(initstring: mergedDb, outdir:"${cloverReportsDir}/html")
+    }
 }
+

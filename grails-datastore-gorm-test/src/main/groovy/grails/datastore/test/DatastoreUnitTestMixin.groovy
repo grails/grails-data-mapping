@@ -14,18 +14,18 @@
  */
 package grails.datastore.test
 
-import org.springframework.datastore.mapping.simple.SimpleMapDatastore
-import org.springframework.datastore.mapping.core.Session
-import org.grails.datastore.gorm.GormEnhancer
-import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import grails.test.MockUtils
-import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
-import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 
-import org.codehaus.groovy.grails.plugins.PluginManagerHolder
-import org.codehaus.groovy.grails.plugins.GrailsPluginManager
+import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.codehaus.groovy.grails.plugins.DefaultGrailsPluginManager
+import org.codehaus.groovy.grails.plugins.GrailsPluginManager
+import org.codehaus.groovy.grails.plugins.PluginManagerHolder
+import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
+import org.grails.datastore.gorm.GormEnhancer
+import org.springframework.datastore.mapping.core.Session
+import org.springframework.datastore.mapping.simple.SimpleMapDatastore
+import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
+import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.util.ClassUtils
 
 /**
@@ -41,58 +41,54 @@ import org.springframework.util.ClassUtils
  * <p>
  * The {@link DatastoreUnitTestMixin#connect()} method should be called in the test cases setUp() method
  * and the {@link DatastoreUnitTestMixin#disconnect()} method on the tearDown() method.
- * </p> 
+ * </p>
  *
  * @author Graeme Rocher
  * @since 1.0
  */
 class DatastoreUnitTestMixin {
 
-  static SimpleMapDatastore datastore = new SimpleMapDatastore()
-  Session session
-  PlatformTransactionManager transactionManager = new DatastoreTransactionManager(datastore:datastore)
-  private mockPluginManager = [hasGrailsPlugin: { String name ->
-    if(name == "hibernate") {
-      return ClassUtils.isPresent("org.hibernate.mapping.Value", getClass().getClassLoader())
+    static SimpleMapDatastore datastore = new SimpleMapDatastore()
+    Session session
+    PlatformTransactionManager transactionManager = new DatastoreTransactionManager(datastore:datastore)
+
+    private mockPluginManager = [hasGrailsPlugin: { String name ->
+        if (name == "hibernate") {
+            return ClassUtils.isPresent("org.hibernate.mapping.Value", getClass().getClassLoader())
+        }
+        return true
+    }] as GrailsPluginManager
+
+    Session connect() {
+        session = datastore.connect()
+        return session
     }
-    return true
-  }
-  ] as GrailsPluginManager
 
-  Session connect() {
-    session = datastore.connect()
-    return session
-  }
+    def mockDomain(Class domainClass, List instances = []) {
+        if (session == null) {
+            datastore.clearData()
+            session = datastore.connect()
+        }
 
-  
-  def mockDomain(Class domainClass, List instances = []) {
-    if(session == null) {
-      datastore.clearData()
-      session = datastore.connect()      
+        if (!(PluginManagerHolder.pluginManager instanceof DefaultGrailsPluginManager)) {
+            PluginManagerHolder.pluginManager = mockPluginManager
+        }
+
+        def entity = datastore.mappingContext.addPersistentEntity(domainClass)
+        def enhancer = new GormEnhancer(datastore, transactionManager)
+        enhancer.enhance entity
+        MockUtils.prepareForConstraintsTests(entity.javaClass)
+        def dc = new DefaultGrailsDomainClass(entity.javaClass)
+        datastore.mappingContext.addEntityValidator(entity, new GrailsDomainClassValidator(domainClass:dc))
+        instances.each {
+            it.metaClass = GroovySystem.metaClassRegistry.getMetaClass(domainClass)
+            session.persist(it)
+        }
+        session.flush()
     }
-    if(!(PluginManagerHolder.pluginManager instanceof DefaultGrailsPluginManager)) {
-      PluginManagerHolder.pluginManager = mockPluginManager
+
+    def disconnect() {
+        session?.disconnect()
+        datastore.clearData()
     }
-    def entity = datastore.mappingContext.addPersistentEntity(domainClass)
-    def enhancer = new GormEnhancer(datastore, transactionManager)
-    enhancer.enhance entity
-    MockUtils.prepareForConstraintsTests(entity.javaClass)
-    def dc = new DefaultGrailsDomainClass(entity.javaClass)
-    datastore.mappingContext.addEntityValidator(entity, new GrailsDomainClassValidator(domainClass:dc))
-    if(instances) {
-      instances?.each {
-        it.metaClass = GroovySystem.metaClassRegistry.getMetaClass(domainClass)
-        session.persist(it)
-      }
-      session.flush()      
-    }
-  }
-
-
-  def disconnect() {
-    session?.disconnect()
-    datastore.clearData()
-  }
-
-
 }

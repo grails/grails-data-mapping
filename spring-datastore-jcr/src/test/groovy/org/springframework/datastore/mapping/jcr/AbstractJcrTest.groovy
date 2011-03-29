@@ -1,8 +1,7 @@
 package org.springframework.datastore.mapping.jcr
 
-import org.junit.BeforeClass
-
 import org.junit.AfterClass
+import org.junit.BeforeClass
 
 /**
  * Test harness for JCR tests
@@ -10,26 +9,25 @@ import org.junit.AfterClass
  * @author Erawat Chamanont
  * @since 1.0
  */
-class AbstractJcrTest{
+class AbstractJcrTest {
 
-  protected static def conn = null
-  protected static def ds = null
-  //setup JCR Environments
-  @BeforeClass
-  public static void setupJCR(){
-    ds = new JcrDatastore()
-    def connectionDetails = [username:"username",
-                              password:"password",
-                              workspace:"default",
-                              configuration:"classpath:repository.xml",
-                              homeDir:"/temp/repo"];
-    conn = ds.connect(connectionDetails)   
-  }
+    protected static conn
+    protected static ds
 
- @AfterClass
-  public static void tearDown() {
-   conn.disconnect();
-  }
+    //setup JCR Environments
+    @BeforeClass
+    static void setupJCR() {
+        ds = new JcrDatastore()
+        def connectionDetails = [username:"username",
+                                 password:"password",
+                                 workspace:"default",
+                                 configuration:"classpath:repository.xml",
+                                 homeDir:"/temp/repo"]
+        conn = ds.connect(connectionDetails)
+    }
 
-  
+    @AfterClass
+    static void tearDown() {
+        conn.disconnect()
+    }
 }

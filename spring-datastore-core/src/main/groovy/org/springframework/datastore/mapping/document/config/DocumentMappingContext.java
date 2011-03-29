@@ -17,52 +17,47 @@ package org.springframework.datastore.mapping.document.config;
 
 import org.springframework.datastore.mapping.model.AbstractMappingContext;
 import org.springframework.datastore.mapping.model.MappingConfigurationStrategy;
-import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.MappingFactory;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.config.GormMappingConfigurationStrategy;
+import org.springframework.util.Assert;
 
 /**
  * Models a {@link MappingContext} for a Document store
- * 
- * @author Graeme Rocher
  *
+ * @author Graeme Rocher
  */
 public class DocumentMappingContext extends AbstractMappingContext{
     String defaultDatabaseName;
-	MappingFactory<Collection, Attribute> mappingFactory;
+    MappingFactory<Collection, Attribute> mappingFactory;
 
-	private MappingConfigurationStrategy syntaxStrategy;
+    private MappingConfigurationStrategy syntaxStrategy;
 
-	public DocumentMappingContext(String defaultDatabaseName) {
-		super();
-        if(defaultDatabaseName == null) throw new IllegalArgumentException("Argument [defaultDatabaseName] cannot be null");
-		this.defaultDatabaseName = defaultDatabaseName;
-		this.mappingFactory = createDocumentMappingFactory();
-		this.syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
-	}
+    public DocumentMappingContext(String defaultDatabaseName) {
+        Assert.notNull(defaultDatabaseName, "Argument [defaultDatabaseName] cannot be null");
+        this.defaultDatabaseName = defaultDatabaseName;
+        mappingFactory = createDocumentMappingFactory();
+        syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
+    }
 
-	protected MappingFactory createDocumentMappingFactory() {
-		return new GormDocumentMappingFactory();
-	}
-	
-	public String getDefaultDatabaseName() {
-		return defaultDatabaseName;
-	}
+    protected MappingFactory createDocumentMappingFactory() {
+        return new GormDocumentMappingFactory();
+    }
 
-	@Override
-	public MappingConfigurationStrategy getMappingSyntaxStrategy() {
-		return syntaxStrategy;
-	}
+    public String getDefaultDatabaseName() {
+        return defaultDatabaseName;
+    }
 
-	@Override
-	public MappingFactory<Collection, Attribute> getMappingFactory() {
-		return mappingFactory;
-	}
+    public MappingConfigurationStrategy getMappingSyntaxStrategy() {
+        return syntaxStrategy;
+    }
 
-	@Override
-	protected PersistentEntity createPersistentEntity(Class javaClass) {
-		return new DocumentPersistentEntity(javaClass, this);
-	}
+    public MappingFactory<Collection, Attribute> getMappingFactory() {
+        return mappingFactory;
+    }
 
+    @Override
+    protected PersistentEntity createPersistentEntity(Class javaClass) {
+        return new DocumentPersistentEntity(javaClass, this);
+    }
 }

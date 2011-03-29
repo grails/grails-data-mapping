@@ -14,17 +14,17 @@
  */
 package org.grails.datastore.gorm.bean.factory
 
-import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
-import org.springframework.datastore.mapping.model.MappingContext
-import org.springframework.beans.factory.FactoryBean
-import org.springframework.context.ApplicationContextAware
-import org.springframework.context.ApplicationContext
-import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
-import org.springframework.datastore.mapping.model.PersistentEntity
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
+import org.codehaus.groovy.grails.plugins.GrailsPluginManager
+import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
+import org.springframework.beans.factory.FactoryBean
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
+import org.springframework.datastore.mapping.model.MappingContext
+import org.springframework.datastore.mapping.model.PersistentEntity
 
 /**
  * An abstract factory bean for constructing MappingContext instances
@@ -32,48 +32,49 @@ import org.grails.datastore.gorm.proxy.GroovyProxyFactory
  * @author Graeme Rocher
  * @since 1.0
  */
-abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingContext>, GrailsApplicationAware, ApplicationContextAware{
+abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingContext>, GrailsApplicationAware, ApplicationContextAware {
 
-  GrailsApplication grailsApplication
-  GrailsPluginManager pluginManager
-  ApplicationContext applicationContext
-  String mappingStrategy
-  boolean defaultExternal
+    GrailsApplication grailsApplication
+    GrailsPluginManager pluginManager
+    ApplicationContext applicationContext
+    String mappingStrategy
+    boolean defaultExternal
 
-  MappingContext getObject() {
-    def mappingContext = createMappingContext();
-    mappingContext.proxyFactory = new GroovyProxyFactory()
-	
-	if(mappingStrategy == null) {
-		mappingStrategy = (getClass().simpleName - 'MappingContextFactoryBean').toLowerCase()
-	}
+    MappingContext getObject() {
+        def mappingContext = createMappingContext();
+        mappingContext.proxyFactory = new GroovyProxyFactory()
 
-    if(grailsApplication) {
-      for(GrailsDomainClass domainClass in grailsApplication.domainClasses){
-		 def domainMappingStrategy = domainClass.getPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY)
-         PersistentEntity entity
-		 
-		 if(mappingStrategy == domainMappingStrategy || (domainMappingStrategy == 'GORM' && !defaultExternal)) {
-			 entity = mappingContext.addPersistentEntity(domainClass.clazz)
-		 }
-		 else  {
-			 entity = mappingContext.addExternalPersistentEntity(domainClass.clazz)
-		 }
-         if(entity) {
-            final validatorBeanName = "${domainClass.fullName}Validator"
-            def validator = applicationContext.containsBean(validatorBeanName) ? applicationContext.getBean(validatorBeanName) : null
+        if (mappingStrategy == null) {
+            mappingStrategy = (getClass().simpleName - 'MappingContextFactoryBean').toLowerCase()
+        }
 
-            if(validator)
-              mappingContext.addEntityValidator(entity, validator)
-         }
-      }
+        if (grailsApplication) {
+            for (GrailsDomainClass domainClass in grailsApplication.domainClasses) {
+                def domainMappingStrategy = domainClass.getPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY)
+                PersistentEntity entity
+
+                if (mappingStrategy == domainMappingStrategy || (domainMappingStrategy == 'GORM' && !defaultExternal)) {
+                    entity = mappingContext.addPersistentEntity(domainClass.clazz)
+                }
+                else {
+                    entity = mappingContext.addExternalPersistentEntity(domainClass.clazz)
+                }
+                if (entity) {
+                    final validatorBeanName = "${domainClass.fullName}Validator"
+                    def validator = applicationContext.containsBean(validatorBeanName) ? applicationContext.getBean(validatorBeanName) : null
+
+                    if (validator) {
+                        mappingContext.addEntityValidator(entity, validator)
+                    }
+                }
+            }
+        }
+        return mappingContext
     }
-    return mappingContext
-  }
 
-  protected abstract MappingContext createMappingContext()
+    protected abstract MappingContext createMappingContext()
 
-  Class<?> getObjectType() { MappingContext }
+    Class<?> getObjectType() { MappingContext }
 
-  boolean isSingleton() { true }
+    boolean isSingleton() { true }
 }

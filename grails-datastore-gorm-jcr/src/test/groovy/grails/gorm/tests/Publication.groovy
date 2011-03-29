@@ -1,66 +1,66 @@
 @grails.persistence.Entity
-class Publication implements Serializable{
-   String id
-   Long version
-   String title
-   Date datePublished
-   Boolean paperback = true
+class Publication implements Serializable {
+    String id
+    Long version
+    String title
+    Date datePublished
+    Boolean paperback = true
 
-   static mapping = {
-     title index:true
-     paperback index:true
-     datePublished index:true
-   }
+    static mapping = {
+        title index:true
+        paperback index:true
+        datePublished index:true
+    }
 
-   static namedQueries = {
-       recentPublications {
-           def now = new Date()
-           gt 'datePublished', now - 365
-       }
+    static namedQueries = {
+        recentPublications {
+            def now = new Date()
+            gt 'datePublished', now - 365
+        }
 
-       publicationsWithBookInTitle {
-           like 'title', 'Book%'
-       }
+        publicationsWithBookInTitle {
+            like 'title', 'Book%'
+        }
 
-       recentPublicationsByTitle { title ->
-           recentPublications()
-           eq 'title', title
-       }
+        recentPublicationsByTitle { title ->
+            recentPublications()
+            eq 'title', title
+        }
 
-       latestBooks {
-           maxResults(10)
-           order("datePublished", "desc")
-       }
+        latestBooks {
+            maxResults(10)
+            order("datePublished", "desc")
+        }
 
-       publishedBetween { start, end ->
-           between 'datePublished', start, end
-       }
+        publishedBetween { start, end ->
+            between 'datePublished', start, end
+        }
 
-       publishedAfter { date ->
-           gt 'datePublished', date
-       }
+        publishedAfter { date ->
+            gt 'datePublished', date
+        }
 
-       paperbackOrRecent {
-           or {
+        paperbackOrRecent {
+            or {
                 def now = new Date()
                 gt 'datePublished', now - 365
                 paperbacks()
-           }
-       }
+            }
+        }
 
-       paperbacks {
-          eq 'paperback', true
-       }
+        paperbacks {
+            eq 'paperback', true
+        }
 
-       paperbackAndRecent {
-           paperbacks()
-           recentPublications()
-       }
+        paperbackAndRecent {
+            paperbacks()
+            recentPublications()
+        }
 
-       thisWeeksPaperbacks() {
-           paperbacks()
-           def today = new Date()
-           publishedBetween(today - 7, today)
-       }
-   }
+        thisWeeksPaperbacks() {
+            paperbacks()
+            def today = new Date()
+            publishedBetween(today - 7, today)
+        }
+    }
 }

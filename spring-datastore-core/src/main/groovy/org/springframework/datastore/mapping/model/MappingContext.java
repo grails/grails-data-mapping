@@ -14,14 +14,13 @@
  */
 package org.springframework.datastore.mapping.model;
 
+import java.util.Collection;
+
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
-import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.datastore.mapping.proxy.ProxyFactory;
 import org.springframework.validation.Validator;
-
-import java.util.Collection;
 
 /**
  * <p>This interface defines the overall context including all known
@@ -40,8 +39,7 @@ import java.util.Collection;
  * @since 1.0
  */
 public interface MappingContext {
-	
-	
+
     /**
      * Obtains a list of PersistentEntity instances
      *
@@ -72,7 +70,7 @@ public interface MappingContext {
      * @return The PersistentEntity instance
      */
     PersistentEntity addPersistentEntity(Class javaClass);
-    
+
     /**
      * Adds a persistent entity that is not mapped by this MappingContext instance.
      * Used for cross store persistence
@@ -164,9 +162,8 @@ public interface MappingContext {
 
     /**
      * Implementors can register for events when the mapping context changes
-     *
      */
-    public static interface Listener {
+    interface Listener {
 
         /**
          * Fired when a new entity is added

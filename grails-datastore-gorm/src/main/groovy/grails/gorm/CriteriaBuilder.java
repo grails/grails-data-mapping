@@ -35,9 +35,9 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.query.Restrictions;
+import org.springframework.util.Assert;
 
 /**
- *
  * Criteria builder implementation that operates against Spring datastore abstraction
  *
  * @author Graeme Rocher
@@ -79,28 +79,26 @@ public class CriteriaBuilder extends GroovyObjectSupport {
     private PersistentEntity persistentEntity;
 
     public CriteriaBuilder(Class targetClass, Datastore datastore) {
-        if(targetClass == null) throw new IllegalArgumentException("Argument [targetClass] cannot be null");
-        if(datastore == null) throw new IllegalArgumentException("Argument [datastore] cannot be null");
+        Assert.notNull(targetClass, "Argument [targetClass] cannot be null");
+        Assert.notNull(datastore, "Argument [datastore] cannot be null");
 
         persistentEntity = datastore.getMappingContext().getPersistentEntity(targetClass.getName());
-        if(persistentEntity == null) throw new IllegalArgumentException("Class ["+targetClass+"] is not a persistent entity");
+        if (persistentEntity == null) throw new IllegalArgumentException("Class ["+targetClass+"] is not a persistent entity");
         this.targetClass = targetClass;
         this.datastore = datastore;
-
     }
 
     public CriteriaBuilder(Class targetClass, Datastore datastore, Query query) {
         this(targetClass, datastore);
         this.query = query;
-
     }
 
    public void setUniqueResult(boolean uniqueResult) {
-		this.uniqueResult = uniqueResult;
-	}
+        this.uniqueResult = uniqueResult;
+    }
 
-public Query.ProjectionList id() {
-       if(projectionList != null) {
+   public Query.ProjectionList id() {
+       if (projectionList != null) {
            projectionList.id();
        }
        return projectionList;
@@ -112,11 +110,10 @@ public Query.ProjectionList id() {
      */
 
     public Query.ProjectionList count() {
-        if(projectionList != null) {
+        if (projectionList != null) {
             projectionList.count();
         }
         return projectionList;
-
     }
 
     /**
@@ -133,13 +130,11 @@ public Query.ProjectionList id() {
      * @return The projection list
      */
     public Query.ProjectionList property(String name) {
-        if(projectionList != null) {
+        if (projectionList != null) {
             projectionList.property(name);
         }
         return projectionList;
-
     }
-
 
     /**
      * Computes the sum of a property
@@ -148,11 +143,10 @@ public Query.ProjectionList id() {
      * @return The projection list
      */
     public Query.ProjectionList sum(String name) {
-        if(projectionList != null) {
+        if (projectionList != null) {
             projectionList.sum(name);
         }
         return projectionList;
-
     }
 
     /**
@@ -162,11 +156,10 @@ public Query.ProjectionList id() {
      * @return The projection list
      */
     public Query.ProjectionList min(String name) {
-        if(projectionList != null) {
+        if (projectionList != null) {
             projectionList.min(name);
         }
         return projectionList;
-
     }
 
     /**
@@ -176,14 +169,11 @@ public Query.ProjectionList id() {
      * @return The PropertyProjection instance
      */
     public Query.ProjectionList max(String name) {
-        if(projectionList != null) {
+        if (projectionList != null) {
             projectionList.max(name);
         }
         return projectionList;
-
     }
-
-
 
    /**
      * Computes the average value of a property
@@ -192,22 +182,21 @@ public Query.ProjectionList id() {
      * @return The PropertyProjection instance
      */
     public Query.ProjectionList avg(String name) {
-       if(projectionList != null) {
+       if (projectionList != null) {
            projectionList.avg(name);
        }
        return projectionList;
-
     }
 
     private boolean isCriteriaConstructionMethod(String name, Object[] args) {
         return (name.equals(LIST_CALL) && args.length == 2 && args[0] instanceof Map && args[1] instanceof Closure) ||
                   (name.equals(ROOT_CALL) ||
-                    name.equals(ROOT_DO_CALL) ||
-                    name.equals(LIST_CALL) ||
-                    name.equals(LIST_DISTINCT_CALL) ||
-                    name.equals(GET_CALL) ||
-                    name.equals(COUNT_CALL) ||
-                    name.equals(SCROLL_CALL) && args.length == 1 && args[0] instanceof Closure);
+                   name.equals(ROOT_DO_CALL) ||
+                   name.equals(LIST_CALL) ||
+                   name.equals(LIST_DISTINCT_CALL) ||
+                   name.equals(GET_CALL) ||
+                   name.equals(COUNT_CALL) ||
+                   name.equals(SCROLL_CALL) && args.length == 1 && args[0] instanceof Closure);
     }
 
     private void invokeClosureNode(Object args) {
@@ -227,7 +216,7 @@ public Query.ProjectionList id() {
             }
 
             query = datastore.getCurrentSession().createQuery(targetClass);
-            queryMetaClass = GroovySystem.getMetaClassRegistry().getMetaClass(query.getClass());            
+            queryMetaClass = GroovySystem.getMetaClassRegistry().getMetaClass(query.getClass());
 
             if (name.equals(GET_CALL)) {
                 uniqueResult = true;
@@ -239,7 +228,6 @@ public Query.ProjectionList id() {
                 uniqueResult = false;
                 count = false;
             }
-
 
             // Check for pagination params
             if (name.equals(LIST_CALL) && args.length == 2) {
@@ -272,7 +260,6 @@ public Query.ProjectionList id() {
             return result;
         }
 
-
         MetaMethod metaMethod = getMetaClass().getMetaMethod(name, args);
         if (metaMethod != null) {
             return metaMethod.invoke(this, args);
@@ -286,10 +273,10 @@ public Query.ProjectionList id() {
         if (args.length == 1 && args[0] instanceof Closure) {
             if (name.equals(AND) || name.equals(OR) || name.equals(NOT)) {
 
-                if(name.equals(AND)) {
+                if (name.equals(AND)) {
                     logicalExpressionStack.add(new Query.Conjunction());
                 }
-                else if(name.equals(NOT)) {
+                else if (name.equals(NOT)) {
                     logicalExpressionStack.add(new Query.Negation());
                 }
                 else {
@@ -309,23 +296,23 @@ public Query.ProjectionList id() {
                 invokeClosureNode(args[0]);
                 return name;
             }
-            
+
             final PersistentProperty property = persistentEntity.getPropertyByName(name);
-            if(property instanceof Association) {
-            	Association association = (Association) property;
-            	Query previousQuery = query;
-            	PersistentEntity previousEntity = persistentEntity;
-            	
-            	try {            		
-            		query = query.createQuery(property.getName());
-            		persistentEntity = association.getAssociatedEntity();
-            		invokeClosureNode(args[0]);
-            		return query;
-            	}
-            	finally {
-            		persistentEntity = previousEntity;
-            		query = previousQuery;
-            	}
+            if (property instanceof Association) {
+                Association association = (Association) property;
+                Query previousQuery = query;
+                PersistentEntity previousEntity = persistentEntity;
+
+                try {
+                    query = query.createQuery(property.getName());
+                    persistentEntity = association.getAssociatedEntity();
+                    invokeClosureNode(args[0]);
+                    return query;
+                }
+                finally {
+                    persistentEntity = previousEntity;
+                    query = previousQuery;
+                }
             }
         }
         else if (args.length == 1 && args[0] != null) {
@@ -364,12 +351,11 @@ public Query.ProjectionList id() {
         }
 
         throw new MissingMethodException(name, getClass(), args) ;
-
     }
 
     /**
      * Creates an "equals" Criterion based on the specified property name and value.
-     * 
+     *
      * @param propertyName The property name
      * @param propertyValue The property value
      *
@@ -383,16 +369,16 @@ public Query.ProjectionList id() {
 
     /**
      * Creates an "equals" Criterion based on the specified property name and value.
-     * 
+     *
      * @param propertyValue The property value
      *
      * @return A Criterion instance
      */
     @SuppressWarnings("rawtypes")
-    public Query.Criterion idEq(Object propertyValue) {        
+    public Query.Criterion idEq(Object propertyValue) {
         return addToCriteria(Restrictions.idEq(propertyValue));
     }
-    
+
     /**
      * Creates a "not equals" Criterion based on the specified property name and value.
      *
@@ -443,7 +429,6 @@ public Query.ProjectionList id() {
         return addToCriteria(Restrictions.gt(property, value));
     }
 
-
     /**
      * Used to restrict a value to be less than or equal to the given value
      * @param property The property
@@ -477,10 +462,9 @@ public Query.ProjectionList id() {
     @SuppressWarnings("rawtypes")
     public Query.Criterion like(String propertyName, Object propertyValue) {
         validatePropertyName(propertyName, "like");
-        if(propertyValue == null) throw new IllegalArgumentException("Cannot use like expression with null value");
+        Assert.notNull(propertyValue, "Cannot use like expression with null value");
         return addToCriteria(Restrictions.like(propertyName, propertyValue.toString()));
     }
-
 
     /**
      * Creates an rlike Criterion based on the specified property name and value.
@@ -493,7 +477,7 @@ public Query.ProjectionList id() {
     @SuppressWarnings("rawtypes")
     public Query.Criterion rlike(String propertyName, Object propertyValue) {
         validatePropertyName(propertyName, "like");
-        if(propertyValue == null) throw new IllegalArgumentException("Cannot use like expression with null value");
+        Assert.notNull(propertyValue, "Cannot use like expression with null value");
         return addToCriteria(Restrictions.rlike(propertyName, propertyValue.toString()));
     }
 
@@ -508,7 +492,7 @@ public Query.ProjectionList id() {
     @SuppressWarnings("rawtypes")
     public Query.Criterion in(String propertyName, Collection values) {
         validatePropertyName(propertyName, "in");
-        if(values == null) throw new IllegalArgumentException("Cannot use in expression with null values");
+        Assert.notNull(values, "Cannot use in expression with null values");
         return addToCriteria(Restrictions.in(propertyName, values));
     }
 
@@ -551,8 +535,6 @@ public Query.ProjectionList id() {
         return in(propertyName, Arrays.asList(values));
     }
 
-
-
     /**
      * Orders by the specified property name (defaults to ascending)
      *
@@ -594,21 +576,20 @@ public Query.ProjectionList id() {
         }
         return o;
     }
-    
+
     protected void validatePropertyName(String propertyName, String methodName) {
-        if(propertyName == null) {
+        if (propertyName == null) {
             throw new IllegalArgumentException("Cannot use ["+methodName+"] restriction with null property name");
         }
 
         PersistentProperty property = persistentEntity.getPropertyByName(propertyName);
-        if(property == null && persistentEntity.getIdentity().getName().equals(propertyName)) {
+        if (property == null && persistentEntity.getIdentity().getName().equals(propertyName)) {
             property = persistentEntity.getIdentity();
         }
-        if(property == null) {
+        if (property == null) {
             throw new IllegalArgumentException("Property ["+propertyName+"] is not a valid property of class ["+persistentEntity+"]");
         }
     }
-
 
     /*
     * adds and returns the given criterion to the currently active criteria set.
@@ -630,7 +611,7 @@ public Query.ProjectionList id() {
     }
 
     public void build(Closure criteria) {
-        if(criteria != null) {
+        if (criteria != null) {
             invokeClosureNode(criteria);
         }
     }

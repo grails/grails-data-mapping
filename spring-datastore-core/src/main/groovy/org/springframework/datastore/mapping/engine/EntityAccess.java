@@ -14,6 +14,12 @@
  */
 package org.springframework.datastore.mapping.engine;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.core.convert.ConversionService;
@@ -22,24 +28,16 @@ import org.springframework.datastore.mapping.model.IdentityMapping;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.util.ReflectionUtils;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
-
-
 /**
  * Class used to access properties of an entity. Also responsible for
  * any conversion from source to target types.
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
 public class EntityAccess {
 
-    private static final Set EXCLUDED_PROPERTIES = new HashSet() {{
-        add("class"); add("metaClass");
-    }};
+    private static final Set EXCLUDED_PROPERTIES = new HashSet(Arrays.asList("class", "metaClass"));
 
     protected Object entity;
     private BeanWrapper beanWrapper;
@@ -48,7 +46,7 @@ public class EntityAccess {
     public EntityAccess(PersistentEntity persistentEntity, Object entity) {
         this.entity = entity;
         this.persistentEntity = persistentEntity;
-        this.beanWrapper = new BeanWrapperImpl(entity);
+        beanWrapper = new BeanWrapperImpl(entity);
     }
 
     public Object getEntity() {
@@ -56,7 +54,7 @@ public class EntityAccess {
     }
 
     public void setConversionService(ConversionService conversionService) {
-        this.beanWrapper.setConversionService(conversionService);
+        beanWrapper.setConversionService(conversionService);
     }
 
     public Object getProperty(String name) {
@@ -69,13 +67,10 @@ public class EntityAccess {
 
     public Object getIdentifier() {
         String idName = getIdentifierName(persistentEntity.getMapping());
-        if(idName != null) {        	
-        	return getProperty(idName);
+        if (idName != null) {
+            return getProperty(idName);
         }
-        else {
-        	return getProperty(persistentEntity.getIdentity().getName());
-        }
-
+        return getProperty(persistentEntity.getIdentity().getName());
     }
 
     public void setIdentifier(Object id) {
@@ -85,22 +80,21 @@ public class EntityAccess {
 
     protected String getIdentifierName(ClassMapping cm) {
         final IdentityMapping identifier = cm.getIdentifier();
-        if(identifier != null && identifier.getIdentifierName() != null) {        	
-        	return identifier.getIdentifierName()[0];
+        if (identifier != null && identifier.getIdentifierName() != null) {
+            return identifier.getIdentifierName()[0];
         }
         return null;
     }
 
     public String getIdentifierName() {
         return getIdentifierName(persistentEntity.getMapping());
-        
     }
 
     public void setPropertyNoConversion(String name, Object value) {
         final PropertyDescriptor pd = beanWrapper.getPropertyDescriptor(name);
-        if(pd != null) {
+        if (pd != null) {
             final Method writeMethod = pd.getWriteMethod();
-            if(writeMethod!=null) {
+            if (writeMethod!=null) {
                 ReflectionUtils.invokeMethod(writeMethod, beanWrapper.getWrappedInstance(), value);
             }
         }
@@ -113,12 +107,11 @@ public class EntityAccess {
         final PropertyDescriptor[] descriptors = beanWrapper.getPropertyDescriptors();
         for (PropertyDescriptor descriptor : descriptors) {
             final String name = descriptor.getName();
-            if(!EXCLUDED_PROPERTIES.contains(name)) {
-                if(beanWrapper.isReadableProperty(name) && beanWrapper.isWritableProperty(name)) {
+            if (!EXCLUDED_PROPERTIES.contains(name)) {
+                if (beanWrapper.isReadableProperty(name) && beanWrapper.isWritableProperty(name)) {
                     Object newValue = getProperty(name);
                     setProperty(name, newValue);
                 }
-
             }
         }
     }

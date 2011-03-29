@@ -18,87 +18,87 @@
 
 package org.springframework.datastore.mapping.riak.collection;
 
-import org.springframework.data.keyvalue.riak.core.RiakTemplate;
-import org.springframework.data.keyvalue.riak.mapreduce.*;
-
 import java.util.AbstractList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.data.keyvalue.riak.core.RiakTemplate;
+import org.springframework.data.keyvalue.riak.mapreduce.JavascriptMapReduceOperation;
+import org.springframework.data.keyvalue.riak.mapreduce.MapReduceJob;
+import org.springframework.data.keyvalue.riak.mapreduce.MapReduceOperation;
+import org.springframework.data.keyvalue.riak.mapreduce.MapReducePhase;
+import org.springframework.data.keyvalue.riak.mapreduce.RiakMapReduceJob;
+import org.springframework.data.keyvalue.riak.mapreduce.RiakMapReducePhase;
 
 /**
  * @author J. Brisbin <jon@jbrisbin.com>
  */
+@SuppressWarnings("hiding")
 public class RiakEntityIndex<Long> extends AbstractList implements List, RiakCollection {
 
-  private RiakTemplate riakTemplate;
-  private String bucket;
+    private RiakTemplate riakTemplate;
+    private String bucket;
 
-  public RiakEntityIndex(RiakTemplate riakTemplate, String bucket) {
-    this.riakTemplate = riakTemplate;
-    this.bucket = bucket;
-  }
+    public RiakEntityIndex(RiakTemplate riakTemplate, String bucket) {
+        this.riakTemplate = riakTemplate;
+        this.bucket = bucket;
+    }
 
-  @Override
-  public Object get(int i) {
-    MapReduceJob mapReduceJob = createFetchAtJob(i);
-    return riakTemplate.execute(mapReduceJob, Map.class);
-  }
+    @Override
+    public Object get(int i) {
+        MapReduceJob mapReduceJob = createFetchAtJob(i);
+        return riakTemplate.execute(mapReduceJob, Map.class);
+    }
 
-  @Override
-  public int size() {
-    MapReduceJob mapReduceJob = createCountJob();
-    return riakTemplate.execute(mapReduceJob, Integer.class);
-  }
+    @Override
+    public int size() {
+        MapReduceJob mapReduceJob = createCountJob();
+        return riakTemplate.execute(mapReduceJob, Integer.class);
+    }
 
-  @Override
-  public boolean isEmpty() {
-    return size() == 0;
-  }
+    @Override
+    public boolean isEmpty() {
+        return size() == 0;
+    }
 
-  @Override
-  public Iterator iterator() {
-    return super.iterator();    //To change body of overridden methods use File | Settings | File Templates.
-  }
+    public String getBucket() {
+        return bucket;
+    }
 
-  public String getBucket() {
-    return this.bucket;
-  }
+    private MapReduceJob createFetchAtJob(int i) {
+        MapReduceJob mapReduceJob = new RiakMapReduceJob(riakTemplate);
+        MapReduceOperation mapJs = new JavascriptMapReduceOperation(
+                "function(values){ var row=Riak.mapValuesJson(values); return [row]; }");
+        MapReducePhase mapPhase = new RiakMapReducePhase(MapReducePhase.Phase.MAP,
+                "javascript",
+                mapJs);
+        mapReduceJob.addPhase(mapPhase);
+        MapReduceOperation reduceJs = new JavascriptMapReduceOperation(String.format(
+                "function(values){ return values[%s]; }",
+                i));
+        MapReducePhase reducePhase = new RiakMapReducePhase(MapReducePhase.Phase.REDUCE,
+                "javascript",
+                reduceJs);
+        mapReduceJob.addPhase(reducePhase);
 
-  private MapReduceJob createFetchAtJob(int i) {
-    MapReduceJob mapReduceJob = new RiakMapReduceJob(riakTemplate);
-    MapReduceOperation mapJs = new JavascriptMapReduceOperation(
-        "function(values){ var row=Riak.mapValuesJson(values); return [row]; }");
-    MapReducePhase mapPhase = new RiakMapReducePhase(MapReducePhase.Phase.MAP,
-        "javascript",
-        mapJs);
-    mapReduceJob.addPhase(mapPhase);
-    MapReduceOperation reduceJs = new JavascriptMapReduceOperation(String.format(
-        "function(values){ return values[%s]; }",
-        i));
-    MapReducePhase reducePhase = new RiakMapReducePhase(MapReducePhase.Phase.REDUCE,
-        "javascript",
-        reduceJs);
-    mapReduceJob.addPhase(reducePhase);
+        return mapReduceJob;
+    }
 
-    return mapReduceJob;
-  }
+    private MapReduceJob createCountJob() {
+        MapReduceJob mapReduceJob = new RiakMapReduceJob(riakTemplate);
+        MapReduceOperation mapJs = new JavascriptMapReduceOperation(
+                "function(values){ var row=Riak.mapValuesJson(values); return [row]; }");
+        MapReducePhase mapPhase = new RiakMapReducePhase(MapReducePhase.Phase.MAP,
+                "javascript",
+                mapJs);
+        mapReduceJob.addPhase(mapPhase);
+        MapReduceOperation reduceJs = new JavascriptMapReduceOperation(
+                "function(values){ return values.length; }");
+        MapReducePhase reducePhase = new RiakMapReducePhase(MapReducePhase.Phase.REDUCE,
+                "javascript",
+                reduceJs);
+        mapReduceJob.addPhase(reducePhase);
 
-  private MapReduceJob createCountJob() {
-    MapReduceJob mapReduceJob = new RiakMapReduceJob(riakTemplate);
-    MapReduceOperation mapJs = new JavascriptMapReduceOperation(
-        "function(values){ var row=Riak.mapValuesJson(values); return [row]; }");
-    MapReducePhase mapPhase = new RiakMapReducePhase(MapReducePhase.Phase.MAP,
-        "javascript",
-        mapJs);
-    mapReduceJob.addPhase(mapPhase);
-    MapReduceOperation reduceJs = new JavascriptMapReduceOperation(
-        "function(values){ return values.length; }");
-    MapReducePhase reducePhase = new RiakMapReducePhase(MapReducePhase.Phase.REDUCE,
-        "javascript",
-        reduceJs);
-    mapReduceJob.addPhase(reducePhase);
-
-    return mapReduceJob;
-  }
+        return mapReduceJob;
+    }
 }

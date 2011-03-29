@@ -19,11 +19,7 @@ import grails.gorm.tests.CircularOneToManySpec
 import grails.gorm.tests.ProxyLoadingSpec
 
 /**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: Aug 31, 2010
- * Time: 1:16:26 PM
- * To change this template use File | Settings | File Templates.
+ * @author graemerocher
  */
 @RunWith(Suite)
 @SuiteClasses([

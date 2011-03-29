@@ -65,44 +65,37 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
     protected Pattern pattern;
     private Pattern[] operatorPatterns;
     private String[] operators;
-    
+
     private static Pattern methodExpressinPattern;
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
-    
-    private static final String NOT = "Not";    
+
+    private static final String NOT = "Not";
     private static final Map<String, Constructor> methodExpressions = new LinkedHashMap<String, Constructor>();
-    
+
     static {
-    	// populate the default method expressions
-    	try {
-    	
-	    	methodExpressions.put(Equal.class.getSimpleName(), Equal.class.getConstructor(new Class[] { Class.class, String.class}));
-	    	methodExpressions.put(NotEqual.class.getSimpleName(), NotEqual.class.getConstructor(new Class[] { Class.class, String.class}));
-	    	methodExpressions.put(InList.class.getSimpleName(), InList.class.getConstructor(new Class[] { Class.class, String.class}));
-	    	methodExpressions.put(Between.class.getSimpleName(), Between.class.getConstructor(new Class[] { Class.class, String.class}));
-	    	methodExpressions.put(Like.class.getSimpleName(), Like.class.getConstructor(new Class[] { Class.class, String.class}));
-	    	methodExpressions.put(GreaterThanEquals.class.getSimpleName(), GreaterThanEquals.class.getConstructor(new Class[] { Class.class, String.class}));
-	    	methodExpressions.put(LessThanEquals.class.getSimpleName(), LessThanEquals.class.getConstructor(new Class[] { Class.class, String.class}));
-	    	methodExpressions.put(GreaterThan.class.getSimpleName(), GreaterThan.class.getConstructor(new Class[] { Class.class, String.class}));
-	    	methodExpressions.put(LessThan.class.getSimpleName(), LessThan.class.getConstructor(new Class[] { Class.class, String.class}));
-	    	methodExpressions.put(IsNull.class.getSimpleName(), IsNull.class.getConstructor(new Class[] { Class.class, String.class}));
-	    	methodExpressions.put(IsNotNull.class.getSimpleName(), IsNotNull.class.getConstructor(new Class[] { Class.class, String.class}));
-	    	methodExpressions.put(IsEmpty.class.getSimpleName(), IsEmpty.class.getConstructor(new Class[] { Class.class, String.class}));
-	    	methodExpressions.put(IsEmpty.class.getSimpleName(), IsEmpty.class.getConstructor(new Class[] { Class.class, String.class}));
-			methodExpressions.put(IsNotEmpty.class.getSimpleName(), IsNotEmpty.class.getConstructor(new Class[] { Class.class, String.class}));
-		} catch (SecurityException e) {
-			// ignore
-		} catch (NoSuchMethodException e) {
-			// ignore
-		}
-    	
-    	resetMethodExpressionPattern();
+        // populate the default method expressions
+        try {
+            Class[] classes = { Equal.class, NotEqual.class, InList.class, Between.class, Like.class,
+                                GreaterThanEquals.class, LessThanEquals.class, GreaterThan.class,
+                                LessThan.class, IsNull.class, IsNotNull.class, IsEmpty.class,
+                                IsEmpty.class, IsNotEmpty.class };
+            Class[] constructorParamTypes = { Class.class, String.class};
+            for (Class c : classes) {
+                methodExpressions.put(c.getSimpleName(), c.getConstructor(constructorParamTypes));
+            }
+        } catch (SecurityException e) {
+            // ignore
+        } catch (NoSuchMethodException e) {
+            // ignore
+        }
+
+        resetMethodExpressionPattern();
     }
 
-	static void resetMethodExpressionPattern() {
-		String expressionPattern = DefaultGroovyMethods.join(methodExpressions.keySet(), "|");
-    	methodExpressinPattern = Pattern.compile("\\p{Upper}[\\p{Lower}\\d]+("+expressionPattern+")");
-	}
+    static void resetMethodExpressionPattern() {
+        String expressionPattern = DefaultGroovyMethods.join(methodExpressions.keySet(), "|");
+        methodExpressinPattern = Pattern.compile("\\p{Upper}[\\p{Lower}\\d]+("+expressionPattern+")");
+    }
 
     public DynamicFinder(Pattern pattern, String[] operators) {
         this.pattern = pattern;
@@ -111,25 +104,23 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
         for (int i = 0; i < operators.length; i++) {
             operatorPatterns[i] = Pattern.compile("(\\w+)("+operators[i]+")(\\p{Upper})(\\w+)");
         }
-        
-        
     }
 
     /**
      * Registers a new method expression. The Class must extends from the class {@link MethodExpression} and provide
      * a constructor that accepts a Class parameter and a String parameter.
-     * 
-     * @param methodExpression A class that extends from {@link MethodExpression} 
+     *
+     * @param methodExpression A class that extends from {@link MethodExpression}
      */
     public static void registerNewMethodExpression(Class methodExpression) {
-    	try {
-			methodExpressions.put(methodExpression.getSimpleName(), methodExpression.getConstructor(new Class[] { Class.class, String.class}));
-			resetMethodExpressionPattern();
-		} catch (SecurityException e) {
-			throw new IllegalArgumentException("Class ["+methodExpression+"] does not provide a constructor that takes parameters of type Class and String: " + e.getMessage(), e);
-		} catch (NoSuchMethodException e) {
-			throw new IllegalArgumentException("Class ["+methodExpression+"] does not provide a constructor that takes parameters of type Class and String: " + e.getMessage(), e);
-		}
+        try {
+            methodExpressions.put(methodExpression.getSimpleName(), methodExpression.getConstructor(new Class[] { Class.class, String.class}));
+            resetMethodExpressionPattern();
+        } catch (SecurityException e) {
+            throw new IllegalArgumentException("Class ["+methodExpression+"] does not provide a constructor that takes parameters of type Class and String: " + e.getMessage(), e);
+        } catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException("Class ["+methodExpression+"] does not provide a constructor that takes parameters of type Class and String: " + e.getMessage(), e);
+        }
     }
 
     public void setPattern(String pattern) {
@@ -137,7 +128,7 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
     }
 
     public boolean isMethodMatch(String methodName) {
-        return this.pattern.matcher(methodName.subSequence(0, methodName.length())).find();
+        return pattern.matcher(methodName.subSequence(0, methodName.length())).find();
     }
 
     public Object invoke(final Class clazz, String methodName, Closure additionalCriteria, Object[] arguments) {
@@ -250,21 +241,20 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
         return new DynamicFinderInvocation(clazz, methodName, remainingArguments, expressions, additionalCriteria, operatorInUse );
     }
 
-    protected MethodExpression findMethodExpression(Class clazz,
-			String expression) {
-		final Matcher matcher = methodExpressinPattern.matcher(expression);
-		
-		if(matcher.find()) {
-			Constructor constructor = methodExpressions.get(matcher.group(1));
-			try {				
-				return (MethodExpression) constructor.newInstance(clazz, calcPropertyName(expression, constructor.getDeclaringClass().getSimpleName()));
-			} catch (Exception e) {
-				// ignore
-			}
-		}
-		return new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()) );
-	}
-    
+    protected MethodExpression findMethodExpression(Class clazz, String expression) {
+        final Matcher matcher = methodExpressinPattern.matcher(expression);
+
+        if (matcher.find()) {
+            Constructor constructor = methodExpressions.get(matcher.group(1));
+            try {
+                return (MethodExpression) constructor.newInstance(clazz, calcPropertyName(expression, constructor.getDeclaringClass().getSimpleName()));
+            } catch (Exception e) {
+                // ignore
+            }
+        }
+        return new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()) );
+    }
+
     private static String calcPropertyName(String queryParameter, String clause) {
         String propName;
         if (clause != null && !clause.equals(Equal.class.getSimpleName())) {
@@ -278,23 +268,20 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
             int i = propName.lastIndexOf(NOT);
             propName = propName.substring(0, i);
         }
-        if(StringUtils.hasLength(propName))
+        if (StringUtils.hasLength(propName))
             return propName.substring(0,1).toLowerCase(Locale.ENGLISH) + propName.substring(1);
-        else
-            throw new IllegalArgumentException("No property name specified in clause: " + clause);
+        throw new IllegalArgumentException("No property name specified in clause: " + clause);
     }
-    
 
-	protected abstract Object doInvokeInternal(DynamicFinderInvocation invocation);
+    protected abstract Object doInvokeInternal(DynamicFinderInvocation invocation);
 
     public Object invoke(final Class clazz, String methodName, Object[] arguments) {
         return invoke(clazz, methodName, null, arguments);
     }
 
-
-
-    public static void populateArgumentsForCriteria(Class<?> targetClass, Query q, Map argMap) {
-        if(argMap != null) {
+    public static void populateArgumentsForCriteria(@SuppressWarnings("unused") Class<?> targetClass,
+             Query q, Map argMap) {
+        if (argMap != null) {
             Integer maxParam = null;
             Integer offsetParam = null;
             final ConversionService conversionService = q.getSession().getMappingContext().getConversionService();
@@ -324,10 +311,8 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
                     q.order(Query.Order.asc(sort));
                 }
             }
-            
         }
     }
-
 
     protected void configureQueryWithArguments(Class clazz, Query query, Object[] arguments) {
         if (arguments.length > 0) {
@@ -339,12 +324,11 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
     }
 
     protected void applyAdditionalCriteria(Query query, Closure additionalCriteria) {
-        if(additionalCriteria != null) {
+        if (additionalCriteria != null) {
             CriteriaBuilder builder = new CriteriaBuilder(query.getEntity().getJavaClass(), query.getSession().getDatastore(), query);
             builder.build(additionalCriteria);
         }
     }
-
 
     public static List<FinderMethod> getAllDynamicFinders(Datastore datastore) {
         List<FinderMethod> finders = new ArrayList<FinderMethod>();

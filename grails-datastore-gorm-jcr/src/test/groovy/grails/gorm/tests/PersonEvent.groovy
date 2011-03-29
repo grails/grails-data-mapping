@@ -1,5 +1,5 @@
 @grails.persistence.Entity
-class PersonEvent implements Serializable{
+class PersonEvent implements Serializable {
     String id
     Long version
     String name
@@ -8,17 +8,19 @@ class PersonEvent implements Serializable{
 
     static STORE = [updated:0, inserted:0]
 
-    static void resetStore() { STORE = [updated:0, inserted:0] }
+    static void resetStore() {
+        STORE = [updated:0, inserted:0]
+    }
 
     def beforeDelete() {
-      STORE["deleted"] = true
-
+        STORE["deleted"] = true
     }
+
     def beforeUpdate() {
-      STORE["updated"]++
-    }
-    def beforeInsert() {
-      STORE["inserted"]++
+        STORE["updated"]++
     }
 
+    def beforeInsert() {
+        STORE["inserted"]++
+    }
 }

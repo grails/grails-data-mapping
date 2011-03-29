@@ -14,16 +14,21 @@
  */
 package org.springframework.datastore.mapping.model;
 
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.datastore.mapping.core.EntityCreationException;
 import org.springframework.datastore.mapping.model.lifecycle.Initializable;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.model.types.OneToMany;
-
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Modifier;
-import java.util.*;
+import org.springframework.util.Assert;
 
 /**
  * Abstract implementation to be subclasses on a per datastore basis
@@ -41,40 +46,38 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
     protected List<String> persistentPropertyNames;
     private String decapitalizedName;
     protected Set owners;
-    private PersistentEntity parentEntity = null;
+    private PersistentEntity parentEntity;
     private boolean external;
 
     public AbstractPersistentEntity(Class javaClass, MappingContext context) {
-        if(javaClass == null) throw new IllegalArgumentException("The argument [javaClass] cannot be null");
+        Assert.notNull(javaClass, "The argument [javaClass] cannot be null");
         this.javaClass = javaClass;
         this.context = context;
-        this.decapitalizedName = Introspector.decapitalize(javaClass.getSimpleName());
+        decapitalizedName = Introspector.decapitalize(javaClass.getSimpleName());
     }
 
     public boolean isExternal() {
-		return external;
-	}
+        return external;
+    }
 
+    public void setExternal(boolean external) {
+        this.external = external;
+    }
 
-
-	public void setExternal(boolean external) {
-		this.external = external;
-	}
-
-	public MappingContext getMappingContext() {
-        return this.context;
+    public MappingContext getMappingContext() {
+        return context;
     }
 
     public void initialize() {
-        this.identity = context.getMappingSyntaxStrategy().getIdentity(javaClass, context);
-        this.owners = context.getMappingSyntaxStrategy().getOwningEntities(javaClass, context);
-        this.persistentProperties = context.getMappingSyntaxStrategy().getPersistentProperties(javaClass, context);
+        identity = context.getMappingSyntaxStrategy().getIdentity(javaClass, context);
+        owners = context.getMappingSyntaxStrategy().getOwningEntities(javaClass, context);
+        persistentProperties = context.getMappingSyntaxStrategy().getPersistentProperties(javaClass, context);
         persistentPropertyNames = new ArrayList<String>();
         associations = new ArrayList();
         for (PersistentProperty persistentProperty : persistentProperties) {
-            if(!(persistentProperty instanceof OneToMany))
+            if (!(persistentProperty instanceof OneToMany))
                 persistentPropertyNames.add(persistentProperty.getName());
-            if(persistentProperty instanceof Association) {
+            if (persistentProperty instanceof Association) {
                 associations.add((Association) persistentProperty);
             }
         }
@@ -84,13 +87,10 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
 
         Class superClass = javaClass.getSuperclass();
         if (superClass != null &&
-        	!superClass.equals(Object.class) &&
+            !superClass.equals(Object.class) &&
             !Modifier.isAbstract(superClass.getModifiers())) {
-            this.parentEntity = context.addPersistentEntity(superClass);
+            parentEntity = context.addPersistentEntity(superClass);
         }
-
-
-
 
         getMapping().getMappedForm(); // initialize mapping
     }
@@ -99,10 +99,9 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
         final PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(getJavaClass(), name);
         return pd != null && pd.getPropertyType().equals(type);
     }
-    
-    @Override
+
     public boolean isIdentityName(String propertyName) {
-    	return getIdentity().getName().equals(propertyName);
+        return getIdentity().getName().equals(propertyName);
     }
 
     public PersistentEntity getParentEntity() {
@@ -132,15 +131,16 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
     }
 
     public String getDecapitalizedName() {
-        return this.decapitalizedName;
+        return decapitalizedName;
     }
 
     public List<String> getPersistentPropertyNames() {
-        return this.persistentPropertyNames;
+        return persistentPropertyNames;
     }
 
     public ClassMapping<T> getMapping() {
         return new AbstractClassMapping<T>(this, context) {
+            @Override
             public T getMappedForm() {
                 return null;
             }
@@ -162,11 +162,11 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
     }
 
     public PersistentProperty getIdentity() {
-        return this.identity;
+        return identity;
     }
 
     public Class getJavaClass() {
-        return this.javaClass;
+        return javaClass;
     }
 
     public boolean isInstance(Object obj) {
@@ -192,8 +192,8 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
 
     @Override
     public boolean equals(Object o) {
-        if(o == null || !(o instanceof PersistentEntity)) return false;
-        if(this == o) return true;
+        if (o == null || !(o instanceof PersistentEntity)) return false;
+        if (this == o) return true;
 
         PersistentEntity other = (PersistentEntity) o;
         return javaClass.equals(other.getJavaClass());

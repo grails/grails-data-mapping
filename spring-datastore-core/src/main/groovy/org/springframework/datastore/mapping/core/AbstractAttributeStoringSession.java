@@ -23,53 +23,50 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 public abstract class AbstractAttributeStoringSession implements Session{
 
-	protected Map<Object, Map<String, Object>> attributes = new ConcurrentHashMap<Object, Map<String, Object>>();
+    protected Map<Object, Map<String, Object>> attributes = new ConcurrentHashMap<Object, Map<String, Object>>();
 
-	public void setAttribute(Object entity, String attributeName, Object value) {
-	    if(entity != null) {
-	        Map<String, Object> attrs = attributes.get(entity);
-	        if(attrs == null) {
-	            attrs = new ConcurrentHashMap<String, Object>();
-	            attributes.put(entity, attrs);
-	        }
-	
-	        if(attributeName != null && value != null) {
-	            attrs.put(attributeName, value);
-	        }
-	
-	    }
-	}
+    public void setAttribute(Object entity, String attributeName, Object value) {
+        if (entity != null) {
+            Map<String, Object> attrs = attributes.get(entity);
+            if (attrs == null) {
+                attrs = new ConcurrentHashMap<String, Object>();
+                attributes.put(entity, attrs);
+            }
 
-	public Object getAttribute(Object entity, String attributeName) {
-	    if(entity != null) {
-	        final Map<String, Object> attrs = attributes.get(entity);
-	        if(attrs != null && attributeName != null) {
-	            return attrs.get(attributeName);
-	        }
-	    }
-	    return null;  
-	}
+            if (attributeName != null && value != null) {
+                attrs.put(attributeName, value);
+            }
 
-	/**
-	 * Performs clear up. Subclasses should always call into this super
-	 * implementation.
-	 */
-	public void disconnect() {
-	    clear();
-	    attributes.clear();
-	    SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(getDatastore());
-	    if(sessionHolder != null) {
-	    	sessionHolder.removeSession(this);
-	    	if(sessionHolder.isEmpty()) {
-	    		try {
-					TransactionSynchronizationManager.unbindResource(getDatastore());
-				} catch (IllegalStateException e) {
-					// ignore session disconnected by a another thread
-				}
-	    	}
-	    }
-	    
-	    
-	}
+        }
+    }
 
+    public Object getAttribute(Object entity, String attributeName) {
+        if (entity != null) {
+            final Map<String, Object> attrs = attributes.get(entity);
+            if (attrs != null && attributeName != null) {
+                return attrs.get(attributeName);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Performs clear up. Subclasses should always call into this super
+     * implementation.
+     */
+    public void disconnect() {
+        clear();
+        attributes.clear();
+        SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(getDatastore());
+        if (sessionHolder != null) {
+            sessionHolder.removeSession(this);
+            if (sessionHolder.isEmpty()) {
+                try {
+                    TransactionSynchronizationManager.unbindResource(getDatastore());
+                } catch (IllegalStateException e) {
+                    // ignore session disconnected by a another thread
+                }
+            }
+        }
+    }
 }

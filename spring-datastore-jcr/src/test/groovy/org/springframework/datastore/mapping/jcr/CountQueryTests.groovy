@@ -1,108 +1,81 @@
 package org.springframework.datastore.mapping.jcr
 
+import static org.springframework.datastore.mapping.query.Restrictions.eq
+
+import org.junit.After
+import org.junit.AfterClass
+import org.junit.BeforeClass
 import org.junit.Test
 import org.springframework.datastore.mapping.query.Query
-import static org.springframework.datastore.mapping.query.Restrictions.eq
-import org.junit.BeforeClass
-import org.junit.AfterClass
-import org.junit.After
 
 /**
  * @author Erawat Chamanont
  * @since 1.0
  */
-class CountQueryTests {
+class CountQueryTests extends AbstractJcrTest {
 
-  protected static def conn = null
-  protected static def ds = null
+    @After
+    void clearNodes() {
+        def session = conn.getNativeInterface()
+        def wp = session.getWorkspace()
+        def qm = wp.getQueryManager()
 
-  @BeforeClass
-  public static void setupJCR() {
-    ds = new JcrDatastore()
-    def connectionDetails = [username: "username",
-            password: "password",
-            workspace: "default",
-            configuration: "classpath:repository.xml",
-            homeDir: "/temp/repo"];
-    conn = ds.connect(connectionDetails)
-  }
+        def q = qm.createQuery("//Book", javax.jcr.query.Query.XPATH)
+        def qr = q.execute()
+        def itr = qr.getNodes()
+        itr.each { it.remove() }
 
-  @AfterClass
-  public static void tearDown() {
-    conn.disconnect();
-  }
+        q = qm.createQuery("//Author", javax.jcr.query.Query.XPATH)
+        qr = q.execute()
+        itr = qr.getNodes()
+        itr.each { it.remove() }
+        session.save()
+    }
 
-  @After
-  public void clearNodes() {
-    def session = conn.getNativeInterface();
-    def wp = session.getWorkspace();
-    def qm = wp.getQueryManager();
+    @Test
+    void testDisjunctionAndCount() {
+        ds.mappingContext.addPersistentEntity(Author)
 
-    def q = qm.createQuery("//Book", javax.jcr.query.Query.XPATH);
-    def qr = q.execute()
-    def itr = qr.getNodes();
-    itr.each { it.remove() }
+        def a = new Author(name: "Stephen King")
+        a.books = [new Book(title: "The Stand"),
+                   new Book(title: "It"),
+                   new Book(title: "The Shining")]
 
-    q = qm.createQuery("//Author", javax.jcr.query.Query.XPATH);
-    qr = q.execute()
-    itr = qr.getNodes();
-    itr.each { it.remove() }
-    session.save()
-  }
+        conn.persist(a)
 
-  @Test
-  void testDisjunctionAndCount() {
-    ds.mappingContext.addPersistentEntity(Author)
+        Query q = conn.createQuery(Book)
+        q.disjunction().add(eq("title", "The Stand")).add(eq("title", "It"))
+        q.projections().count()
 
+        assert 2 == q.singleResult()
+    }
 
-    def a = new Author(name: "Stephen King")
-    a.books = [
-            new Book(title: "The Stand"),
-            new Book(title: "It"),
-            new Book(title: "The Shining")
-    ]
-    
-    conn.persist(a)
+    @Test
+    void testSimpleQueryAndCount() {
+        ds.mappingContext.addPersistentEntity(Author)
 
-    Query q = conn.createQuery(Book)
-    q.disjunction().add(eq("title", "The Stand")).add(eq("title", "It"))
-    q.projections().count()
+        def a = new Author(name: "Stephen King")
+        a.books = [new Book(title: "The Stand"),
+                   new Book(title: "It")]
 
-    assert 2 == q.singleResult()
+        conn.persist(a)
 
-  }
+        Query q = conn.createQuery(Book)
 
-  @Test
-  void testSimpleQueryAndCount() {
-    ds.mappingContext.addPersistentEntity(Author)
+        q.eq("title", "It")
+        q.projections().count()
 
-    def a = new Author(name: "Stephen King")
-    a.books = [
-            new Book(title: "The Stand"),
-            new Book(title: "It")
-    ]
+        def result = q.singleResult()
 
-    conn.persist(a)
+        assert 1 == result
 
+        q = conn.createQuery(Book)
 
-    Query q = conn.createQuery(Book)
+        q.eq("title", "The Stand")
+        q.projections().count()
 
-    q.eq("title", "It")
-    q.projections().count()
+        result = q.singleResult()
 
-    def result = q.singleResult()
-
-    assert 1 == result
-
-    q = conn.createQuery(Book)
-
-    q.eq("title", "The Stand")
-    q.projections().count()
-
-    result = q.singleResult()
-
-    assert 1 == result
-
-  }
-
+        assert 1 == result
+    }
 }

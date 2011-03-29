@@ -17,18 +17,17 @@ package org.springframework.datastore.mapping.core.impl;
 
 import org.springframework.datastore.mapping.engine.EntityAccess;
 
-
 /**
  * An insert that is pending execution in a flush() operation
  *
  * @param <E> The native entry to persist
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
 public interface PendingInsert<E, K> extends Runnable, PendingOperation<E, K>{
-	/**
-	 * @return The EntityAccess object for the entity to be inserted
-	 */
-	EntityAccess getEntityAccess(); 
+    /**
+     * @return The EntityAccess object for the entity to be inserted
+     */
+    EntityAccess getEntityAccess();
 }

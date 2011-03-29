@@ -14,6 +14,16 @@
  */
 package org.springframework.datastore.mapping.redis.engine;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
@@ -33,11 +43,6 @@ import org.springframework.datastore.mapping.redis.query.RedisQuery;
 import org.springframework.datastore.mapping.redis.util.RedisCallback;
 import org.springframework.datastore.mapping.redis.util.RedisTemplate;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
 /**
  * An {@link org.springframework.datastore.mapping.engine.EntityPersister} for the Redis NoSQL datastore
  *
@@ -47,6 +52,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Long> {
     private RedisTemplate redisTemplate;
     private RedisCollection allEntityIndex;
+
     public static final String DISCRIMINATOR = "discriminator";
 
     public RedisEntityPersister(MappingContext context, PersistentEntity entity, RedisSession conn, final RedisTemplate template) {
@@ -54,7 +60,6 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
         this.redisTemplate = template;
         allEntityIndex = new RedisSet(redisTemplate, getEntityFamily() + ".all");
     }
-
 
     private Long getLong(Object key) {
         return getMappingContext().getConversionService().convert(key, Long.class);
@@ -72,10 +77,10 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
 
     @Override
     protected void setEntryValue(Map nativeEntry, String key, Object value) {
-        if(value != null) {
-            if(shouldConvert(value)) {
+        if (value != null) {
+            if (shouldConvert(value)) {
                 final ConversionService conversionService = getMappingContext().getConversionService();
-                nativeEntry.put(key, conversionService.convert(value, String.class));                
+                nativeEntry.put(key, conversionService.convert(value, String.class));
             }
         }
     }
@@ -90,37 +95,33 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
     }
 
     @Override
-    protected void lockEntry(PersistentEntity persistentEntity, String entityFamily, Serializable id, int timeout) {
+    protected void lockEntry(PersistentEntity persistentEntity, @SuppressWarnings("hiding") String entityFamily,
+            Serializable id, int timeout) {
         String redisKey = getRedisKey(entityFamily, id);
         final TimeUnit milliUnit = TimeUnit.MILLISECONDS;
         final long waitTime = TimeUnit.SECONDS.toMillis(timeout);
         final String lockName = lockName(redisKey);
         int sleepTime = 0;
         while(true) {
-            if(redisTemplate.setnx(lockName, System.currentTimeMillis()) && redisTemplate.expire(lockName, timeout)) {
-                    break;
+            if (redisTemplate.setnx(lockName, System.currentTimeMillis()) && redisTemplate.expire(lockName, timeout)) {
+                break;
+            }
+            if (redisTemplate.ttl(lockName) > 0) {
+                try {
+                    if (sleepTime > waitTime) {
+                        throw new CannotAcquireLockException("Failed to acquire lock on key ["+redisKey+"]. Wait time exceeded timeout.");
+                    }
+                    // wait for previous lock to expire
+                    sleepTime += 500;
+                    milliUnit.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new CannotAcquireLockException("Failed to acquire lock on key ["+redisKey+"]: " + e.getMessage(), e);
+                }
             }
             else {
-                if(redisTemplate.ttl(lockName) > 0) {
-                    try {
-                        if(sleepTime > waitTime) {
-                            throw new CannotAcquireLockException("Failed to acquire lock on key ["+redisKey+"]. Wait time exceeded timeout.");
-                        }
-                        else {
-                            // wait for previous lock to expire
-                            sleepTime += 500;
-                            milliUnit.sleep(500);
-                        }
-                    } catch (InterruptedException e) {
-                        throw new CannotAcquireLockException("Failed to acquire lock on key ["+redisKey+"]: " + e.getMessage(), e);
-                    }
-                }
-                else {
-                    if(redisTemplate.getset(lockName, System.currentTimeMillis()) != null 
-                            && redisTemplate.expire(lockName, timeout)) break;
-                }
+                if (redisTemplate.getset(lockName, System.currentTimeMillis()) != null &&
+                        redisTemplate.expire(lockName, timeout)) break;
             }
-
         }
     }
 
@@ -129,8 +130,8 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
     }
 
     @Override
-    protected void unlockEntry(PersistentEntity persistentEntity, String entityFamily, Serializable id) {
-
+    protected void unlockEntry(PersistentEntity persistentEntity,
+            @SuppressWarnings("hiding") String entityFamily, Serializable id) {
         String redisKey = getRedisKey(entityFamily, id);
         redisTemplate.del(lockName(redisKey));
     }
@@ -142,37 +143,29 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
 
     @Override
     protected PersistentEntity discriminatePersistentEntity(PersistentEntity persistentEntity, Map nativeEntry) {
-        if(nativeEntry.containsKey(DISCRIMINATOR)) {
+        if (nativeEntry.containsKey(DISCRIMINATOR)) {
             String discriminator = nativeEntry.get(DISCRIMINATOR).toString();
             final PersistentEntity childEntity = getMappingContext().getChildEntityByDiscriminator(persistentEntity.getRootEntity(), discriminator);
-            if(childEntity != null) {
+            if (childEntity != null) {
                 return childEntity;
             }
-            else {
-                return persistentEntity;
-            }
-        }
-        else {
             return persistentEntity;
-
         }
-
+        return persistentEntity;
     }
-
 
     @Override
     protected Map retrieveEntry(PersistentEntity persistentEntity, final String family, Serializable key) {
         String hashKey = getEntryKey(persistentEntity, family, key);
 
-
         final Map map = redisTemplate.hgetall(hashKey);
-        if(map == null || map.isEmpty()) return null;
+        if (map == null || map.isEmpty()) return null;
         return map;
     }
 
     private String getEntryKey(PersistentEntity persistentEntity, String family, Serializable key) {
         String hashKey;
-        if(persistentEntity.isRoot()) {
+        if (persistentEntity.isRoot()) {
             hashKey = getRedisKey(family, key);
         }
         else {
@@ -187,9 +180,9 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
 
         List<Object> entityResults = new ArrayList<Object>();
 
-        if(keys != null ) {
+        if (keys != null) {
             final List<Serializable> redisKeys;
-            if(keys instanceof List) {
+            if (keys instanceof List) {
                 redisKeys = (List<Serializable>) keys;
             }
             else {
@@ -197,10 +190,9 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
                 for (Serializable key : keys) {
                      redisKeys.add(key);
                 }
-
             }
 
-            if(!redisKeys.isEmpty()) {
+            if (!redisKeys.isEmpty()) {
                 List<Object> results = redisTemplate.pipeline(new RedisCallback<RedisTemplate>(){
                     public Object doInRedis(RedisTemplate redis) throws IOException {
                         for (Serializable key : redisKeys) {
@@ -210,9 +202,9 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
                     }
                 });
 
-                for (int i = 0; i < redisKeys.size(); i++) {
+                for (int i = 0, count = redisKeys.size(); i < count; i++) {
                     Serializable nativeKey = redisKeys.get(i);
-                    Map nativeEntry = getNativeEntryFromList( results.get(i) );
+                    Map nativeEntry = getNativeEntryFromList(results.get(i));
                     entityResults.add(createObjectFromNativeEntry(getPersistentEntity(), nativeKey, nativeEntry));
                 }
             }
@@ -237,30 +229,27 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
     @Override
     public void updateEntry(PersistentEntity persistentEntity, Long key, Map nativeEntry) {
         try {
-            if(!persistentEntity.isRoot()) {
+            if (!persistentEntity.isRoot()) {
                 performInsertion(getRootFamily(persistentEntity), key, nativeEntry);
             }
             else {
                 performInsertion(getFamily(), key, nativeEntry);
             }
         } finally {
-            updateAllEntityIndex(persistentEntity, key);            
+            updateAllEntityIndex(persistentEntity, key);
         }
     }
 
     @Override
     public Long storeEntry(PersistentEntity persistentEntity, Long storeId, Map nativeEntry) {
         try {
-            if(!persistentEntity.isRoot()) {
+            if (!persistentEntity.isRoot()) {
                 nativeEntry.put(DISCRIMINATOR, persistentEntity.getDiscriminator());
                 return performInsertion(getRootFamily(persistentEntity), storeId, nativeEntry);
             }
-            else {
-                return performInsertion(getFamily(), storeId, nativeEntry);
-            }
-        } finally {
-
-
+            return performInsertion(getFamily(), storeId, nativeEntry);
+        }
+        finally {
             updateAllEntityIndex(persistentEntity, storeId);
         }
     }
@@ -294,13 +283,11 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
     private Long performInsertion(final String family, final Long id, final Map nativeEntry) {
         String key = family + ":" + id;
         redisTemplate.hmset(key,nativeEntry);
-                
         return id;
-
     }
 
     public RedisCollection getAllEntityIndex() {
-        return this.allEntityIndex;
+        return allEntityIndex;
     }
 
     public String getFamily() {
@@ -308,7 +295,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
     }
 
     protected Long generateIdentifier(final String family) {
-        return (long) redisTemplate.incr(family + ".next_id");        
+        return (long) redisTemplate.incr(family + ".next_id");
     }
 
     @Override
@@ -339,14 +326,12 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
         return new RedisAssociationIndexer(redisTemplate, getMappingContext().getConversionService(), oneToMany);
     }
 
-
-
     public Query createQuery() {
         return new RedisQuery((RedisSession) session, getRedisTemplate(), getPersistentEntity(), this);
     }
 
     public RedisTemplate getRedisTemplate() {
-        return this.redisTemplate;
+        return redisTemplate;
     }
 
     public String getEntityBaseKey() {

@@ -16,6 +16,7 @@ package org.grails.datastore.gorm
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+
 import org.codehaus.groovy.runtime.metaclass.ClosureStaticMetaMethod
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
@@ -38,258 +39,246 @@ import org.springframework.transaction.support.TransactionTemplate
  */
 class GormEnhancer {
 
-  Datastore datastore
-  PlatformTransactionManager transactionManager
-  List<DynamicFinder> finders
+    Datastore datastore
+    PlatformTransactionManager transactionManager
+    List<DynamicFinder> finders
 
-
-  GormEnhancer(Datastore datastore) {
-    this.datastore = datastore;
-    initialiseFinders(datastore)
-  }
-
-  private List initialiseFinders(Datastore datastore) {
-
-    this.finders = DynamicFinder.getAllDynamicFinders(datastore)
-  }
-
-  GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
-    this.datastore = datastore;
-    initialiseFinders(datastore)
-    this.transactionManager = transactionManager
-  }
-
-
-
-  void enhance() {
-    for(PersistentEntity e in datastore.mappingContext.persistentEntities) {
-      enhance e
+    GormEnhancer(Datastore datastore) {
+        this.datastore = datastore
+        initialiseFinders(datastore)
     }
-  }
-  void enhance(PersistentEntity e) {
-    def cls = e.javaClass
-    def cpf = ClassPropertyFetcher.forClass(cls)
-    def staticMethods = getStaticApi(cls)
-    def instanceMethods = [getInstanceApi(cls), getValidationApi(cls)]
-    def tm = transactionManager
 
-    final namedQueries = cpf.getStaticPropertyValue('namedQueries', Closure)
-	if(namedQueries) {
-		if(namedQueries instanceof Closure) {
-			registerNamedQueries(e,  namedQueries)
-		}
-	}
+    private List initialiseFinders(Datastore datastore) {
+        this.finders = DynamicFinder.getAllDynamicFinders(datastore)
+    }
 
-    def ExpandoMetaClass mc = cls.metaClass
-      for(currentInstanceMethods in instanceMethods) {
-        def apiProvider = currentInstanceMethods
-        for(Method method in apiProvider.methods) {
-          def methodName = method.name
-          def parameterTypes = method.parameterTypes
+    GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
+        this.datastore = datastore
+        initialiseFinders(datastore)
+        this.transactionManager = transactionManager
+    }
 
-          if(parameterTypes) {
-             parameterTypes = Arrays.copyOfRange(parameterTypes, 1, parameterTypes.length)
-             // use fake object just so we have the right method signature
-
-              final tooCall = new InstanceMethodInvokingClosure(apiProvider,methodName, parameterTypes)
-              def pt = parameterTypes
-              // Hack to workaround http://jira.codehaus.org/browse/GROOVY-4720
-              final closureMethod = new ClosureStaticMetaMethod(methodName, cls, tooCall, pt) {
-                  @Override
-                  int getModifiers() {
-                      return Modifier.PUBLIC
-                  }
-
-              }
-              mc.registerInstanceMethod(closureMethod)
-          }
+    void enhance() {
+        for (PersistentEntity e in datastore.mappingContext.persistentEntities) {
+            enhance e
         }
-      }
-      for(p in e.associations) {
-        def prop = p
-        if( (prop instanceof OneToMany) || (prop instanceof ManyToMany)) {
-          def associatedEntity = prop.associatedEntity
-          mc."addTo${prop.capitilizedName}" = { arg ->
-              def obj
-              if (delegate[prop.name] == null) {
-                  delegate[prop.name] = [].asType( prop.type )
-              }
-              if (arg instanceof Map) {
-                  obj = associatedEntity.javaClass.newInstance(arg)
-                  delegate[prop.name].add(obj)
-              }
-              else if (associatedEntity.javaClass.isInstance(arg)) {
-                  obj = arg
-                  delegate[prop.name].add(obj)
-              }
-              else {
-                  throw new MissingMethodException("addTo${prop.capitilizedName}", e.javaClass, [arg] as Object[])
-              }
-              if (prop.bidirectional && prop.inverseSide) {
-                  def otherSide = prop.inverseSide
-                  if (otherSide instanceof OneToMany) {
-                      String name = otherSide.name
-                      if (!obj[name]) {
-                          obj[name] = [].asType(otherSide.type)
-                      }
-                      obj[otherSide.name].add(delegate)
-                  }
-                  else {
-                      obj[otherSide.name] = delegate
-                  }
-              }
-              delegate
-          }
-          mc."removeFrom${prop.capitilizedName}" = {Object arg ->
-                if (associatedEntity.javaClass.isInstance(arg)) {
-                    delegate[prop.name]?.remove(arg)
-                    if (prop.bidirectional) {
-                        def otherSide = prop.inverseSide
-                        if (otherSide instanceof ManyToMany) {
-                            String name = otherSide.name
-                            arg[name]?.remove(delegate)
-                        }
-                        else {
-                            arg[otherSide.name] = null
-                        }
-                    }
-                }
-                else {
-                    throw new MissingMethodException("removeFrom${prop.capitilizedName}", e.javaClass, [arg] as Object[])
-                }
-                delegate
-          }
+    }
+
+    void enhance(PersistentEntity e) {
+        def cls = e.javaClass
+        def cpf = ClassPropertyFetcher.forClass(cls)
+        def staticMethods = getStaticApi(cls)
+        def instanceMethods = [getInstanceApi(cls), getValidationApi(cls)]
+        def tm = transactionManager
+
+        final namedQueries = cpf.getStaticPropertyValue('namedQueries', Closure)
+        if (namedQueries) {
+            if (namedQueries instanceof Closure) {
+                registerNamedQueries(e, namedQueries)
+            }
         }
 
-      }
-
-      def staticScope = mc.static
-        for(Method m in staticMethods.methods) {
-            def method = m
-            if(method != null) {
+        ExpandoMetaClass mc = cls.metaClass
+        for (currentInstanceMethods in instanceMethods) {
+            def apiProvider = currentInstanceMethods
+            for (Method method in apiProvider.methods) {
                 def methodName = method.name
                 def parameterTypes = method.parameterTypes
-                if(parameterTypes != null) {
+
+                if (parameterTypes) {
+                    parameterTypes = Arrays.copyOfRange(parameterTypes, 1, parameterTypes.length)
+                    // use fake object just so we have the right method signature
+
+                    final tooCall = new InstanceMethodInvokingClosure(apiProvider,methodName, parameterTypes)
+                    def pt = parameterTypes
+                    // Hack to workaround http://jira.codehaus.org/browse/GROOVY-4720
+                    final closureMethod = new ClosureStaticMetaMethod(methodName, cls, tooCall, pt) {
+                        @Override
+                        int getModifiers() { Modifier.PUBLIC }
+                    }
+                    mc.registerInstanceMethod(closureMethod)
+                }
+            }
+        }
+        for (p in e.associations) {
+            def prop = p
+            if ( (prop instanceof OneToMany) || (prop instanceof ManyToMany)) {
+                def associatedEntity = prop.associatedEntity
+                mc."addTo${prop.capitilizedName}" = { arg ->
+                    def obj
+                    if (delegate[prop.name] == null) {
+                        delegate[prop.name] = [].asType( prop.type )
+                    }
+                    if (arg instanceof Map) {
+                        obj = associatedEntity.javaClass.newInstance(arg)
+                        delegate[prop.name].add(obj)
+                    }
+                    else if (associatedEntity.javaClass.isInstance(arg)) {
+                        obj = arg
+                        delegate[prop.name].add(obj)
+                    }
+                    else {
+                        throw new MissingMethodException("addTo${prop.capitilizedName}", e.javaClass, [arg] as Object[])
+                    }
+                    if (prop.bidirectional && prop.inverseSide) {
+                        def otherSide = prop.inverseSide
+                        if (otherSide instanceof OneToMany) {
+                            String name = otherSide.name
+                            if (!obj[name]) {
+                                obj[name] = [].asType(otherSide.type)
+                            }
+                            obj[otherSide.name].add(delegate)
+                        }
+                        else {
+                            obj[otherSide.name] = delegate
+                        }
+                    }
+                    delegate
+                }
+                mc."removeFrom${prop.capitilizedName}" = {Object arg ->
+                    if (associatedEntity.javaClass.isInstance(arg)) {
+                        delegate[prop.name]?.remove(arg)
+                        if (prop.bidirectional) {
+                            def otherSide = prop.inverseSide
+                            if (otherSide instanceof ManyToMany) {
+                                String name = otherSide.name
+                                arg[name]?.remove(delegate)
+                            }
+                            else {
+                                arg[otherSide.name] = null
+                            }
+                        }
+                    }
+                    else {
+                        throw new MissingMethodException("removeFrom${prop.capitilizedName}", e.javaClass, [arg] as Object[])
+                    }
+                    delegate
+                }
+            }
+        }
+
+        def staticScope = mc.static
+        for (Method m in staticMethods.methods) {
+            def method = m
+            if (method != null) {
+                def methodName = method.name
+                def parameterTypes = method.parameterTypes
+                if (parameterTypes != null) {
                     def callable = new StaticMethodInvokingClosure(staticMethods, methodName, parameterTypes)
                     staticScope."$methodName" = callable
                 }
             }
-
         }
 
-        if(tm) {
-
-          staticScope.withTransaction = { Closure callable ->
-            if(callable) {
-              def transactionTemplate = new TransactionTemplate(tm)
-              transactionTemplate.execute(callable as TransactionCallback)
+        if (tm) {
+            staticScope.withTransaction = { Closure callable ->
+                if (callable) {
+                    def transactionTemplate = new TransactionTemplate(tm)
+                    transactionTemplate.execute(callable as TransactionCallback)
+                }
             }
-          }
-          staticScope.withNewTransaction = { Closure callable ->
-              if(callable) {
-                def transactionTemplate = new TransactionTemplate(tm, new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW))
-                transactionTemplate.execute(callable as TransactionCallback)
-              }
-          }
-          staticScope.withTransaction = { TransactionDefinition definition, Closure callable ->
-            if(callable) {
-              def transactionTemplate = new TransactionTemplate(tm, definition)
-              transactionTemplate.execute(callable as TransactionCallback)
+            staticScope.withNewTransaction = { Closure callable ->
+                if (callable) {
+                    def transactionTemplate = new TransactionTemplate(tm, new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW))
+                    transactionTemplate.execute(callable as TransactionCallback)
+                }
             }
-          }
+            staticScope.withTransaction = { TransactionDefinition definition, Closure callable ->
+                if (callable) {
+                    def transactionTemplate = new TransactionTemplate(tm, definition)
+                    transactionTemplate.execute(callable as TransactionCallback)
+                }
+            }
         }
 
-	registerMethodMissing cls
-  }
-  
-  protected void registerNamedQueries(PersistentEntity entity, namedQueries) {
-		def namedQueryBuilder = new NamedQueriesBuilder(entity, finders)
-		namedQueryBuilder.evaluate namedQueries
-  }
-  protected void registerMethodMissing(Class cls) {
-	  def mc = cls.metaClass
-	  def dynamicFinders = finders
-	  mc.static.methodMissing = {String methodName, args ->
-			def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
-			if (method) {
-				// register the method invocation for next time
-				synchronized(this) {
-					mc.static."$methodName" = {List varArgs ->
-						method.invoke(cls, methodName, varArgs)
-					}
-				}
-				return method.invoke(cls, methodName, args)
-			}
-			else {
-				throw new MissingMethodException(methodName, delegate, args)
-			}
-	   }
-  }
-  protected GormStaticApi getStaticApi(Class cls) {
-    return new GormStaticApi(cls, datastore)
-  }
+        registerMethodMissing cls
+    }
 
-  protected GormInstanceApi getInstanceApi(Class cls) {
-    return new GormInstanceApi(cls, datastore)
-  }
+    protected void registerNamedQueries(PersistentEntity entity, namedQueries) {
+        def namedQueryBuilder = new NamedQueriesBuilder(entity, finders)
+        namedQueryBuilder.evaluate namedQueries
+    }
 
-  protected GormValidationApi getValidationApi(Class cls) {
-    return new GormValidationApi(cls, datastore)
-  }
+    protected void registerMethodMissing(Class cls) {
+        def mc = cls.metaClass
+        def dynamicFinders = finders
+        mc.static.methodMissing = {String methodName, args ->
+            def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
+            if (method) {
+                // register the method invocation for next time
+                synchronized(this) {
+                    mc.static."$methodName" = {List varArgs ->
+                        method.invoke(cls, methodName, varArgs)
+                    }
+                }
+                return method.invoke(cls, methodName, args)
+            }
+            else {
+                throw new MissingMethodException(methodName, delegate, args)
+            }
+        }
+    }
+
+    protected GormStaticApi getStaticApi(Class cls) {
+        new GormStaticApi(cls, datastore)
+    }
+
+    protected GormInstanceApi getInstanceApi(Class cls) {
+        new GormInstanceApi(cls, datastore)
+    }
+
+    protected GormValidationApi getValidationApi(Class cls) {
+        new GormValidationApi(cls, datastore)
+    }
 }
 
 class InstanceMethodInvokingClosure extends Closure {
     private String methodName
-        private Object apiDelegate
-        private Class[] parameterTypes
+    private Object apiDelegate
+    private Class[] parameterTypes
 
+    InstanceMethodInvokingClosure(Object apiDelegate, String methodName, Class[] parameterTypes) {
+        super(apiDelegate, apiDelegate)
+        this.apiDelegate = apiDelegate
+        this.methodName = methodName
+        this.parameterTypes = parameterTypes
+    }
 
-        public InstanceMethodInvokingClosure(Object apiDelegate,
-                String methodName, Class[] parameterTypes) {
-            super(apiDelegate, apiDelegate);
-            this.apiDelegate = apiDelegate;
-            this.methodName = methodName;
-            this.parameterTypes = parameterTypes;
-        }
+    @Override
+    Object call(Object[] args) {
+        apiDelegate."$methodName"(delegate, *args)
+    }
 
-        @Override
-        public Object call(Object[] args) {
-            apiDelegate."$methodName"(delegate, *args)
-        }
+    Object doCall(Object[] args) {
+        apiDelegate."$methodName"(delegate, *args)
+    }
 
-        public Object doCall(Object[] args) {
-            apiDelegate."$methodName"(delegate, *args)
-        }
-
-        @Override
-        public Class[] getParameterTypes() { parameterTypes	}
-
+    @Override
+    Class[] getParameterTypes() { parameterTypes }
 }
-class StaticMethodInvokingClosure extends Closure {
-	
-		private String methodName
-		private Object apiDelegate
-		private Class[] parameterTypes
-		
-		
-		public StaticMethodInvokingClosure(Object apiDelegate,
-				String methodName, Class[] parameterTypes) {
-			super(apiDelegate, apiDelegate);
-			this.apiDelegate = apiDelegate;
-			this.methodName = methodName;
-			this.parameterTypes = parameterTypes;
-		}
-	
-		@Override
-		public Object call(Object[] args) {
-			apiDelegate."$methodName"(*args)
-		}
 
-		public Object doCall(Object[] args) {
-			apiDelegate."$methodName"(*args)
-		}
-	
-		@Override
-		public Class[] getParameterTypes() { parameterTypes	}
-		  
+class StaticMethodInvokingClosure extends Closure {
+
+    private String methodName
+    private Object apiDelegate
+    private Class[] parameterTypes
+
+    StaticMethodInvokingClosure(Object apiDelegate, String methodName, Class[] parameterTypes) {
+        super(apiDelegate, apiDelegate)
+        this.apiDelegate = apiDelegate
+        this.methodName = methodName
+        this.parameterTypes = parameterTypes
+    }
+
+    @Override
+    Object call(Object[] args) {
+        apiDelegate."$methodName"(*args)
+    }
+
+    Object doCall(Object[] args) {
+        apiDelegate."$methodName"(*args)
+    }
+
+    @Override
+    Class[] getParameterTypes() { parameterTypes }
 }

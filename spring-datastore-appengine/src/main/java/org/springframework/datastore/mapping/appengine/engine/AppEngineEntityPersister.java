@@ -32,7 +32,7 @@ import java.util.Map;
 
 /**
  * Implementation of the {@link org.springframework.datastore.mapping.engine.EntityPersister} abstract
- * class for AppEngine  
+ * class for AppEngine
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -49,10 +49,10 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
 
         conversionService.addConverter(new Converter<Object, com.google.appengine.api.datastore.Key>() {
             public com.google.appengine.api.datastore.Key convert(Object source) {
-                if(source instanceof com.google.appengine.api.datastore.Key) {
+                if (source instanceof com.google.appengine.api.datastore.Key) {
                      return (com.google.appengine.api.datastore.Key)source;
                 }
-                else if(source instanceof Long) {
+                else if (source instanceof Long) {
                     return KeyFactory.createKey(entityFamily, (Long) source);
                 }
                 else {
@@ -98,7 +98,7 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
 
     @Override
     protected void updateEntry(PersistentEntity persistentEntity, com.google.appengine.api.datastore.Key key, Entity entry) {
-        if(entry != null) {
+        if (entry != null) {
             Entity existing = getEntity(key);
             final Map<String,Object> props = entry.getProperties();
             for (String name : props.keySet()) {
@@ -131,10 +131,10 @@ public class AppEngineEntityPersister extends AbstractKeyValueEntityPesister<Ent
 
     @Override
     protected com.google.appengine.api.datastore.Key inferNativeKey(String family, Object identifier) {
-        if(identifier instanceof Long) {
+        if (identifier instanceof Long) {
             identifier = KeyFactory.createKey(family,(Long) identifier);
         }
-        else if(!(identifier instanceof com.google.appengine.api.datastore.Key)) {
+        else if (!(identifier instanceof com.google.appengine.api.datastore.Key)) {
             identifier = KeyFactory.createKey(family, identifier.toString());
         }
         return (com.google.appengine.api.datastore.Key) identifier;

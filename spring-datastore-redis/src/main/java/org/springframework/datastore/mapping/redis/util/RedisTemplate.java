@@ -14,7 +14,6 @@
  */
 package org.springframework.datastore.mapping.redis.util;
 
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,7 +24,7 @@ import java.util.Set;
  * @param <T> The concrete Redis client class
  */
 public interface RedisTemplate<T, S> {
-    
+
     List<Object> pipeline(RedisCallback<RedisTemplate<T,S>> pipeline);
 
     Object execute(RedisCallback<T> callback);
@@ -144,11 +143,9 @@ public interface RedisTemplate<T, S> {
 
     String spop(String key);
 
-    public List<String> sort(final String key, final SortParams<S> params);
+    List<String> sort(String key, SortParams<S> params);
 
-    public void sortstore(final String key, final String destKey,  final SortParams<S> params);
+    void sortstore(String key, String destKey,  SortParams<S> params);
 
     T getRedisClient();
-
-
 }

@@ -27,7 +27,7 @@ package org.springframework.datastore.mapping.keyvalue.mapping.config;
  * @since 1.0
  */
 public class Family {
-    
+
     private String keyspace;
     private String family;
 

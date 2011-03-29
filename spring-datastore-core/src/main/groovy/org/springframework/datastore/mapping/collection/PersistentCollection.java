@@ -26,10 +26,10 @@ public interface PersistentCollection {
      * Check whether the collection has been loaded
      * @return True if the collection has been initialized
      */
-    public boolean isInitialized();
+    boolean isInitialized();
 
     /**
      * Initializes the collection if it hasn't already been initialized
      */
-    public void initialize();
+    void initialize();
 }

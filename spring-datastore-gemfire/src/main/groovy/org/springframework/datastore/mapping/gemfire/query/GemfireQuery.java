@@ -14,11 +14,14 @@
  */
 package org.springframework.datastore.mapping.gemfire.query;
 
-import com.gemstone.gemfire.GemFireCheckedException;
-import com.gemstone.gemfire.GemFireException;
-import com.gemstone.gemfire.cache.Region;
-import com.gemstone.gemfire.cache.query.QueryService;
-import com.gemstone.gemfire.cache.query.SelectResults;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.data.gemfire.GemfireCallback;
 import org.springframework.data.gemfire.GemfireTemplate;
@@ -31,7 +34,11 @@ import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.query.order.ManualEntityOrdering;
 import org.springframework.datastore.mapping.query.projections.ManualProjections;
 
-import java.util.*;
+import com.gemstone.gemfire.GemFireCheckedException;
+import com.gemstone.gemfire.GemFireException;
+import com.gemstone.gemfire.cache.Region;
+import com.gemstone.gemfire.cache.query.QueryService;
+import com.gemstone.gemfire.cache.query.SelectResults;
 
 /**
  * <p>Adds query support for Gemfire. Note that due to limitations in the Gemfire API some operations
@@ -43,6 +50,7 @@ import java.util.*;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("hiding")
 public class GemfireQuery extends Query {
     public static final String SELECT_CLAUSE = "SELECT ";
     public static final String SELECT_DISTINCT = " DISTINCT ";
@@ -62,25 +70,15 @@ public class GemfireQuery extends Query {
     private static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
 
     public static final String GREATER_THAN_EQUALS = " >= ";
-
     public static final String LESS_THAN_EQUALS = " <= ";
-
     public static final String LOGICAL_AND = " AND ";
-
     public static final String GREATER_THAN = " > ";
-
     public static final String WILDCARD = " * ";
-
     public static final char SPACE = ' ';
-
     public static final char DOLLAR_SIGN = '$';
-
     public static final String LESS_THAN = " < ";
-
     public static final String EQUALS = " = ";
-
     public static final String NOT_EQUALS = " != ";
-
     public static final String LIKE = " like ";
 
     static {
@@ -90,22 +88,20 @@ public class GemfireQuery extends Query {
                 final String name = eq.getProperty();
                 validateProperty(entity, name, Equals.class);
 
-
                 q.append(calculateName(entity, name));
                 return appendOrEmbedValue(q, params, index, eq.getValue(), EQUALS);
             }
         });
         queryHandlers.put(IdEquals.class, new QueryHandler() {
             public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, List params, int index) {
-            	IdEquals eq = (IdEquals) criterion;
+                IdEquals eq = (IdEquals) criterion;
                 String name = entity.getIdentity().getName();
                 validateProperty(entity, name, Equals.class);
-
 
                 q.append(calculateName(entity, name));
                 return appendOrEmbedValue(q, params, index, eq.getValue(), EQUALS);
             }
-        });        
+        });
         queryHandlers.put(NotEquals.class, new QueryHandler() {
             public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, List params, int index) {
                 NotEquals eq = (NotEquals) criterion;
@@ -143,7 +139,7 @@ public class GemfireQuery extends Query {
                 for (Iterator iterator = values.iterator(); iterator.hasNext();) {
                     Object value = iterator.next();
                     index = appendOrEmbedValue(q, params, index, value, "");
-                    if(iterator.hasNext()) q.append(",");
+                    if (iterator.hasNext()) q.append(",");
                 }
 
                 q.append(") ");
@@ -152,19 +148,16 @@ public class GemfireQuery extends Query {
             }
         });
         queryHandlers.put(Disjunction.class, new QueryHandler() {
-
             public int handle(PersistentEntity entity, Criterion criterion, StringBuilder query, List params, int index) {
                 return buildWhereClause(entity, (Junction) criterion,query, index, params);
             }
         });
         queryHandlers.put(Conjunction.class, new QueryHandler() {
-
             public int handle(PersistentEntity entity, Criterion criterion, StringBuilder query, List params, int index) {
                 return buildWhereClause(entity, (Junction) criterion,query, index, params);
             }
         });
         queryHandlers.put(Negation.class, new QueryHandler() {
-
             public int handle(PersistentEntity entity, Criterion criterion, StringBuilder query, List params, int index) {
                 return buildWhereClause(entity, (Junction) criterion,query, index, params);
             }
@@ -190,7 +183,6 @@ public class GemfireQuery extends Query {
                 return index;
             }
         });
-
 
         queryHandlers.put(GreaterThan.class, new QueryHandler() {
 
@@ -239,7 +231,7 @@ public class GemfireQuery extends Query {
     }
 
     private static int appendOrEmbedValue(StringBuilder q, List params, int index, Object value, String operator) {
-        if(params == null) {
+        if (params == null) {
             q.append(operator);
             appendValue(q, value);
             q.append(SPACE);
@@ -255,7 +247,7 @@ public class GemfireQuery extends Query {
     }
 
     private static void appendValue(StringBuilder q, Object value) {
-        if(value instanceof Number || value instanceof Boolean) {
+        if (value instanceof Number || value instanceof Boolean) {
             q.append(value);
         }
         else {
@@ -269,7 +261,7 @@ public class GemfireQuery extends Query {
 
     private static String calculateName(PersistentEntity entity, String name) {
         final PersistentProperty prop = entity.getPropertyByName(name);
-        if(prop instanceof ToOne) {
+        if (prop instanceof ToOne) {
             ToOne association = (ToOne) prop;
             final PersistentEntity associated = association.getAssociatedEntity();
             return name + "." + associated.getIdentity().getName();
@@ -278,9 +270,9 @@ public class GemfireQuery extends Query {
     }
 
     private static void validateProperty(PersistentEntity entity, String name, Class criterionType) {
-        if(entity.getIdentity().getName().equals(name)) return;
+        if (entity.getIdentity().getName().equals(name)) return;
         PersistentProperty prop = entity.getPropertyByName(name);
-        if(prop == null) {
+        if (prop == null) {
             throw new InvalidDataAccessResourceUsageException("Cannot use ["+ criterionType.getSimpleName()+"] criterion on non-existent property: " + name);
         }
     }
@@ -294,66 +286,66 @@ public class GemfireQuery extends Query {
         this.manualProjections = new ManualProjections(entity);
         final org.springframework.datastore.mapping.gemfire.config.Region region = getMappedRegionInfo(entity);
 
-        if(region != null && region.getRegion() != null) {
+        if (region != null && region.getRegion() != null) {
             this.regionName = region.getRegion();
         }
         else {
             this.regionName = entity.getDecapitalizedName();
         }
-
     }
 
     private org.springframework.datastore.mapping.gemfire.config.Region getMappedRegionInfo(PersistentEntity entity) {
         final Object mappedForm = entity.getMapping().getMappedForm();
 
         org.springframework.datastore.mapping.gemfire.config.Region mappedRegion = null;
-        if(mappedForm instanceof org.springframework.datastore.mapping.gemfire.config.Region)
+        if (mappedForm instanceof org.springframework.datastore.mapping.gemfire.config.Region) {
             mappedRegion = (org.springframework.datastore.mapping.gemfire.config.Region) mappedForm;
+        }
         return mappedRegion;
     }
 
     @Override
     protected List executeQuery(final PersistentEntity entity, Junction criteria) {
         final ProjectionList projectionList = projections();
-        if(criteria.isEmpty() && !(max > -1)) {
+        if (criteria.isEmpty() && !(max > -1)) {
             return (List) gemfireDatastore.getTemplate(entity).execute(new GemfireCallback() {
 
                 public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
 
                     List finalResults;
-                    if(projectionList.isEmpty()) {
+                    if (projectionList.isEmpty()) {
                         finalResults = new ArrayList(region.values());
                     }
                     else {
                         List results = new ArrayList();
                         for (Projection projection : projectionList.getProjectionList()) {
                             Collection values = null;
-                            if(projection instanceof CountProjection) {
+                            if (projection instanceof CountProjection) {
                                 results.add(region.size());
                             }
-                            else if(projection instanceof MinProjection) {
+                            else if (projection instanceof MinProjection) {
                                 MinProjection min = (MinProjection) projection;
-                                if(values == null) {
+                                if (values == null) {
                                     values = region.values();
                                 }
                                 results.add(manualProjections.min(values, min.getPropertyName()));
                             }
-                            else if(projection instanceof MaxProjection) {
-                                if(values == null) {
+                            else if (projection instanceof MaxProjection) {
+                                if (values == null) {
                                     values = region.values();
                                 }
                                 MaxProjection maxProjection = (MaxProjection) projection;
                                 results.add(manualProjections.max(values,maxProjection.getPropertyName()));
                             }
-                            else if(projection instanceof IdProjection) {
+                            else if (projection instanceof IdProjection) {
                                 results.add(region.keySet());
                             }
-                            else if(projection.getClass() ==  PropertyProjection.class) {
-                                if(values == null) {
+                            else if (projection.getClass() ==  PropertyProjection.class) {
+                                if (values == null) {
                                     values = region.values();
                                 }
                                 final List propertyProjectionResults = manualProjections.property(values, ((PropertyProjection) projection).getPropertyName());
-                                if(projectionList.getProjectionList().size() == 1) {
+                                if (projectionList.getProjectionList().size() == 1) {
                                     results = propertyProjectionResults;
                                 }
                                 else {
@@ -369,64 +361,63 @@ public class GemfireQuery extends Query {
                 }
             });
         }
-        else {
-            GemfireTemplate template = gemfireDatastore.getTemplate(entity);
-            final List params = new ArrayList();
-            final String queryString = getQueryString(params, true);
 
-            return (List) template.execute(new GemfireCallback() {
+        GemfireTemplate template = gemfireDatastore.getTemplate(entity);
+        final List params = new ArrayList();
+        final String queryString = getQueryString(params, true);
 
-                public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
+        return (List) template.execute(new GemfireCallback() {
 
-                    final QueryService queryService = gemfireDatastore.getGemfireCache().getQueryService();
+            public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
 
-                    final com.gemstone.gemfire.cache.query.Query gemfireQuery = queryService.newQuery(queryString);
+                final QueryService queryService = gemfireDatastore.getGemfireCache().getQueryService();
 
-                    final Object result = gemfireQuery.execute(params.toArray());
-                    List finalResults = Collections.emptyList();
-                    if(projectionList.isEmpty()) {
-                        if(result instanceof SelectResults) {
-                            finalResults = ((SelectResults)result).asList();
-                        }
-                        else {
-                            finalResults = wrapResultInList(result);
-                        }
+                final com.gemstone.gemfire.cache.query.Query gemfireQuery = queryService.newQuery(queryString);
+
+                final Object result = gemfireQuery.execute(params.toArray());
+                List finalResults = Collections.emptyList();
+                if (projectionList.isEmpty()) {
+                    if (result instanceof SelectResults) {
+                        finalResults = ((SelectResults)result).asList();
                     }
                     else {
-                        if(result instanceof SelectResults) {
-                            SelectResults selectResults = (SelectResults) result;
-                            finalResults = applyProjections(selectResults.asList(), projectionList);
-                        }
-                        else {
-                            finalResults = wrapResultInList(result);
-                        }
-
+                        finalResults = wrapResultInList(result);
                     }
-
-                    finalResults = ordering.applyOrder(finalResults, getOrderBy());
-
-                    if(offset > 0 ) {
-
-                        final int resultSize = finalResults.size();
-                        if(offset > resultSize) {
-                            finalResults = Collections.emptyList();
-                        }
-                        else {
-                            int end = resultSize;
-                            if(max > -1) {
-                                end = offset + max;
-                                if(end > resultSize) {
-                                    end = resultSize;
-                                }
-                            }
-                            finalResults = finalResults.subList(offset, end);
-                        }
-                    }
-
-                    return finalResults;
                 }
-            });
-        }
+                else {
+                    if (result instanceof SelectResults) {
+                        SelectResults selectResults = (SelectResults) result;
+                        finalResults = applyProjections(selectResults.asList(), projectionList);
+                    }
+                    else {
+                        finalResults = wrapResultInList(result);
+                    }
+
+                }
+
+                finalResults = ordering.applyOrder(finalResults, getOrderBy());
+
+                if (offset > 0 ) {
+
+                    final int resultSize = finalResults.size();
+                    if (offset > resultSize) {
+                        finalResults = Collections.emptyList();
+                    }
+                    else {
+                        int end = resultSize;
+                        if (max > -1) {
+                            end = offset + max;
+                            if (end > resultSize) {
+                                end = resultSize;
+                            }
+                        }
+                        finalResults = finalResults.subList(offset, end);
+                    }
+                }
+
+                return finalResults;
+            }
+        });
     }
 
     /**
@@ -446,24 +437,24 @@ public class GemfireQuery extends Query {
 
         final StringBuilder q = new StringBuilder();
         q.append(select);
-        if(distinct)
+        if (distinct)
             q.append(SELECT_DISTINCT);
-        if(projectionList.isEmpty()) {
+        if (projectionList.isEmpty()) {
             q.append(WILDCARD);
         }
         else {
             boolean modifiedQuery = false;
             for (Projection projection : projectionList.getProjectionList()) {
-                if(projection instanceof IdProjection) {
-                    if(modifiedQuery) {
+                if (projection instanceof IdProjection) {
+                    if (modifiedQuery) {
                         q.append(',');
                     }
                     q.append(SPACE).append(entity.getIdentity().getName());
                     modifiedQuery = true;
 
                 }
-                else if(projection.getClass() == PropertyProjection.class) {
-                    if(modifiedQuery) {
+                else if (projection.getClass() == PropertyProjection.class) {
+                    if (modifiedQuery) {
                         q.append(',');
                     }
 
@@ -472,7 +463,7 @@ public class GemfireQuery extends Query {
                 }
             }
 
-            if(!modifiedQuery) {
+            if (!modifiedQuery) {
                 q.append(WILDCARD);
             }
             else {
@@ -481,12 +472,12 @@ public class GemfireQuery extends Query {
         }
         q.append(from);
 
-        if(!criteria.isEmpty()) {
+        if (!criteria.isEmpty()) {
             q.append(where);
             buildWhereClause(entity, criteria, q, 0, params);
         }
 
-        if(max > 0 && offset == 0) {
+        if (max > 0 && offset == 0) {
             q.append(LIMIT_CLAUSE).append(max);
         }
 
@@ -496,24 +487,23 @@ public class GemfireQuery extends Query {
     private List applyProjections(List results, ProjectionList projections) {
         List projectedResults = new ArrayList();
         for (Projection projection : projections.getProjectionList()) {
-            if(projection instanceof CountProjection) {
+            if (projection instanceof CountProjection) {
                 projectedResults.add(results.size());
             }
-            else if(projection instanceof MinProjection) {
+            else if (projection instanceof MinProjection) {
                 MinProjection min = (MinProjection) projection;
                 projectedResults.add(manualProjections.min(results,min.getPropertyName()));
             }
-           else if(projection instanceof MaxProjection) {
+           else if (projection instanceof MaxProjection) {
                 MaxProjection min = (MaxProjection) projection;
                 projectedResults.add(manualProjections.max(results,min.getPropertyName()));
             }
         }
-        if(projectedResults.isEmpty()) {
-        	return results;
+        if (projectedResults.isEmpty()) {
+            return results;
         }
         return projectedResults;
     }
-
 
     private List wrapResultInList(Object result) {
         List listResult = new ArrayList();
@@ -521,12 +511,9 @@ public class GemfireQuery extends Query {
         return listResult;
     }
 
-
-
-
     private static int buildWhereClause(PersistentEntity entity, Junction criteria, StringBuilder q, int index, List params) {
         final List<Criterion> criterionList = criteria.getCriteria();
-        if(criteria instanceof Negation) {
+        if (criteria instanceof Negation) {
             q.append(NOT_CLAUSE);
         }
         q.append('(');
@@ -535,13 +522,13 @@ public class GemfireQuery extends Query {
 
             final String operator = criteria instanceof Conjunction ? LOGICAL_AND : LOGICAL_OR;
             QueryHandler qh = queryHandlers.get(criterion.getClass());
-            if(qh != null) {
+            if (qh != null) {
                 index = qh.handle(entity,criterion, q, params, index);
             }
 
-            if(iterator.hasNext())
+            if (iterator.hasNext()) {
                 q.append(operator);
-
+            }
         }
         q.append(')');
         return index;

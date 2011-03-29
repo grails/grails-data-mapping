@@ -22,13 +22,13 @@ import org.springframework.datastore.mapping.engine.EntityAccess;
  *
  * @param <E> The native entry to persist
  * @param <K> The native key
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
 public interface PendingUpdate<E, K> extends Runnable, PendingOperation<E, K>{
-	/**
-	 * @return The EntityAccess object for the entity to be inserted
-	 */
-	EntityAccess getEntityAccess(); 
+    /**
+     * @return The EntityAccess object for the entity to be inserted
+     */
+    EntityAccess getEntityAccess();
 }

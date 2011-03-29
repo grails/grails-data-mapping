@@ -30,68 +30,66 @@ import org.springframework.transaction.PlatformTransactionManager
  */
 class JcrGormEnhancer extends GormEnhancer{
 
-  JcrGormEnhancer(Datastore datastore) {
-    super(datastore);
-  }
+    JcrGormEnhancer(Datastore datastore) {
+        super(datastore);
+    }
 
-  JcrGormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
-    super(datastore, transactionManager);
-  }
+    JcrGormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
+        super(datastore, transactionManager);
+    }
 
-  protected GormStaticApi getStaticApi(Class cls) {
-    return new JcrGormStaticApi(cls, datastore)
-  }
+    protected GormStaticApi getStaticApi(Class cls) {
+        return new JcrGormStaticApi(cls, datastore)
+    }
 
-  protected GormInstanceApi getInstanceApi(Class cls) {
-    return new JcrGormInstanceApi(cls, datastore)
-  }
-
-
+    protected GormInstanceApi getInstanceApi(Class cls) {
+        return new JcrGormInstanceApi(cls, datastore)
+    }
 }
 class JcrGormInstanceApi extends GormInstanceApi {
 
-  JcrGormInstanceApi(Class persistentClass, Datastore datastore) {
-    super(persistentClass, datastore);
-  }
+    JcrGormInstanceApi(Class persistentClass, Datastore datastore) {
+        super(persistentClass, datastore);
+    }
 
-  def expire(instance, int ttl) {
-     JcrSession session = datastore.currentSession
+    def expire(instance, int ttl) {
+        JcrSession session = datastore.currentSession
 
-     session.expire instance, ttl
-  }
+        session.expire instance, ttl
+    }
 }
+
 class JcrGormStaticApi extends GormStaticApi {
-  JcrGormStaticApi(Class persistentClass, Datastore datastore) {
-    super(persistentClass, datastore);
-  }
+    JcrGormStaticApi(Class persistentClass, Datastore datastore) {
+        super(persistentClass, datastore);
+    }
 
-  /**
-   * Expires an entity for the given id and TTL
-   */
-  void expire(Serializable id, int ttl) {
-    JcrSession session = datastore.currentSession
+    /**
+     * Expires an entity for the given id and TTL
+     */
+    void expire(Serializable id, int ttl) {
+        JcrSession session = datastore.currentSession
 
-    session.expire(persistentClass, id, ttl)
-  }
-  /**
-   * A random domain class instance is returned
-   * @return A random domain class
-   */
-  def random() {
-    JcrSession session = datastore.currentSession
+        session.expire(persistentClass, id, ttl)
+    }
 
-    return session.random(persistentClass)
-  }
+    /**
+     * A random domain class instance is returned
+     * @return A random domain class
+     */
+    def random() {
+        JcrSession session = datastore.currentSession
 
-  /**
-   * A random domain class instance is removed and returned
-   * @return A random removed domain class
-   */
-  def pop() {
-    JcrSession session = datastore.currentSession
+        return session.random(persistentClass)
+    }
 
-    return session.pop(persistentClass)
+    /**
+     * A random domain class instance is removed and returned
+     * @return A random removed domain class
+     */
+    def pop() {
+        JcrSession session = datastore.currentSession
 
-  }
-
+        return session.pop(persistentClass)
+    }
 }

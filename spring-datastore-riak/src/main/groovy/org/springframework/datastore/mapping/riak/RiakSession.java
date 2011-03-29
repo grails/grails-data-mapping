@@ -40,54 +40,53 @@ import java.math.BigInteger;
 @SuppressWarnings({"unchecked"})
 public class RiakSession extends AbstractSession {
 
-  private RiakTemplate riakTemplate;
-  private QosParameters qosParameters = null;
+    private RiakTemplate riakTemplate;
+    private QosParameters qosParameters;
 
-  public RiakSession(Datastore datastore, MappingContext mappingContext, RiakTemplate riakTemplate) {
-    super(datastore, mappingContext);
-    this.riakTemplate = riakTemplate;
-    mappingContext.addTypeConverter(new BigIntegerToLongConverter());
-  }
-
-  @Override
-  protected Persister createPersister(Class cls, MappingContext mappingContext) {
-    PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
-    if (null != entity) {
-      return new RiakEntityPersister(mappingContext, entity, this, riakTemplate);
+    public RiakSession(Datastore datastore, MappingContext mappingContext, RiakTemplate riakTemplate) {
+        super(datastore, mappingContext);
+        this.riakTemplate = riakTemplate;
+        mappingContext.addTypeConverter(new BigIntegerToLongConverter());
     }
-    return null;
-  }
 
-  @Override
-  protected Transaction beginTransactionInternal() {
-    return new RiakTransaction(riakTemplate);
-  }
-
-  public boolean isConnected() {
-    return true;
-  }
-
-  public Object getNativeInterface() {
-    return riakTemplate;
-  }
-
-  public QosParameters getQosParameters() {
-    return qosParameters;
-  }
-
-  /**
-   * Set the Riak Quality Of Service parameters to use during this session.
-   *
-   * @param qosParameters
-   */
-  public void setQosParameters(QosParameters qosParameters) {
-    this.qosParameters = qosParameters;
-  }
-
-  protected class BigIntegerToLongConverter implements Converter<BigInteger, Long> {
-    public Long convert(BigInteger integer) {
-      return new Long(integer.longValue());
+    @Override
+    protected Persister createPersister(Class cls, MappingContext mappingContext) {
+        PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
+        if (null != entity) {
+            return new RiakEntityPersister(mappingContext, entity, this, riakTemplate);
+        }
+        return null;
     }
-  }
 
+    @Override
+    protected Transaction beginTransactionInternal() {
+        return new RiakTransaction(riakTemplate);
+    }
+
+    public boolean isConnected() {
+        return true;
+    }
+
+    public Object getNativeInterface() {
+        return riakTemplate;
+    }
+
+    public QosParameters getQosParameters() {
+        return qosParameters;
+    }
+
+    /**
+     * Set the Riak Quality Of Service parameters to use during this session.
+     *
+     * @param qosParameters
+     */
+    public void setQosParameters(QosParameters qosParameters) {
+        this.qosParameters = qosParameters;
+    }
+
+    protected class BigIntegerToLongConverter implements Converter<BigInteger, Long> {
+        public Long convert(BigInteger integer) {
+            return Long.valueOf(integer.longValue());
+        }
+    }
 }

@@ -30,13 +30,12 @@ import org.springframework.datastore.mapping.model.MappingContext;
  */
 public interface Datastore {
 
-
     /**
      * Connects to the datastore with the default connection details, normally provided via the datastore implementations constructor
      *
      * @return The session created using the default connection details.
      */
-    public Session connect();
+    Session connect();
 
     /**
      * Obtains the current session (if any)
@@ -44,7 +43,7 @@ public interface Datastore {
      *
      * @throws ConnectionNotFoundException Thrown if the {@link #connect()} method has not yet been called
      */
-    public Session getCurrentSession() throws ConnectionNotFoundException;
+    Session getCurrentSession() throws ConnectionNotFoundException;
 
     /**
      * Obtains the MappingContext object

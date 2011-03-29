@@ -1,171 +1,142 @@
 package org.springframework.datastore.mapping.jcr
 
-import org.junit.Test
-import org.springframework.datastore.mapping.query.Query
+import static org.springframework.datastore.mapping.query.Restrictions.*
+
+import org.junit.After
 import org.junit.AfterClass
 import org.junit.BeforeClass
-import static org.springframework.datastore.mapping.query.Restrictions.*
-import org.junit.After
+import org.junit.Test
+import org.springframework.datastore.mapping.query.Query
 
 /**
- *
  * @author Erawat Chamanont
  * @since 1.0
  */
-class ListQueryTests {
+class ListQueryTests extends AbstractJcrTest {
 
-  protected static def conn = null
-  protected static def ds = null
+    @After
+    void clearNodes() {
+        def session = conn.getNativeInterface()
+        def wp = session.getWorkspace()
+        def qm = wp.getQueryManager()
 
-  @BeforeClass
-  public static void setupJCR() {
-    ds = new JcrDatastore()
-    def connectionDetails = [username: "username",
-            password: "password",
-            workspace: "default",
-            configuration: "classpath:repository.xml",
-            homeDir: "/temp/repo"];
-    conn = ds.connect(connectionDetails)
-  }
+        def q = qm.createQuery("//Book", javax.jcr.query.Query.XPATH)
+        def qr = q.execute()
+        def itr = qr.getNodes()
+        itr.each { it.remove() }
 
-  @AfterClass
-  public static void tearDown() {
-    conn.disconnect();
-  }
+        q = qm.createQuery("//Author", javax.jcr.query.Query.XPATH)
+        qr = q.execute()
+        itr = qr.getNodes()
+        itr.each { it.remove() }
+        session.save()
+    }
 
-  @After
-  public void clearNodes() {
-    def session = conn.getNativeInterface();
-    def wp = session.getWorkspace();
-    def qm = wp.getQueryManager();
+    @Test
+    void testListQuery() {
+        ds.mappingContext.addPersistentEntity(Author)
 
-    def q = qm.createQuery("//Book", javax.jcr.query.Query.XPATH);
-    def qr = q.execute()
-    def itr = qr.getNodes();
-    itr.each { it.remove() }
+        def a = new Author(name: "Stephen King")
+        a.books = [new Book(title: "The Stand"),
+                   new Book(title: "It")]
 
-    q = qm.createQuery("//Author", javax.jcr.query.Query.XPATH);
-    qr = q.execute()
-    itr = qr.getNodes();
-    itr.each { it.remove() }
-    session.save()
-  }
-  @Test
-  void testListQuery() {
-    ds.mappingContext.addPersistentEntity(Author)
+        conn.persist(a)
 
-    def a = new Author(name: "Stephen King")
-    a.books = [
-            new Book(title: "The Stand"),
-            new Book(title: "It")]
+        Query q = conn.createQuery(Book)
 
-    conn.persist(a)
+        def results = q.list()
 
-    Query q = conn.createQuery(Book)
+        assert 2 == results.size()
 
-    def results = q.list()
+        //assert "The Stand" == results[0].title
+        //assert "It" == results[1].title
 
-    assert 2 == results.size()
+        assert null !=    results.find { it.title == "The Stand" }
+        assert null !=    results.find { it.title == "It" }
 
-    //assert "The Stand" == results[0].title
-    //assert "It" == results[1].title
+        q.max 1
 
-     assert null !=  results.find { it.title == "The Stand" }
-     assert null !=  results.find { it.title == "It" }
+        results = q.list()
 
+        assert 1 == results.size()
+        //assert "The Stand" == results[0].title
+    }
 
-    q.max 1
+    @Test
+    void testDisjunction() {
+        ds.mappingContext.addPersistentEntity(Author)
 
-    results = q.list()
+        def a = new Author(name: "Stephen King")
+        a.books = [new Book(title: "The Stand"),
+                   new Book(title: "It"),
+                   new Book(title: "The Shining")]
 
-    assert 1 == results.size()
-    //assert "The Stand" == results[0].title
-  }
-
-  @Test
-  void testDisjunction() {
-    ds.mappingContext.addPersistentEntity(Author)
-
-    def a = new Author(name: "Stephen King")
-    a.books = [
-            new Book(title: "The Stand"),
-            new Book(title: "It"),
-            new Book(title: "The Shining")
-    ]
-
-    conn.persist(a)
+        conn.persist(a)
 
 
-    Query q = conn.createQuery(Book)
-    
-    q.disjunction().add(eq("title", "The Stand"))
-                   .add(eq("title", "The Shining"))
+        Query q = conn.createQuery(Book)
 
-    def results = q.list()
+        q.disjunction().add(eq("title", "The Stand"))
+                       .add(eq("title", "The Shining"))
 
-    assert 2 == results.size()
-    assert null != results.find { it.title == "The Stand" }
-    assert null != results.find { it.title == "The Shining" }
-    assert null == results.find { it.title == "It" }
+        def results = q.list()
 
-  }
+        assert 2 == results.size()
+        assert null != results.find { it.title == "The Stand" }
+        assert null != results.find { it.title == "The Shining" }
+        assert null == results.find { it.title == "It" }
+    }
 
-  @Test
-  void testIdProjection() {
-    ds.mappingContext.addPersistentEntity(Author)
+    @Test
+    void testIdProjection() {
+        ds.mappingContext.addPersistentEntity(Author)
 
-    def a = new Author(name: "Stephen King")
-    a.books = [
-            new Book(title: "The Stand"),
-            new Book(title: "It"),
-            new Book(title: "The Shining")
-    ]
+        def a = new Author(name: "Stephen King")
+        a.books = [new Book(title: "The Stand"),
+                   new Book(title: "It"),
+                   new Book(title: "The Shining")]
 
-    conn.persist(a)
+        conn.persist(a)
 
 
-    Query q = conn.createQuery(Book)
-    q.disjunction().add(eq("title", "The Stand"))
-                   .add(eq("title", "It"))
-    q.projections().id()
+        Query q = conn.createQuery(Book)
+        q.disjunction().add(eq("title", "The Stand"))
+                       .add(eq("title", "It"))
+        q.projections().id()
 
 
-    def results = q.list()
+        def results = q.list()
 
-    assert 2 == results.size()
-    assert results[0] instanceof String
-  }
+        assert 2 == results.size()
+        assert results[0] instanceof String
+    }
 
-  @Test
-  void testSimpleQuery() {
-    ds.mappingContext.addPersistentEntity(Author)
+    @Test
+    void testSimpleQuery() {
+        ds.mappingContext.addPersistentEntity(Author)
 
-    def a = new Author(name: "Stephen King")
-    a.books = [
-            new Book(title: "The Stand"),
-            new Book(title: "It")
-    ]
+        def a = new Author(name: "Stephen King")
+        a.books = [new Book(title: "The Stand"),
+                   new Book(title: "It")]
 
-    conn.persist(a)
+        conn.persist(a)
 
+        Query q = conn.createQuery(Book)
 
-    Query q = conn.createQuery(Book)
+        q.eq("title", "It")
 
-    q.eq("title", "It")
+        def results = q.list()
 
-    def results = q.list()
+        assert 1 == results.size()
+        assert "It" == results[0].title
 
-    assert 1 == results.size()
-    assert "It" == results[0].title
+        q = conn.createQuery(Book)
 
-    q = conn.createQuery(Book)
+        q.eq("title", "The Stand")
 
-    q.eq("title", "The Stand")
+        results = q.list()
 
-    results = q.list()
-
-    assert 1 == results.size()
-    assert "The Stand" == results[0].title
-
-  }
+        assert 1 == results.size()
+        assert "The Stand" == results[0].title
+    }
 }

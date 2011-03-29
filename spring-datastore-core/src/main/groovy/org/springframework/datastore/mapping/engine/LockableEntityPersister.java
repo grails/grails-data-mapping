@@ -14,12 +14,12 @@
  */
 package org.springframework.datastore.mapping.engine;
 
+import java.io.Serializable;
+
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
-
-import java.io.Serializable;
 
 /**
  * Interface for entity persisters that support locking
@@ -66,6 +66,7 @@ public abstract class LockableEntityPersister extends EntityPersister{
      */
     public abstract void unlock(Object o);
 
+    @Override
     public Object proxy(Serializable key) {
         return getProxyFactory().createProxy(session, getPersistentEntity().getJavaClass(), key);
     }

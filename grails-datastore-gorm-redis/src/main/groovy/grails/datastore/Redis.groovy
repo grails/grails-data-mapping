@@ -14,6 +14,7 @@
  */
 package grails.datastore
 
+import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.redis.collection.RedisCollection
 import org.springframework.datastore.mapping.redis.collection.RedisList
@@ -21,87 +22,80 @@ import org.springframework.datastore.mapping.redis.collection.RedisMap
 import org.springframework.datastore.mapping.redis.collection.RedisSet
 import org.springframework.datastore.mapping.redis.util.RedisTemplate
 
-import org.springframework.datastore.mapping.core.Datastore
-
 /**
  * Convenience interface for access the redis datastore
  *
  * @author Graeme Rocher
  */
-class Redis  {
+class Redis {
 
+    @Delegate RedisTemplate redisTemplate
+    private Datastore datastore
 
-  @Delegate RedisTemplate redisTemplate
-  private Datastore datastore
-
-  Redis() {
-  }
-
-  def getAt(String s) {
-    get(s)
-  }
-
-  def setAt(String s, v) {
-    set s, v
-  }
-
-  void setDatastore(Datastore ds) {
-    this.datastore = ds
-    this.redisTemplate = datastore.currentSession.nativeInterface
-  }
-
-  /**
-   * Creates a redis set for the given key
-   * @param key They key
-   * @return
-   */
-  RedisSet set(String key) {
-    return new RedisSet(redisTemplate, key)
-  }
-
-  /**
-   * Creates a hash for the given key
-   * @param key They key
-   * @return
-   */
-  RedisMap hash(String key) {
-    return new RedisMap(redisTemplate, key)
-  }
-
-  /**
-   * Creates a redis list for the given key
-   * @param key They key
-   * @return
-   */
-  RedisList list(String key) {
-    return new RedisList(redisTemplate, key)
-  }
-
-  /**
-   * Returns an entity list from the specified key
-   * @param key The key
-   * @return An entity list
-   */
-  Collection entities(Class type, String key, int offset = 0, int max = -1) {
-    def set = set(key)
-    return entities(type, set, offset, max)
-  }
-
-  /**
-   * Returns a list of entities from the specified type and redis collection
-   * @param type The type
-   * @param col The collection
-   * @param offset The offset
-   * @param max The max
-   * @return A list of entities
-   */
-  Collection entities(Class type, RedisCollection col, int offset = 0, int max = -1) {
-    PersistentEntity entity = datastore.mappingContext.getPersistentEntity(type.name)
-    if (entity == null) {
-      throw new IllegalArgumentException("Class [$type] is not a persistent entity")
+    def getAt(String s) {
+        get(s)
     }
-    def results = col.members(offset, max)
-    datastore.currentSession.retrieveAll(type, results)
-  }
 
+    def setAt(String s, v) {
+        set s, v
+    }
+
+    void setDatastore(Datastore ds) {
+        this.datastore = ds
+        this.redisTemplate = datastore.currentSession.nativeInterface
+    }
+
+    /**
+     * Creates a redis set for the given key
+     * @param key They key
+     * @return
+     */
+    RedisSet set(String key) {
+        return new RedisSet(redisTemplate, key)
+    }
+
+    /**
+     * Creates a hash for the given key
+     * @param key They key
+     * @return
+     */
+    RedisMap hash(String key) {
+        return new RedisMap(redisTemplate, key)
+    }
+
+    /**
+     * Creates a redis list for the given key
+     * @param key They key
+     * @return
+     */
+    RedisList list(String key) {
+        return new RedisList(redisTemplate, key)
+    }
+
+    /**
+     * Returns an entity list from the specified key
+     * @param key The key
+     * @return An entity list
+     */
+    Collection entities(Class type, String key, int offset = 0, int max = -1) {
+        def set = set(key)
+        return entities(type, set, offset, max)
+    }
+
+    /**
+     * Returns a list of entities from the specified type and redis collection
+     * @param type The type
+     * @param col The collection
+     * @param offset The offset
+     * @param max The max
+     * @return A list of entities
+     */
+    Collection entities(Class type, RedisCollection col, int offset = 0, int max = -1) {
+        PersistentEntity entity = datastore.mappingContext.getPersistentEntity(type.name)
+        if (entity == null) {
+            throw new IllegalArgumentException("Class [$type] is not a persistent entity")
+        }
+        def results = col.members(offset, max)
+        datastore.currentSession.retrieveAll(type, results)
+    }
 }

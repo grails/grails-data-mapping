@@ -14,13 +14,11 @@
  */
 package org.grails.datastore.gorm.finders;
 
-import groovy.lang.Closure;
+import java.util.regex.Pattern;
+
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.query.Query;
-
-import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Supports counting objects. For example Book.countByTitle("The Stand")
@@ -34,6 +32,7 @@ public class CountByFinder extends DynamicFinder implements QueryBuildingFinder{
     private static final String[] OPERATORS = new String[]{ OPERATOR_AND, OPERATOR_OR };
 
     Datastore datastore;
+
     public CountByFinder(Datastore datastore) {
         super(METHOD_PATTERN, OPERATORS);
         this.datastore = datastore;
@@ -44,7 +43,6 @@ public class CountByFinder extends DynamicFinder implements QueryBuildingFinder{
         Query q = buildQuery(invocation);
         return invokeQuery(q);
     }
-
 
     protected Object invokeQuery(Query q) {
         return q.singleResult();
@@ -59,13 +57,12 @@ public class CountByFinder extends DynamicFinder implements QueryBuildingFinder{
         configureQueryWithArguments(clazz, q, invocation.getArguments());
 
         String operatorInUse = invocation.getOperator();
-        if(operatorInUse != null && operatorInUse.equals(OPERATOR_OR)) {
+        if (operatorInUse != null && operatorInUse.equals(OPERATOR_OR)) {
             Query.Junction disjunction = q.disjunction();
 
             for (MethodExpression expression : invocation.getExpressions()) {
                 disjunction.add(expression.createCriterion());
             }
-
         }
         else {
             for (MethodExpression expression : invocation.getExpressions()) {

@@ -14,9 +14,9 @@
  */
 package org.springframework.datastore.mapping.engine;
 
-import org.springframework.datastore.mapping.model.PersistentEntity;
-
 import java.util.List;
+
+import org.springframework.datastore.mapping.model.PersistentEntity;
 
 /**
  * Responsible for creating indices for associations used in queries
@@ -26,8 +26,6 @@ import java.util.List;
  */
 public interface AssociationIndexer<K, T> {
 
-
-
     /**
      * Creates an index queryable via the primary key
      *
@@ -35,7 +33,6 @@ public interface AssociationIndexer<K, T> {
      * @param foreignKeys The foreign keys
      */
     void index( K primaryKey, List<T> foreignKeys);
-
 
     /**
      * Queries the given primary key and returns the foreign keys
@@ -45,7 +42,6 @@ public interface AssociationIndexer<K, T> {
      */
     List<T> query(K primaryKey);
 
-    
     PersistentEntity getIndexedEntity();
 
     /**

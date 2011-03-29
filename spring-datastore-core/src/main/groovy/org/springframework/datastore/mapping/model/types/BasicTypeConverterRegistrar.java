@@ -14,12 +14,12 @@
  */
 package org.springframework.datastore.mapping.model.types;
 
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.converter.ConverterRegistry;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.ConverterRegistry;
 
 /**
  * A registrar that registers basic type converters
@@ -28,14 +28,15 @@ import java.util.GregorianCalendar;
  * @since 1.0
  */
 public class BasicTypeConverterRegistrar {
-    
+
     public void register(ConverterRegistry registry) {
-       registry.addConverter(new Converter<Date, String>() {
+        registry.addConverter(new Converter<Date, String>() {
             public String convert(Date date) {
                 return String.valueOf(date.getTime());
             }
         });
-      registry.addConverter(new Converter<Date, Calendar>() {
+
+        registry.addConverter(new Converter<Date, Calendar>() {
             public Calendar convert(Date date) {
                 final GregorianCalendar calendar = new GregorianCalendar();
                 calendar.setTime(date);
@@ -55,9 +56,7 @@ public class BasicTypeConverterRegistrar {
             }
         });
 
-
         registry.addConverter(new Converter<CharSequence, Date>() {
-
             public Date convert(CharSequence s) {
                 try {
                     final Long time = Long.valueOf(s.toString());
@@ -70,7 +69,6 @@ public class BasicTypeConverterRegistrar {
         });
 
         registry.addConverter(new Converter<CharSequence, Double>() {
-
             public Double convert(CharSequence s) {
                 try {
                     return Double.valueOf(s.toString());
@@ -81,7 +79,6 @@ public class BasicTypeConverterRegistrar {
         });
 
         registry.addConverter(new Converter<CharSequence, Integer>() {
-
             public Integer convert(CharSequence s) {
                 try {
                     return Integer.valueOf(s.toString());
@@ -91,8 +88,8 @@ public class BasicTypeConverterRegistrar {
                 return 0;
             }
         });
-        registry.addConverter(new Converter<CharSequence, Long>() {
 
+        registry.addConverter(new Converter<CharSequence, Long>() {
             public Long convert(CharSequence s) {
                 try {
                     return Long.valueOf(s.toString());
@@ -102,7 +99,6 @@ public class BasicTypeConverterRegistrar {
                 return 0L;
             }
         });
-
 
         registry.addConverter(new Converter<Object, String>() {
             public String convert(Object o) {
@@ -117,7 +113,6 @@ public class BasicTypeConverterRegistrar {
         });
 
         registry.addConverter(new Converter<CharSequence, Calendar>() {
-
             public Calendar convert(CharSequence s) {
                 try {
                     Date date = new Date(Long.valueOf(s.toString()));
@@ -128,6 +123,6 @@ public class BasicTypeConverterRegistrar {
                     return null;
                 }
             }
-        });        
+        });
     }
 }

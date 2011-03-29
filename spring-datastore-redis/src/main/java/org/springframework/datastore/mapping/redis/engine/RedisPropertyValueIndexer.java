@@ -14,8 +14,13 @@
  */
 package org.springframework.datastore.mapping.redis.engine;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.dao.DataAccessException;
-import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.core.SessionImplementor;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
 import org.springframework.datastore.mapping.model.MappingContext;
@@ -24,12 +29,6 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.redis.collection.RedisSet;
 import org.springframework.datastore.mapping.redis.query.RedisQueryUtils;
 import org.springframework.datastore.mapping.redis.util.RedisTemplate;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Indexes property values for querying later
@@ -44,7 +43,6 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     private RedisEntityPersister entityPersister;
     private MappingContext mappingContext;
 
-
     public RedisPropertyValueIndexer(MappingContext context, RedisEntityPersister redisEntityPersister, PersistentProperty property) {
         this.template = redisEntityPersister.getRedisTemplate();
         this.entityPersister = redisEntityPersister;
@@ -52,32 +50,30 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
         this.mappingContext = context;
     }
 
-
     public void deindex(Object value, Long primaryKey) {
-        if(value != null) {
+        if (value != null) {
             final String primaryIndex = createRedisKey(value);
-            template.srem(primaryIndex, primaryKey);            
+            template.srem(primaryIndex, primaryKey);
         }
     }
 
     public void index(final Object value, final Long primaryKey) {
-        if(value != null) {
+        if (value != null) {
             String propSortKey = entityPersister.getPropertySortKey(property);
             clearCachedIndices(entityPersister.getPropertySortKeyPattern());
             final String primaryIndex = createRedisKey(value);
             template.sadd(primaryIndex, primaryKey);
             // for numbers and dates we also create a list index in order to support range queries
 
-            if(value instanceof Number) {
+            if (value instanceof Number) {
                 Number n = (Number) value;
                 template.zadd(propSortKey,n.doubleValue(),primaryKey);
             }
-            else if(value instanceof Date) {
+            else if (value instanceof Date) {
                 Date d = (Date) value;
                 Long time = d.getTime();
                 template.zadd(propSortKey,time.doubleValue(),primaryKey);
             }
-
         }
     }
 
@@ -89,7 +85,6 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
                 deleteKeys(template.keys(keyPattern));
             }
         });
-
     }
 
     private abstract class KeyPatternRunnable implements Runnable {
@@ -100,21 +95,21 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
         }
 
         @Override
-            public boolean equals(Object obj) {
-                if(obj instanceof KeyPatternRunnable) {
-                    return keyPattern.equals(((KeyPatternRunnable)obj).keyPattern);
-                }
-                return super.equals(obj);
+        public boolean equals(Object obj) {
+            if (obj instanceof KeyPatternRunnable) {
+                return keyPattern.equals(((KeyPatternRunnable)obj).keyPattern);
             }
+            return super.equals(obj);
+        }
 
-            @Override
-            public int hashCode() {
-                return keyPattern.hashCode();
-            }
+        @Override
+        public int hashCode() {
+            return keyPattern.hashCode();
+        }
     }
 
     private void deleteKeys(List<String> toDelete) {
-        if(toDelete != null && !toDelete.isEmpty())
+        if (toDelete != null && !toDelete.isEmpty())
             template.del(toDelete.toArray(new String[toDelete.size()]));
     }
 
@@ -137,11 +132,10 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     private String getRootEntityName() {
 
         final PersistentEntity owner = property.getOwner();
-        if(owner.isRoot())
+        if (owner.isRoot()) {
             return owner.getName();
-        else {
-            return owner.getRootEntity().getName();
         }
+        return owner.getRootEntity().getName();
     }
 
     public List<Long> query(final Object value) {
@@ -153,7 +147,7 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
 
         RedisSet set = new RedisSet(template, redisKey);
         Collection<String> results;
-        if(offset > 0 || max > 0) {
+        if (offset > 0 || max > 0) {
             results = set.members(offset, max);
         }
         else {
@@ -171,5 +165,4 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
 
         return root + urlEncode(pattern.replaceAll("%", "*"));
     }
-
 }

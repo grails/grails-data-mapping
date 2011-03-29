@@ -21,7 +21,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 
 /**
  * An operation that is pending execution
- * 
+ *
  * @author Graeme Rocher
  *
  * @param <E> The native entity type (examples could be Row, Document etc.)
@@ -29,45 +29,43 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
  */
 public interface PendingOperation<E, K> extends Runnable {
 
-	/**
-	 * @return The {@link PersistentEntity} being inserted
-	 */
-	public abstract PersistentEntity getEntity();
+    /**
+     * @return The {@link PersistentEntity} being inserted
+     */
+    PersistentEntity getEntity();
 
-	/**
-	 * @return The native key to insert
-	 */
-	public abstract K getNativeKey();
+    /**
+     * @return The native key to insert
+     */
+    K getNativeKey();
 
-	/**
-	 * @return The native entry to persist
-	 */
-	public abstract E getNativeEntry();
-	
-	/**
-	 * Operations to be executed directly prior to this operation
-	 * @return The operations to execute prior 
-	 */
-	public List<PendingOperation<E,K>> getPreOperations();
-	
-	/**
-	 * Adds an operation to executed prior to other operations
-	 * @param preOperation The prior operation
-	 */
-	public void addPreOperation(PendingOperation<E, K> preOperation);
-	
-	/**
-	 * Operations to be executed directly following this operation
-	 * @return The operations to cascade to 
-	 */
-	public List<PendingOperation<E,K>> getCascadeOperations();
-	
-	/**
-	 * Adds an operation that should be executed after this operation
-	 * 
-	 * @param pendingOperation The pending operation
-	 */
-	public void addCascadeOperation(PendingOperation<E, K> pendingOperation);
+    /**
+     * @return The native entry to persist
+     */
+    E getNativeEntry();
 
+    /**
+     * Operations to be executed directly prior to this operation
+     * @return The operations to execute prior
+     */
+    List<PendingOperation<E,K>> getPreOperations();
 
+    /**
+     * Adds an operation to executed prior to other operations
+     * @param preOperation The prior operation
+     */
+    void addPreOperation(PendingOperation<E, K> preOperation);
+
+    /**
+     * Operations to be executed directly following this operation
+     * @return The operations to cascade to
+     */
+    List<PendingOperation<E,K>> getCascadeOperations();
+
+    /**
+     * Adds an operation that should be executed after this operation
+     *
+     * @param pendingOperation The pending operation
+     */
+    void addCascadeOperation(PendingOperation<E, K> pendingOperation);
 }

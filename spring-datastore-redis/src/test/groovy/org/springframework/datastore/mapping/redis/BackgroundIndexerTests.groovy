@@ -1,8 +1,9 @@
 package org.springframework.datastore.mapping.redis
 
 import org.junit.Test
-import org.springframework.datastore.mapping.redis.util.RedisTemplate
 import org.springframework.datastore.mapping.redis.util.JedisTemplate
+import org.springframework.datastore.mapping.redis.util.RedisTemplate
+
 import redis.clients.jedis.Jedis
 
 /**
@@ -10,36 +11,31 @@ import redis.clients.jedis.Jedis
  */
 class BackgroundIndexerTests {
 
-  @Test
-  void testBackgroundIndexer() {
+    @Test
+    void testBackgroundIndexer() {
 
+        // create some existing data
+        def template = createTemplate()
+        template.flushdb()
 
-    // create some existing data
-    def template = createTemplate()
-    template.flushdb()
+        template.hmset("org.springframework.datastore.mapping.redis.Book:1", [title:"It"])
+        template.hmset("org.springframework.datastore.mapping.redis.Book:2", [title:"The Shining"])
+        template.sadd("org.springframework.datastore.mapping.redis.Book.all", 1L)
+        template.sadd("org.springframework.datastore.mapping.redis.Book.all", 2L)
 
-    template.hmset("org.springframework.datastore.mapping.redis.Book:1", [title:"It"])
-    template.hmset("org.springframework.datastore.mapping.redis.Book:2", [title:"The Shining"])
-    template.sadd("org.springframework.datastore.mapping.redis.Book.all", 1L)
-    template.sadd("org.springframework.datastore.mapping.redis.Book.all", 2L)
+        // initialise datastore
+        def datastore = new RedisDatastore()
+        datastore.mappingContext.addPersistentEntity(Book)
+        datastore.afterPropertiesSet()
 
+        def session = datastore.connect()
 
-    // initialise datastore
-    def datastore = new RedisDatastore()
-    datastore.mappingContext.addPersistentEntity(Book)
-    datastore.afterPropertiesSet()
+        def results = session.createQuery(Book).eq("title", "It").list()
 
-    def session = datastore.connect()
+        assert 1 == results.size()
+    }
 
-    def results = session.createQuery(Book).eq("title", "It").list()
-
-    assert 1 == results.size()
-
-    
-  }
-
-  private RedisTemplate createTemplate() {
-    return new JedisTemplate(new Jedis("localhost"))
-  }
-
+    private RedisTemplate createTemplate() {
+        return new JedisTemplate(new Jedis("localhost"))
+    }
 }

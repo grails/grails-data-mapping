@@ -31,84 +31,73 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  */
 public class SpringSessionSynchronization implements TransactionSynchronization {
 
-	private final SessionHolder sessionHolder;
+    private final SessionHolder sessionHolder;
+    private final Datastore datastore;
+    private final boolean newSession;
+    private boolean holderActive = true;
 
-	private final Datastore datastore;
+    public SpringSessionSynchronization(SessionHolder sessionHolder,
+            Datastore datastore, boolean newSession) {
+        this.sessionHolder = sessionHolder;
+        this.datastore = datastore;
+        this.newSession = newSession;
+    }
 
-	private final boolean newSession;
+    /**
+     * Check whether there is a Hibernate Session for the current JTA
+     * transaction. Else, fall back to the default thread-bound Session.
+     */
+    private Session getCurrentSession() {
+        return sessionHolder.getSession();
+    }
 
+    public void suspend() {
+        if (holderActive) {
+            TransactionSynchronizationManager.unbindResource(datastore);
+            getCurrentSession().disconnect();
+        }
+    }
 
-	private boolean holderActive = true;
+    public void resume() {
+        if (holderActive) {
+            TransactionSynchronizationManager.bindResource(datastore, sessionHolder);
+        }
+    }
 
-
-	public SpringSessionSynchronization(
-			SessionHolder sessionHolder, Datastore datastore, boolean newSession) {
-
-		this.sessionHolder = sessionHolder;
-		this.datastore = datastore;
-		this.newSession = newSession;
-
-	}
-
-	/**
-	 * Check whether there is a Hibernate Session for the current JTA
-	 * transaction. Else, fall back to the default thread-bound Session.
-	 */
-	private Session getCurrentSession() {
-        return this.sessionHolder.getSession();
-	}
-
-
-
-	public void suspend() {
-		if (this.holderActive) {
-			TransactionSynchronizationManager.unbindResource(this.datastore);
-			getCurrentSession().disconnect();
-		}
-	}
-
-	public void resume() {
-		if (this.holderActive) {
-			TransactionSynchronizationManager.bindResource(this.datastore, this.sessionHolder);
-		}
-	}
-
-	public void flush() {
+    public void flush() {
         // do nothing
-	}
+    }
 
-	public void beforeCommit(boolean readOnly) throws DataAccessException {
+    public void beforeCommit(boolean readOnly) throws DataAccessException {
         // do nothing
-	}
+    }
 
-	public void beforeCompletion() {
+    public void beforeCompletion() {
+        if (newSession) {
+            // Default behavior: unbind and close the thread-bound Hibernate Session.
+            TransactionSynchronizationManager.unbindResource(datastore);
+            holderActive = false;
+        }
+    }
 
-		if (this.newSession) {
-			// Default behavior: unbind and close the thread-bound Hibernate Session.
-			TransactionSynchronizationManager.unbindResource(this.datastore);
-			this.holderActive = false;
-		}
-	}
+    public void afterCommit() {
+    }
 
-	public void afterCommit() {
-	}
-
-	public void afterCompletion(int status) {
+    public void afterCompletion(int status) {
         // No Hibernate TransactionManagerLookup: apply afterTransactionCompletion callback.
         // Always perform explicit afterTransactionCompletion callback for pre-bound Session,
         // even with Hibernate TransactionManagerLookup (which only applies to new Sessions).
-        Session session = this.sessionHolder.getSession();
+        Session session = sessionHolder.getSession();
         // Close the Hibernate Session here if necessary
         // (closed in beforeCompletion in case of TransactionManagerLookup).
-        if (this.newSession) {
-            DatastoreUtils.closeSessionOrRegisterDeferredClose(session, this.datastore);
+        if (newSession) {
+            DatastoreUtils.closeSessionOrRegisterDeferredClose(session, datastore);
         }
         else {
             session.disconnect();
         }
-		if (this.sessionHolder.doesNotHoldNonDefaultSession()) {
-			this.sessionHolder.setSynchronizedWithTransaction(false);
-		}
-	}
-
+        if (sessionHolder.doesNotHoldNonDefaultSession()) {
+            sessionHolder.setSynchronizedWithTransaction(false);
+        }
+    }
 }

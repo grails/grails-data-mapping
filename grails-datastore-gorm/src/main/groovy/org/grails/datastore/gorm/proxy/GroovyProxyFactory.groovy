@@ -25,61 +25,60 @@ import org.springframework.datastore.mapping.engine.EntityPersister
  *
  * @author Graeme Rocher
  */
-class GroovyProxyFactory implements ProxyFactory{
+class GroovyProxyFactory implements ProxyFactory {
 
-  boolean isProxy(Object object) {
-      object.metaClass.getMetaMethod("isProxy", null) != null
-  }
+    boolean isProxy(Object object) {
+        object.metaClass.getMetaMethod("isProxy", null) != null
+    }
 
-  Serializable getIdentifier(Object obj) {
-    return obj.getId()
-  }
+    Serializable getIdentifier(Object obj) {
+        return obj.getId()
+    }
 
+    def createProxy(Session session, Class type, Serializable key) {
+        EntityPersister persister = session.getPersister(type)
 
-
-  def createProxy(Session session, Class type, Serializable key) {
-    EntityPersister persister = session.getPersister(type)
-
-    def proxy = type.newInstance()
-    persister.setObjectIdentifier(proxy, key)
-    def target = null
-    proxy.metaClass.isProxy = {-> true}
-    proxy.metaClass.invokeMethod = { String name, args ->
-        switch(name) {
-          case "getId":
-             return key
-          case 'initialize':
-             if(target == null) target = session.retrieve(type, key)
-             return target
-          case 'isInitialized':
-             return target != null
-          case 'getTarget':
-             if(target == null) target = session.retrieve(type, key)
-             return target
-          default:
-            if(target == null) target = session.retrieve(type, key)
-            return target."$name"(*args)
-
+        def proxy = type.newInstance()
+        persister.setObjectIdentifier(proxy, key)
+        def target = null
+        proxy.metaClass.isProxy = {-> true}
+        proxy.metaClass.invokeMethod = { String name, args ->
+            switch(name) {
+                case "getId":
+                    return key
+                case 'initialize':
+                    if (target == null) target = session.retrieve(type, key)
+                    return target
+                case 'isInitialized':
+                    return target != null
+                case 'getTarget':
+                    if (target == null) target = session.retrieve(type, key)
+                    return target
+                default:
+                    if (target == null) target = session.retrieve(type, key)
+                    return target."$name"(*args)
+            }
         }
+
+        proxy.metaClass.getProperty = { String name ->
+            switch(name) {
+                case 'id':
+                return key
+            case 'initialized':
+                return target != null
+            case 'target':
+                if (target == null) target = session.retrieve(type, key)
+                return target
+            default:
+                if (target == null) target = session.retrieve(type, key)
+                return target[name]
+            }
+        }
+
+        proxy.metaClass.setProperty = { String name, value ->
+            if (target == null) target = session.retrieve(type, key)
+            target[name] = value
+        }
+        return proxy;
     }
-    proxy.metaClass.getProperty = { String name ->
-       switch(name) {
-         case 'id':
-           return key
-         case 'initialized':
-           return target != null
-         case 'target':
-           if(target == null) target = session.retrieve(type, key)
-           return target
-         default:
-           if(target == null) target = session.retrieve(type, key)
-           return target[name]
-       }
-    }
-    proxy.metaClass.setProperty = { String name, value ->
-        if(target == null) target = session.retrieve(type, key)
-        target[name] = value
-    }
-    return proxy;
-  }
 }

@@ -1,17 +1,13 @@
 import grails.gorm.tests.GormDatastoreSpec
 
 /**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 10/03/2011
- * Time: 14:45
- * To change this template use File | Settings | File Templates.
+ * @author graemerocher
  */
-class BidirectionalOneToManyWithInheritanceSpec extends GormDatastoreSpec{
-   	static {
-		GormDatastoreSpec.TEST_CLASSES << ConfigurationItem << Documentation <<  ChangeRequest
-	}
+class BidirectionalOneToManyWithInheritanceSpec extends GormDatastoreSpec {
 
+    static {
+        GormDatastoreSpec.TEST_CLASSES << ConfigurationItem << Documentation <<  ChangeRequest
+    }
 
     void "Test a bidirectional one-to-many association with inheritance"() {
 
@@ -19,8 +15,7 @@ class BidirectionalOneToManyWithInheritanceSpec extends GormDatastoreSpec{
             def doc = new Documentation()
 
             doc.addToConfigurationItems(new ChangeRequest())
-               .addToConfigurationItems(new Documentation())
-
+              .addToConfigurationItems(new Documentation())
 
         when:
             doc.save(flush:true)
@@ -31,6 +26,7 @@ class BidirectionalOneToManyWithInheritanceSpec extends GormDatastoreSpec{
             2 == doc.configurationItems.size()
     }
 }
+
 class ConfigurationItem {
     Long id
     Long version
@@ -46,12 +42,12 @@ class ConfigurationItem {
     }
 }
 
-class Documentation extends ConfigurationItem{
+class Documentation extends ConfigurationItem {
     Long id
     Long version
 }
 
-class ChangeRequest extends ConfigurationItem{
+class ChangeRequest extends ConfigurationItem {
     Long id
     Long version
 }

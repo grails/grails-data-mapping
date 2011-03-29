@@ -12,54 +12,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 package org.springframework.datastore.mapping.model.types;
 
 import java.beans.PropertyDescriptor;
 
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
-import org.springframework.datastore.mapping.model.PropertyMapping;
 
 /**
  * Models a basic collection type such as a list of Strings
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
- *
  */
 public abstract class Basic extends Association {
 
-	public Basic(PersistentEntity owner, MappingContext context,
-			PropertyDescriptor descriptor) {
-		super(owner, context, descriptor);
-	}
+    public Basic(PersistentEntity owner, MappingContext context,
+            PropertyDescriptor descriptor) {
+        super(owner, context, descriptor);
+    }
 
-	public Basic(PersistentEntity owner, MappingContext context, String name, Class type) {
-		super(owner, context, name, type);
+    public Basic(PersistentEntity owner, MappingContext context, String name, Class type) {
+        super(owner, context, name, type);
+    }
 
-	}
+    @Override
+    public Association getInverseSide() {
+        return null; // basic collection types have no inverse side
+    }
 
-	@Override
-	public Association getInverseSide() {
-		return null; // basic collection types have no inverse side
-	}
+    @Override
+    public boolean isOwningSide() {
+        return true;
+    }
 
-	@Override
-	public boolean isOwningSide() {
-		return true;
-	}
+    @Override
+    public void setOwningSide(boolean owningSide) {
+        // noop
+    }
 
-	@Override
-	public void setOwningSide(boolean owningSide) {
-		// noop
-	}
-
-	@Override
-	public PersistentEntity getAssociatedEntity() {
-		return null; // basic collection types have no associated entity
-	}
-	
-	
+    @Override
+    public PersistentEntity getAssociatedEntity() {
+        return null; // basic collection types have no associated entity
+    }
 }

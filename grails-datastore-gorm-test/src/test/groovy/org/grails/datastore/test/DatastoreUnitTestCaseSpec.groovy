@@ -2,76 +2,72 @@ package org.grails.datastore.test
 
 import grails.datastore.test.DatastoreUnitTestMixin
 import spock.lang.Specification
-import grails.test.GrailsUnitTestCase
 
 /**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: Aug 31, 2010
- * Time: 3:18:26 PM
- * To change this template use File | Settings | File Templates.
+ * @author graemerocher
  */
 class DatastoreUnitTestCaseSpec extends Specification {
- // NOTE: we run the same test twice to ensure setup/teardown is cleaning up properly
- void "Test mock domain 1"() {
-	given:
-	 TestTests tt = new TestTests()
-	 tt.metaClass.mixin DatastoreUnitTestMixin
 
-	when:
-	  tt.setUp()
-	  tt.testCRUD()
-	  tt.tearDown()
+    // NOTE: we run the same test twice to ensure setup/teardown is cleaning up properly
+    void "Test mock domain 1"() {
+        given:
+            TestTests tt = new TestTests()
+            tt.metaClass.mixin DatastoreUnitTestMixin
 
-	then:
-	  true == true
-  }
-  void "Test mock domain 2"() {
-    given:
-     TestTests tt = new TestTests()
+        when:
+            tt.setUp()
+            tt.testCRUD()
+            tt.tearDown()
 
-    tt.metaClass.mixin DatastoreUnitTestMixin 
+        then:
+            true == true
+    }
 
-    when:
-      tt.setUp()
-      tt.testCRUD()
-      tt.tearDown()
+    void "Test mock domain 2"() {
+        given:
+            TestTests tt = new TestTests()
 
-    then:
-      true == true 
-  }
+            tt.metaClass.mixin DatastoreUnitTestMixin
+
+        when:
+            tt.setUp()
+            tt.testCRUD()
+            tt.tearDown()
+
+        then:
+            true == true
+    }
 }
+
 @Mixin(DatastoreUnitTestMixin)
-class TestTests extends GroovyTestCase{
+class TestTests extends GroovyTestCase {
 
-  protected void setUp() {
-    super.setUp();
-    connect()
-  }
+    protected void setUp() {
+        super.setUp()
+        connect()
+    }
 
-  protected void tearDown() {
-    super.tearDown();
-    disconnect()
-  }
+    protected void tearDown() {
+        super.tearDown()
+        disconnect()
+    }
 
+    void testCRUD() {
+        mockDomain TestDomain
 
-  void testCRUD() {
-    mockDomain TestDomain
+        def t = new TestDomain(name:"Bob")
+        t.save()
 
-    def t = new TestDomain(name:"Bob")
-    t.save()
+        assert t.id != null
 
-    assert t.id != null
+        t = TestDomain.get(t.id)
 
-    t = TestDomain.get(t.id)
-
-    assert t != null
-
-
-  }
+        assert t != null
+    }
 }
+
 class TestDomain {
-  Long id
-  Long version
-  String name
+    Long id
+    Long version
+    String name
 }

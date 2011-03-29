@@ -14,14 +14,12 @@
  */
 package org.springframework.datastore.mapping.simple;
 
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.converter.ConverterRegistry;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A simple implementation of the {@link org.springframework.datastore.mapping.core.Datastore} interface that backs onto an in-memory map.
@@ -55,7 +53,7 @@ public class SimpleMapDatastore extends AbstractDatastore{
     }
 
     @Override
-    protected Session createSession(Map<String, String> connectionDetails) {
+    protected Session createSession(@SuppressWarnings("hiding") Map<String, String> connectionDetails) {
         return new SimpleMapSession(this, getMappingContext());
     }
 

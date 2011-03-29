@@ -15,7 +15,6 @@
 
 package org.springframework.datastore.mapping.core.impl;
 
-
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
@@ -23,23 +22,20 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
  * Provides default implementation for most of the methods in the {@link PendingInsert} interafce
  *
  * @param <E> The native entry to persist
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
-
 public abstract class PendingInsertAdapter<E, K> extends PendingOperationAdapter<E, K> implements PendingInsert<E, K>{
 
-	private EntityAccess entityAccess;
+    private EntityAccess entityAccess;
 
-	public PendingInsertAdapter(PersistentEntity entity, K nativeKey, E nativeEntry, EntityAccess ea) {
-		super(entity, nativeKey, nativeEntry);
-		this.entityAccess = ea;
-	}
+    public PendingInsertAdapter(PersistentEntity entity, K nativeKey, E nativeEntry, EntityAccess ea) {
+        super(entity, nativeKey, nativeEntry);
+        this.entityAccess = ea;
+    }
 
-	@Override
-	public EntityAccess getEntityAccess() {
-		return this.entityAccess;
-	}
-
+    public EntityAccess getEntityAccess() {
+        return entityAccess;
+    }
 }

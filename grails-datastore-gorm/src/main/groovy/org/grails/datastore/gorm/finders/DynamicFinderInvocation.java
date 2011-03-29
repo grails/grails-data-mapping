@@ -1,9 +1,9 @@
 package org.grails.datastore.gorm.finders;
 
 import groovy.lang.Closure;
-import org.springframework.datastore.mapping.query.Query;
 
 import java.util.List;
+
 /**
  * Value object used to construct all the information necessary to invoke a dynamic finder
  *
@@ -52,5 +52,3 @@ public class DynamicFinderInvocation {
         return operator;
     }
 }
-
-

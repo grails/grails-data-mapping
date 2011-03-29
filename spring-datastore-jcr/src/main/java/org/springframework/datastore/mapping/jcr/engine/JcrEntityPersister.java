@@ -1,11 +1,23 @@
 package org.springframework.datastore.mapping.jcr.engine;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import javax.jcr.ItemNotFoundException;
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.PropertyType;
+import javax.jcr.RepositoryException;
 
 import org.springframework.beans.SimpleTypeConverter;
-import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.jcr.JcrSession;
 import org.springframework.datastore.mapping.jcr.util.JcrConstants;
 import org.springframework.datastore.mapping.model.MappingContext;
@@ -14,17 +26,6 @@ import org.springframework.datastore.mapping.node.engine.AbstractNodeEntityPersi
 import org.springframework.datastore.mapping.query.JcrQuery;
 import org.springframework.extensions.jcr.JcrCallback;
 import org.springframework.extensions.jcr.JcrTemplate;
-
-import javax.jcr.*;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.*;
-
 
 /**
  * TODO: write javadoc
@@ -36,7 +37,6 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
 
     private JcrTemplate jcrTemplate;
     private SimpleTypeConverter typeConverter;
-    
 
     public JcrEntityPersister(MappingContext context, PersistentEntity entity, Session session, JcrTemplate jcrTemplate) {
         super(context, entity, session);
@@ -71,15 +71,13 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
      */
     @Override
     public boolean isLocked(Object o) {
-        String uuid = getString(((Serializable) createEntityAccess(getPersistentEntity(), o).getIdentifier()));
+        String uuid = getString(createEntityAccess(getPersistentEntity(), o).getIdentifier());
         if (uuid == null) return false;
-        else {
-            Node node = jcrTemplate.getNodeByUUID(uuid);
-            try {
-                return node.isLocked();
-            } catch (RepositoryException e) {
-                throw new DataAccessResourceFailureException("Exception occurred cannot unlock entity: " + e.getMessage(), e);
-            }
+        Node node = jcrTemplate.getNodeByUUID(uuid);
+        try {
+            return node.isLocked();
+        } catch (RepositoryException e) {
+            throw new DataAccessResourceFailureException("Exception occurred cannot unlock entity: " + e.getMessage(), e);
         }
     }
 
@@ -124,59 +122,59 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
             if (prop.getType() == PropertyType.REFERENCE) {
                 String nodeUUID = prop.getString();
                 return jcrTemplate.getNodeByUUID(nodeUUID);
-            } else {
-                switch (prop.getType()) {
-                    case PropertyType.BINARY:
-                        // TODO - add lazyinputstream
-                        return prop.getString();
-                    case PropertyType.BOOLEAN:
-                        return prop.getBoolean();
-                    case PropertyType.DATE:
-                        return prop.getDate();
-                    case PropertyType.DOUBLE:
-                        return prop.getDouble();
-                    case PropertyType.LONG:
-                        return prop.getLong();
-                    case PropertyType.NAME: // fall through
-                    case PropertyType.PATH: // fall through
-                    case PropertyType.REFERENCE: // fall through
-                    case PropertyType.STRING: // fall through
-                    case PropertyType.UNDEFINED: // not actually expected
-                    default: // not actually expected
-                        return prop.getString();
-                }
             }
-        }catch(PathNotFoundException e){ 
-            return null;   
+            switch (prop.getType()) {
+                case PropertyType.BINARY:
+                    // TODO - add lazyinputstream
+                    return prop.getString();
+                case PropertyType.BOOLEAN:
+                    return prop.getBoolean();
+                case PropertyType.DATE:
+                    return prop.getDate();
+                case PropertyType.DOUBLE:
+                    return prop.getDouble();
+                case PropertyType.LONG:
+                    return prop.getLong();
+                case PropertyType.NAME: // fall through
+                case PropertyType.PATH: // fall through
+                case PropertyType.REFERENCE: // fall through
+                case PropertyType.STRING: // fall through
+                case PropertyType.UNDEFINED: // not actually expected
+                default: // not actually expected
+                    return prop.getString();
+            }
+        } catch(PathNotFoundException e) {
+            return null;
         } catch (Exception e) {
-            throw new org.springframework.dao.DataRetrievalFailureException("Exception occurred cannot getProperty from Node: " + e.getMessage(), e);
+            throw new DataRetrievalFailureException("Exception occurred cannot getProperty from Node: " + e.getMessage(), e);
         }
     }
 
     @Override
     protected Node retrieveEntry(final PersistentEntity persistentEntity, final Serializable key) {
-        if(key != null){
-            return (Node) jcrTemplate.execute(new JcrCallback() {
-                public Object doInJcr(javax.jcr.Session session) throws IOException, RepositoryException {
-                    try {
-                        return session.getNodeByUUID(getString(key));
-                    } catch (ItemNotFoundException ex) {
-                        //Force to return null when ItemNotFoundException occurred
-                        return null;
-                    }
+        if (key == null) {
+            return null;
+        }
+
+        return (Node) jcrTemplate.execute(new JcrCallback() {
+            public Object doInJcr(javax.jcr.Session s) throws IOException, RepositoryException {
+                try {
+                    return s.getNodeByUUID(getString(key));
+                } catch (ItemNotFoundException ex) {
+                    //Force to return null when ItemNotFoundException occurred
+                    return null;
                 }
-            });
-        }else return null;
+            }
+        });
     }
 
     private String getString(Object key) {
         return typeConverter.convertIfNecessary(key, String.class);
     }
 
-    private Long getLong(Object value){
+    private Long getLong(Object value) {
         return typeConverter.convertIfNecessary(value, Long.class);
     }
-
 
     @Override
     protected Node createNewEntry(final PersistentEntity persistentEntity) {
@@ -201,7 +199,7 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                     nativeEntry.setProperty(propertyName, (String) value);
                 else if (value instanceof Boolean)
                     nativeEntry.setProperty(propertyName, (Boolean) value);
-                else if (value instanceof Calendar){
+                else if (value instanceof Calendar) {
                     nativeEntry.setProperty(propertyName, (Calendar) value);
                 }else if (value instanceof Double)
                     nativeEntry.setProperty(propertyName, (Double) value);
@@ -211,7 +209,7 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                     nativeEntry.setProperty(propertyName, getLong(value));
                 else if (value instanceof Integer)
                     nativeEntry.setProperty(propertyName, getLong(value));
-                else if (value instanceof Date){
+                else if (value instanceof Date) {
                     //TODO: Solve date type problem.
                     nativeEntry.setProperty(propertyName, ((Date)value).getTime());
                 }else{
@@ -221,9 +219,6 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
                 }
               } catch (RepositoryException e) {
                 throw new DataAccessResourceFailureException("Exception occurred set a property value to Node: " + e.getMessage(), e);
-
-
-
             }
         }
     }
@@ -242,8 +237,9 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
             try {
                 node.checkout();
                 for (String propName : propNames) {
-                    if(node.hasProperty(propName))
-                        node.setProperty(propName, entry.getProperty(propName).getValue());                       
+                    if (node.hasProperty(propName)) {
+                        node.setProperty(propName, entry.getProperty(propName).getValue());
+                    }
                 }
                 node.save();
                 node.checkin();
@@ -261,4 +257,3 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
         return jcrTemplate;
     }
 }
-

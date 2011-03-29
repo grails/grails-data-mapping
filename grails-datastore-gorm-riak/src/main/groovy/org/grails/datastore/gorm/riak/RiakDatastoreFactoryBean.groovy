@@ -29,20 +29,19 @@ import org.springframework.datastore.mapping.model.MappingContext
  */
 class RiakDatastoreFactoryBean implements FactoryBean<RiakDatastore> {
 
-  Map<String, String> config
-  MappingContext mappingContext
+    Map<String, String> config
+    MappingContext mappingContext
 
-  RiakDatastore getObject() {
-    RiakDatastore datastore = new RiakDatastore(mappingContext, config)
-    datastore.addEntityInterceptor(new DomainEventInterceptor())
-    datastore.addEntityInterceptor(new AutoTimestampInterceptor())
-    datastore.afterPropertiesSet()
+    RiakDatastore getObject() {
+        RiakDatastore datastore = new RiakDatastore(mappingContext, config)
+        datastore.addEntityInterceptor(new DomainEventInterceptor())
+        datastore.addEntityInterceptor(new AutoTimestampInterceptor())
+        datastore.afterPropertiesSet()
 
-    datastore
-  }
+        datastore
+    }
 
-  Class<?> getObjectType() { RiakDatastore }
+    Class<?> getObjectType() { RiakDatastore }
 
-  boolean isSingleton() { true }
-
+    boolean isSingleton() { true }
 }

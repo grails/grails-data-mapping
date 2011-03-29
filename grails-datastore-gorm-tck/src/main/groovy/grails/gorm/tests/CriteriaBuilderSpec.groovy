@@ -7,254 +7,256 @@ import spock.lang.Ignore;
  */
 class CriteriaBuilderSpec extends GormDatastoreSpec {
 
-  @Ignore // ignored this test because the id() projection does not actually exist in GORM for Hibernate
-  def "Test id projection"() {
-	  given:
-	  	def entity = new TestEntity(name:"Bob", age: 44, child:new ChildEntity(name:"Child")).save(flush:true)
+    @Ignore // ignored this test because the id() projection does not actually exist in GORM for Hibernate
+    void "Test id projection"() {
+        given:
+            def entity = new TestEntity(name:"Bob", age: 44, child:new ChildEntity(name:"Child")).save(flush:true)
 
-	  when:
-		  def result = TestEntity.createCriteria().get {
-			  projections { id() }
-			  idEq entity.id
-		  }
+        when:
+            def result = TestEntity.createCriteria().get {
+                projections { id() }
+                idEq entity.id
+            }
 
-	  then:
-	  	result != null
-		result == entity.id
-  }
-  def "Test idEq method"() {
-		given:
-			def entity = new TestEntity(name:"Bob", age: 44, child:new ChildEntity(name:"Child")).save(flush:true)
-
-		when:
-			def result = TestEntity.createCriteria().get { idEq entity.id }
-
-		then:
-			result != null
-			result.name == 'Bob'
-  }
-
-  def "Test disjunction query"() {
-    given:
-    def age = 40
-    ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
-    def criteria = TestEntity.createCriteria()
-
-    when:
-    def results = criteria.list {
-      or {
-        like('name', 'B%')
-        eq('age', 41)
-      }
-
+        then:
+            result != null
+            result == entity.id
     }
 
-    then:
-    3 == results.size()
-  }
+    void "Test idEq method"() {
+        given:
+            def entity = new TestEntity(name:"Bob", age: 44, child:new ChildEntity(name:"Child")).save(flush:true)
 
-  void "Test conjunction query"() {
-    given:
-      def age = 40
-      ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
+        when:
+            def result = TestEntity.createCriteria().get { idEq entity.id }
 
+        then:
+            result != null
+            result.name == 'Bob'
+    }
 
-    def criteria = TestEntity.createCriteria()
+    void "Test disjunction query"() {
+        given:
+            def age = 40
+            ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
+            def criteria = TestEntity.createCriteria()
 
-    when:
-      def results = criteria.list {
-        and {
-          like('name', 'B%')
-          eq('age', 40)
-        }
+        when:
+            def results = criteria.list {
+                or {
+                    like('name', 'B%')
+                    eq('age', 41)
+                }
+            }
 
-      }
+        then:
+            3 == results.size()
+    }
 
-    then:
-      1 == results.size()
-  }
+    void "Test conjunction query"() {
+        given:
+            def age = 40
+            ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
 
-  void "Test list() query"() {
-    given:
-      def age = 40
-      ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
+            def criteria = TestEntity.createCriteria()
 
+        when:
+            def results = criteria.list {
+                and {
+                    like('name', 'B%')
+                    eq('age', 40)
+                }
+            }
 
-      def criteria = TestEntity.createCriteria()
+        then:
+            1 == results.size()
+    }
 
-    when:
-      def results = criteria.list {
-         like('name', 'B%')
-      }
+    void "Test list() query"() {
+        given:
+            def age = 40
+            ["Bob", "Fred", "Barney", "Frank"].each {
+                new TestEntity(name:it, age: age++, child: new ChildEntity(name:"$it Child")).save()
+            }
 
-    then:
-      2 == results.size()
+            def criteria = TestEntity.createCriteria()
 
-    when:
-	  criteria = TestEntity.createCriteria()
-      results = criteria.list {
-         like('name', 'B%')
-         maxResults 1
-      }
+        when:
+            def results = criteria.list {
+                 like('name', 'B%')
+            }
 
-    then:
-      1 == results.size()
-  }
+        then:
+            2 == results.size()
 
-  void "Test count()"() {
-    given:
-      def age = 40
-      ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
+        when:
+            criteria = TestEntity.createCriteria()
+            results = criteria.list {
+                like('name', 'B%')
+                maxResults 1
+            }
 
+        then:
+            1 == results.size()
+    }
 
-      def criteria = TestEntity.createCriteria()
+    void "Test count()"() {
+        given:
+            def age = 40
+            ["Bob", "Fred", "Barney", "Frank"].each {
+                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+            }
 
-    when:
-      def result = criteria.count {
-         like('name', 'B%')
-      }
+            def criteria = TestEntity.createCriteria()
 
-    then:
-      2 == result
-  }
+        when:
+            def result = criteria.count {
+                like('name', 'B%')
+            }
 
-  void "Test obtain a single result"() {
-    given:
-      def age = 40
-      ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
+        then:
+            2 == result
+    }
 
+    void "Test obtain a single result"() {
+        given:
+            def age = 40
+            ["Bob", "Fred", "Barney", "Frank"].each {
+                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+            }
 
-      def criteria = TestEntity.createCriteria()
+            def criteria = TestEntity.createCriteria()
 
-    when:
-      def result = criteria.get {
-         eq('name', 'Bob')
-      }
+        when:
+            def result = criteria.get {
+                eq('name', 'Bob')
+            }
 
-    then:
-      result != null
-      "Bob" == result.name
+        then:
+            result != null
+            "Bob" == result.name
+    }
 
-  }
+    void "Test order by a property name"() {
+        given:
+            def age = 40
+            ["Bob", "Fred", "Barney", "Frank"].each {
+                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+            }
 
-  void "Test order by a property name"() {
-    given:
-      def age = 40
-      ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
+            def criteria = TestEntity.createCriteria()
 
+        when:
+            def results = criteria.list {
+                like('name', 'B%')
+                order "age"
+            }
 
-      def criteria = TestEntity.createCriteria()
+        then:
+            "Bob" == results[0].name
+            "Barney" == results[1].name
 
-    when:
-      def results = criteria.list {
-         like('name', 'B%')
-         order "age"
-      }
+        when:
+        criteria = TestEntity.createCriteria()
+            results = criteria.list {
+                like('name', 'B%')
+                order "age", "desc"
+            }
 
-    then:
-      "Bob" == results[0].name
-      "Barney" == results[1].name
+        then:
+            "Barney" == results[0].name
+            "Bob" == results[1].name
+    }
 
-    when:
-	  criteria = TestEntity.createCriteria()
-      results = criteria.list {
-         like('name', 'B%')
-         order "age", "desc"
-      }
+    void "Test get minimum value with projection"() {
+        given:
+            def age = 40
+            ["Bob", "Fred", "Barney", "Frank"].each {
+                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+            }
+            Thread.sleep 500
 
-    then:
-      "Barney" == results[0].name
-      "Bob" == results[1].name
+            def criteria = TestEntity.createCriteria()
 
-  }
+        when:
+            def result = criteria.get {
+                projections {
+                    min "age"
+                }
+            }
 
+        then:
+            40 == result
 
-  void "Test get minimum value with projection"() {
-    given:
-      def age = 40
-      ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
-    Thread.sleep 500
+        when:
+            criteria = TestEntity.createCriteria()
+            result = criteria.get {
+                projections {
+                    max "age"
+                }
+            }
 
-      def criteria = TestEntity.createCriteria()
+        then:
+            43 == result
 
-    when:
-      def result = criteria.get {
-        projections {
-          min "age"
-        }
-      }
+        when:
+            criteria = TestEntity.createCriteria()
+            def results = criteria.list {
+                projections {
+                    max "age"
+                    min "age"
+                }
+        }.flatten()
 
-    then:
-      40 == result
+        then:
+            2 == results.size()
+            43 == results[0]
+            40 == results[1]
+            [43, 40] == results
+    }
 
-    when:
-	  criteria = TestEntity.createCriteria()
-      result = criteria.get {
-        projections {
-          max "age"
-        }
-      }
+    void "Test obtain property value using projection"() {
+        given:
+            def age = 40
+            ["Bob", "Fred", "Barney", "Frank"].each {
+                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+            }
 
-    then:
-      43 == result
+            def criteria = TestEntity.createCriteria()
 
-    when:
-	  criteria = TestEntity.createCriteria()
-      def results = criteria.list {
-	      projections {
-	        max "age"
-	        min "age"
-	      }
-	  }.flatten()
+        when:
+            def results = criteria.list {
+                projections {
+                    property "age"
+                }
+            }
 
-    then:
-      2 == results.size()
-      43 == results[0]
-      40 == results[1]
-      [43, 40] == results
-  }
+        then:
+            [40, 41, 42, 43] == results.sort()
+    }
 
-  void "Test obtain property value using projection"() {
-    given:
-      def age = 40
-      ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
+    void "Test obtain association entity using property projection"() {
+        given:
+            def age = 40
+            ["Bob", "Fred", "Barney", "Frank"].each {
+                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+            }
 
+            assert 4 == ChildEntity.count()
 
-      def criteria = TestEntity.createCriteria()
+            def criteria = TestEntity.createCriteria()
 
-    when:
-      def results = criteria.list {
-        projections {
-          property "age"
-        }
-      }
+        when:
+            def results = criteria.list {
+                projections {
+                    property "child"
+                }
+            }
 
-    then:
-      [40, 41, 42, 43] == results.sort()
-  }
-
-  void "Test obtain association entity using property projection"() {
-    given:
-      def age = 40
-      ["Bob", "Fred", "Barney", "Frank"].each { new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save() }
-
-      assert 4 == ChildEntity.count()
-
-
-      def criteria = TestEntity.createCriteria()
-
-    when:
-      def results = criteria.list {
-        projections {
-          property "child"
-        }
-      }
-
-    then:
-      results.find { it.name = "Bob Child"}
-      results.find { it.name = "Fred Child"}
-      results.find { it.name = "Barney Child"}
-      results.find { it.name = "Frank Child"}
-
-  }
+        then:
+            results.find { it.name = "Bob Child"}
+            results.find { it.name = "Fred Child"}
+            results.find { it.name = "Barney Child"}
+            results.find { it.name = "Frank Child"}
+    }
 }

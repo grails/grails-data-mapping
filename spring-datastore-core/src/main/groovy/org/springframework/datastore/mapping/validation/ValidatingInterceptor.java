@@ -21,7 +21,6 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-
 /**
  * An {@link org.springframework.datastore.mapping.engine.EntityInterceptor} that uses
  * Spring's validation mechanism to evict objects if an error occurs
@@ -33,24 +32,25 @@ public class ValidatingInterceptor extends EmptyInterceptor{
     public static final String ERRORS_ATTRIBUTE = "org.springframework.datastore.ERRORS";
     public static final String SKIP_VALIDATION_ATTRIBUTE = "org.springframework.datastore.SKIP_VALIDATION";
 
+    @Override
     public boolean beforeInsert(PersistentEntity entity, EntityAccess e) {
         return doValidate(entity, e.getEntity());
     }
 
+    @Override
     public boolean beforeUpdate(PersistentEntity entity, EntityAccess e) {
         return doValidate(entity, e.getEntity());
     }
 
-
     private boolean doValidate(PersistentEntity entity, Object o) {
         Validator v = datastore.getMappingContext().getEntityValidator(entity);
 
-        if(v != null) {
+        if (v != null) {
             final Object skipValidation = datastore.getCurrentSession().getAttribute(o, SKIP_VALIDATION_ATTRIBUTE);
-            if((skipValidation instanceof Boolean) && (Boolean) skipValidation) return true;
+            if ((skipValidation instanceof Boolean) && (Boolean) skipValidation) return true;
             BeanPropertyBindingResult result = new BeanPropertyBindingResult(o, o.getClass().getName());
             v.validate(o, result);
-            if(result.hasErrors()) {
+            if (result.hasErrors()) {
                 onErrors(o, result);
                 return false;
             }
@@ -67,5 +67,4 @@ public class ValidatingInterceptor extends EmptyInterceptor{
     protected void onErrors(Object object, Errors errors) {
         datastore.getCurrentSession().setAttribute(object, ERRORS_ATTRIBUTE, errors);
     }
-
 }

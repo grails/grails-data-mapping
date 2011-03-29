@@ -7,12 +7,13 @@ package grails.gorm.tests
  * @since 1.0
  */
 @grails.persistence.Entity
-class ChildEntity implements Serializable{
-  String id;
-  String name
+class ChildEntity implements Serializable {
+    String id
+    String name
 
-  static mapping = {
-    name index:true
-  }
-  static belongsTo = [TestEntity]
+    static mapping = {
+        name index:true
+    }
+
+    static belongsTo = [TestEntity]
 }

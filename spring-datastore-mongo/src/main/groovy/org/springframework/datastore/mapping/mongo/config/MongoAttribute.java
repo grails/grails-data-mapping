@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.datastore.mapping.mongo.config;
 
 import java.util.HashMap;
@@ -22,48 +21,53 @@ import org.springframework.datastore.mapping.document.config.Attribute;
 
 /**
  * Extends {@link Attribute} class with additional Mongo specific configuration
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
- *
  */
 public class MongoAttribute extends Attribute {
-	public static final String INDEX_TYPE = "type";
-	private Map indexAttributes;
 
-	public Map getIndexAttributes() {
-		return indexAttributes;
-	}
+    public static final String INDEX_TYPE = "type";
 
-	public void setIndexAttributes(Map indexAttributes) {
-		if(this.indexAttributes == null)
-			this.indexAttributes = indexAttributes;
-		else {
-			this.indexAttributes.putAll(indexAttributes);
-		}
-	}
-	
-	public void setField(String name) {
-		setTargetName(name);
-	}
-	
-	public String getField() {
-		return getTargetName();
-	}
-	
-	
-	public void setGeoIndex(boolean geoIndex) {
-		if(geoIndex) {
-			setIndex(true);
-			initIndexAttributes();
-			indexAttributes.put(INDEX_TYPE, "2d");
-		}
-	}
+    @SuppressWarnings("rawtypes")
+    private Map indexAttributes;
 
-	void initIndexAttributes() {
-		if(this.indexAttributes == null) indexAttributes = new HashMap();
-	}
-	
+    @SuppressWarnings("rawtypes")
+    public Map getIndexAttributes() {
+        return indexAttributes;
+    }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void setIndexAttributes(Map indexAttributes) {
+        if (this.indexAttributes == null) {
+            this.indexAttributes = indexAttributes;
+        }
+        else {
+            this.indexAttributes.putAll(indexAttributes);
+        }
+    }
+
+    public void setField(String name) {
+        setTargetName(name);
+    }
+
+    public String getField() {
+        return getTargetName();
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setGeoIndex(boolean geoIndex) {
+        if (geoIndex) {
+            setIndex(true);
+            initIndexAttributes();
+            indexAttributes.put(INDEX_TYPE, "2d");
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    void initIndexAttributes() {
+        if (indexAttributes == null) {
+            indexAttributes = new HashMap();
+        }
+    }
 }
-

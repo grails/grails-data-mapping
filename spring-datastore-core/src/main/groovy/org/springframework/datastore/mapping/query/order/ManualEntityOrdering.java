@@ -14,6 +14,16 @@
  */
 package org.springframework.datastore.mapping.query.order;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.datastore.mapping.model.PersistentEntity;
@@ -21,17 +31,10 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.util.ReflectionUtils;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * Manual implementation of query ordering for datastores that don't support native ordering. Not all
  * NoSQL datastores support the SQL equivalent of ORDER BY, hence manual in-memory ordering is the
  * only way to simulate such queries.
- *
- *
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -50,10 +53,9 @@ public class ManualEntityOrdering {
     }
 
     public List applyOrder(List results, List<Query.Order> orderDefinition) {
-        if(results == null) return null;
-        if(orderDefinition == null) return results;
+        if (results == null) return null;
+        if (orderDefinition == null) return results;
         for (Query.Order order : orderDefinition) {
-
             results = applyOrder(results, order);
         }
         return results;
@@ -79,31 +81,30 @@ public class ManualEntityOrdering {
     public List applyOrder(List results, Query.Order order) {
        final String name = order.getProperty();
 
-        final PersistentEntity entity = getEntity();
+        @SuppressWarnings("hiding") final PersistentEntity entity = getEntity();
         PersistentProperty property = entity.getPropertyByName(name);
-        if(property == null) {
+        if (property == null) {
             final PersistentProperty identity = entity.getIdentity();
-            if(name.equals(identity.getName())) {
+            if (name.equals(identity.getName())) {
                 property = identity;
             }
         }
 
-        if(property != null) {
+        if (property != null) {
             final PersistentProperty finalProperty = property;
             Collections.sort(results, new Comparator(){
 
-
                 public int compare(Object o1, Object o2) {
 
-                    if(entity.isInstance(o1) && entity.isInstance(o2)) {
+                    if (entity.isInstance(o1) && entity.isInstance(o2)) {
                         final String propertyName = finalProperty.getName();
                         Method readMethod = cachedReadMethods.get(propertyName);
-                        if(readMethod == null) {
+                        if (readMethod == null) {
                             BeanWrapper b = new BeanWrapperImpl(o1);
                             final PropertyDescriptor pd = b.getPropertyDescriptor(propertyName);
-                            if(pd != null) {
+                            if (pd != null) {
                                 readMethod = pd.getReadMethod();
-                                if(readMethod!=null) {
+                                if (readMethod!=null) {
 
                                     ReflectionUtils.makeAccessible(readMethod);
                                     cachedReadMethods.put(propertyName, readMethod);
@@ -111,16 +112,16 @@ public class ManualEntityOrdering {
                             }
                         }
 
-                        if(readMethod != null) {
+                        if (readMethod != null) {
                             final Class<?> declaringClass = readMethod.getDeclaringClass();
-                            if(declaringClass.isInstance(o1) && declaringClass.isInstance(o2)) {
+                            if (declaringClass.isInstance(o1) && declaringClass.isInstance(o2)) {
                                 Object left = ReflectionUtils.invokeMethod(readMethod, o1);
                                 Object right = ReflectionUtils.invokeMethod(readMethod, o2);
 
-                                if(left == null && right == null) return 0;
-                                else if(left != null && right == null) return 1;
-                                else if(left == null) return -1;
-                                else if((left instanceof Comparable) && (right instanceof Comparable)) {
+                                if (left == null && right == null) return 0;
+                                if (left != null && right == null) return 1;
+                                if (left == null) return -1;
+                                if ((left instanceof Comparable) && (right instanceof Comparable)) {
                                     return ((Comparable)left).compareTo(right);
                                 }
                             }
@@ -129,13 +130,12 @@ public class ManualEntityOrdering {
                     return 0;
                 }
             });
-
         }
 
-        if(order.getDirection() == Query.Order.Direction.DESC) {
+        if (order.getDirection() == Query.Order.Direction.DESC) {
             results = reverse(results);
         }
-        
+
         return results;
     }
 }

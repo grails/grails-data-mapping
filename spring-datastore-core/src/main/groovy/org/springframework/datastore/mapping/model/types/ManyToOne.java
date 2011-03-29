@@ -14,14 +14,14 @@
  */
 package org.springframework.datastore.mapping.model.types;
 
+import java.beans.PropertyDescriptor;
+
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
-import java.beans.PropertyDescriptor;
-
 /**
  * Models a many-to-one association
- * 
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
@@ -33,5 +33,4 @@ public abstract class ManyToOne<T> extends ToOne<T> {
     public ManyToOne(PersistentEntity owner, MappingContext context, String name, Class type) {
         super(owner, context, name, type);
     }
-
 }

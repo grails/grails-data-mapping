@@ -43,7 +43,7 @@ abstract public class AbstractRedisCollection implements Collection, RedisCollec
 
     public boolean containsAll(Collection c) {
         for (Object o : c) {
-            if(!contains(o)) return false;
+            if (!contains(o)) return false;
         }
         return true;
     }
@@ -52,7 +52,7 @@ abstract public class AbstractRedisCollection implements Collection, RedisCollec
         boolean changed  = false;
         for (Object e : c) {
             boolean elChange = add(e);
-            if(elChange && !changed) changed = true;
+            if (elChange && !changed) changed = true;
         }
         return changed;
     }
@@ -62,7 +62,7 @@ abstract public class AbstractRedisCollection implements Collection, RedisCollec
         boolean changed = false;
         while (i.hasNext()) {
             Object o = i.next();
-            if(!c.contains(o)) {
+            if (!c.contains(o)) {
                 i.remove();
                 changed = true;
             }
@@ -74,7 +74,7 @@ abstract public class AbstractRedisCollection implements Collection, RedisCollec
         boolean changed  = false;
         for (Object e : c) {
             boolean elChange = remove(e);
-            if(elChange && !changed) changed = true;
+            if (elChange && !changed) changed = true;
         }
         return changed;
 

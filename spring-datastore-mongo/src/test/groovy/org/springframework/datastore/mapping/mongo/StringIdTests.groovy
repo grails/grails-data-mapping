@@ -2,29 +2,29 @@ package org.springframework.datastore.mapping.mongo
 
 import org.junit.Test
 
-class BasicPersistenceSpec {
+class StringIdTests {
 
     @Test
     void testBasicPersistenceOperations() {
         def md = new MongoDatastore()
         md.afterPropertiesSet()
-        md.mappingContext.addPersistentEntity(TestEntity)
+        md.mappingContext.addPersistentEntity(MongoStringIdEntity)
 
         MongoSession session = md.connect()
 
         session.nativeInterface.dropDatabase()
 
-        def te = new TestEntity(name:"Bob")
+        def te = new MongoStringIdEntity(name:"Bob")
 
         session.persist te
         session.flush()
 
         assert te != null
         assert te.id != null
-        assert te.id instanceof Long
+        assert te.id instanceof String
 
         session.clear()
-        te = session.retrieve(TestEntity, te.id)
+        te = session.retrieve(MongoStringIdEntity, te.id)
 
         assert te != null
         assert te.name == "Bob"
@@ -34,7 +34,7 @@ class BasicPersistenceSpec {
         session.flush()
         session.clear()
 
-        te = session.retrieve(TestEntity, te.id)
+        te = session.retrieve(MongoStringIdEntity, te.id)
         assert te != null
         assert te.id != null
         assert te.name == 'Fred'
@@ -42,12 +42,12 @@ class BasicPersistenceSpec {
         session.delete te
         session.flush()
 
-        te = session.retrieve(TestEntity, te.id)
+        te = session.retrieve(MongoStringIdEntity, te.id)
         assert te == null
     }
 }
 
-class TestEntity {
-    Long id
+class MongoStringIdEntity {
+    String id
     String name
 }

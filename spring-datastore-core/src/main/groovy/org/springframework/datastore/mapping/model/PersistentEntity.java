@@ -1,12 +1,11 @@
 package org.springframework.datastore.mapping.model;
 
+import java.util.List;
+
 import org.springframework.datastore.mapping.model.lifecycle.Initializable;
 import org.springframework.datastore.mapping.model.types.Association;
 
-import java.util.List;
-
 /**
- *
  * Represents a persistent entity
  *
  * @author Graeme Rocher
@@ -20,19 +19,19 @@ public interface PersistentEntity extends Initializable {
      * @return The entity name
      */
     String getName();
-    
+
     /**
      * Whether this PersistentEntity is mapped using a different store. Used for cross store persistence
-     * 
+     *
      * @return True if this entity is externally mapped
      */
     boolean isExternal();
 
     /**
      * Whether this PersistentEntity is mapped using a different store. Used for cross store persistence
-     * 
+     *
      * @return True if this entity is externally mapped
-     */    
+     */
     void setExternal(boolean external);
 
     /**
@@ -154,5 +153,5 @@ public interface PersistentEntity extends Initializable {
      * @param propertyName the property name
      * @return True if it is the identifier
      */
-	boolean isIdentityName(String propertyName);
+    boolean isIdentityName(String propertyName);
 }

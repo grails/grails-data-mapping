@@ -31,41 +31,44 @@ import java.util.List;
  */
 public class RiakPropertyValueIndexer implements PropertyValueIndexer<Long> {
 
-  private RiakTemplate riakTemplate;
-  private MappingContext mappingContext;
-  private RiakEntityPersister riakEntityPersister;
-  private PersistentProperty property;
+    @SuppressWarnings("unused")
+    private RiakTemplate riakTemplate;
+    @SuppressWarnings("unused")
+    private MappingContext mappingContext;
+    @SuppressWarnings("unused")
+    private RiakEntityPersister riakEntityPersister;
+    @SuppressWarnings("unused")
+    private PersistentProperty property;
 
-  public RiakPropertyValueIndexer(RiakTemplate riakTemplate, MappingContext mappingContext, RiakEntityPersister riakEntityPersister, PersistentProperty property) {
-    this.riakTemplate = riakTemplate;
-    this.mappingContext = mappingContext;
-    this.riakEntityPersister = riakEntityPersister;
-    this.property = property;
-  }
+    public RiakPropertyValueIndexer(RiakTemplate riakTemplate, MappingContext mappingContext, RiakEntityPersister riakEntityPersister, PersistentProperty property) {
+        this.riakTemplate = riakTemplate;
+        this.mappingContext = mappingContext;
+        this.riakEntityPersister = riakEntityPersister;
+        this.property = property;
+    }
 
-  public void index(Object value, Long primaryKey) {
-    //To change body of implemented methods use File | Settings | File Templates.
-  }
+    public void index(Object value, Long primaryKey) {
+    }
 
-  public List<Long> query(Object value) {
-    return query(value, 0, -1);
-  }
+    public List<Long> query(Object value) {
+        return query(value, 0, -1);
+    }
 
-  public List<Long> query(Object value, int offset, int max) {
-    String js = "function(sdata) {\n" +
+    public List<Long> query(Object value, int offset, int max) {
+        @SuppressWarnings("unused")
+        String js = "function(sdata) {\n" +
         "  var data = Riak.mapValuesJson(sdata);\n" +
         "  ejsLog(\"/tmp/mapred.log\", JSON.stringify(sdata));\n" +
         "  ejsLog(\"/tmp/mapred.log\", JSON.stringify(data));\n" +
         "  return [data];\n" +
         "}";
-    return new ArrayList<Long>();
-  }
+        return new ArrayList<Long>();
+    }
 
-  public String getIndexName(Object value) {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
+    public String getIndexName(Object value) {
+        return null;
+    }
 
-  public void deindex(Object value, Long primaryKey) {
-    //To change body of implemented methods use File | Settings | File Templates.
-  }
+    public void deindex(Object value, Long primaryKey) {
+    }
 }

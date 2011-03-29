@@ -14,16 +14,20 @@
  */
 package org.springframework.datastore.mapping.redis.collection;
 
-import org.springframework.datastore.mapping.redis.util.RedisTemplate;
+import java.util.AbstractList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
-import java.util.*;
+import org.springframework.datastore.mapping.redis.util.RedisTemplate;
 
 /**
  * Creates a list that is backed onto a Redis list
  *
  * @author Graeme Rocher
  * @since 1.0
- * 
  */
 public class RedisList extends AbstractList implements List, RedisCollection {
     private RedisTemplate redisTemplate;
@@ -34,21 +38,24 @@ public class RedisList extends AbstractList implements List, RedisCollection {
         this.redisKey = redisKey;
     }
 
+    @Override
     public Object get(int index) {
         return redisTemplate.lindex(redisKey, index);
     }
 
+    @Override
     public Object set(int index, Object element) {
         Object prev = get(index);
         redisTemplate.lset(redisKey, index, element);
         return prev;
     }
 
+    @Override
     public void add(int index, Object element) {
-        if(index == 0) {
+        if (index == 0) {
             redisTemplate.lpush(redisKey, element);
         }
-        else if(index == size()) {
+        else if (index == size()) {
             redisTemplate.rpush(redisKey, element);
         }
         else {
@@ -56,20 +63,24 @@ public class RedisList extends AbstractList implements List, RedisCollection {
         }
     }
 
+    @Override
     public Object remove(int index) {
         Object o = get(index);
         remove(o);
         return o;
     }
 
+    @Override
     public int size() {
         return redisTemplate.llen(redisKey);
     }
 
+    @Override
     public boolean contains(Object o) {
         return Arrays.asList(elements()).contains(o);
     }
 
+    @Override
     public Iterator iterator() {
         return elements().iterator();
     }
@@ -78,17 +89,19 @@ public class RedisList extends AbstractList implements List, RedisCollection {
         return redisTemplate.lrange(redisKey, 0, -1);
     }
 
+    @Override
     public boolean add(Object e) {
         redisTemplate.rpush(redisKey, e);
         return true;
     }
 
+    @Override
     public boolean remove(Object o) {
         return redisTemplate.lrem(redisKey, o, 0) != 0;
     }
 
     public String getRedisKey() {
-        return this.redisKey;
+        return redisKey;
     }
 
     public Set<String> members() {
