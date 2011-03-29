@@ -11,6 +11,8 @@ def isGroovyProject(project) {
   !isGrailsPlugin && !isDocumentation
 }
 
+apply plugin: 'idea'
+
 subprojects {
 
     releaseType = "BUILD-SNAPSHOT"
@@ -23,6 +25,7 @@ subprojects {
 	    apply plugin: 'groovy'
 	    apply plugin: 'eclipse'
         apply plugin: 'maven'
+		apply plugin: 'idea'
         apply from: "file:${rootDir}/clover.gradle"
 	}
 
