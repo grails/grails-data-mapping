@@ -15,14 +15,19 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.CriteriaBuilder
-
 import org.grails.datastore.gorm.finders.DynamicFinder
+import org.grails.datastore.gorm.finders.FinderMethod
 import org.springframework.beans.BeanWrapperImpl
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.core.Session
+import org.springframework.datastore.mapping.model.PersistentProperty
+import org.springframework.datastore.mapping.model.types.Association
 import org.springframework.datastore.mapping.query.Query
-import org.springframework.datastore.mapping.model.types.Association;
-import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionDefinition
+import org.springframework.transaction.support.DefaultTransactionDefinition
+import org.springframework.transaction.support.TransactionCallback
+import org.springframework.transaction.support.TransactionTemplate
 
 /**
  *  Static methods of the GORM API
@@ -31,8 +36,52 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
  */
 class GormStaticApi extends AbstractGormApi {
 
+    private List<FinderMethod> dynamicFinders
+    private PlatformTransactionManager transactionManager
+
     GormStaticApi(Class persistentClass, Datastore datastore) {
+        this(persistentClass,datastore, DynamicFinder.getAllDynamicFinders(datastore))
+    }
+
+    GormStaticApi(Class persistentClass, Datastore datastore, List<FinderMethod> finders) {
+        this(persistentClass,datastore,finders,null)
+    }
+
+    GormStaticApi(Class persistentClass, Datastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
         super(persistentClass,datastore)
+        this.dynamicFinders = finders
+        this.transactionManager = transactionManager
+    }
+
+    /**
+     * Sets the {@link PlatformTransactionManager} to use
+     */
+    void setTransactionManager(PlatformTransactionManager transactionManager) {
+        this.transactionManager = transactionManager
+    }
+    /**
+     * Method missing handler that deals with the invocation of dynamic finders
+     *
+     * @param methodName The method name
+     * @param args The arguments
+     * @return The result of the method call
+     */
+    def methodMissing(String methodName, args) {
+        def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
+        def cls = persistentClass
+        def mc = cls.metaClass
+        if (method) {
+            // register the method invocation for next time
+            synchronized(this) {
+                mc.static."$methodName" = {List varArgs ->
+                    method.invoke(cls, methodName, varArgs)
+                }
+            }
+            return method.invoke(cls, methodName, args)
+        }
+        else {
+            throw new MissingMethodException(methodName, cls, args)
+        }
     }
 
     /**
@@ -349,6 +398,57 @@ class GormStaticApi extends AbstractGormApi {
      */
     def withSession(Closure callable) {
         callable.call(datastore.currentSession)
+    }
+
+    /**
+     * Executes the closure within the context of a transaction, creating one if non is present or joining
+     * an existing transaction if one is already present
+     *
+     * @param callable The closure to call
+     * @return The result of the closure execution
+     */
+    def withTransaction(Closure callable) {
+        if(transactionManager == null) {
+            throw new IllegalStateException("No transactionManager bean configured")
+        }
+
+        if (callable) {
+            def transactionTemplate = new TransactionTemplate(transactionManager)
+            transactionTemplate.execute(callable as TransactionCallback)
+        }
+    }
+
+    /**
+     * Executes the closure within the context of a new transaction
+     *
+     * @param callable The closure to call
+     * @return The result of the closure execution
+     */
+    def withNewTransaction(Closure callable) {
+        if(transactionManager == null) {
+            throw new IllegalStateException("No transactionManager bean configured")
+        }
+        if (callable) {
+            def transactionTemplate = new TransactionTemplate(transactionManager, new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW))
+            transactionTemplate.execute(callable as TransactionCallback)
+        }
+    }
+
+    /**
+     * Executes the closure within the context of a transaction for the given {@link TransactionDefinition}
+     *
+     * @param callable The closure to call
+     * @return The result of the closure execution
+     */
+    def withTransaction(TransactionDefinition definition, Closure callable) {
+       if(transactionManager == null) {
+            throw new IllegalStateException("No transactionManager bean configured")
+       }
+
+       if (callable) {
+            def transactionTemplate = new TransactionTemplate(transactionManager, definition)
+            transactionTemplate.execute(callable as TransactionCallback)
+       }
     }
 
     /**

@@ -16,7 +16,6 @@ package org.grails.datastore.gorm
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
-
 import org.codehaus.groovy.runtime.metaclass.ClosureStaticMetaMethod
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
@@ -27,12 +26,8 @@ import org.springframework.datastore.mapping.model.types.ManyToMany
 import org.springframework.datastore.mapping.model.types.OneToMany
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.transaction.TransactionDefinition
-import org.springframework.transaction.support.DefaultTransactionDefinition
-import org.springframework.transaction.support.TransactionCallback
-import org.springframework.transaction.support.TransactionTemplate
 
-/**
+ /**
  * Enhances a class with GORM behavior
  *
  * @author Graeme Rocher
@@ -41,15 +36,11 @@ class GormEnhancer {
 
     Datastore datastore
     PlatformTransactionManager transactionManager
-    List<DynamicFinder> finders
+    List<FinderMethod> finders
 
     GormEnhancer(Datastore datastore) {
         this.datastore = datastore
         initialiseFinders(datastore)
-    }
-
-    private List initialiseFinders(Datastore datastore) {
-        this.finders = DynamicFinder.getAllDynamicFinders(datastore)
     }
 
     GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
@@ -68,6 +59,7 @@ class GormEnhancer {
         def cls = e.javaClass
         def cpf = ClassPropertyFetcher.forClass(cls)
         def staticMethods = getStaticApi(cls)
+        staticMethods.transactionManager = transactionManager
         def instanceMethods = [getInstanceApi(cls), getValidationApi(cls)]
         def tm = transactionManager
 
@@ -169,54 +161,11 @@ class GormEnhancer {
                 }
             }
         }
-
-        if (tm) {
-            staticScope.withTransaction = { Closure callable ->
-                if (callable) {
-                    def transactionTemplate = new TransactionTemplate(tm)
-                    transactionTemplate.execute(callable as TransactionCallback)
-                }
-            }
-            staticScope.withNewTransaction = { Closure callable ->
-                if (callable) {
-                    def transactionTemplate = new TransactionTemplate(tm, new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW))
-                    transactionTemplate.execute(callable as TransactionCallback)
-                }
-            }
-            staticScope.withTransaction = { TransactionDefinition definition, Closure callable ->
-                if (callable) {
-                    def transactionTemplate = new TransactionTemplate(tm, definition)
-                    transactionTemplate.execute(callable as TransactionCallback)
-                }
-            }
-        }
-
-        registerMethodMissing cls
     }
 
     protected void registerNamedQueries(PersistentEntity entity, namedQueries) {
         def namedQueryBuilder = new NamedQueriesBuilder(entity, finders)
         namedQueryBuilder.evaluate namedQueries
-    }
-
-    protected void registerMethodMissing(Class cls) {
-        def mc = cls.metaClass
-        def dynamicFinders = finders
-        mc.static.methodMissing = {String methodName, args ->
-            def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
-            if (method) {
-                // register the method invocation for next time
-                synchronized(this) {
-                    mc.static."$methodName" = {List varArgs ->
-                        method.invoke(cls, methodName, varArgs)
-                    }
-                }
-                return method.invoke(cls, methodName, args)
-            }
-            else {
-                throw new MissingMethodException(methodName, delegate, args)
-            }
-        }
     }
 
     protected GormStaticApi getStaticApi(Class cls) {
@@ -230,6 +179,11 @@ class GormEnhancer {
     protected GormValidationApi getValidationApi(Class cls) {
         new GormValidationApi(cls, datastore)
     }
+
+    private List initialiseFinders(Datastore datastore) {
+        this.finders = DynamicFinder.getAllDynamicFinders(datastore)
+    }
+
 }
 
 class InstanceMethodInvokingClosure extends Closure {

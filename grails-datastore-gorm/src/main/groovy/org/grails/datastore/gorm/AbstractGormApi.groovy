@@ -27,7 +27,8 @@ abstract class AbstractGormApi {
         'hashCode',
         'getClass',
         'notify',
-        'notifyAll'
+        'notifyAll',
+        'setTransactionManager'
     ]
 
     protected Class persistentClass

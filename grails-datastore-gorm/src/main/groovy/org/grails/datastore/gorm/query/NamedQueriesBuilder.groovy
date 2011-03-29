@@ -33,7 +33,7 @@ class NamedQueriesBuilder {
     List finders
     boolean initialized = false
 
-    NamedQueriesBuilder(PersistentEntity entity, List<DynamicFinder> finders) {
+    NamedQueriesBuilder(PersistentEntity entity, List<FinderMethod> finders) {
         this.entity = entity;
         this.finders = finders;
     }
