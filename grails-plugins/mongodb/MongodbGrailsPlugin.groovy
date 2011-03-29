@@ -1,7 +1,13 @@
+import java.lang.reflect.Method
+
 import com.mongodb.DBAddress
 import com.mongodb.ServerAddress
 
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
+import org.codehaus.groovy.grails.commons.GrailsServiceClass
+import org.codehaus.groovy.grails.commons.ServiceArtefactHandler
+import org.codehaus.groovy.grails.commons.spring.TypeSpecifyableTransactionProxyFactoryBean
+import org.codehaus.groovy.grails.orm.support.GroovyAwareNamedTransactionAttributeSource
 
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
@@ -12,12 +18,14 @@ import org.grails.datastore.gorm.utils.InstanceProxy
 
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.context.ApplicationContext
+import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.data.document.mongodb.bean.factory.*
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.annotation.Transactional
 
 class MongodbGrailsPlugin {
     def license = "Apache 2.0 License"
@@ -29,7 +37,7 @@ class MongodbGrailsPlugin {
 
     def version = "1.0-M2"
     def grailsVersion = "1.3.5 > *"
-    def loadAfter = ['domainClass']
+    def loadAfter = ['domainClass', 'services']
     def author = "Graeme Rocher"
     def authorEmail = "graeme.rocher@springsource.com"
     def title = "MongoDB GORM"
@@ -37,6 +45,9 @@ class MongodbGrailsPlugin {
 A plugin that integrates the Mongo document datastore into Grails, providing
 a GORM API onto it
 '''
+
+    def watchedResources = ["file:./grails-app/services/**/*Service.groovy",
+                            "file:./plugins/*/grails-app/services/**/*Service.groovy"]
 
     def documentation = "http://grails.org/plugin/mongodb"
 
@@ -118,6 +129,54 @@ a GORM API onto it
                 }
             }
         }
+
+        // need to redefine the service proxies to use mongoTransactionManager
+        for (serviceGrailsClass in application.serviceClasses) {
+            GrailsServiceClass serviceClass = serviceGrailsClass
+
+            if (!shouldCreateTransactionalProxy(serviceClass)) {
+                continue
+            }
+
+            def scope = serviceClass.getPropertyValue("scope")
+            def props = ["*": "PROPAGATION_REQUIRED"] as Properties
+            "${serviceClass.propertyName}"(TypeSpecifyableTransactionProxyFactoryBean, serviceClass.clazz) { bean ->
+                if (scope) bean.scope = scope
+                bean.lazyInit = true
+                target = { innerBean ->
+                    innerBean.lazyInit = true
+                    innerBean.factoryBean = "${serviceClass.fullName}ServiceClass"
+                    innerBean.factoryMethod = "newInstance"
+                    innerBean.autowire = "byName"
+                    if (scope) innerBean.scope = scope
+                }
+                proxyTargetClass = true
+                transactionAttributeSource = new GroovyAwareNamedTransactionAttributeSource(transactionalAttributes:props)
+                transactionManager = ref('mongoTransactionManager')
+            }
+        }
+    }
+
+    boolean shouldCreateTransactionalProxy(GrailsServiceClass serviceClass) {
+
+        if (serviceClass.getStaticPropertyValue('transactional', Boolean)) {
+            // leave it as a regular proxy
+            return false
+        }
+
+        if (!'mongo'.equals(serviceClass.getStaticPropertyValue('transactional', String))) {
+            return false
+        }
+
+        try {
+            Class javaClass = serviceClass.clazz
+            serviceClass.transactional &&
+                !AnnotationUtils.findAnnotation(javaClass, Transactional) &&
+                !javaClass.methods.any { Method m -> AnnotationUtils.findAnnotation(m, Transactional) != null }
+        }
+        catch (e) {
+            return false
+        }
     }
 
     def doWithDynamicMethods = { ctx ->
@@ -150,5 +209,35 @@ a GORM API onto it
                 }
             }
         }
+    }
+
+    def onChange = { event ->
+        if (!event.source || !event.ctx) {
+            return
+        }
+
+        def serviceClass = application.addArtefact(ServiceArtefactHandler.TYPE, event.source)
+        if (!shouldCreateTransactionalProxy(serviceClass)) {
+            return
+        }
+
+        def beans = beans {
+            def scope = serviceClass.getPropertyValue("scope")
+            def props = ["*": "PROPAGATION_REQUIRED"] as Properties
+            "${serviceClass.propertyName}"(TypeSpecifyableTransactionProxyFactoryBean, serviceClass.clazz) { bean ->
+                if (scope) bean.scope = scope
+                bean.lazyInit = true
+                target = { innerBean ->
+                    innerBean.factoryBean = "${serviceClass.fullName}ServiceClass"
+                    innerBean.factoryMethod = "newInstance"
+                    innerBean.autowire = "byName"
+                    if (scope) innerBean.scope = scope
+                }
+                proxyTargetClass = true
+                transactionAttributeSource = new GroovyAwareNamedTransactionAttributeSource(transactionalAttributes:props)
+                transactionManager = ref('mongoTransactionManager')
+            }
+        }
+        beans.registerBeans(event.ctx)
     }
 }
