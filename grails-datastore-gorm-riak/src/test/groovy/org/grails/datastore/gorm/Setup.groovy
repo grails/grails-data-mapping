@@ -37,6 +37,8 @@ class Setup {
 
   static riak
 
+	static destroy() {}
+
   static Session setup(classes) {
     riak = new RiakDatastore(new KeyValueMappingContext(""), [
         defaultUri: "http://localhost:8098/riak/{bucket}/{key}",
@@ -84,7 +86,8 @@ class Setup {
         "grails.gorm.tests.Book",
         "grails.gorm.tests.Pet",
         "grails.gorm.tests.Person",
-        "grails.gorm.tests.Task"
+        "grails.gorm.tests.Task",
+        "grails.gorm.tests.Plant"
     ].each { type ->
       def schema = riakTmpl.getBucketSchema(type, true)
       schema.keys.each { key ->
