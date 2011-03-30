@@ -61,6 +61,7 @@ class GormStaticApi extends AbstractGormApi {
     void setTransactionManager(PlatformTransactionManager transactionManager) {
         this.transactionManager = transactionManager
     }
+
     /**
      * Method missing handler that deals with the invocation of dynamic finders
      *
@@ -75,7 +76,7 @@ class GormStaticApi extends AbstractGormApi {
         if (method) {
             // register the method invocation for next time
             synchronized(this) {
-                mc.static."$methodName" = {List varArgs ->
+                mc.static."$methodName" = { List varArgs ->
                     method.invoke(cls, methodName, varArgs)
                 }
             }

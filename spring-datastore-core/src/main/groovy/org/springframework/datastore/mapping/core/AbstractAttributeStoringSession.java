@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.datastore.mapping.transactions.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-public abstract class AbstractAttributeStoringSession implements Session{
+public abstract class AbstractAttributeStoringSession implements Session {
 
     protected Map<Object, Map<String, Object>> attributes = new ConcurrentHashMap<Object, Map<String, Object>>();
 
@@ -36,7 +36,6 @@ public abstract class AbstractAttributeStoringSession implements Session{
             if (attributeName != null && value != null) {
                 attrs.put(attributeName, value);
             }
-
         }
     }
 

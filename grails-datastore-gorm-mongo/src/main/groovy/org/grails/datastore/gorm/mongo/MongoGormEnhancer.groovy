@@ -48,7 +48,7 @@ class MongoGormEnhancer extends GormEnhancer {
     }
 
     protected GormStaticApi getStaticApi(Class cls) {
-        return new MongoGormStaticApi( cls, datastore )
+        return new MongoGormStaticApi(cls, datastore)
     }
 
     protected GormInstanceApi getInstanceApi(Class cls) {
@@ -118,7 +118,7 @@ class MongoGormInstanceApi extends GormInstanceApi {
         MongoEntityPersister persister = session.getPersister(instance)
         def id = persister.getObjectIdentifier(instance)
 
-        return session.getCachedEntry( persister.getPersistentEntity(), id )
+        return session.getCachedEntry(persister.getPersistentEntity(), id)
     }
 }
 
@@ -144,7 +144,7 @@ class MongoGormStaticApi extends GormStaticApi {
     }
 
     /**
-     * The actual collection that this entity maps too
+     * The actual collection that this entity maps to
      *
      * @return The actual collection
      */
