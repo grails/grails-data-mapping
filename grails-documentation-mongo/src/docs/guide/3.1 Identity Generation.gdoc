@@ -17,7 +17,7 @@ class Person {
 Or a native BSON [ObjectId|http://api.mongodb.org/java/current/org/bson/types/ObjectId.html]:
 
 {code:java}
-import  org.bson.types.ObjectId
+import org.bson.types.ObjectId
 
 class Person {
     ObjectId id

@@ -1,4 +1,4 @@
-Mongo doesn't support transactions directly, however GORM for Mongo does batch up inserts and updates until the session is flushed. This makes it possible to support some rollback options. 
+Mongo doesn't support transactions directly, however GORM for Mongo does batch up inserts and updates until the session is flushed. This makes it possible to support some rollback options.
 
 You can use either transactional services or the static @withTransaction@ method. To mark a service as using the Mongo transaction manager, use the static @transactional@ property with the value @'mongo'@:
 
@@ -10,9 +10,9 @@ Alternately you can do ad-hoc transactions using the @withTransaction@ method:
 
 {code:java}
 Person.withTransaction { status ->
-  new Person(name:"Bob", age:50).save()
-  throw new RuntimeException("bad")
-  new Person(name:"Fred", age:45).save()
+    new Person(name:"Bob", age:50).save()
+    throw new RuntimeException("bad")
+    new Person(name:"Fred", age:45).save()
 }
 {code}
 

@@ -1,4 +1,4 @@
-A lower level API is provided by the plugin that is based on the [GMongo|http://github.com/poiati/gmongo] project. 
+A lower level API is provided by the plugin that is based on the [GMongo|http://github.com/poiati/gmongo] project.
 
 GMongo is a simple Groovy wrapper around the regular [Mongo Java Driver|http://www.mongodb.org/display/DOCS/Java+Language+Center]. In general you can refer to the Mongo Java Drivers [Javadoc API|http://api.mongodb.org/java/current/index.html] when using GMongo.
 
@@ -16,7 +16,7 @@ def db = mongo.getDB("gmongo")
 
 // Collections can be accessed as a db property (like the javascript API)
 assert db.myCollection instanceof com.mongodb.DBCollection
-// They also can be accessed with array notation 
+// They also can be accessed with array notation
 assert db['my.collection'] instanceof com.mongodb.DBCollection
 
 // Insert a document
@@ -36,17 +36,17 @@ To get hold of the @mongo@ instance (which is an of the [com.mongodb.Mongo|http:
 {code:java}
 def mongo
 def myAction = {
-  def db = mongo.getDB("mongo")
-  db.languages.insert([name: 'Groovy'])	
+    def db = mongo.getDB("mongo")
+    db.languages.insert([name: 'Groovy'])
 }
 {code}
 
-A request scoped bean is also available for the default database (typically the name of your application, unless specified by the @databaseName@ config option, plus the suffix "DB"). 
+A request scoped bean is also available for the default database (typically the name of your application, unless specified by the @databaseName@ config option, plus the suffix "DB").
 
 {code:java}
 def peopleDB
 def myAction = {
-  peopleDB.languages.insert([name: 'Fred'])	
+    peopleDB.languages.insert([name: 'Fred'])
 }
 {code}
 

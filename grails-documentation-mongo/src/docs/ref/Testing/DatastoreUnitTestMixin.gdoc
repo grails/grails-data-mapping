@@ -15,14 +15,14 @@ class PersonTests extends GroovyTestCase {
         mockDomain(Person)
         def s = new Person(name:"Bob")
         s.save()
-		
+
         assert s.id != null
-            
+
         s = Person.get(s.id)
-		
+
         assert s != null
     }
-	
+
     void tearDown() {
         disconnect()
     }

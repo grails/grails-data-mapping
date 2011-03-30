@@ -10,11 +10,11 @@ h2. Examples
 def mongo
 
 def foo = {
-	def mongo
-	def myAction = {
-		def db = mongo.getDB("mongo")
-		db.languages.insert([name: 'Groovy'])	
-	}
+    def mongo
+    def myAction = {
+        def db = mongo.getDB("mongo")
+        db.languages.insert([name: 'Groovy'])
+    }
 }
 {code}
 

@@ -19,7 +19,7 @@ With the above commands executed in a terminal window you should see output like
 [66243] 03 Sep 17:35:12 * The server is now ready to accept connections on port 6379
 {code}
 
-As you can see the server is running on port 6379, but don't worry the Redis plugin for Grails will automatically configure itself to look for Redis on that port by default. 
+As you can see the server is running on port 6379, but don't worry the Redis plugin for Grails will automatically configure itself to look for Redis on that port by default.
 
 If you want to configure how Grails connects to redis then you can do so using the following settings in @grails-app/conf/Config.groovy@:
 

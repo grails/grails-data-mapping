@@ -5,7 +5,7 @@ One limitation of Redis' MULT/EXEC command is that even reads are batched up in 
 {code:java}
 Person.withTransaction {
     new Person(firstName:"Bob").save()
-    new Person(firstName:"Fred").save()	
+    new Person(firstName:"Fred").save()
 }
 {code}
 
@@ -14,14 +14,15 @@ However, you cannot execute any queries (only write operations) in the middle of
 {code:java}
 Person.withTransaction {
     new Person(firstName:"Bob").save()
-	
+
     def fred
     Person.withNewSession {
-            fred = Person.findByFirstName("Fred")
-    } 
-    if(!fred)
-        new Person(firstName:"Fred").save()	
+        fred = Person.findByFirstName("Fred")
+    }
+    if (!fred) {
+        new Person(firstName:"Fred").save()
+    }
 }
 {code}
 
-In other words all read operations have to happen in a separate session/connection which can be achieved with the @withNewSession@ method. 
+In other words all read operations have to happen in a separate session/connection which can be achieved with the @withNewSession@ method.

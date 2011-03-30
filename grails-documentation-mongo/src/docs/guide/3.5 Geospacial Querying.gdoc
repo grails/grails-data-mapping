@@ -2,12 +2,12 @@ It is possible to use Mongo's [Geospacial querying|http://www.mongodb.org/displa
 
 {code}
 class Hotel {
-	String name
-	List location
-	
-	static mapping = {
-		location geoIndex:true
-	}
+    String name
+    List location
+
+    static mapping = {
+        location geoIndex:true
+    }
 }
 {code}
 
@@ -15,12 +15,12 @@ By default the index creation assumes latitude/longitude and thus is configured 
 
 {code}
 class Hotel {
-	String name
-	List location
-	
-	static mapping = {
-		location geoIndex:true, indexAttributes:[min:-500, max:500]
-	}
+    String name
+    List location
+
+    static mapping = {
+        location geoIndex:true, indexAttributes:[min:-500, max:500]
+    }
 }
 
 {code}
@@ -63,13 +63,13 @@ If you plan on querying a location and some other value it is recommended to use
 
 {code}
 class Hotel {
-	String name
-	List location
-	int stars
-	
-	static mapping = {
-		compoundIndex location:"2d", stars:1
-	}
+    String name
+    List location
+    int stars
+
+    static mapping = {
+        compoundIndex location:"2d", stars:1
+    }
 }
 {code}
 

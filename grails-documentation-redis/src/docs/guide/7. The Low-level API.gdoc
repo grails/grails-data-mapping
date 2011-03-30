@@ -10,7 +10,7 @@ class MyController {
         redis.select(2)
         redis.flushdb()
         redis["message"] = "World"
-	
+
         render "Hello ${redis["message"]}!"
     }
 }

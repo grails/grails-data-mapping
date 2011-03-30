@@ -2,9 +2,9 @@ The way GORM for Mongo works is to map each domain class to a Mongo collection. 
 
 {code:java}
 class Person {
-  String firstName
-  String lastName
-  static hasMany = [pets:Pet]
+    String firstName
+    String lastName
+    static hasMany = [pets:Pet]
 }
 {code}
 
@@ -14,10 +14,10 @@ It is quite common in Mongo to embed documents within documents (nested document
 
 {code:java}
 class Person {
-  String firstName
-  String lastName
-  Address address
-  static embedded = ['address']
+    String firstName
+    String lastName
+    Address address
+    static embedded = ['address']
 }
 {code}
 
@@ -25,8 +25,8 @@ You can also map lists and maps of basic types (such as strings) simply by defin
 
 {code:java}
 class Person {
-	List<String> friends
-	Map pets
+    List<String> friends
+    Map pets
 }
 
 ...
@@ -40,11 +40,11 @@ You may wish to customize how a domain class maps onto a @DBCollection@. This is
 
 {code:java}
 class Person {
-   ..
-  static mapping = {
-    collection "mycollection"
-    database "mydb"
-  }
+    ..
+    static mapping = {
+        collection "mycollection"
+        database "mydb"
+    }
 }
 {code}
 
@@ -54,10 +54,9 @@ You can also control how an individual property maps onto a Mongo Document field
 
 {code:java}
 class Person {
-   ..
-  static mapping = {
-	firstName field:"first_name"
-  }
+    ..
+    static mapping = {
+        firstName field:"first_name"
+    }
 }
 {code}
-
