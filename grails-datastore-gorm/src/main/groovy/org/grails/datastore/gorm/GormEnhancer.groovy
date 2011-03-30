@@ -84,6 +84,13 @@ class GormEnhancer {
         ExpandoMetaClass mc = cls.metaClass
         for (currentInstanceMethods in instanceMethods) {
             def apiProvider = currentInstanceMethods
+            if(GormInstanceApi.isInstance(apiProvider)) {
+                mc.static.currentGormInstanceApi = {-> apiProvider }
+            }
+            else {
+                mc.static.currentGormValidationApi = {-> apiProvider }
+            }
+
             for (Method method in (onlyExtendedMethods ? apiProvider.extendedMethods : apiProvider.methods)) {
                 def methodName = method.name
                 def parameterTypes = method.parameterTypes
@@ -161,6 +168,7 @@ class GormEnhancer {
         }
 
         def staticScope = mc.static
+        staticScope.currentGormStaticApi = {-> staticMethods }
         for (Method m in (onlyExtendedMethods ? staticMethods.extendedMethods : staticMethods.methods)) {
             def method = m
             if (method != null) {
