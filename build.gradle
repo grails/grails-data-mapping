@@ -41,7 +41,6 @@ subprojects {
         mavenRepo name: "jboss", urls:'http://repository.jboss.org/maven2/'
         mavenRepo name: "java.net", urls:"http://download.java.net/maven/2/"
         mavenCentral()
-        mavenRepo urls:'http://maven.springframework.org/snapshot'
     }
 
     dependencies {
@@ -49,7 +48,9 @@ subprojects {
             groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion
 
             testCompile 'junit:junit:4.8.1'
-            testCompile spockDependency
+            testCompile (spockDependency) {
+                transitive = false
+            }
         }
 
         if (project.name == "grails-datastore-gorm-tck") {
