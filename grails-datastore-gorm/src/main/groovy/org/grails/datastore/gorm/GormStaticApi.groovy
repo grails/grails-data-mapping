@@ -390,6 +390,19 @@ class GormStaticApi extends AbstractGormApi {
         q.singleResult()
     }
 
+   /**
+    * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
+    * a matching persistent entity is not found a new entity is created and returned.
+    *
+    * @param queryMap The map of conditions
+    * @return A single result
+     */
+    def findOrCreateWhere(Map queryMap) {
+        def result = persistentClass.newInstance()
+        result.properties = queryMap
+        result
+    }
+
     /**
      * Execute a closure whose first argument is a reference to the current session
      * @param callable
