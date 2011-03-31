@@ -400,9 +400,12 @@ class GormStaticApi extends AbstractGormApi {
     * @return A single result
      */
     def findOrCreateWhere(Map queryMap) {
-        def result = persistentClass.newInstance()
-        def binder = new DataBinder(result)
-        binder.bind(new MutablePropertyValues(queryMap))
+        def result = findWhere(queryMap)
+        if(!result) {
+            result = persistentClass.newInstance()
+            def binder = new DataBinder(result)
+            binder.bind(new MutablePropertyValues(queryMap))
+        }
         result
     }
 
