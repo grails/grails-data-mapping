@@ -1,4 +1,5 @@
-def spockDependency = "org.spockframework:spock-core:0.5-groovy-1.7-SNAPSHOT"
+def spockDependency = "org.spockframework:spock-core:0.5-groovy-1.8"
+def groovyVersion = '1.8.0-rc-1'
 
 def groovyProjects() {
     subprojects.findAll { project -> isGroovyProject(project) }
@@ -44,10 +45,12 @@ subprojects {
 
     dependencies {
         if (isStandardGroovyMavenProject) {
-            groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.7.5'
+            groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion
 
             testCompile 'junit:junit:4.8.1'
-            testCompile spockDependency
+            testCompile (spockDependency) {
+                transitive = false
+            }
         }
 
         if (project.name == "grails-datastore-gorm-tck") {
@@ -124,7 +127,7 @@ subprojects {
                     license {
                         name 'The Apache Software License, Version 2.0'
                         url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        distribution 'http://github.com/grails/inconsequential'
+                        distribution 'http://github.com/SpringSource/spring-data-mapping/'
                     }
                 }
             }
