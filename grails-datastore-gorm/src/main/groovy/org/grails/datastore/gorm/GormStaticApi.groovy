@@ -18,16 +18,18 @@ import grails.gorm.CriteriaBuilder
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.springframework.beans.BeanWrapperImpl
+import org.springframework.beans.MutablePropertyValues
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.model.PersistentProperty
 import org.springframework.datastore.mapping.model.types.Association
 import org.springframework.datastore.mapping.query.Query
 import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.support.DefaultTransactionDefinition
 import org.springframework.transaction.support.TransactionCallback
 import org.springframework.transaction.support.TransactionTemplate
+import org.springframework.transaction.TransactionDefinition
+import org.springframework.validation.DataBinder
 
 /**
  *  Static methods of the GORM API
@@ -399,7 +401,8 @@ class GormStaticApi extends AbstractGormApi {
      */
     def findOrCreateWhere(Map queryMap) {
         def result = persistentClass.newInstance()
-        result.properties = queryMap
+        def binder = new DataBinder(result)
+        binder.bind(new MutablePropertyValues(queryMap))
         result
     }
 
