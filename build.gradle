@@ -1,5 +1,5 @@
-def spockDependency = "org.spockframework:spock-core:0.5-groovy-1.7-SNAPSHOT"
-def groovyVersion = '1.7.5'
+def spockDependency = "org.spockframework:spock-core:0.5-groovy-1.8"
+def groovyVersion = '1.8.0-rc-1'
 
 def groovyProjects() {
     subprojects.findAll { project -> isGroovyProject(project) }
@@ -41,6 +41,7 @@ subprojects {
         mavenRepo name: "jboss", urls:'http://repository.jboss.org/maven2/'
         mavenRepo name: "java.net", urls:"http://download.java.net/maven/2/"
         mavenCentral()
+        mavenRepo urls:'http://maven.springframework.org/snapshot'
     }
 
     dependencies {
