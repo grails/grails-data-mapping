@@ -14,12 +14,13 @@
  */
 package org.springframework.datastore.mapping.simple;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
+import org.springframework.datastore.mapping.model.MappingContext;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A simple implementation of the {@link org.springframework.datastore.mapping.core.Datastore} interface that backs onto an in-memory map.
@@ -42,10 +43,18 @@ public class SimpleMapDatastore extends AbstractDatastore{
         this.datastore = datastore;
     }
 
-    public SimpleMapDatastore() {
-        super(new KeyValueMappingContext(""));
+    /**
+     * Creates a map based datastore for the specified mapping context
+     *
+     * @param mappingContext The mapping context
+     */
+    public SimpleMapDatastore(MappingContext mappingContext) {
+        super(mappingContext);
         initializeConverters(getMappingContext());
 
+    }
+    public SimpleMapDatastore() {
+        this(new KeyValueMappingContext(""));
     }
 
     public Map getIndices() {
