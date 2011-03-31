@@ -1,4 +1,5 @@
 def spockDependency = "org.spockframework:spock-core:0.5-groovy-1.7-SNAPSHOT"
+def groovyVersion = '1.7.5'
 
 def groovyProjects() {
     subprojects.findAll { project -> isGroovyProject(project) }
@@ -44,7 +45,7 @@ subprojects {
 
     dependencies {
         if (isStandardGroovyMavenProject) {
-            groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: '1.7.5'
+            groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion
 
             testCompile 'junit:junit:4.8.1'
             testCompile spockDependency
