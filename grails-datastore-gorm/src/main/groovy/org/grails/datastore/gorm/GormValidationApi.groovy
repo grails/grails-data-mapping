@@ -83,6 +83,7 @@ class GormValidationApi extends AbstractGormApi{
                     }
 
                 }
+                instance.errors = objectErrors
             }
             return !errors.hasErrors()
         }
