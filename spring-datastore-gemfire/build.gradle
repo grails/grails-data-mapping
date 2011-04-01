@@ -3,7 +3,7 @@ repositories {
     mavenRepo urls:'http://dist.gemstone.com/maven/release'
     
     // temporary, for spring-gemfire 1.0.1.BUILD-SNAPSHOT
-    mavenRepo urils:'http://maven.springframework.org/snapshot'
+    mavenRepo urls:'http://maven.springframework.org/snapshot'
 }
 
 dependencies {
