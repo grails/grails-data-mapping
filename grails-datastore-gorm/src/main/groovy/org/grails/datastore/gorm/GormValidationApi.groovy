@@ -63,7 +63,7 @@ class GormValidationApi extends AbstractGormApi{
         if (validator) {
             def localErrors = new BeanPropertyBindingResult(instance, instance.class.name)
 
-            Errors errors = getErrors(instance)
+            Errors errors = instance.errors
             validator.validate instance, localErrors
 
             if(fields)
@@ -146,7 +146,7 @@ class GormValidationApi extends AbstractGormApi{
 
     private Errors resetErrors(instance) {
         def er = new BeanPropertyBindingResult(instance, persistentClass.name)
-        setErrors(instance, er)
+        instance.errors = er
         return er
     }
 
