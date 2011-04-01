@@ -9,7 +9,7 @@ dependencies {
         exclude module:'spring-context'
         exclude module:'spring-tx'
     }
-    compile('com.gemstone.gemfire:gemfire:6.0.1.A') {
+    compile('com.gemstone.gemfire:gemfire:6.5.1.2') {
         exclude module:'antlr'
     }
 }
