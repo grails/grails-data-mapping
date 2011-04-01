@@ -400,13 +400,7 @@ class GormStaticApi extends AbstractGormApi {
     * @return A single result
      */
     def findOrCreateWhere(Map queryMap) {
-        def result = findWhere(queryMap)
-        if(!result) {
-            result = persistentClass.newInstance()
-            def binder = new DataBinder(result)
-            binder.bind(new MutablePropertyValues(queryMap))
-        }
-        result
+        internalFindOrCreate(queryMap, false)
     }
 
    /**
@@ -417,17 +411,22 @@ class GormStaticApi extends AbstractGormApi {
     * @return A single result
      */
     def findOrSaveWhere(Map queryMap) {
-        
+        internalFindOrCreate(queryMap, true)
+    }
+
+    private internalFindOrCreate(Map queryMap, boolean shouldSave) {
         def result = findWhere(queryMap)
         if(!result) {
             result = persistentClass.newInstance()
             def binder = new DataBinder(result)
             binder.bind(new MutablePropertyValues(queryMap))
-            result.save()
+            if(shouldSave) {
+                result.save()
+            }
         }
         result
     }
-
+    
     /**
      * Execute a closure whose first argument is a reference to the current session
      * @param callable
