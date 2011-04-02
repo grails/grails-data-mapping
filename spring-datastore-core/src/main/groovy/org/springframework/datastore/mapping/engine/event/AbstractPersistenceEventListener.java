@@ -39,6 +39,10 @@ public abstract class AbstractPersistenceEventListener implements PersistenceEve
             return;
         }
 
+        if (event.isListenerExcluded(getClass().getName())) {
+            return;
+        }
+
         onPersistenceEvent(event);
     }
 

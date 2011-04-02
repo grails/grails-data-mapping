@@ -17,6 +17,7 @@ package org.grails.datastore.gorm.jpa;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
+import org.grails.datastore.gorm.events.DomainEventListener;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.ConnectionNotFoundException;
 import org.springframework.datastore.mapping.core.Session;
@@ -55,6 +56,7 @@ public class EntityInterceptorInvokingEntityListener {
 
             final EntityAccess entityAccess = new EntityAccess(entity, o);
             PreInsertEvent event = new PreInsertEvent(session.getDatastore(), entity, entityAccess);
+            event.addExcludedListenerName(DomainEventListener.class.getName());
             session.getDatastore().getApplicationEventPublisher().publishEvent(event);
             if (event.isCancelled()) {
                 rollbackTransaction(jpaSession);
@@ -97,6 +99,7 @@ public class EntityInterceptorInvokingEntityListener {
 
             final EntityAccess entityAccess = new EntityAccess(entity, o);
             PreUpdateEvent event = new PreUpdateEvent(session.getDatastore(), entity, entityAccess);
+            event.addExcludedListenerName(DomainEventListener.class.getName());
             session.getDatastore().getApplicationEventPublisher().publishEvent(event);
             if (event.isCancelled()) {
                 rollbackTransaction(jpaSession);

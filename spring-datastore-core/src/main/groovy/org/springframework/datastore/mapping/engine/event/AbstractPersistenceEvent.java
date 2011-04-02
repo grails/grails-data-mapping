@@ -14,6 +14,9 @@
  */
 package org.springframework.datastore.mapping.engine.event;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.context.ApplicationEvent;
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.engine.EntityAccess;
@@ -27,6 +30,7 @@ public abstract class AbstractPersistenceEvent extends ApplicationEvent {
     private final PersistentEntity entity;
     private final EntityAccess entityAccess;
     private boolean cancelled;
+    private List<String> excludedListenerNames = new ArrayList<String>();
 
     protected AbstractPersistenceEvent(final Datastore source, final PersistentEntity entity,
             final EntityAccess entityAccess) {
@@ -49,5 +53,13 @@ public abstract class AbstractPersistenceEvent extends ApplicationEvent {
 
     public boolean isCancelled() {
         return cancelled;
+    }
+
+    public void addExcludedListenerName(final String name) {
+        excludedListenerNames.add(name);
+    }
+
+    public boolean isListenerExcluded(final String name) {
+        return excludedListenerNames.contains(name);
     }
 }
