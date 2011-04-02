@@ -17,6 +17,7 @@ class Setup {
 
     static Session setup(classes) {
         def ctx = new GenericApplicationContext()
+        ctx.refresh()
         def simple = new SimpleMapDatastore(ctx)
         for (cls in classes) {
             simple.mappingContext.addPersistentEntity(cls)

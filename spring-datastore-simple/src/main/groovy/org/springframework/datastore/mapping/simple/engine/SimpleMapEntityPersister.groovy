@@ -14,6 +14,7 @@
  */
 package org.springframework.datastore.mapping.simple.engine
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.engine.AssociationIndexer
 import org.springframework.datastore.mapping.engine.EntityPersister
@@ -41,8 +42,9 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
     Long lastKey = 0
     String family
 
-    SimpleMapEntityPersister(MappingContext context, PersistentEntity entity, Session session, SimpleMapDatastore datastore) {
-        super(context, entity, session)
+    SimpleMapEntityPersister(MappingContext context, PersistentEntity entity, Session session,
+             SimpleMapDatastore datastore, ApplicationEventPublisher publisher) {
+        super(context, entity, session, publisher)
         this.datastore = datastore.backingMap
         this.indices = datastore.indices
         family = getFamily(entity, entity.getMapping())

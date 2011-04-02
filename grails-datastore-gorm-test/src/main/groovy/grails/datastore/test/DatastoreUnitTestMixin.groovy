@@ -49,8 +49,14 @@ import org.springframework.util.ClassUtils
  */
 class DatastoreUnitTestMixin {
 
-    static ConfigurableApplicationContext ctx = new GenericApplicationContext()
-    static SimpleMapDatastore datastore = new SimpleMapDatastore(ctx)
+    static ConfigurableApplicationContext ctx
+    static SimpleMapDatastore datastore
+    static {
+        ctx = new GenericApplicationContext()
+        ctx.refresh()
+        datastore = new SimpleMapDatastore(ctx)
+    }
+ 
     Session session
     PlatformTransactionManager transactionManager = new DatastoreTransactionManager(datastore:datastore)
 

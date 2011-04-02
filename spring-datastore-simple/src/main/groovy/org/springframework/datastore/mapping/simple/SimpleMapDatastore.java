@@ -57,7 +57,11 @@ public class SimpleMapDatastore extends AbstractDatastore {
     }
 
     public SimpleMapDatastore() {
-        this(new KeyValueMappingContext(""), null);
+        this(null);
+    }
+
+    public SimpleMapDatastore(ConfigurableApplicationContext ctx) {
+        this(new KeyValueMappingContext(""), ctx);
     }
 
     public Map getIndices() {
