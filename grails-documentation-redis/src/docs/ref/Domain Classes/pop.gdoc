@@ -6,7 +6,7 @@ Returns and deletes random domain instance.
 
 h2. Examples
 
-{code:java}
+{code}
 def randomPerson = Person.pop()
 {code}
 

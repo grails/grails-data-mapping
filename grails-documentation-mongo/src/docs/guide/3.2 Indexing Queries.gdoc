@@ -2,7 +2,7 @@ Mongo doesn't require that you specify indices to query, but like a relational d
 
 With that in mind it is important to specify the properties you plan to query using the mapping block:
 
-{code:java}
+{code}
 class Person {
     String name
     static mapping = {
@@ -13,7 +13,7 @@ class Person {
 
 With the above mapping a Mongo index will be automatically created for you. You can customize the index options using the @indexAttributes@ configuration parameter:
 
-{code:java}
+{code}
 class Person {
     String name
     static mapping = {

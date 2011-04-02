@@ -8,7 +8,7 @@ These queries operate in largely the same way as they do with GORM for Hibernate
 
 A good way to debug your query performance is to go to your Redis distribution and type the following in a command or terminal window:
 
-{code:java}
+{code}
 $ ./redis-cli
 $ MONITOR
 {code}

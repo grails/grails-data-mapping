@@ -1,18 +1,18 @@
 To get started with GORM for Mongo you need to install the plugin into a Grails application:
 
-{code:java}
+{code}
 grails install-plugin mongodb
 {code}
 
 With that done you need to set up a running Mongodb server. Refer to the [Mongodb Quick Start guide|http://www.mongodb.org/display/DOCS/Quickstart] for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:
 
-{code:java}
+{code}
 MONGO_HOME/bin/mongod
 {code}
 
 With the above commands executed in a terminal window you should see output like the following appear:
 
-{code:java}
+{code}
 Thu Nov 11 16:54:08 MongoDB starting : pid=4600 port=27017 dbpath=/data/db/ 64-bit
 Thu Nov 11 16:54:08 db version v1.6.3, pdfile version 4.5
 Thu Nov 11 16:54:08 git version: 278bd2ac2f2efbee556f32c13c1b6803224d1c01
@@ -25,7 +25,7 @@ As you can see the server is running on port 27017, but don't worry the Mongodb 
 
 If you want to configure how Grails connects to Mongo then you can do so using the following settings in @grails-app/conf/DataSource.groovy@:
 
-{code:java}
+{code}
 grails {
     mongo {
         host = "localhost"

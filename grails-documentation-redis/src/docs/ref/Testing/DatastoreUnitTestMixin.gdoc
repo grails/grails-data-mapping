@@ -6,7 +6,7 @@ A mixin for setting up unit testing of datastores such as the Redis datastore.
 
 h2. Examples
 
-{code:java}
+{code}
 import grails.datastore.test.DatastoreUnitTestMixin
 
 @Mixin(DatastoreUnitTestMixin)

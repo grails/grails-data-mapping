@@ -2,7 +2,7 @@ A feature of Mongo is its ability to customize how important a database write is
 
 If you wish to customize the @WriteConcern@ for a domain class you can do so in the mapping block:
 
-{code:java}
+{code}
 import com.mongodb.WriteConcern
 
 class Person {

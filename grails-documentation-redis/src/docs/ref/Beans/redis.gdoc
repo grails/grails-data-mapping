@@ -6,7 +6,7 @@ A Spring bean that provides access to the lower level Redis API
 
 h2. Examples
 
-{code:java}
+{code}
 def redis
 
 def foo = {

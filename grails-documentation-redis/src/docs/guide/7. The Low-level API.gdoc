@@ -2,7 +2,7 @@ There is a lower-level API that provides access to the majority of commands from
 
 For example in a controller:
 
-{code:java}
+{code}
 class MyController {
     def redis
 
@@ -20,7 +20,7 @@ See the @org.springframework.datastore.redis.util.RedisTemplate@ interface for t
 
 The low-level API gives you an easy way to work with Redis lists, sets and hashes via the @list@, @set@ and @hash@ methods. For example, the @list@ method returns a normal Java @java.util.List@ that is backed onto a Redis list:
 
-{code:java}
+{code}
 def list = redis.list("my.list")
 list << 1 << 2 << 3
 assert 3 == list.size()
@@ -31,7 +31,7 @@ assert 3 == list[2] as Integer
 
 whilst the @set@ method returns a Java @java.util.Set@:
 
-{code:java}
+{code}
 def set = redis.set("my.set")
 set << 1 << 2 << 3 << 1 << 2
 assert 3 == set.size()
@@ -40,7 +40,7 @@ assert set.contains(1)
 
 And finally the @hash@ method returns a Java @java.util.Map@:
 
-{code:java}
+{code}
 def hash = redis.hash("my.hash")
 
 hash["foo"] = "bar"
@@ -50,7 +50,7 @@ assert "bar" == hash["foo"]
 
 There is also an @entities@ helper method for obtaining domain classes from a Redis set or list. This is useful when you want to build your own indices:
 
-{code:java}
+{code}
 def theSimpsons = Person.findAllByLastName("Simpson")
 
 def list = redis.list("the.simpsons")
@@ -60,8 +60,7 @@ theSimpsons.each { list << it.id }
 
 and later query them:
 
-{code:java}
-
+{code}
 def theSimpsons = redis.entities(Person, "the.simpsons")
 theSimpsons.each {
     println it.firstName

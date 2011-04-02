@@ -6,7 +6,7 @@ Returns a random domain instance.
 
 h2. Examples
 
-{code:java}
+{code}
 def randomPerson = Person.random()
 {code}
 

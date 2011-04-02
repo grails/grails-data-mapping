@@ -10,7 +10,7 @@ There is an excellent tutorial on how to use the Mongo Java driver's API directl
 
 An example of GMongo usage can be seen below:
 
-{code:java}
+{code}
 // Get a db reference in the old fashion way
 def db = mongo.getDB("gmongo")
 
@@ -33,7 +33,7 @@ db.languages << [[name: 'Javascript', type: 'prototyped'], [name: 'Ioke', type: 
 
 To get hold of the @mongo@ instance (which is an of the [com.mongodb.Mongo|http://api.mongodb.org/java/current/com/mongodb/Mongo.html] class) inside a controller or service simple define a @mongo@ property:
 
-{code:java}
+{code}
 def mongo
 def myAction = {
     def db = mongo.getDB("mongo")
@@ -43,7 +43,7 @@ def myAction = {
 
 A request scoped bean is also available for the default database (typically the name of your application, unless specified by the @databaseName@ config option, plus the suffix "DB").
 
-{code:java}
+{code}
 def peopleDB
 def myAction = {
     peopleDB.languages.insert([name: 'Fred'])
@@ -52,7 +52,7 @@ def myAction = {
 
 Each domain class you define also has a @collection@ property that allows easy access to the underlying @DBCollection@ instance and hence the GMongo API:
 
-{code:java}
+{code}
 Person.collection.count() == 1
 Person.collection.findOne(firstName:"Fred").lastName == "Flintstone"
 {code}

@@ -2,7 +2,7 @@ Transactions in Redis (using MULTI/EXEC) operate differently to SQL transactions
 
 One limitation of Redis' MULT/EXEC command is that even reads are batched up in the transaction. This trickles down to usage within GORM for Redis. So for example you can execute a transaction such as:
 
-{code:java}
+{code}
 Person.withTransaction {
     new Person(firstName:"Bob").save()
     new Person(firstName:"Fred").save()
@@ -11,7 +11,7 @@ Person.withTransaction {
 
 However, you cannot execute any queries (only write operations) in the middle of a transaction unless you do so with a separate connection such as:
 
-{code:java}
+{code}
 Person.withTransaction {
     new Person(firstName:"Bob").save()
 

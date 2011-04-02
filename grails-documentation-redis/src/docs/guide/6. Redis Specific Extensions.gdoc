@@ -1,6 +1,6 @@
 As well as all the regular capabilities offered by the GORM API there are a couple of additional GORM methods that take advantage of some key Redis features. The first one is the [random|domainClasses] method which will return a random instance of the domain class:
 
-{code:java}
+{code}
 def randomPerson = Person.random()
 {code}
 
@@ -8,7 +8,7 @@ Implementing a random function in a SQL database is typically quite hard to do i
 
 There is also a [pop|domainClasses] method that will return and remove a random domain instance in one step:
 
-{code:java}
+{code}
 def randomPerson = Person.pop()
 {code}
 
