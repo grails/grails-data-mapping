@@ -46,7 +46,7 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      *
      * @param property The property
      * @param value A two dimensional list of values
-     * @return
+     * @return this Criterion
      */
     public Query.Criterion near(String property, List value) {
         validatePropertyName(property, "near");
@@ -60,7 +60,7 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      *
      * @param property The property
      * @param value A multi-dimensional list of values
-     * @return This Criterion
+     * @return this Criterion
      */
     public Query.Criterion withinBox(String property, List value) {
         validatePropertyName(property, "withinBox");
@@ -74,7 +74,7 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      *
      * @param property The property
      * @param value A multi-dimensional list of values
-     * @return This Criterion
+     * @return this Criterion
      */
     public Query.Criterion withinCircle(String property, List value) {
         validatePropertyName(property, "withinBox");
