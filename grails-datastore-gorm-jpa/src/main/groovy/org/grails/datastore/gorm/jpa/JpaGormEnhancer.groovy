@@ -90,18 +90,17 @@ class JpaInstanceApi extends GormInstanceApi {
             instance.clearErrors()
         }
 
-        if (!hasErrors) {
-            callable.call(session)
-            if (params?.flush) {
-                session.flush()
-            }
-        }
-        else {
+        if (hasErrors) {
             if (params?.failOnError) {
-                throw validationException.newInstance( "Validation error occured during call to save()", instance.errors)
+                throw validationException.newInstance("Validation error occured during call to save()", instance.errors)
             }
             rollbackTransaction(session)
             return null
+        }
+
+        callable.call(session)
+        if (params?.flush) {
+            session.flush()
         }
         return instance
     }
@@ -119,9 +118,7 @@ class JpaStaticApi extends GormStaticApi {
 
     def withEntityManager(Closure callable) {
         JpaTemplate jpaTemplate = datastore.currentSession.getNativeInterface()
-        jpaTemplate.execute({ EntityManager em ->
-            callable.call( em )
-        } as JpaCallback)
+        jpaTemplate.execute({ EntityManager em -> callable.call(em) } as JpaCallback)
     }
 
     @Override

@@ -44,10 +44,11 @@ public class SimpleMapSession extends AbstractSession<Map> {
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
         PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
-        if (entity != null) {
-            return new SimpleMapEntityPersister(mappingContext, entity, this, (SimpleMapDatastore) getDatastore());
+        if (entity == null) {
+            return null;
         }
-        return null;
+        return new SimpleMapEntityPersister(mappingContext, entity, this,
+            (SimpleMapDatastore) getDatastore(), publisher);
     }
 
     public Map<String, Map> getBackingMap() {

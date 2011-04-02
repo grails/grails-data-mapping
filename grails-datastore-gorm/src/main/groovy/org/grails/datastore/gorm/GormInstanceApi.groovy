@@ -136,17 +136,16 @@ class GormInstanceApi extends AbstractGormApi {
             instance.clearErrors()
         }
 
-        if (!hasErrors) {
-            session.persist(instance)
-            if (params?.flush) {
-                session.flush()
-            }
-        }
-        else {
+        if (hasErrors) {
             if (params?.failOnError) {
                 throw validationException.newInstance( "Validation error occured during call to save()", instance.errors)
             }
             return null
+        }
+
+        session.persist(instance)
+        if (params?.flush) {
+            session.flush()
         }
         return instance
     }
