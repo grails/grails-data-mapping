@@ -9,11 +9,10 @@ import org.springframework.datastore.mapping.core.Session
  * @author Graeme Rocher
  * @since 1.0
  */
-class OneToManyAssociationTests {
+class OneToManyAssociationTests extends AbstractRedisTest {
 
     @Test
     void testOneToManyAssociation() {
-        def ds = new RedisDatastore()
         ds.mappingContext.addPersistentEntity(Author)
         Session conn = ds.connect(null)
 

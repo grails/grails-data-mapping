@@ -26,14 +26,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.persistence.FlushModeType;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.mapping.core.impl.PendingInsert;
 import org.springframework.datastore.mapping.core.impl.PendingOperation;
 import org.springframework.datastore.mapping.core.impl.PendingOperationExecution;
 import org.springframework.datastore.mapping.core.impl.PendingUpdate;
-import org.springframework.datastore.mapping.engine.EntityInterceptor;
-import org.springframework.datastore.mapping.engine.EntityInterceptorAware;
 import org.springframework.datastore.mapping.engine.EntityPersister;
 import org.springframework.datastore.mapping.engine.NonPersistentTypeException;
 import org.springframework.datastore.mapping.engine.Persister;
@@ -54,6 +53,7 @@ import com.googlecode.concurrentlinkedhashmap.EvictionListener;
  *
  * @author Graeme Rocher
  * @since 1.0
+ * @param <N>
  */
 public abstract class AbstractSession<N> extends AbstractAttributeStoringSession implements Session, SessionImplementor {
     private static final EvictionListener<PersistentEntity, Collection<PendingInsert>> EXCEPTION_THROWING_INSERT_LISTENER = new EvictionListener<PersistentEntity, Collection<PendingInsert>>() {
@@ -69,7 +69,6 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
     protected Map<Class,Persister> persisters = new ConcurrentHashMap<Class,Persister>();
     private MappingContext mappingContext;
-    protected List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
     protected ConcurrentLinkedQueue lockedObjects = new ConcurrentLinkedQueue();
     private Transaction transaction;
     private Datastore datastore;
@@ -88,10 +87,13 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     protected Collection<Runnable> pendingDeletes = new ConcurrentLinkedQueue<Runnable>();
     protected Collection<Runnable> postFlushOperations = new ConcurrentLinkedQueue<Runnable>();
     private boolean exceptionOccurred;
+    protected ApplicationEventPublisher publisher;
 
-    public AbstractSession(Datastore datastore,MappingContext mappingContext) {
+    public AbstractSession(Datastore datastore, MappingContext mappingContext,
+               ApplicationEventPublisher publisher) {
         this.mappingContext = mappingContext;
         this.datastore = datastore;
+        this.publisher = publisher;
     }
 
     public void addPostFlushOperation(Runnable runnable) {
@@ -122,6 +124,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
         inserts.add(update);
     }
+
     public Object getCachedEntry(PersistentEntity entity, Serializable key) {
         if (key != null) {
             final Map<Serializable, Object> map = firstLevelEntryCache.get(entity.getJavaClass());
@@ -165,16 +168,6 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
     public Datastore getDatastore() {
         return datastore;
-    }
-
-    public void addEntityInterceptor(EntityInterceptor interceptor) {
-        if (interceptor != null) {
-            interceptors.add(interceptor);
-        }
-    }
-
-    public void setEntityInterceptors(List<EntityInterceptor> interceptors) {
-        if (interceptors!=null) this.interceptors = interceptors;
     }
 
     public MappingContext getMappingContext() {
@@ -289,11 +282,9 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         if (p == null) {
             p = createPersister(cls, getMappingContext());
             firstLevelCache.put(cls, new ConcurrentHashMap<Serializable, Object>());
-            if (p instanceof EntityInterceptorAware) {
-                ((EntityInterceptorAware)p).setEntityInterceptors(interceptors);
-            }
-            if (p != null)
+            if (p != null) {
                 persisters.put(cls, p);
+            }
         }
         return p;
     }

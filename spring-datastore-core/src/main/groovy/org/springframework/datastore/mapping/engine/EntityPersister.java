@@ -15,9 +15,9 @@
 package org.springframework.datastore.mapping.engine;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
@@ -29,17 +29,19 @@ import org.springframework.datastore.mapping.proxy.ProxyFactory;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class EntityPersister implements Persister, EntityInterceptorAware {
+public abstract class EntityPersister implements Persister {
     private PersistentEntity persistentEntity;
     private MappingContext mappingContext;
-    protected List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
     protected Session session;
     protected org.springframework.datastore.mapping.proxy.ProxyFactory proxyFactory;
+    protected ApplicationEventPublisher publisher;
 
-    public EntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
+    public EntityPersister(MappingContext mappingContext, PersistentEntity entity,
+              Session session, ApplicationEventPublisher publisher) {
         this.persistentEntity = entity;
         this.mappingContext = mappingContext;
         this.session = session;
+        this.publisher = publisher;
     }
 
     public Session getSession() {
@@ -56,16 +58,6 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
             proxyFactory = mappingContext.getProxyFactory();
         }
         return proxyFactory;
-    }
-
-    public void addEntityInterceptor(EntityInterceptor interceptor) {
-        if (interceptor != null) {
-            interceptors.add(interceptor);
-        }
-    }
-
-    public void setEntityInterceptors(List<EntityInterceptor> interceptors) {
-        if (interceptors!=null) this.interceptors = interceptors;
     }
 
     /**

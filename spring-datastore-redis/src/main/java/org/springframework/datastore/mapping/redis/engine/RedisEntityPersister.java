@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
@@ -55,8 +56,9 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
 
     public static final String DISCRIMINATOR = "discriminator";
 
-    public RedisEntityPersister(MappingContext context, PersistentEntity entity, RedisSession conn, final RedisTemplate template) {
-        super(context, entity, conn);
+    public RedisEntityPersister(MappingContext context, PersistentEntity entity, RedisSession conn,
+           final RedisTemplate template, ApplicationEventPublisher publisher) {
+        super(context, entity, conn, publisher);
         this.redisTemplate = template;
         allEntityIndex = new RedisSet(redisTemplate, getEntityFamily() + ".all");
     }

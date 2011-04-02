@@ -14,44 +14,81 @@
  */
 package org.grails.datastore.gorm.events;
 
-import org.springframework.datastore.mapping.core.Datastore;
-import org.springframework.datastore.mapping.engine.EmptyInterceptor;
-import org.springframework.datastore.mapping.engine.EntityAccess;
-import org.springframework.datastore.mapping.model.MappingContext;
-import org.springframework.datastore.mapping.model.PersistentEntity;
-import org.springframework.util.ReflectionUtils;
-
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.context.ApplicationEvent;
+import org.springframework.datastore.mapping.core.Datastore;
+import org.springframework.datastore.mapping.engine.EntityAccess;
+import org.springframework.datastore.mapping.engine.event.AbstractPersistenceEvent;
+import org.springframework.datastore.mapping.engine.event.AbstractPersistenceEventListener;
+import org.springframework.datastore.mapping.engine.event.PreDeleteEvent;
+import org.springframework.datastore.mapping.engine.event.PreInsertEvent;
+import org.springframework.datastore.mapping.engine.event.PreUpdateEvent;
+import org.springframework.datastore.mapping.model.MappingContext;
+import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.util.ReflectionUtils;
+
 /**
- * An interceptor that provides support for GORM domain events
+ * An event listener that provides support for GORM domain events
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-public class DomainEventInterceptor extends EmptyInterceptor implements MappingContext.Listener {
+public class DomainEventListener extends AbstractPersistenceEventListener
+       implements MappingContext.Listener {
 
     private Map<PersistentEntity, Map<String, Method>> entityEvents = new ConcurrentHashMap<PersistentEntity, Map<String, Method>>();
+
     public static final Class[] ZERO_PARAMS = new Class[0];
     public static final String EVENT_BEFORE_INSERT = "beforeInsert";
     private static final String EVENT_BEFORE_UPDATE = "beforeUpdate";
     private static final String EVENT_BEFORE_DELETE = "beforeDelete";
 
+    public DomainEventListener(final Datastore datastore) {
+        super(datastore);
+
+        for (PersistentEntity entity : datastore.getMappingContext().getPersistentEntities()) {
+            createEventCaches(entity);
+        }
+
+        datastore.getMappingContext().addMappingContextListener(this);
+    }
+
     @Override
+    protected void onPersistenceEvent(final AbstractPersistenceEvent event) {
+        if (event instanceof PreInsertEvent) {
+            beforeInsert(event.getEntity(), event.getEntityAccess());
+        }
+        else if (event instanceof PreUpdateEvent) {
+            beforeUpdate(event.getEntity(), event.getEntityAccess());
+        }
+        else if (event instanceof PreDeleteEvent) {
+            beforeDelete(event.getEntity(), event.getEntityAccess());
+        }
+    }
+
     public boolean beforeInsert(PersistentEntity entity, EntityAccess ea) {
         return invokeEvent(EVENT_BEFORE_INSERT, entity, ea);
     }
 
-    @Override
     public boolean beforeUpdate(PersistentEntity entity, EntityAccess ea) {
         return invokeEvent(EVENT_BEFORE_UPDATE, entity, ea);
     }
 
-    @Override
     public boolean beforeDelete(PersistentEntity entity, EntityAccess ea) {
         return invokeEvent(EVENT_BEFORE_DELETE, entity, ea);
+    }
+
+    public void persistentEntityAdded(PersistentEntity entity) {
+        createEventCaches(entity);
+    }
+
+    public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
+        return PreDeleteEvent.class.isAssignableFrom(eventType) ||
+               PreInsertEvent.class.isAssignableFrom(eventType) ||
+               PreUpdateEvent.class.isAssignableFrom(eventType);
     }
 
     private boolean invokeEvent(String eventName, PersistentEntity entity, EntityAccess ea) {
@@ -65,21 +102,9 @@ public class DomainEventInterceptor extends EmptyInterceptor implements MappingC
                     ea.refresh();
                 }
                 return booleanResult;
-
             }
         }
         return true;
-    }
-
-    @Override
-    public void setDatastore(Datastore datastore) {
-        super.setDatastore(datastore);
-
-        for (PersistentEntity entity : datastore.getMappingContext().getPersistentEntities()) {
-            createEventCaches(entity);
-        }
-
-        datastore.getMappingContext().addMappingContextListener(this);
     }
 
     private void createEventCaches(PersistentEntity entity) {
@@ -97,9 +122,5 @@ public class DomainEventInterceptor extends EmptyInterceptor implements MappingC
         if (method != null) {
             events.put(event, method);
         }
-    }
-
-    public void persistentEntityAdded(PersistentEntity entity) {
-        createEventCaches(entity);
     }
 }

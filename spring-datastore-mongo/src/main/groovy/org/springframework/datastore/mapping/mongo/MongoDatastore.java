@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.document.mongodb.DbCallback;
@@ -57,7 +58,7 @@ import com.mongodb.WriteConcern;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class MongoDatastore extends AbstractDatastore implements InitializingBean, MappingContext.Listener{
+public class MongoDatastore extends AbstractDatastore implements InitializingBean, MappingContext.Listener {
 
     public static final String PASSWORD = "password";
     public static final String USERNAME = "username";
@@ -73,7 +74,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * Typically used during testing.
      */
     public MongoDatastore() {
-        this(new MongoMappingContext("test"), Collections.<String, String>emptyMap());
+        this(new MongoMappingContext("test"), Collections.<String, String>emptyMap(), null);
     }
 
     /**
@@ -83,9 +84,9 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * @param connectionDetails The connection details containing the {@link #MONGO_HOST} and {@link #MONGO_PORT} settings
      */
     public MongoDatastore(MongoMappingContext mappingContext,
-            Map<String, String> connectionDetails, MongoOptions mongoOptions) {
+            Map<String, String> connectionDetails, MongoOptions mongoOptions, ConfigurableApplicationContext ctx) {
 
-        this(mappingContext, connectionDetails);
+        this(mappingContext, connectionDetails, ctx);
         if (mongoOptions != null) {
             this.mongoOptions = mongoOptions;
         }
@@ -98,8 +99,8 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * @param connectionDetails The connection details containing the {@link #MONGO_HOST} and {@link #MONGO_PORT} settings
      */
     public MongoDatastore(MongoMappingContext mappingContext,
-            Map<String, String> connectionDetails) {
-        super(mappingContext, connectionDetails);
+            Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
+        super(mappingContext, connectionDetails, ctx);
 
         if (mappingContext != null) {
             mappingContext.addMappingContextListener(this);
@@ -119,7 +120,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     }
 
     public MongoDatastore(MongoMappingContext mappingContext) {
-        this(mappingContext, Collections.<String, String>emptyMap());
+        this(mappingContext, Collections.<String, String>emptyMap(), null);
     }
 
     /**
@@ -127,8 +128,9 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * @param mappingContext The MappingContext
      * @param mongo The existing Mongo instance
      */
-    public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo) {
-        this(mappingContext, Collections.<String, String>emptyMap());
+    public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo,
+              ConfigurableApplicationContext ctx) {
+        this(mappingContext, Collections.<String, String>emptyMap(), ctx);
         this.mongo = mongo;
     }
 
@@ -139,8 +141,9 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
      * @param mappingContext The MappingContext
      * @param mongo The existing Mongo instance
      */
-    public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo, Map<String, String> connectionDetails) {
-        this(mappingContext, connectionDetails);
+    public MongoDatastore(MongoMappingContext mappingContext, Mongo mongo,
+           Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
+        this(mappingContext, connectionDetails, ctx);
         this.mongo = mongo;
     }
 
@@ -154,21 +157,21 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 
     @Override
     protected Session createSession(Map<String, String> connDetails) {
-        return new MongoSession(this, getMappingContext());
+        return new MongoSession(this, getMappingContext(), getApplicationEventPublisher());
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (this.mongo == null) {
+        if (mongo == null) {
             ServerAddress defaults = new ServerAddress();
             MongoFactoryBean dbFactory = new MongoFactoryBean();
-            dbFactory.setHost( read(String.class, MONGO_HOST, connectionDetails, defaults.getHost()) );
-            dbFactory.setPort( read(Integer.class, MONGO_PORT, connectionDetails, defaults.getPort()) );
-            if (mongoOptions != null ) {
+            dbFactory.setHost(read(String.class, MONGO_HOST, connectionDetails, defaults.getHost()));
+            dbFactory.setPort(read(Integer.class, MONGO_PORT, connectionDetails, defaults.getPort()));
+            if (mongoOptions != null) {
                 dbFactory.setMongoOptions(mongoOptions);
             }
             dbFactory.afterPropertiesSet();
 
-            this.mongo = dbFactory.getObject();
+            mongo = dbFactory.getObject();
         }
 
         for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
@@ -257,7 +260,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                         final String fieldName = getMongoFieldNameForProperty(property);
                         dbObject.put(fieldName,1);
                         DBObject options = new BasicDBObject();
-                        if (mongoAttributeMapping != null ) {
+                        if (mongoAttributeMapping != null) {
                             final Map attributes = mongoAttributeMapping.getIndexAttributes();
                             if (attributes != null) {
                                 if (attributes.containsKey(MongoAttribute.INDEX_TYPE)) {

@@ -25,6 +25,7 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.mapping.collection.PersistentList;
@@ -39,6 +40,9 @@ import org.springframework.datastore.mapping.core.impl.PendingOperationAdapter;
 import org.springframework.datastore.mapping.core.impl.PendingOperationExecution;
 import org.springframework.datastore.mapping.core.impl.PendingUpdate;
 import org.springframework.datastore.mapping.core.impl.PendingUpdateAdapter;
+import org.springframework.datastore.mapping.engine.event.PreDeleteEvent;
+import org.springframework.datastore.mapping.engine.event.PreInsertEvent;
+import org.springframework.datastore.mapping.engine.event.PreUpdateEvent;
 import org.springframework.datastore.mapping.model.ClassMapping;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
@@ -59,11 +63,12 @@ import org.springframework.datastore.mapping.proxy.ProxyFactory;
  * @author Graeme Rocher
  * @since  1.0
  */
-public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPersister{
+public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPersister {
     protected ClassMapping classMapping;
 
-    public NativeEntryEntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
-        super(mappingContext, entity, session);
+    public NativeEntryEntityPersister(MappingContext mappingContext, PersistentEntity entity,
+              Session session, ApplicationEventPublisher publisher) {
+        super(mappingContext, entity, session, publisher);
         classMapping = entity.getMapping();
     }
 
@@ -82,16 +87,21 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
 
     @Override
     protected void deleteEntity(PersistentEntity persistentEntity, Object obj) {
-        if (obj != null) {
-            for (EntityInterceptor interceptor : interceptors) {
-                if (!interceptor.beforeDelete(persistentEntity, createEntityAccess(persistentEntity, obj))) return;
-            }
+        if (obj == null) {
+            return;
+        }
 
-            final K key = readIdentifierFromObject(obj);
+        PreDeleteEvent event = new PreDeleteEvent(session.getDatastore(), persistentEntity,
+                createEntityAccess(persistentEntity, obj));
+        publisher.publishEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
 
-            if (key != null) {
-                deleteEntry(getEntityFamily(), key);
-            }
+        final K key = readIdentifierFromObject(obj);
+
+        if (key != null) {
+            deleteEntry(getEntityFamily(), key);
         }
     }
 
@@ -557,7 +567,7 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
             };
             pendingOperation.addCascadeOperation(postOperation);
 
-            // If the key is still at this point we have to execute the pending operation now to get the key
+            // If the key is still null at this point we have to execute the pending operation now to get the key
             if (k == null) {
                 PendingOperationExecution.executePendingInsert(pendingOperation);
             }
@@ -587,7 +597,7 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
      *
      * @param nativeEntry The native entry
      * @param key The key
-     * @param value The embedded object
+     * @param embeddedEntry The embedded object
      */
     @SuppressWarnings("unused")
     protected void setEmbedded(T nativeEntry, String key, T embeddedEntry) {
@@ -810,43 +820,41 @@ public abstract class NativeEntryEntityPersister<T,K> extends LockableEntityPers
      * @return The key
      */
     protected K executeInsert(final PersistentEntity persistentEntity,
-                                   final NativeEntryModifyingEntityAccess entityAccess, final K id,
-                                   final T e) {
-        if (fireBeforeInsert(persistentEntity, entityAccess)) return null;
+                              final NativeEntryModifyingEntityAccess entityAccess,
+                              final K id, final T e) {
+        if (cancelInsert(persistentEntity, entityAccess)) return null;
         final K newId = storeEntry(persistentEntity, id, e);
         entityAccess.setIdentifier(newId);
         return newId;
     }
 
     /**
-     * Fire the beforeInsert even on an entityAccess object and return true if the operation should be evicted
+     * Fire the beforeInsert even on an entityAccess object and return true if the operation should be cancelled
      * @param persistentEntity The entity
      * @param entityAccess The entity access
-     * @return True if the operation should be eviced
+     * @return true if the operation should be cancelled
      */
-    public boolean fireBeforeInsert(final PersistentEntity persistentEntity,
+    public boolean cancelInsert(final PersistentEntity persistentEntity,
             final EntityAccess entityAccess) {
-        for (EntityInterceptor interceptor : interceptors) {
-                if (!interceptor.beforeInsert(persistentEntity, entityAccess)) return true;
-        }
-        return false;
+        PreInsertEvent event = new PreInsertEvent(session.getDatastore(), persistentEntity, entityAccess);
+        publisher.publishEvent(event);
+        return event.isCancelled();
     }
 
     /**
-     * Fire the beforeUpdate even on an entityAccess object and return true if the operation should be evicted
+     * Fire the beforeUpdate even on an entityAccess object and return true if the operation should be cancelled
      * @param persistentEntity The entity
      * @param entityAccess The entity access
-     * @return True if the operation should be eviced
+     * @return true if the operation should be cancelled
      */
     public boolean fireBeforeUpdate(final PersistentEntity persistentEntity,
             final EntityAccess entityAccess) {
-        for (EntityInterceptor interceptor : interceptors) {
-            if (!interceptor.beforeUpdate(persistentEntity, entityAccess)) return true;
-        }
-        return false;
+        PreUpdateEvent event = new PreUpdateEvent(session.getDatastore(), persistentEntity, entityAccess);
+        publisher.publishEvent(event);
+        return event.isCancelled();
     }
 
-    protected class NativeEntryModifyingEntityAccess extends EntityAccess  {
+    protected class NativeEntryModifyingEntityAccess extends EntityAccess {
 
         T nativeEntry;
         public NativeEntryModifyingEntityAccess(PersistentEntity persistentEntity, Object entity) {

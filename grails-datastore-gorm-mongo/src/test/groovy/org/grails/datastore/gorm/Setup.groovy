@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm
 
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
+import org.springframework.context.support.GenericApplicationContext
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.model.PersistentEntity
@@ -24,6 +25,9 @@ class Setup {
 
     static Session setup(classes) {
         mongo = new MongoDatastore()
+        def ctx = new GenericApplicationContext()
+        ctx.refresh()
+        mongo.applicationContext = ctx
         mongo.afterPropertiesSet()
 
         for (cls in classes) {

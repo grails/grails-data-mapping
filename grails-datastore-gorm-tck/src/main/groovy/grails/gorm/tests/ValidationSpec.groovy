@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-import org.springframework.datastore.mapping.validation.ValidatingInterceptor
+import org.springframework.datastore.mapping.validation.ValidatingEventListener
 import org.springframework.validation.Errors
 
 /**
@@ -9,7 +9,9 @@ import org.springframework.validation.Errors
 class ValidationSpec extends GormDatastoreSpec {
 
     void "Test disable validation"() {
-        session.datastore.addEntityInterceptor(new ValidatingInterceptor())
+        session.datastore.applicationContext.addApplicationListener(
+           new ValidatingEventListener(session.datastore))
+
         // test assumes name cannot be blank
         given:
             def t

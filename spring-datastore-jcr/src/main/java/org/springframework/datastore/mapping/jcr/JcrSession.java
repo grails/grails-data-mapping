@@ -7,6 +7,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.jackrabbit.core.TransientRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -32,8 +33,9 @@ public class JcrSession extends AbstractSession<JcrSessionFactory> {
 
     private JcrSessionFactory jcrSessionFactory;
 
-    public JcrSession(Datastore ds, MappingContext mappingContext, JcrSessionFactory jcrSessionFactory) {
-        super(ds, mappingContext);
+    public JcrSession(Datastore ds, MappingContext mappingContext, JcrSessionFactory jcrSessionFactory,
+              ApplicationEventPublisher publisher) {
+        super(ds, mappingContext, publisher);
         mappingContext.addTypeConverter(new LongToDateConverter());
         this.jcrSessionFactory = jcrSessionFactory;
         interceptor.setSessionFactory(jcrSessionFactory);
@@ -43,10 +45,11 @@ public class JcrSession extends AbstractSession<JcrSessionFactory> {
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
         PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
-        if (entity != null) {
-            return new JcrEntityPersister(mappingContext, entity, this, new JcrTemplate(jcrSessionFactory));
+        if (entity == null) {
+            return null;
         }
-        return null;
+        return new JcrEntityPersister(mappingContext, entity, this,
+                 new JcrTemplate(jcrSessionFactory), publisher);
     }
 
     @Override

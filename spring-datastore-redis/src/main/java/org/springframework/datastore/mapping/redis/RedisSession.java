@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.persistence.FlushModeType;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.core.Datastore;
@@ -50,14 +51,15 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
 
     private RedisTemplate redisTemplate;
 
-    public RedisSession(Datastore ds, MappingContext mappingContext, RedisTemplate template) {
-        super(ds, mappingContext);
+    public RedisSession(Datastore ds, MappingContext mappingContext, RedisTemplate template,
+            ApplicationEventPublisher publisher) {
+        super(ds, mappingContext, publisher);
         redisTemplate = template;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    protected void flushPendingInserts(    final Map<PersistentEntity, Collection<PendingInsert>> inserts) {
+    protected void flushPendingInserts(final Map<PersistentEntity, Collection<PendingInsert>> inserts) {
         // Optimizes saving multiple entities at once
         for (final PersistentEntity entity : inserts.keySet()) {
             final Collection<PendingInsert> pendingInserts = inserts.get(entity);
@@ -70,7 +72,7 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
                 public Object doInRedis(RedisTemplate redis) throws IOException {
                     for (PendingInsert<RedisEntry, Long> pendingInsert : pendingInserts) {
                         final EntityAccess entityAccess = pendingInsert.getEntityAccess();
-                        if (persister.fireBeforeInsert(entity, entityAccess)) continue;
+                        if (persister.cancelInsert(entity, entityAccess)) continue;
 
                         List<PendingOperation<RedisEntry, Long>> preOperations = pendingInsert.getPreOperations();
                         for (PendingOperation<RedisEntry, Long> preOperation : preOperations) {
@@ -127,7 +129,7 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
       PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
       if (entity != null) {
-          return new RedisEntityPersister(mappingContext, entity, this, redisTemplate);
+          return new RedisEntityPersister(mappingContext, entity, this, redisTemplate, publisher);
       }
       return null;
     }

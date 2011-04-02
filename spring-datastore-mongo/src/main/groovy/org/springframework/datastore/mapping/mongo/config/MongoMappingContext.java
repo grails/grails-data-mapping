@@ -19,7 +19,7 @@ import org.springframework.datastore.mapping.document.config.DocumentMappingCont
 import org.springframework.datastore.mapping.model.MappingFactory;
 
 /**
- * Models a {@link MappingContext} for Mongo
+ * Models a {@link org.springframework.datastore.mapping.model.MappingContext} for Mongo.
  *
  * @author Graeme Rocher
  */

@@ -21,16 +21,15 @@ public interface PersistentEntity extends Initializable {
     String getName();
 
     /**
-     * Whether this PersistentEntity is mapped using a different store. Used for cross store persistence
+     * Whether this PersistentEntity is mapped using a different store. Used for cross store persistence.
      *
-     * @return True if this entity is externally mapped
+     * @return true if this entity is externally mapped
      */
     boolean isExternal();
 
     /**
-     * Whether this PersistentEntity is mapped using a different store. Used for cross store persistence
-     *
-     * @return True if this entity is externally mapped
+     * Whether this PersistentEntity is mapped using a different store. Used for cross store persistence.
+     * @param external true if this entity is externally mapped
      */
     void setExternal(boolean external);
 

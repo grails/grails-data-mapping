@@ -15,7 +15,7 @@
 
 package org.grails.datastore.gorm.jpa
 
-import static org.springframework.datastore.mapping.validation.ValidatingInterceptor.*
+import static org.springframework.datastore.mapping.validation.ValidatingEventListener.*
 
 import javax.persistence.EntityManager
 import javax.persistence.Query

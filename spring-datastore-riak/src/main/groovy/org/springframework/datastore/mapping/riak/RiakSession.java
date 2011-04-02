@@ -18,6 +18,9 @@
 
 package org.springframework.datastore.mapping.riak;
 
+import java.math.BigInteger;
+
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.keyvalue.riak.core.QosParameters;
 import org.springframework.data.keyvalue.riak.core.RiakTemplate;
@@ -28,8 +31,6 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.riak.engine.RiakEntityPersister;
 import org.springframework.datastore.mapping.transactions.Transaction;
-
-import java.math.BigInteger;
 
 /**
  * A {@link org.springframework.datastore.mapping.core.Session} implementation for the Riak
@@ -43,8 +44,9 @@ public class RiakSession extends AbstractSession {
     private RiakTemplate riakTemplate;
     private QosParameters qosParameters;
 
-    public RiakSession(Datastore datastore, MappingContext mappingContext, RiakTemplate riakTemplate) {
-        super(datastore, mappingContext);
+    public RiakSession(Datastore datastore, MappingContext mappingContext,
+             RiakTemplate riakTemplate, ApplicationEventPublisher publisher) {
+        super(datastore, mappingContext, publisher);
         this.riakTemplate = riakTemplate;
         mappingContext.addTypeConverter(new BigIntegerToLongConverter());
     }
@@ -52,10 +54,10 @@ public class RiakSession extends AbstractSession {
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
         PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
-        if (null != entity) {
-            return new RiakEntityPersister(mappingContext, entity, this, riakTemplate);
+        if (null == entity) {
+            return null;
         }
-        return null;
+        return new RiakEntityPersister(mappingContext, entity, this, riakTemplate, publisher);
     }
 
     @Override

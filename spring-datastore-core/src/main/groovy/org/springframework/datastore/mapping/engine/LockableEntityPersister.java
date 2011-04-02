@@ -16,6 +16,7 @@ package org.springframework.datastore.mapping.engine;
 
 import java.io.Serializable;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.model.MappingContext;
@@ -27,12 +28,13 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class LockableEntityPersister extends EntityPersister{
+public abstract class LockableEntityPersister extends EntityPersister {
 
     public static int DEFAULT_TIMEOUT = 30;
 
-    public LockableEntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
-        super(mappingContext, entity, session);
+    public LockableEntityPersister(MappingContext mappingContext, PersistentEntity entity,
+               Session session, ApplicationEventPublisher publisher) {
+        super(mappingContext, entity, session, publisher);
     }
 
     /**

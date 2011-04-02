@@ -14,6 +14,8 @@
  */
 package org.springframework.datastore.mapping.core;
 
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.datastore.mapping.model.MappingContext;
 
 /**
@@ -26,7 +28,6 @@ import org.springframework.datastore.mapping.model.MappingContext;
  *
  * @author Guillaume Laforge
  * @author Graeme Rocher
- *
  */
 public interface Datastore {
 
@@ -51,4 +52,16 @@ public interface Datastore {
      * @return The MappingContext object
      */
     MappingContext getMappingContext();
+
+    /**
+     * Get the application event publisher.
+     * @return the publisher
+     */
+    ApplicationEventPublisher getApplicationEventPublisher();
+
+    /**
+     * Get the application context.
+     * @return the context
+     */
+    ConfigurableApplicationContext getApplicationContext();
 }

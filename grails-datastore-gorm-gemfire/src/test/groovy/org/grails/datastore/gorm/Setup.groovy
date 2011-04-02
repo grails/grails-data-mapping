@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm
 
 import org.grails.datastore.gorm.gemfire.GemfireGormEnhancer
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.gemfire.GemfireDatastore
 import org.springframework.datastore.mapping.gemfire.config.GormGemfireMappingFactory
@@ -30,7 +31,9 @@ class Setup {
         def factory = new GormGemfireMappingFactory()
         factory.defaultDataPolicy = DataPolicy.REPLICATE
         context.mappingFactory = factory
-        gemfire = new GemfireDatastore(context)
+        def ctx = new GenericApplicationContext()
+        ctx.refresh()
+        gemfire = new GemfireDatastore(context, ctx)
         gemfire.afterPropertiesSet()
         for (cls in classes) {
             gemfire.mappingContext.addPersistentEntity(cls)

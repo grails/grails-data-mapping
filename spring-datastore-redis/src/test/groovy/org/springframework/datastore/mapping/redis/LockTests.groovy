@@ -5,12 +5,11 @@ import org.junit.Test
 /**
  * Tests for locking
  */
-class LockTests {
+class LockTests extends AbstractRedisTest {
 
     @Test
     void testLock() {
         return // not yet implemented
-        def ds = new RedisDatastore()
         ds.mappingContext.addPersistentEntity(Candidate)
         def session = ds.connect()
         session.getNativeInterface().flushdb()

@@ -18,6 +18,7 @@ import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.model.MappingContext;
@@ -37,8 +38,9 @@ public class JpaDatastore extends AbstractDatastore {
 
     public JpaDatastore(MappingContext mappingContext,
             EntityManagerFactory entityManagerFactory,
-            JpaTransactionManager transactionManager) {
-        super(mappingContext);
+            JpaTransactionManager transactionManager,
+            ConfigurableApplicationContext applicationContext) {
+        super(mappingContext, null, applicationContext);
         this.entityManagerFactory = entityManagerFactory;
         this.transactionManager = transactionManager;
         initializeConverters(mappingContext);

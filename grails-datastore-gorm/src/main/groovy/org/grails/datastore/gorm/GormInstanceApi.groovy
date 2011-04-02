@@ -17,7 +17,7 @@ package org.grails.datastore.gorm
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.validation.ValidationException
 import org.springframework.datastore.mapping.proxy.EntityProxy
-import static org.springframework.datastore.mapping.validation.ValidatingInterceptor.*
+import static org.springframework.datastore.mapping.validation.ValidatingEventListener.*
 
 /**
  * Instance methods of the GORM API

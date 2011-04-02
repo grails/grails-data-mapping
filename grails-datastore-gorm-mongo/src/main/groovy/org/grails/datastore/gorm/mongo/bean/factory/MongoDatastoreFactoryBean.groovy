@@ -15,9 +15,11 @@
 
 package org.grails.datastore.gorm.mongo.bean.factory
 
-import org.grails.datastore.gorm.events.AutoTimestampInterceptor
-import org.grails.datastore.gorm.events.DomainEventInterceptor
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
 import org.springframework.beans.factory.FactoryBean
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.mongo.MongoDatastore
 
@@ -28,32 +30,31 @@ import com.mongodb.Mongo
  *
  * @author Graeme Rocher
  */
-class MongoDatastoreFactoryBean implements FactoryBean<MongoDatastore> {
+class MongoDatastoreFactoryBean implements FactoryBean<MongoDatastore>, ApplicationContextAware {
 
     Mongo mongo
     MappingContext mappingContext
     Map<String,String> config = [:]
+    ApplicationContext applicationContext
 
-    @Override
     MongoDatastore getObject() {
 
         MongoDatastore datastore
-        if (mongo != null) {
-            datastore = new MongoDatastore(mappingContext, mongo, config)
+        if (mongo) {
+            datastore = new MongoDatastore(mappingContext, mongo, config, applicationContext)
         }
         else {
-            datastore = new MongoDatastore(mappingContext, config)
+            datastore = new MongoDatastore(mappingContext, config, applicationContext)
         }
 
-        datastore.addEntityInterceptor(new DomainEventInterceptor())
-        datastore.addEntityInterceptor(new AutoTimestampInterceptor())
+        applicationContext.addApplicationListener new DomainEventListener(datastore)
+        applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
+
         datastore.afterPropertiesSet()
-        return datastore
+        datastore
     }
 
-    @Override
     Class<?> getObjectType() { MongoDatastore }
 
-    @Override
     boolean isSingleton() { true }
 }

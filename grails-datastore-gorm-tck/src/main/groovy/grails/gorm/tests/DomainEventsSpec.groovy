@@ -1,7 +1,7 @@
 package grails.gorm.tests
 
-import org.grails.datastore.gorm.events.AutoTimestampInterceptor
-import org.grails.datastore.gorm.events.DomainEventInterceptor
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
 import org.springframework.datastore.mapping.core.Session
 
 /**
@@ -11,8 +11,8 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
     Session setupEventsSession() {
         def datastore = session.datastore
-        datastore.addEntityInterceptor(new DomainEventInterceptor())
-        datastore.addEntityInterceptor(new AutoTimestampInterceptor())
+        datastore.applicationContext.addApplicationListener new DomainEventListener(datastore)
+        datastore.applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
         session = datastore.connect()
     }
 

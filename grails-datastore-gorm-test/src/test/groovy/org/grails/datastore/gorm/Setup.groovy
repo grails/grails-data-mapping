@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm
 
+import org.springframework.context.support.GenericApplicationContext
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.model.PersistentEntity
@@ -15,7 +16,8 @@ import org.springframework.validation.Validator
 class Setup {
 
     static Session setup(classes) {
-        def simple = new SimpleMapDatastore()
+        def ctx = new GenericApplicationContext()
+        def simple = new SimpleMapDatastore(ctx)
         for (cls in classes) {
             simple.mappingContext.addPersistentEntity(cls)
         }

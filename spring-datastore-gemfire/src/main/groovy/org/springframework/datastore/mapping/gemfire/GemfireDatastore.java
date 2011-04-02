@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.gemfire.CacheFactoryBean;
@@ -66,18 +67,19 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
     public static final String SETTING_CACHE_XML = "cacheXml";
     public static final String SETTING_PROPERTIES = "properties";
 
-    public GemfireDatastore(MappingContext mappingContext, Map<String, String> connectionDetails) {
-        super(mappingContext, connectionDetails != null ? connectionDetails : Collections.<String, String>emptyMap());
+    public GemfireDatastore(MappingContext mappingContext, Map<String, String> connectionDetails,
+            ConfigurableApplicationContext ctx) {
+        super(mappingContext, connectionDetails != null ? connectionDetails : Collections.<String, String>emptyMap(), ctx);
 
         mappingContext.addMappingContextListener(this);
     }
 
-    public GemfireDatastore(MappingContext mappingContext) {
-        this(mappingContext, Collections.<String, String>emptyMap());
+    public GemfireDatastore(MappingContext mappingContext, ConfigurableApplicationContext ctx) {
+        this(mappingContext, Collections.<String, String>emptyMap(), ctx);
     }
 
-    public GemfireDatastore(MappingContext mappingContext, Cache gemfireCache) {
-        this(mappingContext, Collections.<String, String>emptyMap());
+    public GemfireDatastore(MappingContext mappingContext, Cache gemfireCache, ConfigurableApplicationContext ctx) {
+        this(mappingContext, Collections.<String, String>emptyMap(), ctx);
         this.gemfireCache = gemfireCache;
     }
 
@@ -267,7 +269,7 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
 
     @Override
     protected Session createSession(Map<String, String> connDetails) {
-        return new GemfireSession(this, mappingContext);
+        return new GemfireSession(this, mappingContext, getApplicationEventPublisher());
     }
 
     public void destroy() throws Exception {

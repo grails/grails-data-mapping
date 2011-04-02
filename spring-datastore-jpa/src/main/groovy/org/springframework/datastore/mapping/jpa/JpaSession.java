@@ -29,9 +29,7 @@ import javax.persistence.PersistenceException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.datastore.mapping.core.AbstractAttributeStoringSession;
-import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.EntityAccess;
-import org.springframework.datastore.mapping.engine.EntityInterceptor;
 import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.jpa.query.JpaQuery;
 import org.springframework.datastore.mapping.model.MappingContext;
@@ -50,12 +48,12 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class JpaSession extends AbstractAttributeStoringSession implements Session {
+// TODO no events?
+public class JpaSession extends AbstractAttributeStoringSession {
 
     private JpaDatastore datastore;
     private JpaTemplate jpaTemplate;
     private JpaTransactionManager transactionManager;
-    private List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
     private FlushModeType flushMode;
     private boolean connected = true;
     private TransactionStatus transaction;
@@ -68,18 +66,6 @@ public class JpaSession extends AbstractAttributeStoringSession implements Sessi
 
     public JpaTemplate getJpaTemplate() {
         return jpaTemplate;
-    }
-
-    public List<EntityInterceptor> getInterceptors() {
-        return interceptors;
-    }
-
-    public void setEntityInterceptors(List<EntityInterceptor> interceptors) {
-        this.interceptors  = interceptors;
-    }
-
-    public void addEntityInterceptor(EntityInterceptor interceptor) {
-        interceptors.add(interceptor);
     }
 
     public boolean isConnected() {

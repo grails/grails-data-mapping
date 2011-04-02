@@ -31,14 +31,18 @@ import java.util.concurrent.locks.Lock;
 
 import javax.persistence.CascadeType;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.data.gemfire.GemfireCallback;
 import org.springframework.data.gemfire.GemfireTemplate;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.EntityAccess;
-import org.springframework.datastore.mapping.engine.EntityInterceptor;
 import org.springframework.datastore.mapping.engine.LockableEntityPersister;
+import org.springframework.datastore.mapping.engine.event.AbstractPersistenceEvent;
+import org.springframework.datastore.mapping.engine.event.PreDeleteEvent;
+import org.springframework.datastore.mapping.engine.event.PreInsertEvent;
+import org.springframework.datastore.mapping.engine.event.PreUpdateEvent;
 import org.springframework.datastore.mapping.gemfire.GemfireDatastore;
 import org.springframework.datastore.mapping.gemfire.GemfireSession;
 import org.springframework.datastore.mapping.gemfire.query.GemfireQuery;
@@ -69,10 +73,10 @@ public class GemfireEntityPersister extends LockableEntityPersister {
     private static final String CASCADE_PROCESSED = "cascade.processed";
     private static final Boolean TRUE = true;
 
-    public GemfireEntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
-        super(mappingContext, entity, session);
+    public GemfireEntityPersister(MappingContext mappingContext, PersistentEntity entity,
+              Session session, ApplicationEventPublisher publisher) {
+        super(mappingContext, entity, session, publisher);
         this.gemfireDatastore = (GemfireDatastore) session.getDatastore();
-
     }
 
     @Override
@@ -167,7 +171,7 @@ public class GemfireEntityPersister extends LockableEntityPersister {
         final Map putMap = new HashMap();
         List<Serializable> identifiers = new ArrayList<Serializable>();
         final Map<Object, EntityAccess> entityAccessObjects = new HashMap<Object, EntityAccess>();
-        out:
+
         for (Object obj : objs) {
             final EntityAccess access = createEntityAccess(persistentEntity,obj);
             entityAccessObjects.put(obj, access);
@@ -178,16 +182,12 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                 isUpdate = false;
             }
 
-            boolean proceed = true;
-            for (EntityInterceptor interceptor : interceptors) {
-                if (isUpdate) {
-                    proceed = interceptor.beforeUpdate(persistentEntity, access);
-                }
-                else {
-                    proceed = interceptor.beforeInsert(persistentEntity, access);
-                }
-
-                if (!proceed) continue out;
+            AbstractPersistenceEvent event = isUpdate ?
+                new PreUpdateEvent(session.getDatastore(), persistentEntity, access) :
+                new PreInsertEvent(session.getDatastore(), persistentEntity, access);
+            publisher.publishEvent(event);
+            if (event.isCancelled()) {
+                break;
             }
 
             putMap.put(identifier, obj);
@@ -280,15 +280,13 @@ public class GemfireEntityPersister extends LockableEntityPersister {
         template.execute(new GemfireCallback() {
 
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
-                for (EntityInterceptor interceptor : interceptors) {
-                    boolean proceed = true;
-                    if (finalIsUpdate) {
-                        proceed = interceptor.beforeUpdate(persistentEntity, access);
-                    }
-                    else {
-                        proceed = interceptor.beforeInsert(persistentEntity, access);
-                    }
-                    if (!proceed) return finalId;
+
+                AbstractPersistenceEvent event = finalIsUpdate ?
+                        new PreUpdateEvent(session.getDatastore(), persistentEntity, access) :
+                        new PreInsertEvent(session.getDatastore(), persistentEntity, access);
+                publisher.publishEvent(event);
+                if (event.isCancelled()) {
+                    return finalId;
                 }
 
                 region.put(finalId, obj);
@@ -435,9 +433,12 @@ public class GemfireEntityPersister extends LockableEntityPersister {
         template.execute(new GemfireCallback() {
 
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
-                for (EntityInterceptor interceptor : interceptors) {
-                    if (!interceptor.beforeDelete(persistentEntity, access)) return null;
+                PreDeleteEvent event = new PreDeleteEvent(session.getDatastore(), persistentEntity, access);
+                publisher.publishEvent(event);
+                if (event.isCancelled()) {
+                    return null;
                 }
+
                 region.remove(identifier);
                 if (!persistentEntity.isRoot()) {
                     doWithParents(persistentEntity, new GemfireCallback() {

@@ -2,12 +2,10 @@ package org.springframework.datastore.mapping.mongo
 
 import org.junit.Test
 
-class BasicPersistenceSpec {
+class BasicPersistenceSpec extends AbstractMongoTest {
 
     @Test
     void testBasicPersistenceOperations() {
-        def md = new MongoDatastore()
-        md.afterPropertiesSet()
         md.mappingContext.addPersistentEntity(TestEntity)
 
         MongoSession session = md.connect()

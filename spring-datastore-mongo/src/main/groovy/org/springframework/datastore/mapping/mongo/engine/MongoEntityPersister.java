@@ -29,6 +29,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.bson.types.ObjectId;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.document.mongodb.DbCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
@@ -83,9 +84,9 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         nativeEntry.put(key, embeddedEntry);
     }
 
-    public MongoEntityPersister(MappingContext mappingContext,
-            PersistentEntity entity, MongoSession mongoSession) {
-        super(mappingContext, entity, mongoSession);
+    public MongoEntityPersister(MappingContext mappingContext, PersistentEntity entity,
+             MongoSession mongoSession, ApplicationEventPublisher publisher) {
+        super(mappingContext, entity, mongoSession, publisher);
         MongoDatastore datastore = (MongoDatastore) mongoSession.getDatastore();
         mongoTemplate = datastore.getMongoTemplate(entity);
 

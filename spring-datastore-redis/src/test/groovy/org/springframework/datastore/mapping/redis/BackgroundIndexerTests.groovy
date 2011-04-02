@@ -9,7 +9,7 @@ import redis.clients.jedis.Jedis
 /**
  * Tests background indexing functions correctly
  */
-class BackgroundIndexerTests {
+class BackgroundIndexerTests extends AbstractRedisTest {
 
     @Test
     void testBackgroundIndexer() {
@@ -24,11 +24,10 @@ class BackgroundIndexerTests {
         template.sadd("org.springframework.datastore.mapping.redis.Book.all", 2L)
 
         // initialise datastore
-        def datastore = new RedisDatastore()
-        datastore.mappingContext.addPersistentEntity(Book)
-        datastore.afterPropertiesSet()
+        ds.mappingContext.addPersistentEntity(Book)
+        ds.afterPropertiesSet()
 
-        def session = datastore.connect()
+        def session = ds.connect()
 
         def results = session.createQuery(Book).eq("title", "It").list()
 

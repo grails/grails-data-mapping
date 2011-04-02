@@ -14,6 +14,7 @@
  */
 package org.springframework.datastore.mapping.gemfire;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.gemfire.engine.GemfireEntityPersister;
@@ -32,15 +33,16 @@ import com.gemstone.gemfire.cache.CacheTransactionManager;
  * @since 1.0
  */
 public class GemfireSession extends AbstractSession<Cache> {
-    public GemfireSession(GemfireDatastore datastore, MappingContext mappingContext) {
-        super(datastore, mappingContext);
+    public GemfireSession(GemfireDatastore datastore, MappingContext mappingContext,
+               ApplicationEventPublisher publisher) {
+        super(datastore, mappingContext, publisher);
     }
 
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
         final PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
         if (entity != null) {
-            return new GemfireEntityPersister(mappingContext, entity, this);
+            return new GemfireEntityPersister(mappingContext, entity, this, publisher);
         }
         return null;
     }

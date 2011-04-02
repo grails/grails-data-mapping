@@ -16,8 +16,8 @@ package org.grails.datastore.gorm.jpa.bean.factory
 
 import javax.persistence.EntityManagerFactory
 
-import org.grails.datastore.gorm.events.AutoTimestampInterceptor
-import org.grails.datastore.gorm.events.DomainEventInterceptor
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
@@ -25,25 +25,21 @@ import org.springframework.datastore.mapping.jpa.JpaDatastore
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.orm.jpa.JpaTransactionManager
 
-class JpaDatastoreFactoryBean implements FactoryBean<JpaDatastore>,ApplicationContextAware{
+class JpaDatastoreFactoryBean implements FactoryBean<JpaDatastore>, ApplicationContextAware {
 
     EntityManagerFactory entityManagerFactory
     MappingContext mappingContext
     ApplicationContext applicationContext
 
-    @Override
     JpaDatastore getObject() {
         def transactionManager = applicationContext.getBean(JpaTransactionManager)
-        def datastore = new JpaDatastore( mappingContext, entityManagerFactory, transactionManager )
-        datastore.addEntityInterceptor(new DomainEventInterceptor())
-        datastore.addEntityInterceptor(new AutoTimestampInterceptor())
-
-        return datastore
+        def datastore = new JpaDatastore(mappingContext, entityManagerFactory, transactionManager, applicationContext)
+        applicationContext.addApplicationListener new DomainEventListener(datastore)
+        applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
+        datastore
     }
 
-    @Override
     Class<?> getObjectType() { JpaDatastore }
 
-    @Override
     boolean isSingleton() { true }
 }

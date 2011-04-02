@@ -14,17 +14,15 @@
  */
 package org.grails.datastore.gorm.jpa;
 
-import java.util.List;
-
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
-import org.grails.datastore.gorm.events.DomainEventInterceptor;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.ConnectionNotFoundException;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.EntityAccess;
-import org.springframework.datastore.mapping.engine.EntityInterceptor;
+import org.springframework.datastore.mapping.engine.event.PreInsertEvent;
+import org.springframework.datastore.mapping.engine.event.PreUpdateEvent;
 import org.springframework.datastore.mapping.jpa.JpaDatastore;
 import org.springframework.datastore.mapping.jpa.JpaSession;
 import org.springframework.datastore.mapping.model.PersistentEntity;
@@ -55,18 +53,11 @@ public class EntityInterceptorInvokingEntityListener {
                 return;
             }
 
-            final List<EntityInterceptor> interceptors = jpaSession.getInterceptors();
-            if (interceptors != null && !interceptors.isEmpty()) {
-                final EntityAccess entityAccess = new EntityAccess(entity, o);
-                for (EntityInterceptor entityInterceptor : interceptors) {
-                    if (!(entityInterceptor instanceof DomainEventInterceptor)) {
-                        if (!entityInterceptor.beforeInsert(entity, entityAccess)) {
-                            rollbackTransaction(jpaSession);
-
-                            break;
-                        }
-                    }
-                }
+            final EntityAccess entityAccess = new EntityAccess(entity, o);
+            PreInsertEvent event = new PreInsertEvent(session.getDatastore(), entity, entityAccess);
+            session.getDatastore().getApplicationEventPublisher().publishEvent(event);
+            if (event.isCancelled()) {
+                rollbackTransaction(jpaSession);
             }
         }
         catch (ConnectionNotFoundException e) {
@@ -97,22 +88,18 @@ public class EntityInterceptorInvokingEntityListener {
             if (!(session instanceof JpaSession)) {
                 return;
             }
+
             JpaSession jpaSession = (JpaSession)session;
             final PersistentEntity entity = session.getMappingContext().getPersistentEntity(o.getClass().getName());
             if (entity == null) {
                 return;
             }
-            final List<EntityInterceptor> interceptors = jpaSession.getInterceptors();
-            if (interceptors != null && !interceptors.isEmpty()) {
-                final EntityAccess entityAccess = new EntityAccess(entity, o);
-                for (EntityInterceptor entityInterceptor : interceptors) {
-                    if (!(entityInterceptor instanceof DomainEventInterceptor)) {
-                        if (!entityInterceptor.beforeUpdate(entity, entityAccess)) {
-                            rollbackTransaction(jpaSession);
-                            break;
-                        }
-                    }
-                }
+
+            final EntityAccess entityAccess = new EntityAccess(entity, o);
+            PreUpdateEvent event = new PreUpdateEvent(session.getDatastore(), entity, entityAccess);
+            session.getDatastore().getApplicationEventPublisher().publishEvent(event);
+            if (event.isCancelled()) {
+                rollbackTransaction(jpaSession);
             }
         }
         catch (ConnectionNotFoundException e) {

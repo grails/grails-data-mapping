@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.document.mongodb.DbCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
@@ -43,7 +44,7 @@ import com.mongodb.MongoException;
 import com.mongodb.WriteConcern;
 
 /**
- * A {@link Session} implementation for the Mongo document store
+ * A {@link org.springframework.datastore.mapping.core.Session} implementation for the Mongo document store.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -54,8 +55,8 @@ public class MongoSession extends AbstractSession<DB> {
     private boolean connected = true;
     private WriteConcern writeConcern = WriteConcern.NORMAL;
 
-    public MongoSession(MongoDatastore datastore, MappingContext mappingContext) {
-        super(datastore, mappingContext);
+    public MongoSession(MongoDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
+        super(datastore, mappingContext, publisher);
         this.mongoDatastore = datastore;
         getNativeInterface().requestStart();
     }
@@ -76,7 +77,7 @@ public class MongoSession extends AbstractSession<DB> {
 
     /**
      * Obtains the WriteConcern to use for the session
-     * @return
+     * @return the WriteConcern
      */
     public WriteConcern getWriteConcern() {
         return writeConcern;
@@ -132,7 +133,7 @@ public class MongoSession extends AbstractSession<DB> {
 
                     for (PendingInsert pendingInsert : pendingInserts) {
                         final EntityAccess entityAccess = pendingInsert.getEntityAccess();
-                        if (persister.fireBeforeInsert(entity, entityAccess)) continue;
+                        if (persister.cancelInsert(entity, entityAccess)) continue;
 
                         final List<PendingOperation> preOperations = pendingInsert.getPreOperations();
                         for (PendingOperation preOperation : preOperations) {
@@ -165,7 +166,7 @@ public class MongoSession extends AbstractSession<DB> {
     protected Persister createPersister(@SuppressWarnings("rawtypes") Class cls, MappingContext mappingContext) {
         final PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
         if (entity != null) {
-            return new MongoEntityPersister(mappingContext, entity, this);
+            return new MongoEntityPersister(mappingContext, entity, this, publisher);
         }
         return null;
     }

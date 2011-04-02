@@ -14,7 +14,7 @@
  */
 package org.grails.datastore.gorm
 
-import static org.springframework.datastore.mapping.validation.ValidatingInterceptor.*
+import static org.springframework.datastore.mapping.validation.ValidatingEventListener.*
 
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.model.MappingContext

@@ -18,24 +18,28 @@
 
 package org.grails.datastore.gorm.riak
 
-import org.grails.datastore.gorm.events.AutoTimestampInterceptor
-import org.grails.datastore.gorm.events.DomainEventInterceptor
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
+
 import org.springframework.beans.factory.FactoryBean
-import org.springframework.datastore.mapping.riak.RiakDatastore
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
 import org.springframework.datastore.mapping.model.MappingContext
+import org.springframework.datastore.mapping.riak.RiakDatastore
 
 /**
  * @author J. Brisbin <jon@jbrisbin.com>
  */
-class RiakDatastoreFactoryBean implements FactoryBean<RiakDatastore> {
+class RiakDatastoreFactoryBean implements FactoryBean<RiakDatastore>, ApplicationContextAware {
 
     Map<String, String> config
     MappingContext mappingContext
+    ApplicationContext applicationContext
 
     RiakDatastore getObject() {
-        RiakDatastore datastore = new RiakDatastore(mappingContext, config)
-        datastore.addEntityInterceptor(new DomainEventInterceptor())
-        datastore.addEntityInterceptor(new AutoTimestampInterceptor())
+        RiakDatastore datastore = new RiakDatastore(mappingContext, config, applicationContext)
+        applicationContext.addApplicationListener new DomainEventListener(datastore)
+        applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
         datastore.afterPropertiesSet()
 
         datastore

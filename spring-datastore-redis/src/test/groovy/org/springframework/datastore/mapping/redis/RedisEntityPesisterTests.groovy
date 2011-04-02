@@ -7,12 +7,10 @@ import org.springframework.datastore.mapping.core.Session
  * @author Graeme Rocher
  * @since 1.1
  */
-class RedisEntityPesisterTests extends GroovyTestCase {
+class RedisEntityPesisterTests extends AbstractRedisTest {
 
     @Test
     void testPersistObject() {
-        RedisDatastore ds = new RedisDatastore()
-
         Session conn = ds.connect()
 
         try {
@@ -31,7 +29,7 @@ class RedisEntityPesisterTests extends GroovyTestCase {
             t = conn.retrieve(TestEntity, key)
 
             assert t != null
-            assert "bob"    == t.name
+            assert "bob" == t.name
 
             conn.delete(t)
             conn.flush()
@@ -48,9 +46,8 @@ class RedisEntityPesisterTests extends GroovyTestCase {
 
     @Test
     void testTransactions() {
-        if (notYetImplemented()) return
+        if (true) return
         // doesn't work right now
-        def ds = new RedisDatastore()
         ds.getMappingContext().addPersistentEntity(TestEntity)
 
         Session conn = ds.connect(null)

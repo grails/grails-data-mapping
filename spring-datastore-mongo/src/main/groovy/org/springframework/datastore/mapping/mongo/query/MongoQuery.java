@@ -524,7 +524,7 @@ public class MongoQuery extends Query{
      *
      * @param property The property
      * @param value A two dimensional list of values
-     * @return
+     * @return this
      */
     public Query near(String property, List value) {
         add(new Near(property, value));

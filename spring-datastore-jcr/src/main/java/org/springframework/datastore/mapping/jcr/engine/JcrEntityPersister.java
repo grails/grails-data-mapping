@@ -15,6 +15,7 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
 import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.datastore.mapping.core.Session;
@@ -38,15 +39,17 @@ public class JcrEntityPersister extends AbstractNodeEntityPersister<Node, String
     private JcrTemplate jcrTemplate;
     private SimpleTypeConverter typeConverter;
 
-    public JcrEntityPersister(MappingContext context, PersistentEntity entity, Session session, JcrTemplate jcrTemplate) {
-        super(context, entity, session);
+    public JcrEntityPersister(MappingContext context, PersistentEntity entity, Session session,
+               JcrTemplate jcrTemplate, ApplicationEventPublisher publisher) {
+        super(context, entity, session, publisher);
         typeConverter = new SimpleTypeConverter();
         this.jcrTemplate = jcrTemplate;
         this.jcrTemplate.setAllowCreate(true);
     }
 
-    public JcrEntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
-        super(mappingContext, entity, session);
+    public JcrEntityPersister(MappingContext mappingContext, PersistentEntity entity,
+               Session session, ApplicationEventPublisher publisher) {
+        super(mappingContext, entity, session, publisher);
     }
 
     /**
