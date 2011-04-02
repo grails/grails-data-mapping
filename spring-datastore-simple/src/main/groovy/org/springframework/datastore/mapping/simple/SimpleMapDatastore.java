@@ -46,19 +46,19 @@ public class SimpleMapDatastore extends AbstractDatastore {
         setApplicationContext(ctx);
     }
 
-	/**
-	 * Creates a map based datastore for the specified mapping context
-	 *
-	 * @param mappingContext The mapping context
-	 */
-	public SimpleMapDatastore(MappingContext mappingContext, ConfigurableApplicationContext ctx) {
-		super(mappingContext, null, ctx);
-		initializeConverters(getMappingContext());
-	}
+    /**
+     * Creates a map based datastore for the specified mapping context
+     *
+     * @param mappingContext The mapping context
+     */
+    public SimpleMapDatastore(MappingContext mappingContext, ConfigurableApplicationContext ctx) {
+        super(mappingContext, null, ctx);
+        initializeConverters(getMappingContext());
+    }
 
-	public SimpleMapDatastore() {
-		this(new KeyValueMappingContext(""), null);
-	}
+    public SimpleMapDatastore() {
+        this(new KeyValueMappingContext(""), null);
+    }
 
     public Map getIndices() {
         return indices;

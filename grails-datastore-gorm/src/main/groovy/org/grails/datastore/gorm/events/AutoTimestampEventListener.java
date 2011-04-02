@@ -69,7 +69,7 @@ public class AutoTimestampEventListener extends AbstractPersistenceEventListener
     }
 
     public boolean beforeInsert(PersistentEntity entity, EntityAccess ea) {
-     if (hasDateCreated(entity)) {
+        if (hasDateCreated(entity)) {
             final Date now = new Date();
             ea.setProperty(DATE_CREATED_PROPERTY, now);
 
