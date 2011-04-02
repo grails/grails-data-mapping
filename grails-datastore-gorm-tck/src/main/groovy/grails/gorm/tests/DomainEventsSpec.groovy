@@ -87,7 +87,7 @@ class DomainEventsSpec extends GormDatastoreSpec {
             assert PersonEvent.STORE['deleted'] == true
     }
 
-    void "Test before update event"() {
+/*    void "Test before update event"() {
         given:
             session = setupEventsSession()
             PersonEvent.resetStore()
@@ -144,6 +144,7 @@ class DomainEventsSpec extends GormDatastoreSpec {
             1 == PersonEvent.STORE['updated']
             1 == PersonEvent.STORE['inserted']
     }
+*/
 }
 
 class PersonEvent implements Serializable {
