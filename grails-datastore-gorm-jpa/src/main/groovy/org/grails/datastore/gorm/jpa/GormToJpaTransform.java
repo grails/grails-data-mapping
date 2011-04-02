@@ -12,13 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.grails.datastore.gorm.jpa;
 
 import grails.gorm.JpaEntity;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,22 +81,23 @@ import org.codehaus.groovy.transform.GroovyASTTransformation;
 import org.springframework.datastore.mapping.model.MappingFactory;
 
 /**
- * A AST transformation that turns a GORM entity into a JPA entity
+ * A AST transformation that turns a GORM entity into a JPA entity.
  *
  * @author Graeme Rocher
  * @since 1.0
- *
  */
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
-public class GormToJpaTransform implements ASTTransformation{
+public class GormToJpaTransform implements ASTTransformation {
 
     private static final AnnotationNode ANNOTATION_VERSION = new AnnotationNode(new ClassNode(Version.class));
     private static final AnnotationNode ANNOTATION_ID = new AnnotationNode(new ClassNode(Id.class));
     private static final AnnotationNode ANNOTATION_ENTITY = new AnnotationNode(new ClassNode(Entity.class));
     private static final AnnotationNode ANNOTATION_BASIC = new AnnotationNode(new ClassNode(Basic.class));
 
-    private static final PropertyExpression EXPR_CASCADE_ALL = new PropertyExpression(new ClassExpression(new ClassNode(CascadeType.class)), "ALL");
-    private static final PropertyExpression EXPR_CASCADE_PERSIST = new PropertyExpression(new ClassExpression(new ClassNode(CascadeType.class)), "PERSIST");
+    private static final PropertyExpression EXPR_CASCADE_ALL = new PropertyExpression(
+            new ClassExpression(new ClassNode(CascadeType.class)), "ALL");
+    private static final PropertyExpression EXPR_CASCADE_PERSIST = new PropertyExpression(
+            new ClassExpression(new ClassNode(CascadeType.class)), "PERSIST");
 
     private static final ClassNode MY_TYPE = new ClassNode(JpaEntity.class);
     private static final String MY_TYPE_NAME = "@" + MY_TYPE.getNameWithoutPackage();
@@ -142,8 +143,10 @@ public class GormToJpaTransform implements ASTTransformation{
 
         // add the JPA @Entity annotation
         classNode.addAnnotation(ANNOTATION_ENTITY);
-        final AnnotationNode entityListenersAnnotation = new AnnotationNode(new ClassNode(EntityListeners.class));
-        entityListenersAnnotation.addMember("value", new ClassExpression(new ClassNode(EntityInterceptorInvokingEntityListener.class)));
+        final AnnotationNode entityListenersAnnotation = new AnnotationNode(
+                new ClassNode(EntityListeners.class));
+        entityListenersAnnotation.addMember("value", new ClassExpression(
+                new ClassNode(EntityInterceptorInvokingEntityListener.class)));
         classNode.addAnnotation(entityListenersAnnotation);
 
         PropertyNode mappingNode = classNode.getProperty(GrailsDomainClassProperty.MAPPING);
@@ -175,6 +178,7 @@ public class GormToJpaTransform implements ASTTransformation{
                 }
             }
         }
+
         PropertyNode idProperty = classNode.getProperty(idPropertyName);
         if (idProperty == null) {
             new DefaultGrailsDomainClassInjector().performInjectionOnAnnotatedEntity(classNode);
@@ -218,14 +222,17 @@ public class GormToJpaTransform implements ASTTransformation{
 
         final List<MethodNode> methods = classNode.getMethods();
         for (MethodNode methodNode : methods) {
-            if (!methodNode.isStatic() && methodNode.isPublic() && !methodNode.isAbstract()) {
-                final AnnotationNode annotationNode = gormEventMethodToJpaAnnotation.get(methodNode.getName());
-                if (annotationNode != null) {
-
-                    //methodNode.setReturnType(new ClassNode(void.class));
-                    methodNode.addAnnotation(annotationNode);
-                }
+            if (methodNode.isStatic() || !methodNode.isPublic() || methodNode.isAbstract()) {
+                continue;
             }
+
+            final AnnotationNode annotationNode = gormEventMethodToJpaAnnotation.get(methodNode.getName());
+            if (annotationNode == null) {
+                continue;
+            }
+
+            //methodNode.setReturnType(new ClassNode(void.class));
+            methodNode.addAnnotation(annotationNode);
         }
 
         Map<String, ClassNode> hasManyMap = lookupStringToClassNodeMap(classNode, GrailsDomainClassProperty.HAS_MANY);
@@ -235,23 +242,31 @@ public class GormToJpaTransform implements ASTTransformation{
 
         final List<PropertyNode> properties = classNode.getProperties();
         for (PropertyNode propertyNode : properties) {
-            if (propertyNode.isPublic() && !propertyNode.isStatic()) {
-                if (propertyNode != idProperty && propertyNode != versionProperty) {
-                    final String typeName = propertyNode.getType().getName();
+            if (!propertyNode.isPublic() || propertyNode.isStatic()) {
+                continue;
+            }
 
-                    if (typeName.equals("java.util.Date") || typeName.equals("java.util.Calendar")) {
-                        AnnotationNode temporalAnnotation = new AnnotationNode(new ClassNode(Temporal.class));
-                        temporalAnnotation.addMember("value", new PropertyExpression(new ClassExpression(new ClassNode(TemporalType.class)), "DATE"));
-                        propertyNode.getField().addAnnotation(temporalAnnotation);
-                    }
-                    else if (MappingFactory.isSimpleType(typeName)) {
-                        propertyNode.getField().addAnnotation(ANNOTATION_BASIC);
-                    } else {
-                        final String propertyName = propertyNode.getName();
-                        if (!belongsToMap.containsKey(propertyName) && !hasOneMap.containsKey(propertyName)&& !hasManyMap.containsKey(propertyName)) {
-                            handleToOne(classNode, belongsToMap, propertyName);
-                        }
-                    }
+            if (propertyNode == idProperty || propertyNode == versionProperty) {
+                continue;
+            }
+
+            final String typeName = propertyNode.getType().getName();
+
+            if (typeName.equals("java.util.Date") || typeName.equals("java.util.Calendar")) {
+                AnnotationNode temporalAnnotation = new AnnotationNode(new ClassNode(Temporal.class));
+                temporalAnnotation.addMember("value", new PropertyExpression(
+                        new ClassExpression(new ClassNode(TemporalType.class)), "DATE"));
+                propertyNode.getField().addAnnotation(temporalAnnotation);
+            }
+            else if (MappingFactory.isSimpleType(typeName)) {
+                propertyNode.getField().addAnnotation(ANNOTATION_BASIC);
+            }
+            else {
+                final String propertyName = propertyNode.getName();
+                if (!belongsToMap.containsKey(propertyName) &&
+                    !hasOneMap.containsKey(propertyName)&&
+                    !hasManyMap.containsKey(propertyName)) {
+                    handleToOne(classNode, belongsToMap, propertyName);
                 }
             }
         }
@@ -269,11 +284,12 @@ public class GormToJpaTransform implements ASTTransformation{
         if (embeddedProp != null) {
             for (String propertyName : propertyNameList) {
                 final PropertyNode property = classNode.getProperty(propertyName);
-                if (property != null) {
-
-                    ClassNode embeddedType = property.getField().getType();
-                    annotateIfNecessary(embeddedType, Embeddable.class);
+                if (property == null) {
+                    continue;
                 }
+
+                ClassNode embeddedType = property.getField().getType();
+                annotateIfNecessary(embeddedType, Embeddable.class);
             }
         }
 
@@ -282,6 +298,7 @@ public class GormToJpaTransform implements ASTTransformation{
                 handleToOne(classNode, belongsToMap, propertyName);
             }
         }
+
         if (!hasOneMap.isEmpty()) {
             for (String propertyName : hasOneMap.keySet()) {
                 final AnnotationNode oneToOneAnnotation = new AnnotationNode(new ClassNode(OneToOne.class));
@@ -290,17 +307,22 @@ public class GormToJpaTransform implements ASTTransformation{
                 annotateProperty(classNode, propertyName, oneToOneAnnotation);
             }
         }
+
         if (!hasManyMap.isEmpty()) {
             for (String propertyName : hasManyMap.keySet()) {
                 ClassNode associatedClass = hasManyMap.get(propertyName);
-                final Map<String, ClassNode> inverseBelongsToMap = lookupStringToClassNodeMap(associatedClass, GrailsDomainClassProperty.BELONGS_TO);
-                final Map<String, ClassNode> inverseHasManyMap = lookupStringToClassNodeMap(associatedClass, GrailsDomainClassProperty.HAS_MANY);
+                final Map<String, ClassNode> inverseBelongsToMap = lookupStringToClassNodeMap(
+                        associatedClass, GrailsDomainClassProperty.BELONGS_TO);
+                final Map<String, ClassNode> inverseHasManyMap = lookupStringToClassNodeMap(
+                        associatedClass, GrailsDomainClassProperty.HAS_MANY);
 
-                final AnnotationNode oneToManyAnnotation = new AnnotationNode(new ClassNode(OneToMany.class));
+                final AnnotationNode oneToManyAnnotation = new AnnotationNode(
+                        new ClassNode(OneToMany.class));
                 oneToManyAnnotation.addMember("targetEntity", new ClassExpression(associatedClass));
 
                 if (mappedByMap.containsKey(propertyName)) {
-                    oneToManyAnnotation.addMember("mappedBy", new ConstantExpression(mappedByMap.get(propertyName)));
+                    oneToManyAnnotation.addMember("mappedBy", new ConstantExpression(
+                            mappedByMap.get(propertyName)));
                     oneToManyAnnotation.addMember("cascade", EXPR_CASCADE_PERSIST);
                     annotateProperty(classNode, propertyName, oneToManyAnnotation);
                 }
@@ -374,7 +396,7 @@ public class GormToJpaTransform implements ASTTransformation{
                 if (methodName.equals("table")) {
                     ArgumentListExpression ale = (ArgumentListExpression) arguments;
                     final List<Expression> expressions = ale.getExpressions();
-                    if (expressions.size()>0) {
+                    if (!expressions.isEmpty()) {
                         final String tableName = expressions.get(0).getText();
                         final AnnotationNode tableAnnotation = new AnnotationNode(new ClassNode(Table.class));
                         tableAnnotation.addMember("name", new ConstantExpression(tableName));
@@ -384,31 +406,35 @@ public class GormToJpaTransform implements ASTTransformation{
                 else if (methodName.equals("version")) {
                     ArgumentListExpression ale = (ArgumentListExpression) arguments;
                     final List<Expression> expressions = ale.getExpressions();
-                    if (expressions.size()>0) {
+                    if (!expressions.isEmpty()) {
                         final Expression expr = expressions.get(0);
-                        if (expr instanceof BooleanExpression)
+                        if (expr instanceof BooleanExpression) {
                             propertyMapping.put("enabled", Boolean.valueOf(expr.getText()));
+                        }
                     }
                 }
             }
             else if (arguments instanceof TupleExpression) {
                 final List<Expression> tupleExpressions = ((TupleExpression)arguments).getExpressions();
                 for (Expression te : tupleExpressions) {
-                    if (te instanceof NamedArgumentListExpression) {
-                        NamedArgumentListExpression nale = (NamedArgumentListExpression) te;
+                    if (!(te instanceof NamedArgumentListExpression)) {
+                        continue;
+                    }
 
-                        for (MapEntryExpression mee : nale.getMapEntryExpressions()) {
-                            String settingName = mee.getKeyExpression().getText();
+                    NamedArgumentListExpression nale = (NamedArgumentListExpression) te;
+                    for (MapEntryExpression mee : nale.getMapEntryExpressions()) {
+                        String settingName = mee.getKeyExpression().getText();
 
-                            final Expression valueExpression = mee.getValueExpression();
-                            if (valueExpression instanceof ConstantExpression) {
-                                if (valueExpression instanceof BooleanExpression) {
-                                    propertyMapping.put(settingName, Boolean.valueOf(valueExpression.getText()));
-                                }
-                                else {
-                                    propertyMapping.put(settingName, valueExpression.getText());
-                                }
-                            }
+                        final Expression valueExpression = mee.getValueExpression();
+                        if (!(valueExpression instanceof ConstantExpression)) {
+                            continue;
+                        }
+
+                        if (valueExpression instanceof BooleanExpression) {
+                            propertyMapping.put(settingName, Boolean.valueOf(valueExpression.getText()));
+                        }
+                        else {
+                            propertyMapping.put(settingName, valueExpression.getText());
                         }
                     }
                 }
@@ -419,8 +445,8 @@ public class GormToJpaTransform implements ASTTransformation{
     private static PropertyNode findClosestInverstTypeMatch(
             ClassNode classNode, ClassNode associatedClass) {
         for (PropertyNode inverseProperty : associatedClass.getProperties()) {
-            if (inverseProperty.isPublic()) {
-                if (inverseProperty.getType().equals(classNode)) return inverseProperty;
+            if (inverseProperty.isPublic() && inverseProperty.getType().equals(classNode)) {
+                return inverseProperty;
             }
         }
         return null;
@@ -430,13 +456,16 @@ public class GormToJpaTransform implements ASTTransformation{
             Map<String, ClassNode> belongsToMap, String propertyName) {
         ClassNode associatedClass = belongsToMap.get(propertyName);
 
-        final Map<String, ClassNode> inverseHasManyMap = lookupStringToClassNodeMap(associatedClass, GrailsDomainClassProperty.HAS_MANY);
-        final Map<String, ClassNode> inverseHasOneMap = lookupStringToClassNodeMap(associatedClass, GrailsDomainClassProperty.HAS_ONE);
+        final Map<String, ClassNode> inverseHasManyMap = lookupStringToClassNodeMap(
+                associatedClass, GrailsDomainClassProperty.HAS_MANY);
+        final Map<String, ClassNode> inverseHasOneMap = lookupStringToClassNodeMap(
+                associatedClass, GrailsDomainClassProperty.HAS_ONE);
 
         if (inverseHasManyMap.containsValue(classNode)) {
             for (String inversePropertyName : inverseHasManyMap.keySet()) {
                 if (classNode.equals(inverseHasManyMap.get(inversePropertyName))) {
-                    final AnnotationNode manyToOneAnnotation = new AnnotationNode(new ClassNode(ManyToOne.class));
+                    final AnnotationNode manyToOneAnnotation = new AnnotationNode(
+                            new ClassNode(ManyToOne.class));
                     manyToOneAnnotation.addMember("cascade", EXPR_CASCADE_PERSIST);
                     annotateProperty(classNode, propertyName, manyToOneAnnotation);
                 }
@@ -445,7 +474,8 @@ public class GormToJpaTransform implements ASTTransformation{
         else if (inverseHasOneMap.containsValue(classNode)) {
             for (String inversePropertyName : inverseHasOneMap.keySet()) {
                 if (classNode.equals(inverseHasOneMap.get(inversePropertyName))) {
-                    final AnnotationNode oneToOneAnnotation = new AnnotationNode(new ClassNode(OneToOne.class));
+                    final AnnotationNode oneToOneAnnotation = new AnnotationNode(
+                            new ClassNode(OneToOne.class));
                     oneToOneAnnotation.addMember("mappedBy", new ConstantExpression(inversePropertyName));
                     annotateProperty(classNode, propertyName, oneToOneAnnotation);
                 }
@@ -480,24 +510,30 @@ public class GormToJpaTransform implements ASTTransformation{
 
     private static Map<String, String> lookupStringToStringMap(
             ClassNode classNode, String mapName) {
-        Map<String, String> stringToClassNodeMap = new HashMap<String, String>();
+
         final PropertyNode mapProperty = classNode.getProperty(mapName);
-        if (mapProperty != null) {
-            final Expression initialExpression = mapProperty.getInitialExpression();
-            if (initialExpression instanceof MapExpression) {
-                MapExpression mapExpr = (MapExpression) initialExpression;
-                final List<MapEntryExpression> mapEntryExpressions = mapExpr.getMapEntryExpressions();
-                for (MapEntryExpression mapEntryExpression : mapEntryExpressions) {
-                    final Expression keyExpression = mapEntryExpression.getKeyExpression();
-                    if (keyExpression instanceof ConstantExpression) {
-                        ConstantExpression ce = (ConstantExpression) keyExpression;
-                        String propertyName = ce.getValue().toString();
-                        final Expression valueExpression = mapEntryExpression.getValueExpression();
-                        if (valueExpression instanceof ConstantExpression) {
-                            stringToClassNodeMap.put(propertyName, ((ConstantExpression) valueExpression).getValue().toString());
-                        }
-                    }
-                }
+        if (mapProperty == null) {
+            return Collections.emptyMap();
+        }
+
+        final Expression initialExpression = mapProperty.getInitialExpression();
+        if (!(initialExpression instanceof MapExpression)) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, String> stringToClassNodeMap = new HashMap<String, String>();
+        MapExpression mapExpr = (MapExpression) initialExpression;
+        final List<MapEntryExpression> mapEntryExpressions = mapExpr.getMapEntryExpressions();
+        for (MapEntryExpression mapEntryExpression : mapEntryExpressions) {
+            final Expression keyExpression = mapEntryExpression.getKeyExpression();
+            if (!(keyExpression instanceof ConstantExpression)) {
+                continue;
+            }
+            ConstantExpression ce = (ConstantExpression) keyExpression;
+            String propertyName = ce.getValue().toString();
+            final Expression valueExpression = mapEntryExpression.getValueExpression();
+            if (valueExpression instanceof ConstantExpression) {
+                stringToClassNodeMap.put(propertyName, ((ConstantExpression) valueExpression).getValue().toString());
             }
         }
         return stringToClassNodeMap;
@@ -505,34 +541,41 @@ public class GormToJpaTransform implements ASTTransformation{
 
     private static Map<String, ClassNode> lookupStringToClassNodeMap(
             ClassNode classNode, String mapName) {
+
+        if (classNode == null) {
+            return Collections.emptyMap();
+        }
+
+        final PropertyNode mapProperty = classNode.getProperty(mapName);
+        if (mapProperty == null) {
+            return Collections.emptyMap();
+        }
+
+        final Expression initialExpression = mapProperty.getInitialExpression();
+        if (!(initialExpression instanceof MapExpression)) {
+            return Collections.emptyMap();
+        }
+
         Map<String, ClassNode> stringToClassNodeMap = new HashMap<String, ClassNode>();
-        if (classNode != null) {
-            final PropertyNode mapProperty = classNode.getProperty(mapName);
-            if (mapProperty != null) {
-                final Expression initialExpression = mapProperty.getInitialExpression();
-                if (initialExpression instanceof MapExpression) {
-                    MapExpression mapExpr = (MapExpression) initialExpression;
-                    final List<MapEntryExpression> mapEntryExpressions = mapExpr.getMapEntryExpressions();
-                    for (MapEntryExpression mapEntryExpression : mapEntryExpressions) {
-                        final Expression keyExpression = mapEntryExpression.getKeyExpression();
-                        if (keyExpression instanceof ConstantExpression) {
-                            ConstantExpression ce = (ConstantExpression) keyExpression;
-                            String propertyName = ce.getValue().toString();
-                            final Expression valueExpression = mapEntryExpression.getValueExpression();
-                            if (valueExpression instanceof ClassExpression) {
-                                ClassExpression clsExpr = (ClassExpression) valueExpression;
-                                stringToClassNodeMap.put(propertyName, clsExpr.getType());
-                            }
-                        }
-                    }
-                }
+        MapExpression mapExpr = (MapExpression) initialExpression;
+        final List<MapEntryExpression> mapEntryExpressions = mapExpr.getMapEntryExpressions();
+        for (MapEntryExpression mapEntryExpression : mapEntryExpressions) {
+            final Expression keyExpression = mapEntryExpression.getKeyExpression();
+            if (!(keyExpression instanceof ConstantExpression)) {
+                continue;
+            }
+            ConstantExpression ce = (ConstantExpression) keyExpression;
+            String propertyName = ce.getValue().toString();
+            final Expression valueExpression = mapEntryExpression.getValueExpression();
+            if (valueExpression instanceof ClassExpression) {
+                ClassExpression clsExpr = (ClassExpression) valueExpression;
+                stringToClassNodeMap.put(propertyName, clsExpr.getType());
             }
         }
         return stringToClassNodeMap;
     }
 
-    private static void annotateIfNecessary(ClassNode classNode,
-            Class<?> annotationClass) {
+    private static void annotateIfNecessary(ClassNode classNode, Class<?> annotationClass) {
         AnnotationNode ann = new AnnotationNode(new ClassNode(annotationClass));
 
         final List<AnnotationNode> annotations = classNode.getAnnotations();
@@ -561,41 +604,47 @@ public class GormToJpaTransform implements ASTTransformation{
     protected static void annotateProperty(ClassNode classNode,
             String propertyName, final AnnotationNode annotationNode) {
         final PropertyNode prop = classNode.getProperty(propertyName);
-        if (prop != null) {
-            final FieldNode fieldNode = prop.getField();
-            if (fieldNode != null) {
-                final List<AnnotationNode> annotations = fieldNode.getAnnotations(annotationNode.getClassNode());
-                if (annotations == null || annotations.isEmpty()) {
-                    fieldNode.addAnnotation(annotationNode);
-                }
-            }
+        if (prop == null) {
+            return;
+        }
+
+        final FieldNode fieldNode = prop.getField();
+        if (fieldNode == null) {
+            return;
+        }
+
+        final List<AnnotationNode> annotations = fieldNode.getAnnotations(annotationNode.getClassNode());
+        if (annotations == null || annotations.isEmpty()) {
+            fieldNode.addAnnotation(annotationNode);
         }
     }
 
     protected static void populateConstantList(List<String> theList,
             final PropertyNode theProperty) {
-        if (theProperty != null ) {
-            final Expression initialExpression = theProperty.getInitialExpression();
-            if (initialExpression instanceof ListExpression) {
-                ListExpression listExpression = (ListExpression) initialExpression;
-                final List<Expression> entries = listExpression.getExpressions();
-                for (Expression expression : entries) {
-                    if (expression != null) {
-                        if (expression instanceof ConstantExpression) {
-                            addConstantExpressionToList(theList, expression);
-                        }
-                    }
+        if (theProperty == null) {
+            return;
+        }
+
+        final Expression initialExpression = theProperty.getInitialExpression();
+        if (initialExpression instanceof ListExpression) {
+            ListExpression listExpression = (ListExpression) initialExpression;
+            final List<Expression> entries = listExpression.getExpressions();
+            for (Expression expression : entries) {
+                if (expression instanceof ConstantExpression) {
+                    addConstantExpressionToList(theList, expression);
                 }
             }
-            else if (initialExpression instanceof ConstantExpression) {
-                addConstantExpressionToList(theList, initialExpression);
-            }
+        }
+        else if (initialExpression instanceof ConstantExpression) {
+            addConstantExpressionToList(theList, initialExpression);
         }
     }
 
     protected static void addConstantExpressionToList(List<String> theList,
             Expression expression) {
         final Object val = ((ConstantExpression) expression).getValue();
-        if (val != null) theList.add(val.toString());
+        if (val != null) {
+            theList.add(val.toString());
+        }
     }
 }
