@@ -8,7 +8,7 @@ h2. Examples
 
 Static method:
 
-{code:java}
+{code}
 def result = Person.mapreduce.execute([
     map: [
         source: "function(v){ ...perform map operations... return [result]; }"

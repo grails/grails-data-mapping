@@ -2,7 +2,7 @@ Since Map/Reduce is such an integral part of working with the Riak datastore, GO
 
 To execute a Map/Reduce against all instances of a particular entity, you can do the following:
 
-{code:java}
+{code}
 def result = Person.mapreduce.execute([
     map: [
         source: "function(v){ ...perform map operations... return [result]; }"

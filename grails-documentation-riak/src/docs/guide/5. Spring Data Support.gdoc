@@ -2,7 +2,7 @@ The Riak support for GORM is actually built on top of the Riak support for [Spri
 
 For example, in a controller:
 
-{code:java}
+{code}
 class MyController {
     def riakTemplate
 
@@ -15,14 +15,14 @@ class MyController {
 
 Or, for asynchronous access:
 
-{code:java}
+{code}
 class MyController {
     def asyncRiakTemplate
 
     def foo = {
         def callback = [
             completed: { metadata, val ->
-                // Since this is run asynchronously, 
+                // Since this is run asynchronously,
                 // put the data somewhere else...
             },
             failed: { err ->
@@ -30,7 +30,7 @@ class MyController {
             }
         ] as AsyncKeyValueStoreOperation
         riak.get("notifications", "myuser", callback)
-        
+
         // The previous call doesn't block, so we continue on...
         render "Notifications: $notifs"
     }

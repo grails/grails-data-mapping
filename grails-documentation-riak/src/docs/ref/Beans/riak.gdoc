@@ -6,7 +6,7 @@ A Spring bean that provides access to the Spring Data @RiakTemplate@ API using a
 
 h2. Examples
 
-{code:java}
+{code}
 def riak
 
 def foo = {

@@ -2,7 +2,7 @@ Besides direct access to the Java-language template objects, the Riak plugin for
 
 For example, to delete all entries in a bucket using the RiakBuilder DSL (which is a dynamic method the plugin adds to any controller or service class):
 
-{code:java}
+{code}
 riak {
   test {
     foreach {

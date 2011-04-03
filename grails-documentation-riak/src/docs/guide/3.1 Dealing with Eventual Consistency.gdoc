@@ -4,7 +4,7 @@ If you want a @save()@ call to be guaranteed to have persisted the object to dis
 
 For example, to ensure that an object has been completely flushed to disk before returning, use the "durable write" parameter:
 
-{code:java}
+{code}
 def p = new Person(firstName: "Bob")
 p.save([dw: "all"])
 {code}

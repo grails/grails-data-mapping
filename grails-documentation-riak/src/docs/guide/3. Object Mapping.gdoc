@@ -7,12 +7,11 @@ class Person {
 
     String firstName
     String lastName
-	
+
     static constraints = {
         firstName blank:false
         lastName blank:false
     }
-	
 }
 {code}
 
@@ -20,6 +19,6 @@ Since Riak doesn't support the notion of saved indexes, there are no options to 
 
 That said, finder methods are fully supported in Riak for GORM:
 
-{code:java}
+{code}
 Person.findByLastName("Simpson")
 {code}

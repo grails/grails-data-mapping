@@ -1,6 +1,6 @@
 To get started with GORM for Riak, you need to install the plugin into a Grails application:
 
-{code:java}
+{code}
 grails install-plugin riak
 {code}
 
@@ -12,14 +12,14 @@ Now you need to install and configure a Riak server for your architecture. To in
 
 Once installed, you can run a Riak server in a terminal and gain access to an Erlang shell by doing the following (assuming Riak is installed to @/opt/riak-0.13.0@):
 
-{code:java}
+{code}
 cd /opt/riak-0.13.0
 bin/riak console
 {code}
 
 When run, you should see something like the following:
 
-{code:java}
+{code}
 Exec: /opt/riak-0.13.0/erts-5.8.1/bin/erlexec -boot /opt/riak-0.13.0/releases/0.13.0/riak -embedded -config /opt/riak-0.13.0/etc/app.config -args_file /opt/riak-0.13.0/etc/vm.args -- console
 Root: /opt/riak-0.13.0
 Erlang R14B (erts-5.8.1) [source] [64-bit] [smp:2:2] [rq:2] [async-threads:64] [hipe] [kernel-poll:true]
@@ -27,14 +27,14 @@ Erlang R14B (erts-5.8.1) [source] [64-bit] [smp:2:2] [rq:2] [async-threads:64] [
 =INFO REPORT==== 13-Dec-2010::16:30:51 ===
 Spidermonkey VM (thread stack: 32MB, max heap: 12MB) host starting (<0.147.0>)
 Eshell V5.8.1  (abort with ^G)
-(riak@127.0.0.1)1> 
+(riak@127.0.0.1)1>
 {code}
 
 The default port for Riak's REST interface is 8098. So the default URI built into the Riak GORM support will work. The default is @http://localhost:8098/riak/{bucket}/{key}@.
 
 If you need to configure the URLs for the @RiakTemplate@, do so by adding configuration elements to @grails-app/conf/Config.groovy@:
 
-{code:java}
+{code}
 grails.riak.defaultUri = "http://localhost:8098/riak/{bucket}/{key}"
 grails.riak.mapReduceUri = "http://localhost:8098/mapred"
 {code}
