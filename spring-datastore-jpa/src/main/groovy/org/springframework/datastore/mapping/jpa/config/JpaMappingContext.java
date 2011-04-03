@@ -33,12 +33,10 @@ public class JpaMappingContext extends AbstractMappingContext{
     private MappingFactory<Table, Column> mappingFactory = new JpaMappingFactory();
     private MappingConfigurationStrategy jpaMappingSyntaxStrategy = new JpaMappingConfigurationStrategy(mappingFactory);
 
-    @Override
     public MappingConfigurationStrategy getMappingSyntaxStrategy() {
         return jpaMappingSyntaxStrategy ;
     }
 
-    @Override
     public MappingFactory getMappingFactory() {
         return mappingFactory;
     }

@@ -14,7 +14,6 @@ public class JpaTransaction implements Transaction {
         this.transactionManager = transactionManager;
     }
 
-    @Override
     public void commit() {
         if (isValidTransactionPresent()) {
             transactionManager.commit(transaction);
@@ -25,24 +24,20 @@ public class JpaTransaction implements Transaction {
         return transaction != null && !transaction.isCompleted();
     }
 
-    @Override
     public void rollback() {
         if (isValidTransactionPresent()) {
             transactionManager.rollback(transaction);
         }
     }
 
-    @Override
     public Object getNativeTransaction() {
         return transaction;
     }
 
-    @Override
     public boolean isActive() {
         return isValidTransactionPresent();
     }
 
-    @Override
     public void setTimeout(int timeout) {
         transactionManager.setDefaultTimeout(timeout);
     }
