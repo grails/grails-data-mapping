@@ -92,27 +92,32 @@ public class EntityAccess {
 
     public void setPropertyNoConversion(String name, Object value) {
         final PropertyDescriptor pd = beanWrapper.getPropertyDescriptor(name);
-        if (pd != null) {
-            final Method writeMethod = pd.getWriteMethod();
-            if (writeMethod!=null) {
-                ReflectionUtils.invokeMethod(writeMethod, beanWrapper.getWrappedInstance(), value);
-            }
+        if (pd == null) {
+            return;
+        }
+        final Method writeMethod = pd.getWriteMethod();
+        if (writeMethod != null) {
+            ReflectionUtils.invokeMethod(writeMethod, beanWrapper.getWrappedInstance(), value);
         }
     }
 
     /**
-     * Refreshes the object from entity state
+     * Refreshes the object from entity state.
      */
     public void refresh() {
         final PropertyDescriptor[] descriptors = beanWrapper.getPropertyDescriptors();
         for (PropertyDescriptor descriptor : descriptors) {
             final String name = descriptor.getName();
-            if (!EXCLUDED_PROPERTIES.contains(name)) {
-                if (beanWrapper.isReadableProperty(name) && beanWrapper.isWritableProperty(name)) {
-                    Object newValue = getProperty(name);
-                    setProperty(name, newValue);
-                }
+            if (EXCLUDED_PROPERTIES.contains(name)) {
+                continue;
             }
+
+            if (!beanWrapper.isReadableProperty(name) || !beanWrapper.isWritableProperty(name)) {
+                continue;
+            }
+
+            Object newValue = getProperty(name);
+            setProperty(name, newValue);
         }
     }
 }

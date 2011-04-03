@@ -24,7 +24,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.proxy.ProxyFactory;
 
 /**
- * A {@link org.springframework.datastore.mapping.engine.Persister} specificly for persisting PersistentEntity instances
+ * A {@link org.springframework.datastore.mapping.engine.Persister} specifically for persisting PersistentEntity instances.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -109,11 +109,13 @@ public abstract class EntityPersister implements Persister {
     public final Serializable persist(Object obj) {
         if (!persistentEntity.isInstance(obj)) {
             final Persister persister = getSession().getPersister(obj);
-            if (persister != null) {
-                return persister.persist(obj);
+            if (persister == null) {
+                throw new IllegalArgumentException("Object [" + obj +
+                     "] is not an instance supported by the persister for class [" +
+                     getType().getName() + "]");
             }
 
-            throw new IllegalArgumentException("Object ["+obj+"] is not an instance supported by the persister for class ["+getType().getName()+"]");
+            return persister.persist(obj);
         }
 
         return persistEntity(getPersistentEntity(), obj);
@@ -138,7 +140,10 @@ public abstract class EntityPersister implements Persister {
     protected abstract List<Serializable> persistEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objs);
 
     public final Object retrieve(Serializable key) {
-        if (key == null) return null;
+        if (key == null) {
+            return null;
+        }
+
         return retrieveEntity(getPersistentEntity(), key);
     }
 
@@ -161,15 +166,19 @@ public abstract class EntityPersister implements Persister {
     protected abstract Serializable persistEntity(PersistentEntity pe, Object obj);
 
     public final void delete(@SuppressWarnings("rawtypes") Iterable objects) {
-        if (objects != null) {
-            deleteEntities(getPersistentEntity(), objects);
+        if (objects == null) {
+            return;
         }
+
+        deleteEntities(getPersistentEntity(), objects);
     }
 
     public void delete(Object obj) {
-        if (obj != null) {
-            deleteEntity(getPersistentEntity(), obj);
+        if (obj == null) {
+            return;
         }
+
+        deleteEntity(getPersistentEntity(), obj);
     }
 
     protected abstract void deleteEntity(PersistentEntity pe, Object obj);

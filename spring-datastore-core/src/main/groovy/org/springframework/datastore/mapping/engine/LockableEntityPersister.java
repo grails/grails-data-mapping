@@ -23,7 +23,7 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
 /**
- * Interface for entity persisters that support locking
+ * Abstract base class for entity persisters that support locking.
  *
  * @author Graeme Rocher
  * @since 1.0
