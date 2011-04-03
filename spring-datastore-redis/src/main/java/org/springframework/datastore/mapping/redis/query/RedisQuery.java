@@ -152,13 +152,13 @@ public class RedisQuery extends Query {
             if (idProjection != null) {
                 return RedisQueryUtils.transformRedisResults(conversionService, results);
             }
-            return getSession().retrieveAll(getEntity().getJavaClass(), results );
+            return getSession().retrieveAll(getEntity().getJavaClass(), results);
         }
         return Collections.emptyList();
     }
 
     private List unsupportedProjection(String projectionType) {
-        throw new InvalidDataAccessResourceUsageException("Cannot use ["+ projectionType +"] projection. ["+projectionType+"] projections are not currently supported." );
+        throw new InvalidDataAccessResourceUsageException("Cannot use ["+ projectionType +"] projection. ["+projectionType+"] projections are not currently supported.");
     }
 
     private String getValidSortKey(PropertyProjection projection) {
@@ -180,7 +180,7 @@ public class RedisQuery extends Query {
 
     private String storeSortedKey(String finalKey) {
         if (shouldSortOrPaginate()) {
-           StringBuilder builder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
             builder.append('~')
                    .append(finalKey)
                    .append('-')
@@ -189,16 +189,16 @@ public class RedisQuery extends Query {
                    .append(max)
                    .append('-');
 
-           if (!orderBy.isEmpty()) {
-               final Order order = orderBy.get(0);
-               builder.append(order.getProperty())
-                      .append('-')
-                      .append(order.getDirection());
-           }
+            if (!orderBy.isEmpty()) {
+                final Order order = orderBy.get(0);
+                builder.append(order.getProperty())
+                       .append('-')
+                       .append(order.getDirection());
+            }
 
-           String sortKey = builder.toString();
-           template.sortstore(finalKey, sortKey, getSortAndPaginationParams());
-           return sortKey;
+            String sortKey = builder.toString();
+            template.sortstore(finalKey, sortKey, getSortAndPaginationParams());
+            return sortKey;
         }
         return finalKey;
     }
@@ -258,7 +258,6 @@ public class RedisQuery extends Query {
         }
         if (offset > 0 || max > -1) {
             params.limit(offset, max);
-
         }
         return params;
     }
@@ -349,7 +348,7 @@ public class RedisQuery extends Query {
                final Object value = criterion.getValue();
                final String indexName = getIndexName(entityPersister, property, value);
 
-               indices.add( negateIndex(entityPersister, indexName) );
+               indices.add(negateIndex(entityPersister, indexName));
            }
        });
        put(In.class, new CriterionHandler<In>() {
@@ -359,23 +358,23 @@ public class RedisQuery extends Query {
                for (Object value : criterion.getValues()) {
                    dis.add(Restrictions.eq(property, value));
                }
-               indices.add( executeSubQuery(dis, dis.getCriteria()) );
+               indices.add(executeSubQuery(dis, dis.getCriteria()));
            }
        });
        put(Conjunction.class, new CriterionHandler<Junction>() {
            public void handle(RedisEntityPersister entityPersister, List<String> indices, Junction criterion) {
-               indices.add( executeSubQuery(criterion, criterion.getCriteria()) );
+               indices.add(executeSubQuery(criterion, criterion.getCriteria()));
            }
        });
        put(Disjunction.class, new CriterionHandler<Junction>() {
            public void handle(RedisEntityPersister entityPersister, List<String> indices, Junction criterion) {
-               indices.add( executeSubQuery(criterion, criterion.getCriteria()) );
+               indices.add(executeSubQuery(criterion, criterion.getCriteria()));
            }
        });
        put(Negation.class, new CriterionHandler<Negation>() {
            public void handle(RedisEntityPersister entityPersister, List<String> indices, Negation criterion) {
                final String finalIndex = executeSubQuery(criterion, criterion.getCriteria());
-               indices.add( negateIndex(entityPersister, finalIndex) );
+               indices.add(negateIndex(entityPersister, finalIndex));
            }
        });
     }};

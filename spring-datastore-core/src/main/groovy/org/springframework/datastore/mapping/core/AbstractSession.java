@@ -77,12 +77,16 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     protected Map<Class, Map<Serializable, Object>> firstLevelEntryCache = new ConcurrentHashMap<Class, Map<Serializable, Object>>();
 
     protected Map<Object, Serializable> objectToKey = new ConcurrentHashMap<Object, Serializable>();
-    private Map<PersistentEntity, Collection<PendingInsert>> pendingInserts = new Builder<PersistentEntity, Collection<PendingInsert>>()
-                                                                            .listener(EXCEPTION_THROWING_INSERT_LISTENER)
-                                                                            .maximumWeightedCapacity(5000).build();
-    private Map<PersistentEntity, Collection<PendingUpdate>> pendingUpdates = new Builder<PersistentEntity, Collection<PendingUpdate>>()
-                                                                            .listener(EXCEPTION_THROWING_UPDATE_LISTENER)
-                                                                            .maximumWeightedCapacity(5000).build();
+
+    private Map<PersistentEntity, Collection<PendingInsert>> pendingInserts =
+        new Builder<PersistentEntity, Collection<PendingInsert>>()
+           .listener(EXCEPTION_THROWING_INSERT_LISTENER)
+           .maximumWeightedCapacity(5000).build();
+
+    private Map<PersistentEntity, Collection<PendingUpdate>> pendingUpdates =
+        new Builder<PersistentEntity, Collection<PendingUpdate>>()
+           .listener(EXCEPTION_THROWING_UPDATE_LISTENER)
+           .maximumWeightedCapacity(5000).build();
 
     protected Collection<Runnable> pendingDeletes = new ConcurrentLinkedQueue<Runnable>();
     protected Collection<Runnable> postFlushOperations = new ConcurrentLinkedQueue<Runnable>();
@@ -97,10 +101,8 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public void addPostFlushOperation(Runnable runnable) {
-        if (runnable != null) {
-            if (!postFlushOperations.contains(runnable)) {
-                postFlushOperations.add(runnable);
-            }
+        if (runnable != null && !postFlushOperations.contains(runnable)) {
+            postFlushOperations.add(runnable);
         }
     }
 
@@ -126,24 +128,29 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public Object getCachedEntry(PersistentEntity entity, Serializable key) {
-        if (key != null) {
-            final Map<Serializable, Object> map = firstLevelEntryCache.get(entity.getJavaClass());
-            if (map != null) {
-                return map.get(key);
-            }
+        if (key == null) {
+            return null;
         }
-        return null;
+
+        final Map<Serializable, Object> map = firstLevelEntryCache.get(entity.getJavaClass());
+        if (map == null) {
+            return null;
+        }
+
+        return map.get(key);
     }
 
     public void cacheEntry(PersistentEntity entity, Serializable key, Object entry) {
-        if (key != null && entry != null) {
-            Map<Serializable, Object> cache = firstLevelEntryCache.get(entity);
-            if (cache == null) {
-                cache = new ConcurrentHashMap<Serializable,Object>();
-                firstLevelEntryCache.put(entity.getJavaClass(), cache);
-            }
-            cache.put(key, entry);
+        if (key == null || entry == null) {
+            return;
         }
+
+        Map<Serializable, Object> cache = firstLevelEntryCache.get(entity);
+        if (cache == null) {
+            cache = new ConcurrentHashMap<Serializable,Object>();
+            firstLevelEntryCache.put(entity.getJavaClass(), cache);
+        }
+        cache.put(key, entry);
     }
 
     public Map<PersistentEntity, Collection<PendingInsert>> getPendingInserts() {
@@ -175,21 +182,22 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public void flush() {
-        if (!exceptionOccurred) {
-            boolean hasInserts = hasUpdates();
-            if (hasInserts) {
-                flushPendingInserts(pendingInserts);
-                pendingInserts.clear();
-                flushPendingUpdates(pendingUpdates);
-                pendingUpdates.clear();
-                executePendings(pendingDeletes);
-                executePendings(postFlushOperations);
-                postFlush(hasInserts);
-            }
-        }
-        else {
+        if (exceptionOccurred) {
             throw new InvalidDataAccessResourceUsageException("Do not flush() the Session after an exception occurs");
         }
+
+        boolean hasInserts = hasUpdates();
+        if (!hasInserts) {
+            return;
+        }
+
+        flushPendingInserts(pendingInserts);
+        pendingInserts.clear();
+        flushPendingUpdates(pendingUpdates);
+        pendingUpdates.clear();
+        executePendings(pendingDeletes);
+        executePendings(postFlushOperations);
+        postFlush(hasInserts);
     }
 
     /**
@@ -293,106 +301,126 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     protected abstract Persister createPersister(Class cls, MappingContext mappingContext);
 
     public boolean contains(Object o) {
-        if (o != null) {
-            final Map<Serializable, Object> cache = firstLevelCache.get(o.getClass());
-            if (cache != null && cache.containsValue(o)) {
-                return true;
-            }
+        if (o == null) {
+            return false;
         }
-        return false;
+
+        final Map<Serializable, Object> cache = firstLevelCache.get(o.getClass());
+        return cache != null && cache.containsValue(o);
     }
 
     public void clear(Object o) {
-        if (o != null) {
-            final Map<Serializable, Object> cache = firstLevelCache.get(o.getClass());
-            if (cache != null) {
-
-                Serializable key = objectToKey.get(o);
-                if (key != null) {
-                    cache.remove(key);
-                    objectToKey.remove(o);
-                }
-            }
-
-            attributes.remove(o);
+        if (o == null) {
+            return;
         }
+
+        final Map<Serializable, Object> cache = firstLevelCache.get(o.getClass());
+        if (cache != null) {
+            Serializable key = objectToKey.get(o);
+            if (key != null) {
+                cache.remove(key);
+                objectToKey.remove(o);
+            }
+        }
+
+        attributes.remove(o);
     }
 
     public void attach(Object o) {
-        if (o != null) {
-            EntityPersister p = (EntityPersister) getPersister(o);
+        if (o == null) {
+            return;
+        }
 
-            if (p != null) {
-                Serializable identifier = p.getObjectIdentifier(o);
-                if (identifier != null) {
-                    cacheObject(identifier, o);
-                }
-            }
+        EntityPersister p = (EntityPersister) getPersister(o);
+        if (p == null) {
+            return;
+        }
+
+        Serializable identifier = p.getObjectIdentifier(o);
+        if (identifier != null) {
+            cacheObject(identifier, o);
         }
     }
 
     protected void cacheObject(Serializable identifier, Object o) {
-        if (identifier != null && o != null) {
-            Map<Serializable, Object> cache = firstLevelCache.get(o.getClass());
-            if (cache == null) {
-                cache = new ConcurrentHashMap<Serializable, Object>();
-                firstLevelCache.put(o.getClass(), cache);
-            }
-            objectToKey.put(o, identifier);
-            cache.put(identifier, o);
+        if (identifier == null || o == null) {
+            return;
         }
+
+        Map<Serializable, Object> cache = firstLevelCache.get(o.getClass());
+        if (cache == null) {
+            cache = new ConcurrentHashMap<Serializable, Object>();
+            firstLevelCache.put(o.getClass(), cache);
+        }
+        objectToKey.put(o, identifier);
+        cache.put(identifier, o);
     }
 
     public Serializable persist(Object o) {
         Assert.notNull(o, "Cannot persist null object");
         Persister persister = getPersister(o);
-        if (persister != null) {
-            final Serializable key = persister.persist(o);
-            cacheObject(key, o);
-            return key;
+        if (persister == null) {
+            throw new NonPersistentTypeException("Object [" + o +
+                    "] cannot be persisted. It is not a known persistent type.");
         }
-        throw new NonPersistentTypeException("Object ["+o+"] cannot be persisted. It is not a known persistent type.");
+
+        final Serializable key = persister.persist(o);
+        cacheObject(key, o);
+        return key;
     }
 
     public void refresh(Object o) {
         Assert.notNull(o, "Cannot persist null object");
         Persister persister = getPersister(o);
-        if (persister != null) {
-            final Serializable key = persister.refresh(o);
-            cacheObject(key, o);
+        if (persister == null) {
+            throw new NonPersistentTypeException("Object [" + o +
+                    "] cannot be persisted. It is not a known persistent type.");
         }
-        throw new NonPersistentTypeException("Object ["+o+"] cannot be persisted. It is not a known persistent type.");
+
+        final Serializable key = persister.refresh(o);
+        cacheObject(key, o);
     }
 
     public Object retrieve(Class type, Serializable key) {
-        if (key == null || type == null) return null;
-        Persister persister = getPersister(type);
-        if (persister != null) {
-
-            final PersistentEntity entity = getMappingContext().getPersistentEntity(type.getName());
-            if (entity != null) {
-                key = (Serializable) getMappingContext().getConversionService().convert(key, entity.getIdentity().getType());
-            }
-            final Map<Serializable, Object> cache = firstLevelCache.get(type);
-            Object o = cache.get(key);
-            if (o == null) {
-                o = persister.retrieve(key);
-                if (o != null)
-                    cacheObject(key, o);
-                return o;
-            }
-            return o;
+        if (key == null || type == null) {
+            return null;
         }
-        throw new NonPersistentTypeException("Cannot retrieve object with key ["+key+"]. The class ["+type+"] is not a known persistent type.");
+
+        Persister persister = getPersister(type);
+        if (persister == null) {
+            throw new NonPersistentTypeException("Cannot retrieve object with key [" + key +
+                    "]. The class [" + type.getName() + "] is not a known persistent type.");
+        }
+
+        final PersistentEntity entity = getMappingContext().getPersistentEntity(type.getName());
+        if (entity != null) {
+            key = (Serializable) getMappingContext().getConversionService().convert(
+                    key, entity.getIdentity().getType());
+        }
+
+        final Map<Serializable, Object> cache = firstLevelCache.get(type);
+        Object o = cache.get(key);
+        if (o == null) {
+            o = persister.retrieve(key);
+            if (o != null) {
+                cacheObject(key, o);
+            }
+        }
+        return o;
     }
 
     public Object proxy(Class type, Serializable key) {
-        if (key == null || type == null) return null;
-        Persister persister = getPersister(type);
-        if (persister != null) {
-            return persister.proxy(key);
+        if (key == null || type == null) {
+            return null;
         }
-        throw new NonPersistentTypeException("Cannot retrieve object with key ["+key+"]. The class ["+type+"] is not a known persistent type.");
+
+        Persister persister = getPersister(type);
+        if (persister == null) {
+            throw new NonPersistentTypeException("Cannot retrieve object with key [" + key +
+                    "]. The class [" + type.getName() + "] is not a known persistent type.");
+        }
+
+        return persister.proxy(key);
     }
 
     public void lock(Object o) {
@@ -410,18 +438,21 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public void delete(final Object obj) {
-        if (obj != null) {
-            getPendingDeletes().add(new Runnable() {
-                public void run() {
-                    Persister p = getPersister(obj);
-                    if (p != null) {
-                        p.delete(obj);
-                        clear(obj);
-
-                    }
-                }
-            });
+        if (obj == null) {
+            return;
         }
+
+        getPendingDeletes().add(new Runnable() {
+            public void run() {
+                Persister p = getPersister(obj);
+                if (p == null) {
+                    return;
+                }
+
+                p.delete(obj);
+                clear(obj);
+            }
+        });
     }
 
     public void delete(final Iterable objects) {
@@ -450,59 +481,66 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public List<Serializable> persist(Iterable objects) {
-        if (objects != null) {
-
-            final Iterator i = objects.iterator();
-            if (i.hasNext()) {
-                // peek at the first object to get the persister
-                final Object obj = i.next();
-                final Persister p = getPersister(obj);
-                if (p != null) {
-                    return p.persist(objects);
-                }
-                throw new NonPersistentTypeException("Cannot persist objects. The class ["+obj.getClass()+"] is not a known persistent type.");
-            }
-
+        if (objects == null) {
+           return Collections.emptyList();
         }
-        return Collections.emptyList();
+
+        final Iterator i = objects.iterator();
+        if (!i.hasNext()) {
+            return Collections.emptyList();
+        }
+
+        // peek at the first object to get the persister
+        final Object obj = i.next();
+        final Persister p = getPersister(obj);
+        if (p == null) {
+            throw new NonPersistentTypeException("Cannot persist objects. The class [" +
+                     obj.getClass().getName() + "] is not a known persistent type.");
+        }
+
+        return p.persist(objects);
     }
 
     public List retrieveAll(Class type, Iterable keys) {
         Persister p = getPersister(type);
-
-        if (p != null) {
-            return p.retrieveAll(keys);
+        if (p == null) {
+            throw new NonPersistentTypeException("Cannot retrieve objects with keys [" + keys +
+                    "]. The class [" + type.getName() + "] is not a known persistent type.");
         }
-        throw new NonPersistentTypeException("Cannot retrieve objects with keys ["+keys+"]. The class ["+type+"] is not a known persistent type.");
+
+        return p.retrieveAll(keys);
     }
 
     public List retrieveAll(Class type, Serializable... keys) {
         Persister p = getPersister(type);
-
-        if (p != null) {
-            List retrieved = new ArrayList(keys.length);
-            final Map<Serializable, Object> cache = firstLevelCache.get(type);
-            for (int i = 0; i < keys.length; i++) {
-                Serializable key = keys[i];
-                Object cached = cache.get(key);
-                if (cached != null) {
-                    retrieved.add(i, cached);
-                }
-                else {
-                    retrieved.add(i, retrieve(type, key));
-                }
-            }
-            return retrieved;
+        if (p == null) {
+            throw new NonPersistentTypeException("Cannot retrieve objects with keys [" + keys +
+                    "]. The class [" + type.getName() + "] is not a known persistent type.");
         }
-        throw new NonPersistentTypeException("Cannot retrieve objects with keys ["+keys+"]. The class ["+type+"] is not a known persistent type.");
+
+        List retrieved = new ArrayList(keys.length);
+        final Map<Serializable, Object> cache = firstLevelCache.get(type);
+        for (int i = 0; i < keys.length; i++) {
+            Serializable key = keys[i];
+            Object cached = cache.get(key);
+            if (cached != null) {
+                retrieved.add(i, cached);
+            }
+            else {
+                retrieved.add(i, retrieve(type, key));
+            }
+        }
+        return retrieved;
     }
 
     public Query createQuery(Class type) {
         Persister p = getPersister(type);
-        if (p!= null) {
-            return p.createQuery();
+        if (p == null) {
+            throw new NonPersistentTypeException("Cannot create query. The class [" + type +
+                    "] is not a known persistent type.");
         }
-        throw new NonPersistentTypeException("Cannot create query. The class ["+type+"] is not a known persistent type.");
+
+        return p.createQuery();
     }
 
     public final Transaction beginTransaction() {
@@ -513,7 +551,9 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     protected abstract Transaction beginTransactionInternal();
 
     public Transaction getTransaction() {
-        if (transaction == null) throw new NoTransactionException("Transaction not started. Call beginTransaction() first");
+        if (transaction == null) {
+            throw new NoTransactionException("Transaction not started. Call beginTransaction() first");
+        }
         return transaction;
     }
 }

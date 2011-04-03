@@ -22,7 +22,7 @@ import org.springframework.datastore.mapping.redis.RedisSession
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
- * Adds Redis specific functionality to GORM
+ * Adds Redis specific functionality to GORM.
  */
 class RedisGormEnhancer extends GormEnhancer {
 
@@ -50,9 +50,7 @@ class RedisGormInstanceApi extends GormInstanceApi {
     }
 
     def expire(instance, int ttl) {
-         RedisSession session = datastore.currentSession
-
-         session.expire instance, ttl
+        datastore.currentSession.expire instance, ttl
     }
 }
 
@@ -62,30 +60,25 @@ class RedisGormStaticApi extends GormStaticApi {
     }
 
     /**
-     * Expires an entity for the given id and TTL
+     * Expires an entity for the given id and TTL.
      */
     void expire(Serializable id, int ttl) {
-        RedisSession session = datastore.currentSession
-
-        session.expire(persistentClass, id, ttl)
+        datastore.currentSession.expire(persistentClass, id, ttl)
     }
+
     /**
-     * A random domain class instance is returned
+     * A random domain class instance is returned.
      * @return A random domain class
      */
     def random() {
-        RedisSession session = datastore.currentSession
-
-        return session.random(persistentClass)
+        datastore.currentSession.random(persistentClass)
     }
 
     /**
-     * A random domain class instance is removed and returned
+     * A random domain class instance is removed and returned.
      * @return A random removed domain class
      */
     def pop() {
-        RedisSession session = datastore.currentSession
-
-        return session.pop(persistentClass)
+        datastore.currentSession.pop(persistentClass)
     }
 }

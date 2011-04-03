@@ -36,13 +36,14 @@ public class JpaPersistenceContextInterceptor extends DatastorePersistenceContex
     @Override
     protected Session getSession() {
         SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(jpaDatastore);
-        if (sessionHolder == null) {
-            Session session = jpaDatastore.connect();
-            sessionHolder = new SessionHolder(session);
-            TransactionSynchronizationManager.bindResource(jpaDatastore, sessionHolder);
-            return session;
+        if (sessionHolder != null) {
+            return sessionHolder.getSession();
         }
-        return sessionHolder.getSession();
+
+        Session session = jpaDatastore.connect();
+        sessionHolder = new SessionHolder(session);
+        TransactionSynchronizationManager.bindResource(jpaDatastore, sessionHolder);
+        return session;
     }
 
     @Override

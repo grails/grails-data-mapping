@@ -58,7 +58,7 @@ class RiakGormInstanceApi extends GormInstanceApi {
         super(persistentClass, datastore);
     }
 
-    def Object save(Object instance, Map params) {
+    def save(instance, Map params) {
         def currentQosParams = datastore.currentSession.qosParameters
         if (params?.w || params?.dw) {
             QosParameters qos = new RiakQosParameters()

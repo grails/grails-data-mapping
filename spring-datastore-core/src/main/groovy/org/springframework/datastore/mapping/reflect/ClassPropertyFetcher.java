@@ -86,8 +86,8 @@ public class ClassPropertyFetcher {
     }
 
     public boolean isReadableProperty(String name) {
-        return staticFetchers.containsKey(name)
-                || instanceFetchers.containsKey(name);
+        return staticFetchers.containsKey(name) ||
+               instanceFetchers.containsKey(name);
     }
 
     private void init() {
@@ -105,32 +105,34 @@ public class ClassPropertyFetcher {
         }
 
         try {
-            this.propertyDescriptors = Introspector.getBeanInfo(clazz).getPropertyDescriptors();
+            propertyDescriptors = Introspector.getBeanInfo(clazz).getPropertyDescriptors();
         } catch (IntrospectionException e) {
             // ignore
         }
-        if (propertyDescriptors != null) {
 
-            for (PropertyDescriptor desc : propertyDescriptors) {
-                propertyDescriptorsByName.put(desc.getName(),desc);
-                final Class<?> propertyType = desc.getPropertyType();
-                List<PropertyDescriptor> pds = typeToPropertyMap.get(propertyType);
-                if (pds == null) {
-                    pds = new ArrayList<PropertyDescriptor>();
-                    typeToPropertyMap.put(propertyType, pds);
-                }
-                pds.add(desc);
+        if (propertyDescriptors == null) {
+            return;
+        }
 
-                Method readMethod = desc.getReadMethod();
-                if (readMethod != null) {
-                    boolean staticReadMethod = Modifier.isStatic(readMethod.getModifiers());
-                    if (staticReadMethod) {
-                        staticFetchers.put(desc.getName(),
-                                new GetterPropertyFetcher(readMethod, staticReadMethod));
-                    } else {
-                        instanceFetchers.put(desc.getName(),
-                                new GetterPropertyFetcher(readMethod, staticReadMethod));
-                    }
+        for (PropertyDescriptor desc : propertyDescriptors) {
+            propertyDescriptorsByName.put(desc.getName(),desc);
+            final Class<?> propertyType = desc.getPropertyType();
+            List<PropertyDescriptor> pds = typeToPropertyMap.get(propertyType);
+            if (pds == null) {
+                pds = new ArrayList<PropertyDescriptor>();
+                typeToPropertyMap.put(propertyType, pds);
+            }
+            pds.add(desc);
+
+            Method readMethod = desc.getReadMethod();
+            if (readMethod != null) {
+                boolean staticReadMethod = Modifier.isStatic(readMethod.getModifiers());
+                if (staticReadMethod) {
+                    staticFetchers.put(desc.getName(),
+                            new GetterPropertyFetcher(readMethod, staticReadMethod));
+                } else {
+                    instanceFetchers.put(desc.getName(),
+                            new GetterPropertyFetcher(readMethod, staticReadMethod));
                 }
             }
         }
@@ -143,19 +145,19 @@ public class ClassPropertyFetcher {
         if (!Modifier.isPublic(method.getModifiers())) {
             return;
         }
-        if (Modifier.isStatic(method.getModifiers())
-                && method.getReturnType() != Void.class) {
+        if (Modifier.isStatic(method.getModifiers()) &&
+                method.getReturnType() != Void.class) {
             if (method.getParameterTypes().length == 0) {
                 String name = method.getName();
                 if (name.indexOf('$') == -1) {
-                    if (name.length() > 3 && name.startsWith("get")
-                            && Character.isUpperCase(name.charAt(3))) {
+                    if (name.length() > 3 && name.startsWith("get") &&
+                            Character.isUpperCase(name.charAt(3))) {
                         name = name.substring(3);
-                    } else if (name.length() > 2
-                            && name.startsWith("is")
-                            && Character.isUpperCase(name.charAt(2))
-                            && (method.getReturnType() == Boolean.class ||
-                                    method .getReturnType() == boolean.class)) {
+                    } else if (name.length() > 2 &&
+                            name.startsWith("is") &&
+                            Character.isUpperCase(name.charAt(2)) &&
+                            (method.getReturnType() == Boolean.class ||
+                                    method.getReturnType() == boolean.class)) {
                         name = name.substring(2);
                     }
                     PropertyFetcher fetcher = new GetterPropertyFetcher(method, true);
@@ -178,15 +180,12 @@ public class ClassPropertyFetcher {
             }
         }
         else {
-
             if (name.indexOf('$') == -1) {
                 boolean staticField = Modifier.isStatic(modifiers);
                 if (staticField) {
-                    staticFetchers.put(name, new FieldReaderFetcher(field,
-                            staticField));
+                    staticFetchers.put(name, new FieldReaderFetcher(field, staticField));
                 } else {
-                    instanceFetchers.put(name, new FieldReaderFetcher(
-                            field, staticField));
+                    instanceFetchers.put(name, new FieldReaderFetcher(field, staticField));
                 }
             }
         }
@@ -226,18 +225,20 @@ public class ClassPropertyFetcher {
 
     public <T> T getStaticPropertyValue(String name, Class<T> c) {
         PropertyFetcher fetcher = staticFetchers.get(name);
-        if (fetcher != null) {
-            Object v = getPropertyValueWithFetcher(name, fetcher);
-            return returnOnlyIfInstanceOf(v, c);
+        if (fetcher == null) {
+            return null;
         }
-        return null;
+
+        Object v = getPropertyValueWithFetcher(name, fetcher);
+        return returnOnlyIfInstanceOf(v, c);
     }
+
     public <T> T getPropertyValue(String name, Class<T> c) {
         return returnOnlyIfInstanceOf(getPropertyValue(name, false), c);
     }
 
     private <T> T returnOnlyIfInstanceOf(Object value, Class<T> type) {
-        if ((value != null) && (type==Object.class || ReflectionUtils.isAssignableFrom( type, value.getClass()))) {
+        if (value != null && (type == Object.class || ReflectionUtils.isAssignableFrom(type, value.getClass()))) {
             return (T)value;
         }
         return null;
@@ -260,10 +261,7 @@ public class ClassPropertyFetcher {
 
     public Class getPropertyType(String name, boolean onlyInstanceProperties) {
         PropertyFetcher fetcher = resolveFetcher(name, onlyInstanceProperties);
-        if (fetcher != null) {
-            return fetcher.getPropertyType(name);
-        }
-        return null;
+        return fetcher == null ? null : fetcher.getPropertyType(name);
     }
 
     public PropertyDescriptor getPropertyDescriptor(String name) {
@@ -297,15 +295,15 @@ public class ClassPropertyFetcher {
     }
 
     public static interface ReferenceInstanceCallback {
-        public Object getReferenceInstance();
+        Object getReferenceInstance();
     }
 
     static interface PropertyFetcher {
-        public Object get(ReferenceInstanceCallback callback)
+        Object get(ReferenceInstanceCallback callback)
                 throws IllegalArgumentException, IllegalAccessException,
                 InvocationTargetException;
 
-        public Class getPropertyType(String name);
+        Class getPropertyType(String name);
     }
 
     static class GetterPropertyFetcher implements PropertyFetcher {
@@ -319,8 +317,7 @@ public class ClassPropertyFetcher {
         }
 
         public Object get(ReferenceInstanceCallback callback)
-                throws IllegalArgumentException, IllegalAccessException,
-                InvocationTargetException {
+                throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
             if (staticMethod) {
                 return readMethod.invoke(null, (Object[]) null);
             }
@@ -346,8 +343,7 @@ public class ClassPropertyFetcher {
         }
 
         public Object get(ReferenceInstanceCallback callback)
-                throws IllegalArgumentException, IllegalAccessException,
-                InvocationTargetException {
+                throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
             if (staticField) {
                 return field.get(null);
             }

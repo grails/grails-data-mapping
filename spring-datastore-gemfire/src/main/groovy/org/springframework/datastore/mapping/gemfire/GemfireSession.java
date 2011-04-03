@@ -41,10 +41,7 @@ public class GemfireSession extends AbstractSession<Cache> {
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
         final PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
-        if (entity != null) {
-            return new GemfireEntityPersister(mappingContext, entity, this, publisher);
-        }
-        return null;
+        return entity == null ? null : new GemfireEntityPersister(mappingContext, entity, this, publisher);
     }
 
     @Override

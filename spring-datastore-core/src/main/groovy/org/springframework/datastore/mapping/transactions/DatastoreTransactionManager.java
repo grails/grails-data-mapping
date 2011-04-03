@@ -152,8 +152,9 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
             logger.debug("Committing Datastore transaction on Session [" + sessionHolder.getSession() + "]");
         }
         try {
-            if (sessionHolder.getSession() != null)
+            if (sessionHolder.getSession() != null) {
                 sessionHolder.getSession().flush();
+            }
             txObject.getTransaction().commit();
         }
         catch (DataAccessException ex) {

@@ -53,7 +53,7 @@ import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
 
 /**
- * A Datastore implementation for the Mongo document store
+ * A Datastore implementation for the Mongo document store.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -107,11 +107,13 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         }
 
         initializeConverters(mappingContext);
+
         mappingContext.getConverterRegistry().addConverter(new Converter<String, ObjectId>() {
             public ObjectId convert(String source) {
                 return new ObjectId(source);
             }
         });
+
         mappingContext.getConverterRegistry().addConverter(new Converter<ObjectId, String>() {
             public String convert(ObjectId source) {
                 return source.toString();
@@ -187,12 +189,14 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         final MongoCollection mongoCollection = mapping.getMappedForm() != null ? mapping.getMappedForm() : null;
 
         if (mongoCollection != null) {
-            if (mongoCollection.getCollection() != null)
+            if (mongoCollection.getCollection() != null) {
                 collectionName = mongoCollection.getCollection();
-            if (mongoCollection.getDatabase() != null)
+            }
+            if (mongoCollection.getDatabase() != null) {
                 databaseName = mongoCollection.getDatabase();
-
+            }
         }
+
         final MongoTemplate mt = new MongoTemplate(mongoInstance, databaseName,collectionName);
 
         String username = read(String.class, USERNAME, connectionDetails, null);
@@ -284,7 +288,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             String getMongoFieldNameForProperty(PersistentProperty<MongoAttribute> property) {
                 PropertyMapping<MongoAttribute> pm = property.getMapping();
                 String propKey = null;
-                if (pm.getMappedForm()!=null) {
+                if (pm.getMappedForm() != null) {
                     propKey = pm.getMappedForm().getField();
                 }
                 if (propKey == null) {
@@ -296,6 +300,6 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     }
 
     public void persistentEntityAdded(PersistentEntity entity) {
-        createMongoTemplate(entity, this.mongo);
+        createMongoTemplate(entity, mongo);
     }
 }

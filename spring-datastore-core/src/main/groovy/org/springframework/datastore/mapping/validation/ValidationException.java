@@ -22,8 +22,9 @@ import org.springframework.validation.ObjectError;
 /**
  * Exception thrown when a validation error occurs
  */
-public class ValidationException extends DataIntegrityViolationException{
+public class ValidationException extends DataIntegrityViolationException {
     private String fullMessage;
+
     public ValidationException(String msg, Errors errors) {
         super(msg);
         fullMessage = formatErrors(errors, msg);
@@ -36,8 +37,10 @@ public class ValidationException extends DataIntegrityViolationException{
 
     public static String formatErrors(Errors errors, String msg ) {
         String ls = System.getProperty("line.separator");
-        StringBuilder b = new StringBuilder(msg != null ? msg + " : " + ls : "") ;
-
+        StringBuilder b = new StringBuilder();
+        if (msg != null) {
+            b.append(msg).append(" : ").append(ls);
+        }
 
         for (ObjectError error : errors.getAllErrors()) {
             b.append(ls)

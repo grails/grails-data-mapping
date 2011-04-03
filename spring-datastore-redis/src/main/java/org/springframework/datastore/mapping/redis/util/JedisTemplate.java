@@ -102,20 +102,20 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                     redis.auth(password);
                     authenticated = true;
                 } catch (Exception e) {
-                       throw new DataAccessResourceFailureException("I/O exception authenticating with Redis: " + e.getMessage(), e);
+                    throw new DataAccessResourceFailureException("I/O exception authenticating with Redis: " + e.getMessage(), e);
                 }
             }
             return jedisRedisCallback.doInRedis(redis);
         } catch (IOException e) {
             throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
         }
-
     }
 
     protected Jedis getNewConnection() {
         Jedis jedis;
-        if (pool == null)
+        if (pool == null) {
             jedis = new Jedis(host, port, timeout);
+        }
         else {
             try {
                 jedis = pool.getResource(timeout);
@@ -134,7 +134,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public SortParams sortParams() {
         return new JedisSortParams();
     }
-
 
     public void save() {
         execute(new RedisCallback<Jedis>() {
@@ -190,7 +189,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                         pipeline.del(redisKey);
                     }
                     else {
-
                         redis.del(redisKey);
                     }
 
@@ -268,7 +266,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                 return null;
             }
         });
-
     }
 
     public String lindex(final String redisKey, final int index) {
@@ -352,7 +349,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                 return null;
             }
         });
-
     }
 
     public void flushall() {
@@ -366,7 +362,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                 return null;
             }
         });
-
     }
 
     public void select(final int index) {
@@ -380,7 +375,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                 return null;
             }
         });
-
     }
 
     public int dbsize() {
@@ -412,7 +406,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                 return null;
             }
         });
-
     }
 
     public String hget(final String redisKey, final String entryKey) {
@@ -470,7 +463,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     }
 
     public Map<String, String> hgetall(final String redisKey) {
-
         return (Map<String, String>) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 if (pipeline != null) {
@@ -524,7 +516,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                     finally {
                         redis.disconnect();
                     }
-
                 }
                 return redis.incr(key);
             }
@@ -571,7 +562,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                 return null;
             }
         });
-
     }
 
     public void sunionstore(final String storeKey, final String... keys) {
@@ -586,7 +576,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                 return null;
             }
         });
-
     }
 
     public void sdiffstore(final String storeKey, final String... keys) {
@@ -601,7 +590,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                 return null;
             }
         });
-
     }
 
     public boolean setnx(final String redisKey, final Object o) {
@@ -613,7 +601,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                 return redis.setnx(redisKey, o.toString()) > 0;
             }
         });
-
     }
 
     public boolean expire(final String key, final int timeout) {
@@ -642,7 +629,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                 return redis.getSet(redisKey, o.toString());
             }
         });
-
     }
 
     public List<String> keys(final String pattern) {
@@ -682,7 +668,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                 return transaction;
             }
         });
-
     }
 
     public Jedis getRedisClient() {

@@ -52,26 +52,28 @@ public class GormGemfireMappingFactory extends GormKeyValueMappingFactory {
     public Family createMappedForm(PersistentEntity entity) {
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
         final Closure value = cpf.getStaticPropertyValue(GormProperties.MAPPING, Closure.class);
-        if (value != null) {
-            final Region family = new Region();
-            AttributesFactory factory = new AttributesFactory() {
-                @SuppressWarnings("unused")
-                public void setRegion(String name) {
-                    family.setRegion(name);
-                }
-            };
-            factory.setDataPolicy(defaultDataPolicy);
-            MappingConfigurationBuilder builder = new MappingConfigurationBuilder(factory, KeyValue.class);
-            builder.evaluate(value);
-            entityToPropertyMap.put(entity, builder.getProperties());
-            final RegionAttributes regionAttributes = factory.create();
-            family.setRegionAttributes(regionAttributes);
-            family.setCacheListeners(regionAttributes.getCacheListeners());
-            family.setDataPolicy(regionAttributes.getDataPolicy());
-            family.setCacheLoader(regionAttributes.getCacheLoader());
-            family.setCacheWriter(regionAttributes.getCacheWriter());
-            return family;
+        if (value == null) {
+            return new Region();
         }
-        return new Region();
+
+        final Region family = new Region();
+        AttributesFactory factory = new AttributesFactory() {
+            @SuppressWarnings("unused")
+            public void setRegion(String name) {
+                family.setRegion(name);
+            }
+        };
+        factory.setDataPolicy(defaultDataPolicy);
+
+        MappingConfigurationBuilder builder = new MappingConfigurationBuilder(factory, KeyValue.class);
+        builder.evaluate(value);
+        entityToPropertyMap.put(entity, builder.getProperties());
+        final RegionAttributes regionAttributes = factory.create();
+        family.setRegionAttributes(regionAttributes);
+        family.setCacheListeners(regionAttributes.getCacheListeners());
+        family.setDataPolicy(regionAttributes.getDataPolicy());
+        family.setCacheLoader(regionAttributes.getCacheLoader());
+        family.setCacheWriter(regionAttributes.getCacheWriter());
+        return family;
     }
 }

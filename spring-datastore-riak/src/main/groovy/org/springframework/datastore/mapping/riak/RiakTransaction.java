@@ -23,50 +23,47 @@ import org.springframework.datastore.mapping.transactions.Transaction;
 import org.springframework.transaction.IllegalTransactionStateException;
 
 /**
- * A {@link org.springframework.datastore.mapping.transactions.Transaction} implemenatation for
- * Riak.
+ * A {@link org.springframework.datastore.mapping.transactions.Transaction}
+ * implemenatation for Riak.
  * <p/>
- * Note that this implementation doesn't do any real transaction processing because Riak doesn't
- * have native transaction support.
+ * Note that this implementation doesn't do any real transaction processing
+ * because Riak doesn't have native transaction support.
  *
  * @author J. Brisbin <jon@jbrisbin.com>
  */
 public class RiakTransaction implements Transaction<RiakTemplate> {
 
-  private RiakTemplate riakTemplate;
-  private boolean committed = false;
-  private boolean rolledBack = false;
+    private RiakTemplate riakTemplate;
+    private boolean committed = false;
+    private boolean rolledBack = false;
 
-  public RiakTransaction(RiakTemplate riakTemplate) {
-    this.riakTemplate = riakTemplate;
-  }
-
-  public void commit() {
-    if (rolledBack) {
-      throw new IllegalTransactionStateException(
-          "This transaction has already been rolled back!");
+    public RiakTransaction(RiakTemplate riakTemplate) {
+        this.riakTemplate = riakTemplate;
     }
-    committed = true;
-  }
 
-  public void rollback() {
-    if (committed) {
-      throw new IllegalTransactionStateException("This transaction has already been committed!");
+    public void commit() {
+        if (rolledBack) {
+            throw new IllegalTransactionStateException("This transaction has already been rolled back!");
+        }
+        committed = true;
     }
-    rolledBack = true;
-  }
 
-  public RiakTemplate getNativeTransaction() {
-    return riakTemplate;
-  }
+    public void rollback() {
+        if (committed) {
+            throw new IllegalTransactionStateException("This transaction has already been committed!");
+        }
+        rolledBack = true;
+    }
 
-  public boolean isActive() {
-    return !committed && !rolledBack;
-  }
+    public RiakTemplate getNativeTransaction() {
+        return riakTemplate;
+    }
 
-  public void setTimeout(int timeout) {
-    throw new UnsupportedOperationException(
-        "Transaction timeouts do not apply to the Riak support.");
-  }
+    public boolean isActive() {
+        return !committed && !rolledBack;
+    }
 
+    public void setTimeout(int timeout) {
+        throw new UnsupportedOperationException("Transaction timeouts do not apply to the Riak support.");
+    }
 }

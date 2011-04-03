@@ -122,6 +122,7 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
                 // ignore
             }
         }
+
         for (PersistentProperty property : properties) {
             final boolean indexed = isIndexed(property) && Comparable.class.isAssignableFrom(property.getType());
 
@@ -143,19 +144,20 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
     }
 
     private boolean checkIndexExists(Collection<Index> indices, String indexName) {
-        boolean indexExists = false;
-        if (indices != null) {
-            for (Index index : indices) {
-                if (index.getName().equals(indexName)) {
-                    indexExists = true;
-                }
+        if (indices == null) {
+            return false;
+        }
+
+        for (Index index : indices) {
+            if (index.getName().equals(indexName)) {
+                return true;
             }
         }
-        return indexExists;
+
+        return false;
     }
 
     protected Region initializeRegion(Cache cache, PersistentEntity entity) throws Exception {
-
 
         org.springframework.datastore.mapping.gemfire.config.Region mappedRegion = getMappedRegionInfo(entity);
 
@@ -163,7 +165,6 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         String regionName;
         if (hasMappedRegion && mappedRegion.getRegion() != null) {
             regionName = mappedRegion.getRegion();
-
         }
         else {
             regionName = entity.getDecapitalizedName();
@@ -230,8 +231,9 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
         final Object mappedForm = entity.getMapping().getMappedForm();
 
         org.springframework.datastore.mapping.gemfire.config.Region mappedRegion = null;
-        if (mappedForm instanceof org.springframework.datastore.mapping.gemfire.config.Region)
+        if (mappedForm instanceof org.springframework.datastore.mapping.gemfire.config.Region) {
             mappedRegion = (org.springframework.datastore.mapping.gemfire.config.Region) mappedForm;
+        }
         return mappedRegion;
     }
 
@@ -261,10 +263,7 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
      */
     public GemfireTemplate getTemplate(Class entity) {
         final PersistentEntity e = getMappingContext().getPersistentEntity(entity.getName());
-        if (e != null) {
-            return gemfireTemplates.get(e);
-        }
-        return null;
+        return e == null ? null : gemfireTemplates.get(e);
     }
 
     @Override
@@ -273,13 +272,15 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
     }
 
     public void destroy() throws Exception {
-        if (gemfireCache != null) {
-            gemfireCache.close();
-            for (CqQuery continuousQuery : continuousQueries) {
-                continuousQuery.close();
-            }
-            continuousQueries.clear();
+        if (gemfireCache == null) {
+            return;
         }
+
+        gemfireCache.close();
+        for (CqQuery continuousQuery : continuousQueries) {
+            continuousQuery.close();
+        }
+        continuousQueries.clear();
     }
 
     public void afterPropertiesSet() throws Exception {
@@ -316,7 +317,8 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
             initializeRegions(gemfireCache, mappingContext);
             initializeConverters(mappingContext);
         } catch (Exception e) {
-            throw new DatastoreConfigurationException("Failed to configure Gemfire cache and regions: " + e.getMessage(),e);
+            throw new DatastoreConfigurationException("Failed to configure Gemfire cache and regions: " +
+                    e.getMessage(), e);
         }
     }
 
@@ -325,7 +327,9 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
             Region region = initializeRegion(gemfireCache, entity);
             initializeIndices(gemfireCache, entity, region);
         } catch (Exception e) {
-            throw new DatastoreConfigurationException("Failed to configure Gemfire cache and regions for entity ["+entity+"]: " + e.getMessage(),e);
+            throw new DatastoreConfigurationException(
+                    "Failed to configure Gemfire cache and regions for entity [" + entity +
+                    "]: " + e.getMessage(), e);
         }
     }
 }

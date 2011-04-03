@@ -23,7 +23,7 @@ import org.springframework.datastore.mapping.redis.collection.RedisSet
 import org.springframework.datastore.mapping.redis.util.RedisTemplate
 
 /**
- * Convenience interface for access the redis datastore
+ * Convenience interface for access the Redis datastore.
  *
  * @author Graeme Rocher
  */
@@ -46,35 +46,35 @@ class Redis {
     }
 
     /**
-     * Creates a redis set for the given key
-     * @param key They key
-     * @return
+     * Creates a Redis set for the given key.
+     * @param key the key
+     * @return the set
      */
     RedisSet set(String key) {
         return new RedisSet(redisTemplate, key)
     }
 
     /**
-     * Creates a hash for the given key
-     * @param key They key
-     * @return
+     * Creates a hash for the given key.
+     * @param key the key
+     * @return the hash
      */
     RedisMap hash(String key) {
         return new RedisMap(redisTemplate, key)
     }
 
     /**
-     * Creates a redis list for the given key
-     * @param key They key
-     * @return
+     * Creates a Redis list for the given key.
+     * @param key the key
+     * @return the list
      */
     RedisList list(String key) {
         return new RedisList(redisTemplate, key)
     }
 
     /**
-     * Returns an entity list from the specified key
-     * @param key The key
+     * Returns an entity list from the specified key.
+     * @param key the key
      * @return An entity list
      */
     Collection entities(Class type, String key, int offset = 0, int max = -1) {
@@ -83,12 +83,12 @@ class Redis {
     }
 
     /**
-     * Returns a list of entities from the specified type and redis collection
+     * Returns entities from the specified type and Redis collection.
      * @param type The type
      * @param col The collection
      * @param offset The offset
      * @param max The max
-     * @return A list of entities
+     * @return entities
      */
     Collection entities(Class type, RedisCollection col, int offset = 0, int max = -1) {
         PersistentEntity entity = datastore.mappingContext.getPersistentEntity(type.name)

@@ -57,7 +57,7 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
     }
 
     private String createRedisKey(Long primaryKey) {
-        return association.getOwner().getName()+ ":" + primaryKey + ":" + association.getName();
+        return association.getOwner().getName() + ":" + primaryKey + ":" + association.getName();
     }
 
     public List<Long> query(Long primaryKey) {
@@ -80,14 +80,6 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
     }
 
     private RedisCollection createRedisCollection(String redisKey) {
-        RedisCollection col;
-        if (association.isList()) {
-            col = new RedisList(template, redisKey);
-        }
-        else {
-            col = new RedisSet(template, redisKey);
-        }
-        return col;
+        return association.isList() ? new RedisList(template, redisKey) : new RedisSet(template, redisKey);
     }
-
 }

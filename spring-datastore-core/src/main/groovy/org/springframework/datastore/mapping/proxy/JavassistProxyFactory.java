@@ -39,6 +39,15 @@ public class JavassistProxyFactory implements org.springframework.datastore.mapp
 
     private static final Map<Class, Class > PROXY_FACTORIES = new ConcurrentHashMap<Class, Class >();
 
+    private static final List EXCLUDES = Arrays.asList(
+            "getMetaClass",
+            "metaClass",
+            "setMetaClass",
+            "invokeMethod",
+            "getProperty",
+            "setProperty",
+            "$getStaticMetaClass");
+
     public boolean isProxy(Object object) {
         return object instanceof EntityProxy;
     }
@@ -98,14 +107,6 @@ public class JavassistProxyFactory implements org.springframework.datastore.mapp
             javassist.util.proxy.ProxyFactory pf = new ProxyFactory();
             pf.setSuperclass(type);
             pf.setInterfaces(new Class[]{ EntityProxy.class });
-            final List excludes = Arrays.asList(
-                "getMetaClass",
-                "metaClass",
-                "setMetaClass",
-                "invokeMethod",
-                "getProperty",
-                "setProperty",
-                "$getStaticMetaClass");
             pf.setFilter(new MethodFilter() {
                 public boolean isHandled(Method method) {
                     final String methodName = method.getName();
@@ -115,7 +116,7 @@ public class JavassistProxyFactory implements org.springframework.datastore.mapp
                     if (method.getParameterTypes().length == 0 && (methodName.equals("finalize"))) {
                         return false;
                     }
-                    if (excludes.contains(methodName) || method.isSynthetic() || method.isBridge()) {
+                    if (EXCLUDES.contains(methodName) || method.isSynthetic() || method.isBridge()) {
                         return false;
                     }
                     return true;

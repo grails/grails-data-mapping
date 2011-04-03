@@ -100,6 +100,7 @@ public class MongoSession extends AbstractSession<DB> {
             this.writeConcern = current;
         }
     }
+
     @Override
     public void disconnect() {
         super.disconnect();
@@ -150,12 +151,13 @@ public class MongoSession extends AbstractSession<DB> {
                     }
                     return null;
                 }
-
             });
         }
     }
+
     public DB getNativeInterface() {
-        return ((MongoDatastore)getDatastore()).getMongo().getDB(getDocumentMappingContext().getDefaultDatabaseName());
+        return ((MongoDatastore)getDatastore()).getMongo().getDB(
+             getDocumentMappingContext().getDefaultDatabaseName());
     }
 
     public DocumentMappingContext getDocumentMappingContext() {
@@ -165,10 +167,7 @@ public class MongoSession extends AbstractSession<DB> {
     @Override
     protected Persister createPersister(@SuppressWarnings("rawtypes") Class cls, MappingContext mappingContext) {
         final PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
-        if (entity != null) {
-            return new MongoEntityPersister(mappingContext, entity, this, publisher);
-        }
-        return null;
+        return entity == null ? null : new MongoEntityPersister(mappingContext, entity, this, publisher);
     }
 
     @Override

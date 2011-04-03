@@ -177,7 +177,7 @@ class GemfireStaticApi extends GormStaticApi {
         GemfireDatastore gemfire = datastore
         GemfireTemplate template = gemfire.getTemplate(persistentClass)
 
-        template.execute( { Region region ->
+        template.execute({ Region region ->
             def cache = gemfire.gemfireCache
             def queryService = cache.queryService
 
@@ -200,35 +200,19 @@ class GemfireStaticApi extends GormStaticApi {
     }
 
     def find(String query) {
-        def results = executeQuery("$query LIMIT 1")
-        if (results) {
-            return results[0]
-        }
-        return null
+        executeQuery("$query LIMIT 1")[0]
     }
 
     def find(String query, Collection params) {
-        def results = executeQuery("$query LIMIT 1", params)
-        if (results) {
-            return results[0]
-        }
-        return null
+        executeQuery("$query LIMIT 1", params)[0]
     }
 
     def find(String query, Map args) {
-        def results = executeQuery("$query LIMIT 1", args)
-        if (results) {
-            return results[0]
-        }
-        return null
+        executeQuery("$query LIMIT 1", args)[0]
     }
 
     def find(String query, Collection params, Map args) {
-        def results = executeQuery("$query LIMIT 1", params, args)
-        if (results) {
-            return results[0]
-        }
-        return null
+        executeQuery("$query LIMIT 1", params, args)[0]
     }
 
     List findAll(String query) {

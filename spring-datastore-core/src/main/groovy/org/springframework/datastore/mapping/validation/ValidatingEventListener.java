@@ -67,17 +67,22 @@ public class ValidatingEventListener extends AbstractPersistenceEventListener {
 
     private boolean doValidate(PersistentEntity entity, Object o) {
         Validator v = datastore.getMappingContext().getEntityValidator(entity);
-
-        if (v != null) {
-            final Object skipValidation = datastore.getCurrentSession().getAttribute(o, SKIP_VALIDATION_ATTRIBUTE);
-            if ((skipValidation instanceof Boolean) && (Boolean) skipValidation) return true;
-            BeanPropertyBindingResult result = new BeanPropertyBindingResult(o, o.getClass().getName());
-            v.validate(o, result);
-            if (result.hasErrors()) {
-                onErrors(o, result);
-                return false;
-            }
+        if (v == null) {
+            return true;
         }
+
+        final Object skipValidation = datastore.getCurrentSession().getAttribute(o, SKIP_VALIDATION_ATTRIBUTE);
+        if ((skipValidation instanceof Boolean) && (Boolean) skipValidation) {
+            return true;
+        }
+
+        BeanPropertyBindingResult result = new BeanPropertyBindingResult(o, o.getClass().getName());
+        v.validate(o, result);
+        if (result.hasErrors()) {
+            onErrors(o, result);
+            return false;
+        }
+
         return true;
     }
 

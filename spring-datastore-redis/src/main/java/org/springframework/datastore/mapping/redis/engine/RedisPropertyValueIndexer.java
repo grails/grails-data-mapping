@@ -51,29 +51,33 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     }
 
     public void deindex(Object value, Long primaryKey) {
-        if (value != null) {
-            final String primaryIndex = createRedisKey(value);
-            template.srem(primaryIndex, primaryKey);
+        if (value == null) {
+            return;
         }
+
+        final String primaryIndex = createRedisKey(value);
+        template.srem(primaryIndex, primaryKey);
     }
 
     public void index(final Object value, final Long primaryKey) {
-        if (value != null) {
-            String propSortKey = entityPersister.getPropertySortKey(property);
-            clearCachedIndices(entityPersister.getPropertySortKeyPattern());
-            final String primaryIndex = createRedisKey(value);
-            template.sadd(primaryIndex, primaryKey);
-            // for numbers and dates we also create a list index in order to support range queries
+        if (value == null) {
+            return;
+        }
 
-            if (value instanceof Number) {
-                Number n = (Number) value;
-                template.zadd(propSortKey,n.doubleValue(),primaryKey);
-            }
-            else if (value instanceof Date) {
-                Date d = (Date) value;
-                Long time = d.getTime();
-                template.zadd(propSortKey,time.doubleValue(),primaryKey);
-            }
+        String propSortKey = entityPersister.getPropertySortKey(property);
+        clearCachedIndices(entityPersister.getPropertySortKeyPattern());
+        final String primaryIndex = createRedisKey(value);
+        template.sadd(primaryIndex, primaryKey);
+        // for numbers and dates we also create a list index in order to support range queries
+
+        if (value instanceof Number) {
+            Number n = (Number) value;
+            template.zadd(propSortKey,n.doubleValue(),primaryKey);
+        }
+        else if (value instanceof Date) {
+            Date d = (Date) value;
+            Long time = d.getTime();
+            template.zadd(propSortKey,time.doubleValue(),primaryKey);
         }
     }
 
@@ -109,8 +113,9 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     }
 
     private void deleteKeys(List<String> toDelete) {
-        if (toDelete != null && !toDelete.isEmpty())
+        if (toDelete != null && !toDelete.isEmpty()) {
             template.del(toDelete.toArray(new String[toDelete.size()]));
+        }
     }
 
     private String createRedisKey(Object value) {
@@ -161,8 +166,6 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     }
 
     public String getIndexPattern(String pattern) {
-        String root = getIndexRoot();
-
-        return root + urlEncode(pattern.replaceAll("%", "*"));
+        return getIndexRoot() + urlEncode(pattern.replaceAll("%", "*"));
     }
 }
