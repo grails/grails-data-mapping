@@ -11,7 +11,7 @@ def riak
 
 def foo = {
   def notifs = riak.foreach(bucket: "notifications")
-  render "Notifications: $notifs"
+  render "Notifications: \$notifs"
 }
 {code}
 

@@ -8,7 +8,7 @@ class MyController {
 
     def foo = {
         def notifs = riak.get("notifications", "myuser")
-        render "Notifications: $notifs"
+        render "Notifications: \$notifs"
     }
 }
 {code}
@@ -32,7 +32,7 @@ class MyController {
         riak.get("notifications", "myuser", callback)
 
         // The previous call doesn't block, so we continue on...
-        render "Notifications: $notifs"
+        render "Notifications: \$notifs"
     }
 }
 {code}

@@ -27,7 +27,7 @@ Erlang R14B (erts-5.8.1) [source] [64-bit] [smp:2:2] [rq:2] [async-threads:64] [
 =INFO REPORT==== 13-Dec-2010::16:30:51 ===
 Spidermonkey VM (thread stack: 32MB, max heap: 12MB) host starting (<0.147.0>)
 Eshell V5.8.1  (abort with ^G)
-(riak@127.0.0.1)1>
+(riak\@127.0.0.1)1>
 {code}
 
 The default port for Riak's REST interface is 8098. So the default URI built into the Riak GORM support will work. The default is @http://localhost:8098/riak/{bucket}/{key}@.
@@ -35,6 +35,6 @@ The default port for Riak's REST interface is 8098. So the default URI built int
 If you need to configure the URLs for the @RiakTemplate@, do so by adding configuration elements to @grails-app/conf/Config.groovy@:
 
 {code}
-grails.riak.defaultUri = "http://localhost:8098/riak/{bucket}/{key}"
+grails.riak.defaultUri = "http://localhost:8098/riak/\{bucket\}/\{key\}"
 grails.riak.mapReduceUri = "http://localhost:8098/mapred"
 {code}
