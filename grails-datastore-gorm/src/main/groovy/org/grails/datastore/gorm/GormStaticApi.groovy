@@ -15,20 +15,22 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.CriteriaBuilder
+
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.springframework.beans.BeanWrapperImpl
 import org.springframework.beans.MutablePropertyValues
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.model.PersistentProperty
 import org.springframework.datastore.mapping.model.types.Association
 import org.springframework.datastore.mapping.query.Query
 import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.support.DefaultTransactionDefinition
 import org.springframework.transaction.support.TransactionCallback
 import org.springframework.transaction.support.TransactionTemplate
-import org.springframework.transaction.TransactionDefinition
 import org.springframework.validation.DataBinder
 
 /**
@@ -113,7 +115,10 @@ class GormStaticApi extends AbstractGormApi {
      * @return The created instance
      */
     def create() {
-        persistentClass.newInstance()
+        def o = persistentClass.newInstance()
+        datastore.applicationContext.autowireCapableBeanFactory.autowireBeanProperties(
+              o, AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, false)
+        o
     }
 
     /**
@@ -427,7 +432,7 @@ class GormStaticApi extends AbstractGormApi {
         }
         result
     }
-    
+
     /**
      * Execute a closure whose first argument is a reference to the current session
      * @param callable

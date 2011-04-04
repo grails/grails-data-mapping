@@ -42,6 +42,7 @@ import org.springframework.datastore.mapping.engine.LockableEntityPersister;
 import org.springframework.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.springframework.datastore.mapping.engine.event.PreDeleteEvent;
 import org.springframework.datastore.mapping.engine.event.PreInsertEvent;
+import org.springframework.datastore.mapping.engine.event.PreLoadEvent;
 import org.springframework.datastore.mapping.engine.event.PreUpdateEvent;
 import org.springframework.datastore.mapping.gemfire.GemfireDatastore;
 import org.springframework.datastore.mapping.gemfire.GemfireSession;
@@ -103,7 +104,6 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                 final Lock lock = region.getDistributedLock(id);
                 try {
                     if (lock.tryLock(timeout, TimeUnit.SECONDS)) {
-
                         final Object o = region.get(id);
                         distributedLocksHeld.put(o, lock);
                         return o;
@@ -217,6 +217,9 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                         if (updates.get(obj)) {
                             firePostUpdateEvent(persistentEntity, access);
                         }
+                        else {
+                            firePostInsertEvent(persistentEntity, access);
+                        }
                     }
                 }
                 return null;
@@ -233,8 +236,14 @@ public class GemfireEntityPersister extends LockableEntityPersister {
         return template.execute(new GemfireCallback() {
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
                 final Class idType = persistentEntity.getIdentity().getType();
-                Object lookupKey = getMappingContext().getConversionService().convert(key,idType);
+                Object lookupKey = getMappingContext().getConversionService().convert(key, idType);
                 final Object entry = region.get(lookupKey);
+
+                if (entry != null) {
+                    publisher.publishEvent(new PreLoadEvent(session.getDatastore(), getPersistentEntity(),
+                         new EntityAccess(persistentEntity, entry)));
+                }
+
                 for (Association association : persistentEntity.getAssociations()) {
                     if (association instanceof OneToMany) {
                         final EntityAccess ea = createEntityAccess(persistentEntity, entry);
@@ -309,7 +318,13 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                 }
 
                 cascadeSaveOrUpdate(persistentEntity, obj, access);
-                firePostUpdateEvent(persistentEntity, access);
+
+                if (finalIsUpdate) {
+                    firePostUpdateEvent(persistentEntity, access);
+                }
+                else {
+                    firePostInsertEvent(persistentEntity, access);
+                }
 
                 return null;
             }

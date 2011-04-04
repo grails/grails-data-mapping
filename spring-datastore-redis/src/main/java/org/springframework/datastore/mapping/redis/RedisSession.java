@@ -80,6 +80,7 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
                         }
 
                         persister.storeEntry(entity, pendingInsert.getNativeKey(), pendingInsert.getNativeEntry());
+                        persister.firePostInsertEvent(entity, entityAccess);
                         postOperations.addAll(pendingInsert.getCascadeOperations());
                     }
                     for (PendingOperation<RedisEntry, Long> pendingOperation : postOperations) {
@@ -106,7 +107,7 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
                 public Object doInRedis(RedisTemplate redis) throws IOException {
                     for (PendingUpdate<RedisEntry, Long> pendingInsert : pendingInserts) {
                         final EntityAccess entityAccess = pendingInsert.getEntityAccess();
-                        if (persister.fireBeforeUpdate(entity, entityAccess)) continue;
+                        if (persister.cancelUpdate(entity, entityAccess)) continue;
 
                         List<PendingOperation<RedisEntry, Long>> preOperations = pendingInsert.getPreOperations();
                         for (PendingOperation<RedisEntry, Long> preOperation : preOperations) {
@@ -114,6 +115,7 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
                         }
 
                         persister.updateEntry(entity, pendingInsert.getNativeKey(), pendingInsert.getNativeEntry());
+                        persister.firePostUpdateEvent(entity, entityAccess);
                         postOperations.addAll(pendingInsert.getCascadeOperations());
                     }
                     for (PendingOperation<RedisEntry, Long> pendingOperation : postOperations) {

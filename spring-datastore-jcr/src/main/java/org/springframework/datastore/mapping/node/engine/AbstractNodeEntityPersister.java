@@ -24,8 +24,6 @@ import org.springframework.datastore.mapping.core.impl.PendingUpdateAdapter;
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.LockableEntityPersister;
 import org.springframework.datastore.mapping.engine.event.PreDeleteEvent;
-import org.springframework.datastore.mapping.engine.event.PreInsertEvent;
-import org.springframework.datastore.mapping.engine.event.PreUpdateEvent;
 import org.springframework.datastore.mapping.model.ClassMapping;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
@@ -122,7 +120,7 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
     }
 
     protected Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, T nativeEntry) {
-        Object obj = persistentEntity.newInstance();
+        Object obj = newEntityInstance(persistentEntity);
         refreshObjectStateFromNativeEntry(persistentEntity, obj, nativeKey, nativeEntry);
         return obj;
     }
@@ -224,7 +222,6 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
             k = generateIdentifier(persistentEntity, tmp);
 
             pendingOperation = new PendingInsertAdapter<T, K>(persistentEntity, k, tmp, entityAccess) {
-                @Override
                 public void run() {
                     executeInsert(persistentEntity, entityAccess, getNativeKey(), getNativeEntry());
                 }
@@ -243,10 +240,10 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
             }
 
             pendingOperation = new PendingUpdateAdapter<T, K>(persistentEntity, k, tmp, entityAccess) {
-                @Override
                 public void run() {
                     if (cancelUpdate(persistentEntity, entityAccess)) return;
                     updateEntry(persistentEntity, getNativeKey(), getNativeEntry());
+                    firePostUpdateEvent(persistentEntity, entityAccess);
                 }
             };
         }
@@ -343,12 +340,12 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
 
             final K updateId = k;
             PendingOperation postOperation = new PendingOperationAdapter<T, K>(persistentEntity, k, e) {
-                @Override
                 public void run() {
                     if (cancelInsert(persistentEntity, entityAccess)) {
                         return;
                     }
                     storeEntry(persistentEntity, updateId, e);
+                    firePostInsertEvent(persistentEntity, entityAccess);
                     for (OneToMany inverseCollection : inverseCollectionUpdates.keySet()) {
                         final Serializable primaryKey = inverseCollectionUpdates.get(inverseCollection);
                         final AbstractNodeEntityPersister inversePersister = (AbstractNodeEntityPersister) session.getPersister(inverseCollection.getOwner());
@@ -372,7 +369,6 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
             final K updateId = k;
 
             PendingOperation postOperation = new PendingOperationAdapter<T, K>(persistentEntity, k, e) {
-                @Override
                 public void run() {
                      // updateOneToManyIndices(e, updateId, oneToManyKeys);
                      // if (doesRequirePropertyIndexing())
@@ -383,6 +379,7 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
                     }
 
                     updateEntry(persistentEntity, updateId, e);
+                    firePostUpdateEvent(persistentEntity, entityAccess);
                 }
 
             };
@@ -426,18 +423,21 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
             return;
         }
 
+        EntityAccess entityAccess = createEntityAccess(persistentEntity, obj);
         PreDeleteEvent event = new PreDeleteEvent(session.getDatastore(), persistentEntity,
-                 createEntityAccess(persistentEntity, obj));
+                 entityAccess);
         publisher.publishEvent(event);
         if (event.isCancelled()) {
             return;
         }
 
         final K key = readIdentifierFromObject(obj);
-
-        if (key != null) {
-            deleteEntry(key);
+        if (key == null) {
+            return;
         }
+
+        deleteEntry(key);
+        firePostDeleteEvent(persistentEntity, entityAccess);
     }
 
     private K readIdentifierFromObject(Object object) {
@@ -606,33 +606,7 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
         if (cancelInsert(persistentEntity, entityAccess)) return null;
         final K newId = storeEntry(persistentEntity, id, e);
         entityAccess.setIdentifier(newId);
+        firePostInsertEvent(persistentEntity, entityAccess);
         return newId;
-    }
-
-    /**
-     * Fire the beforeInsert even on an entityAccess object and return true if the operation should be cancelled
-     * @param persistentEntity The entity
-     * @param entityAccess The entity access
-     * @return true if the operation should be cancelled
-     */
-    public boolean cancelInsert(final PersistentEntity persistentEntity,
-            final EntityAccess entityAccess) {
-
-        PreInsertEvent event = new PreInsertEvent(session.getDatastore(), persistentEntity, entityAccess);
-        publisher.publishEvent(event);
-        return event.isCancelled();
-    }
-
-    /**
-     * Fire the beforeUpdate even on an entityAccess object and return true if the operation should be cancelled
-     * @param persistentEntity The entity
-     * @param entityAccess The entity access
-     * @return true if the operation should be cancelled
-     */
-    public boolean cancelUpdate(final PersistentEntity persistentEntity,
-            final EntityAccess entityAccess) {
-        PreUpdateEvent event = new PreUpdateEvent(session.getDatastore(), persistentEntity, entityAccess);
-        publisher.publishEvent(event);
-        return event.isCancelled();
     }
 }

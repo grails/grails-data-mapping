@@ -19,6 +19,13 @@ import java.util.List;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.engine.event.PostDeleteEvent;
+import org.springframework.datastore.mapping.engine.event.PostInsertEvent;
+import org.springframework.datastore.mapping.engine.event.PostLoadEvent;
+import org.springframework.datastore.mapping.engine.event.PostUpdateEvent;
+import org.springframework.datastore.mapping.engine.event.PreInsertEvent;
+import org.springframework.datastore.mapping.engine.event.PreLoadEvent;
+import org.springframework.datastore.mapping.engine.event.PreUpdateEvent;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.proxy.ProxyFactory;
@@ -144,7 +151,17 @@ public abstract class EntityPersister implements Persister {
             return null;
         }
 
-        return retrieveEntity(getPersistentEntity(), key);
+        PersistentEntity entity = getPersistentEntity();
+
+        Object o = retrieveEntity(entity, key);
+        if (o == null) {
+            return null;
+        }
+
+        publisher.publishEvent(new PostLoadEvent(session.getDatastore(),
+                entity, new EntityAccess(entity, o)));
+
+        return o;
     }
 
     /**
@@ -187,5 +204,56 @@ public abstract class EntityPersister implements Persister {
 
     protected EntityAccess createEntityAccess(@SuppressWarnings("unused") PersistentEntity pe, Object obj) {
         return new EntityAccess(persistentEntity, obj);
+    }
+
+    protected Object newEntityInstance(@SuppressWarnings("hiding") PersistentEntity persistentEntity) {
+        Object o = persistentEntity.newInstance();
+        publisher.publishEvent(new PreLoadEvent(session.getDatastore(), getPersistentEntity(),
+                new EntityAccess(persistentEntity, o)));
+        return o;
+    }
+
+   /**
+    * Fire the beforeInsert even on an entityAccess object and return true if the operation should be cancelled
+    * @param persistentEntity The entity
+    * @param entityAccess The entity access
+    * @return true if the operation should be cancelled
+    */
+    public boolean cancelInsert(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
+           final EntityAccess entityAccess) {
+       PreInsertEvent event = new PreInsertEvent(session.getDatastore(), persistentEntity, entityAccess);
+       publisher.publishEvent(event);
+       return event.isCancelled();
+   }
+
+    public void firePostInsertEvent(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
+            final EntityAccess entityAccess) {
+        publisher.publishEvent(new PostInsertEvent(
+                session.getDatastore(), persistentEntity, entityAccess));
+    }
+
+   /**
+    * Fire the beforeUpdate even on an entityAccess object and return true if the operation should be cancelled
+    * @param persistentEntity The entity
+    * @param entityAccess The entity access
+    * @return true if the operation should be cancelled
+    */
+    public boolean cancelUpdate(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
+           final EntityAccess entityAccess) {
+       PreUpdateEvent event = new PreUpdateEvent(session.getDatastore(), persistentEntity, entityAccess);
+       publisher.publishEvent(event);
+       return event.isCancelled();
+   }
+
+    public void firePostUpdateEvent(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
+            final EntityAccess entityAccess) {
+        publisher.publishEvent(new PostUpdateEvent(
+                session.getDatastore(), persistentEntity, entityAccess));
+    }
+
+    public void firePostDeleteEvent(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
+            final EntityAccess entityAccess) {
+        publisher.publishEvent(new PostDeleteEvent(
+                session.getDatastore(), persistentEntity, entityAccess));
     }
 }

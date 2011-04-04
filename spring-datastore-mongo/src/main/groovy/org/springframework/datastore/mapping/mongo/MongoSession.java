@@ -28,7 +28,6 @@ import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.core.impl.PendingInsert;
 import org.springframework.datastore.mapping.core.impl.PendingOperation;
 import org.springframework.datastore.mapping.document.config.DocumentMappingContext;
-import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
@@ -130,11 +129,7 @@ public class MongoSession extends AbstractSession<DB> {
                     List<DBObject> dbObjects = new LinkedList<DBObject>();
                     List<PendingOperation> postOperations = new LinkedList<PendingOperation>();
 
-                    final MongoEntityPersister persister = (MongoEntityPersister) getPersister(entity);
-
                     for (PendingInsert pendingInsert : pendingInserts) {
-                        final EntityAccess entityAccess = pendingInsert.getEntityAccess();
-                        if (persister.cancelInsert(entity, entityAccess)) continue;
 
                         final List<PendingOperation> preOperations = pendingInsert.getPreOperations();
                         for (PendingOperation preOperation : preOperations) {
@@ -143,6 +138,7 @@ public class MongoSession extends AbstractSession<DB> {
 
                         dbObjects.add((DBObject) pendingInsert.getNativeEntry());
                         postOperations.addAll(pendingInsert.getCascadeOperations());
+                        pendingInsert.run();
                     }
 
                     collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]), writeConcern);
