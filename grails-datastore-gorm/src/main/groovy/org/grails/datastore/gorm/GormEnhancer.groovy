@@ -39,18 +39,17 @@ class GormEnhancer {
     List<FinderMethod> finders
 
     GormEnhancer(Datastore datastore) {
-        this.datastore = datastore
-        initialiseFinders(datastore)
+        this(datastore, null)
     }
 
     GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
         this.datastore = datastore
-        initialiseFinders(datastore)
         this.transactionManager = transactionManager
+        initialiseFinders(datastore)
     }
 
     /**
-     * Enhances all persistent entities
+     * Enhances all persistent entities.
      *
      * @param onlyExtendedMethods If only to add additional methods provides by subclasses of the GORM APIs
      */
@@ -75,16 +74,14 @@ class GormEnhancer {
         def tm = transactionManager
 
         final namedQueries = cpf.getStaticPropertyValue('namedQueries', Closure)
-        if (namedQueries) {
-            if (namedQueries instanceof Closure) {
-                registerNamedQueries(e, namedQueries)
-            }
+        if (namedQueries instanceof Closure) {
+            registerNamedQueries(e, namedQueries)
         }
 
         ExpandoMetaClass mc = cls.metaClass
         for (currentInstanceMethods in instanceMethods) {
             def apiProvider = currentInstanceMethods
-            if(GormInstanceApi.isInstance(apiProvider)) {
+            if (GormInstanceApi.isInstance(apiProvider)) {
                 mc.static.currentGormInstanceApi = {-> apiProvider }
             }
             else {
@@ -93,13 +90,14 @@ class GormEnhancer {
 
             for (Method method in (onlyExtendedMethods ? apiProvider.extendedMethods : apiProvider.methods)) {
                 def methodName = method.name
-                def parameterTypes = method.parameterTypes
+                Class[] parameterTypes = method.parameterTypes
 
                 if (parameterTypes) {
-                    parameterTypes = Arrays.copyOfRange(parameterTypes, 1, parameterTypes.length)
+                    parameterTypes = parameterTypes.length == 1 ? [] : parameterTypes[1..-1]
+
                     // use fake object just so we have the right method signature
 
-                    final tooCall = new InstanceMethodInvokingClosure(apiProvider,methodName, parameterTypes)
+                    final tooCall = new InstanceMethodInvokingClosure(apiProvider, methodName, parameterTypes)
                     def pt = parameterTypes
                     // Hack to workaround http://jira.codehaus.org/browse/GROOVY-4720
                     final closureMethod = new ClosureStaticMetaMethod(methodName, cls, tooCall, pt) {
@@ -110,14 +108,15 @@ class GormEnhancer {
                 }
             }
         }
+
         for (p in e.associations) {
             def prop = p
-            if ( (prop instanceof OneToMany) || (prop instanceof ManyToMany)) {
+            if ((prop instanceof OneToMany) || (prop instanceof ManyToMany)) {
                 def associatedEntity = prop.associatedEntity
                 mc."addTo${prop.capitilizedName}" = { arg ->
                     def obj
                     if (delegate[prop.name] == null) {
-                        delegate[prop.name] = [].asType( prop.type )
+                        delegate[prop.name] = [].asType(prop.type)
                     }
                     if (arg instanceof Map) {
                         obj = associatedEntity.javaClass.newInstance(arg)
@@ -145,7 +144,7 @@ class GormEnhancer {
                     }
                     delegate
                 }
-                mc."removeFrom${prop.capitilizedName}" = {Object arg ->
+                mc."removeFrom${prop.capitilizedName}" = { arg ->
                     if (associatedEntity.javaClass.isInstance(arg)) {
                         delegate[prop.name]?.remove(arg)
                         if (prop.bidirectional) {
@@ -183,34 +182,32 @@ class GormEnhancer {
     }
 
     protected void registerNamedQueries(PersistentEntity entity, namedQueries) {
-        def namedQueryBuilder = new NamedQueriesBuilder(entity, finders)
-        namedQueryBuilder.evaluate namedQueries
+        new NamedQueriesBuilder(entity, finders).evaluate namedQueries
     }
 
-    protected GormStaticApi getStaticApi(Class cls) {
-        new GormStaticApi(cls, datastore)
+    protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
+        new GormStaticApi<D>(cls, datastore)
     }
 
-    protected GormInstanceApi getInstanceApi(Class cls) {
-        new GormInstanceApi(cls, datastore)
+    protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
+        new GormInstanceApi<D>(cls, datastore)
     }
 
-    protected GormValidationApi getValidationApi(Class cls) {
+    protected <D> GormValidationApi<D> getValidationApi(Class<D> cls) {
         new GormValidationApi(cls, datastore)
     }
 
     private List initialiseFinders(Datastore datastore) {
         this.finders = DynamicFinder.getAllDynamicFinders(datastore)
     }
-
 }
 
 class InstanceMethodInvokingClosure extends Closure {
     private String methodName
-    private Object apiDelegate
+    private apiDelegate
     private Class[] parameterTypes
 
-    InstanceMethodInvokingClosure(Object apiDelegate, String methodName, Class[] parameterTypes) {
+    InstanceMethodInvokingClosure(apiDelegate, String methodName, Class[] parameterTypes) {
         super(apiDelegate, apiDelegate)
         this.apiDelegate = apiDelegate
         this.methodName = methodName
@@ -236,7 +233,7 @@ class StaticMethodInvokingClosure extends Closure {
     private Object apiDelegate
     private Class[] parameterTypes
 
-    StaticMethodInvokingClosure(Object apiDelegate, String methodName, Class[] parameterTypes) {
+    StaticMethodInvokingClosure(apiDelegate, String methodName, Class[] parameterTypes) {
         super(apiDelegate, apiDelegate)
         this.apiDelegate = apiDelegate
         this.methodName = methodName

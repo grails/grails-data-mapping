@@ -45,8 +45,8 @@ class GemfireGormEnhancer extends GormEnhancer {
         super(datastore, transactionManager)
     }
 
-    protected GormStaticApi getStaticApi(Class cls) {
-        return new GemfireStaticApi(cls, (GemfireDatastore)datastore)
+    protected <D> GormStaticApi<D> getStaticApi(Class cls) {
+        return new GemfireStaticApi<D> (cls, datastore)
     }
 }
 
@@ -55,7 +55,7 @@ class GemfireGormEnhancer extends GormEnhancer {
  */
 class ClosureInvokingFunction extends FunctionAdapter {
 
-    def callable
+    Closure callable
     String id
 
     ClosureInvokingFunction(Closure callable, id) {
@@ -65,14 +65,14 @@ class ClosureInvokingFunction extends FunctionAdapter {
         disableOwner(callable)
     }
 
-    protected disableOwner(Closure callable) {
+    protected void disableOwner(Closure callable) {
         // disable owner to prevent the owner being serialized with the function
         nullifyField(callable, "owner")
         nullifyField(callable, "delegate")
         nullifyField(callable, "thisObject")
     }
 
-    protected nullifyField(Closure callable, String fieldName) {
+    protected void nullifyField(Closure callable, String fieldName) {
         def field = ReflectionUtils.findField(callable.getClass(), fieldName)
         ReflectionUtils.makeAccessible field
         field.set callable, null
@@ -97,25 +97,17 @@ class FunctionContextHelper implements RegionFunctionContext, ResultSender, Seri
         this.resultSender = context.resultSender
     }
 
-    def getLocalData() {
+    Region getLocalData() {
         PartitionRegionHelper.getLocalDataForContext(context)
     }
 
-    Set<?> getFilter() {
-        return context.filter
-    }
+    Set<?> getFilter() { context.filter }
 
-    Region getDataSet() {
-        return context.dataSet
-    }
+    Region getDataSet() { context.dataSet }
 
-    Serializable getArguments() {
-        return context.arguments
-    }
+    Serializable getArguments() { context.arguments }
 
-    String getFunctionId() {
-        return context.functionId
-    }
+    String getFunctionId() { context.functionId }
 
     void sendResult(Serializable t) {
         resultSender.sendResult t
@@ -129,10 +121,11 @@ class FunctionContextHelper implements RegionFunctionContext, ResultSender, Seri
 /**
  * Adds support for String-based queries using OQL and continuous queries
  */
-class GemfireStaticApi extends GormStaticApi {
+class GemfireStaticApi<D> extends GormStaticApi<D> {
 
     ContinuousQueryApi cqApi
-    GemfireStaticApi(Class persistentClass, GemfireDatastore datastore) {
+
+    GemfireStaticApi(Class<D> persistentClass, GemfireDatastore datastore) {
         super(persistentClass, datastore)
         cqApi = new ContinuousQueryApi(persistentEntity, datastore)
     }
@@ -158,7 +151,7 @@ class GemfireStaticApi extends GormStaticApi {
         return resultCollector.getResult()
     }
 
-    def executeQuery(String query) {
+    List executeQuery(String query) {
         GemfireDatastore gemfire = datastore
         GemfireTemplate template = gemfire.getTemplate(persistentClass)
 

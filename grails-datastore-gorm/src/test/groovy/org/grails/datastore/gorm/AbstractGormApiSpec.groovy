@@ -20,17 +20,13 @@ class AbstractGormApiSpec extends Specification {
     }
 }
 
-class TestGormStaticApi extends GormStaticApi {
+class TestGormStaticApi<D> extends GormStaticApi<D> {
 
     def myNewMethod() {}
 
-    @Override def create() {
-        return super.create()
-    }
+    @Override D create() { super.create() }
 
-
-
-    TestGormStaticApi(Class persistentClass) {
-        super(persistentClass, [getMappingContext:{-> [getPersistentEntity: { String name->}] as MappingContext }] as Datastore)
+    TestGormStaticApi(Class<D> persistentClass) {
+        super(persistentClass, [getMappingContext: { -> [getPersistentEntity: { String name -> }] as MappingContext } ] as Datastore)
     }
 }

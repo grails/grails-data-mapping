@@ -19,6 +19,7 @@ import org.grails.datastore.gorm.finders.FinderMethod
 import org.springframework.datastore.mapping.gemfire.GemfireDatastore
 import org.springframework.datastore.mapping.gemfire.query.GemfireQuery
 import org.springframework.datastore.mapping.model.PersistentEntity
+import org.springframework.util.Assert
 
 import com.gemstone.gemfire.cache.query.CqAttributes
 import com.gemstone.gemfire.cache.query.CqAttributesFactory
@@ -42,6 +43,10 @@ class ContinuousQueryApi {
     }
 
     def invokeMethod(String methodName, args) {
+
+        def gemfirePool = gemfire.gemfirePool
+        Assert.notNull(gemfirePool, "Cannot invoke a continuous query without an appropriately initialized Gemfire Pool")
+
         FinderMethod method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
         if (!method || !args || !(args[-1] instanceof Closure) || !(method instanceof DynamicFinder)) {
             throw new MissingMethodException(methodName, entity.javaClass, args)
@@ -52,11 +57,6 @@ class ContinuousQueryApi {
         def invocation = dynamicFinder.createFinderInvocation(entity.javaClass, methodName, null, args)
         GemfireQuery q = dynamicFinder.buildQuery(invocation)
         def queryString = q.getQueryString()
-
-        def gemfirePool = gemfire.gemfirePool
-        if (gemfirePool == null) {
-            throw new IllegalStateException("Cannot invoke a continuous query without an appropriately initialized Gemfire Pool")
-        }
 
         def queryService = gemfirePool.getQueryService()
 
@@ -78,8 +78,8 @@ class ClosureInvokingCqListener implements CqListener {
 
     Closure callable
 
-    ClosureInvokingCqListener(callable) {
-        this.callable = callable;
+    ClosureInvokingCqListener(Closure callable) {
+        this.callable = callable
     }
 
     void onEvent(CqEvent cqEvent) {

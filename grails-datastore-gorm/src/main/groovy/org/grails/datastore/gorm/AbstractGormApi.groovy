@@ -25,11 +25,12 @@ import org.grails.datastore.gorm.utils.ReflectionUtils
  * Abstract GORM API provider
  *
  * @author Graeme Rocher
+ * @param <D> the entity/domain class
  * @since 1.0
  */
-abstract class AbstractGormApi {
+abstract class AbstractGormApi<D> {
 
-    static final EXCLUDES = [
+    static final List<String> EXCLUDES = [
         'setProperty',
         'getProperty',
         'getMetaClass',
@@ -47,28 +48,28 @@ abstract class AbstractGormApi {
         'setTransactionManager'
     ]
 
-    protected Class persistentClass
+    protected Class<D> persistentClass
     protected PersistentEntity persistentEntity
     protected Datastore datastore
     private List<Method> methods = []
     private List<Method> extendedMethods = []
 
-    AbstractGormApi(Class persistentClass, Datastore datastore) {
+    AbstractGormApi(Class<D> persistentClass, Datastore datastore) {
         this.persistentClass = persistentClass;
         this.datastore = datastore
         this.persistentEntity = datastore.getMappingContext().getPersistentEntity(persistentClass.name)
 
         final clazz = getClass()
-        while(clazz != Object) {
+        while (clazz != Object) {
             final methodsToAdd = clazz.declaredMethods.findAll { Method m ->
                 def mods = m.getModifiers()
                 !m.isSynthetic() && !Modifier.isStatic(mods) && Modifier.isPublic(mods) &&
                         !AbstractGormApi.EXCLUDES.contains(m.name)
             }
-            methods.addAll ( methodsToAdd )
-            if(clazz != GormStaticApi && clazz != GormInstanceApi && clazz != GormValidationApi && clazz != AbstractGormApi) {
+            methods.addAll methodsToAdd
+            if (clazz != GormStaticApi && clazz != GormInstanceApi && clazz != GormValidationApi && clazz != AbstractGormApi) {
                 def extendedMethodsToAdd = methodsToAdd.findAll { !ReflectionUtils.isMethodOverriddenFromParent(it)}
-                extendedMethods.addAll( extendedMethodsToAdd )
+                extendedMethods.addAll extendedMethodsToAdd
             }
             clazz = clazz.getSuperclass()
         }

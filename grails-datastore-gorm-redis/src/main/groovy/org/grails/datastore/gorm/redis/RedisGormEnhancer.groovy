@@ -27,36 +27,37 @@ import org.springframework.transaction.PlatformTransactionManager
 class RedisGormEnhancer extends GormEnhancer {
 
     RedisGormEnhancer(Datastore datastore) {
-        super(datastore);
+        super(datastore)
     }
 
     RedisGormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
-        super(datastore, transactionManager);
+        super(datastore, transactionManager)
     }
 
-    protected GormStaticApi getStaticApi(Class cls) {
-        return new RedisGormStaticApi(cls, datastore)
+    protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
+        return new RedisGormStaticApi<D>(cls, datastore)
     }
 
-    protected GormInstanceApi getInstanceApi(Class cls) {
-        return new RedisGormInstanceApi(cls, datastore)
+    protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
+        return new RedisGormInstanceApi<D>(cls, datastore)
     }
 }
 
-class RedisGormInstanceApi extends GormInstanceApi {
+class RedisGormInstanceApi<D> extends GormInstanceApi<D> {
 
-    RedisGormInstanceApi(Class persistentClass, Datastore datastore) {
-        super(persistentClass, datastore);
+    RedisGormInstanceApi(Class<D> persistentClass, Datastore datastore) {
+        super(persistentClass, datastore)
     }
 
-    def expire(instance, int ttl) {
+    void expire(D instance, int ttl) {
         datastore.currentSession.expire instance, ttl
     }
 }
 
-class RedisGormStaticApi extends GormStaticApi {
-    RedisGormStaticApi(Class persistentClass, Datastore datastore) {
-        super(persistentClass, datastore);
+class RedisGormStaticApi<D> extends GormStaticApi<D> {
+
+    RedisGormStaticApi(Class<D> persistentClass, Datastore datastore) {
+        super(persistentClass, datastore)
     }
 
     /**
@@ -70,7 +71,7 @@ class RedisGormStaticApi extends GormStaticApi {
      * A random domain class instance is returned.
      * @return A random domain class
      */
-    def random() {
+    D random() {
         datastore.currentSession.random(persistentClass)
     }
 
@@ -78,7 +79,7 @@ class RedisGormStaticApi extends GormStaticApi {
      * A random domain class instance is removed and returned.
      * @return A random removed domain class
      */
-    def pop() {
+    D pop() {
         datastore.currentSession.pop(persistentClass)
     }
 }

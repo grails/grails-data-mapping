@@ -20,34 +20,34 @@ import org.springframework.datastore.mapping.proxy.EntityProxy
 import static org.springframework.datastore.mapping.validation.ValidatingEventListener.*
 
 /**
- * Instance methods of the GORM API
+ * Instance methods of the GORM API.
  *
  * @author Graeme Rocher
+ * @param <D> the entity/domain class
  */
-class GormInstanceApi extends AbstractGormApi {
+class GormInstanceApi<D> extends AbstractGormApi<D> {
 
     Class<Exception> validationException = ValidationException
 
-    GormInstanceApi(Class persistentClass, Datastore datastore) {
+    GormInstanceApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
     }
 
     /**
-     * Proxy aware instanceOf implementation
+     * Proxy aware instanceOf implementation.
      */
-    boolean instanceOf(instance, Class cls) {
-        if (instance instanceof EntityProxy) {
-            def obj = instance.getTarget()
-            return cls.isInstance(obj)
+    boolean instanceOf(o, Class cls) {
+        if (o instanceof EntityProxy) {
+            return cls.isInstance(o.getTarget())
         }
-        return cls.isInstance(instance)
+        return cls.isInstance(o)
     }
 
     /**
      * Upgrades an existing persistence instance to a write lock
      * @return The instance
      */
-    def lock(instance) {
+    D lock(D instance) {
         datastore.currentSession.lock(instance)
         return instance
     }
@@ -58,7 +58,7 @@ class GormInstanceApi extends AbstractGormApi {
      * @param callable The closure
      * @return The result of the closure
      */
-    def mutex(instance, Closure callable) {
+    def mutex(D instance, Closure callable) {
         def session = datastore.currentSession
         try {
             session.lock(instance)
@@ -74,7 +74,7 @@ class GormInstanceApi extends AbstractGormApi {
      * @param instance The instance
      * @return The instance
      */
-    def refresh(instance) {
+    D refresh(D instance) {
         datastore.currentSession.refresh instance
         return instance
     }
@@ -84,7 +84,7 @@ class GormInstanceApi extends AbstractGormApi {
      * @param instance The instance
      * @return Returns the instance
      */
-    def save(instance) {
+    D save(D instance) {
         save(instance, Collections.emptyMap())
     }
 
@@ -93,7 +93,7 @@ class GormInstanceApi extends AbstractGormApi {
      * @param instance The instance
      * @return Returns the instance
      */
-    def merge(instance) {
+    D merge(D instance) {
         save(instance, Collections.emptyMap())
     }
 
@@ -102,19 +102,20 @@ class GormInstanceApi extends AbstractGormApi {
      * @param instance The instance
      * @return Returns the instance
      */
-    def merge(instance, Map params) {
+    D merge(D instance, Map params) {
         save(instance, params)
     }
 
     /**
      * Save method that takes a boolean which indicates whether to perform validation or not
      *
+     * @param instance The instance
      * @param validate Whether to perform validation
      *
      * @return The instance or null if validation fails
      */
-    def save(boolean validate) {
-        save(validate:validate)
+    D save(D instance, boolean validate) {
+        save(instance, [validate: validate])
     }
 
     /**
@@ -123,7 +124,7 @@ class GormInstanceApi extends AbstractGormApi {
      * @param params The parameters
      * @return The instance
      */
-    def save(instance, Map params) {
+    D save(D instance, Map params) {
         final session = datastore.currentSession
         boolean hasErrors = false
         boolean validate = params?.containsKey("validate") ? params.validate : true
@@ -153,7 +154,7 @@ class GormInstanceApi extends AbstractGormApi {
     /**
      * Returns the objects identifier
      */
-    def ident(instance) {
+    Serializable ident(D instance) {
         instance[persistentEntity.getIdentity().name]
     }
 
@@ -162,22 +163,22 @@ class GormInstanceApi extends AbstractGormApi {
      * @param instance The instance
      * @return
      */
-    def attach(instance) {
+    D attach(D instance) {
         datastore.currentSession.attach(instance)
-        return instance
+        instance
     }
 
     /**
      * No concept of session-based model so defaults to true
      */
-    boolean isAttached(instance) {
+    boolean isAttached(D instance) {
         datastore.currentSession.contains(instance)
     }
 
     /**
      * Discards any pending changes. Requires a session-based model.
      */
-    def discard(instance) {
+    void discard(D instance) {
         datastore.currentSession.clear(instance)
     }
 
@@ -185,7 +186,7 @@ class GormInstanceApi extends AbstractGormApi {
      * Deletes an instance from the datastore
      * @param instance The instance to delete
      */
-    def delete(instance) {
+    void delete(D instance) {
         delete(instance, Collections.emptyMap())
     }
 
@@ -193,7 +194,7 @@ class GormInstanceApi extends AbstractGormApi {
      * Deletes an instance from the datastore
      * @param instance The instance to delete
      */
-    def delete(instance, Map params) {
+    void delete(D instance, Map params) {
         final session = datastore.currentSession
         session.delete(instance)
         if (params?.flush) {

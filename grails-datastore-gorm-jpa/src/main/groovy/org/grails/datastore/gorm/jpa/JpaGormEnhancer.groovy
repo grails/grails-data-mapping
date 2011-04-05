@@ -36,7 +36,7 @@ import org.springframework.transaction.PlatformTransactionManager
  * @author Graeme Rocher
  * @since 1.0
  */
-class JpaGormEnhancer extends GormEnhancer{
+class JpaGormEnhancer extends GormEnhancer {
 
     JpaGormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
         super(datastore, transactionManager)
@@ -46,38 +46,38 @@ class JpaGormEnhancer extends GormEnhancer{
         super(datastore)
     }
 
-    protected GormInstanceApi getInstanceApi(Class cls) {
-        return new JpaInstanceApi(cls, datastore)
+    protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
+        return new JpaInstanceApi<D>(cls, datastore)
     }
 
-    protected GormStaticApi getStaticApi(Class cls) {
-        return new JpaStaticApi(cls, datastore)
+    protected <D> GormStaticApi getStaticApi(Class<D> cls) {
+        return new JpaStaticApi<D>(cls, datastore)
     }
 }
 
-class JpaInstanceApi extends GormInstanceApi {
+class JpaInstanceApi<D> extends GormInstanceApi<D> {
 
-    JpaInstanceApi(Class persistentClass, Datastore datastore) {
+    JpaInstanceApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
     }
 
     @Override
-    Object merge(Object instance, Map params) {
+    D merge(D instance, Map params) {
         def merged
         doSave(instance, params) { session ->
             merged = session.merge(instance)
         }
-        return merged
+        merged
     }
 
     @Override
-    Object save(Object instance, Map params) {
+    D save(D instance, Map params) {
         doSave(instance, params) { session ->
             session.persist(instance)
         }
     }
 
-    private doSave(instance, Map params, Closure callable) {
+    private D doSave(D instance, Map params, Closure callable) {
         final session = datastore.currentSession
         boolean hasErrors = false
         boolean validate = params?.containsKey("validate") ? params.validate : true
@@ -110,9 +110,9 @@ class JpaInstanceApi extends GormInstanceApi {
     }
 }
 
-class JpaStaticApi extends GormStaticApi {
+class JpaStaticApi<D> extends GormStaticApi<D> {
 
-    JpaStaticApi(Class persistentClass, Datastore datastore) {
+    JpaStaticApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
     }
 
@@ -147,27 +147,27 @@ class JpaStaticApi extends GormStaticApi {
     }
 
     @Override
-    executeUpdate(String query) {
+    Integer executeUpdate(String query) {
         doUpdate query
     }
 
     @Override
-    executeUpdate(String query, Map args) {
+    Integer executeUpdate(String query, Map args) {
         doUpdate query, null, args
     }
 
     @Override
-    executeUpdate(String query, Map params, Map args) {
+    Integer executeUpdate(String query, Map params, Map args) {
         doUpdate query, params, args
     }
 
     @Override
-    executeUpdate(String query, Collection params) {
+    Integer executeUpdate(String query, Collection params) {
         doUpdate query, params
     }
 
     @Override
-    executeUpdate(String query, Collection params, Map args) {
+    Integer executeUpdate(String query, Collection params, Map args) {
         doUpdate query, params, args
     }
 
@@ -221,7 +221,7 @@ class JpaStaticApi extends GormStaticApi {
         doQuery query, params, args
     }
 
-    private doUpdate(String query, params = null, args = null) {
+    private Integer doUpdate(String query, params = null, args = null) {
         JpaTemplate jpaTemplate = datastore.currentSession.getNativeInterface()
         jpaTemplate.execute({ EntityManager em ->
             Query q = em.createQuery(query)
@@ -275,22 +275,20 @@ class JpaStaticApi extends GormStaticApi {
 
     private doSingleResult(Query q) {
         q.setMaxResults 1
-        def results = q.resultList
-
-        if (results) {
-            results.get 0
-        }
+        q.resultList[0]
     }
 
     private void populateQueryArguments(Datastore datastore, Query q, args) {
-        if (args instanceof Map) {
-            ConversionService conversionService = datastore.mappingContext.conversionService
-            if (args?.max) {
-                q.setMaxResults(conversionService.convert(args.remove('max'), Integer))
-            }
-            if (args?.offset) {
-                q.setFirstResult(conversionService.convert(args.remove('offset'), Integer))
-            }
+        if (!(args instanceof Map)) {
+            return
+        }
+
+        ConversionService conversionService = datastore.mappingContext.conversionService
+        if (args?.max) {
+            q.setMaxResults(conversionService.convert(args.remove('max'), Integer))
+        }
+        if (args?.offset) {
+            q.setFirstResult(conversionService.convert(args.remove('offset'), Integer))
         }
     }
 }
