@@ -16,6 +16,7 @@ package org.springframework.datastore.mapping.simple;
 
 import java.util.Map;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.datastore.mapping.core.AbstractSession;
 import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.model.MappingContext;
@@ -30,23 +31,24 @@ import org.springframework.datastore.mapping.transactions.Transaction;
  * @author Graeme Rocher
  * @since 1.0
  */
-
 public class SimpleMapSession extends AbstractSession<Map> {
     private boolean connected;
     private Map<String, Map> datastore;
 
-    public SimpleMapSession(SimpleMapDatastore datastore, MappingContext mappingContext) {
-        super(datastore, mappingContext);
+    public SimpleMapSession(SimpleMapDatastore datastore, MappingContext mappingContext,
+               ApplicationEventPublisher publisher) {
+        super(datastore, mappingContext, publisher);
         this.datastore = datastore.getBackingMap();
     }
 
     @Override
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
         PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
-        if (entity != null) {
-            return new SimpleMapEntityPersister(mappingContext, entity, this, (SimpleMapDatastore) getDatastore());
+        if (entity == null) {
+            return null;
         }
-        return null;
+        return new SimpleMapEntityPersister(mappingContext, entity, this,
+            (SimpleMapDatastore) getDatastore(), publisher);
     }
 
     public Map<String, Map> getBackingMap() {

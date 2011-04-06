@@ -6,6 +6,7 @@ import javax.jcr.Repository;
 import javax.jcr.SimpleCredentials;
 
 import org.apache.jackrabbit.core.TransientRepository;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
@@ -25,12 +26,12 @@ public class JcrDatastore extends AbstractDatastore {
     private static String DEFAULT_USERNAME = "username";
     private static String DEFAULT_PASSWORD = "password";
 
-    public JcrDatastore(MappingContext mappingContext) {
-        super(mappingContext);
+    public JcrDatastore(MappingContext mappingContext, ConfigurableApplicationContext ctx) {
+        super(mappingContext, null, ctx);
     }
 
-    public JcrDatastore() {
-        super(new NodeMappingContext());
+    public JcrDatastore(ConfigurableApplicationContext ctx) {
+        this(new NodeMappingContext(), ctx);
     }
 
     @Override
@@ -40,13 +41,15 @@ public class JcrDatastore extends AbstractDatastore {
         String password = null;
         if (connectionDetails != null) {
             if (connectionDetails.get("configuration") != null) {
-                System.setProperty("org.apache.jackrabbit.repository.conf", connectionDetails.get("configuration"));
+                System.setProperty("org.apache.jackrabbit.repository.conf",
+                                   connectionDetails.get("configuration"));
             }
             else {
                 System.setProperty("org.apache.jackrabbit.repository.conf", REPOSITORY_CONF);
             }
             if (connectionDetails.get("homeDir") != null) {
-                System.setProperty("org.apache.jackrabbit.repository.home", connectionDetails.get("homeDir"));
+                System.setProperty("org.apache.jackrabbit.repository.home",
+                                   connectionDetails.get("homeDir"));
             }
             else {
                 System.setProperty("org.apache.jackrabbit.repository.home", REPOSITORY_HOME);
@@ -66,13 +69,14 @@ public class JcrDatastore extends AbstractDatastore {
         JcrSessionFactory jcrSessionFactory = null;
         try {
             repository = new TransientRepository();
-            jcrSessionFactory = new JcrSessionFactory(repository, workspace, new SimpleCredentials(username,
-                    password.toCharArray()));
+            jcrSessionFactory = new JcrSessionFactory(repository, workspace,
+                    new SimpleCredentials(username, password.toCharArray()));
             jcrSessionFactory.afterPropertiesSet();
         }
         catch (Exception e) {
-            throw new DataAccessResourceFailureException("Exception occurred cannot create Session: " + e.getMessage(), e);
+            throw new DataAccessResourceFailureException(
+                "Exception occurred cannot create Session: " + e.getMessage(), e);
         }
-        return new JcrSession(this, getMappingContext(), jcrSessionFactory);
+        return new JcrSession(this, getMappingContext(), jcrSessionFactory, getApplicationEventPublisher());
     }
 }

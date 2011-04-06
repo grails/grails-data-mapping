@@ -14,14 +14,14 @@
  */
 package org.grails.plugins.redis
 
-import org.springframework.beans.factory.FactoryBean
-import org.springframework.datastore.mapping.redis.RedisDatastore
-import org.springframework.datastore.mapping.model.MappingContext
-
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager
-
-import org.grails.datastore.gorm.events.AutoTimestampInterceptor
-import org.grails.datastore.gorm.events.DomainEventInterceptor
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
+import org.springframework.beans.factory.FactoryBean
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
+import org.springframework.datastore.mapping.model.MappingContext
+import org.springframework.datastore.mapping.redis.RedisDatastore
 
 /**
  * Constructs a RedisDatastore instance
@@ -29,21 +29,21 @@ import org.grails.datastore.gorm.events.DomainEventInterceptor
  * @author Graeme Rocher
  * @since 1.0
  */
-class RedisDatastoreFactoryBean implements FactoryBean<RedisDatastore>{
+class RedisDatastoreFactoryBean implements FactoryBean<RedisDatastore>, ApplicationContextAware {
 
-  Map<String, String> config
-  MappingContext mappingContext
-  GrailsPluginManager pluginManager
+    Map<String, String> config
+    MappingContext mappingContext
+    GrailsPluginManager pluginManager
+    ApplicationContext applicationContext
 
-  RedisDatastore getObject() {
-    def datastore = new RedisDatastore(mappingContext, config)
-    datastore.addEntityInterceptor(new DomainEventInterceptor())
-    datastore.addEntityInterceptor(new AutoTimestampInterceptor())
+    RedisDatastore getObject() {
+        def datastore = new RedisDatastore(mappingContext, config, applicationContext)
+        applicationContext.addApplicationListener new DomainEventListener(datastore)
+        applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
+        datastore
+    }
 
-    return datastore
-  }
+    Class<?> getObjectType() { RedisDatastore }
 
-  Class<?> getObjectType() { RedisDatastore }
-
-  boolean isSingleton() { true }
+    boolean isSingleton() { true }
 }

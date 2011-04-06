@@ -14,13 +14,14 @@
  */
 package org.springframework.datastore.mapping.simple;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.springframework.datastore.mapping.model.MappingContext;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A simple implementation of the {@link org.springframework.datastore.mapping.core.Datastore} interface that backs onto an in-memory map.
@@ -29,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class SimpleMapDatastore extends AbstractDatastore{
+public class SimpleMapDatastore extends AbstractDatastore {
     private Map<String, Map> datastore = new ConcurrentHashMap<String, Map>();
     private Map indices = new ConcurrentHashMap();
 
@@ -37,10 +38,12 @@ public class SimpleMapDatastore extends AbstractDatastore{
      * Creates a map based datastore backing onto the specified map
      *
      * @param datastore The datastore to back on to
+     * @param ctx the application context
      */
-    public SimpleMapDatastore(Map<String, Map> datastore) {
+    public SimpleMapDatastore(Map<String, Map> datastore, ConfigurableApplicationContext ctx) {
         this();
         this.datastore = datastore;
+        setApplicationContext(ctx);
     }
 
     /**
@@ -48,13 +51,17 @@ public class SimpleMapDatastore extends AbstractDatastore{
      *
      * @param mappingContext The mapping context
      */
-    public SimpleMapDatastore(MappingContext mappingContext) {
-        super(mappingContext);
+    public SimpleMapDatastore(MappingContext mappingContext, ConfigurableApplicationContext ctx) {
+        super(mappingContext, null, ctx);
         initializeConverters(getMappingContext());
-
     }
+
     public SimpleMapDatastore() {
-        this(new KeyValueMappingContext(""));
+        this(null);
+    }
+
+    public SimpleMapDatastore(ConfigurableApplicationContext ctx) {
+        this(new KeyValueMappingContext(""), ctx);
     }
 
     public Map getIndices() {
@@ -63,7 +70,7 @@ public class SimpleMapDatastore extends AbstractDatastore{
 
     @Override
     protected Session createSession(@SuppressWarnings("hiding") Map<String, String> connectionDetails) {
-        return new SimpleMapSession(this, getMappingContext());
+        return new SimpleMapSession(this, getMappingContext(), getApplicationEventPublisher());
     }
 
     public Map<String, Map> getBackingMap() {

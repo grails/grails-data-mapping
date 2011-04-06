@@ -14,6 +14,7 @@
  */
 package org.springframework.datastore.mapping.simple.engine
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.engine.AssociationIndexer
 import org.springframework.datastore.mapping.engine.EntityPersister
@@ -34,15 +35,16 @@ import org.springframework.datastore.mapping.simple.query.SimpleMapQuery
  * @author Graeme Rocher
  * @since 1.0
  */
-class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Object>{
+class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Object> {
 
     Map<String, Map> datastore
     Map indices
     Long lastKey = 0
     String family
 
-    SimpleMapEntityPersister(MappingContext context, PersistentEntity entity, Session session, SimpleMapDatastore datastore) {
-        super(context, entity, session)
+    SimpleMapEntityPersister(MappingContext context, PersistentEntity entity, Session session,
+             SimpleMapDatastore datastore, ApplicationEventPublisher publisher) {
+        super(context, entity, session, publisher)
         this.datastore = datastore.backingMap
         this.indices = datastore.indices
         family = getFamily(entity, entity.getMapping())
@@ -185,22 +187,19 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
     }
 
     protected Map retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
-        def entry = datastore[family].get(key)
-
-        return entry
+        datastore[family].get(key)
     }
 
     protected generateIdentifier(PersistentEntity persistentEntity, Map id) {
         if (persistentEntity.root) {
             lastKey++
-            return persistentEntity.identity.type == String ? lastKey.toString() : lastKey 
+            return persistentEntity.identity.type == String ? lastKey.toString() : lastKey
         }
-        else {
-            def root = persistentEntity.rootEntity
-            session.getPersister(root).lastKey++
-            def key = session.getPersister(root).lastKey
-            return root.identity.type == String ? key.toString() : key
-        }
+
+        def root = persistentEntity.rootEntity
+        session.getPersister(root).lastKey++
+        def key = session.getPersister(root).lastKey
+        return root.identity.type == String ? key.toString() : key
     }
 
     protected storeEntry(PersistentEntity persistentEntity, storeId, Map nativeEntry) {

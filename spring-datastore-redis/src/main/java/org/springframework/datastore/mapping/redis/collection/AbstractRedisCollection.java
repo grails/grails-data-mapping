@@ -6,11 +6,11 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Abstract base class for Redis collections
+ * Abstract base class for Redis collections.
  *
  * @author Graeme Rocher
  */
-abstract public class AbstractRedisCollection implements Collection, RedisCollection {
+abstract public class AbstractRedisCollection implements RedisCollection {
     protected RedisTemplate redisTemplate;
     protected String redisKey;
 
@@ -18,7 +18,6 @@ abstract public class AbstractRedisCollection implements Collection, RedisCollec
         this.redisTemplate = redisTemplate;
         this.redisKey = redisKey;
     }
-
 
     /**
      * They key used by the collection

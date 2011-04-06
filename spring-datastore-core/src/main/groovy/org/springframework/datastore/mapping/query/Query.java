@@ -58,8 +58,7 @@ public abstract class Query {
     }
 
     /**
-     * The ordering of results
-     *
+     * The ordering of results.
      */
     public static class Order {
         private Direction direction = Direction.ASC;
@@ -294,16 +293,19 @@ public abstract class Query {
      */
     public Query createQuery(String associationName) {
         final PersistentProperty property = entity.getPropertyByName(associationName);
-        if (property != null && (property instanceof Association)) {
-            Association association = (Association) property;
-
-            final PersistentEntity associatedEntity = association.getAssociatedEntity();
-
-            final AssociationQuery associationQuery = new AssociationQuery(session, associatedEntity, association);
-            add(associationQuery);
-            return associationQuery;
+        if (property == null || !(property instanceof Association)) {
+            throw new InvalidDataAccessResourceUsageException("Cannot query association [" +
+                  associationName + "] of class [" + entity +
+                  "]. The specified property is not an association.");
         }
-        throw new InvalidDataAccessResourceUsageException("Cannot query association ["+associationName+"] of class ["+entity+"]. The specified property is not an association.");
+
+        Association association = (Association) property;
+
+        final PersistentEntity associatedEntity = association.getAssociatedEntity();
+
+        final AssociationQuery associationQuery = new AssociationQuery(session, associatedEntity, association);
+        add(associationQuery);
+        return associationQuery;
     }
 
     /**
@@ -329,9 +331,7 @@ public abstract class Query {
             else {
                 new EntityAccess(session
                         .getMappingContext()
-                        .getPersistentEntity(
-                                value.getClass().getName()),
-                                value)
+                        .getPersistentEntity(value.getClass().getName()), value)
                         .getIdentifier();
             }
         }
@@ -555,8 +555,7 @@ public abstract class Query {
     /**
      * Restricts a property to be not null
      */
-    public static class IsNotNull extends PropertyNameCriterion{
-
+    public static class IsNotNull extends PropertyNameCriterion {
         public IsNotNull(String name) {
             super(name);
         }
@@ -699,6 +698,7 @@ public abstract class Query {
             super(name, value);
         }
     }
+
     /**
      * Criterion used to restrict the result to be between values (range query)
      */
@@ -794,14 +794,12 @@ public abstract class Query {
     /**
      * A Criterion used to combine to criterion in a logical AND
      */
-    public static class Conjunction extends Junction {
-    }
+    public static class Conjunction extends Junction {}
 
     /**
      * A Criterion used to combine to criterion in a logical OR
      */
-    public static class Disjunction extends Junction {
-    }
+    public static class Disjunction extends Junction {}
 
     /**
      * A criterion used to negate several other criterion

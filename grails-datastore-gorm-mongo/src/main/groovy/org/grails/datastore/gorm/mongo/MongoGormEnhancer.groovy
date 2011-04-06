@@ -29,14 +29,14 @@ import com.mongodb.DBCollection
 import com.mongodb.DBObject
 
 /**
- * GORM enhancer for Mongo
+ * GORM enhancer for Mongo.
  *
  * @author Graeme Rocher
  */
 class MongoGormEnhancer extends GormEnhancer {
 
     MongoGormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
-        super(datastore, transactionManager);
+        super(datastore, transactionManager)
 
         DynamicFinder.registerNewMethodExpression(Near)
         DynamicFinder.registerNewMethodExpression(WithinBox)
@@ -44,54 +44,51 @@ class MongoGormEnhancer extends GormEnhancer {
     }
 
     MongoGormEnhancer(Datastore datastore) {
-        this(datastore, null);
+        this(datastore, null)
     }
 
-    protected GormStaticApi getStaticApi(Class cls) {
-        return new MongoGormStaticApi( cls, datastore )
+    protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
+        return new MongoGormStaticApi<D>(cls, datastore)
     }
 
-    protected GormInstanceApi getInstanceApi(Class cls) {
-        return new MongoGormInstanceApi(cls, datastore)
+    protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
+        return new MongoGormInstanceApi<D>(cls, datastore)
     }
 }
 
-class MongoGormInstanceApi extends GormInstanceApi {
+class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
 
-    MongoGormInstanceApi(Class persistentClass, Datastore datastore) {
-        super(persistentClass, datastore);
+    MongoGormInstanceApi(Class<D> persistentClass, Datastore datastore) {
+        super(persistentClass, datastore)
     }
 
     /**
-    * Allows subscript access to schemaless attributes
-    *
-    * @param instance The instance
-    * @param name The name of the field
-    * @return
-    */
-   void putAt(Object instance, String name, value) {
-       if (instance.hasProperty(name)) {
-            instance.setProperty(name, value)
-       }
-       else {
-           def dbo = getDbo(instance)
-           if (dbo != null) {
-               dbo.put name, value
-           }
-       }
-   }
-
-    /**
-     * Allows subscript access to schemaless attributes
+     * Allows subscript access to schemaless attributes.
      *
      * @param instance The instance
      * @param name The name of the field
-     * @return
      */
-    def getAt(Object instance, String name) {
+    void putAt(D instance, String name, value) {
+        if (instance.hasProperty(name)) {
+            instance.setProperty(name, value)
+        }
+        else {
+            getDbo(instance)?.put name, value
+        }
+    }
+
+    /**
+     * Allows subscript access to schemaless attributes.
+     *
+     * @param instance The instance
+     * @param name The name of the field
+     * @return the value
+     */
+    def getAt(D instance, String name) {
         if (instance.hasProperty(name)) {
             return instance.getProperty(name)
         }
+
         def dbo = getDbo(instance)
         if (dbo != null && dbo.containsField(name)) {
             return dbo.get(name)
@@ -103,33 +100,30 @@ class MongoGormInstanceApi extends GormInstanceApi {
      * Return the DBObject instance for the entity
      *
      * @param instance The instance
-     *
      * @return The DBObject instance
      */
-    DBObject getDbo(Object instance) {
+    DBObject getDbo(D instance) {
         MongoSession session = datastore.currentSession
 
-        if (!session.contains(instance)) {
-            if (!instance.save()) {
-                throw new IllegalStateException("Cannot obtain DBObject for transient instance, save a valid instance first")
-            }
+        if (!session.contains(instance) && !instance.save()) {
+            throw new IllegalStateException(
+                "Cannot obtain DBObject for transient instance, save a valid instance first")
         }
 
         MongoEntityPersister persister = session.getPersister(instance)
         def id = persister.getObjectIdentifier(instance)
-
-        return session.getCachedEntry( persister.getPersistentEntity(), id )
+        return session.getCachedEntry(persister.getPersistentEntity(), id)
     }
 }
 
-class MongoGormStaticApi extends GormStaticApi {
+class MongoGormStaticApi<D> extends GormStaticApi<D> {
 
-    MongoGormStaticApi(Class persistentClass, Datastore datastore) {
-        super(persistentClass, datastore);
+    MongoGormStaticApi(Class<D> persistentClass, Datastore datastore) {
+        super(persistentClass, datastore)
     }
 
     @Override
-    Object createCriteria() {
+    MongoCriteriaBuilder createCriteria() {
         return new MongoCriteriaBuilder(persistentClass, datastore)
     }
 
@@ -138,13 +132,11 @@ class MongoGormStaticApi extends GormStaticApi {
      */
     String getCollectionName() {
         MongoDatastore ms = datastore
-        def template = ms.getMongoTemplate(persistentEntity)
-
-        template.getDefaultCollectionName()
+        ms.getMongoTemplate(persistentEntity).getDefaultCollectionName()
     }
 
     /**
-     * The actual collection that this entity maps too
+     * The actual collection that this entity maps to.
      *
      * @return The actual collection
      */

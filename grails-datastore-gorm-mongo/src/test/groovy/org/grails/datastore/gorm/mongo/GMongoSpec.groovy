@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.mongo
 import grails.gorm.tests.Person
 
 import org.grails.datastore.gorm.mongo.bean.factory.GMongoFactoryBean
+import org.springframework.context.support.GenericApplicationContext
 import org.springframework.datastore.mapping.mongo.MongoDatastore
 import org.springframework.datastore.mapping.mongo.config.MongoMappingContext
 
@@ -26,7 +27,9 @@ class GMongoSpec extends Specification {
             gmongo != null
 
         when:
-            def datastore = new MongoDatastore(new MongoMappingContext("test"),gmongo.mongo)
+            def ctx = new GenericApplicationContext()
+            ctx.refresh()
+            def datastore = new MongoDatastore(new MongoMappingContext("test"), gmongo.mongo, ctx)
             def session = datastore.connect()
             def entity = datastore.mappingContext.addPersistentEntity(Person)
             new MongoGormEnhancer(datastore).enhance entity

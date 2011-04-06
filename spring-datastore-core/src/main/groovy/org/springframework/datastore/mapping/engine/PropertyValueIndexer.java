@@ -17,10 +17,10 @@ package org.springframework.datastore.mapping.engine;
 import java.util.List;
 
 /**
- * Responsible for creating indices for property values used in queries
+ * Responsible for creating indices for property values used in queries.
  *
  * This interface is designed for usage in datastores that don't automatically
- * create indices and require the application to create the indices manually
+ * create indices and require the application to create the indices manually.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -44,7 +44,7 @@ public interface PropertyValueIndexer<K> {
      */
     List<K> query(Object value);
 
-/**
+    /**
      * Queries the given value and returns the keys
      *
      * @param value The value to query by

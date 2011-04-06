@@ -37,6 +37,7 @@ class MongodbGrailsPlugin {
 
     def version = "1.0-M2"
     def grailsVersion = "1.3.5 > *"
+    def observe = ['services']
     def loadAfter = ['domainClass', 'services']
     def author = "Graeme Rocher"
     def authorEmail = "graeme.rocher@springsource.com"
@@ -45,9 +46,6 @@ class MongodbGrailsPlugin {
 A plugin that integrates the Mongo document datastore into Grails, providing
 a GORM API onto it
 '''
-
-    def watchedResources = ["file:./grails-app/services/**/*Service.groovy",
-                            "file:./plugins/*/grails-app/services/**/*Service.groovy"]
 
     def documentation = "http://grails.org/plugin/mongodb"
 

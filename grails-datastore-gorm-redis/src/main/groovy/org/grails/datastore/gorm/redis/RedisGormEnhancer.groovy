@@ -22,70 +22,64 @@ import org.springframework.datastore.mapping.redis.RedisSession
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
- * Adds Redis specific functionality to GORM
+ * Adds Redis specific functionality to GORM.
  */
 class RedisGormEnhancer extends GormEnhancer {
 
     RedisGormEnhancer(Datastore datastore) {
-        super(datastore);
+        super(datastore)
     }
 
     RedisGormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
-        super(datastore, transactionManager);
+        super(datastore, transactionManager)
     }
 
-    protected GormStaticApi getStaticApi(Class cls) {
-        return new RedisGormStaticApi(cls, datastore)
+    protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
+        return new RedisGormStaticApi<D>(cls, datastore)
     }
 
-    protected GormInstanceApi getInstanceApi(Class cls) {
-        return new RedisGormInstanceApi(cls, datastore)
-    }
-}
-
-class RedisGormInstanceApi extends GormInstanceApi {
-
-    RedisGormInstanceApi(Class persistentClass, Datastore datastore) {
-        super(persistentClass, datastore);
-    }
-
-    def expire(instance, int ttl) {
-         RedisSession session = datastore.currentSession
-
-         session.expire instance, ttl
+    protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
+        return new RedisGormInstanceApi<D>(cls, datastore)
     }
 }
 
-class RedisGormStaticApi extends GormStaticApi {
-    RedisGormStaticApi(Class persistentClass, Datastore datastore) {
-        super(persistentClass, datastore);
+class RedisGormInstanceApi<D> extends GormInstanceApi<D> {
+
+    RedisGormInstanceApi(Class<D> persistentClass, Datastore datastore) {
+        super(persistentClass, datastore)
+    }
+
+    void expire(D instance, int ttl) {
+        datastore.currentSession.expire instance, ttl
+    }
+}
+
+class RedisGormStaticApi<D> extends GormStaticApi<D> {
+
+    RedisGormStaticApi(Class<D> persistentClass, Datastore datastore) {
+        super(persistentClass, datastore)
     }
 
     /**
-     * Expires an entity for the given id and TTL
+     * Expires an entity for the given id and TTL.
      */
     void expire(Serializable id, int ttl) {
-        RedisSession session = datastore.currentSession
-
-        session.expire(persistentClass, id, ttl)
+        datastore.currentSession.expire(persistentClass, id, ttl)
     }
+
     /**
-     * A random domain class instance is returned
+     * A random domain class instance is returned.
      * @return A random domain class
      */
-    def random() {
-        RedisSession session = datastore.currentSession
-
-        return session.random(persistentClass)
+    D random() {
+        datastore.currentSession.random(persistentClass)
     }
 
     /**
-     * A random domain class instance is removed and returned
+     * A random domain class instance is removed and returned.
      * @return A random removed domain class
      */
-    def pop() {
-        RedisSession session = datastore.currentSession
-
-        return session.pop(persistentClass)
+    D pop() {
+        datastore.currentSession.pop(persistentClass)
     }
 }

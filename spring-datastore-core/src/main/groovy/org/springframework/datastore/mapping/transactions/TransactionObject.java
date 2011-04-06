@@ -17,18 +17,15 @@ package org.springframework.datastore.mapping.transactions;
 import org.springframework.datastore.mapping.core.Session;
 
 /**
- * A transaction object returned when the transaction is created
+ * A transaction object returned when the transaction is created.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
 public class TransactionObject {
     private SessionHolder sessionHolder;
-
     private boolean newSessionHolder;
-
     private boolean newSession;
-
 
     public SessionHolder getSessionHolder() {
         return sessionHolder;

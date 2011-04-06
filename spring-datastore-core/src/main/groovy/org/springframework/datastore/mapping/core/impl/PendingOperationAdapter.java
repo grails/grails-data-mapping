@@ -1,5 +1,4 @@
 /* Copyright (C) 2010 SpringSource
-/* Copyright (C) 2010 SpringSource
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +21,7 @@ import java.util.List;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
 /**
- * Base implementation of the {@link PendingOperation} interface
+ * Base implementation of the {@link PendingOperation} interface.
  *
  * @author Graeme Rocher
  *
@@ -37,8 +36,7 @@ public abstract class PendingOperationAdapter<E, K> implements PendingOperation<
     private List<PendingOperation<E, K>> pendingOperations = new LinkedList<PendingOperation<E, K>>();
     private List<PendingOperation<E, K>> preOperations = new LinkedList<PendingOperation<E, K>>();
 
-    public PendingOperationAdapter(PersistentEntity entity,
-            K nativeKey, E nativeEntry) {
+    public PendingOperationAdapter(PersistentEntity entity, K nativeKey, E nativeEntry) {
         this.entity = entity;
         this.nativeKey = nativeKey;
         this.nativeEntry = nativeEntry;

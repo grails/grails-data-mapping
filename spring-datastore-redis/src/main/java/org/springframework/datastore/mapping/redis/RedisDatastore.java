@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.datastore.mapping.config.Property;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
@@ -75,11 +76,12 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
     }
 
     public RedisDatastore(MappingContext mappingContext) {
-        this(mappingContext, null);
+        this(mappingContext, null, null);
     }
 
-    public RedisDatastore(MappingContext mappingContext, Map<String, String> connectionDetails) {
-        super(mappingContext, connectionDetails);
+    public RedisDatastore(MappingContext mappingContext, Map<String, String> connectionDetails,
+                ConfigurableApplicationContext ctx) {
+        super(mappingContext, connectionDetails, ctx);
 
         int resourceCount = 10;
         if (connectionDetails != null) {
@@ -128,6 +130,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
             else {
                 template = new JedisTemplate(host, port, timeout);
             }
+
             if (password != null) {
                 template.setPassword(password);
             }
@@ -147,10 +150,14 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
 
     @Override
     protected Session createSession(Map<String, String> connDetails) {
-        if (useJedis()) {
-            return new RedisSession(this, getMappingContext(), JedisTemplateFactory.create(host, port, timeout, pooled,password ));
+        if (!useJedis()) {
+            throw new IllegalStateException(
+                    "Cannot create RedisSession. No Redis client library found on classpath. " +
+                    "Please make sure you have the Jedis library on your classpath");
         }
-        throw new IllegalStateException("Cannot create RedisSession. No Redis client library found on classpath. Please make sure you have the Jedis library on your classpath");
+
+        return new RedisSession(this, getMappingContext(),
+            JedisTemplateFactory.create(host, port, timeout, pooled,password), getApplicationEventPublisher());
     }
 
     public void afterPropertiesSet() throws Exception {

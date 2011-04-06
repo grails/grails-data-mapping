@@ -19,6 +19,7 @@ import org.grails.datastore.gorm.finders.FinderMethod
 import org.springframework.datastore.mapping.gemfire.GemfireDatastore
 import org.springframework.datastore.mapping.gemfire.query.GemfireQuery
 import org.springframework.datastore.mapping.model.PersistentEntity
+import org.springframework.util.Assert
 
 import com.gemstone.gemfire.cache.query.CqAttributes
 import com.gemstone.gemfire.cache.query.CqAttributesFactory
@@ -42,35 +43,34 @@ class ContinuousQueryApi {
     }
 
     def invokeMethod(String methodName, args) {
+
+        def gemfirePool = gemfire.gemfirePool
+        Assert.notNull(gemfirePool, "Cannot invoke a continuous query without an appropriately initialized Gemfire Pool")
+
         FinderMethod method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
-        def cls = entity.javaClass
-        if (method && args && (args[-1] instanceof Closure) && (method instanceof DynamicFinder)) {
-            DynamicFinder dynamicFinder = method
-
-            def invocation = dynamicFinder.createFinderInvocation(entity.javaClass, methodName, null, args)
-            GemfireQuery q = dynamicFinder.buildQuery(invocation)
-            def queryString = q.getQueryString()
-
-            def gemfirePool = gemfire.gemfirePool
-            if (gemfirePool == null) {
-                throw new IllegalStateException("Cannot invoke a continuous query without an appropriately initialized Gemfire Pool")
-            }
-            def queryService = gemfirePool.getQueryService()
-
-            CqAttributesFactory cqf = new CqAttributesFactory()
-            def listeners = [new ClosureInvokingCqListener(args[-1])] as CqListener[]
-            cqf.initCqListeners(listeners)
-            CqAttributes attrs = cqf.create()
-
-            def cqName = "${entity.name}.${methodName}(${args[0..-2].join(',')})"
-            def continuousQuery = queryService.newCq(cqName,queryString, attrs)
-
-            continuousQuery.execute()
-            gemfire.addContinuousQuery(continuousQuery)
-            return continuousQuery
+        if (!method || !args || !(args[-1] instanceof Closure) || !(method instanceof DynamicFinder)) {
+            throw new MissingMethodException(methodName, entity.javaClass, args)
         }
 
-        throw new MissingMethodException(methodName, cls, args)
+        DynamicFinder dynamicFinder = method
+
+        def invocation = dynamicFinder.createFinderInvocation(entity.javaClass, methodName, null, args)
+        GemfireQuery q = dynamicFinder.buildQuery(invocation)
+        def queryString = q.getQueryString()
+
+        def queryService = gemfirePool.getQueryService()
+
+        CqAttributesFactory cqf = new CqAttributesFactory()
+        def listeners = [new ClosureInvokingCqListener(args[-1])] as CqListener[]
+        cqf.initCqListeners(listeners)
+        CqAttributes attrs = cqf.create()
+
+        def cqName = "${entity.name}.${methodName}(${args[0..-2].join(',')})"
+        def continuousQuery = queryService.newCq(cqName,queryString, attrs)
+
+        continuousQuery.execute()
+        gemfire.addContinuousQuery(continuousQuery)
+        return continuousQuery
     }
 }
 
@@ -78,8 +78,8 @@ class ClosureInvokingCqListener implements CqListener {
 
     Closure callable
 
-    ClosureInvokingCqListener(callable) {
-        this.callable = callable;
+    ClosureInvokingCqListener(Closure callable) {
+        this.callable = callable
     }
 
     void onEvent(CqEvent cqEvent) {

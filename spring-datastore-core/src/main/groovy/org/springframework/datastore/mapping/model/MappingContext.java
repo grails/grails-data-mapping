@@ -23,7 +23,7 @@ import org.springframework.datastore.mapping.proxy.ProxyFactory;
 import org.springframework.validation.Validator;
 
 /**
- * <p>This interface defines the overall context including all known
+ * <p>Defines the overall context including all known
  * PersistentEntity instances and methods to obtain instances on demand</p>
  *
  * <p>This interface is used internally to establish associations
@@ -32,7 +32,7 @@ import org.springframework.validation.Validator;
  * <p>The generic type parameters T & R are used to specify the
  * mapped form of a class (example Table) and property (example Column) respectively.</p>
  *
- * <p>Used instances of the {@link org.springframework.datastore.mapping.core.Datastore} interface to
+ * <p>Uses instances of the {@link org.springframework.datastore.mapping.core.Datastore} interface to
  * discover how to persist objects</p>
  *
  * @author Graeme Rocher

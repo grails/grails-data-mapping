@@ -6,12 +6,11 @@ import org.junit.Test
 import org.springframework.datastore.mapping.collection.PersistentList
 import org.springframework.datastore.mapping.core.Session
 
-class OneToManyLazyAssociationTests {
+class OneToManyLazyAssociationTests extends AbstractRedisTest {
+
     @Test
     void testOneToManyAssociation() {
         return
-
-        def ds = new RedisDatastore()
 
         ds.mappingContext.addPersistentEntity(LazyAuthor)
         Session conn = ds.connect()

@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.keyvalue.riak.core.RiakTemplate;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
@@ -67,11 +68,12 @@ public class RiakDatastore extends AbstractDatastore implements InitializingBean
     }
 
     public RiakDatastore(MappingContext mappingContext) {
-        this(mappingContext, null);
+        this(mappingContext, null, null);
     }
 
-    public RiakDatastore(MappingContext mappingContext, Map<String, String> connectionDetails) {
-        super(mappingContext, connectionDetails);
+    public RiakDatastore(MappingContext mappingContext, Map<String, String> connectionDetails,
+               ConfigurableApplicationContext ctx) {
+        super(mappingContext, connectionDetails, ctx);
         initializeConverters(mappingContext);
         if (connectionDetails != null) {
             defaultUri = connectionDetails.containsKey(CONFIG_DEFAULT_URI) ? connectionDetails.get(
@@ -104,7 +106,7 @@ public class RiakDatastore extends AbstractDatastore implements InitializingBean
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-        return new RiakSession(this, mappingContext, riak);
+        return new RiakSession(this, mappingContext, riak, getApplicationEventPublisher());
     }
 
     public void destroy() throws Exception {

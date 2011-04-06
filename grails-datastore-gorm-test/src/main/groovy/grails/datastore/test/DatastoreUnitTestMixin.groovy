@@ -22,6 +22,8 @@ import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import org.codehaus.groovy.grails.plugins.PluginManagerHolder
 import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.grails.datastore.gorm.GormEnhancer
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.simple.SimpleMapDatastore
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
@@ -31,7 +33,6 @@ import org.springframework.util.ClassUtils
 /**
  * <p>A Groovy mixin used for testing datastore interactions. Test cases should include the mixin using
  * the Groovy @Mixin transformation:</p>
- *
  *
  * <pre><code>
  *  @Mixin(DatastoreUnitTestMixin)
@@ -48,7 +49,14 @@ import org.springframework.util.ClassUtils
  */
 class DatastoreUnitTestMixin {
 
-    static SimpleMapDatastore datastore = new SimpleMapDatastore()
+    static ConfigurableApplicationContext ctx
+    static SimpleMapDatastore datastore
+    static {
+        ctx = new GenericApplicationContext()
+        ctx.refresh()
+        datastore = new SimpleMapDatastore(ctx)
+    }
+ 
     Session session
     PlatformTransactionManager transactionManager = new DatastoreTransactionManager(datastore:datastore)
 

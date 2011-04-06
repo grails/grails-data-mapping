@@ -20,11 +20,11 @@ import org.springframework.datastore.mapping.mongo.config.MongoMappingContext
 import org.springframework.util.Assert
 
 /**
- * Factor bean for construction the Mongo DocumentMappingContext
+ * Factory bean for construction the Mongo DocumentMappingContext.
  *
  * @author Graeme Rocher
  */
-class MongoMappingContextFactoryBean extends AbstractMappingContextFactoryBean{
+class MongoMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
 
     String defaultDatabaseName
 

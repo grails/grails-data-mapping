@@ -17,6 +17,7 @@
 package org.grails.datastore.gorm
 
 import org.grails.datastore.gorm.riak.RiakGormEnhancer
+import org.springframework.context.support.GenericApplicationContext
 import org.springframework.data.keyvalue.riak.core.QosParameters
 import org.springframework.data.keyvalue.riak.core.RiakQosParameters
 import org.springframework.data.keyvalue.riak.core.RiakTemplate
@@ -40,10 +41,12 @@ class Setup {
 	static destroy() {}
 
   static Session setup(classes) {
+    def ctx = new GenericApplicationContext()
+    ctx.refresh()
     riak = new RiakDatastore(new KeyValueMappingContext(""), [
         defaultUri: "http://localhost:8098/riak/{bucket}/{key}",
         mapReduceUri: "http://localhost:8098/mapred"
-    ])
+    ], ctx)
     for (cls in classes) {
       riak.mappingContext.addPersistentEntity(cls)
     }

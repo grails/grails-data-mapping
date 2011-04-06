@@ -19,7 +19,6 @@ import java.util.List;
 
 import javax.persistence.FlushModeType;
 
-import org.springframework.datastore.mapping.engine.EntityInterceptorAware;
 import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.query.Query;
@@ -33,8 +32,7 @@ import org.springframework.datastore.mapping.transactions.Transaction;
  *
  * @since 1.0
  */
-public interface Session extends EntityInterceptorAware {
-
+public interface Session {
 
     /**
      * Associates an attribute with the given persistent entity. Attributes will
@@ -102,7 +100,6 @@ public interface Session extends EntityInterceptorAware {
      * Flushes any pending changes to the datastore
      */
     void flush();
-
 
     /**
      * Clears any pending changes to the datastore

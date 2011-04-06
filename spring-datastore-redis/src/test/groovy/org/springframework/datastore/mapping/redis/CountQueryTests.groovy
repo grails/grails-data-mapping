@@ -1,78 +1,65 @@
 package org.springframework.datastore.mapping.redis
 
-import org.springframework.datastore.mapping.query.Query
-
-import org.junit.Test
 import static org.springframework.datastore.mapping.query.Restrictions.*
 
-/**
- */
-class CountQueryTests {
+import org.junit.Test
+import org.springframework.datastore.mapping.query.Query
 
-  @Test
-  void testDisjunctionAndCount() {
-    def ds = new RedisDatastore()
-    ds.mappingContext.addPersistentEntity(Author)
-    def session = ds.connect()
-    session.getNativeInterface().flushall()
+class CountQueryTests extends AbstractRedisTest {
 
-    def a = new Author(name:"Stephen King")
-    a.books = [
+    @Test
+    void testDisjunctionAndCount() {
+        ds.mappingContext.addPersistentEntity(Author)
+        def session = ds.connect()
+        session.getNativeInterface().flushall()
+
+        def a = new Author(name:"Stephen King")
+        a.books = [
             new Book(title:"The Stand"),
             new Book(title:"It")  ,
             new Book(title:"The Shining")
-    ]
+        ]
 
-    session.persist(a)
+        session.persist(a)
 
+        Query q = session.createQuery(Book)
+        q.disjunction()
+          .add( eq( "title", "The Stand" ) )
+          .add( eq( "title", "It" ) )
+        q.projections().count()
 
-    Query q = session.createQuery(Book)
-    q
-     .disjunction()
-     .add( eq( "title", "The Stand" ) )
-     .add( eq( "title", "It" ) )
-    q.projections()
-     .count()
+        assert 2 == q.singleResult()
+    }
 
-    assert 2 == q.singleResult()
+    @Test
+    void testSimpleQueryAndCount() {
+        ds.mappingContext.addPersistentEntity(Author)
+        def session = ds.connect()
+        session.getNativeInterface().flushall()
 
-
-  }
-
- @Test
-  void testSimpleQueryAndCount() {
-    def ds = new RedisDatastore()
-    ds.mappingContext.addPersistentEntity(Author)
-    def session = ds.connect()
-    session.getNativeInterface().flushall()
-
-    def a = new Author(name:"Stephen King")
-    a.books = [
+        def a = new Author(name:"Stephen King")
+        a.books = [
             new Book(title:"The Stand"),
             new Book(title:"It")
-    ]
+        ]
 
-    session.persist(a)
+        session.persist(a)
 
+        Query q = session.createQuery(Book)
+        q.eq("title", "It")
+        q.projections().count()
 
-    Query q = session.createQuery(Book)
+        def result = q.singleResult()
 
-    q.eq("title", "It")
-    q.projections().count()
+        assert 1 == result
 
-    def result = q.singleResult()
+        q = session.createQuery(Book)
 
-    assert 1 == result
+        q.eq("title", "The Stand")
+        q.projections().count()
 
-    q = session.createQuery(Book)
+        result = q.singleResult()
 
-    q.eq("title", "The Stand")
-    q.projections().count()
-
-    result = q.singleResult()
-
-    assert 1 == result
-
-  }
-
+        assert 1 == result
+    }
 }

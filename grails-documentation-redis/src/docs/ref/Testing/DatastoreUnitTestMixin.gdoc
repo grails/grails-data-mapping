@@ -6,7 +6,7 @@ A mixin for setting up unit testing of datastores such as the Redis datastore.
 
 h2. Examples
 
-{code:java}
+{code}
 import grails.datastore.test.DatastoreUnitTestMixin
 
 @Mixin(DatastoreUnitTestMixin)
@@ -15,14 +15,14 @@ class PersonTests extends GroovyTestCase {
         mockDomain(Person)
         def s = new Simple(name:"Bob")
         s.save()
-		
+
         assert s.id != null
-            
+
         s = Simple.get(s.id)
-		
+
         assert s != null
     }
-	
+
     void tearDown() {
         disconnect()
     }

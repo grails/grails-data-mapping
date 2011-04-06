@@ -14,10 +14,11 @@
  */
 package org.grails.datastore.gorm
 
-import static org.springframework.datastore.mapping.validation.ValidatingInterceptor.*
+import static org.springframework.datastore.mapping.validation.ValidatingEventListener.*
 
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.model.MappingContext
+import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.validation.BeanPropertyBindingResult
 import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
@@ -28,13 +29,14 @@ import org.springframework.validation.Validator
  * Methods used for validating GORM instances
  *
  * @author Graeme Rocher
+ * @param <D> the entity/domain class
  * @since 1.0
  */
-class GormValidationApi extends AbstractGormApi{
+class GormValidationApi<D> extends AbstractGormApi<D> {
 
     Validator validator
 
-    GormValidationApi(Class persistentClass, Datastore datastore) {
+    GormValidationApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
         MappingContext context = datastore.mappingContext
         def entity = context.getPersistentEntity(persistentClass.name)
@@ -48,7 +50,7 @@ class GormValidationApi extends AbstractGormApi{
      * @param arguments The arguments to use
      * @return True if the instance is valid
      */
-    boolean validate(instance, Map arguments) {
+    boolean validate(D instance, Map arguments) {
         validate instance, Collections.emptyList()
     }
 
@@ -59,35 +61,36 @@ class GormValidationApi extends AbstractGormApi{
      * @param fields The list of fields to validate
      * @return True if the instance is valid
      */
-    boolean validate(instance, List fields) {
-        if (validator) {
-            def localErrors = new BeanPropertyBindingResult(instance, instance.class.name)
+    boolean validate(D instance, List fields) {
+        if (!validator) {
+            return true
+        }
 
-            Errors errors = instance.errors
-            validator.validate instance, localErrors
+        def localErrors = new BeanPropertyBindingResult(instance, instance.getClass().name)
 
-            if(fields)
-                localErrors = filterErrors(localErrors, fields as Set, instance)
+        Errors errors = instance.errors
+        validator.validate instance, localErrors
 
-            if (localErrors.hasErrors()) {
-                Errors objectErrors = errors
-                localErrors.allErrors.each { localError ->
-                    if(localError instanceof FieldError) {
-                        def fieldName = localError.getField()
-                        def fieldError = objectErrors.getFieldError(fieldName)
+        if (fields) {
+            localErrors = filterErrors(localErrors, fields as Set, instance)
+        }
 
-                        // if we didn't find an error OR if it is a bindingFailure...
-                        if (!fieldError || fieldError.bindingFailure) {
-                            objectErrors.addError(localError)
-                        }
+        if (localErrors.hasErrors()) {
+            Errors objectErrors = errors
+            localErrors.allErrors.each { localError ->
+                if (localError instanceof FieldError) {
+                    def fieldName = localError.getField()
+                    def fieldError = objectErrors.getFieldError(fieldName)
+
+                    // if we didn't find an error OR if it is a bindingFailure...
+                    if (!fieldError || fieldError.bindingFailure) {
+                        objectErrors.addError(localError)
                     }
-
                 }
                 instance.errors = objectErrors
             }
-            return !errors.hasErrors()
         }
-        return true
+        return !errors.hasErrors()
     }
 
     private Errors filterErrors(Errors errors, Set validatedFields, Object target) {
@@ -114,7 +117,7 @@ class GormValidationApi extends AbstractGormApi{
      * @param instance The instance to validate
      * @return True if the instance is valid
      */
-    boolean validate(instance) {
+    boolean validate(D instance) {
         validate instance, Collections.emptyList()
     }
 
@@ -124,10 +127,9 @@ class GormValidationApi extends AbstractGormApi{
      *
      * @param instance The instance to validate
      * @return True if the instance is valid
-     *
      */
     @Deprecated
-    boolean validate(instance, boolean evict) {
+    boolean validate(D instance, boolean evict) {
         validate instance, Collections.emptyList()
     }
 
@@ -136,7 +138,7 @@ class GormValidationApi extends AbstractGormApi{
      * @param instance The instance to obtain errors for
      * @return The {@link Errors} instance
      */
-    Errors getErrors(instance) {
+    Errors getErrors(D instance) {
         def session = datastore.currentSession
         def errors = session.getAttribute(instance, ERRORS_ATTRIBUTE)
         if (errors == null) {
@@ -145,7 +147,7 @@ class GormValidationApi extends AbstractGormApi{
         return errors
     }
 
-    private Errors resetErrors(instance) {
+    private Errors resetErrors(D instance) {
         def er = new BeanPropertyBindingResult(instance, persistentClass.name)
         instance.errors = er
         return er
@@ -156,17 +158,15 @@ class GormValidationApi extends AbstractGormApi{
      * @param instance The instance
      * @param errors The errors
      */
-    void setErrors(instance, Errors errors) {
-        def session = datastore.currentSession
-
-        session.setAttribute(instance, ERRORS_ATTRIBUTE, errors)
+    void setErrors(D instance, Errors errors) {
+        datastore.currentSession.setAttribute(instance, ERRORS_ATTRIBUTE, errors)
     }
 
     /**
      * Clears any errors that exist on an instance
      * @param instance The instance
      */
-    void clearErrors(instance) {
+    void clearErrors(D instance) {
         resetErrors(instance)
     }
 
@@ -175,7 +175,7 @@ class GormValidationApi extends AbstractGormApi{
      * @param instance The instance
      * @return True if errors exist
      */
-    boolean hasErrors(instance) {
+    boolean hasErrors(D instance) {
         instance.errors?.hasErrors()
     }
 }

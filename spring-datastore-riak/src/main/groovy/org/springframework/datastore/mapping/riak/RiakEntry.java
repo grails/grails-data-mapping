@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.datastore.mapping.riak;
 
 import java.util.LinkedHashMap;
@@ -25,14 +24,13 @@ import java.util.LinkedHashMap;
  */
 public class RiakEntry extends LinkedHashMap {
 
-  private String family;
+    private String family;
 
-  public RiakEntry(String family) {
-    this.family = family;
-  }
+    public RiakEntry(String family) {
+        this.family = family;
+    }
 
-  public String getFamily() {
-    return family;
-  }
-
+    public String getFamily() {
+        return family;
+    }
 }

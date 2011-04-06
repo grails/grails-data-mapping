@@ -18,28 +18,58 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.context.ApplicationEvent;
 import org.springframework.datastore.mapping.core.Datastore;
-import org.springframework.datastore.mapping.engine.EmptyInterceptor;
 import org.springframework.datastore.mapping.engine.EntityAccess;
+import org.springframework.datastore.mapping.engine.event.AbstractPersistenceEvent;
+import org.springframework.datastore.mapping.engine.event.AbstractPersistenceEventListener;
+import org.springframework.datastore.mapping.engine.event.PreInsertEvent;
+import org.springframework.datastore.mapping.engine.event.PreUpdateEvent;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
 /**
- * An interceptor that adds support for GORM-style auto-timestamping
+ * An event listener that adds support for GORM-style auto-timestamping
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-public class AutoTimestampInterceptor extends EmptyInterceptor implements MappingContext.Listener {
+public class AutoTimestampEventListener extends AbstractPersistenceEventListener implements MappingContext.Listener {
+
     public static final String DATE_CREATED_PROPERTY = "dateCreated";
     public static final String LAST_UPDATED_PROPERTY = "lastUpdated";
 
     private Map<PersistentEntity, Boolean> entitiesWithDateCreated = new ConcurrentHashMap<PersistentEntity, Boolean>();
     private Map<PersistentEntity, Boolean> entitiesWithLastUpdated = new ConcurrentHashMap<PersistentEntity, Boolean>();
 
+    public AutoTimestampEventListener(final Datastore datastore) {
+        super(datastore);
+
+        for (PersistentEntity persistentEntity : datastore.getMappingContext().getPersistentEntities()) {
+            storeDateCreatedInfo(persistentEntity);
+            storeLastUpdatedInfo(persistentEntity);
+        }
+
+        datastore.getMappingContext().addMappingContextListener(this);
+    }
+
     @Override
+    protected void onPersistenceEvent(final AbstractPersistenceEvent event) {
+        if (event instanceof PreInsertEvent) {
+            beforeInsert(event.getEntity(), event.getEntityAccess());
+        }
+        else if (event instanceof PreUpdateEvent) {
+            beforeUpdate(event.getEntity(), event.getEntityAccess());
+        }
+    }
+
+    public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
+        return PreInsertEvent.class.isAssignableFrom(eventType) ||
+               PreUpdateEvent.class.isAssignableFrom(eventType);
+    }
+
     public boolean beforeInsert(PersistentEntity entity, EntityAccess ea) {
-     if (hasDateCreated(entity)) {
+        if (hasDateCreated(entity)) {
             final Date now = new Date();
             ea.setProperty(DATE_CREATED_PROPERTY, now);
 
@@ -50,7 +80,6 @@ public class AutoTimestampInterceptor extends EmptyInterceptor implements Mappin
         return true;
     }
 
-    @Override
     public boolean beforeUpdate(PersistentEntity entity, EntityAccess ea) {
         if (hasLastupdated(entity)) {
             ea.setProperty(LAST_UPDATED_PROPERTY, new Date());
@@ -64,17 +93,6 @@ public class AutoTimestampInterceptor extends EmptyInterceptor implements Mappin
 
     private boolean hasDateCreated(PersistentEntity entity) {
         return entitiesWithDateCreated.containsKey(entity)&& entitiesWithDateCreated.get(entity);
-    }
-
-    @Override
-    public void setDatastore(Datastore datastore) {
-        super.setDatastore(datastore);
-        for (PersistentEntity persistentEntity : datastore.getMappingContext().getPersistentEntities()) {
-            storeDateCreatedInfo(persistentEntity);
-            storeLastUpdatedInfo(persistentEntity);
-        }
-
-        datastore.getMappingContext().addMappingContextListener(this);
     }
 
     private void storeLastUpdatedInfo(PersistentEntity persistentEntity) {

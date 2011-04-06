@@ -1,14 +1,14 @@
 As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your @grails-app/conf/DataSource.groovy@ file:
 
-{code:java}
+{code}
 grails {
-  mongo {
-    host = "localhost"
-    port = 27107
-    username = "blah"
-    password = "blah"
-    databaseName = "foo"
-  }
+    mongo {
+        host = "localhost"
+        port = 27107
+        username = "blah"
+        password = "blah"
+        databaseName = "foo"
+    }
 }
 {code}
 
@@ -16,14 +16,14 @@ The @databaseName@ setting configures the default database name. If not specifie
 
 You can also customize the Mongo connection settings using an @options@ block:
 
-{code:java}
+{code}
 grails {
-  mongo {
-    options {
-       autoConnectRetry = true
-       connectTimeout = 300
+    mongo {
+        options {
+            autoConnectRetry = true
+            connectTimeout = 300
+        }
     }
-  }
 }
 {code}
 
@@ -31,21 +31,21 @@ Available options and their descriptions are defined in the [MongoOptions|http:/
 
 In production scenarios you will typically use more than one Mongo server in either [master/slave|http://www.mongodb.org/display/DOCS/Master+Slave] or [replication|http://www.mongodb.org/display/DOCS/Replication] scenarios. The plugin allows you to configure [replica pairs|http://www.mongodb.org/display/DOCS/Replica+Pairs]:
 
-{code:java}
+{code}
 grails {
-  mongo {
-    replicaPair = [ "localhost:27017", "localhost:27018"]
-  }
+    mongo {
+        replicaPair = [ "localhost:27017", "localhost:27018"]
+    }
 }
 {code}
 
 Or [replica sets|http://www.mongodb.org/display/DOCS/Replica+Sets]:
 
-{code:java}
+{code}
 grails {
-  mongo {
-    replicaSet = [ "localhost:27017", "localhost:27018"]
-  }
+    mongo {
+        replicaSet = [ "localhost:27017", "localhost:27018"]
+    }
 }
 {code}
 

@@ -1,6 +1,6 @@
 By default in GORM entities are supplied with an integer-based identifier. So for example the following entity:
 
-{code:java}
+{code}
 class Person {}
 {code}
 
@@ -8,7 +8,7 @@ Has a property called @id@ of type @java.lang.Long@. In this case GORM for Mongo
 
 However, sequence based integer identifiers are not ideal for environments that require [sharding|http://www.mongodb.org/display/DOCS/Sharding] (one of the nicer features of Mongo). Hence it is generally advised to use either String based ids:
 
-{code:java}
+{code}
 class Person {
     String id
 }
@@ -16,8 +16,8 @@ class Person {
 
 Or a native BSON [ObjectId|http://api.mongodb.org/java/current/org/bson/types/ObjectId.html]:
 
-{code:java}
-import  org.bson.types.ObjectId
+{code}
+import org.bson.types.ObjectId
 
 class Person {
     ObjectId id

@@ -15,42 +15,47 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.CriteriaBuilder
+
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.springframework.beans.BeanWrapperImpl
 import org.springframework.beans.MutablePropertyValues
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.core.Session
+import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.model.PersistentProperty
 import org.springframework.datastore.mapping.model.types.Association
 import org.springframework.datastore.mapping.query.Query
 import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.support.DefaultTransactionDefinition
 import org.springframework.transaction.support.TransactionCallback
 import org.springframework.transaction.support.TransactionTemplate
-import org.springframework.transaction.TransactionDefinition
+import org.springframework.util.Assert
 import org.springframework.validation.DataBinder
 
 /**
- *  Static methods of the GORM API
+ * Static methods of the GORM API.
  *
  * @author Graeme Rocher
+ * @param <D> the entity/domain class
  */
-class GormStaticApi extends AbstractGormApi {
+class GormStaticApi<D> extends AbstractGormApi<D> {
 
     private List<FinderMethod> dynamicFinders
     private PlatformTransactionManager transactionManager
 
-    GormStaticApi(Class persistentClass, Datastore datastore) {
-        this(persistentClass,datastore, DynamicFinder.getAllDynamicFinders(datastore))
+    GormStaticApi(Class<D> persistentClass, Datastore datastore) {
+        this(persistentClass, datastore, DynamicFinder.getAllDynamicFinders(datastore))
     }
 
-    GormStaticApi(Class persistentClass, Datastore datastore, List<FinderMethod> finders) {
-        this(persistentClass,datastore,finders,null)
+    GormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
+        this(persistentClass, datastore, finders, null)
     }
 
-    GormStaticApi(Class persistentClass, Datastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
-        super(persistentClass,datastore)
+    GormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
+        super(persistentClass, datastore)
         this.dynamicFinders = finders
         this.transactionManager = transactionManager
     }
@@ -61,6 +66,7 @@ class GormStaticApi extends AbstractGormApi {
     void setTransactionManager(PlatformTransactionManager transactionManager) {
         this.transactionManager = transactionManager
     }
+
     /**
      * Method missing handler that deals with the invocation of dynamic finders
      *
@@ -71,19 +77,19 @@ class GormStaticApi extends AbstractGormApi {
     def methodMissing(String methodName, args) {
         def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
         def cls = persistentClass
-        def mc = cls.metaClass
-        if (method) {
-            // register the method invocation for next time
-            synchronized(this) {
-                mc.static."$methodName" = {List varArgs ->
-                    method.invoke(cls, methodName, varArgs)
-                }
-            }
-            return method.invoke(cls, methodName, args)
-        }
-        else {
+        if (!method) {
             throw new MissingMethodException(methodName, cls, args)
         }
+
+        def mc = cls.metaClass
+
+        // register the method invocation for next time
+        synchronized(this) {
+            mc.static."$methodName" = { List varArgs ->
+                method.invoke(cls, methodName, varArgs)
+            }
+        }
+        return method.invoke(cls, methodName, args)
     }
 
     /**
@@ -91,34 +97,33 @@ class GormStaticApi extends AbstractGormApi {
      * @param objectsToSave The objects to save
      * @return A list of object identifiers
      */
-    List saveAll(Object...objectsToSave) {
-        Session currentSession = datastore.currentSession
-
-        currentSession.persist Arrays.asList(objectsToSave)
+    List<Serializable> saveAll(D... objectsToSave) {
+        datastore.currentSession.persist Arrays.asList(objectsToSave)
     }
 
     /**
      * Deletes a list of objects in one go
      * @param objectsToDelete The objects to delete
      */
-    void deleteAll(Object...objectsToDelete) {
-        Session currentSession = datastore.currentSession
-
-        currentSession.delete objectsToDelete
+    void deleteAll(D... objectsToDelete) {
+        datastore.currentSession.delete objectsToDelete
     }
 
     /**
      * Creates an instance of this class
      * @return The created instance
      */
-    def create() {
-        persistentClass.newInstance()
+    D create() {
+        D d = persistentClass.newInstance()
+        datastore.applicationContext.autowireCapableBeanFactory.autowireBeanProperties(
+              d, AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, false)
+        d
     }
 
     /**
      * Retrieves and object from the datastore. eg. Book.get(1)
      */
-    def get(Serializable id) {
+    D get(Serializable id) {
         datastore.currentSession.retrieve(persistentClass,id)
     }
 
@@ -128,21 +133,21 @@ class GormStaticApi extends AbstractGormApi {
      * Since the datastore abstraction doesn't support dirty checking yet this
      * just delegates to {@link #get(Serializable)}
      */
-    def read(Serializable id) {
-        datastore.currentSession.retrieve(persistentClass,id)
+    D read(Serializable id) {
+        datastore.currentSession.retrieve(persistentClass, id)
     }
 
     /**
      * Retrieves and object from the datastore as a proxy. eg. Book.load(1)
      */
-    def load(Serializable id) {
-        datastore.currentSession.proxy(persistentClass,id)
+    D load(Serializable id) {
+        datastore.currentSession.proxy(persistentClass, id)
     }
 
     /**
      * Retrieves and object from the datastore as a proxy. eg. Book.proxy(1)
      */
-    def proxy(Serializable id) {
+    D proxy(Serializable id) {
         load(id)
     }
 
@@ -151,21 +156,21 @@ class GormStaticApi extends AbstractGormApi {
      * @param ids The identifiers to operate against
      * @return A list of identifiers
      */
-    List getAll(Serializable... ids) {
+    List<D> getAll(Serializable... ids) {
         datastore.currentSession.retrieveAll(persistentClass, ids.flatten())
     }
 
     /**
      * @return Synonym for {@link #list()}
      */
-    List getAll() {
+    List<D> getAll() {
         list()
     }
 
     /**
      * Creates a criteria builder instance
      */
-    def createCriteria() {
+    CriteriaBuilder createCriteria() {
         return new CriteriaBuilder(persistentClass, datastore)
     }
 
@@ -179,7 +184,7 @@ class GormStaticApi extends AbstractGormApi {
     /**
      * Creates a criteria builder instance
      */
-    def withCriteria( Map builderArgs, Closure callable) {
+    def withCriteria(Map builderArgs, Closure callable) {
         def criteriaBuilder = createCriteria()
         def builderBean = new BeanWrapperImpl(criteriaBuilder)
         for (entry in builderArgs) {
@@ -196,18 +201,18 @@ class GormStaticApi extends AbstractGormApi {
      * @param id The identifier
      * @return The instance
      */
-    def lock(Serializable id) {
+    D lock(Serializable id) {
         datastore.currentSession.lock(persistentClass, id)
     }
 
     /**
      * Merges an instance with the current session
-     * @param o The object to merge
+     * @param d The object to merge
      * @return The instance
      */
-    def merge(Object o) {
-        datastore.currentSession.persist(o)
-        return o
+    D merge(D d) {
+        datastore.currentSession.persist(d)
+        return d
     }
 
     /**
@@ -246,7 +251,7 @@ class GormStaticApi extends AbstractGormApi {
      * @param params Any parameters such as offset, max etc.
      * @return A list of results
      */
-    List list(Map params) {
+    List<D> list(Map params) {
         Query q = datastore.currentSession.createQuery(persistentClass)
         DynamicFinder.populateArgumentsForCriteria(persistentClass, q, params)
         q.list()
@@ -257,11 +262,8 @@ class GormStaticApi extends AbstractGormApi {
      *
      * @return The list of all entities
      */
-    List list() {
-        datastore
-            .currentSession
-            .createQuery(persistentClass)
-            .list()
+    List<D> list() {
+        datastore.currentSession.createQuery(persistentClass).list()
     }
 
     /**
@@ -269,7 +271,7 @@ class GormStaticApi extends AbstractGormApi {
      *
      * @return The list of all entities
      */
-    List findAll() {
+    List<D> findAll() {
         list()
     }
 
@@ -279,7 +281,7 @@ class GormStaticApi extends AbstractGormApi {
      * @param example The example
      * @return A list of matching results
      */
-    List findAll(Object example) {
+    List<D> findAll(D example) {
         findAll(example, Collections.emptyMap())
     }
 
@@ -291,15 +293,16 @@ class GormStaticApi extends AbstractGormApi {
      *
      * @return A list of matching results
      */
-    List findAll(Object example, Map args) {
-        if (persistentEntity.isInstance(example)) {
-            def queryMap = createQueryMapForExample(persistentEntity, example)
-            return findAllWhere(queryMap, args)
+    List<D> findAll(D example, Map args) {
+        if (!persistentEntity.isInstance(example)) {
+            return Collections.emptyList()
         }
-        return Collections.emptyList()
+
+        def queryMap = createQueryMapForExample(persistentEntity, example)
+        return findAllWhere(queryMap, args)
     }
 
-    private Map createQueryMapForExample(org.springframework.datastore.mapping.model.PersistentEntity persistentEntity, example) {
+    private Map createQueryMapForExample(PersistentEntity persistentEntity, D example) {
         def props = persistentEntity.persistentProperties.findAll { PersistentProperty prop ->
             !(prop instanceof Association)
         }
@@ -320,7 +323,7 @@ class GormStaticApi extends AbstractGormApi {
      * @param queryMap The map of conditions
      * @return A list of results
      */
-    List findAllWhere(Map queryMap) {
+    List<D> findAllWhere(Map queryMap) {
         findAllWhere(queryMap, Collections.emptyMap())
     }
 
@@ -332,7 +335,7 @@ class GormStaticApi extends AbstractGormApi {
      *
      * @return A list of results
      */
-    List findAllWhere(Map queryMap, Map args) {
+    List<D> findAllWhere(Map queryMap, Map args) {
         Query q = datastore.currentSession.createQuery(persistentClass)
         q.allEq(queryMap)
         DynamicFinder.populateArgumentsForCriteria persistentClass, q, args
@@ -345,7 +348,7 @@ class GormStaticApi extends AbstractGormApi {
      * @param example The example
      * @return A list of matching results
      */
-    def find(Object example) {
+    D find(D example) {
         find(example, Collections.emptyMap())
     }
 
@@ -357,7 +360,7 @@ class GormStaticApi extends AbstractGormApi {
      *
      * @return A list of matching results
      */
-    def find(Object example, Map args) {
+    D find(D example, Map args) {
         if (persistentEntity.isInstance(example)) {
             def queryMap = createQueryMapForExample(persistentEntity, example)
             return findWhere(queryMap, args)
@@ -371,7 +374,7 @@ class GormStaticApi extends AbstractGormApi {
      * @param queryMap The map of conditions
      * @return A single result
      */
-    def findWhere(Map queryMap) {
+    D findWhere(Map queryMap) {
         findWhere(queryMap, Collections.emptyMap())
     }
 
@@ -383,7 +386,7 @@ class GormStaticApi extends AbstractGormApi {
      *
      * @return A single result
      */
-    def findWhere(Map queryMap, Map args) {
+    D findWhere(Map queryMap, Map args) {
         Query q = datastore.currentSession.createQuery(persistentClass)
         if (queryMap) {
             q.allEq(queryMap)
@@ -399,20 +402,38 @@ class GormStaticApi extends AbstractGormApi {
     * @param queryMap The map of conditions
     * @return A single result
      */
-    def findOrCreateWhere(Map queryMap) {
-        def result = findWhere(queryMap)
-        if(!result) {
+    D findOrCreateWhere(Map queryMap) {
+        internalFindOrCreate(queryMap, false)
+    }
+
+   /**
+    * Finds a single result matching all of the given conditions. Eg. Book.findWhere(author:"Stephen King", title:"The Stand").  If
+    * a matching persistent entity is not found a new entity is created, saved and returned.
+    *
+    * @param queryMap The map of conditions
+    * @return A single result
+     */
+    D findOrSaveWhere(Map queryMap) {
+        internalFindOrCreate(queryMap, true)
+    }
+
+    private D internalFindOrCreate(Map queryMap, boolean shouldSave) {
+        D result = findWhere(queryMap)
+        if (!result) {
             result = persistentClass.newInstance()
             def binder = new DataBinder(result)
             binder.bind(new MutablePropertyValues(queryMap))
+            if (shouldSave) {
+                result.save()
+            }
         }
         result
     }
 
     /**
-     * Execute a closure whose first argument is a reference to the current session
-     * @param callable
+     * Execute a closure whose first argument is a reference to the current session.
      *
+     * @param callable the closure
      * @return The result of the closure
      */
     def withSession(Closure callable) {
@@ -420,21 +441,20 @@ class GormStaticApi extends AbstractGormApi {
     }
 
     /**
-     * Executes the closure within the context of a transaction, creating one if non is present or joining
-     * an existing transaction if one is already present
+     * Executes the closure within the context of a transaction, creating one if none is present or joining
+     * an existing transaction if one is already present.
      *
      * @param callable The closure to call
      * @return The result of the closure execution
      */
     def withTransaction(Closure callable) {
-        if(transactionManager == null) {
-            throw new IllegalStateException("No transactionManager bean configured")
+        Assert.notNull transactionManager, "No transactionManager bean configured"
+
+        if (!callable) {
+            return
         }
 
-        if (callable) {
-            def transactionTemplate = new TransactionTemplate(transactionManager)
-            transactionTemplate.execute(callable as TransactionCallback)
-        }
+        new TransactionTemplate(transactionManager).execute(callable as TransactionCallback)
     }
 
     /**
@@ -444,13 +464,15 @@ class GormStaticApi extends AbstractGormApi {
      * @return The result of the closure execution
      */
     def withNewTransaction(Closure callable) {
-        if(transactionManager == null) {
-            throw new IllegalStateException("No transactionManager bean configured")
+        Assert.notNull transactionManager, "No transactionManager bean configured"
+
+        if (!callable) {
+            return
         }
-        if (callable) {
-            def transactionTemplate = new TransactionTemplate(transactionManager, new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW))
-            transactionTemplate.execute(callable as TransactionCallback)
-        }
+
+        def transactionTemplate = new TransactionTemplate(transactionManager,
+                new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW))
+        transactionTemplate.execute(callable as TransactionCallback)
     }
 
     /**
@@ -460,14 +482,13 @@ class GormStaticApi extends AbstractGormApi {
      * @return The result of the closure execution
      */
     def withTransaction(TransactionDefinition definition, Closure callable) {
-       if(transactionManager == null) {
-            throw new IllegalStateException("No transactionManager bean configured")
-       }
+        Assert.notNull transactionManager, "No transactionManager bean configured"
 
-       if (callable) {
-            def transactionTemplate = new TransactionTemplate(transactionManager, definition)
-            transactionTemplate.execute(callable as TransactionCallback)
-       }
+        if (!callable) {
+            return
+        }
+
+        new TransactionTemplate(transactionManager, definition).execute(callable as TransactionCallback)
     }
 
     /**
@@ -509,19 +530,19 @@ class GormStaticApi extends AbstractGormApi {
         unsupported("executeUpdate")
     }
 
-    def executeUpdate(String query, Map args) {
+    Integer executeUpdate(String query, Map args) {
         unsupported("executeUpdate")
     }
 
-    def executeUpdate(String query, Map params, Map args) {
+    Integer executeUpdate(String query, Map params, Map args) {
         unsupported("executeUpdate")
     }
 
-    def executeUpdate(String query, Collection params) {
+    Integer executeUpdate(String query, Collection params) {
         unsupported("executeUpdate")
     }
 
-    def executeUpdate(String query, Collection params, Map args) {
+    Integer executeUpdate(String query, Collection params, Map args) {
         unsupported("executeUpdate")
     }
 
@@ -565,7 +586,7 @@ class GormStaticApi extends AbstractGormApi {
         unsupported("findAll")
     }
 
-    def unsupported(method) {
+    void unsupported(method) {
         throw new UnsupportedOperationException("String-based queries like [$method] are currently not supported in this implementation of GORM. Use criteria instead.")
     }
 }

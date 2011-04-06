@@ -9,12 +9,12 @@ class Person {
 
     String firstName
     String lastName
-	
+
     static constraints = {
         firstName blank:false
         lastName blank:false
     }
-	
+
     static mapping = {
         lastName index:true
     }
@@ -23,7 +23,7 @@ class Person {
 
 Note that one key difference with GORM for Redis is that you *must* specify the properties you want to index before you can execute any query against the property. In the example above the @lastName@ property can be queried with a dynamic finder such as:
 
-{code:java}
+{code}
 Person.findByLastName("Simpson")
 {code}
 

@@ -27,6 +27,7 @@ include "spring-datastore-core",
 
 		// GORM Implementations
         'grails-datastore-gorm-jpa',		
+/*        'grails-datastore-gorm-hibernate',*/
 /*        'grails-datastore-gorm-jcr',		*/
         'grails-datastore-gorm-redis',
         'grails-datastore-gorm-riak',

@@ -4,6 +4,7 @@ import org.grails.datastore.gorm.jpa.JpaGormEnhancer
 import org.hibernate.dialect.HSQLDialect
 import org.hibernate.ejb.Ejb3Configuration
 import org.hsqldb.jdbcDriver
+import org.springframework.context.support.GenericApplicationContext
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.jpa.JpaDatastore
 import org.springframework.datastore.mapping.jpa.config.JpaMappingContext
@@ -45,7 +46,10 @@ class Setup {
         def entityManagerFactory = config.buildEntityManagerFactory()
 
         def txMgr = new JpaTransactionManager(entityManagerFactory)
-        jpaDatastore = new JpaDatastore(context, entityManagerFactory, txMgr)
+
+        def ctx = new GenericApplicationContext()
+        ctx.refresh()
+        jpaDatastore = new JpaDatastore(context, entityManagerFactory, txMgr, ctx)
 
         PersistentEntity entity = jpaDatastore.mappingContext.persistentEntities.find { PersistentEntity e -> e.name.contains("TestEntity")}
 

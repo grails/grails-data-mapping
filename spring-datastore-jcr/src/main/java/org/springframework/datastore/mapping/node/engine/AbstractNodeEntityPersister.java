@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.persistence.CascadeType;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.datastore.mapping.core.Session;
@@ -21,8 +22,8 @@ import org.springframework.datastore.mapping.core.impl.PendingOperationExecution
 import org.springframework.datastore.mapping.core.impl.PendingUpdate;
 import org.springframework.datastore.mapping.core.impl.PendingUpdateAdapter;
 import org.springframework.datastore.mapping.engine.EntityAccess;
-import org.springframework.datastore.mapping.engine.EntityInterceptor;
 import org.springframework.datastore.mapping.engine.LockableEntityPersister;
+import org.springframework.datastore.mapping.engine.event.PreDeleteEvent;
 import org.springframework.datastore.mapping.model.ClassMapping;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
@@ -49,8 +50,9 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
     protected Session session;
     protected ClassMapping classMapping;
 
-    public AbstractNodeEntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
-        super(mappingContext, entity, session);
+    public AbstractNodeEntityPersister(MappingContext mappingContext, PersistentEntity entity,
+              Session session, ApplicationEventPublisher publisher) {
+        super(mappingContext, entity, session, publisher);
         this.session = session;
         this.classMapping = entity.getMapping();
         this.nodeEntity = getEntity(entity, classMapping);
@@ -118,7 +120,7 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
     }
 
     protected Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, T nativeEntry) {
-        Object obj = persistentEntity.newInstance();
+        Object obj = newEntityInstance(persistentEntity);
         refreshObjectStateFromNativeEntry(persistentEntity, obj, nativeKey, nativeEntry);
         return obj;
     }
@@ -220,7 +222,6 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
             k = generateIdentifier(persistentEntity, tmp);
 
             pendingOperation = new PendingInsertAdapter<T, K>(persistentEntity, k, tmp, entityAccess) {
-                @Override
                 public void run() {
                     executeInsert(persistentEntity, entityAccess, getNativeKey(), getNativeEntry());
                 }
@@ -239,10 +240,10 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
             }
 
             pendingOperation = new PendingUpdateAdapter<T, K>(persistentEntity, k, tmp, entityAccess) {
-                @Override
                 public void run() {
-                    if (fireBeforeUpdate(persistentEntity, entityAccess)) return;
+                    if (cancelUpdate(persistentEntity, entityAccess)) return;
                     updateEntry(persistentEntity, getNativeKey(), getNativeEntry());
+                    firePostUpdateEvent(persistentEntity, entityAccess);
                 }
             };
         }
@@ -339,12 +340,12 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
 
             final K updateId = k;
             PendingOperation postOperation = new PendingOperationAdapter<T, K>(persistentEntity, k, e) {
-                @Override
                 public void run() {
-                    for (EntityInterceptor interceptor : interceptors) {
-                        if (!interceptor.beforeInsert(persistentEntity, entityAccess)) return;
+                    if (cancelInsert(persistentEntity, entityAccess)) {
+                        return;
                     }
                     storeEntry(persistentEntity, updateId, e);
+                    firePostInsertEvent(persistentEntity, entityAccess);
                     for (OneToMany inverseCollection : inverseCollectionUpdates.keySet()) {
                         final Serializable primaryKey = inverseCollectionUpdates.get(inverseCollection);
                         final AbstractNodeEntityPersister inversePersister = (AbstractNodeEntityPersister) session.getPersister(inverseCollection.getOwner());
@@ -368,16 +369,17 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
             final K updateId = k;
 
             PendingOperation postOperation = new PendingOperationAdapter<T, K>(persistentEntity, k, e) {
-                @Override
                 public void run() {
                      // updateOneToManyIndices(e, updateId, oneToManyKeys);
                      // if (doesRequirePropertyIndexing())
                     //      updatePropertyIndices(updateId, toIndex, toUnindex);
 
-                    for (EntityInterceptor interceptor : interceptors) {
-                        if (!interceptor.beforeUpdate(persistentEntity, entityAccess)) return;
+                    if (cancelUpdate(persistentEntity, entityAccess)) {
+                        return;
                     }
+
                     updateEntry(persistentEntity, updateId, e);
+                    firePostUpdateEvent(persistentEntity, entityAccess);
                 }
 
             };
@@ -417,17 +419,25 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
 
     @Override
     protected void deleteEntity(PersistentEntity persistentEntity, Object obj) {
-        if (obj != null) {
-            for (EntityInterceptor interceptor : interceptors) {
-                if (!interceptor.beforeDelete(persistentEntity, createEntityAccess(persistentEntity, obj))) return;
-            }
-
-            final K key = readIdentifierFromObject(obj);
-
-            if (key != null) {
-                deleteEntry(key);
-            }
+        if (obj == null) {
+            return;
         }
+
+        EntityAccess entityAccess = createEntityAccess(persistentEntity, obj);
+        PreDeleteEvent event = new PreDeleteEvent(session.getDatastore(), persistentEntity,
+                 entityAccess);
+        publisher.publishEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
+
+        final K key = readIdentifierFromObject(obj);
+        if (key == null) {
+            return;
+        }
+
+        deleteEntry(key);
+        firePostDeleteEvent(persistentEntity, entityAccess);
     }
 
     private K readIdentifierFromObject(Object object) {
@@ -591,39 +601,12 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
      * @return The key
      */
     protected K executeInsert(final PersistentEntity persistentEntity,
-                                   final EntityAccess entityAccess, final K id,
-                                   final T e) {
-        if (fireBeforeInsert(persistentEntity, entityAccess)) return null;
+                              final EntityAccess entityAccess,
+                              final K id, final T e) {
+        if (cancelInsert(persistentEntity, entityAccess)) return null;
         final K newId = storeEntry(persistentEntity, id, e);
         entityAccess.setIdentifier(newId);
+        firePostInsertEvent(persistentEntity, entityAccess);
         return newId;
-    }
-
-    /**
-     * Fire the beforeInsert even on an entityAccess object and return true if the operation should be evicted
-     * @param persistentEntity The entity
-     * @param entityAccess The entity access
-     * @return True if the operation should be eviced
-     */
-    public boolean fireBeforeInsert(final PersistentEntity persistentEntity,
-            final EntityAccess entityAccess) {
-        for (EntityInterceptor interceptor : interceptors) {
-                if (!interceptor.beforeInsert(persistentEntity, entityAccess)) return true;
-        }
-        return false;
-    }
-
-    /**
-     * Fire the beforeUpdate even on an entityAccess object and return true if the operation should be evicted
-     * @param persistentEntity The entity
-     * @param entityAccess The entity access
-     * @return True if the operation should be eviced
-     */
-    public boolean fireBeforeUpdate(final PersistentEntity persistentEntity,
-            final EntityAccess entityAccess) {
-        for (EntityInterceptor interceptor : interceptors) {
-            if (!interceptor.beforeUpdate(persistentEntity, entityAccess)) return true;
-        }
-        return false;
     }
 }

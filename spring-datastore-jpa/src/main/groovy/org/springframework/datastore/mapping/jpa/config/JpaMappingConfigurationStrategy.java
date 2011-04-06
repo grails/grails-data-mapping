@@ -64,13 +64,11 @@ public class JpaMappingConfigurationStrategy implements MappingConfigurationStra
     }
 
     @SuppressWarnings("unchecked")
-    @Override
     public boolean isPersistentEntity(Class javaClass) {
         return javaClass != null && javaClass.getAnnotation(Entity.class) != null;
     }
 
     @SuppressWarnings("rawtypes")
-    @Override
     public List<PersistentProperty> getPersistentProperties(Class javaClass,
             MappingContext context) {
         return getPersistentProperties(javaClass, context, null);
@@ -87,7 +85,6 @@ public class JpaMappingConfigurationStrategy implements MappingConfigurationStra
         return entity;
     }
 
-    @Override
     public List<PersistentProperty> getPersistentProperties(Class javaClass,
             MappingContext context, ClassMapping mapping) {
         initializeClassMapping(javaClass, context, mapping);
@@ -194,18 +191,15 @@ public class JpaMappingConfigurationStrategy implements MappingConfigurationStra
         return associatedEntity;
     }
 
-    @Override
     public PersistentProperty getIdentity(Class javaClass, MappingContext context) {
         initializeClassMapping(javaClass, context, null);
         return identities.get(javaClass);
     }
 
-    @Override
     public IdentityMapping getDefaultIdentityMapping(ClassMapping classMapping) {
         return null;
     }
 
-    @Override
     public Set getOwningEntities(Class javaClass, MappingContext context) {
         initializeClassMapping(javaClass, context, null);
         final Set set = owningEntities.get(javaClass);

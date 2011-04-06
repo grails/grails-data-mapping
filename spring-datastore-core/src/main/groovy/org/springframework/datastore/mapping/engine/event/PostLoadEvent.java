@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 SpringSource
+/* Copyright (C) 2011 SpringSource
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,33 +12,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.datastore.mapping.engine;
+package org.springframework.datastore.mapping.engine.event;
 
 import org.springframework.datastore.mapping.core.Datastore;
+import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
 /**
- * An interceptor that does nothing
- * 
- * @author Graeme Rocher
- * @since 1.0
+ * @author Burt Beckwith
  */
-public class EmptyInterceptor implements EntityInterceptor{
-    protected Datastore datastore;
+public class PostLoadEvent extends AbstractPersistenceEvent {
 
-    public boolean beforeInsert(PersistentEntity entity, EntityAccess ea) {
-        return true;
-    }
-
-    public boolean beforeUpdate(PersistentEntity entity, EntityAccess ea) {
-        return true;
-    }
-
-    public boolean beforeDelete(PersistentEntity entity, EntityAccess ea) {
-        return true;
-    }
-
-    public void setDatastore(Datastore datastore) {
-        this.datastore = datastore;
+    public PostLoadEvent(final Datastore source, final PersistentEntity entity,
+            final EntityAccess entityAccess) {
+        super(source, entity, entityAccess);
     }
 }

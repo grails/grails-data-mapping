@@ -15,31 +15,40 @@
 package org.springframework.datastore.mapping.engine;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.engine.event.PostDeleteEvent;
+import org.springframework.datastore.mapping.engine.event.PostInsertEvent;
+import org.springframework.datastore.mapping.engine.event.PostLoadEvent;
+import org.springframework.datastore.mapping.engine.event.PostUpdateEvent;
+import org.springframework.datastore.mapping.engine.event.PreInsertEvent;
+import org.springframework.datastore.mapping.engine.event.PreLoadEvent;
+import org.springframework.datastore.mapping.engine.event.PreUpdateEvent;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.proxy.ProxyFactory;
 
 /**
- * A {@link org.springframework.datastore.mapping.engine.Persister} specificly for persisting PersistentEntity instances
+ * A {@link org.springframework.datastore.mapping.engine.Persister} specifically for persisting PersistentEntity instances.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class EntityPersister implements Persister, EntityInterceptorAware {
+public abstract class EntityPersister implements Persister {
     private PersistentEntity persistentEntity;
     private MappingContext mappingContext;
-    protected List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
     protected Session session;
     protected org.springframework.datastore.mapping.proxy.ProxyFactory proxyFactory;
+    protected ApplicationEventPublisher publisher;
 
-    public EntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session) {
+    public EntityPersister(MappingContext mappingContext, PersistentEntity entity,
+              Session session, ApplicationEventPublisher publisher) {
         this.persistentEntity = entity;
         this.mappingContext = mappingContext;
         this.session = session;
+        this.publisher = publisher;
     }
 
     public Session getSession() {
@@ -56,16 +65,6 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
             proxyFactory = mappingContext.getProxyFactory();
         }
         return proxyFactory;
-    }
-
-    public void addEntityInterceptor(EntityInterceptor interceptor) {
-        if (interceptor != null) {
-            interceptors.add(interceptor);
-        }
-    }
-
-    public void setEntityInterceptors(List<EntityInterceptor> interceptors) {
-        if (interceptors!=null) this.interceptors = interceptors;
     }
 
     /**
@@ -117,11 +116,13 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
     public final Serializable persist(Object obj) {
         if (!persistentEntity.isInstance(obj)) {
             final Persister persister = getSession().getPersister(obj);
-            if (persister != null) {
-                return persister.persist(obj);
+            if (persister == null) {
+                throw new IllegalArgumentException("Object [" + obj +
+                     "] is not an instance supported by the persister for class [" +
+                     getType().getName() + "]");
             }
 
-            throw new IllegalArgumentException("Object ["+obj+"] is not an instance supported by the persister for class ["+getType().getName()+"]");
+            return persister.persist(obj);
         }
 
         return persistEntity(getPersistentEntity(), obj);
@@ -146,8 +147,21 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
     protected abstract List<Serializable> persistEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objs);
 
     public final Object retrieve(Serializable key) {
-        if (key == null) return null;
-        return retrieveEntity(getPersistentEntity(), key);
+        if (key == null) {
+            return null;
+        }
+
+        PersistentEntity entity = getPersistentEntity();
+
+        Object o = retrieveEntity(entity, key);
+        if (o == null) {
+            return null;
+        }
+
+        publisher.publishEvent(new PostLoadEvent(session.getDatastore(),
+                entity, new EntityAccess(entity, o)));
+
+        return o;
     }
 
     /**
@@ -169,15 +183,19 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
     protected abstract Serializable persistEntity(PersistentEntity pe, Object obj);
 
     public final void delete(@SuppressWarnings("rawtypes") Iterable objects) {
-        if (objects != null) {
-            deleteEntities(getPersistentEntity(), objects);
+        if (objects == null) {
+            return;
         }
+
+        deleteEntities(getPersistentEntity(), objects);
     }
 
     public void delete(Object obj) {
-        if (obj != null) {
-            deleteEntity(getPersistentEntity(), obj);
+        if (obj == null) {
+            return;
         }
+
+        deleteEntity(getPersistentEntity(), obj);
     }
 
     protected abstract void deleteEntity(PersistentEntity pe, Object obj);
@@ -186,5 +204,56 @@ public abstract class EntityPersister implements Persister, EntityInterceptorAwa
 
     protected EntityAccess createEntityAccess(@SuppressWarnings("unused") PersistentEntity pe, Object obj) {
         return new EntityAccess(persistentEntity, obj);
+    }
+
+    protected Object newEntityInstance(@SuppressWarnings("hiding") PersistentEntity persistentEntity) {
+        Object o = persistentEntity.newInstance();
+        publisher.publishEvent(new PreLoadEvent(session.getDatastore(), getPersistentEntity(),
+                new EntityAccess(persistentEntity, o)));
+        return o;
+    }
+
+   /**
+    * Fire the beforeInsert even on an entityAccess object and return true if the operation should be cancelled
+    * @param persistentEntity The entity
+    * @param entityAccess The entity access
+    * @return true if the operation should be cancelled
+    */
+    public boolean cancelInsert(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
+           final EntityAccess entityAccess) {
+       PreInsertEvent event = new PreInsertEvent(session.getDatastore(), persistentEntity, entityAccess);
+       publisher.publishEvent(event);
+       return event.isCancelled();
+   }
+
+    public void firePostInsertEvent(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
+            final EntityAccess entityAccess) {
+        publisher.publishEvent(new PostInsertEvent(
+                session.getDatastore(), persistentEntity, entityAccess));
+    }
+
+   /**
+    * Fire the beforeUpdate even on an entityAccess object and return true if the operation should be cancelled
+    * @param persistentEntity The entity
+    * @param entityAccess The entity access
+    * @return true if the operation should be cancelled
+    */
+    public boolean cancelUpdate(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
+           final EntityAccess entityAccess) {
+       PreUpdateEvent event = new PreUpdateEvent(session.getDatastore(), persistentEntity, entityAccess);
+       publisher.publishEvent(event);
+       return event.isCancelled();
+   }
+
+    public void firePostUpdateEvent(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
+            final EntityAccess entityAccess) {
+        publisher.publishEvent(new PostUpdateEvent(
+                session.getDatastore(), persistentEntity, entityAccess));
+    }
+
+    public void firePostDeleteEvent(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
+            final EntityAccess entityAccess) {
+        publisher.publishEvent(new PostDeleteEvent(
+                session.getDatastore(), persistentEntity, entityAccess));
     }
 }

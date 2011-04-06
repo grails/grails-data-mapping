@@ -21,33 +21,37 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.datastore.mapping.transactions.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-public abstract class AbstractAttributeStoringSession implements Session{
+public abstract class AbstractAttributeStoringSession implements Session {
 
     protected Map<Object, Map<String, Object>> attributes = new ConcurrentHashMap<Object, Map<String, Object>>();
 
     public void setAttribute(Object entity, String attributeName, Object value) {
-        if (entity != null) {
-            Map<String, Object> attrs = attributes.get(entity);
-            if (attrs == null) {
-                attrs = new ConcurrentHashMap<String, Object>();
-                attributes.put(entity, attrs);
-            }
+        if (entity == null) {
+            return;
+        }
 
-            if (attributeName != null && value != null) {
-                attrs.put(attributeName, value);
-            }
+        Map<String, Object> attrs = attributes.get(entity);
+        if (attrs == null) {
+            attrs = new ConcurrentHashMap<String, Object>();
+            attributes.put(entity, attrs);
+        }
 
+        if (attributeName != null && value != null) {
+            attrs.put(attributeName, value);
         }
     }
 
     public Object getAttribute(Object entity, String attributeName) {
-        if (entity != null) {
-            final Map<String, Object> attrs = attributes.get(entity);
-            if (attrs != null && attributeName != null) {
-                return attrs.get(attributeName);
-            }
+        if (entity == null) {
+            return null;
         }
-        return null;
+
+        final Map<String, Object> attrs = attributes.get(entity);
+        if (attrs == null || attributeName == null) {
+            return null;
+        }
+
+        return attrs.get(attributeName);
     }
 
     /**
@@ -58,14 +62,16 @@ public abstract class AbstractAttributeStoringSession implements Session{
         clear();
         attributes.clear();
         SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(getDatastore());
-        if (sessionHolder != null) {
-            sessionHolder.removeSession(this);
-            if (sessionHolder.isEmpty()) {
-                try {
-                    TransactionSynchronizationManager.unbindResource(getDatastore());
-                } catch (IllegalStateException e) {
-                    // ignore session disconnected by a another thread
-                }
+        if (sessionHolder == null) {
+            return;
+        }
+
+        sessionHolder.removeSession(this);
+        if (sessionHolder.isEmpty()) {
+            try {
+                TransactionSynchronizationManager.unbindResource(getDatastore());
+            } catch (IllegalStateException e) {
+                // ignore session disconnected by a another thread
             }
         }
     }

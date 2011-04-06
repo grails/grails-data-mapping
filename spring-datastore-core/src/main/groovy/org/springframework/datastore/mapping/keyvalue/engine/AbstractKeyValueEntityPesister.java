@@ -14,6 +14,7 @@
  */
 package org.springframework.datastore.mapping.keyvalue.engine;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister;
 import org.springframework.datastore.mapping.keyvalue.mapping.config.Family;
@@ -26,7 +27,7 @@ import org.springframework.datastore.mapping.model.PropertyMapping;
 
 /**
  * Abstract implementation of the EntityPersister abstract class
- * for key/value style stores
+ * for key/value style stores.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -34,8 +35,9 @@ import org.springframework.datastore.mapping.model.PropertyMapping;
 public abstract class AbstractKeyValueEntityPesister<T,K> extends NativeEntryEntityPersister<T,K> {
     protected String entityFamily;
 
-    public AbstractKeyValueEntityPesister(MappingContext context, PersistentEntity entity, Session session) {
-        super(context, entity, session);
+    public AbstractKeyValueEntityPesister(MappingContext context, PersistentEntity entity,
+               Session session, ApplicationEventPublisher publisher) {
+        super(context, entity, session, publisher);
         entityFamily = getFamily(entity, classMapping);
     }
 

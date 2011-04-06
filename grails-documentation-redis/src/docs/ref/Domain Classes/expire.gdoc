@@ -8,14 +8,14 @@ h2. Examples
 
 Instance method:
 
-{code:java}
+{code}
 def person = Person.get(1)
 person.expire(60) // expire after 60 seconds
 {code}
 
 Static method:
 
-{code:java}
+{code}
 Person.expire(1, 60) // expire Person:1 after 60 seconds
 {code}
 

@@ -104,8 +104,7 @@ public class ManualEntityOrdering {
                             final PropertyDescriptor pd = b.getPropertyDescriptor(propertyName);
                             if (pd != null) {
                                 readMethod = pd.getReadMethod();
-                                if (readMethod!=null) {
-
+                                if (readMethod != null) {
                                     ReflectionUtils.makeAccessible(readMethod);
                                     cachedReadMethods.put(propertyName, readMethod);
                                 }

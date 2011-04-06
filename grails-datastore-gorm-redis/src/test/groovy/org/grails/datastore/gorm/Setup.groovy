@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm
 
 import org.grails.datastore.gorm.redis.*
+import org.springframework.context.support.GenericApplicationContext
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.springframework.datastore.mapping.model.MappingContext
@@ -23,7 +24,9 @@ class Setup {
     }
 
     static Session setup(classes) {
-        redis = new RedisDatastore(new KeyValueMappingContext(""), [pooled:"false"])
+        def ctx = new GenericApplicationContext()
+        ctx.refresh()
+        redis = new RedisDatastore(new KeyValueMappingContext(""), [pooled:"false"], ctx)
         for (cls in classes) {
             redis.mappingContext.addPersistentEntity(cls)
         }

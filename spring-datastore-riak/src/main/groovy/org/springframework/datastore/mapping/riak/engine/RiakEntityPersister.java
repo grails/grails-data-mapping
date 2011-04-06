@@ -31,6 +31,7 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.keyvalue.riak.core.QosParameters;
 import org.springframework.data.keyvalue.riak.core.RiakTemplate;
@@ -64,8 +65,9 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
     private final Logger log = LoggerFactory.getLogger(getClass());
     private RiakTemplate riakTemplate;
 
-    public RiakEntityPersister(MappingContext context, PersistentEntity entity, Session session, final RiakTemplate riakTemplate) {
-        super(context, entity, session);
+    public RiakEntityPersister(MappingContext context, PersistentEntity entity, Session session,
+               final RiakTemplate riakTemplate, ApplicationEventPublisher publisher) {
+        super(context, entity, session, publisher);
         this.riakTemplate = riakTemplate;
     }
 

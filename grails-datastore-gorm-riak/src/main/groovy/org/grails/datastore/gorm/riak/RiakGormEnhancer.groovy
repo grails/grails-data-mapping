@@ -43,22 +43,22 @@ class RiakGormEnhancer extends GormEnhancer {
         super(datastore, transactionManager);
     }
 
-    protected GormStaticApi getStaticApi(Class cls) {
-        return new RiakGormStaticApi(cls, datastore)
+    protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
+        return new RiakGormStaticApi<D>(cls, datastore)
     }
 
-    protected GormInstanceApi getInstanceApi(Class cls) {
-        return new RiakGormInstanceApi(cls, datastore)
+    protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
+        return new RiakGormInstanceApi<D>(cls, datastore)
     }
 }
 
-class RiakGormInstanceApi extends GormInstanceApi {
+class RiakGormInstanceApi<D> extends GormInstanceApi<D> {
 
-    RiakGormInstanceApi(persistentClass, datastore) {
+    RiakGormInstanceApi(Class<D> persistentClass, datastore) {
         super(persistentClass, datastore);
     }
 
-    def Object save(Object instance, Map params) {
+    D save(D instance, Map params) {
         def currentQosParams = datastore.currentSession.qosParameters
         if (params?.w || params?.dw) {
             QosParameters qos = new RiakQosParameters()
@@ -66,21 +66,25 @@ class RiakGormInstanceApi extends GormInstanceApi {
             qos.writeThreshold = params?.w
             datastore.currentSession.qosParameters = qos
         }
-        Object obj = super.save(instance, params);
-        if (params?.w || params?.dw) {
-            datastore.currentSession.qosParameters = currentQosParams
-        }
-        return obj
+
+		  try {
+			  return super.save(instance, params)
+		  }
+		  finally {
+            if (params?.w || params?.dw) {
+                datastore.currentSession.qosParameters = currentQosParams
+            }
+		  }
     }
 }
 
-class RiakGormStaticApi extends GormStaticApi {
+class RiakGormStaticApi<D> extends GormStaticApi<D> {
 
     MapReduceApi mapReduceApi
 
-    RiakGormStaticApi(persistentClass, datastore) {
+    RiakGormStaticApi(D persistentClass, datastore) {
         super(persistentClass, datastore);
-        mapReduceApi = new MapReduceApi(persistentClass, datastore)
+        mapReduceApi = new MapReduceApi<D>(persistentClass, datastore)
     }
 
     MapReduceApi getMapreduce() {
@@ -88,39 +92,41 @@ class RiakGormStaticApi extends GormStaticApi {
     }
 }
 
-class MapReduceApi {
+class MapReduceApi<D> {
 
     static Logger log = LoggerFactory.getLogger(MapReduceApi)
 
-    Class type
+    Class<D> type
     RiakDatastore datastore
 
-    MapReduceApi(type, datastore) {
+    MapReduceApi(Class<D> type, RiakDatastore datastore) {
         this.type = type
         this.datastore = datastore;
     }
 
     def invokeMethod(String methodName, args) {
-        RiakTemplate riak = datastore.currentSession.nativeInterface
+        if (methodName != "execute") {
+            return
+        }
+
         log.debug "Invoking $methodName with ${args}"
+        RiakTemplate riak = datastore.currentSession.nativeInterface
         RiakMapReduceJob mr = new RiakMapReduceJob(riak)
         mr.addInputs([type.name])
-        if (methodName == "execute") {
-            def params = args[0]
-            if (params["map"]) {
-                def oper = extractMapReduceOperation(params["map"])
-                mr.addPhase(new RiakMapReducePhase(MapReducePhase.Phase.MAP, params["map"]["language"] ?: "javascript", oper))
-            }
-            if (params["reduce"]) {
-                def oper = extractMapReduceOperation(params["reduce"])
-                mr.addPhase(new RiakMapReducePhase(MapReducePhase.Phase.REDUCE, params["map"]["language"] ?: "javascript", oper))
-            }
-            riak.execute(mr)
+        def params = args[0]
+        if (params["map"]) {
+            def oper = extractMapReduceOperation(params["map"])
+            mr.addPhase(new RiakMapReducePhase(MapReducePhase.Phase.MAP, params["map"]["language"] ?: "javascript", oper))
         }
+        if (params["reduce"]) {
+            def oper = extractMapReduceOperation(params["reduce"])
+            mr.addPhase(new RiakMapReducePhase(MapReducePhase.Phase.REDUCE, params["map"]["language"] ?: "javascript", oper))
+        }
+        riak.execute(mr)
     }
 
     protected MapReduceOperation extractMapReduceOperation(param) {
-        def oper = null
+        def oper
         def lang = param.language ?: "javascript"
         if (lang == "javascript") {
             if (param.source) {

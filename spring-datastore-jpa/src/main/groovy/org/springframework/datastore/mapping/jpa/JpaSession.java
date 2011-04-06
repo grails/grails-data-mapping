@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.datastore.mapping.jpa;
 
 import java.io.Serializable;
@@ -29,9 +28,7 @@ import javax.persistence.PersistenceException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.datastore.mapping.core.AbstractAttributeStoringSession;
-import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.EntityAccess;
-import org.springframework.datastore.mapping.engine.EntityInterceptor;
 import org.springframework.datastore.mapping.engine.Persister;
 import org.springframework.datastore.mapping.jpa.query.JpaQuery;
 import org.springframework.datastore.mapping.model.MappingContext;
@@ -50,12 +47,11 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class JpaSession extends AbstractAttributeStoringSession implements Session {
+public class JpaSession extends AbstractAttributeStoringSession {
 
     private JpaDatastore datastore;
     private JpaTemplate jpaTemplate;
     private JpaTransactionManager transactionManager;
-    private List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
     private FlushModeType flushMode;
     private boolean connected = true;
     private TransactionStatus transaction;
@@ -70,18 +66,6 @@ public class JpaSession extends AbstractAttributeStoringSession implements Sessi
         return jpaTemplate;
     }
 
-    public List<EntityInterceptor> getInterceptors() {
-        return interceptors;
-    }
-
-    public void setEntityInterceptors(List<EntityInterceptor> interceptors) {
-        this.interceptors  = interceptors;
-    }
-
-    public void addEntityInterceptor(EntityInterceptor interceptor) {
-        interceptors.add(interceptor);
-    }
-
     public boolean isConnected() {
         return connected;
     }
@@ -93,7 +77,8 @@ public class JpaSession extends AbstractAttributeStoringSession implements Sessi
     }
 
     public Transaction beginTransaction() {
-        final TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+        final TransactionStatus status = transactionManager.getTransaction(
+                new DefaultTransactionDefinition());
         return new JpaTransaction(transactionManager, status);
     }
 
@@ -102,36 +87,46 @@ public class JpaSession extends AbstractAttributeStoringSession implements Sessi
     }
 
     public Serializable persist(Object o) {
-        if (o != null) {
-            final PersistentEntity persistentEntity = getMappingContext().getPersistentEntity(o.getClass().getName());
-            if (persistentEntity == null) throw new InvalidDataAccessApiUsageException("Object of class ["+o.getClass()+"] is not a persistent entity");
-
-            jpaTemplate.persist(o);
-            return (Serializable) new EntityAccess(persistentEntity, o).getIdentifier();
+        if (o == null) {
+            throw new InvalidDataAccessApiUsageException("Object to persist cannot be null");
         }
-        throw new InvalidDataAccessApiUsageException("Object to persist cannot be null");
+
+        final PersistentEntity persistentEntity = getMappingContext().getPersistentEntity(o.getClass().getName());
+        if (persistentEntity == null) {
+            throw new InvalidDataAccessApiUsageException("Object of class [" +
+                    o.getClass().getName() + "] is not a persistent entity");
+        }
+
+        jpaTemplate.persist(o);
+        return (Serializable)new EntityAccess(persistentEntity, o).getIdentifier();
     }
 
     public Object merge(Object o) {
-        if (o != null) {
-            final PersistentEntity persistentEntity = getMappingContext().getPersistentEntity(o.getClass().getName());
-            if (persistentEntity == null) throw new InvalidDataAccessApiUsageException("Object of class ["+o.getClass()+"] is not a persistent entity");
-
-            return jpaTemplate.merge(o);
+        if (o == null) {
+            throw new InvalidDataAccessApiUsageException("Object to merge cannot be null");
         }
-        throw new InvalidDataAccessApiUsageException("Object to merge cannot be null");
+
+        final PersistentEntity persistentEntity = getMappingContext().getPersistentEntity(o.getClass().getName());
+        if (persistentEntity == null) {
+            throw new InvalidDataAccessApiUsageException("Object of class [" +
+                    o.getClass().getName() + "] is not a persistent entity");
+        }
+
+        return jpaTemplate.merge(o);
     }
 
     public void refresh(Object o) {
-        if (o != null) {
-            jpaTemplate.refresh(o);
+        if (o == null) {
+            return;
         }
+        jpaTemplate.refresh(o);
     }
 
     public void attach(Object o) {
-        if (o != null) {
-            jpaTemplate.merge(o);
+        if (o == null) {
+            return;
         }
+        jpaTemplate.merge(o);
     }
 
     public void flush() {
@@ -139,8 +134,8 @@ public class JpaSession extends AbstractAttributeStoringSession implements Sessi
     }
 
     public void clear() {
-        jpaTemplate.execute(new JpaCallback<Object>() {
-            public Object doInJpa(EntityManager em) throws PersistenceException {
+        jpaTemplate.execute(new JpaCallback<Void>() {
+            public Void doInJpa(EntityManager em) throws PersistenceException {
                 em.clear();
                 return null;
             }
@@ -157,12 +152,7 @@ public class JpaSession extends AbstractAttributeStoringSession implements Sessi
 
     public void setFlushMode(FlushModeType flushMode) {
         this.flushMode = flushMode;
-        if (flushMode == FlushModeType.AUTO) {
-            jpaTemplate.setFlushEager(true);
-        }
-        else {
-            jpaTemplate.setFlushEager(false);
-        }
+        jpaTemplate.setFlushEager(flushMode == FlushModeType.AUTO);
     }
 
     public FlushModeType getFlushMode() {
@@ -170,8 +160,8 @@ public class JpaSession extends AbstractAttributeStoringSession implements Sessi
     }
 
     public void lock(final Object o) {
-        jpaTemplate.execute(new JpaCallback<Object>() {
-            public Object doInJpa(EntityManager em) throws PersistenceException {
+        jpaTemplate.execute(new JpaCallback<Void>() {
+            public Void doInJpa(EntityManager em) throws PersistenceException {
                 em.lock(o, LockModeType.WRITE);
                 return null;
             }
@@ -196,12 +186,13 @@ public class JpaSession extends AbstractAttributeStoringSession implements Sessi
 
     public <T> T retrieve(Class<T> type, Serializable key) {
         final PersistentEntity persistentEntity = getPersistentEntity(type);
-        if (persistentEntity != null) {
-            final ConversionService conversionService = getMappingContext().getConversionService();
-            final Object id = conversionService.convert(key, persistentEntity.getIdentity().getType());
-            return jpaTemplate.find(type, id);
+        if (persistentEntity == null) {
+            return null;
         }
-        return null;
+
+        final ConversionService conversionService = getMappingContext().getConversionService();
+        final Object id = conversionService.convert(key, persistentEntity.getIdentity().getType());
+        return jpaTemplate.find(type, id);
     }
 
     public <T> T proxy(Class<T> type, Serializable key) {
@@ -240,24 +231,23 @@ public class JpaSession extends AbstractAttributeStoringSession implements Sessi
     }
 
     public List retrieveAll(Class type, Serializable... keys) {
-        if (type != null) {
-            final PersistentEntity persistentEntity = getPersistentEntity(type);
-            if (persistentEntity != null) {
-                final List<Serializable> identifiers = Arrays.asList(keys);
-                return retrieveAll(persistentEntity, identifiers);
-            }
+        if (type == null) {
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
+
+        final PersistentEntity persistentEntity = getPersistentEntity(type);
+        if (persistentEntity == null) {
+            return Collections.emptyList();
+        }
+
+        final List<Serializable> identifiers = Arrays.asList(keys);
+        return retrieveAll(persistentEntity, identifiers);
     }
 
-    public List retrieveAll(final PersistentEntity persistentEntity,
-            final List<Serializable> identifiers) {
+    public List retrieveAll(final PersistentEntity persistentEntity, final List<Serializable> identifiers) {
         return createQuery(persistentEntity.getJavaClass())
-                .in(    persistentEntity
-                            .getIdentity()
-                            .getName(),
-                            identifiers)
-                .list();
+            .in(persistentEntity.getIdentity().getName(), identifiers)
+            .list();
     }
 
     public Query createQuery(Class type) {
@@ -273,10 +263,10 @@ public class JpaSession extends AbstractAttributeStoringSession implements Sessi
     }
 
     public Transaction getTransaction() {
-        if (transaction != null) {
-            return new JpaTransaction(transactionManager, transaction);
+        if (transaction == null) {
+            return null;
         }
-        return null;
+        return new JpaTransaction(transactionManager, transaction);
     }
 
     public JpaDatastore getDatastore() {

@@ -23,11 +23,11 @@ import org.springframework.datastore.mapping.model.config.GormMappingConfigurati
 import org.springframework.util.Assert;
 
 /**
- * Models a {@link MappingContext} for a Document store
+ * Models a {@link org.springframework.datastore.mapping.model.MappingContext} for a Document store.
  *
  * @author Graeme Rocher
  */
-public class DocumentMappingContext extends AbstractMappingContext{
+public class DocumentMappingContext extends AbstractMappingContext {
     String defaultDatabaseName;
     MappingFactory<Collection, Attribute> mappingFactory;
 

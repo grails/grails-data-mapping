@@ -6,15 +6,15 @@ A Spring bean that provides access to the lower level Mongo API based on GMongo
 
 h2. Examples
 
-{code:java}
+{code}
 def mongo
 
 def foo = {
-	def mongo
-	def myAction = {
-		def db = mongo.getDB("mongo")
-		db.languages.insert([name: 'Groovy'])	
-	}
+    def mongo
+    def myAction = {
+        def db = mongo.getDB("mongo")
+        db.languages.insert([name: 'Groovy'])
+    }
 }
 {code}
 

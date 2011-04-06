@@ -20,7 +20,7 @@ import org.springframework.transaction.NoTransactionException;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
- * Utility methods for Transactions
+ * Utility methods for Transactions.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -41,10 +41,6 @@ public class TransactionUtils {
 
     public static Transaction getTransaction(Datastore datastore) {
         final SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(datastore);
-
-        if (sessionHolder != null) {
-            return sessionHolder.getTransaction();
-        }
-        return null;
+        return sessionHolder == null ? null : sessionHolder.getTransaction();
     }
 }

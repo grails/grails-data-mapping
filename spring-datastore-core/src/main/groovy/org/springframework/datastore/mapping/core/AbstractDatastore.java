@@ -14,21 +14,20 @@
  */
 package org.springframework.datastore.mapping.core;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.datastore.mapping.config.Property;
-import org.springframework.datastore.mapping.engine.EntityInterceptor;
-import org.springframework.datastore.mapping.engine.EntityInterceptorAware;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.PropertyMapping;
 import org.springframework.datastore.mapping.model.types.BasicTypeConverterRegistrar;
 import org.springframework.datastore.mapping.transactions.SessionHolder;
-import org.springframework.datastore.mapping.validation.ValidatingInterceptor;
+import org.springframework.datastore.mapping.validation.ValidatingEventListener;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
@@ -37,20 +36,28 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class AbstractDatastore implements Datastore, EntityInterceptorAware {
+public abstract class AbstractDatastore implements Datastore {
 
     protected MappingContext mappingContext;
     protected Map<String, String> connectionDetails = Collections.emptyMap();
-    protected List<EntityInterceptor> interceptors = new ArrayList<EntityInterceptor>();
+    private ApplicationContext applicationContext;
 
     public AbstractDatastore(MappingContext mappingContext) {
-        this(mappingContext, null);
+        this(mappingContext, null, null);
     }
 
-    public AbstractDatastore(MappingContext mappingContext, Map<String, String> connectionDetails) {
+    public AbstractDatastore(MappingContext mappingContext, Map<String, String> connectionDetails,
+              ConfigurableApplicationContext ctx) {
         this.mappingContext = mappingContext;
         this.connectionDetails = connectionDetails != null ? connectionDetails : Collections.<String, String>emptyMap();
-        addEntityInterceptor(new ValidatingInterceptor());
+        setApplicationContext(ctx);
+    }
+
+    public void setApplicationContext(ConfigurableApplicationContext ctx) {
+        applicationContext = ctx;
+        if (ctx != null) {
+            ctx.addApplicationListener(new ValidatingEventListener(this));
+        }
     }
 
     public void setConnectionDetails(Map<String, String> connectionDetails) {
@@ -58,18 +65,7 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
     }
 
     public Session connect() {
-        return connect(this.connectionDetails);
-    }
-
-    public void addEntityInterceptor(EntityInterceptor interceptor) {
-        if (interceptor != null) {
-            interceptor.setDatastore(this);
-            this.interceptors.add(interceptor);
-        }
-    }
-
-    public void setEntityInterceptors(List<EntityInterceptor> interceptors) {
-        if (interceptors!=null) this.interceptors = interceptors;
+        return connect(connectionDetails);
     }
 
     public AbstractDatastore() {
@@ -79,19 +75,21 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
         SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(this);
         final Session session = createSession(connectionDetails);
 
-        if (session != null) {
-            session.setEntityInterceptors(this.interceptors);
-            if (sessionHolder != null) {
-                sessionHolder.addSession(session);
-            }
-            else {
-                try {
-                    TransactionSynchronizationManager.bindResource(this, new SessionHolder(session));
-                } catch (IllegalStateException e) {
-                    // ignore session bound by another thread
-                }
+        if (session == null) {
+            return null;
+        }
+
+        if (sessionHolder != null) {
+            sessionHolder.addSession(session);
+        }
+        else {
+            try {
+                TransactionSynchronizationManager.bindResource(this, new SessionHolder(session));
+            } catch (IllegalStateException e) {
+                // ignore session bound by another thread
             }
         }
+
         return session;
     }
 
@@ -154,6 +152,14 @@ public abstract class AbstractDatastore implements Datastore, EntityInterceptorA
 
     public MappingContext getMappingContext() {
         return mappingContext;
+    }
+
+    public ConfigurableApplicationContext getApplicationContext() {
+        return (ConfigurableApplicationContext)applicationContext;
+    }
+
+    public ApplicationEventPublisher getApplicationEventPublisher() {
+        return getApplicationContext();
     }
 
     protected void initializeConverters(@SuppressWarnings("hiding") MappingContext mappingContext) {

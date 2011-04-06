@@ -14,23 +14,33 @@
  */
 package org.grails.datastore.gorm.jpa;
 
-import java.util.List;
-
+import javax.persistence.PostLoad;
+import javax.persistence.PostPersist;
+import javax.persistence.PostRemove;
+import javax.persistence.PostUpdate;
 import javax.persistence.PrePersist;
+import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 
-import org.grails.datastore.gorm.events.DomainEventInterceptor;
+import org.grails.datastore.gorm.events.DomainEventListener;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.ConnectionNotFoundException;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.EntityAccess;
-import org.springframework.datastore.mapping.engine.EntityInterceptor;
+import org.springframework.datastore.mapping.engine.event.AbstractPersistenceEvent;
+import org.springframework.datastore.mapping.engine.event.PostDeleteEvent;
+import org.springframework.datastore.mapping.engine.event.PostInsertEvent;
+import org.springframework.datastore.mapping.engine.event.PostLoadEvent;
+import org.springframework.datastore.mapping.engine.event.PostUpdateEvent;
+import org.springframework.datastore.mapping.engine.event.PreDeleteEvent;
+import org.springframework.datastore.mapping.engine.event.PreInsertEvent;
+import org.springframework.datastore.mapping.engine.event.PreUpdateEvent;
 import org.springframework.datastore.mapping.jpa.JpaDatastore;
 import org.springframework.datastore.mapping.jpa.JpaSession;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.transactions.Transaction;
 import org.springframework.transaction.NoTransactionException;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 /**
@@ -42,36 +52,93 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 public class EntityInterceptorInvokingEntityListener {
 
     @PrePersist
-    public void prePersist(Object o) {
-        try {
-            final Session session = AbstractDatastore.retrieveSession(JpaDatastore.class);
-            if (!(session instanceof JpaSession)) {
-                return;
-            }
-
-            JpaSession jpaSession = (JpaSession)session;
-            final PersistentEntity entity = session.getMappingContext().getPersistentEntity(o.getClass().getName());
-            if (entity == null) {
-                return;
-            }
-
-            final List<EntityInterceptor> interceptors = jpaSession.getInterceptors();
-            if (interceptors != null && !interceptors.isEmpty()) {
-                final EntityAccess entityAccess = new EntityAccess(entity, o);
-                for (EntityInterceptor entityInterceptor : interceptors) {
-                    if (!(entityInterceptor instanceof DomainEventInterceptor)) {
-                        if (!entityInterceptor.beforeInsert(entity, entityAccess)) {
-                            rollbackTransaction(jpaSession);
-
-                            break;
-                        }
-                    }
+    public void prePersist(final Object o) {
+        doWithSession(o, new JpaSessionTemplate() {
+            public void doWithSession(final JpaSession session, final PersistentEntity entity, final EntityAccess ea) {
+                PreInsertEvent event = new PreInsertEvent(session.getDatastore(), entity, ea);
+                event.addExcludedListenerName(DomainEventListener.class.getName());
+                publishEvent(session, event);
+                if (event.isCancelled()) {
+                    rollbackTransaction(session);
                 }
             }
-        }
-        catch (ConnectionNotFoundException e) {
-            // ignore, shouldn't happen
-        }
+        });
+    }
+
+    @PreUpdate
+    public void preUpdate(final Object o) {
+        doWithSession(o, new JpaSessionTemplate() {
+            public void doWithSession(final JpaSession session, final PersistentEntity entity, final EntityAccess ea) {
+                PreUpdateEvent event = new PreUpdateEvent(session.getDatastore(), entity, ea);
+                event.addExcludedListenerName(DomainEventListener.class.getName());
+                session.getDatastore().getApplicationEventPublisher().publishEvent(event);
+                if (event.isCancelled()) {
+                    rollbackTransaction(session);
+                }
+            }
+        });
+    }
+
+    @PreRemove
+    public void preRemove(final Object o) {
+        doWithSession(o, new JpaSessionTemplate() {
+            public void doWithSession(final JpaSession session, final PersistentEntity entity, final EntityAccess ea) {
+                PreDeleteEvent event = new PreDeleteEvent(session.getDatastore(), entity, ea);
+                event.addExcludedListenerName(DomainEventListener.class.getName());
+                session.getDatastore().getApplicationEventPublisher().publishEvent(event);
+                if (event.isCancelled()) {
+                    rollbackTransaction(session);
+                }
+            }
+        });
+    }
+
+    @PostPersist
+    public void postPersist(final Object o) {
+        doWithSession(o, new JpaSessionTemplate() {
+            public void doWithSession(final JpaSession session, final PersistentEntity entity, final EntityAccess ea) {
+                PostInsertEvent event = new PostInsertEvent(session.getDatastore(), entity, ea);
+                event.addExcludedListenerName(DomainEventListener.class.getName());
+                session.getDatastore().getApplicationEventPublisher().publishEvent(event);
+            }
+        });
+    }
+
+    @PostUpdate
+    public void postUpdate(final Object o) {
+        doWithSession(o, new JpaSessionTemplate() {
+            public void doWithSession(final JpaSession session, final PersistentEntity entity, final EntityAccess ea) {
+                PostUpdateEvent event = new PostUpdateEvent(session.getDatastore(), entity, ea);
+                event.addExcludedListenerName(DomainEventListener.class.getName());
+                session.getDatastore().getApplicationEventPublisher().publishEvent(event);
+            }
+        });
+    }
+
+    @PostRemove
+    public void postRemove(final Object o) {
+        doWithSession(o, new JpaSessionTemplate() {
+            public void doWithSession(final JpaSession session, final PersistentEntity entity, final EntityAccess ea) {
+                PostDeleteEvent event = new PostDeleteEvent(session.getDatastore(), entity, ea);
+                event.addExcludedListenerName(DomainEventListener.class.getName());
+                session.getDatastore().getApplicationEventPublisher().publishEvent(event);
+            }
+        });
+    }
+
+    @PostLoad
+    public void postLoad(final Object o) {
+        doWithSession(o, new JpaSessionTemplate() {
+            public void doWithSession(final JpaSession session, final PersistentEntity entity, final EntityAccess ea) {
+
+                session.getDatastore().getApplicationContext().getAutowireCapableBeanFactory().autowireBeanProperties(
+                      o, AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, false);
+
+                PostLoadEvent event = new PostLoadEvent(session.getDatastore(), entity, ea);
+                event.addExcludedListenerName(DomainEventListener.class.getName());
+                session.getDatastore().getApplicationEventPublisher().publishEvent(event);
+            }
+        });
     }
 
     void rollbackTransaction(JpaSession jpaSession) {
@@ -81,8 +148,7 @@ public class EntityInterceptorInvokingEntityListener {
         }
         else {
             try {
-                final TransactionStatus currentTransactionStatus = TransactionAspectSupport.currentTransactionStatus();
-                currentTransactionStatus.setRollbackOnly();
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             }
             catch (NoTransactionException e) {
                 // ignore
@@ -90,33 +156,31 @@ public class EntityInterceptorInvokingEntityListener {
         }
     }
 
-    @PreUpdate
-    public void preUpdate(Object o) {
+    private void doWithSession(Object o, JpaSessionTemplate template) {
         try {
             final Session session = AbstractDatastore.retrieveSession(JpaDatastore.class);
             if (!(session instanceof JpaSession)) {
                 return;
             }
+
             JpaSession jpaSession = (JpaSession)session;
             final PersistentEntity entity = session.getMappingContext().getPersistentEntity(o.getClass().getName());
             if (entity == null) {
                 return;
             }
-            final List<EntityInterceptor> interceptors = jpaSession.getInterceptors();
-            if (interceptors != null && !interceptors.isEmpty()) {
-                final EntityAccess entityAccess = new EntityAccess(entity, o);
-                for (EntityInterceptor entityInterceptor : interceptors) {
-                    if (!(entityInterceptor instanceof DomainEventInterceptor)) {
-                        if (!entityInterceptor.beforeUpdate(entity, entityAccess)) {
-                            rollbackTransaction(jpaSession);
-                            break;
-                        }
-                    }
-                }
-            }
+
+            template.doWithSession(jpaSession, entity, new EntityAccess(entity, o));
         }
         catch (ConnectionNotFoundException e) {
             // ignore, shouldn't happen
         }
+    }
+
+    private void publishEvent(final JpaSession session, final AbstractPersistenceEvent event) {
+        session.getDatastore().getApplicationEventPublisher().publishEvent(event);
+    }
+
+    private static interface JpaSessionTemplate {
+        void doWithSession(JpaSession session, PersistentEntity entity, EntityAccess entityAccess);
     }
 }

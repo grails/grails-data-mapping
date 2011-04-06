@@ -1,20 +1,13 @@
 package grails.gorm.tests
 
-import org.grails.datastore.gorm.events.AutoTimestampInterceptor
-import org.grails.datastore.gorm.events.DomainEventInterceptor
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
 import org.springframework.datastore.mapping.core.Session
 
 /**
  * @author graemerocher
  */
 class DomainEventsSpec extends GormDatastoreSpec {
-
-    Session setupEventsSession() {
-        def datastore = session.datastore
-        datastore.addEntityInterceptor(new DomainEventInterceptor())
-        datastore.addEntityInterceptor(new AutoTimestampInterceptor())
-        session = datastore.connect()
-    }
 
     void "Test modify property before save"() {
         given:
@@ -54,23 +47,10 @@ class DomainEventsSpec extends GormDatastoreSpec {
             p.save(flush:true)
 
         then:
-            p.dateCreated.before(p.lastUpdated) == true
+            p.dateCreated.before(p.lastUpdated)
     }
 
-//    void testOnloadEvent() {
-//        def personClass = ga.getDomainClass("PersonEvent")
-//        def p = personClass.newInstance()
-//
-//        p.name = "Fred"
-//        p.save()
-//        session.flush()
-//        session.clear()
-//
-//        p = personClass.clazz.get(1)
-//        assertEquals "Bob", p.name
-//    }
-
-    void "Test before delete event"() {
+    void "Test delete events"() {
         given:
             session = setupEventsSession()
             PersonEvent.resetStore()
@@ -81,10 +61,17 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
         when:
             p = PersonEvent.get(p.id)
+
+        then:
+            0 == PersonEvent.STORE.beforeDelete
+            0 == PersonEvent.STORE.afterDelete
+
+        when:
             p.delete(flush:true)
 
         then:
-            assert PersonEvent.STORE['deleted'] == true
+            1 == PersonEvent.STORE.beforeDelete
+            1 == PersonEvent.STORE.afterDelete
     }
 
     void "Test before update event"() {
@@ -103,19 +90,22 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
         then:
             "Fred" == p.name
-            0 == PersonEvent.STORE['updated']
+            0 == PersonEvent.STORE.beforeUpdate
+            0 == PersonEvent.STORE.afterUpdate
 
         when:
             p.name = "Bob"
             p.save(flush:true)
             session.clear()
             p = PersonEvent.get(p.id)
+
         then:
             "Bob" == p.name
-            1 == PersonEvent.STORE['updated']
+            1 == PersonEvent.STORE.beforeUpdate
+            1 == PersonEvent.STORE.afterUpdate
     }
 
-    void "Test before insert event"() {
+    void "Test insert events"() {
         given:
             session = setupEventsSession()
             PersonEvent.resetStore()
@@ -130,8 +120,10 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
         then:
             "Fred" == p.name
-            0 == PersonEvent.STORE['updated']
-            1 == PersonEvent.STORE['inserted']
+            0 == PersonEvent.STORE.beforeUpdate
+            1 == PersonEvent.STORE.beforeInsert
+            0 == PersonEvent.STORE.afterUpdate
+            1 == PersonEvent.STORE.afterInsert
 
         when:
             p.name = "Bob"
@@ -141,8 +133,64 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
         then:
             "Bob" == p.name
-            1 == PersonEvent.STORE['updated']
-            1 == PersonEvent.STORE['inserted']
+            1 == PersonEvent.STORE.beforeUpdate
+            1 == PersonEvent.STORE.beforeInsert
+            1 == PersonEvent.STORE.afterUpdate
+            1 == PersonEvent.STORE.afterInsert
+    }
+
+    void "Test load events"() {
+        given:
+            session = setupEventsSession()
+            PersonEvent.resetStore()
+            def p = new PersonEvent()
+
+            p.name = "Fred"
+            p.save(flush:true)
+            session.clear()
+
+        when:
+            p = PersonEvent.get(p.id)
+
+        then:
+            "Fred" == p.name
+            if (!'JpaSession'.equals(session.getClass().simpleName)) {
+                // JPA doesn't seem to support a pre-load event
+                1 == PersonEvent.STORE.beforeLoad
+            }
+            1 == PersonEvent.STORE.afterLoad
+    }
+
+    void "Test bean autowiring"() {
+        given:
+            session = setupEventsSession()
+            PersonEvent.resetStore()
+
+            def personService = new Object()
+            session.datastore.applicationContext.beanFactory.registerSingleton 'personService', personService
+
+            def p = new PersonEvent()
+            p.name = "Fred"
+            p.save(flush:true)
+            session.clear()
+
+        when:
+            p = PersonEvent.get(p.id)
+
+        then:
+            "Fred" == p.name
+            personService.is p.personService
+    }
+
+    private Session setupEventsSession() {
+        def datastore = session.datastore
+        datastore.applicationContext.addApplicationListener new DomainEventListener(datastore)
+        datastore.applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
+        session = datastore.connect()
+    }
+
+    def cleanup() {
+        session.datastore.applicationContext.beanFactory.destroySingleton 'personService'
     }
 }
 
@@ -153,20 +201,50 @@ class PersonEvent implements Serializable {
     Date dateCreated
     Date lastUpdated
 
-    static STORE = [updated:0, inserted:0]
+    def personService
 
-    static void resetStore() { STORE = [updated:0, inserted:0] }
+    static STORE_INITIAL = [
+        beforeDelete: 0, afterDelete: 0,
+        beforeUpdate: 0, afterUpdate: 0,
+        beforeInsert: 0, afterInsert: 0,
+        beforeLoad: 0, afterLoad: 0]
+
+    static STORE = [:] + STORE_INITIAL
+
+    static void resetStore() {
+        STORE = [:] + STORE_INITIAL
+    }
 
     def beforeDelete() {
-        STORE["deleted"] = true
+        STORE.beforeDelete++
+    }
+
+    void afterDelete() {
+        STORE.afterDelete++
     }
 
     def beforeUpdate() {
-        STORE["updated"]++
+        STORE.beforeUpdate++
+    }
+
+    void afterUpdate() {
+        STORE.afterUpdate++
     }
 
     def beforeInsert() {
-        STORE["inserted"]++
+        STORE.beforeInsert++
+    }
+
+    void afterInsert() {
+        STORE.afterInsert++
+    }
+
+    void beforeLoad() {
+        STORE.beforeLoad++
+    }
+
+    void afterLoad() {
+        STORE.afterLoad++
     }
 }
 
