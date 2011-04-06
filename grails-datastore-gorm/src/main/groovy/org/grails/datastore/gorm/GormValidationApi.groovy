@@ -14,18 +14,12 @@
  */
 package org.grails.datastore.gorm
 
-import static org.springframework.datastore.mapping.validation.ValidatingEventListener.*
-
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.model.MappingContext
-import org.springframework.datastore.mapping.model.PersistentEntity;
-import org.springframework.validation.BeanPropertyBindingResult
-import org.springframework.validation.Errors
-import org.springframework.validation.FieldError
-import org.springframework.validation.ObjectError
-import org.springframework.validation.Validator
+import static org.springframework.datastore.mapping.validation.ValidatingEventListener.ERRORS_ATTRIBUTE
+import org.springframework.validation.*
 
-/**
+ /**
  * Methods used for validating GORM instances
  *
  * @author Graeme Rocher
@@ -87,8 +81,8 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
                         objectErrors.addError(localError)
                     }
                 }
-                instance.errors = objectErrors
             }
+            instance.errors = objectErrors
         }
         return !errors.hasErrors()
     }
