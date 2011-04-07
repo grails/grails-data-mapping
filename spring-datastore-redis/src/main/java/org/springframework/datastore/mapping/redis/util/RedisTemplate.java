@@ -25,7 +25,46 @@ import java.util.Set;
  */
 public interface RedisTemplate<T, S> {
 
+    /**
+     * See http://redis.io/commands/append
+     */
+    boolean append(String key, Object val);
+
+
+    /**
+     * See http://redis.io/commands/blpop
+     */
+    List<String> blpop(int timeout, String...keys);
+
+    /**
+     * See http://redis.io/commands/brpop
+     */
+    List<String> brpop(int timeout, String...keys);
+
+    /**
+     * See http://redis.io/commands/decr
+     */
+    boolean decr(String key);
+
+    /**
+     * See http://redis.io/commands/decrby
+     */
+    boolean decrby(String key, int amount);
+
+    /**
+     * See http://redis.io/commands/del
+     */
+    void del(String redisKey);
+
+    /**
+     * See http://redis.io/commands/del
+     */
+    int del(String... redisKey);
+
+
     List<Object> pipeline(RedisCallback<RedisTemplate<T,S>> pipeline);
+
+    boolean persist(String redisKey);
 
     Object execute(RedisCallback<T> callback);
 
@@ -37,11 +76,11 @@ public interface RedisTemplate<T, S> {
 
     boolean sismember(String redisKey, Object o);
 
-    void del(String redisKey);
 
     int scard(String redisKey);
 
     boolean sadd(String redisKey, Object o);
+
 
     boolean srem(String redisKey, Object o);
 
@@ -49,11 +88,17 @@ public interface RedisTemplate<T, S> {
 
     void lset(String redisKey, int index, Object o);
 
+    void ltrim(String redisKey, int start, int end);
+
     String lindex(String redisKey, int index);
 
     int llen(String redisKey);
 
     List<String> lrange(String redisKey, int start, int end);
+
+    String rename(String old, String newKey);
+
+    String rpop(String redisKey);
 
     void rpush(String redisKey, Object o);
 
@@ -69,15 +114,27 @@ public interface RedisTemplate<T, S> {
 
     void lpush(String redisKey, Object o);
 
+    void lpop(String redisKey);
+
     String hget(String redisKey, String entryKey);
 
     int hlen(String redisKey);
 
+    List<String> hkeys(String redisKey);
+
     boolean hset(String redisKey, String key, Object o);
+
+    boolean hsetnx(String redisKey, String key, Object o);
+
+    List<String> hvals(String redisKey);
 
     boolean hdel(String redisKey, String entryKey);
 
+    boolean hexists(String redisKey, String entryKey);
+
     Map<String, String> hgetall(String redisKey);
+
+    boolean hincrby(String redisKey, String entryKey, int amount);
 
     List<String> hmget(String hashKey, String... fields);
 
@@ -85,7 +142,8 @@ public interface RedisTemplate<T, S> {
 
     int incr(String key);
 
-    int del(String... redisKey);
+    int incrby(String key, int amount);
+
 
     Set<String> sinter(String...keys);
 
@@ -95,13 +153,21 @@ public interface RedisTemplate<T, S> {
 
     void sunionstore(String storeKey, String... keys);
 
+    Set<String> sdiff(final String... keys);
+
+    boolean smove(String source, String destination, String member);
+
     void sdiffstore(String key, String... otherKeys);
 
     boolean setnx(String redisKey, Object o);
 
+    int strlen(String redisKey);
+
     boolean expire(String key, int timeout);
 
     int ttl(String key);
+
+    String type(String key);
 
     String getset(String redisKey, Object o);
 
@@ -115,6 +181,8 @@ public interface RedisTemplate<T, S> {
 
     String get(String key);
 
+    List<String> mget(String...keys);
+
     void mset(Map<String, String> map);
 
     Object[] exec();
@@ -122,6 +190,12 @@ public interface RedisTemplate<T, S> {
     void discard();
 
     boolean zadd(String key, double rank, Object o);
+
+    int zcard(String key);
+
+    int zcount(String key, double min, double max);
+
+    double zincrby(String key, double score, String member);
 
     int zrank(String key, Object member);
 
