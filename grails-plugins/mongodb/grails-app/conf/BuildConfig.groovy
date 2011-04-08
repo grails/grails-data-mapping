@@ -11,13 +11,15 @@ grails.project.dependency.resolution = {
     log "warn"
 
 	def version = "1.0.0.groovy-1.7-BUILD-SNAPSHOT"	
-	def repo = version.endsWith("-SNAPSHOT") ? 'snapshot' : 'milestone'
-
 
     repositories {
         mavenCentral()
 		grailsCentral()
-        mavenRepo "http://maven.springframework.org/$repo"
+		mavenRepo 'http://maven.springframework.org/milestone'
+		if(version.endsWith("-SNAPSHOT")) {
+        	mavenRepo "http://maven.springframework.org/snapshot"			
+		}
+
     }
 
     dependencies {
@@ -27,14 +29,16 @@ grails.project.dependency.resolution = {
             excludes "spring-core", "spring-beans", "spring-aop", "spring-asm","spring-webmvc","spring-tx", "spring-context", "spring-web", "log4j", "slf4j-log4j12"
         }
         compile("org.mongodb:mongo-java-driver:2.4")
+		compile("org.springframework.data:spring-data-mongodb:1.0.0.M1", excludes)
         runtime("com.gmongo:gmongo:0.7", excludes)
         compile("org.grails:grails-datastore-gorm-mongo:$version",
-				"org.grails:grails-datastore-gorm:$version",
+				"org.grails:grails-datastore-gorm:$version",				
 				"org.springframework:spring-datastore-core:$version",
 				"org.springframework:spring-datastore-mongo:$version",
 				"org.springframework:spring-datastore-web:$version") {
 			transitive = false
 		}
+		
         test("org.grails:grails-datastore-gorm-test:$version",
 			 "org.springframework:spring-datastore-simple:$version"){
 			transitive = false
