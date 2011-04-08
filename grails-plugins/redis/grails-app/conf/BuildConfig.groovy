@@ -4,23 +4,34 @@ grails.project.test.reports.dir = "target/test-reports"
 
 grails.project.dependency.resolution = {
 
-    inherits "global"
+    inherits( "global" ) {
+		excludes 'xml-apis', 'netty'
+	}
 
     log "warn"
+	useOrigin true
 
     repositories {
-        mavenRepo "http://maven.springframework.org/snapshot"
-        mavenCentral()
+/*        mavenRepo "http://maven.springframework.org/snapshot"
+        mavenCentral()*/
+		mavenLocal()
+		mavenCentral()
     }
 
     dependencies {
 
-        def excludes = {
-            excludes "slf4j-simple", "persistence-api", "commons-logging", "jcl-over-slf4j", "slf4j-api", "jta"
-            excludes "spring-core", "spring-beans", "spring-aop", "spring-tx", "spring-context", "spring-web"
-        }
-        compile("org.grails:grails-datastore-gorm-redis:1.0.0.BUILD-SNAPSHOT", excludes)
-        compile("org.springframework:spring-datastore-web:1.0.0.BUILD-SNAPSHOT", excludes)
-        test("org.grails:grails-datastore-gorm-test:1.0.0.BUILD-SNAPSHOT", excludes)
+		def version = "1.0.0.BUILD-SNAPSHOT"
+		compile 'redis.clients:jedis:1.5.2'
+        compile("org.grails:grails-datastore-gorm-redis:$version",
+				"org.grails:grails-datastore-gorm:$version",
+				"org.springframework:spring-datastore-core:$version",
+				"org.springframework:spring-datastore-redis:$version",
+				"org.springframework:spring-datastore-web:$version") {
+			transitive = false
+		}
+        test("org.grails:grails-datastore-gorm-test:$version",
+			 "org.springframework:spring-datastore-simple:$version"){
+			transitive = false
+		} 
     }
 }

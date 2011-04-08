@@ -14,19 +14,10 @@
  */
 package org.springframework.datastore.mapping.redis.engine;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.CannotAcquireLockException;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
 import org.springframework.datastore.mapping.keyvalue.engine.AbstractKeyValueEntityPesister;
@@ -44,6 +35,12 @@ import org.springframework.datastore.mapping.redis.query.RedisQuery;
 import org.springframework.datastore.mapping.redis.util.RedisCallback;
 import org.springframework.datastore.mapping.redis.util.RedisTemplate;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
 /**
  * An {@link org.springframework.datastore.mapping.engine.EntityPersister} for the Redis NoSQL datastore
  *
@@ -51,6 +48,7 @@ import org.springframework.datastore.mapping.redis.util.RedisTemplate;
  * @since 1.0
  */
 public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Long> {
+    public static final String UTF_8 = "UTF-8";
     private RedisTemplate redisTemplate;
     private RedisCollection allEntityIndex;
 
@@ -220,11 +218,29 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
     private Map getNativeEntryFromList(Object result) {
         Collection flatHash = (Collection) result;
         Map<String, String> hash = new HashMap<String, String>();
-        Iterator<String> iterator = flatHash.iterator();
+        Iterator iterator = flatHash.iterator();
         while (iterator.hasNext()) {
-            hash.put(iterator.next(), iterator.next());
+            Object key = iterator.next();
+            Object value = iterator.next();
+
+            hash.put(convertByteArrayToString(key), convertByteArrayToString(value));
         }
         return hash;
+    }
+
+    private String convertByteArrayToString(Object byteArray) {
+        String value;
+        if(byteArray instanceof byte[]) {
+            try {
+                value = new String((byte[])byteArray, UTF_8);
+            } catch (UnsupportedEncodingException e) {
+                throw new DataRetrievalFailureException("Cannot decode byte[] value: " + e.getMessage(),e);
+            }
+        }
+        else {
+            value = byteArray.toString();
+        }
+        return value;
     }
 
     private String getRedisKey(String family, Serializable key) {

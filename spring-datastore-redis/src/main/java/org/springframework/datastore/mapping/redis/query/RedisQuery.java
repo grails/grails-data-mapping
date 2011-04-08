@@ -14,17 +14,6 @@
  */
 package org.springframework.datastore.mapping.redis.query;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -41,6 +30,9 @@ import org.springframework.datastore.mapping.redis.engine.RedisPropertyValueInde
 import org.springframework.datastore.mapping.redis.util.RedisCallback;
 import org.springframework.datastore.mapping.redis.util.RedisTemplate;
 import org.springframework.datastore.mapping.redis.util.SortParams;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  * A Query implementation for Redis
@@ -269,6 +261,7 @@ public class RedisQuery extends Query {
     }
 
     private String formulateDisjunctionKey(List<String> indicesList) {
+        Collections.sort(indicesList);
         return "~!" + indicesList.toString().replaceAll("\\s", "");
     }
 
@@ -528,7 +521,7 @@ public class RedisQuery extends Query {
         PersistentProperty prop = getEntity().getPropertyByName(property);
         assertIndexed(property, prop);
         RedisPropertyValueIndexer indexer = (RedisPropertyValueIndexer) entityPersister.getPropertyIndexer(prop);
-        return template.keys(indexer.getIndexPattern(pattern));
+        return new ArrayList<String>(template.keys(indexer.getIndexPattern(pattern)));
     }
 
     private String getIndexName(RedisEntityPersister entityPersister, String property, Object value) {

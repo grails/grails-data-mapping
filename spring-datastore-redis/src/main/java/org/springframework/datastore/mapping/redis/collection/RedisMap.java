@@ -14,12 +14,12 @@
  */
 package org.springframework.datastore.mapping.redis.collection;
 
+import org.springframework.datastore.mapping.redis.util.RedisTemplate;
+
 import java.util.AbstractMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import org.springframework.datastore.mapping.redis.util.RedisTemplate;
 
 /**
  * A map that is backed onto a Redis hash
@@ -91,6 +91,6 @@ public class RedisMap extends AbstractMap {
 
     @Override
     public int size() {
-        return redisTemplate.hlen(redisKey);
+        return Long.valueOf(redisTemplate.hlen(redisKey)).intValue();
     }
 }

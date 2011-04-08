@@ -30,7 +30,7 @@ public class RedisSet extends AbstractRedisCollection implements Set {
     }
 
     public int size() {
-        return redisTemplate.scard(redisKey);
+        return Long.valueOf(redisTemplate.scard(redisKey)).intValue();
     }
 
     public boolean contains(Object o) {

@@ -59,7 +59,7 @@ public interface RedisTemplate<T, S> {
     /**
      * See http://redis.io/commands/del
      */
-    int del(String... redisKey);
+    long del(String... redisKey);
 
 
     List<Object> pipeline(RedisCallback<RedisTemplate<T,S>> pipeline);
@@ -77,7 +77,7 @@ public interface RedisTemplate<T, S> {
     boolean sismember(String redisKey, Object o);
 
 
-    int scard(String redisKey);
+    long scard(String redisKey);
 
     boolean sadd(String redisKey, Object o);
 
@@ -92,7 +92,7 @@ public interface RedisTemplate<T, S> {
 
     String lindex(String redisKey, int index);
 
-    int llen(String redisKey);
+    long llen(String redisKey);
 
     List<String> lrange(String redisKey, int start, int end);
 
@@ -102,7 +102,7 @@ public interface RedisTemplate<T, S> {
 
     void rpush(String redisKey, Object o);
 
-    int lrem(String redisKey, Object o, int count);
+    long lrem(String redisKey, Object o, int count);
 
     void flushdb();
 
@@ -110,7 +110,7 @@ public interface RedisTemplate<T, S> {
 
     void select(int index);
 
-    int dbsize();
+    long dbsize();
 
     void lpush(String redisKey, Object o);
 
@@ -118,7 +118,7 @@ public interface RedisTemplate<T, S> {
 
     String hget(String redisKey, String entryKey);
 
-    int hlen(String redisKey);
+    long hlen(String redisKey);
 
     List<String> hkeys(String redisKey);
 
@@ -140,9 +140,9 @@ public interface RedisTemplate<T, S> {
 
     void hmset(String key, Map<String, String> nativeEntry);
 
-    int incr(String key);
+    long incr(String key);
 
-    int incrby(String key, int amount);
+    long incrby(String key, int amount);
 
 
     Set<String> sinter(String...keys);
@@ -161,17 +161,17 @@ public interface RedisTemplate<T, S> {
 
     boolean setnx(String redisKey, Object o);
 
-    int strlen(String redisKey);
+    long strlen(String redisKey);
 
     boolean expire(String key, int timeout);
 
-    int ttl(String key);
+    long ttl(String key);
 
     String type(String key);
 
     String getset(String redisKey, Object o);
 
-    List<String> keys(String pattern);
+    Set<String> keys(String pattern);
 
     void close();
 
@@ -191,13 +191,13 @@ public interface RedisTemplate<T, S> {
 
     boolean zadd(String key, double rank, Object o);
 
-    int zcard(String key);
+    long zcard(String key);
 
-    int zcount(String key, double min, double max);
+    long zcount(String key, double min, double max);
 
     double zincrby(String key, double score, String member);
 
-    int zrank(String key, Object member);
+    long zrank(String key, Object member);
 
     Set<String> zrange(String key, int fromIndex, int toIndex);
 

@@ -17,12 +17,12 @@ package org.springframework.datastore.mapping.redis.util;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.transaction.NoTransactionException;
 import redis.clients.jedis.*;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeoutException;
 
 /**
  * A Spring-style template for querying Redis and translating
@@ -39,7 +39,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     private Transaction transaction;
     private JedisPool pool;
     public static final String QUEUED = "QUEUED";
-    private Client pipeline;
+    private PipelineBlock pipeline;
     private String host = "localhost";
     private int port;
     private int timeout = 2000;
@@ -114,11 +114,11 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
 
         return (List<Object>) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) throws IOException {
-                return redis.pipelined(new JedisPipeline(){
+                return redis.pipelined(new PipelineBlock(){
                     @Override
                     public void execute() {
                         try {
-                            JedisTemplate.this.pipeline = client;
+                            JedisTemplate.this.pipeline = this;
                             pipeline.doInRedis(JedisTemplate.this);
                         } catch (IOException e) {
                             throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
@@ -176,14 +176,14 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         }
         else {
             try {
-                jedis = pool.getResource(timeout);
-            } catch (TimeoutException e) {
+                jedis = pool.getResource();
+            } catch (JedisConnectionException e) {
                 throw new DataAccessResourceFailureException("Connection timeout getting Jedis connection from pool: " + e.getMessage(), e);
             }
         }
         try {
             jedis.connect();
-        } catch (IOException e) {
+        } catch (JedisConnectionException e) {
             throw new DataAccessResourceFailureException("Connection failure connecting to Redis: " + e.getMessage(), e);
         }
         return jedis;
@@ -230,7 +230,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                     pipeline.sismember(redisKey, o.toString());
                     return false;
                 }
-                return redis.sismember(redisKey, o.toString()) > 0;
+                return redis.sismember(redisKey, o.toString());
             }
         });
     }
@@ -256,8 +256,8 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    public int scard(final String redisKey) {
-        return (Integer)execute(new RedisCallback<Jedis>() {
+    public long scard(final String redisKey) {
+        return (Long)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 if (pipeline != null) {
                     redis.scard(redisKey);
@@ -357,8 +357,8 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    public int llen(final String redisKey) {
-        return (Integer) execute(new RedisCallback<Jedis>() {
+    public long llen(final String redisKey) {
+        return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 if (pipeline != null) {
                     pipeline.llen(redisKey);
@@ -438,8 +438,8 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    public int lrem(final String redisKey, final Object o, final int count) {
-        return (Integer) execute(new RedisCallback<Jedis>() {
+    public long lrem(final String redisKey, final Object o, final int count) {
+        return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 if (transaction != null) {
                     transaction.lrem(redisKey, count, o.toString());
@@ -457,11 +457,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public void flushdb() {
         execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
-                if (pipeline != null) {
-                    pipeline.flushDB();
-                } else {
-                    redis.flushDB();
-                }
+                redis.flushDB();
                 return null;
             }
         });
@@ -470,11 +466,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public void flushall() {
         execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
-                if (pipeline != null) {
-                    pipeline.flushAll();
-                } else {
-                    redis.flushAll();
-                }
+                redis.flushAll();
                 return null;
             }
         });
@@ -483,23 +475,15 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public void select(final int index) {
         execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
-                if (pipeline != null) {
-                    pipeline.select(index);
-                } else {
-                    redis.select(index);
-                }
+                redis.select(index);
                 return null;
             }
         });
     }
 
-    public int dbsize() {
-        return (Integer) execute(new RedisCallback<Jedis>() {
+    public long dbsize() {
+        return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
-                if (pipeline != null) {
-                    pipeline.dbSize();
-                    return 0;
-                }
                 return redis.dbSize();
             }
         });
@@ -556,8 +540,8 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    public int hlen(final String redisKey) {
-        return (Integer) execute(new RedisCallback<Jedis>() {
+    public long hlen(final String redisKey) {
+        return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 if (pipeline != null) {
                     pipeline.hlen(redisKey);
@@ -652,7 +636,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                     pipeline.hexists(redisKey, entryKey);
                     return false;
                 }
-                return redis.hexists(redisKey, entryKey) > 0;
+                return redis.hexists(redisKey, entryKey);
             }
         });
     }
@@ -716,8 +700,8 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    public int incr(final String key) {
-        return (Integer)execute(new RedisCallback<Jedis>() {
+    public long incr(final String key) {
+        return (Long)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) throws IOException {
                 if (transaction != null) {
                     redis = getNewConnection();
@@ -734,8 +718,8 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     }
 
     @Override
-    public int incrby(final String key, final int amount) {
-        return (Integer)execute(new RedisCallback<Jedis>() {
+    public long incrby(final String key, final int amount) {
+        return (Long)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) throws IOException {
                 if (transaction != null) {
                     redis = getNewConnection();
@@ -751,8 +735,8 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    public int del(final String... redisKey) {
-        return (Integer)execute(new RedisCallback<Jedis>() {
+    public long del(final String... redisKey) {
+        return (Long)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 if (transaction != null) {
                     transaction.del(redisKey);
@@ -862,8 +846,8 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     }
 
     @Override
-    public int strlen(final String redisKey) {
-        return (Integer)execute(new RedisCallback<Jedis>() {
+    public long strlen(final String redisKey) {
+        return (Long)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 return redis.strlen(redisKey);
             }
@@ -882,8 +866,8 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    public int ttl(final String key) {
-        return (Integer)execute(new RedisCallback<Jedis>() {
+    public long ttl(final String key) {
+        return (Long)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 return redis.ttl(key);
             }
@@ -907,8 +891,8 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    public List<String> keys(final String pattern) {
-        return (List<String>) execute(new RedisCallback<Jedis>() {
+    public Set<String> keys(final String pattern) {
+        return (Set<String>) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) throws IOException {
                 if (transaction != null) {
                     redis = getNewConnection();
@@ -953,7 +937,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public boolean exists(final String key) {
         return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
-                return redis.exists(key) > 0;
+                return redis.exists(key);
             }
         });
     }
@@ -1043,8 +1027,8 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     }
 
     @Override
-    public int zcount(final String key, final double min, final double max) {
-     return (Integer) execute(new RedisCallback<Jedis>() {
+    public long zcount(final String key, final double min, final double max) {
+     return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 return redis.zcount(key, min, max);
             }
@@ -1061,16 +1045,16 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     }
 
     @Override
-    public int zcard(final String key) {
-        return (Integer) execute(new RedisCallback<Jedis>() {
+    public long zcard(final String key) {
+        return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 return redis.zcard(key);
             }
         });
     }
 
-    public int zrank(final String key, final Object member) {
-        return (Integer) execute(new RedisCallback<Jedis>() {
+    public long zrank(final String key, final Object member) {
+        return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 return redis.zrank(key, member.toString());
             }

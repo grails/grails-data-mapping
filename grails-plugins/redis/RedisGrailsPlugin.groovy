@@ -29,11 +29,24 @@ import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import org.springframework.transaction.PlatformTransactionManager
+import org.codehaus.groovy.grails.commons.GrailsServiceClass
+
+import org.springframework.core.annotation.AnnotationUtils
+import org.springframework.data.document.mongodb.bean.factory.*
+import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
+import org.springframework.transaction.annotation.Transactional
 
 class RedisGrailsPlugin {
-    def version = "1.0.0.M3"
+    def license = "Apache 2.0 License"
+    def organization = [ name: "SpringSource", url: "http://www.springsource.org/" ]
+    def developers = [
+        [ name: "Graeme Rocher", email: "grocher@vmware.com" ] ]
+    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPREDIS" ]
+    def scm = [ url: "https://github.com/SpringSource/spring-data-mapping" ]
+	
+    def version = "1.0.0.M4"
     def grailsVersion = "1.3.4 > *"
-    def loadAfter = ['domainClass']
+    def loadAfter = ['domainClass', 'services']
 
     def author = "Graeme Rocher"
     def authorEmail = "graeme.rocher@springsource.com"
@@ -42,6 +55,12 @@ class RedisGrailsPlugin {
 A plugin that integrates the Redis key/value datastore into Grails, providing
 a GORM-like API onto it
 '''
+
+	def pluginExcludes = [
+	        "grails-app/domain/*.groovy",
+	        "grails-app/services/*.groovy",	
+	        "grails-app/controllers/*.groovy",		
+	]
 
     def documentation = "http://grails.org/plugin/redis"
 
@@ -64,14 +83,8 @@ a GORM-like API onto it
             pluginManager = ref('pluginManager')
         }
 
-        redisBean(Redis) { bean ->
-            bean.scope = "request"
+        redis(Redis) { bean ->
             datastore = ref("redisDatastore")
-        }
-
-        redis(ScopedProxyFactoryBean) {
-            targetBeanName = "redisBean"
-            proxyTargetClass = true
         }
 
         redisDatastorePersistenceInterceptor(DatastorePersistenceContextInterceptor, ref("redisDatastore"))
@@ -91,6 +104,41 @@ a GORM-like API onto it
                     annotationHandlerMapping.interceptors = [redisDatastoreOpenSessionInViewInterceptor]
                 }
             }
+        }
+
+        for (serviceGrailsClass in application.serviceClasses) {
+            GrailsServiceClass serviceClass = serviceGrailsClass
+
+            if (!shouldCreateTransactionalProxy(serviceClass)) {
+                continue
+            }
+
+			def beanName = serviceClass.propertyName
+			if(springConfig.containsBean(beanName)) {
+				delegate."${beanName}".transactionManager = ref("redisDatastoreTransactionManager")
+			}
+        }
+    }
+
+    boolean shouldCreateTransactionalProxy(GrailsServiceClass serviceClass) {
+
+        if (serviceClass.getStaticPropertyValue('transactional', Boolean)) {
+            // leave it as a regular proxy
+            return false
+        }
+
+        if (!'redis'.equals(serviceClass.getStaticPropertyValue('transactional', String))) {
+            return false
+        }
+
+        try {
+            Class javaClass = serviceClass.clazz
+            serviceClass.transactional &&
+                !AnnotationUtils.findAnnotation(javaClass, Transactional) &&
+                !javaClass.methods.any { m -> AnnotationUtils.findAnnotation(m, Transactional) != null }
+        }
+        catch (e) {
+            return false
         }
     }
 

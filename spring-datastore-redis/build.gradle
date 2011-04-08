@@ -1,11 +1,8 @@
-repositories {
-    add(new org.apache.ivy.plugins.resolver.URLResolver()) {
-        name = "jedis"
-        addArtifactPattern "http://github.com/downloads/xetorthio/jedis/[module]-[revision].jar"
-    }
-}
 dependencies {
     compile project(":spring-datastore-core")
-    compile 'redis.clients:jedis:1.3.1'
+    compile("commons-pool:commons-pool:1.5.5")
+    compile( 'redis.clients:jedis:1.5.2' ) {
+		transitive = false
+	}
 }
 jar.appendix = 'redis'

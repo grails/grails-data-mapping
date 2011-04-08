@@ -14,13 +14,6 @@
  */
 package org.springframework.datastore.mapping.redis;
 
-import static org.springframework.datastore.mapping.config.utils.ConfigUtils.read;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -38,8 +31,15 @@ import org.springframework.datastore.mapping.redis.engine.RedisEntityPersister;
 import org.springframework.datastore.mapping.redis.util.JedisTemplate;
 import org.springframework.datastore.mapping.redis.util.RedisTemplate;
 import org.springframework.util.ClassUtils;
-
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+import static org.springframework.datastore.mapping.config.utils.ConfigUtils.read;
 
 /**
  * A Datastore implementation for the Redis key/value datastore
@@ -93,7 +93,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
             resourceCount = read(Integer.class, CONFIG_RESOURCE_COUNT, connectionDetails, 10);
         }
         if (pooled && useJedis()) {
-            this.pool = JedisTemplateFactory.createPool(host, port, timeout, resourceCount);
+            this.pool = JedisTemplateFactory.createPool(host, port, timeout, resourceCount, password);
         }
 
         initializeConverters(mappingContext);
@@ -112,11 +112,16 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
     static class JedisTemplateFactory {
         static JedisPool pool;
 
-        static JedisPool createPool(String host, int port, int timeout, int resources) {
-            pool = new JedisPool(host, port, timeout);
-            pool.setResourcesNumber(resources);
-            pool.setRepairThreadsNumber(1);
-            pool.init();
+        static JedisPool createPool(String host, int port, int timeout, int resources, String password) {
+            JedisPoolConfig poolConfig = new JedisPoolConfig();
+            poolConfig.setMaxWait(timeout);
+
+            if(password != null) {
+               pool = new JedisPool(poolConfig, host, port, timeout, password);
+            }
+            else {
+                pool = new JedisPool(poolConfig, host, port, timeout);
+            }
             return pool;
         }
 

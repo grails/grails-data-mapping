@@ -14,12 +14,6 @@
  */
 package org.springframework.datastore.mapping.redis.engine;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
 import org.springframework.dao.DataAccessException;
 import org.springframework.datastore.mapping.core.SessionImplementor;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
@@ -29,6 +23,12 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.redis.collection.RedisSet;
 import org.springframework.datastore.mapping.redis.query.RedisQueryUtils;
 import org.springframework.datastore.mapping.redis.util.RedisTemplate;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Indexes property values for querying later
@@ -112,7 +112,7 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
         }
     }
 
-    private void deleteKeys(List<String> toDelete) {
+    private void deleteKeys(java.util.Set<String> toDelete) {
         if (toDelete != null && !toDelete.isEmpty()) {
             template.del(toDelete.toArray(new String[toDelete.size()]));
         }

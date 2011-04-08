@@ -291,7 +291,7 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
             return;
         }
 
-        final List<String> keys = redisTemplate.keys("~*");
+        final java.util.Set<String> keys = redisTemplate.keys("~*");
         if (keys != null && !keys.isEmpty()) {
             redisTemplate.del(keys.toArray(new String[keys.size()]));
         }
