@@ -32,10 +32,10 @@ class MongodbGrailsPlugin {
     def organization = [ name: "SpringSource", url: "http://www.springsource.org/" ]
     def developers = [
         [ name: "Graeme Rocher", email: "grocher@vmware.com" ] ]
-    def issueManagement = [ system: "JIRA", url: "http://jira.codehaus.org/browse/GRAILSPLUGINS" ]
-    def scm = [ url: "https://github.com/grails/inconsequential" ]
+    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPMONGODB" ]
+    def scm = [ url: "https://github.com/SpringSource/spring-data-mapping" ]
 
-    def version = "1.0-M2"
+    def version = "1.0-M5"
     def grailsVersion = "1.3.5 > *"
     def observe = ['services']
     def loadAfter = ['domainClass', 'services']

@@ -4,13 +4,20 @@ grails.project.test.reports.dir = "target/test-reports"
 
 grails.project.dependency.resolution = {
 
-    inherits "global"
+    inherits( "global" ) {
+		excludes 'xml-apis', 'netty'
+	}
 
     log "warn"
 
+	def version = "1.0.0.groovy-1.7-BUILD-SNAPSHOT"	
+	def repo = version.endsWith("-SNAPSHOT") ? 'snapshot' : 'milestone'
+
+
     repositories {
         mavenCentral()
-        mavenRepo 'http://maven.springframework.org/milestone'
+		grailsCentral()
+        mavenRepo "http://maven.springframework.org/$repo"
     }
 
     dependencies {
@@ -21,13 +28,22 @@ grails.project.dependency.resolution = {
         }
         compile("org.mongodb:mongo-java-driver:2.4")
         runtime("com.gmongo:gmongo:0.7", excludes)
-        runtime("org.grails:grails-datastore-gorm:1.0.0.M4", excludes)
-        runtime("org.grails:grails-datastore-gorm-mongo:1.0.0.M4", excludes)
-        runtime("org.springframework:spring-datastore-web:1.0.0.M4", excludes)
-        test("org.grails:grails-datastore-gorm-test:1.0.0.M4", excludes)
+        compile("org.grails:grails-datastore-gorm-mongo:$version",
+				"org.grails:grails-datastore-gorm:$version",
+				"org.springframework:spring-datastore-core:$version",
+				"org.springframework:spring-datastore-mongo:$version",
+				"org.springframework:spring-datastore-web:$version") {
+			transitive = false
+		}
+        test("org.grails:grails-datastore-gorm-test:$version",
+			 "org.springframework:spring-datastore-simple:$version"){
+			transitive = false
+		}
     }
 
     plugins {
-        build ":maven-publisher:0.7.5"
+        build( ":maven-publisher:0.7.5" ) {
+			export = false
+		}
     }
 }
