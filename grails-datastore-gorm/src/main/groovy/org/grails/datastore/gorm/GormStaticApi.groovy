@@ -18,11 +18,10 @@ import grails.gorm.CriteriaBuilder
 
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
-import org.springframework.beans.BeanWrapperImpl
 import org.springframework.beans.MutablePropertyValues
+import org.springframework.beans.PropertyAccessorFactory
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.model.PersistentProperty
 import org.springframework.datastore.mapping.model.types.Association
@@ -186,7 +185,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      */
     def withCriteria(Map builderArgs, Closure callable) {
         def criteriaBuilder = createCriteria()
-        def builderBean = new BeanWrapperImpl(criteriaBuilder)
+        def builderBean = PropertyAccessorFactory.forBeanPropertyAccess(criteriaBuilder)
         for (entry in builderArgs) {
             if (builderBean.isWritableProperty(entry.key)) {
                 builderBean.setPropertyValue(entry.key, entry.value)
@@ -495,7 +494,6 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * Creates and binds a new session for the scope of the given closure
      */
     def withNewSession(Closure callable) {
-
         def session = datastore.connect()
         try {
             callable?.call(session)
@@ -526,7 +524,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         unsupported("executeQuery")
     }
 
-    def executeUpdate(String query) {
+    Integer executeUpdate(String query) {
         unsupported("executeUpdate")
     }
 
