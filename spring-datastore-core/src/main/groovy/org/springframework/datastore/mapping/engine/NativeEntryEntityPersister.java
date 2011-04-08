@@ -412,7 +412,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             pendingOperation = new PendingUpdateAdapter<T, K>(persistentEntity, k, tmp, entityAccess) {
                 public void run() {
                     if (cancelUpdate(persistentEntity, entityAccess)) return;
-                    updateEntry(persistentEntity, getNativeKey(), getNativeEntry());
+                    updateEntry(persistentEntity, entityAccess, getNativeKey(), getNativeEntry());
                     firePostUpdateEvent(persistentEntity, entityAccess);
                 }
             };
@@ -785,20 +785,24 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      * Stores the native form of a Key/value datastore to the actual data store
      *
      * @param persistentEntity The persistent entity
+     * @param entityAccess The EntityAccess
      * @param storeId
-     *@param nativeEntry The native form. Could be a a ColumnFamily, BigTable Entity etc.
-     *  @return The native key
+     * @param nativeEntry The native form. Could be a a ColumnFamily, BigTable Entity etc.
+     * @return The native key
      */
-    protected abstract K storeEntry(PersistentEntity persistentEntity, K storeId, T nativeEntry);
+    protected abstract K storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess,
+                                    K storeId, T nativeEntry);
 
     /**
      * Updates an existing entry to the actual datastore
      *
      * @param persistentEntity The PersistentEntity
+     * @param entityAccess The EntityAccess
      * @param key The key of the object to update
      * @param entry The entry
      */
-    protected abstract void updateEntry(PersistentEntity persistentEntity, K key, T entry);
+    protected abstract void updateEntry(PersistentEntity persistentEntity,
+            EntityAccess entityAccess, K key, T entry);
 
     /**
      * Deletes one or many entries for the given list of Keys
@@ -822,7 +826,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                               final NativeEntryModifyingEntityAccess entityAccess,
                               final K id, final T e) {
         if (cancelInsert(persistentEntity, entityAccess)) return null;
-        final K newId = storeEntry(persistentEntity, id, e);
+        final K newId = storeEntry(persistentEntity, entityAccess, id, e);
         entityAccess.setIdentifier(newId);
         firePostInsertEvent(persistentEntity, entityAccess);
         return newId;

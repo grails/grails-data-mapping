@@ -38,6 +38,7 @@ import org.springframework.data.keyvalue.riak.core.RiakTemplate;
 import org.springframework.data.keyvalue.riak.core.RiakValue;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
+import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
 import org.springframework.datastore.mapping.keyvalue.engine.AbstractKeyValueEntityPesister;
 import org.springframework.datastore.mapping.model.MappingContext;
@@ -198,7 +199,8 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
     }
 
     @Override
-    protected Long storeEntry(PersistentEntity persistentEntity, Long storeId, Map nativeEntry) {
+    protected Long storeEntry(final PersistentEntity persistentEntity, final EntityAccess entityAccess,
+                              final Long storeId, final Map nativeEntry) {
         Map<String, String> metaData = null;
 
         // Quality Of Service parameters (r, w, dw)
@@ -240,8 +242,9 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
     }
 
     @Override
-    protected void updateEntry(PersistentEntity persistentEntity, Long key, Map entry) {
-        storeEntry(persistentEntity, key, entry);
+    protected void updateEntry(final PersistentEntity persistentEntity, final EntityAccess entityAccess,
+                               final Long key, final Map entry) {
+        storeEntry(persistentEntity, entityAccess, key, entry);
     }
 
     @Override

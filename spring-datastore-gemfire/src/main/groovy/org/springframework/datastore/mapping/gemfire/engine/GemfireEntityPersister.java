@@ -36,6 +36,7 @@ import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.data.gemfire.GemfireCallback;
 import org.springframework.data.gemfire.GemfireTemplate;
+import org.springframework.datastore.mapping.core.OptimisticLockingException;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.LockableEntityPersister;
@@ -200,6 +201,7 @@ public class GemfireEntityPersister extends LockableEntityPersister {
 
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
                 region.putAll(putMap);
+
                 if (!persistentEntity.isRoot()) {
                     doWithParents(persistentEntity, new GemfireCallback() {
                         @SuppressWarnings("hiding")
@@ -209,6 +211,7 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                         }
                     });
                 }
+
                 for (Object id : putMap.keySet()) {
                     Object obj = putMap.get(id);
                     final EntityAccess access = entityAccessObjects.get(obj);
@@ -222,6 +225,7 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                         }
                     }
                 }
+
                 return null;
             }
         });
@@ -306,6 +310,11 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                     return finalId;
                 }
 
+                if (finalIsUpdate && isVersioned(access)) {
+                    // TODO this should be done with a CAS approach if possible
+                    checkVersion(region, access, persistentEntity, finalId);
+                }
+
                 region.put(finalId, obj);
                 if (!persistentEntity.isRoot()) {
                     doWithParents(persistentEntity, new GemfireCallback() {
@@ -330,6 +339,27 @@ public class GemfireEntityPersister extends LockableEntityPersister {
             }
         });
         return (Serializable) identifier;
+    }
+
+    protected void checkVersion(Region region, EntityAccess access,
+                                PersistentEntity persistentEntity, Object id) {
+
+       final Class idType = persistentEntity.getIdentity().getType();
+       Object lookupKey = getMappingContext().getConversionService().convert(id, idType);
+       Object previous = region.get(lookupKey);
+
+       Object oldVersion = new EntityAccess(persistentEntity, previous).getProperty("version");
+       Object currentVersion = access.getProperty("version");
+       if (Number.class.isAssignableFrom(access.getPropertyType("version"))) {
+           oldVersion = ((Number)oldVersion).longValue();
+           currentVersion = ((Number)currentVersion).longValue();
+       }
+
+       if (!oldVersion.equals(currentVersion)) {
+           throw new OptimisticLockingException(persistentEntity, id);
+       }
+
+       incrementVersion(access);
     }
 
     private void cascadeSaveOrUpdate(PersistentEntity persistentEntity, Object obj, EntityAccess access) {

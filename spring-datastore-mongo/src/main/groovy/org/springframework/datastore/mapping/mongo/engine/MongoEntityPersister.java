@@ -33,7 +33,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.document.mongodb.DbCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
+import org.springframework.datastore.mapping.core.OptimisticLockingException;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
+import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
 import org.springframework.datastore.mapping.model.MappingContext;
@@ -296,8 +298,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @Override
-    protected Object storeEntry(final PersistentEntity persistentEntity,
-            final Object storeId, final DBObject nativeEntry) {
+    protected Object storeEntry(final PersistentEntity persistentEntity, final EntityAccess entityAccess,
+                                final Object storeId, final DBObject nativeEntry) {
         return mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
                 String collectionName = getCollectionName(persistentEntity, nativeEntry);
@@ -305,7 +307,6 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 DBCollection dbCollection = con.getCollection(collectionName);
                 nativeEntry.put(MONGO_ID_FIELD, storeId);
                 dbCollection.insert(nativeEntry);
-
                 return nativeEntry.get(MONGO_ID_FIELD);
             }
         });
@@ -331,18 +332,39 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @Override
-    public void updateEntry(final PersistentEntity persistentEntity, final Object key,
-            final DBObject entry) {
+    public void updateEntry(final PersistentEntity persistentEntity, final EntityAccess ea,
+            final Object key, final DBObject entry) {
         mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
                 String collectionName = getCollectionName(persistentEntity, entry);
                 DBCollection dbCollection = con.getCollection(collectionName);
                 DBObject dbo = createDBObjectWithKey(key);
+
+                if (isVersioned(ea)) {
+                    // TODO this should be done with a CAS approach if possible
+                    DBObject previous = dbCollection.findOne(dbo);
+                    checkVersion(ea, previous, persistentEntity, key);
+                }
+
                 MongoSession mongoSession = (MongoSession) session;
                 dbCollection.update(dbo, entry, false, false, mongoSession.getWriteConcern());
                 return null;
             }
         });
+    }
+
+    protected void checkVersion(final EntityAccess ea, final DBObject previous,
+                                final PersistentEntity persistentEntity, final Object key) {
+        Object oldVersion = previous.get("version");
+        Object currentVersion = ea.getProperty("version");
+        if (Number.class.isAssignableFrom(ea.getPropertyType("version"))) {
+            oldVersion = ((Number)oldVersion).longValue();
+            currentVersion = ((Number)currentVersion).longValue();
+        }
+        if (!oldVersion.equals(currentVersion)) {
+            throw new OptimisticLockingException(persistentEntity, key);
+        }
+        incrementVersion(ea);
     }
 
     @Override
@@ -363,7 +385,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         });
     }
 
-     protected DBObject createDBObjectWithKey(Object key) {
+    protected DBObject createDBObjectWithKey(Object key) {
         DBObject dbo = new BasicDBObject();
         if (hasNumericalIdentifier || hasStringIdentifier) {
             dbo.put(MONGO_ID_FIELD, key);

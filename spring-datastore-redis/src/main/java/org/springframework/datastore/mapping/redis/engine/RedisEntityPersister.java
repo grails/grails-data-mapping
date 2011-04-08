@@ -18,7 +18,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.datastore.mapping.core.OptimisticLockingException;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
+import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
 import org.springframework.datastore.mapping.keyvalue.engine.AbstractKeyValueEntityPesister;
 import org.springframework.datastore.mapping.model.MappingContext;
@@ -248,13 +250,14 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
     }
 
     @Override
-    public void updateEntry(PersistentEntity persistentEntity, Long key, Map nativeEntry) {
+    public void updateEntry(final PersistentEntity persistentEntity, final EntityAccess entityAccess,
+                            final Long key, final Map nativeEntry) {
         try {
             if (!persistentEntity.isRoot()) {
-                performInsertion(getRootFamily(persistentEntity), key, nativeEntry);
+                saveOrUpdate(getRootFamily(persistentEntity), key, nativeEntry, persistentEntity, entityAccess, true);
             }
             else {
-                performInsertion(getFamily(), key, nativeEntry);
+                saveOrUpdate(getFamily(), key, nativeEntry, persistentEntity, entityAccess, true);
             }
         } finally {
             updateAllEntityIndex(persistentEntity, key);
@@ -262,13 +265,16 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
     }
 
     @Override
-    public Long storeEntry(PersistentEntity persistentEntity, Long storeId, Map nativeEntry) {
+    public Long storeEntry(final PersistentEntity persistentEntity, final EntityAccess entityAccess,
+                           final Long storeId, final Map nativeEntry) {
         try {
             if (!persistentEntity.isRoot()) {
                 nativeEntry.put(DISCRIMINATOR, persistentEntity.getDiscriminator());
-                return performInsertion(getRootFamily(persistentEntity), storeId, nativeEntry);
+                saveOrUpdate(getRootFamily(persistentEntity), storeId, nativeEntry, persistentEntity, entityAccess, false);
+                return storeId;
             }
-            return performInsertion(getFamily(), storeId, nativeEntry);
+            saveOrUpdate(getFamily(), storeId, nativeEntry, persistentEntity, entityAccess, false);
+            return storeId;
         }
         finally {
             updateAllEntityIndex(persistentEntity, storeId);
@@ -300,10 +306,30 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
         return generateIdentifier(persister.getFamily());
     }
 
-    private Long performInsertion(final String family, final Long id, final Map nativeEntry) {
-        String key = family + ":" + id;
-        redisTemplate.hmset(key,nativeEntry);
-        return id;
+    private void saveOrUpdate(final String family, final Long id, final Map nativeEntry,
+            final PersistentEntity persistentEntity, final EntityAccess entityAccess, final boolean update) {
+
+        final String key = family + ":" + id;
+
+        if (update && isVersioned(entityAccess)) {
+//            String oldVersion;
+//            RedisSession newSession = (RedisSession)getSession().getDatastore().connect();
+//            try {
+//                oldVersion = newSession.getNativeInterface().hget(key, "version");
+//            }
+//            finally {
+//                newSession.disconnect();
+//            }
+//
+//            String version = (String)nativeEntry.get("version");
+//            if (!version.equals(oldVersion)) {
+//                throw new OptimisticLockingException(persistentEntity, id);
+//            }
+
+            incrementVersion(entityAccess);
+        }
+
+        redisTemplate.hmset(key, nativeEntry);
     }
 
     public RedisCollection getAllEntityIndex() {

@@ -1,5 +1,7 @@
 package org.grails.datastore.gorm
 
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.redis.*
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.datastore.mapping.core.Session
@@ -48,6 +50,9 @@ class Setup {
         redis.mappingContext.addMappingContextListener({ e ->
             enhancer.enhance e
         } as MappingContext.Listener)
+
+        redis.applicationContext.addApplicationListener new DomainEventListener(redis)
+        redis.applicationContext.addApplicationListener new AutoTimestampEventListener(redis)
 
         def con = redis.connect()
         con.getNativeInterface().flushdb()

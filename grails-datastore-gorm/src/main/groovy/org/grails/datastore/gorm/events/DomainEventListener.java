@@ -15,7 +15,9 @@
 package org.grails.datastore.gorm.events;
 
 import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -101,7 +103,29 @@ public class DomainEventListener extends AbstractPersistenceEventListener
     }
 
     public boolean beforeInsert(final PersistentEntity entity, final EntityAccess ea) {
+
+        if (entity.isVersioned()) {
+            try {
+                setVersion(ea);
+            }
+            catch (RuntimeException e) {
+                // TODO
+            }
+        }
+
         return invokeEvent(EVENT_BEFORE_INSERT, entity, ea);
+    }
+
+    protected void setVersion(final EntityAccess ea) {
+        if (Number.class.isAssignableFrom(ea.getPropertyType("version"))) {
+            ea.setProperty("version", 0);
+        }
+        else if (Timestamp.class.isAssignableFrom(ea.getPropertyType("version"))) {
+            ea.setProperty("version", new Timestamp(System.currentTimeMillis()));
+        }
+        else if (Date.class.isAssignableFrom(ea.getPropertyType("version"))) {
+            ea.setProperty("version", new Date());
+        }
     }
 
     public boolean beforeUpdate(final PersistentEntity entity, final EntityAccess ea) {
@@ -133,7 +157,7 @@ public class DomainEventListener extends AbstractPersistenceEventListener
         invokeEvent(EVENT_AFTER_LOAD, entity, ea);
     }
 
-    public void autowireBeanProperties(final Object entity) {
+    protected void autowireBeanProperties(final Object entity) {
         datastore.getApplicationContext().getAutowireCapableBeanFactory().autowireBeanProperties(
               entity, AutowireCapableBeanFactory.AUTOWIRE_BY_NAME, false);
     }

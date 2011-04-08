@@ -24,6 +24,8 @@ import org.springframework.validation.DataBinder
  */
 class MappingConfigurationBuilder {
 
+    public static final String VERSION_KEY = 'VERSION_KEY'
+
     Object target
     Map properties = [:]
     Class propertyClass
@@ -36,6 +38,11 @@ class MappingConfigurationBuilder {
 
     def invokeMethod(String name, args) {
         if (args.size() == 0) {
+            return
+        }
+
+        if ('version'.equals(name) && args.length == 1 && args[0] instanceof Boolean) {
+            properties[VERSION_KEY] = args[0]
             return
         }
 

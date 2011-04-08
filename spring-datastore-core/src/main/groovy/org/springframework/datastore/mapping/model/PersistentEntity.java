@@ -41,6 +41,20 @@ public interface PersistentEntity extends Initializable {
     PersistentProperty getIdentity();
 
     /**
+     * Returns the version property.
+     *
+     * @return the property
+     */
+    PersistentProperty getVersion();
+
+    /**
+     * Is the entity versioned for optimistic locking.
+     *
+     * @return true if versioned
+     */
+    boolean isVersioned();
+
+    /**
      * A list of properties to be persisted
      * @return A list of PersistentProperty instances
      */

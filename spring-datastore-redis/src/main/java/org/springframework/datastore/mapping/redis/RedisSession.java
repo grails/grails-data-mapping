@@ -79,7 +79,8 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
                             preOperation.run();
                         }
 
-                        persister.storeEntry(entity, pendingInsert.getNativeKey(), pendingInsert.getNativeEntry());
+                        persister.storeEntry(entity, entityAccess, pendingInsert.getNativeKey(),
+                                             pendingInsert.getNativeEntry());
                         persister.firePostInsertEvent(entity, entityAccess);
                         postOperations.addAll(pendingInsert.getCascadeOperations());
                     }
@@ -114,7 +115,8 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
                             preOperation.run();
                         }
 
-                        persister.updateEntry(entity, pendingInsert.getNativeKey(), pendingInsert.getNativeEntry());
+                        persister.updateEntry(entity, entityAccess, pendingInsert.getNativeKey(),
+                                              pendingInsert.getNativeEntry());
                         persister.firePostUpdateEvent(entity, entityAccess);
                         postOperations.addAll(pendingInsert.getCascadeOperations());
                     }

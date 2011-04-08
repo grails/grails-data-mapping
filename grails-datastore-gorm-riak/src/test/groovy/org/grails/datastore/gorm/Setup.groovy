@@ -16,6 +16,8 @@
 
 package org.grails.datastore.gorm
 
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.riak.RiakGormEnhancer
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.data.keyvalue.riak.core.QosParameters
@@ -70,6 +72,9 @@ class Setup {
         enhancer.enhance()
 
         riak.mappingContext.addMappingContextListener({ e -> enhancer.enhance e } as MappingContext.Listener)
+
+        riak.applicationContext.addApplicationListener new DomainEventListener(riak)
+        riak.applicationContext.addApplicationListener new AutoTimestampEventListener(riak)
 
         Session con = riak.connect()
         RiakTemplate riakTmpl = con.nativeInterface

@@ -27,7 +27,6 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.PropertyMapping;
-import org.springframework.datastore.mapping.model.lifecycle.Initializable;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.model.types.Embedded;
 import org.springframework.datastore.mapping.model.types.ManyToMany;
@@ -42,11 +41,12 @@ import org.springframework.datastore.mapping.model.types.OneToOne;
  * @since 1.0
  */
 @SuppressWarnings("hiding")
-public class GrailsDomainClassPersistentEntity implements PersistentEntity, Initializable {
+public class GrailsDomainClassPersistentEntity implements PersistentEntity {
 
     private GrailsDomainClass domainClass;
     private GrailsDomainClassMappingContext mappingContext;
     private GrailsDomainClassPersistentProperty identifier;
+    private GrailsDomainClassPersistentProperty version;
     private Map<String, PersistentProperty> propertiesByName = new HashMap<String, PersistentProperty>();
     private List<PersistentProperty> properties = new ArrayList<PersistentProperty>();
     private List<Association> associations = new ArrayList<Association>();
@@ -66,6 +66,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Init
 
     public void initialize() {
         identifier = new GrailsDomainClassPersistentProperty(this, domainClass.getIdentifier());
+        version = new GrailsDomainClassPersistentProperty(this, domainClass.getVersion());
 
         mappingContext.addEntityValidator(this, domainClass.getValidator());
 
@@ -109,6 +110,15 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity, Init
 
     public PersistentProperty getIdentity() {
         return identifier;
+    }
+
+    public PersistentProperty getVersion() {
+        return version;
+    }
+
+    public boolean isVersioned() {
+        // TODO
+        return version != null;
     }
 
     public List<PersistentProperty> getPersistentProperties() {

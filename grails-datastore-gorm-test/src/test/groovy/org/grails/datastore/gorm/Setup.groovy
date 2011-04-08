@@ -1,5 +1,7 @@
 package org.grails.datastore.gorm
 
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.model.MappingContext
@@ -39,6 +41,9 @@ class Setup {
         enhancer.enhance()
 
         simple.mappingContext.addMappingContextListener({ e -> enhancer.enhance e } as MappingContext.Listener)
+
+        simple.applicationContext.addApplicationListener new DomainEventListener(simple)
+        simple.applicationContext.addApplicationListener new AutoTimestampEventListener(simple)
 
         simple.connect()
     }

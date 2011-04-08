@@ -15,6 +15,8 @@
 package org.springframework.datastore.mapping.engine;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.context.ApplicationEventPublisher;
@@ -255,5 +257,42 @@ public abstract class EntityPersister implements Persister {
             final EntityAccess entityAccess) {
         publisher.publishEvent(new PostDeleteEvent(
                 session.getDatastore(), persistentEntity, entityAccess));
+    }
+
+    protected boolean isVersioned(final EntityAccess ea) {
+
+        if (!ea.getPersistentEntity().isVersioned()) {
+            return false;
+        }
+
+        Class type = ea.getPropertyType("version");
+        return Number.class.isAssignableFrom(type) || Date.class.isAssignableFrom(type);
+    }
+
+    protected void incrementVersion(final EntityAccess ea) {
+        if (Number.class.isAssignableFrom(ea.getPropertyType("version"))) {
+            ea.setProperty("version", ((Number)ea.getProperty("version")).longValue() + 1);
+        }
+        else {
+            setDateVersion(ea);
+        }
+    }
+
+    protected void setVersion(final EntityAccess ea) {
+        if (Number.class.isAssignableFrom(ea.getPropertyType("version"))) {
+            ea.setProperty("version", 0);
+        }
+        else {
+            setDateVersion(ea);
+        }
+    }
+
+    protected void setDateVersion(final EntityAccess ea) {
+        if (Timestamp.class.isAssignableFrom(ea.getPropertyType("version"))) {
+            ea.setProperty("version", new Timestamp(System.currentTimeMillis()));
+        }
+        else {
+            ea.setProperty("version", new Date());
+        }
     }
 }

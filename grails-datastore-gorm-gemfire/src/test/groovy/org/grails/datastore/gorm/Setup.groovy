@@ -1,7 +1,9 @@
 package org.grails.datastore.gorm
 
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.gemfire.GemfireGormEnhancer
-import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.support.GenericApplicationContext
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.gemfire.GemfireDatastore
 import org.springframework.datastore.mapping.gemfire.config.GormGemfireMappingFactory
@@ -60,6 +62,8 @@ class Setup {
             enhancer.enhance e
         } as MappingContext.Listener)
 
+        gemfire.applicationContext.addApplicationListener new DomainEventListener(gemfire)
+        gemfire.applicationContext.addApplicationListener new AutoTimestampEventListener(gemfire)
 
         gemfire.connect()
     }

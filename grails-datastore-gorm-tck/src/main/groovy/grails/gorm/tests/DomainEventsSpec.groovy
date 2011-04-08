@@ -1,7 +1,5 @@
 package grails.gorm.tests
 
-import org.grails.datastore.gorm.events.AutoTimestampEventListener
-import org.grails.datastore.gorm.events.DomainEventListener
 import org.springframework.datastore.mapping.core.Session
 
 /**
@@ -9,9 +7,12 @@ import org.springframework.datastore.mapping.core.Session
  */
 class DomainEventsSpec extends GormDatastoreSpec {
 
+    def setup() {
+        PersonEvent.resetStore()
+    }
+
     void "Test modify property before save"() {
         given:
-            session = setupEventsSession()
             session.datastore.mappingContext.addPersistentEntity(ModifyPerson)
             def p = new ModifyPerson(name:"Bob").save(flush:true)
             session.clear()
@@ -26,8 +27,6 @@ class DomainEventsSpec extends GormDatastoreSpec {
     void "Test auto time stamping working"() {
 
         given:
-            session = setupEventsSession()
-
             def p = new PersonEvent()
 
             p.name = "Fred"
@@ -52,8 +51,6 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
     void "Test delete events"() {
         given:
-            session = setupEventsSession()
-            PersonEvent.resetStore()
             def p = new PersonEvent()
             p.name = "Fred"
             p.save(flush:true)
@@ -76,9 +73,6 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
     void "Test before update event"() {
         given:
-            session = setupEventsSession()
-            PersonEvent.resetStore()
-
             def p = new PersonEvent()
 
             p.name = "Fred"
@@ -107,8 +101,6 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
     void "Test insert events"() {
         given:
-            session = setupEventsSession()
-            PersonEvent.resetStore()
             def p = new PersonEvent()
 
             p.name = "Fred"
@@ -141,8 +133,6 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
     void "Test load events"() {
         given:
-            session = setupEventsSession()
-            PersonEvent.resetStore()
             def p = new PersonEvent()
 
             p.name = "Fred"
@@ -163,9 +153,6 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
     void "Test bean autowiring"() {
         given:
-            session = setupEventsSession()
-            PersonEvent.resetStore()
-
             def personService = new Object()
             session.datastore.applicationContext.beanFactory.registerSingleton 'personService', personService
 
@@ -180,13 +167,6 @@ class DomainEventsSpec extends GormDatastoreSpec {
         then:
             "Fred" == p.name
             personService.is p.personService
-    }
-
-    private Session setupEventsSession() {
-        def datastore = session.datastore
-        datastore.applicationContext.addApplicationListener new DomainEventListener(datastore)
-        datastore.applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
-        session = datastore.connect()
     }
 
     def cleanup() {

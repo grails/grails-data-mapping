@@ -14,9 +14,11 @@
  */
 package org.springframework.datastore.mapping.simple.engine
 
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisher
+import org.springframework.datastore.mapping.core.OptimisticLockingException
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.engine.AssociationIndexer
+import org.springframework.datastore.mapping.engine.EntityAccess
 import org.springframework.datastore.mapping.engine.EntityPersister
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer
 import org.springframework.datastore.mapping.keyvalue.engine.AbstractKeyValueEntityPesister
@@ -43,7 +45,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
     String family
 
     SimpleMapEntityPersister(MappingContext context, PersistentEntity entity, Session session,
-             SimpleMapDatastore datastore, ApplicationEventPublisher publisher) {
+                             SimpleMapDatastore datastore, ApplicationEventPublisher publisher) {
         super(context, entity, session, publisher)
         this.datastore = datastore.backingMap
         this.indices = datastore.indices
@@ -61,7 +63,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
     }
 
     Query createQuery() {
-        return new SimpleMapQuery(session, super.getPersistentEntity(), this)
+        return new SimpleMapQuery(session, getPersistentEntity(), this)
     }
 
     protected void deleteEntry(String family, key) {
@@ -202,7 +204,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
         return root.identity.type == String ? key.toString() : key
     }
 
-    protected storeEntry(PersistentEntity persistentEntity, storeId, Map nativeEntry) {
+    protected storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, storeId, Map nativeEntry) {
         if (!persistentEntity.root) {
             nativeEntry.discriminator = persistentEntity.discriminator
         }
@@ -226,9 +228,28 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
         }
     }
 
-    protected void updateEntry(PersistentEntity persistentEntity, key, Map entry) {
+    protected void updateEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, key, Map entry) {
         def family = getFamily(persistentEntity, persistentEntity.getMapping())
         def existing = datastore[family].get(key)
+
+        if (isVersioned(entityAccess)) {
+            if (existing == null) {
+                setVersion entityAccess
+            }
+            else {
+                def oldVersion = existing.version
+                def currentVersion = entityAccess.getProperty('version')
+                if (Number.isAssignableFrom(entityAccess.getPropertyType('version'))) {
+                    oldVersion = existing.version.toLong()
+                    currentVersion = entityAccess.getProperty('version').toLong()
+                }
+                if (!oldVersion.equals(currentVersion)) {
+                    throw new OptimisticLockingException(persistentEntity, key)
+                }
+                incrementVersion(entityAccess)
+            }
+        }
+
         if (existing == null) {
             datastore[family].put(key, entry)
         }

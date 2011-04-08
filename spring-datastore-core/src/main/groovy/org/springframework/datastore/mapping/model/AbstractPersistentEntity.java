@@ -14,6 +14,8 @@
  */
 package org.springframework.datastore.mapping.model;
 
+import groovy.lang.Closure;
+
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Modifier;
@@ -24,10 +26,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.springframework.datastore.mapping.core.EntityCreationException;
-import org.springframework.datastore.mapping.model.lifecycle.Initializable;
+import org.springframework.datastore.mapping.model.config.GormProperties;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.model.types.OneToMany;
+import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.springframework.util.Assert;
 
 /**
@@ -36,18 +40,20 @@ import org.springframework.util.Assert;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class AbstractPersistentEntity<T> implements PersistentEntity, Initializable{
+public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
     protected Class javaClass;
     protected List<PersistentProperty> persistentProperties;
     protected List<Association> associations;
     protected Map<String, PersistentProperty> propertiesByName = new HashMap<String,PersistentProperty>();
     protected MappingContext context;
     protected PersistentProperty identity;
+    protected PersistentProperty version;
     protected List<String> persistentPropertyNames;
     private String decapitalizedName;
     protected Set owners;
     private PersistentEntity parentEntity;
     private boolean external;
+    private MappingProperties mappingProperties = new MappingProperties();
 
     public AbstractPersistentEntity(Class javaClass, MappingContext context) {
         Assert.notNull(javaClass, "The argument [javaClass] cannot be null");
@@ -74,25 +80,33 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
         persistentProperties = context.getMappingSyntaxStrategy().getPersistentProperties(javaClass, context);
         persistentPropertyNames = new ArrayList<String>();
         associations = new ArrayList();
+
         for (PersistentProperty persistentProperty : persistentProperties) {
-            if (!(persistentProperty instanceof OneToMany))
+
+            if (!(persistentProperty instanceof OneToMany)) {
                 persistentPropertyNames.add(persistentProperty.getName());
+            }
+
             if (persistentProperty instanceof Association) {
                 associations.add((Association) persistentProperty);
             }
-        }
-        for (PersistentProperty persistentProperty : persistentProperties) {
+
             propertiesByName.put(persistentProperty.getName(), persistentProperty);
         }
 
         Class superClass = javaClass.getSuperclass();
         if (superClass != null &&
-            !superClass.equals(Object.class) &&
-            !Modifier.isAbstract(superClass.getModifiers())) {
+                !superClass.equals(Object.class) &&
+                !Modifier.isAbstract(superClass.getModifiers())) {
             parentEntity = context.addPersistentEntity(superClass);
         }
 
         getMapping().getMappedForm(); // initialize mapping
+
+        initializeMappingProperties();
+        if (mappingProperties.isVersioned()) {
+            version = propertiesByName.get("version");
+        }
     }
 
     public boolean hasProperty(String name, Class type) {
@@ -115,7 +129,7 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
     public PersistentEntity getRootEntity() {
         PersistentEntity root = this;
         PersistentEntity parent = getParentEntity();
-        while(parent != null) {
+        while (parent != null) {
             root = parent;
             parent = parent.getParentEntity();
         }
@@ -151,9 +165,11 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
         try {
             return getJavaClass().newInstance();
         } catch (InstantiationException e) {
-            throw new EntityCreationException("Unable to create entity of type ["+getJavaClass()+"]: " + e.getMessage(),e);
+            throw new EntityCreationException("Unable to create entity of type [" + getJavaClass().getName() +
+                    "]: " + e.getMessage(), e);
         } catch (IllegalAccessException e) {
-            throw new EntityCreationException("Unable to create entity of type ["+getJavaClass()+"]: " + e.getMessage(),e);
+            throw new EntityCreationException("Unable to create entity of type [" + getJavaClass().getName() +
+                    "]: " + e.getMessage(), e);
         }
     }
 
@@ -163,6 +179,14 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
 
     public PersistentProperty getIdentity() {
         return identity;
+    }
+
+    public PersistentProperty getVersion() {
+        return version;
+    }
+
+    public boolean isVersioned() {
+        return version != null && mappingProperties.isVersioned();
     }
 
     public Class getJavaClass() {
@@ -183,6 +207,34 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity, I
 
     public PersistentProperty getPropertyByName(String name) {
         return propertiesByName.get(name);
+    }
+
+    private void initializeMappingProperties() {
+        MappingConfigurationBuilder builder = new MappingConfigurationBuilder(
+              mappingProperties, MappingProperties.class);
+
+        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(getJavaClass());
+        Closure value = cpf.getStaticPropertyValue(GormProperties.MAPPING, Closure.class);
+        if (value != null) {
+            builder.evaluate(value);
+        }
+
+        Object mappingVersion = builder.getProperties().get(MappingConfigurationBuilder.VERSION_KEY);
+        if (mappingVersion instanceof Boolean) {
+            mappingProperties.setVersion((Boolean)mappingVersion);
+        }
+    }
+
+    private static class MappingProperties {
+        private Boolean version;
+
+        public void setVersion(final boolean version) {
+            this.version = version;
+        }
+
+        public boolean isVersioned() {
+            return version == null ? true : version;
+        }
     }
 
     @Override

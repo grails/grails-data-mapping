@@ -1,5 +1,7 @@
 package org.grails.datastore.gorm
 
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.datastore.mapping.core.Session
@@ -52,6 +54,8 @@ class Setup {
             enhancer.enhance e
         } as MappingContext.Listener)
 
+        mongo.applicationContext.addApplicationListener new DomainEventListener(mongo)
+        mongo.applicationContext.addApplicationListener new AutoTimestampEventListener(mongo)
 
         session = mongo.connect()
 

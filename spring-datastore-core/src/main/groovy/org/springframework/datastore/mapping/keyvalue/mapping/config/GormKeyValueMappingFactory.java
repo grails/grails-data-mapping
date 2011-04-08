@@ -14,9 +14,6 @@
  */
 package org.springframework.datastore.mapping.keyvalue.mapping.config;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.datastore.mapping.config.AbstractGormMappingFactory;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
@@ -27,7 +24,6 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
  */
 public class GormKeyValueMappingFactory extends AbstractGormMappingFactory<Family, KeyValue> {
 
-    protected Map<PersistentEntity, Map> entityToPropertyMap = new HashMap<PersistentEntity, Map>();
     private String keyspace;
 
     public GormKeyValueMappingFactory(String keyspace) {

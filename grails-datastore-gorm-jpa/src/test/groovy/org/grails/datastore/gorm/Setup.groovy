@@ -1,5 +1,7 @@
 package org.grails.datastore.gorm
 
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.jpa.JpaGormEnhancer
 import org.hibernate.dialect.HSQLDialect
 import org.hibernate.ejb.Ejb3Configuration
@@ -68,6 +70,9 @@ class Setup {
         jpaDatastore.mappingContext.addMappingContextListener({ e ->
             enhancer.enhance e
         } as MappingContext.Listener)
+
+        jpaDatastore.applicationContext.addApplicationListener new DomainEventListener(jpaDatastore)
+        jpaDatastore.applicationContext.addApplicationListener new AutoTimestampEventListener(jpaDatastore)
 
         def session = jpaDatastore.connect()
 

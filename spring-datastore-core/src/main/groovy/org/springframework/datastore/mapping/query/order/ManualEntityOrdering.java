@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.query.Query;
@@ -100,7 +100,7 @@ public class ManualEntityOrdering {
                         final String propertyName = finalProperty.getName();
                         Method readMethod = cachedReadMethods.get(propertyName);
                         if (readMethod == null) {
-                            BeanWrapper b = new BeanWrapperImpl(o1);
+                            BeanWrapper b = PropertyAccessorFactory.forBeanPropertyAccess(o1);
                             final PropertyDescriptor pd = b.getPropertyDescriptor(propertyName);
                             if (pd != null) {
                                 readMethod = pd.getReadMethod();

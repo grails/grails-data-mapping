@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.datastore.mapping.model.ClassMapping;
 import org.springframework.datastore.mapping.model.IdentityMapping;
@@ -46,7 +46,7 @@ public class EntityAccess {
     public EntityAccess(PersistentEntity persistentEntity, Object entity) {
         this.entity = entity;
         this.persistentEntity = persistentEntity;
-        beanWrapper = new BeanWrapperImpl(entity);
+        beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(entity);
     }
 
     public Object getEntity() {
@@ -59,6 +59,10 @@ public class EntityAccess {
 
     public Object getProperty(String name) {
         return beanWrapper.getPropertyValue(name);
+    }
+
+    public Class getPropertyType(String name) {
+        return beanWrapper.getPropertyType(name);
     }
 
     public void setProperty(String name, Object value) {
@@ -88,6 +92,10 @@ public class EntityAccess {
 
     public String getIdentifierName() {
         return getIdentifierName(persistentEntity.getMapping());
+    }
+
+    public PersistentEntity getPersistentEntity() {
+        return persistentEntity;
     }
 
     public void setPropertyNoConversion(String name, Object value) {
