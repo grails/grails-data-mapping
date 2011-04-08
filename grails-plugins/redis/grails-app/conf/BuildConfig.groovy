@@ -9,19 +9,17 @@ grails.project.dependency.resolution = {
 	}
 
     log "warn"
-	useOrigin true
-
+	
+	def version = "1.0.0.BUILD-SNAPSHOT"	
+	def repo = version.endsWith("-SNAPSHOT") ? 'snapshot' : 'milestone'
+	
     repositories {
-/*        mavenRepo "http://maven.springframework.org/snapshot"
-        mavenCentral()*/
-		mavenLocal()
-		mavenCentral()
+        mavenRepo "http://maven.springframework.org/$repo"
+        mavenCentral()
     }
 
     dependencies {
 
-		def version = "1.0.0.BUILD-SNAPSHOT"
-		compile 'redis.clients:jedis:1.5.2'
         compile("org.grails:grails-datastore-gorm-redis:$version",
 				"org.grails:grails-datastore-gorm:$version",
 				"org.springframework:spring-datastore-core:$version",
