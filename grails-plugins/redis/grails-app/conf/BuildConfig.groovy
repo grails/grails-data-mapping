@@ -10,7 +10,7 @@ grails.project.dependency.resolution = {
 
     log "warn"
 	
-	def version = "1.0.0.groovy-1.7-BUILD-SNAPSHOTT"	
+	def version = "1.0.0.groovy-1.7-BUILD-SNAPSHOT"	
 	def repo = version.endsWith("-SNAPSHOT") ? 'snapshot' : 'milestone'
 	
     repositories {
@@ -19,7 +19,7 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
-
+		compile( 'redis.clients:jedis:1.5.2' )
         compile("org.grails:grails-datastore-gorm-redis:$version",
 				"org.grails:grails-datastore-gorm:$version",
 				"org.springframework:spring-datastore-core:$version",
