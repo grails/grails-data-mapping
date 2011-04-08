@@ -1,5 +1,5 @@
-def spockDependency = "org.spockframework:spock-core:0.5-groovy-1.8"
-def groovyVersion = '1.8.0-rc-1'
+def groovyVersion = System.getProperty('groovyVersion') ?: '1.7.8'
+def spockDependency = "org.spockframework:spock-core:0.5-groovy-${groovyVersion[0..2]}"
 
 def groovyProjects() {
     subprojects.findAll { project -> isGroovyProject(project) }
