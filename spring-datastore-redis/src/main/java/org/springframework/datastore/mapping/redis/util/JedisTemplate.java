@@ -14,15 +14,23 @@
  */
 package org.springframework.datastore.mapping.redis.util;
 
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.transaction.NoTransactionException;
-import redis.clients.jedis.*;
-import redis.clients.jedis.exceptions.JedisConnectionException;
-
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.transaction.NoTransactionException;
+import org.springframework.util.ReflectionUtils;
+
+import redis.clients.jedis.Client;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.PipelineBlock;
+import redis.clients.jedis.SortingParams;
+import redis.clients.jedis.Transaction;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 /**
  * A Spring-style template for querying Redis and translating
@@ -50,12 +58,11 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         this.timeout = timeout;
     }
 
-    public JedisTemplate(Jedis jedis) throws IOException {
+    public JedisTemplate(Jedis jedis) {
         this.redis = jedis;
         jedis.connect();
     }
 
-    @Override
     public boolean append(final String key, final Object val) {
         return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -72,7 +79,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public List<String> blpop(final int timeout, final String... keys) {
         return (List<String>) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -82,7 +88,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
 
     }
 
-    @Override
     public List<String> brpop(final int timeout, final String... keys) {
         return (List<String>) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -91,7 +96,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public boolean decr(final String key) {
         return (Boolean) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -100,7 +104,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public boolean decrby(final String key, final int amount) {
         return (Boolean) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -120,8 +123,10 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                             JedisTemplate.this.pipeline = this;
                             pipeline.doInRedis(JedisTemplate.this);
                         } catch (IOException e) {
+                            disconnect();
                             throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
                         } catch (RuntimeException e) {
+                            disconnect();
                             throw e;
                         }
                         finally {
@@ -133,7 +138,19 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
+    private void disconnect() {
+        // hack in to get the private client since disconnect() isn't in the interface
+        Field field = ReflectionUtils.findField(pipeline.getClass(), "client");
+        field.setAccessible(true);
+        try {
+            Client client = (Client)field.get(pipeline);
+            client.disconnect();
+        }
+        catch (Exception e) {
+            ReflectionUtils.handleReflectionException(e);
+        }
+    }
+
     public boolean persist(final String redisKey) {
         return (Boolean) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -327,7 +344,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public void ltrim(final String redisKey, final int start, final int end) {
         execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -382,7 +398,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public String rename(final String old, final String newKey) {
         return (String) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -402,7 +417,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
 
     }
 
-    @Override
     public String rpop(final String redisKey) {
         return (String) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -509,7 +523,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public void lpop(final String redisKey) {
        execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -553,7 +566,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public List<String> hkeys(final String redisKey) {
       return (List<String>) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -581,7 +593,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public boolean hsetnx(final String redisKey, final String key, final Object o) {
        return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -597,7 +608,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public List<String> hvals(final String redisKey) {
         return (List<String>) execute(new RedisCallback<Jedis>() {
               public Object doInRedis(Jedis redis) {
@@ -626,7 +636,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public boolean hexists(final String redisKey, final String entryKey) {
         return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -654,7 +663,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public boolean hincrby(final String redisKey, final String entryKey, final int amount) {
         return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -718,7 +726,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public long incrby(final String key, final int amount) {
         return (Long)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) throws IOException {
@@ -792,7 +799,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public Set<String> sdiff(final String... keys) {
         return (Set<String>) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -801,7 +807,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public boolean smove(final String source, final String destination, final String member) {
         return (Boolean) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -846,7 +851,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public long strlen(final String redisKey) {
         return (Long)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -875,7 +879,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public String type(final String key) {
         return (String) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -951,7 +954,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public List<String> mget(final String... keys) {
         return (List<String>) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -1027,7 +1029,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public long zcount(final String key, final double min, final double max) {
      return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -1036,7 +1037,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public double zincrby(final String key, final double score, final String member) {
          return (Double) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -1045,7 +1045,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public long zinterstore(final String destKey, final String...keys) {
          return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -1058,7 +1057,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public long zunionstore(final String destKey, final String... keys) {
          return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -1071,7 +1069,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public long zcard(final String key) {
         return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -1092,7 +1089,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-    @Override
     public long zrem(final String key, final Object member) {
         return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
