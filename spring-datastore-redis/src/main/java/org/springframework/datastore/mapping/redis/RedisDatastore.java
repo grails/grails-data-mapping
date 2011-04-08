@@ -115,6 +115,14 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
         static JedisPool createPool(String host, int port, int timeout, int resources, String password) {
             JedisPoolConfig poolConfig = new JedisPoolConfig();
             poolConfig.setMaxWait(timeout);
+            poolConfig.setMaxActive(20);
+            poolConfig.setMaxIdle(5);
+            poolConfig.setMinIdle(1);
+            poolConfig.setTestOnBorrow(true);
+            poolConfig.setTestOnReturn(true);
+            poolConfig.setTestWhileIdle(true);
+            poolConfig.setNumTestsPerEvictionRun(10);
+            poolConfig.setTimeBetweenEvictionRunsMillis(60000);
 
             if(password != null) {
                pool = new JedisPool(poolConfig, host, port, timeout, password);
