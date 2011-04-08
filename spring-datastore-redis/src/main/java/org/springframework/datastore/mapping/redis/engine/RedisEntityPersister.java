@@ -312,19 +312,19 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
         final String key = family + ":" + id;
 
         if (update && isVersioned(entityAccess)) {
-//            String oldVersion;
-//            RedisSession newSession = (RedisSession)getSession().getDatastore().connect();
-//            try {
-//                oldVersion = newSession.getNativeInterface().hget(key, "version");
-//            }
-//            finally {
-//                newSession.disconnect();
-//            }
-//
-//            String version = (String)nativeEntry.get("version");
-//            if (!version.equals(oldVersion)) {
-//                throw new OptimisticLockingException(persistentEntity, id);
-//            }
+            String oldVersion;
+            RedisSession newSession = (RedisSession)getSession().getDatastore().connect();
+            try {
+                oldVersion = newSession.getNativeInterface().hget(key, "version");
+            }
+            finally {
+                newSession.disconnect();
+            }
+
+            String version = (String)nativeEntry.get("version");
+            if (!version.equals(oldVersion)) {
+                throw new OptimisticLockingException(persistentEntity, id);
+            }
 
             incrementVersion(entityAccess);
         }

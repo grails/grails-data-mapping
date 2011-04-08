@@ -111,7 +111,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
 
 
     public List<Object> pipeline(final RedisCallback<RedisTemplate<Jedis, SortingParams>> pipeline) {
-
         return (List<Object>) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) throws IOException {
                 return redis.pipelined(new PipelineBlock(){
@@ -121,7 +120,11 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                             JedisTemplate.this.pipeline = this;
                             pipeline.doInRedis(JedisTemplate.this);
                         } catch (IOException e) {
+                            JedisTemplate.this.pipeline.disconnect();
                             throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+                        } catch (RuntimeException e) {
+                            JedisTemplate.this.pipeline.disconnect();
+                            throw e;
                         }
                         finally {
                             JedisTemplate.this.pipeline = null;
