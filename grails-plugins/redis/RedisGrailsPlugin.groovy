@@ -13,27 +13,29 @@
  * limitations under the License.
  */
 
+import grails.datastore.Redis
+
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
+import org.codehaus.groovy.grails.commons.GrailsServiceClass
+
+import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.redis.RedisGormEnhancer
+import org.grails.datastore.gorm.redis.RedisGormStaticApi
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.grails.datastore.gorm.utils.InstanceProxy
+
 import org.grails.plugins.redis.RedisDatastoreFactoryBean
 import org.grails.plugins.redis.RedisMappingContextFactoryBean
+
 import org.springframework.aop.scope.ScopedProxyFactoryBean
-import grails.datastore.Redis
-import org.grails.datastore.gorm.GormInstanceApi
-import org.grails.datastore.gorm.redis.RedisGormStaticApi
 import org.springframework.context.ApplicationContext
+import org.springframework.core.annotation.AnnotationUtils
+import org.springframework.data.document.mongodb.bean.factory.*
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import org.springframework.transaction.PlatformTransactionManager
-import org.codehaus.groovy.grails.commons.GrailsServiceClass
-
-import org.springframework.core.annotation.AnnotationUtils
-import org.springframework.data.document.mongodb.bean.factory.*
-import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import org.springframework.transaction.annotation.Transactional
 
 class RedisGrailsPlugin {
@@ -43,7 +45,7 @@ class RedisGrailsPlugin {
         [ name: "Graeme Rocher", email: "grocher@vmware.com" ] ]
     def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPREDIS" ]
     def scm = [ url: "https://github.com/SpringSource/spring-data-mapping" ]
-	
+
     def version = "1.0.0.M4"
     def grailsVersion = "1.3.4 > *"
     def loadAfter = ['domainClass', 'services']
@@ -56,11 +58,11 @@ A plugin that integrates the Redis key/value datastore into Grails, providing
 a GORM-like API onto it
 '''
 
-	def pluginExcludes = [
-	        "grails-app/domain/*.groovy",
-	        "grails-app/services/*.groovy",	
-	        "grails-app/controllers/*.groovy",		
-	]
+    def pluginExcludes = [
+        "grails-app/domain/*.groovy",
+        "grails-app/services/*.groovy",
+        "grails-app/controllers/*.groovy"
+    ]
 
     def documentation = "http://grails.org/plugin/redis"
 
@@ -113,10 +115,10 @@ a GORM-like API onto it
                 continue
             }
 
-			def beanName = serviceClass.propertyName
-			if(springConfig.containsBean(beanName)) {
-				delegate."${beanName}".transactionManager = ref("redisDatastoreTransactionManager")
-			}
+            def beanName = serviceClass.propertyName
+            if (springConfig.containsBean(beanName)) {
+                delegate."${beanName}".transactionManager = ref("redisDatastoreTransactionManager")
+            }
         }
     }
 
