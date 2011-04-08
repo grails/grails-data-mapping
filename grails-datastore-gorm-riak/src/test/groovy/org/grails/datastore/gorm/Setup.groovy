@@ -36,72 +36,68 @@ import org.springframework.validation.Validator
  */
 class Setup {
 
-  static riak
+    static riak
 
-	static destroy() {}
+    static destroy() {}
 
-  static Session setup(classes) {
-    def ctx = new GenericApplicationContext()
-    ctx.refresh()
-    riak = new RiakDatastore(new KeyValueMappingContext(""), [
-        defaultUri: "http://localhost:8098/riak/{bucket}/{key}",
-        mapReduceUri: "http://localhost:8098/mapred"
-    ], ctx)
-    for (cls in classes) {
-      riak.mappingContext.addPersistentEntity(cls)
-    }
+    static Session setup(classes) {
+        def ctx = new GenericApplicationContext()
+        ctx.refresh()
 
-    PersistentEntity entity = riak.mappingContext.persistentEntities.find { PersistentEntity e ->
-      e.name.contains("TestEntity")
-    }
+        riak = new RiakDatastore(new KeyValueMappingContext(""), [
+            defaultUri: "http://localhost:8098/riak/{bucket}/{key}",
+            mapReduceUri: "http://localhost:8098/mapred"
+        ], ctx)
 
-    riak.mappingContext.addEntityValidator(entity, [
-        supports: { Class c -> true },
-        validate: { Object o, Errors errors ->
-          if (!StringUtils.hasText(o.name)) {
-            errors.rejectValue("name", "name.is.blank")
-          }
+        for (cls in classes) {
+            riak.mappingContext.addPersistentEntity(cls)
         }
-    ] as Validator)
 
-    def enhancer = new RiakGormEnhancer(riak, new DatastoreTransactionManager(datastore: riak))
-    enhancer.enhance()
-
-    riak.mappingContext.addMappingContextListener({ e ->
-      enhancer.enhance e
-    } as MappingContext.Listener)
-
-
-    Session con = riak.connect()
-    RiakTemplate riakTmpl = con.nativeInterface
-    QosParameters qos = new RiakQosParameters()
-    qos.durableWriteThreshold = "3"
-    riakTmpl.defaultQosParameters = qos
-    riakTmpl.useCache = false
-    [
-        "grails.gorm.tests.TestEntity",
-        "grails.gorm.tests.ChildEntity",
-        "grails.gorm.tests.Publication",
-        "grails.gorm.tests.Location",
-        "grails.gorm.tests.City",
-        "grails.gorm.tests.Country",
-        "grails.gorm.tests.Highway",
-        "grails.gorm.tests.Book",
-        "grails.gorm.tests.Pet",
-        "grails.gorm.tests.Person",
-        "grails.gorm.tests.Task",
-        "grails.gorm.tests.Plant"
-    ].each { type ->
-      def schema = riakTmpl.getBucketSchema(type, true)
-      schema.keys.each { key ->
-        try {
-          riakTmpl.deleteKeys("$type:$key")
-        } catch (err) {
+        PersistentEntity entity = riak.mappingContext.persistentEntities.find { PersistentEntity e ->
+            e.name.contains("TestEntity")
         }
-      }
+
+        riak.mappingContext.addEntityValidator(entity, [
+            supports: { Class c -> true },
+            validate: { Object o, Errors errors ->
+                if (!StringUtils.hasText(o.name)) {
+                    errors.rejectValue("name", "name.is.blank")
+                }
+            }
+        ] as Validator)
+
+        def enhancer = new RiakGormEnhancer(riak, new DatastoreTransactionManager(datastore: riak))
+        enhancer.enhance()
+
+        riak.mappingContext.addMappingContextListener({ e -> enhancer.enhance e } as MappingContext.Listener)
+
+        Session con = riak.connect()
+        RiakTemplate riakTmpl = con.nativeInterface
+        QosParameters qos = new RiakQosParameters()
+        qos.durableWriteThreshold = "3"
+        riakTmpl.defaultQosParameters = qos
+        riakTmpl.useCache = false
+        ["grails.gorm.tests.TestEntity",
+         "grails.gorm.tests.ChildEntity",
+         "grails.gorm.tests.Publication",
+         "grails.gorm.tests.Location",
+         "grails.gorm.tests.City",
+         "grails.gorm.tests.Country",
+         "grails.gorm.tests.Highway",
+         "grails.gorm.tests.Book",
+         "grails.gorm.tests.Pet",
+         "grails.gorm.tests.Person",
+         "grails.gorm.tests.Task",
+         "grails.gorm.tests.Plant"].each { type ->
+            def schema = riakTmpl.getBucketSchema(type, true)
+            schema.keys.each { key ->
+                try {
+                    riakTmpl.deleteKeys("$type:$key")
+                } catch (err) {
+                }
+            }
+         }
+
+         con
     }
-
-    return con
-
-  }
 }

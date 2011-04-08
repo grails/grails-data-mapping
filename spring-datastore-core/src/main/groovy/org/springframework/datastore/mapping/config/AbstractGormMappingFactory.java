@@ -29,7 +29,7 @@ import org.springframework.datastore.mapping.model.config.GormProperties;
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher;
 
 /**
- * Abstract GORM implementation that uses the GORM MappingConfigurationBuilder to configure entity mappings
+ * Abstract GORM implementation that uses the GORM MappingConfigurationBuilder to configure entity mappings.
  *
  * @author Graeme Rocher
  */
@@ -63,7 +63,7 @@ public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R,
     @Override
     public T createMappedForm(@SuppressWarnings("rawtypes") PersistentProperty mpp) {
         Map<String, T> properties = entityToPropertyMap.get(mpp.getOwner());
-        if(properties != null && properties.containsKey(mpp.getName())) {
+        if (properties != null && properties.containsKey(mpp.getName())) {
             return properties.get(mpp.getName());
         }
         return BeanUtils.instantiate(getPropertyMappedFormType());

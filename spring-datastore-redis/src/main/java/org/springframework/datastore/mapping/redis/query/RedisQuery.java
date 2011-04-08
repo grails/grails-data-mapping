@@ -67,7 +67,7 @@ public class RedisQuery extends Query {
 
         if (!getEntity().isRoot()) {
             // if the entity is not a root entity then apply a conjunction to trim
-            // any enities not of this type
+            // any entities not of this type
 
             final String childEntityResultsKey = finalKey + "-" + getEntity().getDecapitalizedName();
             template.sinterstore(childEntityResultsKey, finalKey,

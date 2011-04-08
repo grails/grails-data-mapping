@@ -67,14 +67,14 @@ class RiakGormInstanceApi<D> extends GormInstanceApi<D> {
             datastore.currentSession.qosParameters = qos
         }
 
-		  try {
-			  return super.save(instance, params)
-		  }
-		  finally {
+        try {
+            return super.save(instance, params)
+        }
+        finally {
             if (params?.w || params?.dw) {
                 datastore.currentSession.qosParameters = currentQosParams
             }
-		  }
+        }
     }
 }
 

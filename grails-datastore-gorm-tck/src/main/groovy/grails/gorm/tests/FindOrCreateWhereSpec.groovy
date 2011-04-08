@@ -11,14 +11,14 @@ class FindOrCreateWhereSpec extends GormDatastoreSpec {
             64 == entity.age
             null == entity.id
     }
-    
+
     def "Test findOrCreateWhere returns a persistent instance if it exists in the database"() {
         given:
             def entityId = new TestEntity(name: 'Belew', age: 61).save().id
-            
+
         when:
             def entity = TestEntity.findOrCreateWhere(name: 'Belew', age: 61)
-            
+
         then:
             entity.id != null
             entityId == entity.id
