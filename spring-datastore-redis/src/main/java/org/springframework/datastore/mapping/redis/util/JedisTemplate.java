@@ -1045,6 +1045,32 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     }
 
     @Override
+    public long zinterstore(final String destKey, final String...keys) {
+         return (Long) execute(new RedisCallback<Jedis>() {
+            public Object doInRedis(Jedis redis) {
+                if(pipeline != null) {
+                    pipeline.zinterstore(destKey, keys);
+                    return 0;
+                }
+                return redis.zinterstore(destKey,keys);
+            }
+        });
+    }
+
+    @Override
+    public long zunionstore(final String destKey, final String... keys) {
+         return (Long) execute(new RedisCallback<Jedis>() {
+            public Object doInRedis(Jedis redis) {
+                if(pipeline != null) {
+                    pipeline.zunionstore(destKey, keys);
+                    return 0;
+                }
+                return redis.zunionstore(destKey, keys);
+            }
+        });
+    }
+
+    @Override
     public long zcard(final String key) {
         return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
@@ -1056,7 +1082,24 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public long zrank(final String key, final Object member) {
         return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
+                if(pipeline != null) {
+                    redis.zrank(key, member.toString());
+                    return 0;
+                }
                 return redis.zrank(key, member.toString());
+            }
+        });
+    }
+
+    @Override
+    public long zrem(final String key, final Object member) {
+        return (Long) execute(new RedisCallback<Jedis>() {
+            public Object doInRedis(Jedis redis) {
+                if(pipeline != null) {
+                    pipeline.zrem(key, member.toString());
+                    return 0;
+                }
+                return redis.zrem(key, member.toString());
             }
         });
     }

@@ -197,7 +197,14 @@ public interface RedisTemplate<T, S> {
 
     double zincrby(String key, double score, String member);
 
+
+    long zinterstore(final String destKey, final String...keys);
+
+    long zunionstore(final String destKey, final String...keys);
+
     long zrank(String key, Object member);
+
+    long zrem(String key, Object member);
 
     Set<String> zrange(String key, int fromIndex, int toIndex);
 
