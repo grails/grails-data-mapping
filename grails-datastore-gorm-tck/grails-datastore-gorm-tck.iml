@@ -17,22 +17,22 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.spockframework/spock-core/jars/spock-core-0.5-groovy-1.7-SNAPSHOT.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.spockframework/spock-core/jars/spock-core-0.5-groovy-1.7.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.spockframework/spock-core/sources/spock-core-0.5-groovy-1.7-SNAPSHOT-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.spockframework/spock-core/sources/spock-core-0.5-groovy-1.7-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.groovy/groovy-all/jars/groovy-all-1.7.5.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.groovy/groovy-all/jars/groovy-all-1.7.8.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.groovy/groovy-all/sources/groovy-all-1.7.5-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.groovy/groovy-all/sources/groovy-all-1.7.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

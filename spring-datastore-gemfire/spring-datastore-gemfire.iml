@@ -23,18 +23,18 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data.gemfire/spring-gemfire/jars/spring-gemfire-1.0.0.M1.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data.gemfire/spring-gemfire/jars/spring-gemfire-1.0.1.BUILD-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data.gemfire/spring-gemfire/sources/spring-gemfire-1.0.0.M1-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data.gemfire/spring-gemfire/sources/spring-gemfire-1.0.1.BUILD-SNAPSHOT-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/com.gemstone.gemfire/gemfire/jars/gemfire-6.0.1.A.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/com.gemstone.gemfire/gemfire/jars/gemfire-6.5.1.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -52,11 +52,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.groovy/groovy-all/jars/groovy-all-1.7.5.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.groovy/groovy-all/jars/groovy-all-1.7.8.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.groovy/groovy-all/sources/groovy-all-1.7.5-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.groovy/groovy-all/sources/groovy-all-1.7.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -84,44 +84,11 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.spockframework/spock-core/jars/spock-core-0.5-groovy-1.7-SNAPSHOT.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.spockframework/spock-core/jars/spock-core-0.5-groovy-1.7.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.spockframework/spock-core/sources/spock-core-0.5-groovy-1.7-SNAPSHOT-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.groovy/groovy-all/jars/groovy-all-1.7.5.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.groovy/groovy-all/sources/groovy-all-1.7.5-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/junit/junit-dep/jars/junit-dep-4.8.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/junit/junit-dep/sources/junit-dep-4.8.2-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.hamcrest/hamcrest-core/jars/hamcrest-core-1.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.hamcrest/hamcrest-core/sources/hamcrest-core-1.2-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.spockframework/spock-core/sources/spock-core-0.5-groovy-1.7-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

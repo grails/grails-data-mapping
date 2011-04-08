@@ -14,6 +14,7 @@
  */
 package org.springframework.datastore.mapping.core;
 
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
 /**
@@ -22,7 +23,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
  * @author Burt Beckwith
  * @since 1.0
  */
-public class OptimisticLockingException extends RuntimeException {
+public class OptimisticLockingException extends OptimisticLockingFailureException {
 
     private static final long serialVersionUID = 1;
 
