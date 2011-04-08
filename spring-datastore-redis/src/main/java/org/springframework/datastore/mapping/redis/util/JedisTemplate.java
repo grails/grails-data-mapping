@@ -120,10 +120,8 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                             JedisTemplate.this.pipeline = this;
                             pipeline.doInRedis(JedisTemplate.this);
                         } catch (IOException e) {
-                            JedisTemplate.this.pipeline.disconnect();
                             throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
                         } catch (RuntimeException e) {
-                            JedisTemplate.this.pipeline.disconnect();
                             throw e;
                         }
                         finally {

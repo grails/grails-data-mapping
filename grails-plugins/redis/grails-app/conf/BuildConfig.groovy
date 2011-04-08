@@ -10,7 +10,7 @@ grails.project.dependency.resolution = {
 
     log "warn"
 	
-	def version = "1.0.0.BUILD-SNAPSHOT"	
+	def version = "1.0.0.groovy-1.7-BUILD-SNAPSHOTT"	
 	def repo = version.endsWith("-SNAPSHOT") ? 'snapshot' : 'milestone'
 	
     repositories {
