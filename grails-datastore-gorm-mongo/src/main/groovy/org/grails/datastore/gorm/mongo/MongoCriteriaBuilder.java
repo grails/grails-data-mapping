@@ -19,7 +19,7 @@ import grails.gorm.CriteriaBuilder;
 
 import java.util.List;
 
-import org.springframework.datastore.mapping.core.Datastore;
+import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.mongo.query.MongoQuery.Near;
 import org.springframework.datastore.mapping.mongo.query.MongoQuery.WithinBox;
 import org.springframework.datastore.mapping.mongo.query.MongoQuery.WithinCircle;
@@ -33,12 +33,12 @@ import org.springframework.datastore.mapping.query.Query;
  */
 public class MongoCriteriaBuilder extends CriteriaBuilder {
 
-    public MongoCriteriaBuilder(Class targetClass, Datastore datastore, Query query) {
-        super(targetClass, datastore, query);
+    public MongoCriteriaBuilder(final Class targetClass, final Session session, final Query query) {
+        super(targetClass, session, query);
     }
 
-    public MongoCriteriaBuilder(Class targetClass, Datastore datastore) {
-        super(targetClass, datastore);
+    public MongoCriteriaBuilder(final Class targetClass, final Session session) {
+        super(targetClass, session);
     }
 
     /**

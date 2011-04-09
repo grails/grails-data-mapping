@@ -71,10 +71,10 @@ public abstract class AbstractDatastore implements Datastore {
     public AbstractDatastore() {
     }
 
-    public final Session connect(@SuppressWarnings("hiding") Map<String, String> connectionDetails) {
+    public final Session connect(Map<String, String> connDetails) {
         SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(this);
-        final Session session = createSession(connectionDetails);
 
+        final Session session = createSession(connDetails);
         if (session == null) {
             return null;
         }
@@ -112,6 +112,10 @@ public abstract class AbstractDatastore implements Datastore {
             connection = sessionHolder.getSession();
         }
         return connection;
+    }
+
+    public boolean hasCurrentSession() {
+        return TransactionSynchronizationManager.hasResource(this);
     }
 
     /**

@@ -12,24 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm.finders;
+package org.grails.datastore.gorm;
 
 import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.query.Query;
 
 /**
- * Implemented by finders that build queries.
- *
- * @author Graeme Rocher
- * @since 1.0
+ * @author Burt Beckwith
  */
-public interface QueryBuildingFinder {
-
-    /**
-     * Build a query from an invocation
-     * @param invocation The invocation
-     * @param session an active session
-     * @return The query
-     */
-    Query buildQuery(DynamicFinderInvocation invocation, Session session);
+public interface VoidSessionCallback {
+	void doInSession(Session session);
 }

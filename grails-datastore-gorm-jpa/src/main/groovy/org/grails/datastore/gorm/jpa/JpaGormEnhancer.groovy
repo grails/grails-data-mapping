@@ -23,8 +23,10 @@ import javax.persistence.Query
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
+import org.grails.datastore.gorm.SessionCallback
 import org.springframework.core.convert.ConversionService
 import org.springframework.datastore.mapping.core.Datastore
+import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.jpa.JpaSession
 import org.springframework.orm.jpa.JpaCallback
 import org.springframework.orm.jpa.JpaTemplate
@@ -78,31 +80,34 @@ class JpaInstanceApi<D> extends GormInstanceApi<D> {
     }
 
     private D doSave(D instance, Map params, Closure callable) {
-        final session = datastore.currentSession
-        boolean hasErrors = false
-        boolean validate = params?.containsKey("validate") ? params.validate : true
-        if (instance.respondsTo('validate') && validate) {
-            session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, false)
-            hasErrors = !instance.validate()
-        }
-        else {
-            session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, true)
-            instance.clearErrors()
-        }
+        doInSession new SessionCallback() {
+            def doInSession(Session session) {
+                boolean hasErrors = false
+                boolean validate = params?.containsKey("validate") ? params.validate : true
+                if (instance.respondsTo('validate') && validate) {
+                    session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, false)
+                    hasErrors = !instance.validate()
+                }
+                else {
+                    session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, true)
+                    instance.clearErrors()
+                }
 
-        if (hasErrors) {
-            if (params?.failOnError) {
-                throw validationException.newInstance("Validation error occured during call to save()", instance.errors)
+                if (hasErrors) {
+                    if (params?.failOnError) {
+                        throw validationException.newInstance("Validation error occured during call to save()", instance.errors)
+                    }
+                    rollbackTransaction(session)
+                    return null
+                }
+
+                callable.call(session)
+                if (params?.flush) {
+                    session.flush()
+                }
+                return instance
             }
-            rollbackTransaction(session)
-            return null
         }
-
-        callable.call(session)
-        if (params?.flush) {
-            session.flush()
-        }
-        return instance
     }
 
     private void rollbackTransaction(JpaSession jpaSession) {
@@ -117,8 +122,12 @@ class JpaStaticApi<D> extends GormStaticApi<D> {
     }
 
     def withEntityManager(Closure callable) {
-        JpaTemplate jpaTemplate = datastore.currentSession.getNativeInterface()
-        jpaTemplate.execute({ EntityManager em -> callable.call(em) } as JpaCallback)
+        doInSession new SessionCallback() {
+            def doInSession(Session session) {
+                JpaTemplate jpaTemplate = session.getNativeInterface()
+                jpaTemplate.execute({ EntityManager em -> callable.call(em) } as JpaCallback)
+            }
+        }
     }
 
     @Override
@@ -222,32 +231,40 @@ class JpaStaticApi<D> extends GormStaticApi<D> {
     }
 
     private Integer doUpdate(String query, params = null, args = null) {
-        JpaTemplate jpaTemplate = datastore.currentSession.getNativeInterface()
-        jpaTemplate.execute({ EntityManager em ->
-            Query q = em.createQuery(query)
-            populateQueryArguments(datastore, q, params)
-            populateQueryArguments(datastore, q, args)
-            handleParamsAndArguments(q, params, args)
+        doInSession new SessionCallback<Integer>() {
+            Integer doInSession(Session session) {
+                JpaTemplate jpaTemplate = session.getNativeInterface()
+                jpaTemplate.execute({ EntityManager em ->
+                    Query q = em.createQuery(query)
+                    populateQueryArguments(datastore, q, params)
+                    populateQueryArguments(datastore, q, args)
+                    handleParamsAndArguments(q, params, args)
 
-            q.executeUpdate()
-        } as JpaCallback)
+                    q.executeUpdate()
+                } as JpaCallback)
+            }
+        }
     }
 
     private doQuery(String query, params = null, args = null, boolean singleResult = false) {
-        JpaTemplate jpaTemplate = datastore.currentSession.getNativeInterface()
-        jpaTemplate.execute({ EntityManager em ->
-            Query q = em.createQuery(query)
-            populateQueryArguments(datastore, q, args)
-            populateQueryArguments(datastore, q, params)
-            handleParamsAndArguments(q, params, args)
+        doInSession new SessionCallback() {
+            def doInSession(Session session) {
+                JpaTemplate jpaTemplate = session.getNativeInterface()
+                jpaTemplate.execute({ EntityManager em ->
+                    Query q = em.createQuery(query)
+                    populateQueryArguments(datastore, q, args)
+                    populateQueryArguments(datastore, q, params)
+                    handleParamsAndArguments(q, params, args)
 
-            if (singleResult) {
-                doSingleResult(q)
+                    if (singleResult) {
+                        doSingleResult(q)
+                    }
+                    else {
+                        return q.resultList
+                    }
+                } as JpaCallback)
             }
-            else {
-                return q.resultList
-            }
-        } as JpaCallback)
+        }
     }
 
     private Query handleParamsAndArguments(Query q, params, args) {

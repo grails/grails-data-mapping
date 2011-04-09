@@ -47,6 +47,12 @@ public interface Datastore {
     Session getCurrentSession() throws ConnectionNotFoundException;
 
     /**
+     * Checks if there is a current session.
+     * @return true if there's a bound active session
+     */
+    boolean hasCurrentSession();
+
+    /**
      * Obtains the MappingContext object
      *
      * @return The MappingContext object

@@ -32,7 +32,6 @@ import org.springframework.datastore.mapping.transactions.Transaction;
  * @since 1.0
  */
 public class SimpleMapSession extends AbstractSession<Map> {
-    private boolean connected;
     private Map<String, Map> datastore;
 
     public SimpleMapSession(SimpleMapDatastore datastore, MappingContext mappingContext,
@@ -58,16 +57,6 @@ public class SimpleMapSession extends AbstractSession<Map> {
     @Override
     protected Transaction beginTransactionInternal() {
         return new MockTransaction(this);
-    }
-
-    public boolean isConnected() {
-        return connected;
-    }
-
-    @Override
-    public void disconnect() {
-        super.disconnect();
-        connected = false;
     }
 
     public Map getNativeInterface() {

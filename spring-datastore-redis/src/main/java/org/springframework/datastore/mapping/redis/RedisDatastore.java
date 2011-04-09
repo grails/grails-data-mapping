@@ -162,7 +162,8 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
         }
 
         return new RedisSession(this, getMappingContext(),
-            JedisTemplateFactory.create(host, port, timeout, pooled,password), getApplicationEventPublisher());
+            JedisTemplateFactory.create(host, port, timeout, pooled, password),
+            getApplicationEventPublisher());
     }
 
     public void afterPropertiesSet() throws Exception {
