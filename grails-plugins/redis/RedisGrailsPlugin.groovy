@@ -19,6 +19,8 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.codehaus.groovy.grails.commons.GrailsServiceClass
 
 import org.grails.datastore.gorm.GormInstanceApi
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.redis.RedisGormEnhancer
 import org.grails.datastore.gorm.redis.RedisGormStaticApi
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
@@ -170,6 +172,15 @@ a GORM-like API onto it
             else {
                 enhancer.enhance(entity)
             }
+        }
+    }
+
+    def doWithApplicationContext = { ctx ->
+        // TODO investigate why implementing ApplicationContextAware in RedisDatastoreFactoryBean doesn't work
+        def redisDatastore = ctx.redisDatastore
+        if (!redisDatastore.applicationContext) {
+            ctx.addApplicationListener new DomainEventListener(redisDatastore)
+            ctx.addApplicationListener new AutoTimestampEventListener(redisDatastore)
         }
     }
 }
