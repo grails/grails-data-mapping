@@ -80,7 +80,7 @@ class JpaInstanceApi<D> extends GormInstanceApi<D> {
     }
 
     private D doSave(D instance, Map params, Closure callable) {
-        doInSession new SessionCallback() {
+        execute new SessionCallback() {
             def doInSession(Session session) {
                 boolean hasErrors = false
                 boolean validate = params?.containsKey("validate") ? params.validate : true
@@ -122,7 +122,7 @@ class JpaStaticApi<D> extends GormStaticApi<D> {
     }
 
     def withEntityManager(Closure callable) {
-        doInSession new SessionCallback() {
+        execute new SessionCallback() {
             def doInSession(Session session) {
                 JpaTemplate jpaTemplate = session.getNativeInterface()
                 jpaTemplate.execute({ EntityManager em -> callable.call(em) } as JpaCallback)
@@ -231,7 +231,7 @@ class JpaStaticApi<D> extends GormStaticApi<D> {
     }
 
     private Integer doUpdate(String query, params = null, args = null) {
-        doInSession new SessionCallback<Integer>() {
+        execute new SessionCallback<Integer>() {
             Integer doInSession(Session session) {
                 JpaTemplate jpaTemplate = session.getNativeInterface()
                 jpaTemplate.execute({ EntityManager em ->
@@ -247,7 +247,7 @@ class JpaStaticApi<D> extends GormStaticApi<D> {
     }
 
     private doQuery(String query, params = null, args = null, boolean singleResult = false) {
-        doInSession new SessionCallback() {
+        execute new SessionCallback() {
             def doInSession(Session session) {
                 JpaTemplate jpaTemplate = session.getNativeInterface()
                 jpaTemplate.execute({ EntityManager em ->

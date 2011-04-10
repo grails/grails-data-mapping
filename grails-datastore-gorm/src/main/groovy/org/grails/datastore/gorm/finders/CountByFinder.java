@@ -38,7 +38,7 @@ public class CountByFinder extends DynamicFinder implements QueryBuildingFinder 
 
     @Override
     protected Object doInvokeInternal(final DynamicFinderInvocation invocation) {
-        return doInSession(new SessionCallback<Object>() {
+        return execute(new SessionCallback<Object>() {
             public Object doInSession(final Session session) {
                 Query q = buildQuery(invocation, session);
                 return invokeQuery(q);

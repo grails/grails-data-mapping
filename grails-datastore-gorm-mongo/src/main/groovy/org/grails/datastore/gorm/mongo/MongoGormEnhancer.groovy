@@ -104,7 +104,7 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
      * @return The DBObject instance
      */
     DBObject getDbo(D instance) {
-        doInSession new SessionCallback<DBObject>() {
+        execute new SessionCallback<DBObject>() {
             DBObject doInSession(Session session) {
 
                 if (!session.contains(instance) && !instance.save()) {

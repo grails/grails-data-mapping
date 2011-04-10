@@ -30,7 +30,7 @@ abstract class AbstractDatastoreApi {
         this.datastore = datastore
     }
 
-    protected <T> T doInSession(SessionCallback<T> callback) {
+    protected <T> T execute(SessionCallback<T> callback) {
         Session session = DatastoreUtils.getSession(datastore, true)
         boolean existing = DatastoreUtils.isSessionTransactional(session, datastore)
         try {
@@ -43,7 +43,7 @@ abstract class AbstractDatastoreApi {
         }
     }
 
-    protected void doInSession(VoidSessionCallback callback) {
+    protected void execute(VoidSessionCallback callback) {
         Session session = DatastoreUtils.getSession(datastore, true)
         boolean existing = DatastoreUtils.isSessionTransactional(session, datastore)
         try {

@@ -52,7 +52,7 @@ class RedisGormInstanceApi<D> extends GormInstanceApi<D> {
     }
 
     void expire(D instance, int ttl) {
-        doInSession new VoidSessionCallback() {
+        execute new VoidSessionCallback() {
             void doInSession(Session session) {
                 session.expire instance, ttl
             }
@@ -70,7 +70,7 @@ class RedisGormStaticApi<D> extends GormStaticApi<D> {
      * Expires an entity for the given id and TTL.
      */
     void expire(Serializable id, int ttl) {
-        doInSession new VoidSessionCallback() {
+        execute new VoidSessionCallback() {
             void doInSession(Session session) {
                 session.expire(persistentClass, id, ttl)
             }
@@ -82,7 +82,7 @@ class RedisGormStaticApi<D> extends GormStaticApi<D> {
      * @return A random domain class
      */
     D random() {
-        doInSession new SessionCallback() {
+        execute new SessionCallback() {
             def doInSession(Session session) {
                 session.random(persistentClass)
             }
@@ -94,7 +94,7 @@ class RedisGormStaticApi<D> extends GormStaticApi<D> {
      * @return A random removed domain class
      */
     D pop() {
-        doInSession new SessionCallback() {
+        execute new SessionCallback() {
             def doInSession(Session session) {
                 session.pop(persistentClass)
             }
