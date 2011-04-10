@@ -32,7 +32,6 @@ import org.grails.plugins.redis.RedisMappingContextFactoryBean
 import org.springframework.aop.scope.ScopedProxyFactoryBean
 import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.AnnotationUtils
-import org.springframework.data.document.mongodb.bean.factory.*
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
@@ -50,7 +49,7 @@ class RedisGrailsPlugin {
 
     def version = "1.0.0.M4"
     def grailsVersion = "1.3.4 > *"
-    def loadAfter = ['domainClass', 'services']
+    def loadAfter = ['domainClass', 'hibernate', 'services']
 
     def author = "Graeme Rocher"
     def authorEmail = "graeme.rocher@springsource.com"
@@ -120,6 +119,20 @@ a GORM-like API onto it
             def beanName = serviceClass.propertyName
             if (springConfig.containsBean(beanName)) {
                 delegate."${beanName}".transactionManager = ref("redisDatastoreTransactionManager")
+            }
+        }
+
+        // make sure validators for Redis domain classes are regular GrailsDomainClassValidator
+        def isHibernateInstalled = manager.hasGrailsPlugin("hibernate")
+        for (dc in application.domainClasses) {
+            def cls = dc.clazz
+            def cpf = ClassPropertyFetcher.forClass(cls)
+            def mappedWith = cpf.getStaticPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY, String)
+            if (mappedWith == 'redis' || (!isHibernateInstalled && mappedWith == null)) {
+                String validatorBeanName = "${dc.fullName}Validator"
+                def beandef = springConfig.getBeanConfig(validatorBeanName)?.beanDefinition ?:
+                              springConfig.getBeanDefinition(validatorBeanName)
+                beandef.beanClassName = GrailsDomainClassValidator.name
             }
         }
     }
