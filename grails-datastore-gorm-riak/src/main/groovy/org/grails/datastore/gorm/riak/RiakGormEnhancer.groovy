@@ -62,7 +62,7 @@ class RiakGormInstanceApi<D> extends GormInstanceApi<D> {
     }
 
     D save(D instance, Map params) {
-        doInSession new SessionCallback() {
+        execute new SessionCallback() {
             def doInSession(Session session) {
                 def currentQosParams = session.qosParameters
                 if (params?.w || params?.dw) {
@@ -73,7 +73,7 @@ class RiakGormInstanceApi<D> extends GormInstanceApi<D> {
                 }
 
                 try {
-                    return super.save(instance, params)
+                    return doSave(instance, params, session)
                 }
                 finally {
                     if (params?.w || params?.dw) {
@@ -117,7 +117,7 @@ class MapReduceApi<D> extends AbstractDatastoreApi {
 
         log.debug "Invoking $methodName with ${args}"
 
-        doInSession new SessionCallback() {
+        execute new SessionCallback() {
             def doInSession(Session session) {
                 RiakTemplate riak = session.nativeInterface
                 RiakMapReduceJob mr = new RiakMapReduceJob(riak)

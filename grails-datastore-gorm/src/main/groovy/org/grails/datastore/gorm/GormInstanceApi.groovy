@@ -50,7 +50,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @return The instance
      */
     D lock(D instance) {
-        doInSession new SessionCallback() {
+        execute new SessionCallback() {
             def doInSession(Session session) {
                 session.lock(instance)
                 return instance
@@ -65,7 +65,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @return The result of the closure
      */
     def mutex(D instance, Closure callable) {
-        doInSession new SessionCallback() {
+        execute new SessionCallback() {
             def doInSession(Session session) {
                 try {
                     session.lock(instance)
@@ -84,7 +84,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @return The instance
      */
     D refresh(D instance) {
-        doInSession new SessionCallback() {
+        execute new SessionCallback() {
             def doInSession(Session session) {
                 session.refresh instance
                 return instance
@@ -138,33 +138,37 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @return The instance
      */
     D save(D instance, Map params) {
-        doInSession new SessionCallback() {
+        execute new SessionCallback() {
             def doInSession(Session session) {
-                boolean hasErrors = false
-                boolean validate = params?.containsKey("validate") ? params.validate : true
-                if (instance.respondsTo('validate') && validate) {
-                    session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, false)
-                    hasErrors = !instance.validate()
-                }
-                else {
-                    session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, true)
-                    instance.clearErrors()
-                }
-
-                if (hasErrors) {
-                    if (params?.failOnError) {
-                        throw validationException.newInstance( "Validation error occured during call to save()", instance.errors)
-                    }
-                    return null
-                }
-
-                session.persist(instance)
-                if (params?.flush) {
-                    session.flush()
-                }
-                return instance
+                doSave instance, params, session
             }
         }
+    }
+
+    protected D doSave(D instance, Map params, Session session) {
+        boolean hasErrors = false
+        boolean validate = params?.containsKey("validate") ? params.validate : true
+        if (instance.respondsTo('validate') && validate) {
+            session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, false)
+            hasErrors = !instance.validate()
+        }
+        else {
+            session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, true)
+            instance.clearErrors()
+        }
+
+        if (hasErrors) {
+            if (params?.failOnError) {
+                throw validationException.newInstance( "Validation error occured during call to save()", instance.errors)
+            }
+            return null
+        }
+
+        session.persist(instance)
+        if (params?.flush) {
+            session.flush()
+        }
+        return instance
     }
 
     /**
@@ -180,7 +184,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @return
      */
     D attach(D instance) {
-        doInSession new SessionCallback() {
+        execute new SessionCallback() {
             def doInSession(Session session) {
                 session.attach(instance)
                 instance
@@ -192,7 +196,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * No concept of session-based model so defaults to true
      */
     boolean isAttached(D instance) {
-        doInSession new SessionCallback<Boolean>() {
+        execute new SessionCallback<Boolean>() {
             Boolean doInSession(Session session) {
                 session.contains(instance)
             }
@@ -203,7 +207,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * Discards any pending changes. Requires a session-based model.
      */
     void discard(D instance) {
-        doInSession new VoidSessionCallback() {
+        execute new VoidSessionCallback() {
             void doInSession(Session session) {
                 session.clear(instance)
             }
@@ -223,7 +227,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param instance The instance to delete
      */
     void delete(D instance, Map params) {
-        doInSession new VoidSessionCallback() {
+        execute new VoidSessionCallback() {
             void doInSession(Session session) {
                 session.delete(instance)
                 if (params?.flush) {
