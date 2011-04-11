@@ -15,12 +15,7 @@
 
 package org.springframework.datastore.mapping.mongo;
 
-import static org.springframework.datastore.mapping.config.utils.ConfigUtils.read;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.mongodb.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -32,25 +27,16 @@ import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.document.config.DocumentMappingContext;
-import org.springframework.datastore.mapping.model.ClassMapping;
-import org.springframework.datastore.mapping.model.DatastoreConfigurationException;
-import org.springframework.datastore.mapping.model.MappingContext;
-import org.springframework.datastore.mapping.model.PersistentEntity;
-import org.springframework.datastore.mapping.model.PersistentProperty;
-import org.springframework.datastore.mapping.model.PropertyMapping;
+import org.springframework.datastore.mapping.model.*;
 import org.springframework.datastore.mapping.mongo.config.MongoAttribute;
 import org.springframework.datastore.mapping.mongo.config.MongoCollection;
 import org.springframework.datastore.mapping.mongo.config.MongoMappingContext;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.Mongo;
-import com.mongodb.MongoException;
-import com.mongodb.MongoOptions;
-import com.mongodb.ServerAddress;
-import com.mongodb.WriteConcern;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.springframework.datastore.mapping.config.utils.ConfigUtils.read;
 
 /**
  * A Datastore implementation for the Mongo document store.
@@ -177,7 +163,10 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         }
 
         for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
-            createMongoTemplate(entity, mongo);
+            // Only create Mongo templates for entities that are mapped with Mongo
+            if(!entity.isExternal()) {
+                createMongoTemplate(entity, mongo);
+            }
         }
     }
 

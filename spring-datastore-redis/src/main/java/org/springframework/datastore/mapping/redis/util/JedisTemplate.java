@@ -14,23 +14,17 @@
  */
 package org.springframework.datastore.mapping.redis.util;
 
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.transaction.NoTransactionException;
+import org.springframework.util.ReflectionUtils;
+import redis.clients.jedis.*;
+import redis.clients.jedis.exceptions.JedisConnectionException;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.transaction.NoTransactionException;
-import org.springframework.util.ReflectionUtils;
-
-import redis.clients.jedis.Client;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.PipelineBlock;
-import redis.clients.jedis.SortingParams;
-import redis.clients.jedis.Transaction;
-import redis.clients.jedis.exceptions.JedisConnectionException;
 
 /**
  * A Spring-style template for querying Redis and translating
@@ -1167,6 +1161,10 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public Double zscore(final String key, final String member) {
         return (Double) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
+                if(pipeline != null) {
+                    pipeline.zscore(key, member);
+                    return 0;
+                }
                 return redis.zscore(key, member);
             }
         });
