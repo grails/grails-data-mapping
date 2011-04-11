@@ -39,6 +39,8 @@ import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterc
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.Transactional
 
+import org.grails.plugins.redis.PersistenceContextInterceptorAggregator
+
 class RedisGrailsPlugin {
     def license = "Apache 2.0 License"
     def organization = [ name: "SpringSource", url: "http://www.springsource.org/" ]
@@ -91,6 +93,8 @@ a GORM-like API onto it
         }
 
         redisDatastorePersistenceInterceptor(DatastorePersistenceContextInterceptor, ref("redisDatastore"))
+
+        redisPersistenceContextInterceptorAggregator(PersistenceContextInterceptorAggregator)
 
         if (manager?.hasGrailsPlugin("controllers")) {
             redisDatastoreOpenSessionInViewInterceptor(OpenSessionInViewInterceptor) {
@@ -189,7 +193,6 @@ a GORM-like API onto it
     }
 
     def doWithApplicationContext = { ctx ->
-        // TODO investigate why implementing ApplicationContextAware in RedisDatastoreFactoryBean doesn't work
         def redisDatastore = ctx.redisDatastore
         if (!redisDatastore.applicationContext) {
             ctx.addApplicationListener new DomainEventListener(redisDatastore)

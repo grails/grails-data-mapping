@@ -21,12 +21,15 @@ import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.data.document.mongodb.bean.factory.*
+import org.springframework.data.document.mongodb.MongoOptionsFactoryBean
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.Transactional
+
+import org.grails.plugin.mongo.PersistenceContextInterceptorAggregator
 
 class MongodbGrailsPlugin {
     def license = "Apache 2.0 License"
@@ -111,6 +114,8 @@ a GORM API onto it
         }
 
         mongoPersistenceInterceptor(DatastorePersistenceContextInterceptor, ref("mongoDatastore"))
+
+        mongoPersistenceContextInterceptorAggregator(PersistenceContextInterceptorAggregator)
 
         if (manager?.hasGrailsPlugin("controllers")) {
             mongoOpenSessionInViewInterceptor(OpenSessionInViewInterceptor) {
