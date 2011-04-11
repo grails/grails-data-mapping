@@ -17,6 +17,7 @@ import grails.datastore.Redis
 
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.codehaus.groovy.grails.commons.GrailsServiceClass
+import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
