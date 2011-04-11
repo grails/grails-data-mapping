@@ -213,6 +213,15 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         return jedis;
     }
 
+    protected void closeNewConnection(Jedis jedis) {
+        if (pool == null) {
+            jedis.disconnect();
+        }
+        else {
+            pool.returnResource(jedis);
+        }
+    }
+
     public SortParams sortParams() {
         return new JedisSortParams();
     }
@@ -724,7 +733,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                         return redis.incr(key);
                     }
                     finally {
-                        redis.disconnect();
+                        closeNewConnection(redis);
                     }
                 }
                 return redis.incr(key);
@@ -742,7 +751,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                         return redis.incrBy(key, amount);
                     }
                     finally {
-                        redis.disconnect();
+                        closeNewConnection(redis);
                     }
                 }
                 return redis.incrBy(key, amount);
@@ -910,8 +919,9 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                     redis.connect();
                     try {
                         return redis.keys(pattern);
-                    } finally {
-                        redis.disconnect();
+                    }
+                    finally {
+                        closeNewConnection(redis);
                     }
                 }
                 return redis.keys(pattern);
