@@ -88,9 +88,9 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
             host = read(String.class, CONFIG_HOST, connectionDetails, DEFAULT_HOST);
             port = read(Integer.class, CONFIG_PORT, connectionDetails, DEFAULT_PORT);
             timeout = read(Integer.class, CONFIG_TIMEOUT, connectionDetails, 2000);
-            pooled = read(Boolean.class, CONFIG_POOLED, connectionDetails, false);
+            pooled = read(Boolean.class, CONFIG_POOLED, connectionDetails, true);
             password = read(String.class, CONFIG_PASSWORD, connectionDetails, null);
-            resourceCount = read(Integer.class, CONFIG_RESOURCE_COUNT, connectionDetails, 10);
+            resourceCount = read(Integer.class, CONFIG_RESOURCE_COUNT, connectionDetails, resourceCount);
         }
         if (pooled && useJedis()) {
             this.pool = JedisTemplateFactory.createPool(host, port, timeout, resourceCount, password);
@@ -115,9 +115,10 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
         static JedisPool createPool(String host, int port, int timeout, int resources, String password) {
             JedisPoolConfig poolConfig = new JedisPoolConfig();
             poolConfig.setMaxWait(timeout);
+            poolConfig.setMaxActive(resources);
 
-            if(password != null) {
-               pool = new JedisPool(poolConfig, host, port, timeout, password);
+            if (password != null) {
+                pool = new JedisPool(poolConfig, host, port, timeout, password);
             }
             else {
                 pool = new JedisPool(poolConfig, host, port, timeout);
