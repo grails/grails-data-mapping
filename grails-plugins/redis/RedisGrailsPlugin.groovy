@@ -195,9 +195,7 @@ a GORM-like API onto it
 
     def doWithApplicationContext = { ctx ->
         def redisDatastore = ctx.redisDatastore
-        if (!redisDatastore.applicationContext) {
-            ctx.addApplicationListener new DomainEventListener(redisDatastore)
-            ctx.addApplicationListener new AutoTimestampEventListener(redisDatastore)
-        }
+        ctx.addApplicationListener new DomainEventListener(redisDatastore)
+        ctx.addApplicationListener new AutoTimestampEventListener(redisDatastore)
     }
 }
