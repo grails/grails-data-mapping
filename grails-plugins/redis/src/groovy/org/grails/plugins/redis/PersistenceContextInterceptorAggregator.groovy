@@ -14,11 +14,13 @@
  */
 package org.grails.plugins.redis
 
+import org.apache.log4j.Logger
 import org.codehaus.groovy.grails.support.PersistenceContextInterceptor
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
+import org.springframework.core.Ordered
 
 /**
  * Works around the issue where Grails only finds the first PersistenceContextInterceptor by
@@ -26,7 +28,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
  *
  * @author Burt Beckwith
  */
-class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryPostProcessor {
+class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryPostProcessor, Ordered {
 
     private boolean hibernate
     private boolean mongo
@@ -34,7 +36,13 @@ class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryP
     private boolean aggregate
     private List<PersistenceContextInterceptor> interceptors = []
 
+    protected Logger log = Logger.getLogger(getClass())
+
+    int getOrder() { 500 }
+
     void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
+
+        log.info 'postProcessBeanDefinitionRegistry start'
 
         int count = 0
         if (registry.containsBeanDefinition('persistenceInterceptor')) {
@@ -51,6 +59,7 @@ class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryP
         }
 
         if (count < 2) {
+            log.info "Not processing, there are $count interceptors"
             return
         }
 
@@ -73,6 +82,8 @@ class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryP
         if (!aggregate) {
             return
         }
+
+        log.info 'postProcessBeanFactory start'
 
         if (hibernate) {
             def HibernatePersistenceContextInterceptor = Class.forName(
