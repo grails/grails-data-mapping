@@ -24,6 +24,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public abstract class AbstractAttributeStoringSession implements Session {
 
     protected Map<Object, Map<String, Object>> attributes = new ConcurrentHashMap<Object, Map<String, Object>>();
+    private boolean connected = true;
 
     public void setAttribute(Object entity, String attributeName, Object value) {
         if (entity == null) {
@@ -59,6 +60,7 @@ public abstract class AbstractAttributeStoringSession implements Session {
      * implementation.
      */
     public void disconnect() {
+        connected = false;
         clear();
         attributes.clear();
         SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(getDatastore());
@@ -74,5 +76,9 @@ public abstract class AbstractAttributeStoringSession implements Session {
                 // ignore session disconnected by a another thread
             }
         }
+    }
+
+    public boolean isConnected() {
+        return connected;
     }
 }

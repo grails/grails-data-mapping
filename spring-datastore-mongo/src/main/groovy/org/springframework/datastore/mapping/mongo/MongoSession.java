@@ -51,7 +51,6 @@ import com.mongodb.WriteConcern;
 public class MongoSession extends AbstractSession<DB> {
 
     MongoDatastore mongoDatastore;
-    private boolean connected = true;
     private WriteConcern writeConcern = WriteConcern.NORMAL;
 
     public MongoSession(MongoDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
@@ -103,16 +102,7 @@ public class MongoSession extends AbstractSession<DB> {
     @Override
     public void disconnect() {
         super.disconnect();
-        try {
-            getNativeInterface().requestDone();
-        }
-        finally {
-            connected = false;
-        }
-    }
-
-    public boolean isConnected() {
-        return connected;
+        getNativeInterface().requestDone();
     }
 
     @Override

@@ -15,6 +15,7 @@
 package grails.datastore
 
 import org.springframework.datastore.mapping.core.Datastore
+import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.redis.collection.RedisCollection
 import org.springframework.datastore.mapping.redis.collection.RedisList
@@ -41,8 +42,13 @@ class Redis {
     }
 
     void setDatastore(Datastore ds) {
-        this.datastore = ds
-        this.redisTemplate = datastore.currentSession.nativeInterface
+        datastore = ds
+        boolean existing = datastore.hasCurrentSession()
+        Session session = datastore.currentSession
+        redisTemplate = session.nativeInterface
+        if (!existing) {
+            session.disconnect()
+        }
     }
 
     /**

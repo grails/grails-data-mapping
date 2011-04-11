@@ -65,10 +65,6 @@ public class RiakSession extends AbstractSession {
         return new RiakTransaction(riakTemplate);
     }
 
-    public boolean isConnected() {
-        return true;
-    }
-
     public Object getNativeInterface() {
         return riakTemplate;
     }

@@ -14,10 +14,12 @@
  */
 package org.grails.datastore.gorm
 
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.validation.ValidationException
-import org.springframework.datastore.mapping.proxy.EntityProxy
 import static org.springframework.datastore.mapping.validation.ValidatingEventListener.*
+
+import org.springframework.datastore.mapping.core.Datastore
+import org.springframework.datastore.mapping.core.Session
+import org.springframework.datastore.mapping.proxy.EntityProxy
+import org.springframework.datastore.mapping.validation.ValidationException
 
 /**
  * Instance methods of the GORM API.
@@ -48,8 +50,12 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @return The instance
      */
     D lock(D instance) {
-        datastore.currentSession.lock(instance)
-        return instance
+        execute new SessionCallback() {
+            def doInSession(Session session) {
+                session.lock(instance)
+                return instance
+            }
+        }
     }
 
     /**
@@ -59,13 +65,16 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @return The result of the closure
      */
     def mutex(D instance, Closure callable) {
-        def session = datastore.currentSession
-        try {
-            session.lock(instance)
-            callable?.call()
-        }
-        finally {
-            session.unlock(instance)
+        execute new SessionCallback() {
+            def doInSession(Session session) {
+                try {
+                    session.lock(instance)
+                    callable?.call()
+                }
+                finally {
+                    session.unlock(instance)
+                }
+            }
         }
     }
 
@@ -75,8 +84,12 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @return The instance
      */
     D refresh(D instance) {
-        datastore.currentSession.refresh instance
-        return instance
+        execute new SessionCallback() {
+            def doInSession(Session session) {
+                session.refresh instance
+                return instance
+            }
+        }
     }
 
     /**
@@ -125,7 +138,14 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @return The instance
      */
     D save(D instance, Map params) {
-        final session = datastore.currentSession
+        execute new SessionCallback() {
+            def doInSession(Session session) {
+                doSave instance, params, session
+            }
+        }
+    }
+
+    protected D doSave(D instance, Map params, Session session) {
         boolean hasErrors = false
         boolean validate = params?.containsKey("validate") ? params.validate : true
         if (instance.respondsTo('validate') && validate) {
@@ -164,22 +184,34 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @return
      */
     D attach(D instance) {
-        datastore.currentSession.attach(instance)
-        instance
+        execute new SessionCallback() {
+            def doInSession(Session session) {
+                session.attach(instance)
+                instance
+            }
+        }
     }
 
     /**
      * No concept of session-based model so defaults to true
      */
     boolean isAttached(D instance) {
-        datastore.currentSession.contains(instance)
+        execute new SessionCallback<Boolean>() {
+            Boolean doInSession(Session session) {
+                session.contains(instance)
+            }
+        }
     }
 
     /**
      * Discards any pending changes. Requires a session-based model.
      */
     void discard(D instance) {
-        datastore.currentSession.clear(instance)
+        execute new VoidSessionCallback() {
+            void doInSession(Session session) {
+                session.clear(instance)
+            }
+        }
     }
 
     /**
@@ -195,10 +227,13 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param instance The instance to delete
      */
     void delete(D instance, Map params) {
-        final session = datastore.currentSession
-        session.delete(instance)
-        if (params?.flush) {
-            session.flush()
+        execute new VoidSessionCallback() {
+            void doInSession(Session session) {
+                session.delete(instance)
+                if (params?.flush) {
+                    session.flush()
+                }
+            }
         }
     }
 }

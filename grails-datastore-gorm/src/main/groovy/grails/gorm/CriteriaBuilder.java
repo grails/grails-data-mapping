@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.datastore.mapping.core.Datastore;
+import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
@@ -56,7 +56,6 @@ public class CriteriaBuilder extends GroovyObjectSupport {
     public static final String IS_EMPTY = "isEmpty"; //builder
     public static final String IS_NOT_EMPTY = "isNotEmpty"; //builder
 
-
     private static final String ROOT_DO_CALL = "doCall";
     private static final String ROOT_CALL = "call";
     private static final String LIST_CALL = "list";
@@ -67,7 +66,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
     private static final String PROJECTIONS = "projections";
 
     private Class targetClass;
-    private Datastore datastore;
+    private Session session;
     private Query query;
     private boolean uniqueResult = false;
     private boolean count = false;
@@ -78,18 +77,21 @@ public class CriteriaBuilder extends GroovyObjectSupport {
     private Query.ProjectionList projectionList;
     private PersistentEntity persistentEntity;
 
-    public CriteriaBuilder(Class targetClass, Datastore datastore) {
+    public CriteriaBuilder(final Class targetClass, final Session session) {
         Assert.notNull(targetClass, "Argument [targetClass] cannot be null");
-        Assert.notNull(datastore, "Argument [datastore] cannot be null");
+        Assert.notNull(session, "Argument [session] cannot be null");
 
-        persistentEntity = datastore.getMappingContext().getPersistentEntity(targetClass.getName());
-        if (persistentEntity == null) throw new IllegalArgumentException("Class ["+targetClass+"] is not a persistent entity");
+        persistentEntity = session.getDatastore().getMappingContext().getPersistentEntity(targetClass.getName());
+        if (persistentEntity == null) {
+            throw new IllegalArgumentException("Class [" + targetClass.getName() + "] is not a persistent entity");
+        }
+
         this.targetClass = targetClass;
-        this.datastore = datastore;
+        this.session = session;
     }
 
-    public CriteriaBuilder(Class targetClass, Datastore datastore, Query query) {
-        this(targetClass, datastore);
+    public CriteriaBuilder(final Class targetClass, final Session session, final Query query) {
+        this(targetClass, session);
         this.query = query;
     }
 
@@ -215,7 +217,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
                 throw new IllegalArgumentException("call to [" + name + "] not supported here");
             }
 
-            query = datastore.getCurrentSession().createQuery(targetClass);
+            query = session.createQuery(targetClass);
             queryMetaClass = GroovySystem.getMetaClassRegistry().getMetaClass(query.getClass());
 
             if (name.equals(GET_CALL)) {

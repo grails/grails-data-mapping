@@ -14,7 +14,9 @@
  */
 package org.grails.datastore.gorm.finders;
 
+import org.grails.datastore.gorm.SessionCallback;
 import org.springframework.datastore.mapping.core.Datastore;
+import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.reflect.NameUtils;
 
@@ -31,20 +33,19 @@ import java.util.regex.Pattern;
  *
  * @author Graeme Rocher
  */
-public class ListOrderByFinder implements FinderMethod{
+public class ListOrderByFinder extends AbstractFinder {
     private static final Pattern METHOD_PATTERN = Pattern.compile("(listOrderBy)(\\w+)");
     private Pattern pattern = METHOD_PATTERN;
-    private Datastore datastore;
 
     public ListOrderByFinder(Datastore datastore) {
-        this.datastore = datastore;
+        super(datastore);
     }
 
     public void setPattern(String pattern) {
         this.pattern = Pattern.compile(pattern);
     }
 
-    public Object invoke(Class clazz, String methodName, Object[] arguments) {
+    public Object invoke(final Class clazz, final String methodName, final Object[] arguments) {
 
         Matcher match = pattern.matcher(methodName);
         match.find();
@@ -52,15 +53,19 @@ public class ListOrderByFinder implements FinderMethod{
         String nameInSignature = match.group(2);
         final String propertyName = NameUtils.decapitalize(nameInSignature);
 
-        Query q = datastore.getCurrentSession().createQuery(clazz);
+        return execute(new SessionCallback<Object>() {
+            public Object doInSession(final Session session) {
+                Query q = session.createQuery(clazz);
 
-        if (arguments.length > 0 && (arguments[0] instanceof Map)) {
-            DynamicFinder.populateArgumentsForCriteria(clazz, q, (Map) arguments[0]);
-        }
+                if (arguments.length > 0 && (arguments[0] instanceof Map)) {
+                    DynamicFinder.populateArgumentsForCriteria(clazz, q, (Map) arguments[0]);
+                }
 
-        q.order(Query.Order.asc(propertyName));
+                q.order(Query.Order.asc(propertyName));
 
-        return invokeQuery(q);
+                return invokeQuery(q);
+            }
+        });
     }
 
     protected Object invokeQuery(Query q) {

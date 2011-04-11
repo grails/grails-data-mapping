@@ -17,10 +17,11 @@ package org.grails.datastore.gorm.mongo
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
+import org.grails.datastore.gorm.SessionCallback
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.springframework.datastore.mapping.core.Datastore
+import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.mongo.MongoDatastore
-import org.springframework.datastore.mapping.mongo.MongoSession
 import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister
 import org.springframework.transaction.PlatformTransactionManager
 
@@ -103,16 +104,19 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
      * @return The DBObject instance
      */
     DBObject getDbo(D instance) {
-        MongoSession session = datastore.currentSession
+        execute new SessionCallback<DBObject>() {
+            DBObject doInSession(Session session) {
 
-        if (!session.contains(instance) && !instance.save()) {
-            throw new IllegalStateException(
-                "Cannot obtain DBObject for transient instance, save a valid instance first")
+                if (!session.contains(instance) && !instance.save()) {
+                    throw new IllegalStateException(
+                        "Cannot obtain DBObject for transient instance, save a valid instance first")
+                }
+
+                MongoEntityPersister persister = session.getPersister(instance)
+                def id = persister.getObjectIdentifier(instance)
+                return session.getCachedEntry(persister.getPersistentEntity(), id)
+            }
         }
-
-        MongoEntityPersister persister = session.getPersister(instance)
-        def id = persister.getObjectIdentifier(instance)
-        return session.getCachedEntry(persister.getPersistentEntity(), id)
     }
 }
 
@@ -124,7 +128,7 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
 
     @Override
     MongoCriteriaBuilder createCriteria() {
-        return new MongoCriteriaBuilder(persistentClass, datastore)
+        return new MongoCriteriaBuilder(persistentClass, datastore.currentSession)
     }
 
     /**

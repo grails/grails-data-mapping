@@ -25,8 +25,6 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
  */
 public class OptimisticLockingException extends OptimisticLockingFailureException {
 
-    private static final long serialVersionUID = 1;
-
     private final Object key;
     private final PersistentEntity persistentEntity;
 

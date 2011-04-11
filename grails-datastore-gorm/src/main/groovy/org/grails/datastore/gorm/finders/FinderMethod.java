@@ -15,10 +15,10 @@
 package org.grails.datastore.gorm.finders;
 
 /**
- * Implementation of dynamic finders
+ * Implementation of dynamic finders.
  */
-public interface FinderMethod
-{
+public interface FinderMethod {
+
     /**
      * @param pattern A regular expression
      */

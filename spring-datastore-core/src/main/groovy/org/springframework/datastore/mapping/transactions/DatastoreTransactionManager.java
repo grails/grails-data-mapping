@@ -85,8 +85,8 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
             }
         }
         else {
-            Session session = getDatastore().connect();
-            txObject.setSession(session);
+            getDatastore().connect();
+            txObject.setSessionHolder((SessionHolder)TransactionSynchronizationManager.getResource(getDatastore()));
         }
 
         return txObject;

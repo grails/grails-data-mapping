@@ -17,8 +17,10 @@ package org.grails.datastore.gorm.redis
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
+import org.grails.datastore.gorm.SessionCallback
+import org.grails.datastore.gorm.VoidSessionCallback
 import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.redis.RedisSession
+import org.springframework.datastore.mapping.core.Session
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
@@ -50,7 +52,11 @@ class RedisGormInstanceApi<D> extends GormInstanceApi<D> {
     }
 
     void expire(D instance, int ttl) {
-        datastore.currentSession.expire instance, ttl
+        execute new VoidSessionCallback() {
+            void doInSession(Session session) {
+                session.expire instance, ttl
+            }
+        }
     }
 }
 
@@ -64,7 +70,11 @@ class RedisGormStaticApi<D> extends GormStaticApi<D> {
      * Expires an entity for the given id and TTL.
      */
     void expire(Serializable id, int ttl) {
-        datastore.currentSession.expire(persistentClass, id, ttl)
+        execute new VoidSessionCallback() {
+            void doInSession(Session session) {
+                session.expire(persistentClass, id, ttl)
+            }
+        }
     }
 
     /**
@@ -72,7 +82,11 @@ class RedisGormStaticApi<D> extends GormStaticApi<D> {
      * @return A random domain class
      */
     D random() {
-        datastore.currentSession.random(persistentClass)
+        execute new SessionCallback() {
+            def doInSession(Session session) {
+                session.random(persistentClass)
+            }
+        }
     }
 
     /**
@@ -80,6 +94,10 @@ class RedisGormStaticApi<D> extends GormStaticApi<D> {
      * @return A random removed domain class
      */
     D pop() {
-        datastore.currentSession.pop(persistentClass)
+        execute new SessionCallback() {
+            def doInSession(Session session) {
+                session.pop(persistentClass)
+            }
+        }
     }
 }

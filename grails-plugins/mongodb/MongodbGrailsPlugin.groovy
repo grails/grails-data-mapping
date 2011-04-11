@@ -8,6 +8,7 @@ import org.codehaus.groovy.grails.commons.GrailsServiceClass
 import org.codehaus.groovy.grails.commons.ServiceArtefactHandler
 import org.codehaus.groovy.grails.commons.spring.TypeSpecifyableTransactionProxyFactoryBean
 import org.codehaus.groovy.grails.orm.support.GroovyAwareNamedTransactionAttributeSource
+import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
@@ -20,12 +21,15 @@ import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.data.document.mongodb.bean.factory.*
+import org.springframework.data.document.mongodb.MongoOptionsFactoryBean
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.Transactional
+
+import org.grails.plugin.mongo.PersistenceContextInterceptorAggregator
 
 class MongodbGrailsPlugin {
     def license = "Apache 2.0 License"
@@ -38,7 +42,7 @@ class MongodbGrailsPlugin {
     def version = "1.0-M5"
     def grailsVersion = "1.3.5 > *"
     def observe = ['services']
-    def loadAfter = ['domainClass', 'services']
+    def loadAfter = ['domainClass', 'hibernate', 'services']
     def author = "Graeme Rocher"
     def authorEmail = "graeme.rocher@springsource.com"
     def title = "MongoDB GORM"
@@ -111,6 +115,8 @@ a GORM API onto it
 
         mongoPersistenceInterceptor(DatastorePersistenceContextInterceptor, ref("mongoDatastore"))
 
+        mongoPersistenceContextInterceptorAggregator(PersistenceContextInterceptorAggregator)
+
         if (manager?.hasGrailsPlugin("controllers")) {
             mongoOpenSessionInViewInterceptor(OpenSessionInViewInterceptor) {
                 datastore = ref("mongoDatastore")
@@ -128,7 +134,7 @@ a GORM API onto it
             }
         }
 
-        // need to redefine the service proxies to use mongoTransactionManager
+        // need to fix the service proxies to use mongoTransactionManager
         for (serviceGrailsClass in application.serviceClasses) {
             GrailsServiceClass serviceClass = serviceGrailsClass
 
@@ -136,21 +142,23 @@ a GORM API onto it
                 continue
             }
 
-            def scope = serviceClass.getPropertyValue("scope")
-            def props = ["*": "PROPAGATION_REQUIRED"] as Properties
-            "${serviceClass.propertyName}"(TypeSpecifyableTransactionProxyFactoryBean, serviceClass.clazz) { bean ->
-                if (scope) bean.scope = scope
-                bean.lazyInit = true
-                target = { innerBean ->
-                    innerBean.lazyInit = true
-                    innerBean.factoryBean = "${serviceClass.fullName}ServiceClass"
-                    innerBean.factoryMethod = "newInstance"
-                    innerBean.autowire = "byName"
-                    if (scope) innerBean.scope = scope
-                }
-                proxyTargetClass = true
-                transactionAttributeSource = new GroovyAwareNamedTransactionAttributeSource(transactionalAttributes:props)
-                transactionManager = ref('mongoTransactionManager')
+            def beanName = serviceClass.propertyName
+            if (springConfig.containsBean(beanName)) {
+                delegate."$beanName".transactionManager = ref('mongoTransactionManager')
+            }
+        }
+
+        // make sure validators for Mongo domain classes are regular GrailsDomainClassValidator
+        def isHibernateInstalled = manager.hasGrailsPlugin("hibernate")
+        for (dc in application.domainClasses) {
+            def cls = dc.clazz
+            def cpf = ClassPropertyFetcher.forClass(cls)
+            def mappedWith = cpf.getStaticPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY, String)
+            if (mappedWith == 'mongo' || (!isHibernateInstalled && mappedWith == null)) {
+                String validatorBeanName = "${dc.fullName}Validator"
+                def beandef = springConfig.getBeanConfig(validatorBeanName)?.beanDefinition ?:
+                              springConfig.getBeanDefinition(validatorBeanName)
+                beandef.beanClassName = GrailsDomainClassValidator.name
             }
         }
     }

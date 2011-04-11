@@ -139,10 +139,6 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
         return new RedisEntityPersister(mappingContext, entity, this, redisTemplate, publisher);
     }
 
-    public boolean isConnected() {
-        return true;
-    }
-
     @Override
     public void disconnect() {
         try {

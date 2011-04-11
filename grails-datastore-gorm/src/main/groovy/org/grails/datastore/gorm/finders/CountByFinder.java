@@ -16,6 +16,7 @@ package org.grails.datastore.gorm.finders;
 
 import java.util.regex.Pattern;
 
+import org.grails.datastore.gorm.SessionCallback;
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.query.Query;
@@ -23,7 +24,7 @@ import org.springframework.datastore.mapping.query.Query;
 /**
  * Supports counting objects. For example Book.countByTitle("The Stand")
  */
-public class CountByFinder extends DynamicFinder implements QueryBuildingFinder{
+public class CountByFinder extends DynamicFinder implements QueryBuildingFinder {
 
     private static final String OPERATOR_OR = "Or";
     private static final String OPERATOR_AND = "And";
@@ -31,28 +32,27 @@ public class CountByFinder extends DynamicFinder implements QueryBuildingFinder{
     private static final Pattern METHOD_PATTERN = Pattern.compile("(countBy)(\\w+)");
     private static final String[] OPERATORS = new String[]{ OPERATOR_AND, OPERATOR_OR };
 
-    Datastore datastore;
-
-    public CountByFinder(Datastore datastore) {
-        super(METHOD_PATTERN, OPERATORS);
-        this.datastore = datastore;
+    public CountByFinder(final Datastore datastore) {
+        super(METHOD_PATTERN, OPERATORS, datastore);
     }
 
     @Override
-    protected Object doInvokeInternal(DynamicFinderInvocation invocation) {
-        Query q = buildQuery(invocation);
-        return invokeQuery(q);
+    protected Object doInvokeInternal(final DynamicFinderInvocation invocation) {
+        return execute(new SessionCallback<Object>() {
+            public Object doInSession(final Session session) {
+                Query q = buildQuery(invocation, session);
+                return invokeQuery(q);
+            }
+        });
     }
 
     protected Object invokeQuery(Query q) {
         return q.singleResult();
     }
 
-    public Query buildQuery(DynamicFinderInvocation invocation) {
-      Session currentSession = datastore.getCurrentSession();
-
+    public Query buildQuery(DynamicFinderInvocation invocation, Session session) {
         final Class clazz = invocation.getJavaClass();
-        Query q = currentSession.createQuery(clazz);
+        Query q = session.createQuery(clazz);
         applyAdditionalCriteria(q, invocation.getCriteria());
         configureQueryWithArguments(clazz, q, invocation.getArguments());
 

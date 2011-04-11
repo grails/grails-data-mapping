@@ -15,8 +15,6 @@
 package org.grails.plugins.redis
 
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager
-import org.grails.datastore.gorm.events.AutoTimestampEventListener
-import org.grails.datastore.gorm.events.DomainEventListener
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
@@ -37,10 +35,7 @@ class RedisDatastoreFactoryBean implements FactoryBean<RedisDatastore>, Applicat
     ApplicationContext applicationContext
 
     RedisDatastore getObject() {
-        def datastore = new RedisDatastore(mappingContext, config, applicationContext)
-        applicationContext.addApplicationListener new DomainEventListener(datastore)
-        applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
-        datastore
+        new RedisDatastore(mappingContext, config, applicationContext)
     }
 
     Class<?> getObjectType() { RedisDatastore }

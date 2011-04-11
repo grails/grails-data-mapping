@@ -53,7 +53,6 @@ public class JpaSession extends AbstractAttributeStoringSession {
     private JpaTemplate jpaTemplate;
     private JpaTransactionManager transactionManager;
     private FlushModeType flushMode;
-    private boolean connected = true;
     private TransactionStatus transaction;
 
     public JpaSession(JpaDatastore datastore, JpaTemplate jpaTemplate, JpaTransactionManager transactionManager) {
@@ -64,16 +63,6 @@ public class JpaSession extends AbstractAttributeStoringSession {
 
     public JpaTemplate getJpaTemplate() {
         return jpaTemplate;
-    }
-
-    public boolean isConnected() {
-        return connected;
-    }
-
-    @Override
-    public void disconnect() {
-        connected = false;
-        super.disconnect();
     }
 
     public Transaction beginTransaction() {

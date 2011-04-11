@@ -18,9 +18,11 @@
 
 package org.grails.datastore.gorm.riak
 
+import org.grails.datastore.gorm.AbstractDatastoreApi
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
+import org.grails.datastore.gorm.SessionCallback
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.keyvalue.riak.core.QosParameters
@@ -28,6 +30,7 @@ import org.springframework.data.keyvalue.riak.core.RiakQosParameters
 import org.springframework.data.keyvalue.riak.core.RiakTemplate
 import org.springframework.data.keyvalue.riak.core.SimpleBucketKeyPair
 import org.springframework.data.keyvalue.riak.mapreduce.*
+import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.riak.RiakDatastore
 
 /**
@@ -36,11 +39,11 @@ import org.springframework.datastore.mapping.riak.RiakDatastore
 class RiakGormEnhancer extends GormEnhancer {
 
     RiakGormEnhancer(datastore) {
-        super(datastore);
+        super(datastore)
     }
 
     RiakGormEnhancer(datastore, transactionManager) {
-        super(datastore, transactionManager);
+        super(datastore, transactionManager)
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
@@ -55,24 +58,28 @@ class RiakGormEnhancer extends GormEnhancer {
 class RiakGormInstanceApi<D> extends GormInstanceApi<D> {
 
     RiakGormInstanceApi(Class<D> persistentClass, datastore) {
-        super(persistentClass, datastore);
+        super(persistentClass, datastore)
     }
 
     D save(D instance, Map params) {
-        def currentQosParams = datastore.currentSession.qosParameters
-        if (params?.w || params?.dw) {
-            QosParameters qos = new RiakQosParameters()
-            qos.durableWriteThreshold = params?.dw
-            qos.writeThreshold = params?.w
-            datastore.currentSession.qosParameters = qos
-        }
+        execute new SessionCallback() {
+            def doInSession(Session session) {
+                def currentQosParams = session.qosParameters
+                if (params?.w || params?.dw) {
+                    QosParameters qos = new RiakQosParameters()
+                    qos.durableWriteThreshold = params?.dw
+                    qos.writeThreshold = params?.w
+                    session.qosParameters = qos
+                }
 
-        try {
-            return super.save(instance, params)
-        }
-        finally {
-            if (params?.w || params?.dw) {
-                datastore.currentSession.qosParameters = currentQosParams
+                try {
+                    return doSave(instance, params, session)
+                }
+                finally {
+                    if (params?.w || params?.dw) {
+                        session.qosParameters = currentQosParams
+                    }
+                }
             }
         }
     }
@@ -83,7 +90,7 @@ class RiakGormStaticApi<D> extends GormStaticApi<D> {
     MapReduceApi mapReduceApi
 
     RiakGormStaticApi(D persistentClass, datastore) {
-        super(persistentClass, datastore);
+        super(persistentClass, datastore)
         mapReduceApi = new MapReduceApi<D>(persistentClass, datastore)
     }
 
@@ -92,16 +99,15 @@ class RiakGormStaticApi<D> extends GormStaticApi<D> {
     }
 }
 
-class MapReduceApi<D> {
+class MapReduceApi<D> extends AbstractDatastoreApi {
 
     static Logger log = LoggerFactory.getLogger(MapReduceApi)
 
     Class<D> type
-    RiakDatastore datastore
 
     MapReduceApi(Class<D> type, RiakDatastore datastore) {
+        super(datastore)
         this.type = type
-        this.datastore = datastore;
     }
 
     def invokeMethod(String methodName, args) {
@@ -110,19 +116,24 @@ class MapReduceApi<D> {
         }
 
         log.debug "Invoking $methodName with ${args}"
-        RiakTemplate riak = datastore.currentSession.nativeInterface
-        RiakMapReduceJob mr = new RiakMapReduceJob(riak)
-        mr.addInputs([type.name])
-        def params = args[0]
-        if (params["map"]) {
-            def oper = extractMapReduceOperation(params["map"])
-            mr.addPhase(new RiakMapReducePhase(MapReducePhase.Phase.MAP, params["map"]["language"] ?: "javascript", oper))
+
+        execute new SessionCallback() {
+            def doInSession(Session session) {
+                RiakTemplate riak = session.nativeInterface
+                RiakMapReduceJob mr = new RiakMapReduceJob(riak)
+                mr.addInputs([type.name])
+                def params = args[0]
+                if (params["map"]) {
+                    def oper = extractMapReduceOperation(params["map"])
+                    mr.addPhase(new RiakMapReducePhase(MapReducePhase.Phase.MAP, params["map"]["language"] ?: "javascript", oper))
+                }
+                if (params["reduce"]) {
+                    def oper = extractMapReduceOperation(params["reduce"])
+                    mr.addPhase(new RiakMapReducePhase(MapReducePhase.Phase.REDUCE, params["map"]["language"] ?: "javascript", oper))
+                }
+                riak.execute(mr)
+            }
         }
-        if (params["reduce"]) {
-            def oper = extractMapReduceOperation(params["reduce"])
-            mr.addPhase(new RiakMapReducePhase(MapReducePhase.Phase.REDUCE, params["map"]["language"] ?: "javascript", oper))
-        }
-        riak.execute(mr)
     }
 
     protected MapReduceOperation extractMapReduceOperation(param) {

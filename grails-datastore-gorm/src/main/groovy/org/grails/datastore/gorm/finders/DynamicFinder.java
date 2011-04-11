@@ -49,7 +49,7 @@ import org.springframework.util.StringUtils;
 /**
  * Implementation of dynamic finders
  */
-public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder{
+public abstract class DynamicFinder extends AbstractFinder implements QueryBuildingFinder {
 
     public static final String ARGUMENT_MAX = "max";
     public static final String ARGUMENT_OFFSET = "offset";
@@ -97,7 +97,8 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
         methodExpressinPattern = Pattern.compile("\\p{Upper}[\\p{Lower}\\d]+("+expressionPattern+")");
     }
 
-    public DynamicFinder(Pattern pattern, String[] operators) {
+    protected DynamicFinder(final Pattern pattern, final String[] operators, final Datastore datastore) {
+        super(datastore);
         this.pattern = pattern;
         this.operators = operators;
         this.operatorPatterns = new Pattern[operators.length];
@@ -238,7 +239,7 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
             }
         }
 
-        return new DynamicFinderInvocation(clazz, methodName, remainingArguments, expressions, additionalCriteria, operatorInUse );
+        return new DynamicFinderInvocation(clazz, methodName, remainingArguments, expressions, additionalCriteria, operatorInUse);
     }
 
     protected MethodExpression findMethodExpression(Class clazz, String expression) {
@@ -264,13 +265,17 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
         else {
             propName = queryParameter;
         }
+
         if (propName.endsWith(NOT)) {
             int i = propName.lastIndexOf(NOT);
             propName = propName.substring(0, i);
         }
-        if (StringUtils.hasLength(propName))
-            return propName.substring(0,1).toLowerCase(Locale.ENGLISH) + propName.substring(1);
-        throw new IllegalArgumentException("No property name specified in clause: " + clause);
+
+        if (!StringUtils.hasLength(propName)) {
+            throw new IllegalArgumentException("No property name specified in clause: " + clause);
+        }
+
+        return propName.substring(0,1).toLowerCase(Locale.ENGLISH) + propName.substring(1);
     }
 
     protected abstract Object doInvokeInternal(DynamicFinderInvocation invocation);
@@ -281,53 +286,58 @@ public abstract class DynamicFinder implements FinderMethod, QueryBuildingFinder
 
     public static void populateArgumentsForCriteria(@SuppressWarnings("unused") Class<?> targetClass,
              Query q, Map argMap) {
-        if (argMap != null) {
-            Integer maxParam = null;
-            Integer offsetParam = null;
-            final ConversionService conversionService = q.getSession().getMappingContext().getConversionService();
-            if (argMap.containsKey(ARGUMENT_MAX)) {
-                maxParam = conversionService.convert(argMap.get(ARGUMENT_MAX),Integer.class);
-            }
-            if (argMap.containsKey(ARGUMENT_OFFSET)) {
-                offsetParam = conversionService.convert(argMap.get(ARGUMENT_OFFSET),Integer.class);
-            }
-            String orderParam = (String)argMap.get(ARGUMENT_ORDER);
+        if (argMap == null) {
+            return;
+        }
 
-            final String sort = (String)argMap.get(ARGUMENT_SORT);
-            final String order = ORDER_DESC.equalsIgnoreCase(orderParam) ? ORDER_DESC : ORDER_ASC;
-            final int max = maxParam == null ? -1 : maxParam;
-            final int offset = offsetParam == null ? -1 : offsetParam;
-            if (max > -1) {
-                q.max(max);
+        Integer maxParam = null;
+        Integer offsetParam = null;
+        final ConversionService conversionService = q.getSession().getMappingContext().getConversionService();
+        if (argMap.containsKey(ARGUMENT_MAX)) {
+            maxParam = conversionService.convert(argMap.get(ARGUMENT_MAX),Integer.class);
+        }
+        if (argMap.containsKey(ARGUMENT_OFFSET)) {
+            offsetParam = conversionService.convert(argMap.get(ARGUMENT_OFFSET),Integer.class);
+        }
+        String orderParam = (String)argMap.get(ARGUMENT_ORDER);
+
+        final String sort = (String)argMap.get(ARGUMENT_SORT);
+        final String order = ORDER_DESC.equalsIgnoreCase(orderParam) ? ORDER_DESC : ORDER_ASC;
+        final int max = maxParam == null ? -1 : maxParam;
+        final int offset = offsetParam == null ? -1 : offsetParam;
+        if (max > -1) {
+            q.max(max);
+        }
+        if (offset > -1) {
+            q.offset(offset);
+        }
+        if (sort != null) {
+            if (ORDER_DESC.equals(order)) {
+                q.order(Query.Order.desc(sort));
             }
-            if (offset > -1) {
-                q.offset(offset);
-            }
-            if (sort != null) {
-                if (ORDER_DESC.equals(order)) {
-                    q.order(Query.Order.desc(sort));
-                }
-                else {
-                    q.order(Query.Order.asc(sort));
-                }
+            else {
+                q.order(Query.Order.asc(sort));
             }
         }
     }
 
     protected void configureQueryWithArguments(Class clazz, Query query, Object[] arguments) {
-        if (arguments.length > 0) {
-            if (arguments[0] instanceof Map<?, ?>) {
-               Map<?, ?> argMap = (Map<?, ?>) arguments[0];
-               populateArgumentsForCriteria(clazz, query, argMap);
-            }
+        if (arguments.length == 0 || !(arguments[0] instanceof Map)) {
+            return;
         }
+
+        Map<?, ?> argMap = (Map<?, ?>)arguments[0];
+        populateArgumentsForCriteria(clazz, query, argMap);
     }
 
     protected void applyAdditionalCriteria(Query query, Closure additionalCriteria) {
-        if (additionalCriteria != null) {
-            CriteriaBuilder builder = new CriteriaBuilder(query.getEntity().getJavaClass(), query.getSession().getDatastore(), query);
-            builder.build(additionalCriteria);
+        if (additionalCriteria == null) {
+            return;
         }
+
+        CriteriaBuilder builder = new CriteriaBuilder(query.getEntity().getJavaClass(),
+                  query.getSession(), query);
+        builder.build(additionalCriteria);
     }
 
     public static List<FinderMethod> getAllDynamicFinders(Datastore datastore) {

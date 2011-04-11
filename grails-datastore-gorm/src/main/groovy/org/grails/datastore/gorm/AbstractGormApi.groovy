@@ -17,18 +17,20 @@ package org.grails.datastore.gorm
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.gorm.utils.ReflectionUtils
+import org.springframework.datastore.mapping.core.Datastore
+import org.springframework.datastore.mapping.core.DatastoreUtils
+import org.springframework.datastore.mapping.core.Session
+import org.springframework.datastore.mapping.model.PersistentEntity
 
 /**
- * Abstract GORM API provider
+ * Abstract GORM API provider.
  *
  * @author Graeme Rocher
  * @param <D> the entity/domain class
  * @since 1.0
  */
-abstract class AbstractGormApi<D> {
+abstract class AbstractGormApi<D> extends AbstractDatastoreApi {
 
     static final List<String> EXCLUDES = [
         'setProperty',
@@ -50,13 +52,12 @@ abstract class AbstractGormApi<D> {
 
     protected Class<D> persistentClass
     protected PersistentEntity persistentEntity
-    protected Datastore datastore
     private List<Method> methods = []
     private List<Method> extendedMethods = []
 
     AbstractGormApi(Class<D> persistentClass, Datastore datastore) {
+        super(datastore)
         this.persistentClass = persistentClass;
-        this.datastore = datastore
         this.persistentEntity = datastore.getMappingContext().getPersistentEntity(persistentClass.name)
 
         final clazz = getClass()

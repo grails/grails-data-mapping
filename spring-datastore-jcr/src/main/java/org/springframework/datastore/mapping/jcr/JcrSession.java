@@ -65,6 +65,7 @@ public class JcrSession extends AbstractSession<JcrSessionFactory> {
         }
     }
 
+    @Override
     public boolean isConnected() {
         try {
             return jcrSessionFactory.getSession().isLive();

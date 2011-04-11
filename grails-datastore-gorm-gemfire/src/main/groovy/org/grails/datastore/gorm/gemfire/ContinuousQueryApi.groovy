@@ -55,7 +55,8 @@ class ContinuousQueryApi {
         DynamicFinder dynamicFinder = method
 
         def invocation = dynamicFinder.createFinderInvocation(entity.javaClass, methodName, null, args)
-        GemfireQuery q = dynamicFinder.buildQuery(invocation)
+        // TODO not sure if current session makes sense for continuous query
+        GemfireQuery q = dynamicFinder.buildQuery(invocation, gemfire.currentSession)
         def queryString = q.getQueryString()
 
         def queryService = gemfirePool.getQueryService()

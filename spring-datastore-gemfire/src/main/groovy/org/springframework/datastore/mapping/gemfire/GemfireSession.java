@@ -52,9 +52,8 @@ public class GemfireSession extends AbstractSession<Cache> {
         return new GemfireTransaction(tm);
     }
 
-    public boolean isConnected() {
-        return true; // TODO: Support Client Caches, here we assume a peer cache
-    }
+    // TODO: Support Client Caches, here we assume a peer cache
+//    public boolean isConnected() {}
 
     public Object getNativeInterface() {
         return ((GemfireDatastore)getDatastore()).getGemfireCache();
