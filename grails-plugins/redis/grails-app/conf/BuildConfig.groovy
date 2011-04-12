@@ -16,6 +16,7 @@ grails.project.dependency.resolution = {
     repositories {
         mavenRepo "http://maven.springframework.org/$repo"
         mavenCentral()
+		grailsCentral()
     }
 
     dependencies {
@@ -31,5 +32,11 @@ grails.project.dependency.resolution = {
 			 "org.springframework:spring-datastore-simple:$version"){
 			transitive = false
 		} 
+    }
+
+    plugins {
+        build( ":maven-publisher:0.7.5" ) {
+            export = false
+        }
     }
 }
