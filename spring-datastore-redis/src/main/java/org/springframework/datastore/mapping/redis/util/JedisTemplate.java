@@ -36,7 +36,6 @@ import java.util.Set;
 @SuppressWarnings("hiding")
 public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     private String password;
-    private boolean authenticated;
     private Jedis redis;
     private Transaction transaction;
     private JedisPool pool;
@@ -165,12 +164,12 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         try {
             if (redis == null) {
                 redis = getNewConnection();
-                redis.connect();
+                doConnect();
             }
             else {
                 if (!redis.isConnected()) {
                     try {
-                        redis.connect();
+                        doConnect();
                     }
                     catch (JedisConnectionException e) {
                         throw new DataAccessResourceFailureException(
@@ -178,17 +177,25 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                     }
                 }
             }
-            if (password != null && !authenticated) {
-                try {
-                    redis.auth(password);
-                    authenticated = true;
-                } catch (Exception e) {
-                    throw new DataAccessResourceFailureException("I/O exception authenticating with Redis: " + e.getMessage(), e);
-                }
-            }
+
             return jedisRedisCallback.doInRedis(redis);
         } catch (IOException e) {
             throw new DataAccessResourceFailureException("I/O exception thrown connecting to Redis: " + e.getMessage(), e);
+        }
+    }
+
+    private void doConnect() {
+        redis.connect();
+        doAuthentication();
+    }
+
+    private void doAuthentication() {
+        if (password != null) {
+            try {
+                redis.auth(password);
+            } catch (Exception e) {
+                throw new DataAccessResourceFailureException("I/O exception authenticating with Redis: " + e.getMessage(), e);
+            }
         }
     }
 
