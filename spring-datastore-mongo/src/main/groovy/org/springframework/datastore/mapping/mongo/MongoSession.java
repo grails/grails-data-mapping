@@ -56,7 +56,12 @@ public class MongoSession extends AbstractSession<DB> {
     public MongoSession(MongoDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
         super(datastore, mappingContext, publisher);
         this.mongoDatastore = datastore;
-        getNativeInterface().requestStart();
+        try {
+            getNativeInterface().requestStart();
+        }
+        catch (IllegalStateException ignored) {
+            // can't call authenticate() twice, and it's probably been called at startup
+        }
     }
 
     @Override
