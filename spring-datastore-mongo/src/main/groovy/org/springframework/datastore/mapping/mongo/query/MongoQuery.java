@@ -452,9 +452,11 @@ public class MongoQuery extends Query{
                     cursor.limit(max);
                 }
 
-                for (Order order : orderBy) {
+                if(!orderBy.isEmpty()) {
                     DBObject orderObject = new BasicDBObject();
-                    orderObject.put(order.getProperty(), order.getDirection() == Order.Direction.DESC ? -1 : 1);
+                    for (Order order : orderBy) {
+                        orderObject.put(order.getProperty(), order.getDirection() == Order.Direction.DESC ? -1 : 1);
+                    }
                     cursor.sort(orderObject);
                 }
 
