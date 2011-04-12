@@ -1,5 +1,19 @@
 Below are the details of the changes across releases:
 
+h4. 1.0 Milestone 5
+
+* Remaining GORM events (beforeLoad, afterLoad)
+* Optimistic locking via versioning
+* Services can now be made transactional for Mongo only via transactional = "mongo"
+
+h4. 1.0 Milestone 4
+
+* Bug fixes and minor improvements
+
+h4. 1.0 Milestone 3
+
+* Bug fixes and minor improvements
+
 h4. 1.0 Milestone 2
 
 Features added in 1.0 Milestone 2:
