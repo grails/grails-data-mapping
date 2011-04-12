@@ -16,7 +16,6 @@ package org.grails.datastore.gorm.bean.factory
 
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
@@ -26,7 +25,7 @@ import org.springframework.context.ApplicationContextAware
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.model.PersistentEntity
 
-/**
+ /**
  * An abstract factory bean for constructing MappingContext instances
  *
  * @author Graeme Rocher
@@ -50,7 +49,7 @@ abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingC
 
         if (grailsApplication) {
             for (GrailsDomainClass domainClass in grailsApplication.domainClasses) {
-                def domainMappingStrategy = domainClass.getPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY)
+                def domainMappingStrategy = domainClass.mappingStrategy
                 PersistentEntity entity
 
                 if (mappingStrategy == domainMappingStrategy || (domainMappingStrategy == 'GORM' && !defaultExternal)) {
