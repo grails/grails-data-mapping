@@ -29,7 +29,7 @@ grails.project.dependency.resolution = {
         }
 
         compile("org.mongodb:mongo-java-driver:2.4")
-        compile("org.springframework.data:spring-data-mongodb:1.0.0.M1", excludes)
+        compile("org.springframework.data:spring-data-mongodb:1.0.0.BUILD-SNAPSHOT", excludes)
         runtime("com.gmongo:gmongo:0.7", excludes)
         compile("org.grails:grails-datastore-gorm-mongo:$version",
                 "org.grails:grails-datastore-gorm:$version",
