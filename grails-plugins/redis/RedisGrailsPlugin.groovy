@@ -52,7 +52,7 @@ class RedisGrailsPlugin {
 
     def version = "1.0.0.M4"
     def grailsVersion = "1.3.4 > *"
-    def loadAfter = ['domainClass', 'hibernate', 'services']
+    def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
 
     def author = "Graeme Rocher"
     def authorEmail = "graeme.rocher@springsource.com"
@@ -195,6 +195,7 @@ a GORM-like API onto it
 
     def doWithApplicationContext = { ctx ->
         def redisDatastore = ctx.redisDatastore
+        redisDatastore.applicationContext = ctx
         ctx.addApplicationListener new DomainEventListener(redisDatastore)
         ctx.addApplicationListener new AutoTimestampEventListener(redisDatastore)
     }

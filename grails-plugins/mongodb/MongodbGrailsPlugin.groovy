@@ -42,7 +42,7 @@ class MongodbGrailsPlugin {
     def version = "1.0-M5"
     def grailsVersion = "1.3.5 > *"
     def observe = ['services']
-    def loadAfter = ['domainClass', 'hibernate', 'services']
+    def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
     def author = "Graeme Rocher"
     def authorEmail = "graeme.rocher@springsource.com"
     def title = "MongoDB GORM"
@@ -93,14 +93,14 @@ a GORM API onto it
             else if (mongoConfig?.replicaPair) {
                 def pair = []
                 for (server in mongoConfig.remove("replicaPair")) {
-                    pair << new DBAddress(server.indexOf("/")>0 ? server : "$server/$databaseName")
+                    pair << new DBAddress(server.indexOf("/") > 0 ? server : "$server/$databaseName")
                 }
                 replicaPair = pair
             }
             else if (mongoConfig?.replicaSet) {
                 def set = []
                 for (server in mongoConfig.remove("replicaSet")) {
-                    set << new DBAddress(server.indexOf("/")>0 ? server : "$server/$databaseName")
+                    set << new DBAddress(server.indexOf("/") > 0 ? server : "$server/$databaseName")
                 }
 
                 replicaSetSeeds = set
