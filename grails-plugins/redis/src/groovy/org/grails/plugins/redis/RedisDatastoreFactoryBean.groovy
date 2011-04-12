@@ -16,8 +16,6 @@ package org.grails.plugins.redis
 
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import org.springframework.beans.factory.FactoryBean
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ApplicationContextAware
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.redis.RedisDatastore
 
@@ -27,15 +25,14 @@ import org.springframework.datastore.mapping.redis.RedisDatastore
  * @author Graeme Rocher
  * @since 1.0
  */
-class RedisDatastoreFactoryBean implements FactoryBean<RedisDatastore>, ApplicationContextAware {
+class RedisDatastoreFactoryBean implements FactoryBean<RedisDatastore> {
 
     Map<String, String> config
     MappingContext mappingContext
     GrailsPluginManager pluginManager
-    ApplicationContext applicationContext
 
     RedisDatastore getObject() {
-        new RedisDatastore(mappingContext, config, applicationContext)
+        new RedisDatastore(mappingContext, config, null)
     }
 
     Class<?> getObjectType() { RedisDatastore }
