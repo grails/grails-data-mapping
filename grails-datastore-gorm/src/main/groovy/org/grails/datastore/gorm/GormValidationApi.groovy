@@ -14,10 +14,11 @@
  */
 package org.grails.datastore.gorm
 
+import org.grails.datastore.gorm.support.BeforeValidateHelper
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.model.MappingContext
-import static org.springframework.datastore.mapping.validation.ValidatingEventListener.ERRORS_ATTRIBUTE
 import org.springframework.validation.*
+import static org.springframework.datastore.mapping.validation.ValidatingEventListener.ERRORS_ATTRIBUTE
 
  /**
  * Methods used for validating GORM instances
@@ -29,12 +30,14 @@ import org.springframework.validation.*
 class GormValidationApi<D> extends AbstractGormApi<D> {
 
     Validator validator
+    BeforeValidateHelper beforeValidateHelper
 
     GormValidationApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
         MappingContext context = datastore.mappingContext
         def entity = context.getPersistentEntity(persistentClass.name)
         validator = context.getEntityValidator(entity)
+        beforeValidateHelper = new BeforeValidateHelper()
     }
 
     /**
@@ -45,7 +48,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
      * @return True if the instance is valid
      */
     boolean validate(D instance, Map arguments) {
-        validate instance, Collections.emptyList()
+        validate instance, (List)null
     }
 
     /**
@@ -56,6 +59,9 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
      * @return True if the instance is valid
      */
     boolean validate(D instance, List fields) {
+        
+        beforeValidateHelper.invokeBeforeValidate instance, fields
+        
         if (!validator) {
             return true
         }
@@ -112,7 +118,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
      * @return True if the instance is valid
      */
     boolean validate(D instance) {
-        validate instance, Collections.emptyList()
+        validate instance, (List)null
     }
 
     /**
@@ -124,7 +130,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
      */
     @Deprecated
     boolean validate(D instance, boolean evict) {
-        validate instance, Collections.emptyList()
+        validate instance, (List)null
     }
 
     /**

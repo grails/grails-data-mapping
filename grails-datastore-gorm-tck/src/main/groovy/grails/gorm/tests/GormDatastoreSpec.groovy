@@ -22,7 +22,9 @@ abstract class GormDatastoreSpec extends Specification {
     static final TEST_CLASSES = [
          Task, Person, ModifyPerson, Pet, PetType, PersonEvent, Book, Highway,
          TestEntity, ChildEntity, CommonTypes, Location, City, Country, Plant,
-         PlantCategory, Publication, OptLockVersioned, OptLockNotVersioned]
+         PlantCategory, Publication, OptLockVersioned, OptLockNotVersioned,
+         ClassWithNoArgBeforeValidate, ClassWithListArgBeforeValidate, 
+         ClassWithOverloadedBeforeValidate]
 
     @Shared Class setupClass
 
