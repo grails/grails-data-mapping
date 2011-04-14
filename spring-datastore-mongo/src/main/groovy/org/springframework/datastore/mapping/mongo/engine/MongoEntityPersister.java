@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Currency;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -123,16 +124,26 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             query.in(persistentEntity.getIdentity().getName(), keyList);
         }
 
-        return query.list();
+        List<Object> entityResults = new ArrayList<Object>();
+        Iterator<Serializable> keyIterator = keys.iterator();
+        Iterator<Object> listIterator = query.list().iterator();
+        while (keyIterator.hasNext() && listIterator.hasNext()) {
+            Serializable key = keyIterator.next();
+            Object next = listIterator.next();
+            if (next instanceof DBObject) {
+                entityResults.add(createObjectFromNativeEntry(getPersistentEntity(), key, (DBObject)next));
+            }
+            else {
+                entityResults.add(next);
+            }
+        }
+
+        return entityResults;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected List<Object> retrieveAllEntities(PersistentEntity persistentEntity,
-            Serializable[] keys) {
-        Query query = session.createQuery(persistentEntity.getJavaClass());
-        query.in(persistentEntity.getIdentity().getName(), Arrays.asList(keys));
-        return query.list();
+    protected List<Object> retrieveAllEntities(PersistentEntity persistentEntity, Serializable[] keys) {
+        return retrieveAllEntities(persistentEntity, Arrays.asList(keys));
     }
 
     @Override

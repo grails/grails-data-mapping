@@ -21,6 +21,7 @@ class OneToManySpec extends GormDatastoreSpec {
             c != null
             c.residents != null
             c.residents.size() == 1
+            c.residents.every { it instanceof Person } == true
 
         when:
             c.addToResidents(new Person(firstName:"Barney", lastName:"Rubble"))
@@ -32,6 +33,7 @@ class OneToManySpec extends GormDatastoreSpec {
             c != null
             c.residents != null
             c.residents.size() == 2
+            c.residents.every { it instanceof Person } == true
     }
 
     void "test save and return bidirectional one to many"() {
@@ -51,11 +53,11 @@ class OneToManySpec extends GormDatastoreSpec {
             p = Person.findByFirstName("Fred")
 
         then:
-
             p != null
             p.pets != null
             p.pets.size() == 1
             def pet = p.pets.iterator().next()
+            pet instanceof Pet
             pet.name == 'Dino'
             pet.type != null
             pet.type.name == 'Dinosaur'
@@ -70,6 +72,7 @@ class OneToManySpec extends GormDatastoreSpec {
             p != null
             p.pets != null
             p.pets.size() == 2
+            p.pets.every { it instanceof Pet } == true
     }
 
     void "test update inverse side of bidirectional one to many collection"() {
@@ -90,6 +93,7 @@ class OneToManySpec extends GormDatastoreSpec {
             p.pets != null
             p.pets.size() == 1
             def pet = p.pets.iterator().next()
+            pet instanceof Pet
             pet.name == 'Dino'
             pet.type != null
             pet.type.name == 'Dinosaur'
