@@ -52,10 +52,10 @@ class RangeQuerySpec extends GormDatastoreSpec {
             results = TestEntity.findAllByAgeLessThanEquals(38)
 
         then:
-            assert 4 == results.size()
-            assert results.find { it.age == 38 } != null
-            assert results.find { it.age == 37 }!= null
-            assert results.find { it.age == 36 }!= null
-            assert results.find { it.age == 35 }!= null
+            4 == results.size()
+            results.find { it.age == 38 } != null
+            results.find { it.age == 37 } != null
+            results.find { it.age == 36 } != null
+            results.find { it.age == 35 } != null
     }
 }

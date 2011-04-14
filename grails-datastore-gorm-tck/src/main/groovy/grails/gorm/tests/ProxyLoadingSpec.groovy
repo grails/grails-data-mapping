@@ -29,6 +29,6 @@ class ProxyLoadingSpec extends GormDatastoreSpec {
             t = TestEntity.findByChild(proxy)
 
         then:
-            assert t != null
+            t != null
     }
 }

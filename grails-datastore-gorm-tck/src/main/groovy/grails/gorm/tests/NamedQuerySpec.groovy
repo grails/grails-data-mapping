@@ -12,10 +12,10 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def now = new Date()
             def oldDate = now - 2000
 
-            assert Publication.newInstance(title: 'New Paperback', datePublished: now, paperback: true).save()
-            assert Publication.newInstance(title: 'Old Paperback', datePublished: oldDate, paperback: true).save()
-            assert Publication.newInstance(title: 'New Hardback', datePublished: now, paperback: false).save()
-            assert Publication.newInstance(title: 'Old Hardback', datePublished: oldDate, paperback: false).save()
+            Publication.newInstance(title: 'New Paperback', datePublished: now, paperback: true).save(failOnError: true)
+            Publication.newInstance(title: 'Old Paperback', datePublished: oldDate, paperback: true).save(failOnError: true)
+            Publication.newInstance(title: 'New Hardback', datePublished: now, paperback: false).save(failOnError: true)
+            Publication.newInstance(title: 'Old Hardback', datePublished: oldDate, paperback: false).save(failOnError: true)
             session.flush()
             session.clear()
 
@@ -23,7 +23,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def publications = Publication.paperbackOrRecent.list()
 
         then:
-            assert 3 == publications?.size()
+            3 == publications?.size()
     }
 
     void "Test max and offset parameter"() {
@@ -50,12 +50,9 @@ class NamedQuerySpec extends GormDatastoreSpec {
 
         given:
             def now = new Date()
-            def newPublication = Publication.newInstance(title: "Some New Book", datePublished: now - 10).save()
-            assert newPublication
+            def newPublication = Publication.newInstance(title: "Some New Book", datePublished: now - 10).save(failOnError: true)
             def oldPublication = Publication.newInstance(title: "Some Old Book",
-            datePublished: now - 900).save(flush:true)
-            assert oldPublication
-
+            datePublished: now - 900).save(flush:true, failOnError: true)
             session.clear()
 
         when:
@@ -71,12 +68,12 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
             6.times {
-                assert Publication.newInstance(title: "Some Book",
-                                               datePublished: now - 10).save()
-                assert Publication.newInstance(title: "Some Other Book",
-                                               datePublished: now - 10).save()
-                assert Publication.newInstance(title: "Some Book",
-                                               datePublished: now - 900).save()
+                Publication.newInstance(title: "Some Book",
+                                               datePublished: now - 10).save(failOnError: true)
+                Publication.newInstance(title: "Some Other Book",
+                                               datePublished: now - 10).save(failOnError: true)
+                Publication.newInstance(title: "Some Book",
+                                               datePublished: now - 900).save(failOnError: true)
             }
             session.flush()
             session.clear()
@@ -87,7 +84,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             }
 
         then:
-            assert 6 == publications?.size()
+            6 == publications?.size()
 
         when:
             publications = Publication.recentPublications {
@@ -95,7 +92,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             }
 
         then:
-            assert 12 == publications?.size()
+            12 == publications?.size()
 
         when:
             def cnt = Publication.recentPublications.count {
@@ -103,7 +100,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             }
 
         then:
-            assert 6 == cnt
+            6 == cnt
 
         when:
             publications = Publication.recentPublications(max: 3) {
@@ -111,7 +108,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             }
 
         then:
-            assert 3 == publications?.size()
+            3 == publications?.size()
     }
 
     void "Test passing parameters to additional criteria"() {
@@ -133,7 +130,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             }
 
         then:
-            assert 6 == results?.size()
+            6 == results?.size()
 
         when:
             results = Publication.publishedAfter(now - 5, [max: 2, offset: 1]) {
@@ -141,7 +138,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             }
 
         then:
-            assert 2 == results?.size()
+            2 == results?.size()
 
         when:
             results = Publication.publishedBetween(now - 5, now + 1) {
@@ -149,7 +146,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             }
 
         then:
-            assert 6 == results?.size()
+            6 == results?.size()
 
         when:
             results = Publication.publishedBetween(now - 5, now + 1, [max: 2, offset: 1]) {
@@ -157,7 +154,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             }
 
         then:
-            assert 2 == results?.size()
+            2 == results?.size()
 
         when:
             results = Publication.publishedAfter(now - 1005) {
@@ -165,7 +162,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             }
 
         then:
-            assert 12 == results?.size()
+            12 == results?.size()
 
         when:
             results = Publication.publishedAfter(now - 5) {
@@ -173,7 +170,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             }
 
         then:
-            assert 0 == results?.size()
+            0 == results?.size()
 
         when:
             results = Publication.publishedAfter(now - 5, [max: 2, offset: 1]) {
@@ -181,7 +178,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             }
 
         then:
-            assert 0 == results?.size()
+            0 == results?.size()
 
         when:
             results = Publication.publishedBetween(now - 5, now + 1) {
@@ -189,7 +186,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             }
 
         then:
-            assert 0 == results?.size()
+            0 == results?.size()
 
         when:
             results = Publication.publishedBetween(now - 5, now + 1, [max: 2, offset: 1]) {
@@ -197,7 +194,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             }
 
         then:
-            assert 0 == results?.size()
+            0 == results?.size()
 
         when:
             results = Publication.publishedAfter(now - 1005) {
@@ -205,7 +202,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             }
 
         then:
-            assert 0 == results?.size()
+            0 == results?.size()
     }
 
     void "Test get method followed named query chaining"() {
@@ -251,8 +248,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
 
         given:
             def now = new Date()
-            assert Publication.newInstance(title: "Book 1",
-            datePublished: now - 900).save()
+            Publication.newInstance(title: "Book 1", datePublished: now - 900).save(failOnError: true)
             def recentBookId = Publication.newInstance(
                 title: "Book 1",
                 datePublished: now - 10).save(flush:true).id
@@ -270,12 +266,12 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
             3.times {
-                assert new Publication(title: "Some Recent Book",
-                                       datePublished: now - 10).save()
-                assert new Publication(title: "Some Other Book",
-                                       datePublished: now - 10).save()
-                assert new Publication(title: "Some Book",
-                                       datePublished: now - 900).save(flush:true)
+                new Publication(title: "Some Recent Book",
+                                       datePublished: now - 10).save(failOnError: true)
+                new Publication(title: "Some Other Book",
+                                       datePublished: now - 10).save(failOnError: true)
+                new Publication(title: "Some Book",
+                                       datePublished: now - 900).save(flush:true, failOnError: true)
             }
             session.clear()
 
@@ -283,10 +279,10 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def publications = Publication.recentPublications.findAllByTitle('Some Recent Book')
 
         then:
-            assert 3 == publications?.size()
-            assert 'Some Recent Book' == publications[0].title
-            assert 'Some Recent Book' == publications[1].title
-            assert 'Some Recent Book' == publications[2].title
+            3 == publications?.size()
+            'Some Recent Book' == publications[0].title
+            'Some Recent Book' == publications[1].title
+            'Some Recent Book' == publications[2].title
     }
 
     @spock.lang.Ignore  // queries on associations not yet supported
@@ -419,7 +415,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def results = Publication.recentPublications().publicationsWithBookInTitle().findAllWhere(paperback: true)
 
         then:
-            assert 1 == results?.size()
+            1 == results?.size()
     }
 
     void "Test named query passing multiple parameters to a nested query"() {
@@ -445,7 +441,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def results = Publication.thisWeeksPaperbacks().list()
 
         then:
-            assert 2 == results?.size()
+            2 == results?.size()
     }
 
     void "Test chaining named queries"() {
@@ -481,47 +477,47 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def results = Publication.recentPublications().publicationsWithBookInTitle().list()
 
         then: "The result size should be 16 when returned from chained queries"
-            assert 16 == results?.size()
+            16 == results?.size()
 
         when:
             results = Publication.recentPublications().publicationsWithBookInTitle().count()
         then:
-            assert 16 == results
+            16 == results
 
         when:
             results = Publication.recentPublications.publicationsWithBookInTitle.list()
         then:"The result size should be 16 when returned from chained queries"
-            assert 16 == results?.size()
+            16 == results?.size()
 
         when:
             results = Publication.recentPublications.publicationsWithBookInTitle.count()
         then:
-            assert 16 == results
+            16 == results
 
         when:
             results = Publication.paperbacks().recentPublications().publicationsWithBookInTitle().list()
         then: "The result size should be 8 when returned from chained queries"
-            assert 8 ==  results?.size()
+            8 ==  results?.size()
 
         when:
             results = Publication.paperbacks().recentPublications().publicationsWithBookInTitle().count()
         then:
-            assert 8 == results
+            8 == results
 
         when:
             results = Publication.recentPublications().publicationsWithBookInTitle().findAllByPaperback(true)
         then: "The result size should be 8"
-            assert 8 == results?.size()
+            8 == results?.size()
 
         when:
             results = Publication.paperbacks.recentPublications.publicationsWithBookInTitle.list()
         then:"The result size should be 8 when returned from chained queries"
-            assert 8 == results?.size()
+            8 == results?.size()
 
         when:
             results = Publication.paperbacks.recentPublications.publicationsWithBookInTitle.count()
         then:
-            assert 8 == results
+            8 == results
     }
 
     void testChainingQueriesWithParams() {
@@ -531,22 +527,22 @@ class NamedQuerySpec extends GormDatastoreSpec {
         def lastWeek = now - 7
         def longAgo = now - 1000
         2.times {
-            assert Publication.newInstance(title: 'Some Book',
-                                           datePublished: now).save()
-            assert Publication.newInstance(title: 'Some Title',
-                                           datePublished: now).save()
+            Publication.newInstance(title: 'Some Book',
+                                           datePublished: now).save(failOnError: true)
+            Publication.newInstance(title: 'Some Title',
+                                           datePublished: now).save(failOnError: true)
         }
         3.times {
-            assert Publication.newInstance(title: 'Some Book',
-                                           datePublished: lastWeek).save()
-            assert Publication.newInstance(title: 'Some Title',
-                                           datePublished: lastWeek).save()
+            Publication.newInstance(title: 'Some Book',
+                                           datePublished: lastWeek).save(failOnError: true)
+            Publication.newInstance(title: 'Some Title',
+                                           datePublished: lastWeek).save(failOnError: true)
         }
         4.times {
-            assert Publication.newInstance(title: 'Some Book',
-                                           datePublished: longAgo).save()
-            assert Publication.newInstance(title: 'Some Title',
-                                           datePublished: longAgo).save()
+            Publication.newInstance(title: 'Some Book',
+                                           datePublished: longAgo).save(failOnError: true)
+            Publication.newInstance(title: 'Some Title',
+                                           datePublished: longAgo).save(failOnError: true)
         }
         session.clear()
 
@@ -579,7 +575,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
         when:
             def publications = Publication.recentPublications.list()
         then:
-            assert 0 == publications.size()
+            0 == publications.size()
     }
 
     void "Test named query with conjunction"() {
@@ -587,10 +583,10 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def now = new Date()
             def oldDate = now - 2000
 
-            assert Publication.newInstance(title: 'New Paperback', datePublished: now, paperback: true).save()
-            assert Publication.newInstance(title: 'Old Paperback', datePublished: oldDate, paperback: true).save()
-            assert Publication.newInstance(title: 'New Hardback', datePublished: now, paperback: false).save()
-            assert Publication.newInstance(title: 'Old Hardback', datePublished: oldDate, paperback: false).save()
+            Publication.newInstance(title: 'New Paperback', datePublished: now, paperback: true).save(failOnError: true)
+            Publication.newInstance(title: 'Old Paperback', datePublished: oldDate, paperback: true).save(failOnError: true)
+            Publication.newInstance(title: 'New Hardback', datePublished: now, paperback: false).save(failOnError: true)
+            Publication.newInstance(title: 'Old Hardback', datePublished: oldDate, paperback: false).save(failOnError: true)
             session.flush()
             session.clear()
 
@@ -605,10 +601,10 @@ class NamedQuerySpec extends GormDatastoreSpec {
 
         given:
             def now = new Date()
-            assert Publication.newInstance(title: "Some New Book",
-                                           datePublished: now - 10).save()
-            assert Publication.newInstance(title: "Some Old Book",
-                                           datePublished: now - 900).save(flush:true)
+            Publication.newInstance(title: "Some New Book",
+                                           datePublished: now - 10).save(failOnError: true)
+            Publication.newInstance(title: "Some Old Book",
+                                           datePublished: now - 900).save(flush:true, failOnError: true)
 
             session.clear()
 
@@ -616,8 +612,8 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def publications = Publication.recentPublications.list()
 
         then:
-            assert 1 == publications?.size()
-            assert 'Some New Book' == publications[0].title
+            1 == publications?.size()
+            'Some New Book' == publications[0].title
     }
 
     // findby boolean queries not yet supported
@@ -627,18 +623,18 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def Publication = ga.getDomainClass("Publication").clazz
             def now = new Date()
 
-            assert Publication.newInstance(title: 'Some Book', datePublished: now - 900, paperback: false).save()
-            assert Publication.newInstance(title: 'Some Book', datePublished: now - 900, paperback: false).save()
-            assert Publication.newInstance(title: 'Some Book', datePublished: now - 10, paperback: true).save()
-            assert Publication.newInstance(title: 'Some Book', datePublished: now - 10, paperback: true).save()
+            Publication.newInstance(title: 'Some Book', datePublished: now - 900, paperback: false).save(failOnError: true)
+            Publication.newInstance(title: 'Some Book', datePublished: now - 900, paperback: false).save(failOnError: true)
+            Publication.newInstance(title: 'Some Book', datePublished: now - 10, paperback: true).save(failOnError: true)
+            Publication.newInstance(title: 'Some Book', datePublished: now - 10, paperback: true).save(failOnError: true)
 
         when:
             def publications = Publication.recentPublications.findAllPaperbackByTitle('Some Book')
 
         then:
-            assert 2 == publications?.size()
-            assert publications[0].title == 'Some Book'
-            assert publications[1].title == 'Some Book'
+            2 == publications?.size()
+            publications[0].title == 'Some Book'
+            publications[1].title == 'Some Book'
     }
 
     // findby boolean queries not yet supported
@@ -648,28 +644,28 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
 
-            assert Publication.newInstance(title: 'Some Book', datePublished: now - 900, paperback: false).save()
-            assert Publication.newInstance(title: 'Some Book', datePublished: now - 900, paperback: false).save()
-            assert Publication.newInstance(title: 'Some Book', datePublished: now - 10, paperback: true).save()
-            assert Publication.newInstance(title: 'Some Book', datePublished: now - 10, paperback: true).save()
+            Publication.newInstance(title: 'Some Book', datePublished: now - 900, paperback: false).save(failOnError: true)
+            Publication.newInstance(title: 'Some Book', datePublished: now - 900, paperback: false).save(failOnError: true)
+            Publication.newInstance(title: 'Some Book', datePublished: now - 10, paperback: true).save(failOnError: true)
+            Publication.newInstance(title: 'Some Book', datePublished: now - 10, paperback: true).save(failOnError: true)
 
         when:
             def publication = Publication.recentPublications.findPaperbackByTitle('Some Book')
 
         then:
-            assert publication.title == 'Some Book'
+            publication.title == 'Some Book'
     }
 
     void "Test named query with countBy*() dynamic finder"() {
         given:
             def now = new Date()
             3.times {
-                assert Publication.newInstance(title: "Some Book",
-                                               datePublished: now - 10).save()
-                assert Publication.newInstance(title: "Some Other Book",
-                                               datePublished: now - 10).save()
-                assert Publication.newInstance(title: "Some Book",
-                                               datePublished: now - 900).save(flush:true)
+                Publication.newInstance(title: "Some Book",
+                                               datePublished: now - 10).save(failOnError: true)
+                Publication.newInstance(title: "Some Other Book",
+                                               datePublished: now - 10).save(failOnError: true)
+                Publication.newInstance(title: "Some Book",
+                                               datePublished: now - 900).save(flush:true, failOnError: true)
             }
             session.clear()
 
@@ -677,7 +673,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def numberOfNewBooksNamedSomeBook = Publication.recentPublications.countByTitle('Some Book')
 
         then:
-            assert 3 == numberOfNewBooksNamedSomeBook
+            3 == numberOfNewBooksNamedSomeBook
     }
 
     @Ignore // list order by not yet supported
@@ -686,21 +682,21 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
 
-            assert Publication.newInstance(title: "Book 1", datePublished: now).save()
-            assert Publication.newInstance(title: "Book 5", datePublished: now).save()
-            assert Publication.newInstance(title: "Book 3", datePublished: now - 900).save()
-            assert Publication.newInstance(title: "Book 2", datePublished: now - 900).save()
-            assert Publication.newInstance(title: "Book 4", datePublished: now).save(flush:true)
+            Publication.newInstance(title: "Book 1", datePublished: now).save(failOnError: true)
+            Publication.newInstance(title: "Book 5", datePublished: now).save(failOnError: true)
+            Publication.newInstance(title: "Book 3", datePublished: now - 900).save(failOnError: true)
+            Publication.newInstance(title: "Book 2", datePublished: now - 900).save(failOnError: true)
+            Publication.newInstance(title: "Book 4", datePublished: now).save(flush:true, failOnError: true)
             session.clear()
 
         when:
             def publications = Publication.recentPublications.listOrderByTitle()
 
         then:
-            assert 3 == publications?.size()
-            assert 'Book 1' == publications[0].title
-            assert 'Book 4' == publications[1].title
-            assert'Book 5'== publications[2].title
+            3 == publications?.size()
+            'Book 1' == publications[0].title
+            'Book 4' == publications[1].title
+            'Book 5'== publications[2].title
     }
 
     void "Test get with id of object which does not match criteria"() {
@@ -709,11 +705,10 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def now = new Date()
             def hasBookInTitle = Publication.newInstance(
                 title: "Book 1",
-                datePublished: now - 10).save()
-            assert hasBookInTitle
+                datePublished: now - 10).save(failOnError: true)
             def doesNotHaveBookInTitle = Publication.newInstance(
                 title: "Some Publication",
-                datePublished: now - 900).save(flush:true)
+                datePublished: now - 900).save(flush:true, failOnError: true)
 
             session.clear()
 
@@ -730,12 +725,10 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def now = new Date()
             def newPublication = Publication.newInstance(
                 title: "Some New Book",
-                datePublished: now - 10).save()
-            assert newPublication
+                datePublished: now - 10).save(failOnError: true)
             def oldPublication = Publication.newInstance(
                 title: "Some Old Book",
-                datePublished: now - 900).save(flush:true)
-            assert oldPublication
+                datePublished: now - 900).save(flush:true, failOnError: true)
 
             session.clear()
 
@@ -743,8 +736,8 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def publication = Publication.recentPublications.get(newPublication.id)
 
         then:
-            assert publication != null
-            assert 'Some New Book' == publication.title
+            publication != null
+            'Some New Book' == publication.title
     }
 
     void "Test get method returns null"() {
@@ -753,12 +746,10 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def now = new Date()
             def newPublication = Publication.newInstance(
                 title: "Some New Book",
-                datePublished: now - 10).save()
-            assert newPublication
+                datePublished: now - 10).save(failOnError: true)
             def oldPublication = Publication.newInstance(
                 title: "Some Old Book",
-                datePublished: now - 900).save(flush:true)
-            assert oldPublication
+                datePublished: now - 900).save(flush:true, failOnError: true)
 
             session.clear()
 
@@ -766,7 +757,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def publication = Publication.recentPublications.get(42 + oldPublication.id)
 
         then:
-            assert publication == null
+            publication == null
     }
 
     void "Test count method following named criteria"() {
@@ -775,12 +766,10 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def now = new Date()
             def newPublication = Publication.newInstance(
                 title: "Book Some New ",
-                datePublished: now - 10).save()
-            assert newPublication
+                datePublished: now - 10).save(failOnError: true)
             def oldPublication = Publication.newInstance(
                 title: "Book Some Old ",
-                datePublished: now - 900).save(flush:true)
-            assert oldPublication
+                datePublished: now - 900).save(flush:true, failOnError: true)
 
             session.clear()
 
@@ -797,12 +786,12 @@ class NamedQuerySpec extends GormDatastoreSpec {
 
         given:
             def now = new Date()
-            assert Publication.newInstance(title: "Book",
-                                           datePublished: now - 10).save()
-            assert Publication.newInstance(title: "Book",
-                                           datePublished: now - 10).save()
-            assert Publication.newInstance(title: "Book",
-                                           datePublished: now - 900).save(flush:true)
+            Publication.newInstance(title: "Book",
+                                           datePublished: now - 10).save(failOnError: true)
+            Publication.newInstance(title: "Book",
+                                           datePublished: now - 10).save(failOnError: true)
+            Publication.newInstance(title: "Book",
+                                           datePublished: now - 900).save(flush:true, failOnError: true)
 
             session.clear()
 
@@ -810,7 +799,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def recentPublicationsCount = Publication.recentPublicationsByTitle('Book').count()
 
         then:
-            assert 2 == recentPublicationsCount
+            2 == recentPublicationsCount
     }
 
     void "Test max parameter"() {
@@ -823,7 +812,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
         when:
             def pubs = Publication.recentPublications.list(max: 10)
         then:
-            assert 10 == pubs?.size()
+            10 == pubs?.size()
     }
 
     void "Test max results"() {
@@ -837,7 +826,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def pubs = Publication.latestBooks.list()
 
         then:
-            assert 10 == pubs?.size()
+            10 == pubs?.size()
     }
 
     void "Test findAllWhere method combined with named query"() {
@@ -845,8 +834,8 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def now = new Date()
             (1..5).each {num ->
                 3.times {
-                    assert Publication.newInstance(title: "Book Number ${num}",
-                                                   datePublished: now).save()
+                    Publication.newInstance(title: "Book Number ${num}",
+                                            datePublished: now).save(failOnError: true)
                 }
             }
 
@@ -854,7 +843,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def pubs = Publication.recentPublications.findAllWhere(title: 'Book Number 2')
 
         then:
-            assert 3 == pubs?.size()
+            3 == pubs?.size()
     }
 
     void "Test findAllWhere method with named query and disjunction"() {
@@ -863,30 +852,30 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def now = new Date()
             def oldDate = now - 2000
 
-            assert Publication.newInstance(title: 'New Paperback', datePublished: now, paperback: true).save()
-            assert Publication.newInstance(title: 'New Paperback', datePublished: now, paperback: true).save()
-            assert Publication.newInstance(title: 'Old Paperback', datePublished: oldDate, paperback: true).save()
-            assert Publication.newInstance(title: 'New Hardback', datePublished: now, paperback: false).save()
-            assert Publication.newInstance(title: 'Old Hardback', datePublished: oldDate, paperback: false).save(flush:true)
+            Publication.newInstance(title: 'New Paperback', datePublished: now, paperback: true).save(failOnError: true)
+            Publication.newInstance(title: 'New Paperback', datePublished: now, paperback: true).save(failOnError: true)
+            Publication.newInstance(title: 'Old Paperback', datePublished: oldDate, paperback: true).save(failOnError: true)
+            Publication.newInstance(title: 'New Hardback', datePublished: now, paperback: false).save(failOnError: true)
+            Publication.newInstance(title: 'Old Hardback', datePublished: oldDate, paperback: false).save(flush:true, failOnError: true)
             session.clear()
 
         when:
             def publications = Publication.paperbackOrRecent.findAllWhere(title: 'Old Paperback')
 
         then:
-            assert 1 == publications?.size()
+            1 == publications?.size()
 
         when:
             publications = Publication.paperbackOrRecent.findAllWhere(title: 'Old Hardback')
 
         then:
-            assert 0 == publications?.size()
+            0 == publications?.size()
 
         when:
             publications = Publication.paperbackOrRecent.findAllWhere(title: 'New Paperback')
 
         then:
-            assert 2 == publications?.size()
+            2 == publications?.size()
     }
 
     void "Test get with parameterized named query"() {
@@ -908,7 +897,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             pub = Publication.recentPublicationsByTitle('Some Title').get(recentPub.id)
 
         then:
-            assert recentPub.id == pub?.id
+            recentPub.id == pub?.id
     }
 
     void "Test named query with one parameter"() {
@@ -917,9 +906,9 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def now = new Date()
             (1..5).each {num ->
                 3.times {
-                    assert Publication.newInstance(
+                    Publication.newInstance(
                         title: "Book Number ${num}",
-                        datePublished: now).save()
+                        datePublished: now).save(failOnError: true)
                 }
             }
 
@@ -927,7 +916,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def pubs = Publication.recentPublicationsByTitle('Book Number 2').list()
 
         then:
-            assert 3 == pubs?.size()
+            3 == pubs?.size()
     }
 
     void "Test named query with multiple parameters"() {
@@ -935,28 +924,28 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
             (1..5).each {num ->
-                assert Publication.newInstance(
+                Publication.newInstance(
                     title: "Book Number ${num}",
-                    datePublished: ++now).save()
+                    datePublished: ++now).save(failOnError: true)
             }
 
         when:
             def pubs = Publication.publishedBetween(now-2, now).list()
 
         then:
-            assert 3 == pubs?.size()
+            3 == pubs?.size()
     }
 
     void "Test named query with multiple parameters and dynamic finder"() {
         given:
             def now = new Date()
             (1..5).each {num ->
-                assert Publication.newInstance(
+                Publication.newInstance(
                     title: "Book Number ${num}",
-                    datePublished: now + num).save()
-                assert Publication.newInstance(
+                    datePublished: now + num).save(failOnError: true)
+                Publication.newInstance(
                     title: "Another Book Number ${num}",
-                    datePublished: now + num).save()
+                    datePublished: now + num).save(failOnError: true)
             }
 
         when:
@@ -971,9 +960,9 @@ class NamedQuerySpec extends GormDatastoreSpec {
         given:
             def now = new Date()
             (1..10).each {num ->
-                assert Publication.newInstance(
+                Publication.newInstance(
                     title: "Book Number ${num}",
-                    datePublished: ++now).save()
+                    datePublished: ++now).save(failOnError: true)
             }
 
         when:
@@ -989,16 +978,16 @@ class NamedQuerySpec extends GormDatastoreSpec {
             def now = new Date()
             (1..5).each {num ->
                 3.times {
-                    assert Publication.newInstance(
+                    Publication.newInstance(
                         title: "Book Number ${num}",
-                        datePublished: now).save()
+                        datePublished: now).save(failOnError: true)
                 }
             }
 
         when:
             def pub = Publication.recentPublications.findWhere(title: 'Book Number 2')
         then:
-            assert 'Book Number 2' == pub.title
+            'Book Number 2' == pub.title
     }
 }
 

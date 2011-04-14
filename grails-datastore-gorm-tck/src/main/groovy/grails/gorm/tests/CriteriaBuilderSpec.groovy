@@ -242,7 +242,7 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
                 new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
             }
 
-            assert 4 == ChildEntity.count()
+            4 == ChildEntity.count()
 
             def criteria = TestEntity.createCriteria()
 

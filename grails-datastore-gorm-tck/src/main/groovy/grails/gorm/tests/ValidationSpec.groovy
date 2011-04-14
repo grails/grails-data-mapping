@@ -4,7 +4,7 @@ import org.springframework.datastore.mapping.validation.ValidatingEventListener
 import org.springframework.validation.Errors
 
 /**
- * Abstract base class for testing validation semantics
+ * Tests validation semantics.
  */
 class ValidationSpec extends GormDatastoreSpec {
 

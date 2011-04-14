@@ -37,7 +37,7 @@ class FindByMethodSpec extends GormDatastoreSpec {
         when:
             highways = Highway.findAllNotBypassedByName('Bypassed Highway')
         then:
-            assert 0 == highways?.size()
+            0 == highways?.size()
 
         when:
             highways = Highway.findAllBypassed()
@@ -145,7 +145,7 @@ class FindByMethodSpec extends GormDatastoreSpec {
         when:
             books = Book.findAllNotPublishedByAuthor('Graeme')
         then:
-            assert 0 == books?.size()
+            0 == books?.size()
     }
 }
 
