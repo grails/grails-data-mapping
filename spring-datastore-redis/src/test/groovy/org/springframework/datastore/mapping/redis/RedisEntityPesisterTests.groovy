@@ -11,37 +11,29 @@ class RedisEntityPesisterTests extends AbstractRedisTest {
 
     @Test
     void testPersistObject() {
-        Session conn = ds.connect()
 
-        try {
-            conn.nativeInterface.flushdb()
-            ds.getMappingContext().addPersistentEntity(TestEntity)
+        session.nativeInterface.flushdb()
+        ds.getMappingContext().addPersistentEntity(TestEntity)
 
-//            assert conn.retrieve(TestEntity, new RedisKey(1)) == null
+//        assert session.retrieve(TestEntity, new RedisKey(1)) == null
 
-            TestEntity t = new TestEntity()
-            t.name = "bob"
-            conn.persist(t)
+        TestEntity t = new TestEntity()
+        t.name = "bob"
+        session.persist(t)
 
-            assert t.id != null
+        assert t.id != null
 
-            def key = t.id
-            t = conn.retrieve(TestEntity, key)
+        def key = t.id
+        t = session.retrieve(TestEntity, key)
 
-            assert t != null
-            assert "bob" == t.name
+        assert t != null
+        assert "bob" == t.name
 
-            conn.delete(t)
-            conn.flush()
+        session.delete(t)
+        session.flush()
 
-            t = conn.retrieve(TestEntity, key)
-
-            assert t == null
-
-        }
-        finally {
-            conn.disconnect()
-        }
+        t = session.retrieve(TestEntity, key)
+        assert t == null
     }
 
     @Test
@@ -50,33 +42,30 @@ class RedisEntityPesisterTests extends AbstractRedisTest {
         // doesn't work right now
         ds.getMappingContext().addPersistentEntity(TestEntity)
 
-        Session conn = ds.connect(null)
-        conn.clear()
+        assert 0 == session.size()
 
-        assert 0 == conn.size()
-
-        def t = conn.beginTransaction()
+        def t = session.beginTransaction()
         TestEntity te = new TestEntity()
         te.name = "bob"
-        conn.persist(te)
+        session.persist(te)
         TestEntity te2 = new TestEntity()
         te2.name = "frank"
-        conn.persist(te2)
+        session.persist(te2)
         t.commit()
 
-        assert 2 == conn.size()
+        assert 2 == session.size()
 
-        t = conn.beginTransaction()
+        t = session.beginTransaction()
         TestEntity te3 = new TestEntity()
         te3.name = "joe"
-        conn.persist(te3)
+        session.persist(te3)
         TestEntity te4 = new TestEntity()
         te4.name = "jack"
-        conn.persist(te4)
+        session.persist(te4)
 
         t.rollback()
 
-        assert 2 == conn.size()
+        assert 2 == session.size()
     }
 }
 

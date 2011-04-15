@@ -16,10 +16,10 @@ package org.grails.datastore.gorm
 
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.core.DatastoreUtils
-import org.springframework.datastore.mapping.core.Session
+import org.springframework.datastore.mapping.core.SessionCallback
+import org.springframework.datastore.mapping.core.VoidSessionCallback
 
 /**
- * TODO move this and code in AbstractFinder to shared location.
  * @author Burt Beckwith
  */
 abstract class AbstractDatastoreApi {
@@ -31,28 +31,10 @@ abstract class AbstractDatastoreApi {
     }
 
     protected <T> T execute(SessionCallback<T> callback) {
-        Session session = DatastoreUtils.getSession(datastore, true)
-        boolean existing = DatastoreUtils.isSessionTransactional(session, datastore)
-        try {
-            return callback.doInSession(session)
-        }
-        finally {
-            if (!existing) {
-                DatastoreUtils.closeSessionOrRegisterDeferredClose(session, datastore)
-            }
-        }
+        DatastoreUtils.execute datastore, callback
     }
 
     protected void execute(VoidSessionCallback callback) {
-        Session session = DatastoreUtils.getSession(datastore, true)
-        boolean existing = DatastoreUtils.isSessionTransactional(session, datastore)
-        try {
-            callback.doInSession session
-        }
-        finally {
-            if (!existing) {
-                DatastoreUtils.closeSessionOrRegisterDeferredClose(session, datastore)
-            }
-        }
+        DatastoreUtils.execute datastore, callback
     }
 }

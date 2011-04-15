@@ -22,7 +22,6 @@ import org.grails.datastore.gorm.AbstractDatastoreApi
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
-import org.grails.datastore.gorm.SessionCallback
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.keyvalue.riak.core.QosParameters
@@ -31,6 +30,7 @@ import org.springframework.data.keyvalue.riak.core.RiakTemplate
 import org.springframework.data.keyvalue.riak.core.SimpleBucketKeyPair
 import org.springframework.data.keyvalue.riak.mapreduce.*
 import org.springframework.datastore.mapping.core.Session
+import org.springframework.datastore.mapping.core.SessionCallback
 import org.springframework.datastore.mapping.riak.RiakDatastore
 
 /**

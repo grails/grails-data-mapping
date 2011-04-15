@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm;
+package org.springframework.datastore.mapping.core;
 
 import org.springframework.datastore.mapping.core.Session;
 
@@ -21,5 +21,5 @@ import org.springframework.datastore.mapping.core.Session;
  * @param <T>
  */
 public interface SessionCallback<T> {
-	T doInSession(Session session);
+    T doInSession(Session session);
 }

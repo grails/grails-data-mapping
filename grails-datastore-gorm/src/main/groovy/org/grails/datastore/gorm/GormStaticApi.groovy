@@ -23,6 +23,8 @@ import org.springframework.beans.PropertyAccessorFactory
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.core.Session
+import org.springframework.datastore.mapping.core.SessionCallback
+import org.springframework.datastore.mapping.core.VoidSessionCallback
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.model.PersistentProperty
 import org.springframework.datastore.mapping.model.types.Association

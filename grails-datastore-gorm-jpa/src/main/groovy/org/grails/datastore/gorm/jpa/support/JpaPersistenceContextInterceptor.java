@@ -15,6 +15,7 @@
 package org.grails.datastore.gorm.jpa.support;
 
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor;
+import org.springframework.datastore.mapping.core.DatastoreUtils;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.jpa.JpaDatastore;
 import org.springframework.datastore.mapping.transactions.SessionHolder;
@@ -40,10 +41,7 @@ public class JpaPersistenceContextInterceptor extends DatastorePersistenceContex
             return sessionHolder.getSession();
         }
 
-        Session session = jpaDatastore.connect();
-        sessionHolder = new SessionHolder(session);
-        TransactionSynchronizationManager.bindResource(jpaDatastore, sessionHolder);
-        return session;
+        return DatastoreUtils.bindSession(jpaDatastore.connect());
     }
 
     @Override

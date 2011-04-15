@@ -22,8 +22,9 @@ import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import org.codehaus.groovy.grails.plugins.PluginManagerHolder
 import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.grails.datastore.gorm.GormEnhancer
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.context.support.GenericApplicationContext
+import org.springframework.datastore.mapping.core.DatastoreUtils
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.simple.SimpleMapDatastore
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
@@ -69,6 +70,7 @@ class DatastoreUnitTestMixin {
 
     Session connect() {
         session = datastore.connect()
+        DatastoreUtils.bindSession session
         return session
     }
 

@@ -14,14 +14,13 @@ class OneToOneAssociationTests extends AbstractRedisTest {
     @Test
     void testPersistOneToOneAssociation() {
         ds.mappingContext.addPersistentEntity(Person)
-        Session conn = ds.connect(null)
 
         def p = new Person(name:"Bob")
         p.address = new Address(number:"20", postCode:"39847")
 
-        conn.persist(p)
+        session.persist(p)
 
-        p = conn.retrieve(Person, p.id)
+        p = session.retrieve(Person, p.id)
 
         assert p != null
         assert "Bob" == p.name

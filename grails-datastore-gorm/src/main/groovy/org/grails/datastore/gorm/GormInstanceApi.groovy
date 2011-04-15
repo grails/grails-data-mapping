@@ -18,6 +18,8 @@ import static org.springframework.datastore.mapping.validation.ValidatingEventLi
 
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.core.Session
+import org.springframework.datastore.mapping.core.SessionCallback
+import org.springframework.datastore.mapping.core.VoidSessionCallback
 import org.springframework.datastore.mapping.proxy.EntityProxy
 import org.springframework.datastore.mapping.validation.ValidationException
 

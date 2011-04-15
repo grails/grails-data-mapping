@@ -61,19 +61,21 @@ public abstract class AbstractAttributeStoringSession implements Session {
      */
     public void disconnect() {
         connected = false;
-        clear();
-        attributes.clear();
-        SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(getDatastore());
-        if (sessionHolder == null) {
-            return;
+        try {
+            clear();
+            attributes.clear();
         }
-
-        sessionHolder.removeSession(this);
-        if (sessionHolder.isEmpty()) {
-            try {
-                TransactionSynchronizationManager.unbindResource(getDatastore());
-            } catch (IllegalStateException e) {
-                // ignore session disconnected by a another thread
+        finally {
+            SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(getDatastore());
+            if (sessionHolder != null) {
+                sessionHolder.removeSession(this);
+                if (sessionHolder.isEmpty()) {
+                    try {
+                        TransactionSynchronizationManager.unbindResource(getDatastore());
+                    } catch (IllegalStateException e) {
+                        // ignore session disconnected by a another thread
+                    }
+                }
             }
         }
     }

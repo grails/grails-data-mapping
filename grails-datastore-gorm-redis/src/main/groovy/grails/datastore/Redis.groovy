@@ -44,7 +44,13 @@ class Redis {
     void setDatastore(Datastore ds) {
         datastore = ds
         boolean existing = datastore.hasCurrentSession()
-        Session session = datastore.currentSession
+        Session session
+        if (existing) {
+            session = datastore.currentSession
+        }
+        else {
+            session = datastore.connect()
+        }
         redisTemplate = session.nativeInterface
         if (!existing) {
             session.disconnect()
@@ -99,9 +105,26 @@ class Redis {
     Collection entities(Class type, RedisCollection col, int offset = 0, int max = -1) {
         PersistentEntity entity = datastore.mappingContext.getPersistentEntity(type.name)
         if (entity == null) {
-            throw new IllegalArgumentException("Class [$type] is not a persistent entity")
+            throw new IllegalArgumentException("Class [$type.name] is not a persistent entity")
         }
         def results = col.members(offset, max)
-        datastore.currentSession.retrieveAll(type, results)
+
+        boolean existing = datastore.hasCurrentSession()
+        Session session
+        if (existing) {
+            session = datastore.currentSession
+        }
+        else {
+            session = datastore.connect()
+        }
+
+        try {
+            return session.retrieveAll(type, results)
+        }
+        finally {
+            if (!existing) {
+                session.disconnect()
+            }
+        }
     }
 }

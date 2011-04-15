@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.gorm.support;
 
+import javax.persistence.FlushModeType;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
@@ -23,12 +25,11 @@ import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.transactions.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import javax.persistence.FlushModeType;
-
 /**
  * @since 1.0
  */
-public class DatastorePersistenceContextInterceptor implements PersistenceContextInterceptor{
+public class DatastorePersistenceContextInterceptor implements PersistenceContextInterceptor {
+
     private static final Log LOG = LogFactory.getLog(DatastorePersistenceContextInterceptor.class);
     protected Datastore datastore;
     protected boolean participate;
@@ -47,7 +48,7 @@ public class DatastorePersistenceContextInterceptor implements PersistenceContex
             Session session = getSession();
             session.setFlushMode(FlushModeType.AUTO);
             try {
-                TransactionSynchronizationManager.bindResource(datastore, new SessionHolder(session));
+                DatastoreUtils.bindSession(session);
             } catch (IllegalStateException e) {
                 // ignore, already bound
             }
@@ -102,6 +103,11 @@ public class DatastorePersistenceContextInterceptor implements PersistenceContex
     }
 
     public boolean isOpen() {
-        return getSession().isConnected();
+        try {
+            return DatastoreUtils.doGetSession(datastore, false).isConnected();
+        }
+        catch (IllegalStateException e) {
+            return false;
+        }
     }
 }

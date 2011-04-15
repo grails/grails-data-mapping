@@ -17,10 +17,10 @@ package org.grails.datastore.gorm.mongo
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
-import org.grails.datastore.gorm.SessionCallback
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.core.Session
+import org.springframework.datastore.mapping.core.SessionCallback
 import org.springframework.datastore.mapping.mongo.MongoDatastore
 import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister
 import org.springframework.transaction.PlatformTransactionManager

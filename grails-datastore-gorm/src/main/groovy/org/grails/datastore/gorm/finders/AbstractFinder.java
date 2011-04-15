@@ -14,15 +14,13 @@
  */
 package org.grails.datastore.gorm.finders;
 
-import org.grails.datastore.gorm.SessionCallback;
-import org.grails.datastore.gorm.VoidSessionCallback;
 import org.springframework.datastore.mapping.core.Datastore;
 import org.springframework.datastore.mapping.core.DatastoreUtils;
-import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.core.SessionCallback;
+import org.springframework.datastore.mapping.core.VoidSessionCallback;
 
 /**
  * Abstract base class for finders.
- * TODO move this and code in AbstractDatastoreApi to shared location.
  *
  * @author Burt Beckwith
  */
@@ -34,29 +32,11 @@ public abstract class AbstractFinder implements FinderMethod {
         this.datastore = datastore;
     }
 
-    protected <T> T execute(SessionCallback<T> callback) {
-        Session session = DatastoreUtils.getSession(datastore, true);
-        boolean existing = DatastoreUtils.isSessionTransactional(session, datastore);
-        try {
-            return callback.doInSession(session);
-        }
-        finally {
-            if (!existing) {
-                DatastoreUtils.closeSessionOrRegisterDeferredClose(session, datastore);
-            }
-        }
+    protected <T> T execute(final SessionCallback<T> callback) {
+        return DatastoreUtils.execute(datastore, callback);
     }
 
-    protected void execute(VoidSessionCallback callback) {
-        Session session = DatastoreUtils.getSession(datastore, true);
-        boolean existing = DatastoreUtils.isSessionTransactional(session, datastore);
-        try {
-            callback.doInSession(session);
-        }
-        finally {
-            if (!existing) {
-                DatastoreUtils.closeSessionOrRegisterDeferredClose(session, datastore);
-            }
-        }
+    protected void execute(final VoidSessionCallback callback) {
+        DatastoreUtils.execute(datastore, callback);
     }
 }

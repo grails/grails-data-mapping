@@ -6,7 +6,6 @@ import static junit.framework.Assert.assertTrue;
 import javassist.util.proxy.ProxyObject;
 
 import org.junit.Test;
-import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.proxy.EntityProxy;
 
 public class LazyLoadedOneToOneTests extends AbstractRedisTest {
@@ -14,7 +13,6 @@ public class LazyLoadedOneToOneTests extends AbstractRedisTest {
     @Test
     public void testLazyLoadedOneToOne() {
         ds.getMappingContext().addPersistentEntity(Person.class);
-        Session conn = ds.connect();
 
         Person p = new Person();
         p.setName("Bob");
@@ -22,12 +20,12 @@ public class LazyLoadedOneToOneTests extends AbstractRedisTest {
         a.setNumber("22");
         a.setPostCode("308420");
         p.setAddress(a);
-        conn.persist(p);
-        conn.flush();
+        session.persist(p);
+        session.flush();
 
-        conn.clear();
+        session.clear();
 
-        p = conn.retrieve(Person.class, p.getId());
+        p = session.retrieve(Person.class, p.getId());
 
         Address proxy = p.getAddress();
 
@@ -45,7 +43,6 @@ public class LazyLoadedOneToOneTests extends AbstractRedisTest {
     @Test
     public void testProxyMethod() {
         ds.getMappingContext().addPersistentEntity(Person.class);
-        Session conn = ds.connect();
 
         Person p = new Person();
         p.setName("Bob");
@@ -53,9 +50,9 @@ public class LazyLoadedOneToOneTests extends AbstractRedisTest {
         a.setNumber("22");
         a.setPostCode("308420");
         p.setAddress(a);
-        conn.persist(p);
+        session.persist(p);
 
-        Person personProxy = conn.proxy(Person.class, p.getId());
+        Person personProxy = session.proxy(Person.class, p.getId());
 
         EntityProxy proxy = (EntityProxy) personProxy;
 

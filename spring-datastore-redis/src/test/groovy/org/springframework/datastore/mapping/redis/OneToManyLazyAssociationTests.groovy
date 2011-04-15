@@ -13,18 +13,17 @@ class OneToManyLazyAssociationTests extends AbstractRedisTest {
         return
 
         ds.mappingContext.addPersistentEntity(LazyAuthor)
-        Session conn = ds.connect()
-        conn.nativeInterface.flushall()
+        session.nativeInterface.flushall()
 
         def a = new LazyAuthor(name:"Stephen King")
         a.books = [ new LazyBook(title:"The Stand"), new LazyBook(title:"It")]
 
-        conn.persist(a)
-        conn.flush()
+        session.persist(a)
+        session.flush()
 
-        conn.clear()
+        session.clear()
 
-        a = conn.retrieve(LazyAuthor, a.id)
+        a = session.retrieve(LazyAuthor, a.id)
 
         assert a != null
         assert "Stephen King" == a.name

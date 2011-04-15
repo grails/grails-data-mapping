@@ -42,14 +42,16 @@ class WithTransactionSpec extends GormDatastoreSpec {
 
     void "Test rollback transaction with Exception"() {
         given:
+            def ex
             try {
                 TestEntity.withNewTransaction { status ->
                     new TestEntity(name:"Bob", age:50, child:new ChildEntity(name:"Bob Child")).save()
                     throw new RuntimeException("bad")
                     new TestEntity(name:"Fred", age:45, child:new ChildEntity(name:"Fred Child")).save()
                 }
-            } catch (e) {
-                // ignore
+            }
+            catch (e) {
+                ex = e
             }
 
         when:
@@ -59,5 +61,7 @@ class WithTransactionSpec extends GormDatastoreSpec {
         then:
             count == 0
             results.size() == 0
+            ex instanceof RuntimeException
+            ex.message == 'bad'
     }
 }

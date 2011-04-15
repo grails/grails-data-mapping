@@ -1,5 +1,6 @@
 package grails.gorm.tests
 
+import org.springframework.datastore.mapping.core.DatastoreUtils
 import org.springframework.datastore.mapping.core.Session
 
 import spock.lang.*
@@ -38,6 +39,7 @@ abstract class GormDatastoreSpec extends Specification {
     def setup() {
         cleanRegistry()
         session = setupClass.setup(TEST_CLASSES)
+        DatastoreUtils.bindSession session
     }
 
     def cleanup() {

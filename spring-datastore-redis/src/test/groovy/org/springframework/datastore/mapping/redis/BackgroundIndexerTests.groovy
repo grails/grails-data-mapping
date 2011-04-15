@@ -1,6 +1,11 @@
 package org.springframework.datastore.mapping.redis
 
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
+import org.springframework.context.support.GenericApplicationContext
+import org.springframework.datastore.mapping.core.DatastoreUtils
+import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.redis.util.JedisTemplate
 import org.springframework.datastore.mapping.redis.util.RedisTemplate
 
@@ -9,7 +14,24 @@ import redis.clients.jedis.Jedis
 /**
  * Tests background indexing functions correctly
  */
-class BackgroundIndexerTests extends AbstractRedisTest {
+class BackgroundIndexerTests {
+
+    private RedisDatastore ds
+    private Session session
+
+    @Before
+    void setUp() {
+        def ctx = new GenericApplicationContext()
+        ctx.refresh()
+        ds = new RedisDatastore()
+        ds.applicationContext = ctx
+    }
+
+    @After
+    void tearDown() {
+        session.disconnect()
+        ds.destroy()
+    }
 
     @Test
     void testBackgroundIndexer() {
@@ -27,7 +49,8 @@ class BackgroundIndexerTests extends AbstractRedisTest {
         ds.mappingContext.addPersistentEntity(Book)
         ds.afterPropertiesSet()
 
-        def session = ds.connect()
+        session = ds.connect()
+        DatastoreUtils.bindSession session
 
         def results = session.createQuery(Book).eq("title", "It").list()
 

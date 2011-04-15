@@ -38,9 +38,12 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  */
 public abstract class AbstractDatastore implements Datastore {
 
+    private ApplicationContext applicationContext;
+
     protected MappingContext mappingContext;
     protected Map<String, String> connectionDetails = Collections.emptyMap();
-    private ApplicationContext applicationContext;
+
+    public AbstractDatastore() {}
 
     public AbstractDatastore(MappingContext mappingContext) {
         this(mappingContext, null, null);
@@ -68,29 +71,8 @@ public abstract class AbstractDatastore implements Datastore {
         return connect(connectionDetails);
     }
 
-    public AbstractDatastore() {
-    }
-
     public final Session connect(Map<String, String> connDetails) {
-        SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(this);
-
-        final Session session = createSession(connDetails);
-        if (session == null) {
-            return null;
-        }
-
-        if (sessionHolder != null) {
-            sessionHolder.addSession(session);
-        }
-        else {
-            try {
-                TransactionSynchronizationManager.bindResource(this, new SessionHolder(session));
-            } catch (IllegalStateException e) {
-                // ignore session bound by another thread
-            }
-        }
-
-        return session;
+        return createSession(connDetails);
     }
 
     /**
@@ -102,16 +84,7 @@ public abstract class AbstractDatastore implements Datastore {
     protected abstract Session createSession(@SuppressWarnings("hiding") Map<String, String> connectionDetails);
 
     public final Session getCurrentSession() throws ConnectionNotFoundException {
-        SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(this);
-
-        Session connection = null;
-        if (sessionHolder == null) {
-            connection = connect(connectionDetails);
-        }
-        else {
-            connection = sessionHolder.getSession();
-        }
-        return connection;
+        return DatastoreUtils.doGetSession(this, false);
     }
 
     public boolean hasCurrentSession() {
@@ -135,23 +108,23 @@ public abstract class AbstractDatastore implements Datastore {
      */
     public static Session retrieveSession(Class datastoreClass) throws ConnectionNotFoundException {
         final Map<Object, Object> resourceMap = TransactionSynchronizationManager.getResourceMap();
-        Session connection = null;
+        Session session = null;
 
         if (resourceMap != null && !resourceMap.isEmpty()) {
             for (Object key : resourceMap.keySet()) {
                 if (datastoreClass.isInstance(key)) {
                     SessionHolder sessionHolder = (SessionHolder) resourceMap.get(key);
                     if (sessionHolder != null) {
-                        connection = sessionHolder.getSession();
+                        session = sessionHolder.getSession();
                     }
                 }
             }
         }
 
-        if (connection == null) {
+        if (session == null) {
             throw new ConnectionNotFoundException("Not datastore session found. Call Datastore.connect(..) before calling Datastore.getCurrentSession()");
         }
-        return connection;
+        return session;
     }
 
     public MappingContext getMappingContext() {

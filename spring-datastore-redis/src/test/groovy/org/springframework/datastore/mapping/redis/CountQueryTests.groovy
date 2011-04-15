@@ -10,7 +10,6 @@ class CountQueryTests extends AbstractRedisTest {
     @Test
     void testDisjunctionAndCount() {
         ds.mappingContext.addPersistentEntity(Author)
-        def session = ds.connect()
         session.getNativeInterface().flushall()
 
         def a = new Author(name:"Stephen King")
@@ -34,7 +33,6 @@ class CountQueryTests extends AbstractRedisTest {
     @Test
     void testSimpleQueryAndCount() {
         ds.mappingContext.addPersistentEntity(Author)
-        def session = ds.connect()
         session.getNativeInterface().flushall()
 
         def a = new Author(name:"Stephen King")

@@ -14,15 +14,15 @@
  */
 package org.grails.datastore.gorm.finders;
 
-import org.grails.datastore.gorm.SessionCallback;
-import org.springframework.datastore.mapping.core.Datastore;
-import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.query.Query;
-import org.springframework.datastore.mapping.reflect.NameUtils;
-
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.springframework.datastore.mapping.core.Datastore;
+import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.core.SessionCallback;
+import org.springframework.datastore.mapping.query.Query;
+import org.springframework.datastore.mapping.reflect.NameUtils;
 
 /**
  * The "listOrderBy*" static persistent method. Allows ordered listing of instances based on their properties.

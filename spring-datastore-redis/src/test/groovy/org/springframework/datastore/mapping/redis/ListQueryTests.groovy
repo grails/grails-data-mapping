@@ -1,9 +1,9 @@
 package org.springframework.datastore.mapping.redis
 
-import org.junit.Test
-
-import org.springframework.datastore.mapping.query.Query
 import static org.springframework.datastore.mapping.query.Restrictions.*
+
+import org.junit.Test
+import org.springframework.datastore.mapping.query.Query
 
 /**
  * @author Graeme Rocher
@@ -14,7 +14,6 @@ class ListQueryTests extends AbstractRedisTest {
     @Test
     void testListQuery() {
         ds.mappingContext.addPersistentEntity(Author)
-        def session = ds.connect()
         session.getNativeInterface().flushall()
 
         def a = new Author(name:"Stephen King")
@@ -45,7 +44,6 @@ class ListQueryTests extends AbstractRedisTest {
     @Test
     void testDisjunction() {
         ds.mappingContext.addPersistentEntity(Author)
-        def session = ds.connect(null)
         session.getNativeInterface().flushall()
 
         def a = new Author(name:"Stephen King")
@@ -70,7 +68,6 @@ class ListQueryTests extends AbstractRedisTest {
     @Test
     void testIdProjection() {
         ds.mappingContext.addPersistentEntity(Author)
-        def session = ds.connect(null)
         session.getNativeInterface().flushall()
 
         def a = new Author(name:"Stephen King")
@@ -97,7 +94,6 @@ class ListQueryTests extends AbstractRedisTest {
     @Test
     void testSimpleQuery() {
         ds.mappingContext.addPersistentEntity(Author)
-        def session = ds.connect()
         session.getNativeInterface().flushall()
 
         def a = new Author(name:"Stephen King")

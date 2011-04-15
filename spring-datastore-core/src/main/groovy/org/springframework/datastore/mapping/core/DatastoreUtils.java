@@ -14,6 +14,8 @@
  */
 package org.springframework.datastore.mapping.core;
 
+import groovy.lang.Closure;
+
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -84,7 +86,7 @@ public abstract class DatastoreUtils {
      * @throws IllegalStateException if no thread-bound Session found and
      * "allowCreate" is <code>false</code>
      */
-    private static Session doGetSession(Datastore datastore, boolean allowCreate){
+    public static Session doGetSession(Datastore datastore, boolean allowCreate) {
 
         Assert.notNull(datastore, "No Datastore specified");
 
@@ -97,7 +99,7 @@ public abstract class DatastoreUtils {
                     sessionHolder.doesNotHoldNonDefaultSession()) {
                 // Spring transaction management is active ->
                 // register pre-bound Session with it for transactional flushing.
-                session = sessionHolder.getSession();
+                session = sessionHolder.getValidatedSession();
                 if (session != null && !sessionHolder.isSynchronizedWithTransaction()) {
                     logger.debug("Registering Spring transaction synchronization for existing Datastore Session");
                         TransactionSynchronizationManager.registerSynchronization(
@@ -262,5 +264,75 @@ public abstract class DatastoreUtils {
         else {
             closeSession(session);
         }
+    }
+
+    /**
+     * Execute the closure in the current session if it exists, or create a new one and close it otherwise.
+     * @param datastore the datastore
+     * @param c the closure to execute
+     * @return the return value from the closure
+     */
+    public static Object doWithSession(final Datastore datastore, final Closure c) {
+        boolean existing = datastore.hasCurrentSession();
+        Session session = existing ? datastore.getCurrentSession() : bindSession(datastore.connect());
+        try {
+            return c.call(session);
+        }
+        finally {
+            if (!existing) {
+                TransactionSynchronizationManager.unbindResource(session.getDatastore());
+                DatastoreUtils.closeSessionOrRegisterDeferredClose(session, datastore);
+            }
+        }
+    }
+
+    /**
+     * Execute the callback in the current session if it exists, or create a new one and close it otherwise.
+     * @param <T> the return type
+     * @param datastore the datastore
+     * @param callback the callback to execute
+     * @return the return value from the callback
+     */
+    public static <T> T execute(final Datastore datastore, final SessionCallback<T> callback) {
+        boolean existing = datastore.hasCurrentSession();
+        Session session = existing ? datastore.getCurrentSession() : bindSession(datastore.connect());
+        try {
+            return callback.doInSession(session);
+        }
+        finally {
+            if (!existing) {
+                TransactionSynchronizationManager.unbindResource(session.getDatastore());
+                DatastoreUtils.closeSessionOrRegisterDeferredClose(session, datastore);
+            }
+        }
+    }
+
+    /**
+     * Execute the callback in the current session if it exists, or create a new one and close it otherwise.
+     * @param datastore the datastore
+     * @param callback the callback to execute
+     */
+    public static void execute(final Datastore datastore, final VoidSessionCallback callback) {
+        boolean existing = datastore.hasCurrentSession();
+        Session session = existing ? datastore.getCurrentSession() : bindSession(datastore.connect());
+        try {
+            callback.doInSession(session);
+        }
+        finally {
+            if (!existing) {
+                TransactionSynchronizationManager.unbindResource(session.getDatastore());
+                DatastoreUtils.closeSessionOrRegisterDeferredClose(session, datastore);
+            }
+        }
+    }
+
+    /**
+     * Bind the session to the thread with a SessionHolder keyed by its Datastore.
+     * @param session the session
+     * @return the session (for method chaining)
+     */
+    public static Session bindSession(final Session session) {
+        TransactionSynchronizationManager.bindResource(session.getDatastore(), new SessionHolder(session));
+        return session;
     }
 }

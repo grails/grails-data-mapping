@@ -58,7 +58,7 @@ public class OpenSessionInViewInterceptor implements WebRequestInterceptor {
         Session session = DatastoreUtils.getSession(datastore, true);
         session.setFlushMode(flushMode);
         if (!hasSessionBound()) {
-            TransactionSynchronizationManager.bindResource(getDatastore(), new SessionHolder(session));
+            DatastoreUtils.bindSession(session);
         }
     }
 

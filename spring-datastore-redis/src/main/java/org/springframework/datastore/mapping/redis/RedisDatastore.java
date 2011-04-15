@@ -14,11 +14,19 @@
  */
 package org.springframework.datastore.mapping.redis;
 
+import static org.springframework.datastore.mapping.config.utils.ConfigUtils.read;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.datastore.mapping.config.Property;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
+import org.springframework.datastore.mapping.core.DatastoreUtils;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
@@ -31,15 +39,9 @@ import org.springframework.datastore.mapping.redis.engine.RedisEntityPersister;
 import org.springframework.datastore.mapping.redis.util.JedisTemplate;
 import org.springframework.datastore.mapping.redis.util.RedisTemplate;
 import org.springframework.util.ClassUtils;
+
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import static org.springframework.datastore.mapping.config.utils.ConfigUtils.read;
 
 /**
  * A Datastore implementation for the Redis key/value datastore
@@ -190,48 +192,56 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
 
         public void run() {
             final Session session = RedisDatastore.this.connect();
-            final Collection<PersistentEntity> entities = RedisDatastore.this.getMappingContext().getPersistentEntities();
-            for (PersistentEntity entity : entities) {
-                final List<PersistentProperty> props = entity.getPersistentProperties();
-                List<PersistentProperty> indexed = new ArrayList<PersistentProperty>();
-                for (PersistentProperty prop : props) {
-                    Property kv = (Property) prop.getMapping().getMappedForm();
-                    if (kv != null && kv.isIndex()) {
-                        indexed.add(prop);
-                    }
-                }
+            try {
 
-                if (!indexed.isEmpty()) {
-                    // page through entities indexing each one
-                    final Class cls = entity.getJavaClass();
-                    Query query = session.createQuery(cls);
-                    query.projections().count();
-                    Long total = (Long) query.singleResult();
+                DatastoreUtils.bindSession(session);
 
-                    if (total < 100) {
-                        List persistedObjects = session.createQuery(cls).list();
-                        for (Object persistedObject : persistedObjects) {
-                            updatedPersistedObjectIndices(session, entity, persistedObject, indexed);
+                final Collection<PersistentEntity> entities = RedisDatastore.this.getMappingContext().getPersistentEntities();
+                for (PersistentEntity entity : entities) {
+                    final List<PersistentProperty> props = entity.getPersistentProperties();
+                    List<PersistentProperty> indexed = new ArrayList<PersistentProperty>();
+                    for (PersistentProperty prop : props) {
+                        Property kv = (Property) prop.getMapping().getMappedForm();
+                        if (kv != null && kv.isIndex()) {
+                            indexed.add(prop);
                         }
                     }
-                    else {
-                        query = session.createQuery(cls);
-                        int offset = 0;
-                        int max = 100;
 
-                        // 300+100 < 350
-                        while(offset < total) {
-                            query.offset(offset);
-                            query.max(max);
-                            List persistedObjects = query.list();
+                    if (!indexed.isEmpty()) {
+                        // page through entities indexing each one
+                        final Class cls = entity.getJavaClass();
+                        Query query = session.createQuery(cls);
+                        query.projections().count();
+                        Long total = (Long) query.singleResult();
+
+                        if (total < 100) {
+                            List persistedObjects = session.createQuery(cls).list();
                             for (Object persistedObject : persistedObjects) {
                                 updatedPersistedObjectIndices(session, entity, persistedObject, indexed);
                             }
+                        }
+                        else {
+                            query = session.createQuery(cls);
+                            int offset = 0;
+                            int max = 100;
 
-                            offset += max;
+                            // 300+100 < 350
+                            while(offset < total) {
+                                query.offset(offset);
+                                query.max(max);
+                                List persistedObjects = query.list();
+                                for (Object persistedObject : persistedObjects) {
+                                    updatedPersistedObjectIndices(session, entity, persistedObject, indexed);
+                                }
+
+                                offset += max;
+                            }
                         }
                     }
                 }
+            }
+            finally {
+                session.disconnect();
             }
         }
 

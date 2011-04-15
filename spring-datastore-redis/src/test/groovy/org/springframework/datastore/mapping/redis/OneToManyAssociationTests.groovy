@@ -14,14 +14,13 @@ class OneToManyAssociationTests extends AbstractRedisTest {
     @Test
     void testOneToManyAssociation() {
         ds.mappingContext.addPersistentEntity(Author)
-        Session conn = ds.connect(null)
 
         def a = new Author(name:"Stephen King")
         a.books = [ new Book(title:"The Stand"), new Book(title:"It")]
 
-        conn.persist(a)
+        session.persist(a)
 
-        a = conn.retrieve(Author, a.id)
+        a = session.retrieve(Author, a.id)
 
         assert a != null
         assert "Stephen King" == a.name

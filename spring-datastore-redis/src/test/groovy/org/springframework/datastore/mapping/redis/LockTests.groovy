@@ -1,17 +1,20 @@
 package org.springframework.datastore.mapping.redis
 
+import org.junit.After
 import org.junit.Test
+import org.springframework.datastore.mapping.core.Session
 
 /**
  * Tests for locking
  */
 class LockTests extends AbstractRedisTest {
 
+    private Session s2
+
     @Test
     void testLock() {
         return // not yet implemented
         ds.mappingContext.addPersistentEntity(Candidate)
-        def session = ds.connect()
         session.getNativeInterface().flushdb()
 
         def c = new Candidate()
@@ -21,7 +24,7 @@ class LockTests extends AbstractRedisTest {
         int x = 5
         int y = 3
         def threads = []
-        def s2 = ds.connect()
+        s2 = ds.connect()
         x.times {
             threads << Thread.start {
                 y.times {
@@ -39,6 +42,11 @@ class LockTests extends AbstractRedisTest {
         c = session.retrieve(Candidate, c.id)
 
         assert x * y == c.votes
+    }
+
+    @After
+    void after() {
+        s2?.disconnect()
     }
 }
 
