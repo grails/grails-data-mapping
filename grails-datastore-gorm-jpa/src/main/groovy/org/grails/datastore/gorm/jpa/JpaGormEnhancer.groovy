@@ -85,11 +85,11 @@ class JpaInstanceApi<D> extends GormInstanceApi<D> {
                 boolean hasErrors = false
                 boolean validate = params?.containsKey("validate") ? params.validate : true
                 if (instance.respondsTo('validate') && validate) {
-                    session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, false)
+                    session.datastore.setSkipValidation(instance, false)
                     hasErrors = !instance.validate()
                 }
                 else {
-                    session.setAttribute(instance, SKIP_VALIDATION_ATTRIBUTE, true)
+                    session.datastore.setSkipValidation(instance, true)
                     instance.clearErrors()
                 }
 

@@ -21,6 +21,7 @@ import org.grails.datastore.gorm.finders.FinderMethod
 import org.springframework.beans.MutablePropertyValues
 import org.springframework.beans.PropertyAccessorFactory
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
+import org.springframework.datastore.mapping.core.AbstractDatastore
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.core.SessionCallback
@@ -36,6 +37,7 @@ import org.springframework.transaction.support.TransactionCallback
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.util.Assert
 import org.springframework.validation.DataBinder
+import org.springframework.validation.Errors
 
 /**
  * Static methods of the GORM API.
@@ -556,7 +558,6 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * Creates and binds a new session for the scope of the given closure
      */
     def withNewSession(Closure callable) {
-        // TODO check
         def session = datastore.connect()
         try {
             callable?.call(session)
@@ -564,6 +565,22 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         finally {
             session.disconnect()
         }
+    }
+
+    /**
+     * Get the thread-local map used to store Errors when validating.
+     * @return the map
+     */
+    Map<Object, Errors> getValidationErrorsMap() {
+        AbstractDatastore.getValidationErrorsMap()
+    }
+
+    /**
+     * Get the thread-local map used to store whether to skip validation.
+     * @return the map
+     */
+    Map<Object, Boolean> getValidationSkipMap() {
+        AbstractDatastore.getValidationErrorsMap()
     }
 
     // TODO: In the first version no support will exist for String-based queries

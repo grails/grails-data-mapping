@@ -17,6 +17,7 @@ package org.springframework.datastore.mapping.core;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.datastore.mapping.model.MappingContext;
+import org.springframework.validation.Errors;
 
 /**
  * The <code>Datastore</code> interface is the basic commom denominator all NoSQL databases should support:
@@ -70,4 +71,32 @@ public interface Datastore {
      * @return the context
      */
     ConfigurableApplicationContext getApplicationContext();
+
+    /**
+     * Get the validation errors if available.
+     * @param o the entity
+     * @return the errors or null
+     */
+    Errors getObjectErrors(Object o);
+
+    /**
+     * Register validation errors for an instance.
+     * @param object the instance
+     * @param errors the errors
+     */
+    void setObjectErrors(Object object, Errors errors);
+
+    /**
+     * Check if validation should be skipped.
+     * @param o the instance
+     * @return true to skip
+     */
+    boolean skipValidation(Object o);
+
+    /**
+     * Register that validation should be skipped or not.
+     * @param o the instance
+     * @param skip whether to skip or not
+     */
+    void setSkipValidation(Object o, boolean skip);
 }

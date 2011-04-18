@@ -18,10 +18,9 @@ import org.grails.datastore.gorm.support.BeforeValidateHelper
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.validation.*
-import static org.springframework.datastore.mapping.validation.ValidatingEventListener.ERRORS_ATTRIBUTE
 
- /**
- * Methods used for validating GORM instances
+/**
+ * Methods used for validating GORM instances.
  *
  * @author Graeme Rocher
  * @param <D> the entity/domain class
@@ -77,7 +76,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
 
         if (localErrors.hasErrors()) {
             Errors objectErrors = errors
-            localErrors.allErrors.each { localError ->
+            for (localError in localErrors.allErrors) {
                 if (localError instanceof FieldError) {
                     def fieldName = localError.getField()
                     def fieldError = objectErrors.getFieldError(fieldName)
@@ -94,7 +93,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
     }
 
     private Errors filterErrors(Errors errors, Set validatedFields, Object target) {
-        if (validatedFields == null || validatedFields.isEmpty()) return errors
+        if (!validatedFields) return errors
 
         BeanPropertyBindingResult result = new BeanPropertyBindingResult(
             target, target.getClass().getName())
@@ -139,8 +138,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
      * @return The {@link Errors} instance
      */
     Errors getErrors(D instance) {
-        def session = datastore.currentSession
-        def errors = session.getAttribute(instance, ERRORS_ATTRIBUTE)
+        def errors = datastore.getObjectErrors(instance)
         if (errors == null) {
             errors = resetErrors(instance)
         }
@@ -148,9 +146,9 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
     }
 
     private Errors resetErrors(D instance) {
-        def er = new BeanPropertyBindingResult(instance, persistentClass.name)
-        instance.errors = er
-        return er
+        def errors = new BeanPropertyBindingResult(instance, persistentClass.name)
+        instance.errors = errors
+        return errors
     }
 
     /**
@@ -159,7 +157,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
      * @param errors The errors
      */
     void setErrors(D instance, Errors errors) {
-        datastore.currentSession.setAttribute(instance, ERRORS_ATTRIBUTE, errors)
+        datastore.setObjectErrors instance, errors
     }
 
     /**
@@ -176,6 +174,6 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
      * @return True if errors exist
      */
     boolean hasErrors(D instance) {
-        instance.errors?.hasErrors()
+        datastore.getObjectErrors(instance)?.hasErrors()
     }
 }

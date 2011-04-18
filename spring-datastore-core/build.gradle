@@ -11,6 +11,7 @@ dependencies {
     compile 'javax.persistence:persistence-api:1.0'
     compile 'javassist:javassist:3.11.0.GA'
     compile 'javax.transaction:jta:1.1'
+    compile 'commons-collections:commons-collections:3.2'
 
     compile "org.slf4j:jcl-over-slf4j:1.5.8"
     compile "org.slf4j:slf4j-api:1.5.8"

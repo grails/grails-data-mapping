@@ -35,9 +35,6 @@ import org.springframework.validation.Validator;
  */
 public class ValidatingEventListener extends AbstractPersistenceEventListener {
 
-    public static final String ERRORS_ATTRIBUTE = "org.springframework.datastore.ERRORS";
-    public static final String SKIP_VALIDATION_ATTRIBUTE = "org.springframework.datastore.SKIP_VALIDATION";
-
     public ValidatingEventListener(Datastore datastore) {
         super(datastore);
     }
@@ -71,8 +68,7 @@ public class ValidatingEventListener extends AbstractPersistenceEventListener {
             return true;
         }
 
-        final Object skipValidation = datastore.getCurrentSession().getAttribute(o, SKIP_VALIDATION_ATTRIBUTE);
-        if ((skipValidation instanceof Boolean) && (Boolean) skipValidation) {
+        if (datastore.skipValidation(o)) {
             return true;
         }
 
@@ -93,6 +89,6 @@ public class ValidatingEventListener extends AbstractPersistenceEventListener {
      * @param errors The errors instance
      */
     protected void onErrors(Object object, Errors errors) {
-        datastore.getCurrentSession().setAttribute(object, ERRORS_ATTRIBUTE, errors);
+        datastore.setObjectErrors(object, errors);
     }
 }

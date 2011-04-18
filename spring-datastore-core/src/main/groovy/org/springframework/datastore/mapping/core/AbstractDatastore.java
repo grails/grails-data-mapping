@@ -29,6 +29,7 @@ import org.springframework.datastore.mapping.model.types.BasicTypeConverterRegis
 import org.springframework.datastore.mapping.transactions.SessionHolder;
 import org.springframework.datastore.mapping.validation.ValidatingEventListener;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.validation.Errors;
 
 /**
  * Abstract Datastore implementation that deals with binding the Session to thread locale upon creation.
@@ -39,6 +40,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public abstract class AbstractDatastore implements Datastore {
 
     private ApplicationContext applicationContext;
+
+    private static final SoftThreadLocalMap ERRORS_MAP = new SoftThreadLocalMap();
+    private static final SoftThreadLocalMap VALIDATE_MAP = new SoftThreadLocalMap();
 
     protected MappingContext mappingContext;
     protected Map<String, String> connectionDetails = Collections.emptyMap();
@@ -137,6 +141,31 @@ public abstract class AbstractDatastore implements Datastore {
 
     public ApplicationEventPublisher getApplicationEventPublisher() {
         return getApplicationContext();
+    }
+
+    public Errors getObjectErrors(final Object o) {
+        return getValidationErrorsMap().get(o);
+    }
+
+    public void setObjectErrors(Object object, Errors errors) {
+        getValidationErrorsMap().put(object, errors);
+    }
+
+    public void setSkipValidation(final Object o, final boolean skip) {
+        VALIDATE_MAP.get().put(o, skip);
+    }
+
+    public boolean skipValidation(final Object o) {
+        final Object skipValidation = VALIDATE_MAP.get().get(o);
+        return skipValidation instanceof Boolean && (Boolean) skipValidation;
+    }
+
+    public static Map<Object, Errors> getValidationErrorsMap() {
+        return ERRORS_MAP.get();
+    }
+
+    public static Map<Object, Boolean> getValidationSkipMap() {
+        return VALIDATE_MAP.get();
     }
 
     protected void initializeConverters(@SuppressWarnings("hiding") MappingContext mappingContext) {
