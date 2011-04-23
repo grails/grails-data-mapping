@@ -92,11 +92,6 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
     }
 
     @Override
-    public boolean isLocked(Object o) {
-        return super.isLocked(o);
-    }
-
-    @Override
     protected void lockEntry(PersistentEntity persistentEntity, @SuppressWarnings("hiding") String entityFamily,
             Serializable id, int timeout) {
         String redisKey = getRedisKey(entityFamily, id);

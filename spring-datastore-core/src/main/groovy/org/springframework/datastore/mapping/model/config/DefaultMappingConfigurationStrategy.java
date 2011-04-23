@@ -86,7 +86,7 @@ public class DefaultMappingConfigurationStrategy implements MappingConfiguration
                 final String propertyName = descriptor.getName();
                 if (isExcludedProperty(propertyName, mapping, Collections.emptyList())) continue;
                 if (MappingFactory.isSimpleType(descriptor.getPropertyType())) {
-                    persistentProperties.add( propertyFactory.createSimple(entity, context, descriptor) );
+                    persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
                 }
             }
         }
