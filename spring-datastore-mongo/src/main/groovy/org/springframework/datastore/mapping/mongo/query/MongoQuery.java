@@ -26,6 +26,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.data.document.mongodb.DbCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
+import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
@@ -51,7 +52,7 @@ import com.mongodb.MongoException;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public class MongoQuery extends Query{
+public class MongoQuery extends Query {
 
     private static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
     private static Map<Class, QueryHandler> negatedHandlers = new HashMap<Class, QueryHandler>();
@@ -116,9 +117,21 @@ public class MongoQuery extends Query{
         });
 
         queryHandlers.put(In.class, new QueryHandler<In>() {
+            @SuppressWarnings("unchecked")
             public void handle(PersistentEntity entity, In in, DBObject query) {
                 DBObject inQuery = new BasicDBObject();
-                inQuery.put(MONGO_IN_OPERATOR, in.getValues());
+                List ids = new ArrayList();
+                for (Object value : in.getValues()) {
+                    PersistentEntity pe = entity.getMappingContext().getPersistentEntity(
+                            value.getClass().getName());
+                    if (value == null || pe == null) {
+                        ids.add(value);
+                    }
+                    else {
+                        ids.add(new EntityAccess(pe, value).getIdentifier());
+                    }
+                }
+                inQuery.put(MONGO_IN_OPERATOR, ids);
                 String propertyName = getPropertyName(entity, in);
                 query.put(propertyName, inQuery);
             }
