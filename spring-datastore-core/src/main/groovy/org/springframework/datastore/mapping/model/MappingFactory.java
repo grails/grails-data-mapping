@@ -35,6 +35,7 @@ import java.util.TimeZone;
 
 import org.springframework.datastore.mapping.model.types.Basic;
 import org.springframework.datastore.mapping.model.types.Embedded;
+import org.springframework.datastore.mapping.model.types.EmbeddedCollection;
 import org.springframework.datastore.mapping.model.types.Identity;
 import org.springframework.datastore.mapping.model.types.ManyToMany;
 import org.springframework.datastore.mapping.model.types.ManyToOne;
@@ -257,6 +258,23 @@ public abstract class MappingFactory<R,T> {
     public Embedded createEmbedded(PersistentEntity entity,
             MappingContext context, PropertyDescriptor property) {
         return new Embedded<T>(entity, context, property) {
+            public PropertyMapping getMapping() {
+                return createPropertyMapping(this, owner);
+            }
+        };
+    }
+
+    /**
+     * Creates an {@link EmbeddedCollection} type used to model an embedded collection association (composition).
+     *
+     * @param entity The entity
+     * @param context The context
+     * @param property The property
+     * @return The {@link Embedded} instance
+     */
+    public EmbeddedCollection createEmbeddedCollection(PersistentEntity entity,
+            MappingContext context, PropertyDescriptor property) {
+        return new EmbeddedCollection<T>(entity, context, property) {
             public PropertyMapping getMapping() {
                 return createPropertyMapping(this, owner);
             }

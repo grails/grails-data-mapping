@@ -21,6 +21,18 @@ class Person {
 }
 {code}
 
+You can map embedded lists and sets of documents/domain classes:
+
+{code}
+class Person {
+    String firstName
+    String lastName
+    Address address
+    List otherAddresses
+    static embedded = ['address', 'otherAddresses']
+}
+{code}
+
 You can also map lists and maps of basic types (such as strings) simply by defining the appropriate collection type:
 
 {code}

@@ -184,7 +184,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
         nativeEntry[key] = values
     }
 
-    protected Map getEmbbeded( Map nativeEntry, String key) {
+    protected Map getEmbedded( Map nativeEntry, String key) {
         nativeEntry[key]
     }
 

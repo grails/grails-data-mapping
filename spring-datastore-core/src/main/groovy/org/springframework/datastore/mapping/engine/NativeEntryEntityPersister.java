@@ -49,6 +49,7 @@ import org.springframework.datastore.mapping.model.PropertyMapping;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.model.types.Basic;
 import org.springframework.datastore.mapping.model.types.Embedded;
+import org.springframework.datastore.mapping.model.types.EmbeddedCollection;
 import org.springframework.datastore.mapping.model.types.OneToMany;
 import org.springframework.datastore.mapping.model.types.Simple;
 import org.springframework.datastore.mapping.model.types.ToOne;
@@ -271,20 +272,26 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             else if (prop instanceof ToOne) {
                 if (prop instanceof Embedded) {
                     Embedded embedded = (Embedded) prop;
-                    T embbeddedEntry = getEmbbeded(nativeEntry, propKey);
+                    T embeddedEntry = getEmbedded(nativeEntry, propKey);
 
-                    if (embbeddedEntry != null) {
+                    if (embeddedEntry != null) {
                         Object embeddedInstance = newEntityInstance(embedded.getAssociatedEntity());
                         createEntityAccess(embedded.getAssociatedEntity(), embeddedInstance);
-                        refreshObjectStateFromNativeEntry(embedded.getAssociatedEntity(), embeddedInstance, null, embbeddedEntry);
+                        refreshObjectStateFromNativeEntry(embedded.getAssociatedEntity(),
+                              embeddedInstance, null, embeddedEntry);
                         ea.setProperty(propKey, embeddedInstance);
                     }
+                }
+                else if (prop instanceof EmbeddedCollection) {
+                    final Object embeddedInstances = getEntryValue(nativeEntry, propKey);
+                    loadEmbeddedCollection((EmbeddedCollection)prop, ea, embeddedInstances, propKey);
                 }
                 else {
                     Serializable tmp = (Serializable) getEntryValue(nativeEntry, propKey);
                     if (tmp != null && !prop.getType().isInstance(tmp)) {
                         PersistentEntity associatedEntity = prop.getOwner();
-                        final Serializable associationKey = (Serializable) getMappingContext().getConversionService().convert(tmp, associatedEntity.getIdentity().getType());
+                        final Serializable associationKey = (Serializable) getMappingContext().getConversionService().convert(
+                              tmp, associatedEntity.getIdentity().getType());
                         if (associationKey != null) {
 
                             PropertyMapping<Property> associationPropertyMapping = prop.getMapping();
@@ -327,15 +334,21 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         }
     }
 
+    @SuppressWarnings("unused")
+    protected void loadEmbeddedCollection(EmbeddedCollection embeddedCollection, EntityAccess ea,
+            Object embeddedInstances, String key) {
+        // no support by default for embedded collections
+    }
+
     /**
-     * Implementors should override to provide support for embedded objets
+     * Implementors should override to provide support for embedded objects.
      *
      * @param nativeEntry The native entry to read the embedded instance from
      * @param key The key
      * @return The native entry of the embedded instance
      */
     @SuppressWarnings("unused")
-    protected T getEmbbeded(T nativeEntry, String key) {
+    protected T getEmbedded(T nativeEntry, String key) {
         return null;
     }
 
@@ -482,6 +495,37 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                         setEmbedded(e, key, embeddedEntry);
                     }
                 }
+                else if (prop instanceof EmbeddedCollection) {
+                    // For embedded properties simply set the entry value, the underlying implementation
+                    // will have to store the embedded entity in an appropriate way (as a sub-document in a document store for example)
+                    Object embeddedInstances = entityAccess.getProperty(prop.getName());
+                    if (embeddedInstances instanceof Collection && !((Collection)embeddedInstances).isEmpty()) {
+                        Collection instances = (Collection)embeddedInstances;
+                        List<T> embeddedEntries = new ArrayList<T>();
+                        int i = 0;
+                        for (Object instance : instances) {
+                            PersistentEntity embeddedPersistentEntity =
+                                getMappingContext().getPersistentEntity(instance.getClass().getName());
+                            List<PersistentProperty> embeddedProperties =
+                                embeddedPersistentEntity.getPersistentProperties();
+                            NativeEntryEntityPersister<T,K> embeddedPersister =
+                                (NativeEntryEntityPersister<T,K>) session.getPersister(instance);
+
+                            T entry = embeddedPersister.createNewEntry(embeddedPersister.getEntityFamily());
+                            embeddedEntries.add(entry);
+                            EntityAccess embeddedEntityAccess = createEntityAccess(
+                                    embeddedPersistentEntity, instance);
+                            setEntryValue(entry, "$$embeddedClassName$$", instance.getClass().getName());
+                            for (PersistentProperty persistentProperty : embeddedProperties) {
+                                setEntryValue(entry, persistentProperty.getName(),
+                                        embeddedEntityAccess.getProperty(persistentProperty.getName()));
+                            }
+                            i++;
+                        }
+
+                        setEmbeddedCollection(e, key, instances, embeddedEntries);
+                    }
+                }
                 else if (association.doesCascade(CascadeType.PERSIST)) {
 
                     if (!association.isForeignKeyInChild()) {
@@ -601,6 +645,19 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     @SuppressWarnings("unused")
     protected void setEmbedded(T nativeEntry, String key, T embeddedEntry) {
         // do nothing. The default is no support for embedded instances
+    }
+
+    /**
+     * Implementors should override this method to provide support for embedded objects
+     *
+     * @param nativeEntry The native entry
+     * @param key The key
+     * @param instances the embedded instances
+     * @param embeddedEntries the native entries
+     */
+    @SuppressWarnings("unused")
+    protected void setEmbeddedCollection(T nativeEntry, String key, Collection<?> instances, List<T> embeddedEntries) {
+        // do nothing. The default is no support for embedded collections
     }
 
     /**

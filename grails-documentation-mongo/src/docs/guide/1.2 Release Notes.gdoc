@@ -1,5 +1,9 @@
 Below are the details of the changes across releases:
 
+h4. 1.0 Milestone 6
+
+* Support for embedded collections of Mongo domain classes
+
 h4. 1.0 Milestone 5
 
 * Remaining GORM events (beforeLoad, afterLoad)

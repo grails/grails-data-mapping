@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Currency;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -43,11 +44,13 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
+import org.springframework.datastore.mapping.model.types.EmbeddedCollection;
 import org.springframework.datastore.mapping.mongo.MongoDatastore;
 import org.springframework.datastore.mapping.mongo.MongoSession;
 import org.springframework.datastore.mapping.mongo.query.MongoQuery;
 import org.springframework.datastore.mapping.query.Query;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
@@ -73,8 +76,18 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     public static final String MONGO_ID_FIELD = "_id";
     public static final String MONGO_CLASS_FIELD = "_class";
 
+    public MongoEntityPersister(MappingContext mappingContext, PersistentEntity entity,
+             MongoSession mongoSession, ApplicationEventPublisher publisher) {
+        super(mappingContext, entity, mongoSession, publisher);
+        MongoDatastore datastore = (MongoDatastore) mongoSession.getDatastore();
+        mongoTemplate = datastore.getMongoTemplate(entity);
+
+        hasNumericalIdentifier = Long.class.isAssignableFrom(entity.getIdentity().getType());
+        hasStringIdentifier = String.class.isAssignableFrom(entity.getIdentity().getType());
+    }
+
     @Override
-    protected DBObject getEmbbeded(DBObject nativeEntry, String key) {
+    protected DBObject getEmbedded(DBObject nativeEntry, String key) {
         final Object embeddedDocument = nativeEntry.get(key);
         if (embeddedDocument instanceof DBObject) {
             return (DBObject) embeddedDocument;
@@ -87,14 +100,45 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         nativeEntry.put(key, embeddedEntry);
     }
 
-    public MongoEntityPersister(MappingContext mappingContext, PersistentEntity entity,
-             MongoSession mongoSession, ApplicationEventPublisher publisher) {
-        super(mappingContext, entity, mongoSession, publisher);
-        MongoDatastore datastore = (MongoDatastore) mongoSession.getDatastore();
-        mongoTemplate = datastore.getMongoTemplate(entity);
+    @Override
+    protected void setEmbeddedCollection(DBObject nativeEntry, String key, Collection<?> instances,
+            List<DBObject> embeddedEntries) {
+        if (instances == null || instances.isEmpty()) {
+            return;
+        }
 
-        hasNumericalIdentifier = Long.class.isAssignableFrom(entity.getIdentity().getType());
-        hasStringIdentifier = String.class.isAssignableFrom(entity.getIdentity().getType());
+        nativeEntry.put(key, embeddedEntries.toArray());
+    }
+
+    @Override
+    protected void loadEmbeddedCollection(@SuppressWarnings("rawtypes") EmbeddedCollection embeddedCollection,
+            EntityAccess ea, Object embeddedInstances, String propertyKey) {
+
+        Collection<Object> instances;
+        if (List.class.isAssignableFrom(embeddedCollection.getType())) {
+            instances = new ArrayList<Object>();
+        }
+        else {
+            instances = new HashSet<Object>();
+        }
+
+        if (embeddedInstances instanceof BasicDBList) {
+            BasicDBList list = (BasicDBList)embeddedInstances;
+            for (Object dbo : list) {
+                if (dbo instanceof BasicDBObject) {
+                    BasicDBObject nativeEntry = (BasicDBObject)dbo;
+                    String embeddedClassName = (String)nativeEntry.remove("$$embeddedClassName$$");
+                    PersistentEntity embeddedPersistentEntity =
+                        getMappingContext().getPersistentEntity(embeddedClassName);
+
+                    Object instance = newEntityInstance(embeddedPersistentEntity);
+                    refreshObjectStateFromNativeEntry(embeddedPersistentEntity, instance, null, nativeEntry);
+                    instances.add(instance);
+                }
+            }
+        }
+
+        ea.setProperty(propertyKey, instances);
     }
 
     public Query createQuery() {

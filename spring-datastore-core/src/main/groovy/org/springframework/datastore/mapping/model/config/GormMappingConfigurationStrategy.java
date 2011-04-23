@@ -48,6 +48,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.model.types.Basic;
+import org.springframework.datastore.mapping.model.types.EmbeddedCollection;
 import org.springframework.datastore.mapping.model.types.OneToOne;
 import org.springframework.datastore.mapping.model.types.ToOne;
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher;
@@ -168,18 +169,25 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 // establish if the property is a one-to-many
                 // if it is a Set and there are relationships defined
                 // and it is defined as persistent
-                if (isCollectionType(currentPropType)) {
+                if (embedded.contains(propertyName)) {
+                    if (isCollectionType(currentPropType)) {
+                        EmbeddedCollection association = propertyFactory.createEmbeddedCollection(
+                                entity, context, descriptor);
+                        persistentProperties.add(association);
+                    }
+                    else {
+                        ToOne association = propertyFactory.createEmbedded(entity, context, descriptor);
+                        PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity, context, association.getType());
+                        association.setAssociatedEntity(associatedEntity);
+                        persistentProperties.add(association);
+                    }
+                }
+                else if (isCollectionType(currentPropType)) {
                     final Association association = establishRelationshipForCollection(descriptor, entity, context, hasManyMap, mappedByMap);
                     if (association != null) {
                         configureOwningSide(association);
                         persistentProperties.add(association);
                     }
-                }
-                else if (embedded.contains(propertyName)) {
-                    ToOne association = propertyFactory.createEmbedded(entity, context, descriptor);
-                    PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity, context, association.getType());
-                    association.setAssociatedEntity(associatedEntity);
-                    persistentProperties.add(association);
                 }
                 // otherwise if the type is a domain class establish relationship
                 else if (isPersistentEntity(currentPropType)) {
@@ -532,7 +540,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
         return null;
     }
-
 
     private boolean isCollectionType(Class type) {
         return Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type);
