@@ -317,7 +317,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
             }
 
             String version = (String)nativeEntry.get("version");
-            if (!version.equals(oldVersion)) {
+            if (oldVersion != null && version != null && !version.equals(oldVersion)) {
                 throw new OptimisticLockingException(persistentEntity, id);
             }
 

@@ -243,7 +243,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
                     oldVersion = existing.version.toLong()
                     currentVersion = entityAccess.getProperty('version').toLong()
                 }
-                if (!oldVersion.equals(currentVersion)) {
+                if (oldVersion != null && currentVersion != null && !oldVersion.equals(currentVersion)) {
                     throw new OptimisticLockingException(persistentEntity, key)
                 }
                 incrementVersion(entityAccess)

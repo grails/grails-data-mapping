@@ -208,8 +208,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             }
 
             protected DBCollection getCollection(DB con) {
-                DBCollection dbCollection = con.getCollection(getCollectionName(getPersistentEntity()));
-                return dbCollection;
+                return con.getCollection(getCollectionName(getPersistentEntity()));
             }
         });
     }
@@ -416,7 +415,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             oldVersion = ((Number)oldVersion).longValue();
             currentVersion = ((Number)currentVersion).longValue();
         }
-        if (!oldVersion.equals(currentVersion)) {
+        if (oldVersion != null && currentVersion != null && !oldVersion.equals(currentVersion)) {
             throw new OptimisticLockingException(persistentEntity, key);
         }
         incrementVersion(ea);

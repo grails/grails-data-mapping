@@ -355,7 +355,7 @@ public class GemfireEntityPersister extends LockableEntityPersister {
            currentVersion = ((Number)currentVersion).longValue();
        }
 
-       if (!oldVersion.equals(currentVersion)) {
+       if (oldVersion != null && currentVersion != null && !oldVersion.equals(currentVersion)) {
            throw new OptimisticLockingException(persistentEntity, id);
        }
 
