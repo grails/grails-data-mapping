@@ -1,0 +1,120 @@
+package org.grails.datastore.gorm.neo4j
+
+import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister
+import org.springframework.datastore.mapping.model.PersistentEntity
+import org.springframework.datastore.mapping.engine.PropertyValueIndexer
+import org.springframework.datastore.mapping.model.PersistentProperty
+import org.springframework.datastore.mapping.engine.AssociationIndexer
+import org.springframework.datastore.mapping.model.types.Association
+import org.springframework.datastore.mapping.engine.EntityAccess
+import org.springframework.datastore.mapping.query.Query
+import org.springframework.context.ApplicationEventPublisher
+import org.springframework.datastore.mapping.core.Session
+import org.springframework.datastore.mapping.model.MappingContext
+import org.neo4j.graphdb.GraphDatabaseService
+import org.neo4j.graphdb.Node
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.neo4j.graphdb.NotFoundException
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: stefan
+ * Date: 25.04.11
+ * Time: 18:09
+ * To change this template use File | Settings | File Templates.
+ */
+class Neo4jEntityPersister extends NativeEntryEntityPersister {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Neo4jEntityPersister.class);
+
+    GraphDatabaseService graphDatabaseService
+
+    Neo4jEntityPersister(MappingContext mappingContext, PersistentEntity entity,
+              Session session, ApplicationEventPublisher publisher) {
+        super(mappingContext, entity, session, publisher)
+        graphDatabaseService = session.nativeInterface
+    }
+
+    @Override
+    String getEntityFamily() {
+        classMapping.entity.toString()
+    }
+
+    @Override
+    protected void deleteEntry(String family, Object key) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected Object generateIdentifier(PersistentEntity persistentEntity, Object entry) {
+        entry.id
+    }
+
+    @Override
+    PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
+        return null  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    AssociationIndexer getAssociationIndexer(Object nativeEntry, Association association) {
+        return null  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected Object createNewEntry(String family) {
+        Node node = graphDatabaseService.createNode()
+        node.setProperty('__type__', family)
+        // TDOD: add link to subreference node
+        node
+    }
+
+    @Override
+    protected Object getEntryValue(Object nativeEntry, String property) {
+        LOG.info("getting property $property on $nativeEntry")
+        nativeEntry.getProperty(property, null)
+    }
+
+    @Override
+    protected void setEntryValue(Object nativeEntry, String key, Object value) {
+        LOG.info("setting property $key = $value ${value?.class}")
+        if (value && (value.class in [String, Long, Integer])) {
+            nativeEntry.setProperty(key, value)
+        }
+    }
+
+    @Override
+    protected Object retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
+        try {
+            def node = graphDatabaseService.getNodeById(key)
+            if (node) {
+                assert node.getProperty("__type__") == family
+            }
+            node
+        } catch (NotFoundException e) {
+            null
+        }
+    }
+
+    @Override
+    protected Object storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object storeId, Object nativeEntry) {
+        assert storeId
+        assert nativeEntry
+        assert persistentEntity
+        storeId // TODO: not sure what to do here...
+    }
+
+    @Override
+    protected void updateEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object key, Object entry) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected void deleteEntries(String family, List keys) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    Query createQuery() {
+        new Neo4jQuery(session, persistentEntity, this)
+    }
+}
