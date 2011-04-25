@@ -35,6 +35,8 @@ import org.springframework.transaction.support.DefaultTransactionDefinition
 import org.springframework.transaction.support.TransactionCallback
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.util.Assert
+import org.springframework.validation.Errors
+
 
 /**
  * Static methods of the GORM API.
