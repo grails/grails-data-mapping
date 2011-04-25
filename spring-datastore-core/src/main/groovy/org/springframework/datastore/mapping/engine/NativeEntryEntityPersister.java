@@ -283,7 +283,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 else {
                     Serializable tmp = (Serializable) getEntryValue(nativeEntry, propKey);
                     if (tmp != null && !prop.getType().isInstance(tmp)) {
-                        PersistentEntity associatedEntity = prop.getOwner();
+                        PersistentEntity associatedEntity = ((Association)prop).getAssociatedEntity();
                         final Serializable associationKey = (Serializable) getMappingContext().getConversionService().convert(
                               tmp, associatedEntity.getIdentity().getType());
                         if (associationKey != null) {
