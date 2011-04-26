@@ -17,7 +17,7 @@ import org.neo4j.graphdb.Transaction
 class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
 
     GraphDatabaseService graphDatabaseService
-    String storeDir
+    def storeDir
     Transaction transaction
 
     public Neo4jDatastore() {
@@ -32,16 +32,14 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
     }
 
     void afterPropertiesSet() {
-        def directory = storeDir
-        if (!directory) {
-            directory = File.createTempFile("neo4j",null)
-            assert directory.delete()
-            assert directory.mkdir()
+        if (!storeDir) {
+            storeDir = File.createTempFile("neo4j",null)
+            assert storeDir.delete()
+            assert storeDir.mkdir()
             // directory.deleteOnExit()
-            directory = directory.path
+            storeDir = storeDir.path
         }
-        graphDatabaseService = new EmbeddedGraphDatabase(directory)
-        //To change body of implemented methods use File | Settings | File Templates.
+        graphDatabaseService = new EmbeddedGraphDatabase(storeDir)
     }
 }
 

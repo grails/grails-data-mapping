@@ -22,6 +22,7 @@ class Setup {
     static destroy() {
         session.nativeInterface.shutdown()
 
+        new File(datastore.storeDir).deleteDir()
         //redis?.destroy()
     }
 
