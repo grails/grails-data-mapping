@@ -5,6 +5,9 @@ import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.engine.EntityPersister
 import org.neo4j.graphdb.Node
 import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister
+import org.neo4j.graphdb.Relationship
+import org.neo4j.graphdb.Direction
+import org.apache.commons.lang.NotImplementedException
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,13 +27,47 @@ class Neo4jQuery extends Query {
 
     @Override
     protected List executeQuery(PersistentEntity entity, Query.Junction criteria) {
+
+        assert entity
+        Node subReferenceNode = session.subReferenceNodes[entity.name]
+        assert subReferenceNode
+
         // TODO: for now return all nodes, handle subreference nodes
         def result = []
-        for (Node n in session.nativeInterface.getAllNodes()) {
-            if (n.getProperty("__type__", null) == entityPersister.entityFamily) {
+        for (Relationship rel in subReferenceNode.getRelationships(GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING)) {
+            Node n = rel.endNode
+            assert n.getProperty("__type__", null) == entityPersister.entityFamily
+
+            if (matchesJunction(n, criteria)) {
                 result << entityPersister.createObjectFromNativeEntry(entity, n.id, n)
             }
         }
         result
+    }
+
+    boolean matchesJunction(Node node, Query.Junction junction) {
+        if (junction.empty) {
+            true
+        } else {
+            switch (junction) {
+                case Query.Disjunction:
+                    return junction.criteria.any { matchesCriteria(node, it)}
+                    break
+                case Query.Conjunction:
+                    return junction.criteria.every { matchesCriteria(node, it)}
+                    break
+                case Query.Negation:
+                    return !matchesCriteria(junction.criteria.first())
+                    break
+                default:
+                    throw new NotImplementedException("couldn't handle junction ${junction.class}")
+
+            }
+        }
+    }
+
+    boolean matchesCriteria(Node node, Query.Criterion criterion) {
+        assert criterion instanceof Query.Equals
+        node.getProperty(criterion.name, null) == criterion.value
     }
 }

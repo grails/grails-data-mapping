@@ -16,6 +16,7 @@ import org.neo4j.graphdb.Node
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.neo4j.graphdb.NotFoundException
+import org.springframework.core.convert.ConversionService
 
 /**
  * Created by IntelliJ IDEA.
@@ -34,6 +35,17 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
               Session session, ApplicationEventPublisher publisher) {
         super(mappingContext, entity, session, publisher)
         graphDatabaseService = session.nativeInterface
+        createSubReferenceNode(session, entity)
+    }
+
+    def createSubReferenceNode(session,entity) {
+        def name = entityFamily
+        if (!session.subReferenceNodes.containsKey(name)) {
+            def subReferenceNode = graphDatabaseService.createNode()
+            subReferenceNode.setProperty("__subreference__", name)
+            graphDatabaseService.referenceNode.createRelationshipTo(subReferenceNode, GrailsRelationshipTypes.SUBREFERENCE)
+            session.subReferenceNodes[name] = subReferenceNode
+        }
     }
 
     @Override
@@ -65,7 +77,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
     protected Object createNewEntry(String family) {
         Node node = graphDatabaseService.createNode()
         node.setProperty('__type__', family)
-        // TDOD: add link to subreference node
+        session.subReferenceNodes[family].createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
         node
     }
 
@@ -78,7 +90,10 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
     @Override
     protected void setEntryValue(Object nativeEntry, String key, Object value) {
         LOG.info("setting property $key = $value ${value?.class}")
-        if (value && (value.class in [String, Long, Integer])) {
+        if (value) {
+            if (!(value.class in [String, Long, Integer])) {
+                value = mappingContext.conversionService.convert(value, String)
+            }
             nativeEntry.setProperty(key, value)
         }
     }
