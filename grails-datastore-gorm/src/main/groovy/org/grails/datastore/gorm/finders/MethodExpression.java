@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm.finders;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.springframework.datastore.mapping.query.Query;
@@ -45,7 +46,11 @@ public abstract class MethodExpression {
     public void setArguments(Object[] arguments) {
         this.arguments = arguments;
     }
-
+    
+    public Object[] getArguments() {
+          return Arrays.copyOf(arguments, arguments.length);
+    }
+    
     public static class GreaterThan extends MethodExpression {
         public GreaterThan(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);

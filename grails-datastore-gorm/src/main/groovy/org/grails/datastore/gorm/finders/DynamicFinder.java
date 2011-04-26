@@ -342,6 +342,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
 
     public static List<FinderMethod> getAllDynamicFinders(Datastore datastore) {
         List<FinderMethod> finders = new ArrayList<FinderMethod>();
+        finders.add(new FindOrCreateByFinder(datastore));
         finders.add(new FindByFinder(datastore));
         finders.add(new FindAllByFinder(datastore));
         finders.add(new FindAllByBooleanFinder(datastore));

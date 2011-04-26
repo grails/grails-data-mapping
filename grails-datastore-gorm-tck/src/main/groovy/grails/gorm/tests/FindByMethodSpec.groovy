@@ -147,6 +147,34 @@ class FindByMethodSpec extends GormDatastoreSpec {
         then:
             0 == books?.size()
     }
+    
+    void "Test findOrCreateBy For A Record That Does Not Exist In The Database"() {
+        when:
+            def book = Book.findOrCreateByAuthor('Someone')
+            
+        then:
+            'Someone' == book.author
+            null == book.title
+            null == book.id
+    }
+    
+    void "Test findOrCreateBy With An AND Clause"() {
+        when:
+            def book = Book.findOrCreateByAuthorAndTitle('Someone', 'Something')
+            
+        then:
+            'Someone' == book.author
+            'Something' == book.title
+            null == book.id    
+    }
+    
+    void "Test findOrCreateBy Throws Exception If An OR Clause Is Used"() {
+        when:
+            Book.findOrCreateByAuthorOrTitle('Someone', 'Something')
+            
+        then:
+            thrown(UnsupportedOperationException)
+    }
 }
 
 class Highway implements Serializable {
