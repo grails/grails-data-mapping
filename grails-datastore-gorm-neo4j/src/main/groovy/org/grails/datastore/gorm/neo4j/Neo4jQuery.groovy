@@ -8,6 +8,8 @@ import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister
 import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.Direction
 import org.apache.commons.lang.NotImplementedException
+import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,6 +19,8 @@ import org.apache.commons.lang.NotImplementedException
  * To change this template use File | Settings | File Templates.
  */
 class Neo4jQuery extends Query {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Neo4jQuery.class);
 
     NativeEntryEntityPersister entityPersister
 
@@ -32,7 +36,6 @@ class Neo4jQuery extends Query {
         Node subReferenceNode = session.subReferenceNodes[entity.name]
         assert subReferenceNode
 
-        // TODO: for now return all nodes, handle subreference nodes
         def result = []
         for (Relationship rel in subReferenceNode.getRelationships(GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING)) {
             Node n = rel.endNode
@@ -51,13 +54,19 @@ class Neo4jQuery extends Query {
         } else {
             switch (junction) {
                 case Query.Disjunction:
-                    return junction.criteria.any { matchesCriteria(node, it)}
+                    return junction.criteria.any { invokeMethod("matchesCriterion${it.class.simpleName}", [node,it])}
                     break
                 case Query.Conjunction:
-                    return junction.criteria.every { matchesCriteria(node, it)}
+                    return junction.criteria.every {
+                        LOG.info "criterion is ${it.class.simpleName}"
+                        invokeMethod("matchesCriterion${it.class.simpleName}", [node,it])
+                        //matchesCriteria(node, it)
+                        }
                     break
                 case Query.Negation:
-                    return !matchesCriteria(junction.criteria.first())
+                    assert junction.criteria.size()==1
+                    def firstCriterion = junction.criteria.first()
+                    return !invokeMethod("matchesCriterion${firstCriterion.class.simpleName}", [node,firstCriterion])
                     break
                 default:
                     throw new NotImplementedException("couldn't handle junction ${junction.class}")
@@ -66,7 +75,7 @@ class Neo4jQuery extends Query {
         }
     }
 
-    boolean matchesCriteria(Node node, Query.Criterion criterion) {
+    boolean matchesCriterionEquals(Node node, Query.Criterion criterion) {
         assert criterion instanceof Query.Equals
         node.getProperty(criterion.name, null) == criterion.value
     }
