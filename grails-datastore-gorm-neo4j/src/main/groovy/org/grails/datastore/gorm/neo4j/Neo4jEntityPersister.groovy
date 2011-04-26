@@ -17,6 +17,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.neo4j.graphdb.NotFoundException
 import org.springframework.core.convert.ConversionService
+import org.codehaus.groovy.runtime.NullObject
 
 /**
  * Created by IntelliJ IDEA.
@@ -92,8 +93,8 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
     @Override
     protected void setEntryValue(Object nativeEntry, String key, Object value) {
         LOG.info("setting property $key = $value ${value?.class}")
-        if (value) {
-            if (!(value.class in [String, Long, Integer])) {
+        if (value!=null) {
+            if (!isAllowedNeo4jType(value.class)) {
                 value = mappingContext.conversionService.convert(value, String)
             }
             nativeEntry.setProperty(key, value)
@@ -134,4 +135,25 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
     Query createQuery() {
         new Neo4jQuery(session, persistentEntity, this)
     }
+
+    private boolean isAllowedNeo4jType(Class clazz) {
+        switch (clazz) {
+            case null:
+            case NullObject:
+            case String:
+            case Integer:
+            case Long:
+            case Float:
+            case Boolean:
+            case String[]:
+            case Integer[]:
+            case Long[]:
+            case Float[]:
+                return true;
+                break
+            default:
+                return false;
+        }
+    }
+
 }
