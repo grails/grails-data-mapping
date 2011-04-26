@@ -65,12 +65,14 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
 
     @Override
     PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        [
+                index: {k,v -> },
+        ] as PropertyValueIndexer
     }
 
     @Override
     AssociationIndexer getAssociationIndexer(Object nativeEntry, Association association) {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        new Neo4jAssociationIndexer(nativeEntry: nativeEntry, association:association)
     }
 
     @Override

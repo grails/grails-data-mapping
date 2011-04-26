@@ -26,7 +26,6 @@ import grails.gorm.tests.WithTransactionSpec
 
 @RunWith(Suite)
 @SuiteClasses([
-  QueryAfterPropertyChangeSpec,
 //  CircularOneToManySpec,
 //  InheritanceSpec,
 //  FindByMethodSpec,
@@ -42,14 +41,15 @@ import grails.gorm.tests.WithTransactionSpec
 //  WithTransactionSpec,
 
 
-/*
+
+  QueryAfterPropertyChangeSpec,
   AttachMethodSpec,
   CommonTypesPersistenceSpec,
   GroovyProxySpec,
-    ProxyLoadingSpec,
-    DomainEventsSpec,
-    CrudOperationsSpec
-*/
+  ProxyLoadingSpec,
+  DomainEventsSpec,
+  CrudOperationsSpec
+
 ])
 class Neo4jSuite {
 }
