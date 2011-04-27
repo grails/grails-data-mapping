@@ -42,7 +42,7 @@ class Neo4jSession extends AbstractSession {
         Node referenceNode = nativeInterface.referenceNode
         for (Relationship rel in referenceNode.getRelationships(GrailsRelationshipTypes.SUBREFERENCE, Direction.OUTGOING)) {
             def endNode = rel.endNode
-            def clazz = endNode.getProperty("__subreference__")
+            def clazz = endNode.getProperty(Neo4jEntityPersister.SUBREFERENCE_PROPERTY_NAME)
             map[clazz] = endNode
         }
         map

@@ -39,7 +39,7 @@ class Neo4jQuery extends Query {
         def result = []
         for (Relationship rel in subReferenceNode.getRelationships(GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING)) {
             Node n = rel.endNode
-            assert n.getProperty("__type__", null) == entityPersister.entityFamily
+            assert n.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null) == entityPersister.entityFamily
 
             if (matchesJunction(n, criteria)) {
                 result << entityPersister.createObjectFromNativeEntry(entity, n.id, n)

@@ -29,8 +29,10 @@ import org.codehaus.groovy.runtime.NullObject
 class Neo4jEntityPersister extends NativeEntryEntityPersister {
 
     private static final Logger LOG = LoggerFactory.getLogger(Neo4jEntityPersister.class);
+	public static final TYPE_PROPERTY_NAME = "__type__"
+	public static final String SUBREFERENCE_PROPERTY_NAME = "__subreference__"
 
-    GraphDatabaseService graphDatabaseService
+	GraphDatabaseService graphDatabaseService
 
     Neo4jEntityPersister(MappingContext mappingContext, PersistentEntity entity,
               Session session, ApplicationEventPublisher publisher) {
@@ -43,7 +45,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
         def name = entityFamily
         if (!session.subReferenceNodes.containsKey(name)) {
             def subReferenceNode = graphDatabaseService.createNode()
-            subReferenceNode.setProperty("__subreference__", name)
+            subReferenceNode.setProperty(SUBREFERENCE_PROPERTY_NAME, name)
             graphDatabaseService.referenceNode.createRelationshipTo(subReferenceNode, GrailsRelationshipTypes.SUBREFERENCE)
             session.subReferenceNodes[name] = subReferenceNode
         }
@@ -79,7 +81,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
     @Override
     protected Object createNewEntry(String family) {
         Node node = graphDatabaseService.createNode()
-        node.setProperty('__type__', family)
+        node.setProperty(TYPE_PROPERTY_NAME, family)
         session.subReferenceNodes[family].createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
         node
     }
@@ -106,7 +108,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
         try {
             def node = graphDatabaseService.getNodeById(key)
             if (node) {
-                assert node.getProperty("__type__") == family
+                assert node.getProperty(TYPE_PROPERTY_NAME) == family
             }
             node
         } catch (NotFoundException e) {
