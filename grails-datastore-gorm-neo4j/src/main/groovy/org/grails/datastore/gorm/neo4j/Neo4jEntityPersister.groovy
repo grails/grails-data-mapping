@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory
 import org.neo4j.graphdb.NotFoundException
 import org.springframework.core.convert.ConversionService
 import org.codehaus.groovy.runtime.NullObject
+import org.neo4j.graphdb.DynamicRelationshipType
 
 /**
  * Created by IntelliJ IDEA.
@@ -97,7 +98,14 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
         LOG.info("setting property $key = $value ${value?.class}")
         if (value!=null) {
             if (!isAllowedNeo4jType(value.class)) {
-                value = mappingContext.conversionService.convert(value, String)
+	            if (mappingContext.persistentEntities.any { it.javaClass.isInstance(value) }) {
+		            assert value.id // make sure we have a non-null id
+		            def targetNode = graphDatabaseService.getNodeById(value.id)
+		            nativeEntry.createRelationshipTo(targetNode, DynamicRelationshipType.withName(key))
+		            return
+	            } else {
+                    value = mappingContext.conversionService.convert(value, String)
+	            }
             }
             nativeEntry.setProperty(key, value)
         }

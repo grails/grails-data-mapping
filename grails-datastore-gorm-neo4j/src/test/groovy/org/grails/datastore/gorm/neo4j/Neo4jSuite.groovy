@@ -28,7 +28,6 @@ import grails.gorm.tests.WithTransactionSpec
 @SuiteClasses([
 //  CircularOneToManySpec,
 //  InheritanceSpec,
-//  FindByMethodSpec,
 //  ListOrderBySpec,
 //  GormEnhancerSpec,
 //  CriteriaBuilderSpec,
@@ -36,12 +35,13 @@ import grails.gorm.tests.WithTransactionSpec
 //  NamedQuerySpec,
 //  OrderBySpec,
 //  RangeQuerySpec,
-//  ValidationSpec,
+  ValidationSpec,
 //  UpdateWithProxyPresentSpec,
 //  WithTransactionSpec,
 
 
 
+  FindByMethodSpec,
   QueryAfterPropertyChangeSpec,
   AttachMethodSpec,
   CommonTypesPersistenceSpec,

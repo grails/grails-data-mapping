@@ -45,7 +45,14 @@ class Neo4jQuery extends Query {
                 result << entityPersister.createObjectFromNativeEntry(entity, n.id, n)
             }
         }
-        result
+
+	    if (projections.projectionList) {      // TODO: optimize, for count we do not need to create all objects
+		    assert projections.projectionList.size()==1, "only a single projection supported for now"
+		    assert projections.projectionList[0] instanceof Query.CountProjection
+		    return [result.size()]
+	    } else {
+            result
+	    }
     }
 
     boolean matchesJunction(Node node, Query.Junction junction) {
