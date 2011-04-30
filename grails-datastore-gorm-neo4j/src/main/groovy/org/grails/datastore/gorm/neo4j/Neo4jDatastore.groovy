@@ -32,14 +32,16 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
     }
 
     void afterPropertiesSet() {
-        if (!storeDir) {
-            storeDir = File.createTempFile("neo4j",null)
-            assert storeDir.delete()
-            assert storeDir.mkdir()
-            // directory.deleteOnExit()
-            storeDir = storeDir.path
+        if (!graphDatabaseService) {
+            if (!storeDir) {
+                storeDir = File.createTempFile("neo4j",null)
+                assert storeDir.delete()
+                assert storeDir.mkdir()
+                // directory.deleteOnExit()
+                storeDir = storeDir.path
+            }
+            graphDatabaseService = new EmbeddedGraphDatabase(storeDir)
         }
-        graphDatabaseService = new EmbeddedGraphDatabase(storeDir)
     }
 }
 
