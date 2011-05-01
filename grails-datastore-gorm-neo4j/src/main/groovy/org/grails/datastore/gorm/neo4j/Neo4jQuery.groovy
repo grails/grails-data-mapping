@@ -51,9 +51,16 @@ class Neo4jQuery extends Query {
 		    assert projections.projectionList[0] instanceof Query.CountProjection
 		    return [result.size()]
 	    } else {
-            result
+		    paginate(result)
 	    }
     }
+
+	def paginate(collection) {
+		if (((max==-1) && (offset==0)) || collection.empty) return collection
+
+		def lastIndex = (max==-1) ? collection.size() : offset+max
+		collection[offset..lastIndex-1]
+	}
 
     boolean matchesJunction(Node node, Query.Junction junction) {
         if (junction.empty) {
@@ -83,7 +90,16 @@ class Neo4jQuery extends Query {
     }
 
     boolean matchesCriterionEquals(Node node, Query.Criterion criterion) {
-        assert criterion instanceof Query.Equals
         node.getProperty(criterion.name, null) == criterion.value
     }
+
+	boolean matchesCriterionIn(Node node, Query.In criterion) {
+		node.getProperty(criterion.name, null) in criterion.values
+	}
+
+	boolean matchesCriterionLike(Node node, Query.Like criterion) {
+		def value = criterion.value.replaceAll('%','.*')
+	    node.getProperty(criterion.name, null) =~ /$value/
+	}
+
 }

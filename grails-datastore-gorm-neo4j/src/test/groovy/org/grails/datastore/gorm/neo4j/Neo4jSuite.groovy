@@ -29,18 +29,16 @@ import grails.gorm.tests.WithTransactionSpec
 //  CircularOneToManySpec,
 //  InheritanceSpec,
 //  ListOrderBySpec,
-//  GormEnhancerSpec,
 //  CriteriaBuilderSpec,
 //  NegationSpec,
 //  NamedQuerySpec,
 //  OrderBySpec,
 //  RangeQuerySpec,
-  ValidationSpec,
 //  UpdateWithProxyPresentSpec,
 //  WithTransactionSpec,
 
-
-
+GormEnhancerSpec,
+  ValidationSpec,
   FindByMethodSpec,
   QueryAfterPropertyChangeSpec,
   AttachMethodSpec,
