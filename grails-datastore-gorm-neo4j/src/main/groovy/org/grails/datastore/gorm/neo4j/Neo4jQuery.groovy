@@ -41,7 +41,7 @@ class Neo4jQuery extends Query {
             Node n = rel.endNode
             assert n.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null) == entityPersister.entityFamily
 
-            if (matchesJunction(n, criteria)) {
+            if (invokeMethod("matchesCriterion${criteria.class.simpleName}", [n, criteria])) {
                 result << entityPersister.createObjectFromNativeEntry(entity, n.id, n)
             }
         }
@@ -61,6 +61,8 @@ class Neo4jQuery extends Query {
 		def lastIndex = (max==-1) ? collection.size() : offset+max
 		collection[offset..lastIndex-1]
 	}
+
+
 
     boolean matchesJunction(Node node, Query.Junction junction) {
         if (junction.empty) {
@@ -89,9 +91,25 @@ class Neo4jQuery extends Query {
         }
     }
 
+	boolean matchesCriterionDisjunction(Node node, Query.Junction criterion) {
+		criterion.criteria.any { invokeMethod("matchesCriterion${it.class.simpleName}", [node,it])}
+	}
+
+	boolean matchesCriterionConjunction(Node node, Query.Junction criterion) {
+		criterion.criteria.every { invokeMethod("matchesCriterion${it.class.simpleName}", [node,it])}
+	}
+
+	boolean matchesCriterionNegation(Node node, Query.Junction criterion) {
+		return !matchesCriterionDisjunction(node, criterion)
+	}
+
     boolean matchesCriterionEquals(Node node, Query.Criterion criterion) {
         node.getProperty(criterion.name, null) == criterion.value
     }
+
+	boolean matchesCriterionNotEquals(Node node, Query.Criterion criterion) {
+	    node.getProperty(criterion.name, null) != criterion.value
+	}
 
 	boolean matchesCriterionIn(Node node, Query.In criterion) {
 		node.getProperty(criterion.name, null) in criterion.values
@@ -101,5 +119,6 @@ class Neo4jQuery extends Query {
 		def value = criterion.value.replaceAll('%','.*')
 	    node.getProperty(criterion.name, null) =~ /$value/
 	}
+
 
 }
