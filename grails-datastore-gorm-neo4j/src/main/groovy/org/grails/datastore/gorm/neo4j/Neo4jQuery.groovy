@@ -10,6 +10,7 @@ import org.neo4j.graphdb.Direction
 import org.apache.commons.lang.NotImplementedException
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
+import org.springframework.datastore.mapping.model.MappingContext
 
 /**
  * Created by IntelliJ IDEA.
@@ -117,7 +118,21 @@ class Neo4jQuery extends Query {
 
 	boolean matchesCriterionLike(Node node, Query.Like criterion) {
 		def value = criterion.value.replaceAll('%','.*')
-	    node.getProperty(criterion.name, null) =~ /$value/
+	    node.getProperty(criterion.name, null) ==~ /$value/
+	}
+
+	boolean matchesCriterionBetween(Node node, Query.Between criterion) {
+		def value = getNodePropertyAsType(node, criterion.property, criterion.from.class)
+		return ((value >= criterion.from) && (value <= criterion.to))
+	}
+
+	boolean matchesCriterionGreaterThan(Node node, Query.GreaterThan criterion) {
+		getNodePropertyAsType(node, criterion.name, criterion.value?.class) > criterion.value
+	}
+
+	private getNodePropertyAsType(Node node, String propertyName, Class targetClass) {
+		def val = node.getProperty(propertyName, null)
+		session.mappingContext.conversionService.convert(val, targetClass)
 	}
 
 

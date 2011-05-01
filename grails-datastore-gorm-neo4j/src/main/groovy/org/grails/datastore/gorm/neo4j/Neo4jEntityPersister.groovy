@@ -89,13 +89,13 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
 
     @Override
     protected Object getEntryValue(Object nativeEntry, String property) {
-        LOG.info("getting property $property on $nativeEntry")
+        LOG.debug("getting property $property on $nativeEntry")
         nativeEntry.getProperty(property, null)
     }
 
     @Override
     protected void setEntryValue(Object nativeEntry, String key, Object value) {
-        LOG.info("setting property $key = $value ${value?.class}")
+        LOG.debug("setting property $key = $value ${value?.class}")
         if (value!=null) {
             if (!isAllowedNeo4jType(value.class)) {
 	            if (mappingContext.persistentEntities.any { it.javaClass.isInstance(value) }) {

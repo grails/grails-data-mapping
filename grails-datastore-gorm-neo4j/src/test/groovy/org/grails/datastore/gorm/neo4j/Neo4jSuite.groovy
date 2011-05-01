@@ -30,12 +30,12 @@ import grails.gorm.tests.WithTransactionSpec
 //  InheritanceSpec,
 //  ListOrderBySpec,
 //  CriteriaBuilderSpec,
-//  NamedQuerySpec,
 //  OrderBySpec,
 //  RangeQuerySpec,
 //  UpdateWithProxyPresentSpec,
 //  WithTransactionSpec,
 
+  NamedQuerySpec,
   NegationSpec,
   GormEnhancerSpec,
   ValidationSpec,
