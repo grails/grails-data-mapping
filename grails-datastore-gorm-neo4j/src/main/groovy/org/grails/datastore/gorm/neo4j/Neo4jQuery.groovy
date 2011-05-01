@@ -48,13 +48,32 @@ class Neo4jQuery extends Query {
         }
 
 	    if (projections.projectionList) {      // TODO: optimize, for count we do not need to create all objects
-		    assert projections.projectionList.size()==1, "only a single projection supported for now"
-		    assert projections.projectionList[0] instanceof Query.CountProjection
-		    return [result.size()]
+		    projection(result)
 	    } else {
-		    paginate(result)
+		    orderBy(paginate(result))
 	    }
     }
+
+	def projection(collection) {
+		projections.projectionList.collect { projection ->
+			switch (projection) {
+				case Query.CountProjection:
+					return collection.size()
+					break
+				case Query.MinProjection:
+					return collection.collect { it."$projection.propertyName" }.min()
+					break
+				case Query.MaxProjection:
+					return collection.collect { it."$projection.propertyName" }.max()
+					break
+				case Query.PropertyProjection:
+					return collection.collect { it."$projection.propertyName" }
+					break
+				default:
+				    throw new NotImplementedException("projection do support ${projection.class}")
+			}
+		}.flatten()
+	}
 
 	def paginate(collection) {
 		if (((max==-1) && (offset==0)) || collection.empty) return collection
@@ -63,9 +82,21 @@ class Neo4jQuery extends Query {
 		collection[offset..lastIndex-1]
 	}
 
+	def orderBy(collection) {
+		if (orderBy.empty) return collection
+		assert orderBy.size() == 1, "for now only sorting a single property is allowd"
+		collection.sort { a,b ->
+			for (Query.Order order in orderBy) {
+				def cmp = a."$order.property" <=> b."$order.property"
+				if (cmp) {
+					return order.direction == org.springframework.datastore.mapping.query.Query.Order.Direction.ASC ? cmp : -cmp
+				}
+			}
+		}
+	}
 
 
-    boolean matchesJunction(Node node, Query.Junction junction) {
+    /*boolean matchesJunction(Node node, Query.Junction junction) {
         if (junction.empty) {
             true
         } else {
@@ -90,7 +121,7 @@ class Neo4jQuery extends Query {
 
             }
         }
-    }
+    } */
 
 	boolean matchesCriterionDisjunction(Node node, Query.Junction criterion) {
 		criterion.criteria.any { invokeMethod("matchesCriterion${it.class.simpleName}", [node,it])}
@@ -128,6 +159,22 @@ class Neo4jQuery extends Query {
 
 	boolean matchesCriterionGreaterThan(Node node, Query.GreaterThan criterion) {
 		getNodePropertyAsType(node, criterion.name, criterion.value?.class) > criterion.value
+	}
+
+	boolean matchesCriterionGreaterThanEquals(Node node, Query.GreaterThanEquals criterion) {
+		getNodePropertyAsType(node, criterion.name, criterion.value?.class) >= criterion.value
+	}
+
+	boolean matchesCriterionLessThan(Node node, Query.LessThan criterion) {
+		getNodePropertyAsType(node, criterion.name, criterion.value?.class) < criterion.value
+	}
+
+	boolean matchesCriterionLessThanEquals(Node node, Query.LessThanEquals criterion) {
+		getNodePropertyAsType(node, criterion.name, criterion.value?.class) <= criterion.value
+	}
+
+	boolean matchesCriterionIdEquals(Node node, Query.IdEquals criterion) {
+		node.id == criterion.value
 	}
 
 	private getNodePropertyAsType(Node node, String propertyName, Class targetClass) {
