@@ -19,6 +19,10 @@ import org.neo4j.graphdb.NotFoundException
 import org.springframework.core.convert.ConversionService
 import org.codehaus.groovy.runtime.NullObject
 import org.neo4j.graphdb.DynamicRelationshipType
+import org.springframework.datastore.mapping.query.Query.Order.Direction
+import org.neo4j.graphdb.Direction
+import org.springframework.core.convert.ConverterNotFoundException
+import org.springframework.core.convert.ConversionException
 
 /**
  * Created by IntelliJ IDEA.
@@ -76,7 +80,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
 
     @Override
     AssociationIndexer getAssociationIndexer(Object nativeEntry, Association association) {
-        new Neo4jAssociationIndexer(nativeEntry: nativeEntry, association:association)
+        new Neo4jAssociationIndexer(nativeEntry: nativeEntry, association:association, graphDatabaseService: graphDatabaseService)
     }
 
     @Override
@@ -84,42 +88,95 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
         Node node = graphDatabaseService.createNode()
         node.setProperty(TYPE_PROPERTY_NAME, family)
         session.subReferenceNodes[family].createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
+	    LOG.info("created node $node.id with class $family")
         node
     }
 
     @Override
     protected Object getEntryValue(Object nativeEntry, String property) {
-        LOG.debug("getting property $property on $nativeEntry")
-        nativeEntry.getProperty(property, null)
-    }
+	    def result
+	    if (persistentEntity.associations.find { it.name == property } ) {
+		    def relname = DynamicRelationshipType.withName(property)
+		    nativeEntry.relationships.each {
+			    LOG.info("rels $nativeEntry.id  -> ${it.getOtherNode(nativeEntry).id}, begin $it.startNode")
+		    }
 
-    @Override
-    protected void setEntryValue(Object nativeEntry, String key, Object value) {
-        LOG.debug("setting property $key = $value ${value?.class}")
-        if (value!=null) {
-            if (!isAllowedNeo4jType(value.class)) {
-	            if (mappingContext.persistentEntities.any { it.javaClass.isInstance(value) }) {
-		            assert value.id // make sure we have a non-null id
-		            def targetNode = graphDatabaseService.getNodeById(value.id)
-		            nativeEntry.createRelationshipTo(targetNode, DynamicRelationshipType.withName(key))
-		            return
-	            } else {
-                    value = mappingContext.conversionService.convert(value, String)
-	            }
+            nativeEntry.getRelationships(relname, Direction.OUTGOING).each {
+                LOG.error "$it.startNode.id -> $it.endNode.id"
             }
-            nativeEntry.setProperty(key, value)
-        }
+
+		    def rel = nativeEntry.getSingleRelationship(relname, Direction.OUTGOING)
+		    result = rel ? rel.getOtherNode(nativeEntry).id : null
+		    LOG.info("getting property $property via relationship on $nativeEntry = $result")
+	    } else {
+		    result = nativeEntry.getProperty(property, null)
+		    def pe = persistentEntity.getPropertyByName(property)
+            if (property=="bd") {
+                LOG.info("HURZ $property")
+            }
+		    try {
+		        result = mappingContext.conversionService.convert(result, pe.type)
+            } catch (ConversionException e) {
+                LOG.error("prop $property: $e.message")
+                throw e
+            }
+		    LOG.debug("getting property $property on $nativeEntry = $result")
+	    }
+	    result
     }
 
-    @Override
+	@Override
+	protected void setEntryValue(Object nativeEntry, String key, Object value) {
+		if (value != null) {
+			if (persistentEntity.associations.find { it.name == key } ) {
+				LOG.info("setting $key via relationship to $value")
+
+				def relname = DynamicRelationshipType.withName(key)
+				def rel = nativeEntry.getSingleRelationship(relname, Direction.OUTGOING)
+				if (rel) {
+					if (rel.endNode.id == value) {
+						return // unchanged value
+					}
+					rel.delete()
+				}
+
+                def targetNodeId = value instanceof Long ? value : value.id
+				def targetNode = graphDatabaseService.getNodeById(targetNodeId)
+				rel = nativeEntry.createRelationshipTo(targetNode, relname)
+                LOG.warn("createRelationship $rel.startNode.id -> $rel.endNode.id ($rel.type)")
+
+			} else {
+				LOG.debug("setting property $key = $value ${value?.class}")
+
+				if (!isAllowedNeo4jType(value.class)) {
+					value = mappingContext.conversionService.convert(value, String)
+				}
+				nativeEntry.setProperty(key, value)
+
+			}
+
+		}
+	}
+
+	@Override
     protected Object retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
         try {
             def node = graphDatabaseService.getNodeById(key)
-            if (node) {
-                assert node.getProperty(TYPE_PROPERTY_NAME) == family
+
+            def type = node.getProperty(TYPE_PROPERTY_NAME, null)
+            switch (type) {
+                case null:
+                    return null
+                    break
+                case family:
+                    return node
+                    break
+                default:
+                    Class clazz = Thread.currentThread().contextClassLoader.loadClass(type)
+                    (clazz.isAssignableFrom(persistentEntity.javaClass)) ? node : null
             }
-            node
         } catch (NotFoundException e) {
+	        LOG.warn("could not retrieve an Node for id $key")
             null
         }
     }
@@ -153,6 +210,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
             case String:
             case Integer:
             case Long:
+            case Byte:
             case Float:
             case Boolean:
             case String[]:

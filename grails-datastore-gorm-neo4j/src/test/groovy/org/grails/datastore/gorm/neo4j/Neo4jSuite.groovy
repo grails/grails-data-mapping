@@ -28,10 +28,10 @@ import grails.gorm.tests.WithTransactionSpec
 @SuiteClasses([
 //  CircularOneToManySpec,
 //  InheritanceSpec,
-//  ListOrderBySpec,
-//  UpdateWithProxyPresentSpec,
 //  WithTransactionSpec,
 
+  UpdateWithProxyPresentSpec,
+  ListOrderBySpec,
   CriteriaBuilderSpec,
   OrderBySpec,
   RangeQuerySpec,

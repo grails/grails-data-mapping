@@ -11,6 +11,7 @@ import org.apache.commons.lang.NotImplementedException
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
 import org.springframework.datastore.mapping.model.MappingContext
+import org.neo4j.graphdb.DynamicRelationshipType
 
 /**
  * Created by IntelliJ IDEA.
@@ -136,7 +137,11 @@ class Neo4jQuery extends Query {
 	}
 
     boolean matchesCriterionEquals(Node node, Query.Criterion criterion) {
-        node.getProperty(criterion.name, null) == criterion.value
+        if (entityPersister.persistentEntity.associations.any { it.name == criterion.name}) {
+            node.getSingleRelationship(DynamicRelationshipType.withName(criterion.name), Direction.BOTH)?.getOtherNode(node).id == criterion.value
+        } else {
+            node.getProperty(criterion.name, null) == criterion.value
+        }
     }
 
 	boolean matchesCriterionNotEquals(Node node, Query.Criterion criterion) {

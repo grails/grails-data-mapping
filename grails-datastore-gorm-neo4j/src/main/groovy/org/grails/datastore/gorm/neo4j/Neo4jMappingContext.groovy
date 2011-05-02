@@ -7,6 +7,14 @@ import org.springframework.datastore.mapping.model.MappingFactory
 import org.springframework.datastore.mapping.model.config.GormMappingConfigurationStrategy
 import org.springframework.datastore.mapping.document.config.Attribute
 import org.springframework.datastore.mapping.document.config.GormDocumentMappingFactory
+import org.springframework.core.convert.support.StringToNumberConverterFactory
+import org.grails.datastore.gorm.neo4j.converters.StringToCurrencyConverter
+import org.grails.datastore.gorm.neo4j.converters.StringToLocaleConverter
+import org.grails.datastore.gorm.neo4j.converters.StringToTimeZoneConverter
+import org.grails.datastore.gorm.neo4j.converters.StringToURLConverter
+import org.grails.datastore.gorm.neo4j.converters.StringToBigDecimalConverter
+import org.grails.datastore.gorm.neo4j.converters.StringToBigIntegerConverter
+import org.grails.datastore.gorm.neo4j.converters.StringToShortConverter
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,6 +31,14 @@ class Neo4jMappingContext extends AbstractMappingContext {
     Neo4jMappingContext() {
         mappingFactory = new GormDocumentMappingFactory() //new GraphGormMappingFactory()
         syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory)
+        //addTypeConverter(new StringToNumberConverterFactory().getConverter(BigDecimal))
+        addTypeConverter(new StringToShortConverter())
+        addTypeConverter(new StringToBigIntegerConverter())
+        addTypeConverter(new StringToBigDecimalConverter())
+        addTypeConverter(new StringToCurrencyConverter())
+        addTypeConverter(new StringToLocaleConverter())
+        addTypeConverter(new StringToTimeZoneConverter())
+        addTypeConverter(new StringToURLConverter())
     }
 
     @Override

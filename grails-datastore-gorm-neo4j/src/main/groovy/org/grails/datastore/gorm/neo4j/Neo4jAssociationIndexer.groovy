@@ -8,6 +8,9 @@ import org.slf4j.LoggerFactory
 import org.apache.commons.lang.NotImplementedException
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.DynamicRelationshipType
+import org.neo4j.graphdb.GraphDatabaseService
+import org.neo4j.graphdb.Direction
+import org.neo4j.graphdb.Relationship
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,30 +25,39 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
 
     Node nativeEntry
     Association association
+	GraphDatabaseService graphDatabaseService
 
     void index(Object primaryKey, List foreignKeys) {
         assert nativeEntry.id == primaryKey
-        LOG.info("indexing $primaryKey, $foreignKeys")
 
         foreignKeys.each {
-            throw new NotImplementedException()
+            index(primaryKey, it)
         }
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     List query(Object primaryKey) {
-        LOG.info("query $primaryKey")
-        nativeEntry.getRelationships(DynamicRelationshipType.withName(association.referencedPropertyName)).collect { it.endNode.id}
+        def ids = nativeEntry.getRelationships(DynamicRelationshipType.withName(association.referencedPropertyName))
+            .collect { it.getOtherNode(nativeEntry).id}
+	    LOG.info("query $primaryKey: $ids")
+	    ids
     }
 
     PersistentEntity getIndexedEntity() {
-        LOG.info("getIndexEntity")
         association.associatedEntity
     }
 
     void index(Object primaryKey, Object foreignKey) {
-        LOG.info("indexing $primaryKey, $foreignKey")
-        throw new NotImplementedException()
-        //To change body of implemented methods use File | Settings | File Templates.
+        if (primaryKey!=foreignKey) {
+            def keyOfOtherNode = (primaryKey == nativeEntry.id) ? foreignKey : primaryKey
+            def target = graphDatabaseService.getNodeById(keyOfOtherNode)
+            def relationshipType = DynamicRelationshipType.withName(association.referencedPropertyName)
+
+            def hasRelationship = nativeEntry.getRelationships(relationshipType, Direction.OUTGOING).any { it.endNode == target}
+            if (!hasRelationship) {
+                def rel = nativeEntry.createRelationshipTo(target, relationshipType)
+                LOG.warn("createRelationship $rel.startNode.id -> $rel.endNode.id ($rel.type)")
+
+            }
+        }
     }
 }
