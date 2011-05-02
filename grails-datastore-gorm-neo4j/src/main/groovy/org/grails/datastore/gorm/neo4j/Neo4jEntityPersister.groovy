@@ -110,10 +110,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
 		    LOG.info("getting property $property via relationship on $nativeEntry = $result")
 	    } else {
 		    result = nativeEntry.getProperty(property, null)
-		    def pe = persistentEntity.getPropertyByName(property)
-            if (property=="bd") {
-                LOG.info("HURZ $property")
-            }
+            def pe = discriminatePersistentEntity(persistentEntity, nativeEntry).getPropertyByName(property)
 		    try {
 		        result = mappingContext.conversionService.convert(result, pe.type)
             } catch (ConversionException e) {
@@ -172,8 +169,9 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
                     return node
                     break
                 default:
+                    //mappingContext.persistentEntities.find
                     Class clazz = Thread.currentThread().contextClassLoader.loadClass(type)
-                    (clazz.isAssignableFrom(persistentEntity.javaClass)) ? node : null
+                    persistentEntity.javaClass.isAssignableFrom(clazz) ? node : null
             }
         } catch (NotFoundException e) {
 	        LOG.warn("could not retrieve an Node for id $key")
@@ -191,11 +189,13 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
 
     @Override
     protected void updateEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object key, Object entry) {
+        LOG.error("updateentry ")
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     protected void deleteEntries(String family, List keys) {
+        LOG.error("delete $keys")
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -222,6 +222,16 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
             default:
                 return false;
         }
+    }
+
+    @Override
+    protected PersistentEntity discriminatePersistentEntity(PersistentEntity persistentEntity, Object nativeEntry) {
+        def className = nativeEntry.getProperty(TYPE_PROPERTY_NAME,null)
+        def targetEntity = mappingContext.getPersistentEntity(className)
+        for (def entity = targetEntity; (entity != persistentEntity) || (entity==null); entity = entity.getParentEntity()) {
+            assert entity
+        }
+        return targetEntity
     }
 
 }

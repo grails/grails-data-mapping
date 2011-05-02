@@ -35,16 +35,17 @@ class Neo4jQuery extends Query {
     protected List executeQuery(PersistentEntity entity, Query.Junction criteria) {
 
         assert entity
-        Node subReferenceNode = session.subReferenceNodes[entity.name]
-        assert subReferenceNode
-
         def result = []
-        for (Relationship rel in subReferenceNode.getRelationships(GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING)) {
-            Node n = rel.endNode
-            assert n.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null) == entityPersister.entityFamily
+        def subReferenceNodes = getSubreferencesOfSelfAndDerived(entity)
+        def validClassNames = subReferenceNodes.collect { it.getProperty(Neo4jEntityPersister.SUBREFERENCE_PROPERTY_NAME)}
+        for (Node subReferenceNode in subReferenceNodes) {
+            for (Relationship rel in subReferenceNode.getRelationships(GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING)) {
+                Node n = rel.endNode
+                assert n.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null) in validClassNames
 
-            if (invokeMethod("matchesCriterion${criteria.class.simpleName}", [n, criteria])) {
-                result << entityPersister.createObjectFromNativeEntry(entity, n.id, n)
+                if (invokeMethod("matchesCriterion${criteria.class.simpleName}", [n, criteria])) {
+                    result << entityPersister.createObjectFromNativeEntry(entity, n.id, n)
+                }
             }
         }
 
@@ -53,6 +54,13 @@ class Neo4jQuery extends Query {
 	    } else {
 		    orderBy(paginate(result))
 	    }
+    }
+
+    def getSubreferencesOfSelfAndDerived(entity) {
+        // TODO: handle inheritence recursively
+        def result = entityPersister.mappingContext.persistentEntities.findAll { it.parentEntity == entity }.collect {session.subReferenceNodes[it.name]}
+        result << session.subReferenceNodes[entity.name]
+        result
     }
 
 	def projection(collection) {

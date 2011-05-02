@@ -27,9 +27,9 @@ import grails.gorm.tests.WithTransactionSpec
 @RunWith(Suite)
 @SuiteClasses([
 //  CircularOneToManySpec,
-//  InheritanceSpec,
 //  WithTransactionSpec,
 
+  InheritanceSpec,
   UpdateWithProxyPresentSpec,
   ListOrderBySpec,
   CriteriaBuilderSpec,
