@@ -14,20 +14,20 @@
  */
 package org.grails.datastore.gorm.mongo
 
-import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.GormInstanceApi
-import org.grails.datastore.gorm.GormStaticApi
-import org.grails.datastore.gorm.finders.DynamicFinder
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.core.SessionCallback
-import org.springframework.datastore.mapping.mongo.MongoDatastore
-import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister
-import org.springframework.transaction.PlatformTransactionManager
-
 import com.gmongo.internal.DBCollectionPatcher
 import com.mongodb.DBCollection
 import com.mongodb.DBObject
+import org.grails.datastore.gorm.finders.DynamicFinder
+import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.gorm.GormEnhancer
+import org.grails.datastore.gorm.GormInstanceApi
+import org.grails.datastore.gorm.GormStaticApi
+import org.springframework.datastore.mapping.core.Datastore
+import org.springframework.datastore.mapping.core.Session
+import org.springframework.datastore.mapping.core.SessionCallback
+import org.springframework.datastore.mapping.mongo.engine.MongoEntityPersister
+import org.springframework.datastore.mapping.mongo.MongoDatastore
+import org.springframework.transaction.PlatformTransactionManager
 
 /**
  * GORM enhancer for Mongo.
@@ -49,7 +49,7 @@ class MongoGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new MongoGormStaticApi<D>(cls, datastore)
+        return new MongoGormStaticApi<D>(cls, datastore, finders)
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
@@ -122,8 +122,8 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
 
 class MongoGormStaticApi<D> extends GormStaticApi<D> {
 
-    MongoGormStaticApi(Class<D> persistentClass, Datastore datastore) {
-        super(persistentClass, datastore)
+    MongoGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
+        super(persistentClass, datastore, finders)
     }
 
     @Override

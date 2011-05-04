@@ -19,6 +19,7 @@
 package org.grails.datastore.gorm.riak
 
 import org.grails.datastore.gorm.AbstractDatastoreApi
+import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
@@ -47,7 +48,7 @@ class RiakGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new RiakGormStaticApi<D>(cls, datastore)
+        return new RiakGormStaticApi<D>(cls, datastore, finders)
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
@@ -89,8 +90,8 @@ class RiakGormStaticApi<D> extends GormStaticApi<D> {
 
     MapReduceApi mapReduceApi
 
-    RiakGormStaticApi(D persistentClass, datastore) {
-        super(persistentClass, datastore)
+    RiakGormStaticApi(D persistentClass, datastore, List<FinderMethod> finders) {
+        super(persistentClass, datastore, finders)
         mapReduceApi = new MapReduceApi<D>(persistentClass, datastore)
     }
 

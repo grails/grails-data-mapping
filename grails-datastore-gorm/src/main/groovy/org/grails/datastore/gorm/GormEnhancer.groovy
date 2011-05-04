@@ -17,8 +17,15 @@ package org.grails.datastore.gorm
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import org.codehaus.groovy.runtime.metaclass.ClosureStaticMetaMethod
+import org.grails.datastore.gorm.finders.CountByFinder
 import org.grails.datastore.gorm.finders.DynamicFinder
+import org.grails.datastore.gorm.finders.FindAllByBooleanFinder
+import org.grails.datastore.gorm.finders.FindAllByFinder
+import org.grails.datastore.gorm.finders.FindByBooleanFinder
+import org.grails.datastore.gorm.finders.FindByFinder
 import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.gorm.finders.FindOrCreateByFinder
+import org.grails.datastore.gorm.finders.ListOrderByFinder
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.model.PersistentEntity
@@ -45,7 +52,7 @@ class GormEnhancer {
     GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
         this.datastore = datastore
         this.transactionManager = transactionManager
-        initialiseFinders(datastore)
+        initialiseFinders()
     }
 
     /**
@@ -186,7 +193,7 @@ class GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        new GormStaticApi<D>(cls, datastore)
+        new GormStaticApi<D>(cls, datastore, finders)
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
@@ -197,8 +204,20 @@ class GormEnhancer {
         new GormValidationApi(cls, datastore)
     }
 
-    private List initialiseFinders(Datastore datastore) {
-        this.finders = DynamicFinder.getAllDynamicFinders(datastore)
+    protected List<FinderMethod> getAllDynamicFinders() {
+        List<FinderMethod> finders = new ArrayList<FinderMethod>();
+        finders.add(new FindOrCreateByFinder(datastore));
+        finders.add(new FindByFinder(datastore));
+        finders.add(new FindAllByFinder(datastore));
+        finders.add(new FindAllByBooleanFinder(datastore));
+        finders.add(new FindByBooleanFinder(datastore));
+        finders.add(new CountByFinder(datastore));
+        finders.add(new ListOrderByFinder(datastore));
+        return finders;
+    }
+
+    private List initialiseFinders() {
+        this.finders = Collections.unmodifiableList(getAllDynamicFinders())
     }
 }
 

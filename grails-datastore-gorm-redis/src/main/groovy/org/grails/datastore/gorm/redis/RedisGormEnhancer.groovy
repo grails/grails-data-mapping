@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm.redis
 
+import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
@@ -37,7 +38,7 @@ class RedisGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new RedisGormStaticApi<D>(cls, datastore)
+        return new RedisGormStaticApi<D>(cls, datastore, finders)
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
@@ -62,8 +63,8 @@ class RedisGormInstanceApi<D> extends GormInstanceApi<D> {
 
 class RedisGormStaticApi<D> extends GormStaticApi<D> {
 
-    RedisGormStaticApi(Class<D> persistentClass, Datastore datastore) {
-        super(persistentClass, datastore)
+    RedisGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
+        super(persistentClass, datastore, finders)
     }
 
     /**

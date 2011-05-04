@@ -27,6 +27,6 @@ class TestGormStaticApi<D> extends GormStaticApi<D> {
     @Override D create() { super.create() }
 
     TestGormStaticApi(Class<D> persistentClass) {
-        super(persistentClass, [getMappingContext: { -> [getPersistentEntity: { String name -> }] as MappingContext } ] as Datastore)
+        super(persistentClass, [getMappingContext: { -> [getPersistentEntity: { String name -> }] as MappingContext } ] as Datastore, [])
     }
 }

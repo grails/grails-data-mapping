@@ -49,10 +49,6 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     private List<FinderMethod> dynamicFinders
     private PlatformTransactionManager transactionManager
 
-    GormStaticApi(Class<D> persistentClass, Datastore datastore) {
-        this(persistentClass, datastore, DynamicFinder.getAllDynamicFinders(datastore))
-    }
-
     GormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
         this(persistentClass, datastore, finders, null)
     }

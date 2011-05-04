@@ -15,11 +15,9 @@
 
 package org.grails.datastore.gorm.jpa
 
-import static org.springframework.datastore.mapping.validation.ValidatingEventListener.*
-
 import javax.persistence.EntityManager
 import javax.persistence.Query
-
+import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
@@ -31,6 +29,7 @@ import org.springframework.datastore.mapping.jpa.JpaSession
 import org.springframework.orm.jpa.JpaCallback
 import org.springframework.orm.jpa.JpaTemplate
 import org.springframework.transaction.PlatformTransactionManager
+import static org.springframework.datastore.mapping.validation.ValidatingEventListener.*
 
 /**
  * Extends the default {@link GormEnhancer} adding supporting for JPQL methods
@@ -53,7 +52,7 @@ class JpaGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi getStaticApi(Class<D> cls) {
-        return new JpaStaticApi<D>(cls, datastore)
+        return new JpaStaticApi<D>(cls, datastore, finders)
     }
 }
 
@@ -117,8 +116,8 @@ class JpaInstanceApi<D> extends GormInstanceApi<D> {
 
 class JpaStaticApi<D> extends GormStaticApi<D> {
 
-    JpaStaticApi(Class<D> persistentClass, Datastore datastore) {
-        super(persistentClass, datastore)
+    JpaStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
+        super(persistentClass, datastore, finders)
     }
 
     def withEntityManager(Closure callable) {
