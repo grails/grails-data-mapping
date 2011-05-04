@@ -5,7 +5,7 @@ repositories {
 
 dependencies {
     compile project(":spring-datastore-core")
-    compile('org.springframework.data.gemfire:spring-gemfire:1.0.1') {
+    compile('org.springframework.data.gemfire:spring-gemfire:1.0.1.RELEASE') {
         exclude module:'spring-context'
         exclude module:'spring-tx'
     }
