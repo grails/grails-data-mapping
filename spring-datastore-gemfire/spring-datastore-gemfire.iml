@@ -23,11 +23,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data.gemfire/spring-gemfire/jars/spring-gemfire-1.0.1.BUILD-SNAPSHOT.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data.gemfire/spring-gemfire/jars/spring-gemfire-1.0.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data.gemfire/spring-gemfire/sources/spring-gemfire-1.0.1.BUILD-SNAPSHOT-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data.gemfire/spring-gemfire/sources/spring-gemfire-1.0.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

@@ -1,18 +1,15 @@
 repositories {
     mavenRepo urls:'http://maven.springframework.org/milestone'
     mavenRepo urls:'http://dist.gemstone.com/maven/release'
-    
-    // temporary, for spring-gemfire 1.0.1.BUILD-SNAPSHOT
-    mavenRepo urls:'http://maven.springframework.org/snapshot'
 }
 
 dependencies {
     compile project(":spring-datastore-core")
-    compile('org.springframework.data.gemfire:spring-gemfire:1.0.1.BUILD-SNAPSHOT') {
+    compile('org.springframework.data.gemfire:spring-gemfire:1.0.1') {
         exclude module:'spring-context'
         exclude module:'spring-tx'
     }
-    compile('com.gemstone.gemfire:gemfire:6.5.1.2') {
+    compile('com.gemstone.gemfire:gemfire:6.5.1.4') {
         exclude module:'antlr'
     }
 }
