@@ -104,7 +104,7 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
      * @return The DBObject instance
      */
     DBObject getDbo(D instance) {
-        execute new SessionCallback<DBObject>() {
+        execute (new SessionCallback<DBObject>() {
             DBObject doInSession(Session session) {
 
                 if (!session.contains(instance) && !instance.save()) {
@@ -116,7 +116,7 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
                 def id = persister.getObjectIdentifier(instance)
                 return session.getCachedEntry(persister.getPersistentEntity(), id)
             }
-        }
+        })
     }
 }
 

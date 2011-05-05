@@ -79,7 +79,7 @@ class JpaInstanceApi<D> extends GormInstanceApi<D> {
     }
 
     private D doSave(D instance, Map params, Closure callable) {
-        execute new SessionCallback() {
+        execute (new SessionCallback() {
             def doInSession(Session session) {
                 boolean hasErrors = false
                 boolean validate = params?.containsKey("validate") ? params.validate : true
@@ -106,7 +106,7 @@ class JpaInstanceApi<D> extends GormInstanceApi<D> {
                 }
                 return instance
             }
-        }
+        })
     }
 
     private void rollbackTransaction(JpaSession jpaSession) {
@@ -121,12 +121,12 @@ class JpaStaticApi<D> extends GormStaticApi<D> {
     }
 
     def withEntityManager(Closure callable) {
-        execute new SessionCallback() {
+        execute (new SessionCallback() {
             def doInSession(Session session) {
                 JpaTemplate jpaTemplate = session.getNativeInterface()
                 jpaTemplate.execute({ EntityManager em -> callable.call(em) } as JpaCallback)
             }
-        }
+        })
     }
 
     @Override
@@ -230,7 +230,7 @@ class JpaStaticApi<D> extends GormStaticApi<D> {
     }
 
     private Integer doUpdate(String query, params = null, args = null) {
-        execute new SessionCallback<Integer>() {
+        execute (new SessionCallback<Integer>() {
             Integer doInSession(Session session) {
                 JpaTemplate jpaTemplate = session.getNativeInterface()
                 jpaTemplate.execute({ EntityManager em ->
@@ -242,11 +242,11 @@ class JpaStaticApi<D> extends GormStaticApi<D> {
                     q.executeUpdate()
                 } as JpaCallback)
             }
-        }
+        })
     }
 
     private doQuery(String query, params = null, args = null, boolean singleResult = false) {
-        execute new SessionCallback() {
+        execute (new SessionCallback() {
             def doInSession(Session session) {
                 JpaTemplate jpaTemplate = session.getNativeInterface()
                 jpaTemplate.execute({ EntityManager em ->
@@ -263,7 +263,7 @@ class JpaStaticApi<D> extends GormStaticApi<D> {
                     }
                 } as JpaCallback)
             }
-        }
+        })
     }
 
     private Query handleParamsAndArguments(Query q, params, args) {

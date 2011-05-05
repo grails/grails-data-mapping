@@ -83,11 +83,11 @@ class RedisGormStaticApi<D> extends GormStaticApi<D> {
      * @return A random domain class
      */
     D random() {
-        execute new SessionCallback() {
+        execute (new SessionCallback() {
             def doInSession(Session session) {
                 session.random(persistentClass)
             }
-        }
+        })
     }
 
     /**
@@ -95,10 +95,10 @@ class RedisGormStaticApi<D> extends GormStaticApi<D> {
      * @return A random removed domain class
      */
     D pop() {
-        execute new SessionCallback() {
+        execute (new SessionCallback() {
             def doInSession(Session session) {
                 session.pop(persistentClass)
             }
-        }
+        })
     }
 }
