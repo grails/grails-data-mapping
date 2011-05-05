@@ -140,11 +140,11 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @return The instance
      */
     D save(D instance, Map params) {
-        execute new SessionCallback() {
+        execute (new SessionCallback() {
             def doInSession(Session session) {
                 doSave instance, params, session
             }
-        }
+        })
     }
 
     protected D doSave(D instance, Map params, Session session) {
