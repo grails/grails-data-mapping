@@ -53,11 +53,11 @@ class RedisGormInstanceApi<D> extends GormInstanceApi<D> {
     }
 
     void expire(D instance, int ttl) {
-        execute new VoidSessionCallback() {
+        execute (new VoidSessionCallback() {
             void doInSession(Session session) {
                 session.expire instance, ttl
             }
-        }
+        })
     }
 }
 
@@ -71,11 +71,11 @@ class RedisGormStaticApi<D> extends GormStaticApi<D> {
      * Expires an entity for the given id and TTL.
      */
     void expire(Serializable id, int ttl) {
-        execute new VoidSessionCallback() {
+        execute (new VoidSessionCallback() {
             void doInSession(Session session) {
                 session.expire(persistentClass, id, ttl)
             }
-        }
+        })
     }
 
     /**
