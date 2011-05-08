@@ -20,6 +20,7 @@ import org.codehaus.groovy.runtime.NullObject
 import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.Direction
 import org.springframework.core.convert.ConversionException
+import org.apache.commons.lang.NotImplementedException
 
 /**
  * Created by IntelliJ IDEA.
@@ -60,7 +61,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
 
     @Override
     protected void deleteEntry(String family, Object key) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw new NotImplementedException()
     }
 
     @Override
@@ -192,6 +193,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
     @Override
     protected void deleteEntries(String family, List keys) {
         LOG.error("delete $keys")
+        throw new NotImplementedException()
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
