@@ -56,9 +56,8 @@ class Neo4jSession extends AbstractSession {
 
     @Override
     protected Transaction beginTransactionInternal() {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+        new Neo4jTransaction(nativeInterface.beginTx())
     }
-
 
     Object getNativeInterface() {
         datastore.graphDatabaseService

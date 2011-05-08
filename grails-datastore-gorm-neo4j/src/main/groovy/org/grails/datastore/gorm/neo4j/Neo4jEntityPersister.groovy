@@ -16,12 +16,9 @@ import org.neo4j.graphdb.Node
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.neo4j.graphdb.NotFoundException
-import org.springframework.core.convert.ConversionService
 import org.codehaus.groovy.runtime.NullObject
 import org.neo4j.graphdb.DynamicRelationshipType
-import org.springframework.datastore.mapping.query.Query.Order.Direction
 import org.neo4j.graphdb.Direction
-import org.springframework.core.convert.ConverterNotFoundException
 import org.springframework.core.convert.ConversionException
 
 /**
@@ -97,12 +94,11 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
 	    def result
 	    if (persistentEntity.associations.find { it.name == property } ) {
 		    def relname = DynamicRelationshipType.withName(property)
-		    nativeEntry.relationships.each {
-			    LOG.info("rels $nativeEntry.id  -> ${it.getOtherNode(nativeEntry).id}, begin $it.startNode")
-		    }
 
-            nativeEntry.getRelationships(relname, Direction.OUTGOING).each {
-                LOG.error "$it.startNode.id -> $it.endNode.id"
+            if (LOG.infoEnabled) {
+                nativeEntry.relationships.each {
+                    LOG.info("rels $nativeEntry.id  has relationship ${it.startNode.id} -> ${it.endNode.id}, type $it.type")
+                }
             }
 
 		    def rel = nativeEntry.getSingleRelationship(relname, Direction.OUTGOING)

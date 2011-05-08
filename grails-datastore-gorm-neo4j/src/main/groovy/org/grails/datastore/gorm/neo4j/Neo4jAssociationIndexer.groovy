@@ -36,7 +36,7 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
     }
 
     List query(Object primaryKey) {
-        def ids = nativeEntry.getRelationships(DynamicRelationshipType.withName(association.referencedPropertyName))
+        def ids = nativeEntry.getRelationships(relationshipType)
             .collect { it.getOtherNode(nativeEntry).id}
 	    LOG.info("query $primaryKey: $ids")
 	    ids
@@ -50,7 +50,6 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
         if (primaryKey!=foreignKey) {
             def keyOfOtherNode = (primaryKey == nativeEntry.id) ? foreignKey : primaryKey
             def target = graphDatabaseService.getNodeById(keyOfOtherNode)
-            def relationshipType = DynamicRelationshipType.withName(association.referencedPropertyName)
 
             def hasRelationship = nativeEntry.getRelationships(relationshipType, Direction.OUTGOING).any { it.endNode == target}
             if (!hasRelationship) {
@@ -59,5 +58,9 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
 
             }
         }
+    }
+
+    def getRelationshipType() {
+        return DynamicRelationshipType.withName(association.name)
     }
 }

@@ -18,12 +18,12 @@ class Setup {
 
     static session
     static datastore
+    static trans
 
     static destroy() {
+        trans.rollback()
         session.nativeInterface.shutdown()
-
-        new File(datastore.storeDir).deleteDir()
-        //redis?.destroy()
+        //new File(datastore.storeDir).deleteDir()
     }
 
     static Session setup(classes) {
@@ -61,6 +61,7 @@ class Setup {
         datastore.applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
 
         session = datastore.connect()
+        trans = session.beginTransaction()
         session
     }
 
