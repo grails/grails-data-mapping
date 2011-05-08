@@ -87,13 +87,13 @@ class Neo4jQuery extends Query {
 	def paginate(collection) {
 		if (((max==-1) && (offset==0)) || collection.empty) return collection
 
-		def lastIndex = (max==-1) ? collection.size() : offset+max
+		def lastIndex = (max==-1) ? collection.size() : Math.min(collection.size(), offset+max)
 		collection[offset..lastIndex-1]
 	}
 
 	def orderBy(collection) {
 		if (orderBy.empty) return collection
-		assert orderBy.size() == 1, "for now only sorting a single property is allowd"
+//		assert orderBy.size() == 1, "for now only sorting a single property is allowd"
 		collection.sort { a,b ->
 			for (Query.Order order in orderBy) {
 				def cmp = a."$order.property" <=> b."$order.property"
