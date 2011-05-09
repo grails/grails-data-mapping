@@ -58,8 +58,10 @@ class Neo4jQuery extends Query {
 
     def getSubreferencesOfSelfAndDerived(entity) {
         // TODO: handle inheritence recursively
-        def result = entityPersister.mappingContext.persistentEntities.findAll { it.parentEntity == entity }.collect {session.subReferenceNodes[it.name]}
-        result << session.subReferenceNodes[entity.name]
+        def result = entityPersister.mappingContext.persistentEntities.findAll { it.parentEntity == entity }.collect {
+            session.datastore.subReferenceNodes[it.name]
+        }
+        result << session.datastore.subReferenceNodes[entity.name]
         result
     }
 

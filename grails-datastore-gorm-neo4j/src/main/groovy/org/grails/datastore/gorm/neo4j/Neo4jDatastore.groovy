@@ -5,12 +5,14 @@ import org.springframework.datastore.mapping.core.Session
 import org.springframework.beans.factory.InitializingBean
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.kernel.EmbeddedGraphDatabase
-import org.neo4j.graphdb.Transaction
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.neo4j.graphdb.Direction
+import org.neo4j.graphdb.Relationship
+import org.neo4j.graphdb.Node
 
 /**
  * TODO: refactor constructors to be groovier
@@ -25,6 +27,8 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean, Mapp
     private static final Logger LOG = LoggerFactory.getLogger(Neo4jDatastore.class);
 
     GraphDatabaseService graphDatabaseService
+    def subReferenceNodes // maps entity class names to neo4j subreference node
+
     def storeDir
     //Transaction transaction
 
@@ -65,7 +69,6 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean, Mapp
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
-        //transaction = graphDatabaseService.beginTx()  // TODO: not the right place for transaction handling
         new Neo4jSession(this, mappingContext, applicationEventPublisher)
     }
 
@@ -80,11 +83,25 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean, Mapp
             }
             graphDatabaseService = new EmbeddedGraphDatabase(storeDir)
         }
+        subReferenceNodes = findSubReferenceNodes()
+
     }
 
     @Override
     void persistentEntityAdded(PersistentEntity entity) {
         LOG.warn("persistentEntityAdded $entity")
     }
+
+    def findSubReferenceNodes() {
+        def map = [:]
+        Node referenceNode = graphDatabaseService.referenceNode
+        for (Relationship rel in referenceNode.getRelationships(GrailsRelationshipTypes.SUBREFERENCE, Direction.OUTGOING)) {
+            def endNode = rel.endNode
+            def clazz = endNode.getProperty(Neo4jEntityPersister.SUBREFERENCE_PROPERTY_NAME)
+            map[clazz] = endNode
+        }
+        map
+    }
+
 }
 

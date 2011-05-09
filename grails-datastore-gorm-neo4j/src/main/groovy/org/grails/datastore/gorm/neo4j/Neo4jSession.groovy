@@ -7,10 +7,6 @@ import org.springframework.datastore.mapping.transactions.Transaction
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.datastore.mapping.model.PersistentEntity
-import org.neo4j.graphdb.Node
-import org.neo4j.graphdb.DynamicRelationshipType
-import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.Relationship
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,12 +17,9 @@ import org.neo4j.graphdb.Relationship
  */
 class Neo4jSession extends AbstractSession {
 
-    def subReferenceNodes // maps entity class names to neo4j subreference node
 
     public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
         super(datastore, mappingContext, publisher);
-
-        subReferenceNodes = findSubReferenceNodes()
 
 /*        this.mongoDatastore = datastore;
         try {
@@ -35,17 +28,6 @@ class Neo4jSession extends AbstractSession {
         catch (IllegalStateException ignored) {
             // can't call authenticate() twice, and it's probably been called at startup
         }*/
-    }
-
-    def findSubReferenceNodes() {
-        def map = [:]
-        Node referenceNode = nativeInterface.referenceNode
-        for (Relationship rel in referenceNode.getRelationships(GrailsRelationshipTypes.SUBREFERENCE, Direction.OUTGOING)) {
-            def endNode = rel.endNode
-            def clazz = endNode.getProperty(Neo4jEntityPersister.SUBREFERENCE_PROPERTY_NAME)
-            map[clazz] = endNode
-        }
-        map
     }
 
     @Override

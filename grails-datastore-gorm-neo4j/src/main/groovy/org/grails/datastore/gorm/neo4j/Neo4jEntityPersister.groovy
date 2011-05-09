@@ -46,11 +46,11 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
 
     def createSubReferenceNode(session,entity) {
         def name = entityFamily
-        if (!session.subReferenceNodes.containsKey(name)) {
+        if (!session.datastore.subReferenceNodes.containsKey(name)) {
             def subReferenceNode = graphDatabaseService.createNode()
             subReferenceNode.setProperty(SUBREFERENCE_PROPERTY_NAME, name)
             graphDatabaseService.referenceNode.createRelationshipTo(subReferenceNode, GrailsRelationshipTypes.SUBREFERENCE)
-            session.subReferenceNodes[name] = subReferenceNode
+            session.datastore.subReferenceNodes[name] = subReferenceNode
         }
     }
 
@@ -85,7 +85,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
     protected Object createNewEntry(String family) {
         Node node = graphDatabaseService.createNode()
         node.setProperty(TYPE_PROPERTY_NAME, family)
-        session.subReferenceNodes[family].createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
+        session.datastore.subReferenceNodes[family].createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
 	    LOG.info("created node $node.id with class $family")
         node
     }
