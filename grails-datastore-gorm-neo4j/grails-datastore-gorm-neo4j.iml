@@ -107,6 +107,7 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="spring-datastore-web" exported="" />
     <orderEntry type="module" module-name="grails-datastore-gorm" exported="" />
     <orderEntry type="module-library" scope="TEST">
       <library>
@@ -136,6 +137,28 @@
         <JAVADOC />
         <SOURCES>
           <root url="jar://$GRADLE_CACHE$/org.spockframework/spock-core/sources/spock-core-0.5-groovy-1.7-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_CACHE$/junit/junit-dep/jars/junit-dep-4.8.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_CACHE$/junit/junit-dep/sources/junit-dep-4.8.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_CACHE$/org.hamcrest/hamcrest-core/jars/hamcrest-core-1.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_CACHE$/org.hamcrest/hamcrest-core/sources/hamcrest-core-1.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
