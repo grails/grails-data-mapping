@@ -3,10 +3,12 @@ package org.grails.datastore.gorm.neo4j
 import org.springframework.datastore.mapping.core.AbstractSession
 import org.springframework.datastore.mapping.engine.Persister
 import org.springframework.datastore.mapping.model.MappingContext
-import org.springframework.datastore.mapping.transactions.Transaction
 import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.datastore.mapping.model.PersistentEntity
+import org.springframework.datastore.mapping.transactions.Transaction
+import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,9 +19,14 @@ import org.springframework.datastore.mapping.model.PersistentEntity
  */
 class Neo4jSession extends AbstractSession {
 
+    private static final Logger log = LoggerFactory.getLogger(Neo4jSession.class);
+
+    Neo4jTransaction transaction
 
     public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
         super(datastore, mappingContext, publisher);
+        log.info("new")
+        //beginTransactionInternal()
 
 /*        this.mongoDatastore = datastore;
         try {
@@ -38,10 +45,26 @@ class Neo4jSession extends AbstractSession {
 
     @Override
     protected Transaction beginTransactionInternal() {
-        new Neo4jTransaction(nativeInterface.beginTx())
+        //transaction?.commit()
+        transaction = new Neo4jTransaction(nativeInterface)
+        transaction
     }
 
     Object getNativeInterface() {
         datastore.graphDatabaseService
     }
+
+    @Override
+    protected void postFlush(boolean hasUpdates) {
+        //beginTransactionInternal()
+    }
+
+    @Override
+    public void disconnect() {
+        log.info "disconnect"
+        super.disconnect()
+        //transaction?.commit()
+    }
+
+
 }

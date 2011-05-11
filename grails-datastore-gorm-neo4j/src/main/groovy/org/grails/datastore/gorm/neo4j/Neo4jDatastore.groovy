@@ -15,22 +15,17 @@ import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.Node
 
 /**
+ * Datastore implementation for Neo4j backend
+ * @author Stefan Armbruster <stefan@armbruster-it.de>
  * TODO: refactor constructors to be groovier
- * Created by IntelliJ IDEA.
- * User: stefan
- * Date: 25.04.11
- * Time: 12:23
- * To change this template use File | Settings | File Templates.
  */
-class Neo4jDatastore extends AbstractDatastore implements InitializingBean, MappingContext.Listener {
+class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
 
     private static final Logger LOG = LoggerFactory.getLogger(Neo4jDatastore.class);
 
     GraphDatabaseService graphDatabaseService
     def subReferenceNodes // maps entity class names to neo4j subreference node
-
     def storeDir
-    //Transaction transaction
 
     /**
      * only to be called during testing
@@ -43,11 +38,7 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean, Mapp
     public Neo4jDatastore(Neo4jMappingContext mappingContext, ConfigurableApplicationContext ctx, GraphDatabaseService graphDatabaseService) {
         super(mappingContext, Collections.<String,String>emptyMap(), ctx)
         this.graphDatabaseService = graphDatabaseService
-        if (mappingContext != null) {
-            mappingContext.addMappingContextListener(this);
-        }
 
-        initializeConverters(mappingContext);
 
 /*        mappingContext.getConverterRegistry().addConverter(new Converter<String, ObjectId>() {
             public ObjectId convert(String source) {
@@ -74,31 +65,42 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean, Mapp
 
     void afterPropertiesSet() {
         if (!graphDatabaseService) {
-            if (!storeDir) {
-                storeDir = File.createTempFile("neo4j",null)
-                assert storeDir.delete()
-                assert storeDir.mkdir()
-                // directory.deleteOnExit()
-                storeDir = storeDir.path
-            }
+            assert storeDir
             graphDatabaseService = new EmbeddedGraphDatabase(storeDir)
         }
-        subReferenceNodes = findSubReferenceNodes()
+        initializeConverters(mappingContext);
+        subReferenceNodes = findOrCreateSubReferenceNodes()
 
     }
 
-    @Override
-    void persistentEntityAdded(PersistentEntity entity) {
-        LOG.warn("persistentEntityAdded $entity")
+    def createSubReferenceNode(name) {
+        def tx = graphDatabaseService.beginTx()
+        try {
+            def subReferenceNode = graphDatabaseService.createNode()
+            subReferenceNode.setProperty(Neo4jEntityPersister.SUBREFERENCE_PROPERTY_NAME, name)
+            graphDatabaseService.referenceNode.createRelationshipTo(subReferenceNode, GrailsRelationshipTypes.SUBREFERENCE)
+            tx.success()
+            return subReferenceNode
+        } finally {
+            tx.finish()
+        }
     }
 
-    def findSubReferenceNodes() {
+    def findOrCreateSubReferenceNodes() {
+
         def map = [:]
         Node referenceNode = graphDatabaseService.referenceNode
         for (Relationship rel in referenceNode.getRelationships(GrailsRelationshipTypes.SUBREFERENCE, Direction.OUTGOING)) {
             def endNode = rel.endNode
             def clazz = endNode.getProperty(Neo4jEntityPersister.SUBREFERENCE_PROPERTY_NAME)
             map[clazz] = endNode
+        }
+
+        mappingContext.persistentEntities.each {
+            if (!map.containsKey(it.name)) {
+                def node = createSubReferenceNode(it.name)
+                map[it.name] = node
+            }
         }
         map
     }

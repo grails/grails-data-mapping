@@ -7,7 +7,6 @@ import org.springframework.datastore.mapping.model.MappingFactory
 import org.springframework.datastore.mapping.model.config.GormMappingConfigurationStrategy
 import org.springframework.datastore.mapping.document.config.Attribute
 import org.springframework.datastore.mapping.document.config.GormDocumentMappingFactory
-import org.springframework.core.convert.support.StringToNumberConverterFactory
 import org.grails.datastore.gorm.neo4j.converters.StringToCurrencyConverter
 import org.grails.datastore.gorm.neo4j.converters.StringToLocaleConverter
 import org.grails.datastore.gorm.neo4j.converters.StringToTimeZoneConverter
