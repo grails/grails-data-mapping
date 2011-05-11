@@ -14,11 +14,9 @@ import org.springframework.datastore.mapping.model.MappingContext
 import org.neo4j.graphdb.DynamicRelationshipType
 
 /**
- * Created by IntelliJ IDEA.
- * User: stefan
- * Date: 25.04.11
- * Time: 21:54
- * To change this template use File | Settings | File Templates.
+ * perform criteria queries on a Neo4j backend
+ *
+ * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
 class Neo4jQuery extends Query {
 
@@ -57,11 +55,14 @@ class Neo4jQuery extends Query {
     }
 
     def getSubreferencesOfSelfAndDerived(entity) {
+        def subReferenceNodes = session.datastore.subReferenceNodes
         // TODO: handle inheritence recursively
         def result = entityPersister.mappingContext.persistentEntities.findAll { it.parentEntity == entity }.collect {
-            session.datastore.subReferenceNodes[it.name]
+            subReferenceNodes[it.name]
         }
-        result << session.datastore.subReferenceNodes[entity.name]
+        if (subReferenceNodes.containsKey(entity.name)) {
+            result << session.datastore.subReferenceNodes[entity.name]
+        }
         result
     }
 
@@ -106,34 +107,6 @@ class Neo4jQuery extends Query {
 		}
 	}
 
-
-    /*boolean matchesJunction(Node node, Query.Junction junction) {
-        if (junction.empty) {
-            true
-        } else {
-            switch (junction) {
-                case Query.Disjunction:
-                    return junction.criteria.any { invokeMethod("matchesCriterion${it.class.simpleName}", [node,it])}
-                    break
-                case Query.Conjunction:
-                    return junction.criteria.every {
-                        LOG.info "criterion is ${it.class.simpleName}"
-                        invokeMethod("matchesCriterion${it.class.simpleName}", [node,it])
-                        //matchesCriteria(node, it)
-                        }
-                    break
-                case Query.Negation:
-                    assert junction.criteria.size()==1
-                    def firstCriterion = junction.criteria.first()
-                    return !invokeMethod("matchesCriterion${firstCriterion.class.simpleName}", [node,firstCriterion])
-                    break
-                default:
-                    throw new NotImplementedException("couldn't handle junction ${junction.class}")
-
-            }
-        }
-    } */
-
 	boolean matchesCriterionDisjunction(Node node, Query.Junction criterion) {
 		criterion.criteria.any { invokeMethod("matchesCriterion${it.class.simpleName}", [node,it])}
 	}
@@ -150,21 +123,21 @@ class Neo4jQuery extends Query {
         if (entityPersister.persistentEntity.associations.any { it.name == criterion.name}) {
             node.getSingleRelationship(DynamicRelationshipType.withName(criterion.name), Direction.BOTH)?.getOtherNode(node).id == criterion.value
         } else {
-            node.getProperty(criterion.name, null) == criterion.value
+        getNodeProperty(node, criterion.name) == criterion.value
         }
     }
 
 	boolean matchesCriterionNotEquals(Node node, Query.Criterion criterion) {
-	    node.getProperty(criterion.name, null) != criterion.value
+	    getNodeProperty(node, criterion.name) != criterion.value
 	}
 
 	boolean matchesCriterionIn(Node node, Query.In criterion) {
-		node.getProperty(criterion.name, null) in criterion.values
+		getNodeProperty(node, criterion.name) in criterion.values
 	}
 
 	boolean matchesCriterionLike(Node node, Query.Like criterion) {
 		def value = criterion.value.replaceAll('%','.*')
-	    node.getProperty(criterion.name, null) ==~ /$value/
+	    getNodeProperty(node, criterion.name) ==~ /$value/
 	}
 
 	boolean matchesCriterionBetween(Node node, Query.Between criterion) {
@@ -193,9 +166,17 @@ class Neo4jQuery extends Query {
 	}
 
 	private getNodePropertyAsType(Node node, String propertyName, Class targetClass) {
-		def val = node.getProperty(propertyName, null)
+		def val = getNodeProperty(node, propertyName)
 		session.mappingContext.conversionService.convert(val, targetClass)
 	}
-
+    
+    private getNodeProperty(Node node, String propertyName) {
+        if (propertyName=='id') {
+            node.id
+        } else {
+            node.getProperty(propertyName, null)
+        }
+        
+    }
 
 }
