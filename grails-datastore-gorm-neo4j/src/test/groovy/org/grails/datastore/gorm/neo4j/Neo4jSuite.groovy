@@ -7,33 +7,37 @@ import grails.gorm.tests.*
 
 @RunWith(Suite)
 @SuiteClasses([
-//FindOrSaveWhereSpec,
+
+AttachMethodSpec,
+CircularOneToManySpec,
+CommonTypesPersistenceSpec,
+CriteriaBuilderSpec,
+CrudOperationsSpec,
+DomainEventsSpec,
+FindByExampleSpec,
+FindByMethodSpec,
 //FindOrCreateWhereSpec,
+//FindOrSaveWhereSpec,
+GormEnhancerSpec,
+GroovyProxySpec,
+InheritanceSpec,
+ListOrderBySpec,
+NamedQuerySpec,
+NegationSpec,
+OneToManySpec,
 //OptimisticLockingSpec,
+OrderBySpec,
+ProxyLoadingSpec,
+QueryAfterPropertyChangeSpec,
+QueryByAssociationSpec,
+RangeQuerySpec,
+SaveAllSpec,
+UpdateWithProxyPresentSpec,
+ValidationSpec,
 //WithTransactionSpec,
 
-  OneToManySpec,
-  CircularOneToManySpec,
-  InheritanceSpec,
-  UpdateWithProxyPresentSpec,
-  ListOrderBySpec,
-  CriteriaBuilderSpec,
-  OrderBySpec,
-  RangeQuerySpec,
-  NamedQuerySpec,
-  NegationSpec,
-  GormEnhancerSpec,
-  ValidationSpec,
-  FindByMethodSpec,
-  QueryAfterPropertyChangeSpec,
-  AttachMethodSpec,
-  CommonTypesPersistenceSpec,
-  GroovyProxySpec,
-  ProxyLoadingSpec,
-  DomainEventsSpec,
-  CrudOperationsSpec,
-
   TraverserSpec
+
 ])
 class Neo4jSuite {
 }
