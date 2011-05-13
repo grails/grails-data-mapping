@@ -1,4 +1,3 @@
-import org.neo4j.kernel.EmbeddedGraphDatabase
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jDatastoreFactoryBean
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jMappingContextFactoryBean
 import org.springframework.datastore.mapping.core.Datastore
@@ -12,10 +11,8 @@ import org.grails.datastore.gorm.utils.InstanceProxy
 import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
-import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import org.codehaus.groovy.grails.commons.GrailsServiceClass
 import org.grails.datastore.gorm.neo4j.Neo4jOpenSessionInViewInterceptor
-
 
 class Neo4jGrailsPlugin {
 
@@ -48,18 +45,37 @@ a GORM API onto it
             "grails-app/views/error.gsp"
     ]
 
-
-	def defaultStoreDir = "data/neo4j"
-	def defaultStoreClass = EmbeddedGraphDatabase
-	def defaultConfig = [:]
-
     def doWithWebDescriptor = { xml ->
-        // TODO Implement additions to web.xml (optional), this event occurs before 
     }
 
     def doWithSpring = {
-        neo4jTransactionManager(DatastoreTransactionManager) {
-            datastore = ref("neo4jDatastore")
+
+        def neo4jConfig = application.config?.grails?.neo4j  // use config from app's Datasource.groovy
+
+        def neo4jGraphDatabaseClass
+        def neo4jDefaultLocation
+        switch (neo4jConfig.type) {
+            case "rest":
+                neo4jGraphDatabaseClass = "org.neo4j.rest.graphdb.RestGraphDatabase"
+                neo4jDefaultLocation = "http://localhost:7474/db/data/"
+                break
+            case "embedded":
+                neo4jGraphDatabaseClass = "org.neo4j.kernel.EmbeddedGraphDatabase"
+                neo4jDefaultLocation = "data/neo4j"
+                break
+            default:
+                neo4jGraphDatabaseClass = "org.neo4j.kernel.EmbeddedGraphDatabase"
+                neo4jDefaultLocation = "data/neo4j"
+                break
+        }
+        assert neo4jGraphDatabaseClass
+
+        graphDatabaseService(
+			     neo4jGraphDatabaseClass as Class,
+                 neo4jConfig.location ?: neo4jDefaultLocation
+
+	    ) { bean ->
+            bean.destroyMethod = "shutdown"
         }
 
         neo4jMappingContext(Neo4jMappingContextFactoryBean) {
@@ -67,13 +83,14 @@ a GORM API onto it
             pluginManager = ref('pluginManager')
         }
 
-	    graphDatabaseService(
-			     application.config.grails.neo4j.storeClass ?: defaultStoreClass,
-			     application.config.grails.neo4j.storeDir ?: defaultStoreDir,
-			     application.config.grails.neo4j.config ?: defaultConfig
+        neo4jDatastore(Neo4jDatastoreFactoryBean) {
+            graphDatabaseService = graphDatabaseService
+            mappingContext = neo4jMappingContext
 
-	    ) { bean ->
-            bean.destroyMethod = "shutdown"
+        }
+
+        neo4jTransactionManager(DatastoreTransactionManager) {
+            datastore = neo4jDatastore
         }
 
 /*
@@ -82,16 +99,9 @@ a GORM API onto it
             bean.destroyMethod = "shutdown"
         }
 */
+        neo4jPersistenceInterceptor(DatastorePersistenceContextInterceptor, neo4jDatastore)
 
-        neo4jDatastore(Neo4jDatastoreFactoryBean) {
-            graphDatabaseService = graphDatabaseService
-            mappingContext = neo4jMappingContext
-
-        }
-
-        neo4jPersistenceInterceptor(DatastorePersistenceContextInterceptor, ref("neo4jDatastore"))
-
-        //neo4jPersistenceContextInterceptorAggregator(PersistenceContextInterceptorAggregato)
+        //neo4jPersistenceContextInterceptorAggregator(PersistenceContextInterceptorAggregator)
 
 
         if (manager?.hasGrailsPlugin("controllers")) {
@@ -125,7 +135,7 @@ a GORM API onto it
             }
         }
 
-        // make sure validators for Mongo domain classes are regular GrailsDomainClassValidator
+        // make sure validators for Neo4j domain classes are regular GrailsDomainClassValidator
         def isHibernateInstalled = manager.hasGrailsPlugin("hibernate")
         for (dc in application.domainClasses) {
             def cls = dc.clazz
@@ -173,17 +183,11 @@ a GORM API onto it
     }
 
     def doWithApplicationContext = { applicationContext ->
-        // TODO Implement post initialization spring config (optional)
     }
 
     def onChange = { event ->
-        // TODO Implement code that is executed when any artefact that this plugin is
-        // watching is modified and reloaded. The event contains: event.source,
-        // event.application, event.manager, event.ctx, and event.plugin.
     }
 
     def onConfigChange = { event ->
-        // TODO Implement code that is executed when the project configuration changes.
-        // The event is the same as for 'onChange'.
     }
 }
