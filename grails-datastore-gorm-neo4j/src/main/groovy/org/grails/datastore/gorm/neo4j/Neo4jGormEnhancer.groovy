@@ -46,61 +46,46 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
         super(persistentClass, datastore)
     }
 
-//    /**
-//     * Allows subscript access to schemaless attributes.
-//     *
-//     * @param instance The instance
-//     * @param name The name of the field
-//     */
-//    void putAt(D instance, String name, value) {
-//        if (instance.hasProperty(name)) {
-//            instance.setProperty(name, value)
-//        }
-//        else {
-//            getDbo(instance)?.put name, value
-//        }
-//    }
-//
-//    /**
-//     * Allows subscript access to schemaless attributes.
-//     *
-//     * @param instance The instance
-//     * @param name The name of the field
-//     * @return the value
-//     */
-//    def getAt(D instance, String name) {
-//        if (instance.hasProperty(name)) {
-//            return instance.getProperty(name)
-//        }
-//
-//        def dbo = getDbo(instance)
-//        if (dbo != null && dbo.containsField(name)) {
-//            return dbo.get(name)
-//        }
-//        return null
-//    }
-//
-//    /**
-//     * Return the DBObject instance for the entity
-//     *
-//     * @param instance The instance
-//     * @return The DBObject instance
-//     */
-//    DBObject getDbo(D instance) {
-//        execute new SessionCallback<DBObject>() {
-//            DBObject doInSession(Session session) {
-//
-//                if (!session.contains(instance) && !instance.save()) {
-//                    throw new IllegalStateException(
-//                        "Cannot obtain DBObject for transient instance, save a valid instance first")
-//                }
-//
-//                Neo4jEntityPersister persister = session.getPersister(instance)
-//                def id = persister.getObjectIdentifier(instance)
-//                return session.getCachedEntry(persister.getPersistentEntity(), id)
-//            }
-//        }
-//    }
+    def traverse(def instance, Traverser.Order order, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args ) {
+
+        execute new SessionCallback() {
+            def doInSession(Session session) {
+
+                def referenceNode = datastore.graphDatabaseService.getNodeById(instance.id)
+
+                // run neo4j traverser
+                def traverser = args ? referenceNode.traverse(order, stopEvaluator, returnableEvaluator, args) :
+                    referenceNode.traverse(order, stopEvaluator, returnableEvaluator,
+                    GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH)
+
+                // iterate result, unmarshall nodes to domain class instances if possible
+                traverser.collect { Node node ->
+                    def clazz = node.getProperty("__type__", null)
+                    if (clazz) {
+                        def entityPersister = session.getPersister(clazz as Class)
+                        assert entityPersister
+                        entityPersister.createObjectFromNativeEntry(entityPersister.persistentEntity, node.id, node)
+                    } else {
+                        node
+                    }
+                }
+            }
+        }
+    }
+
+    def traverse(def instance, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args) {
+        traverse(instance, Traverser.Order.BREADTH_FIRST, stopEvaluator, returnableEvaluator, args)
+    }
+
+    def traverse(def instance, Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
+        traverse(instance, Traverser.Order.BREADTH_FIRST, stopEvaluator, returnableEvaluator, args)
+    }
+
+    def traverse(def instance, Traverser.Order order, Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
+        traverse(instance, order, stopEvaluator as StopEvaluator, returnableEvaluator as ReturnableEvaluator, args)
+    }
+
+
 }
 
 class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
@@ -110,7 +95,7 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
     }
 
 
-    def traverse(Traverser.Order order, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args ) {
+    def traverseStatic(Traverser.Order order, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args ) {
 
         execute new SessionCallback() {
             def doInSession(Session session) {
@@ -137,43 +122,17 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
         }
     }
 
-    def traverse(StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args) {
-        traverse(Traverser.Order.BREADTH_FIRST, stopEvaluator, returnableEvaluator, args)
+    def traverseStatic(StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args) {
+        traverseStatic(Traverser.Order.BREADTH_FIRST, stopEvaluator, returnableEvaluator, args)
     }
 
-    def traverse (Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
-        traverse(Traverser.Order.BREADTH_FIRST, stopEvaluator, returnableEvaluator, args)
+    def traverseStatic(Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
+        traverseStatic(Traverser.Order.BREADTH_FIRST, stopEvaluator, returnableEvaluator, args)
     }
 
-    def traverse(Traverser.Order order, Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
-        traverse(order, stopEvaluator as StopEvaluator, returnableEvaluator as ReturnableEvaluator, args)
+    def traverseStatic(Traverser.Order order, Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
+        traverseStatic(order, stopEvaluator as StopEvaluator, returnableEvaluator as ReturnableEvaluator, args)
     }
 
-//    @Override
-//    Neo4jCriteriaBuilder createCriteria() {
-//        return new Neo4jCriteriaBuilder(persistentClass, datastore.currentSession)
-//    }
-//
-//    /**
-//     * @return The name of the Neo4j collection that entity maps to
-//     */
-//    String getCollectionName() {
-//        Neo4jDatastore ms = datastore
-//        ms.getNeo4jTemplate(persistentEntity).getDefaultCollectionName()
-//    }
-//
-//    /**
-//     * The actual collection that this entity maps to.
-//     *
-//     * @return The actual collection
-//     */
-//    DBCollection getCollection() {
-//        Neo4jDatastore ms = datastore
-//        def template = ms.getNeo4jTemplate(persistentEntity)
-//
-//        def coll = template.getCollection(template.getDefaultCollectionName())
-//        DBCollectionPatcher.patch(coll)
-//        return coll
-//    }
 }
 

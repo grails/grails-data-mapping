@@ -20,33 +20,76 @@ class TraverserSpec extends GormDatastoreSpec {
         new Person(lastName: "person2").save()
 
         when:
-        def traverserResult = Person.traverse(Traverser.Order.BREADTH_FIRST, StopEvaluator.END_OF_GRAPH, ReturnableEvaluator.ALL_BUT_START_NODE,
+        def traverserResult = Person.traverseStatic(Traverser.Order.BREADTH_FIRST, StopEvaluator.END_OF_GRAPH, ReturnableEvaluator.ALL_BUT_START_NODE,
                 GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH)
         def size = traverserResult.size()
-        println traverserResult //.collect { "$it.id ${it.getProperty('__type__', 'unknown')}" }
 
         then:
 
-        size == Person.traverse(StopEvaluator.END_OF_GRAPH, ReturnableEvaluator.ALL_BUT_START_NODE,
+        size == Person.traverseStatic(StopEvaluator.END_OF_GRAPH, ReturnableEvaluator.ALL_BUT_START_NODE,
             GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH).size()
 
-        size+1 == Person.traverse(Traverser.Order.BREADTH_FIRST,
+        size+1 == Person.traverseStatic(Traverser.Order.BREADTH_FIRST,
                 { TraversalPosition p -> false },
                 { TraversalPosition p -> true },
             GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH).size()
 
-        size+1 == Person.traverse(
+        size+1 == Person.traverseStatic(
                 { TraversalPosition p -> false },
                 { TraversalPosition p -> true },
             GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH).size()
 
-        size+1 == Person.traverse(
+        size+1 == Person.traverseStatic(
                 { TraversalPosition p -> false },
                 { TraversalPosition p -> true } ).size()
 
-        Person.count() == Person.traverse(
+        Person.count() == Person.traverseStatic(
                 { TraversalPosition p -> false },
                 { TraversalPosition p -> p.currentNode().getProperty("__type__",null)==Person.class.name } ).size()
 
+        Person.count()+2 == Person.traverseStatic( // +2: referenceNode + self (aka subreferenceNode)
+                        { TraversalPosition p -> true },
+                        { TraversalPosition p -> true } ).size()
     }
+
+    def "test instance based traversing"() {
+        given:
+        def person = new Person(lastName: "person1")
+        person.save()
+        new Person(lastName: "person2").save()
+
+        when:
+        def traverserResult = person.traverse(Traverser.Order.BREADTH_FIRST, StopEvaluator.END_OF_GRAPH, ReturnableEvaluator.ALL_BUT_START_NODE,
+                GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH)
+        def size = traverserResult.size()
+
+        then:
+
+        size == person.traverse(StopEvaluator.END_OF_GRAPH, ReturnableEvaluator.ALL_BUT_START_NODE,
+            GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH).size()
+
+        size+1 == person.traverse(Traverser.Order.BREADTH_FIRST,
+                { TraversalPosition p -> false },
+                { TraversalPosition p -> true },
+            GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH).size()
+
+        size+1 == person.traverse(
+                { TraversalPosition p -> false },
+                { TraversalPosition p -> true },
+            GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH).size()
+
+        size+1 == person.traverse(
+                { TraversalPosition p -> false },
+                { TraversalPosition p -> true } ).size()
+
+        Person.count() == person.traverse(
+                { TraversalPosition p -> false },
+                { TraversalPosition p -> p.currentNode().getProperty("__type__",null)==Person.class.name } ).size()
+
+        2 == person.traverse(
+                        { TraversalPosition p -> true },
+                        { TraversalPosition p -> true } ).size()
+
+    }
+
 }
