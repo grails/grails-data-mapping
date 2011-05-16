@@ -175,6 +175,30 @@ class FindByMethodSpec extends GormDatastoreSpec {
         then:
             thrown(UnsupportedOperationException)
     }
+    
+    void "Test findOrSaveBy For A Record That Does Not Exist In The Database"() {
+        when:
+            def book = Book.findOrSaveByAuthor('Some New Author')
+        
+        then:
+            'Some New Author' == book.author
+            null == book.title
+            book.id != null
+    }
+    
+    void "Test findOrSaveBy For A Record That Does Exist In The Database"() {
+        
+        given:
+            def originalId = new Book(author: 'Some Author', title: 'Some Title').save().id
+            
+        when:
+            def book = Book.findOrSaveByAuthor('Some Author')
+        
+        then:
+            'Some Author' == book.author
+            'Some Title' == book.title
+            originalId == book.id
+    }
 }
 
 class Highway implements Serializable {

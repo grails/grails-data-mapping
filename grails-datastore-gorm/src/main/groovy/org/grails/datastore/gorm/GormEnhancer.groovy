@@ -25,6 +25,7 @@ import org.grails.datastore.gorm.finders.FindByBooleanFinder
 import org.grails.datastore.gorm.finders.FindByFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.finders.FindOrCreateByFinder
+import org.grails.datastore.gorm.finders.FindOrSaveByFinder
 import org.grails.datastore.gorm.finders.ListOrderByFinder
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
 import org.springframework.datastore.mapping.core.Datastore
@@ -207,6 +208,7 @@ class GormEnhancer {
     protected List<FinderMethod> getAllDynamicFinders() {
         List<FinderMethod> finders = new ArrayList<FinderMethod>();
         finders.add(new FindOrCreateByFinder(datastore));
+        finders.add(new FindOrSaveByFinder(datastore));
         finders.add(new FindByFinder(datastore));
         finders.add(new FindAllByFinder(datastore));
         finders.add(new FindAllByBooleanFinder(datastore));
