@@ -16,7 +16,7 @@ apply plugin: 'idea'
 
 subprojects {
 
-    releaseType = "M6"
+    releaseType = "BUILD-SNAPSHOT"
     version = "1.0.0.${releaseType}"
 
     def isSpringProject = project.name.contains("spring-datastore")
