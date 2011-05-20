@@ -50,7 +50,7 @@ class RedisGrailsPlugin {
     def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPREDIS" ]
     def scm = [ url: "https://github.com/SpringSource/spring-data-mapping" ]
 
-    def version = "1.0.0.M5"
+    def version = "1.0.0.M6"
     def grailsVersion = "1.3.4 > *"
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
 
@@ -181,7 +181,7 @@ a GORM-like API onto it
                     enhancer.enhance(entity)
                 }
                 else {
-                    def staticApi = new RedisGormStaticApi(cls, datastore)
+                    def staticApi = new RedisGormStaticApi(cls, datastore, enhancer.finders)
                     def instanceApi = new GormInstanceApi(cls, datastore)
                     cls.metaClass.static.getRedis = {-> staticApi }
                     cls.metaClass.getRedis = {-> new InstanceProxy(instance:delegate, target:instanceApi) }
