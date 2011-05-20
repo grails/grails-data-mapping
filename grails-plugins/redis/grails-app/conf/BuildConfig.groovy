@@ -10,10 +10,11 @@ grails.project.dependency.resolution = {
 
     log "warn"
 	
-	def version = "1.0.0.groovy-1.7-M5"
+	def version = "1.0.0.M6"
 	def repo = version.endsWith("-SNAPSHOT") ? 'snapshot' : 'milestone'
 	
     repositories {
+		mavenRepo "http://repo.grails.org/grails/core"
         mavenRepo "http://maven.springframework.org/$repo"
         mavenCentral()
 		grailsCentral()
@@ -35,7 +36,7 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        build( ":maven-publisher:0.7.5" ) {
+        build( ":release:1.0.0.M2" ) {
             export = false
         }
     }

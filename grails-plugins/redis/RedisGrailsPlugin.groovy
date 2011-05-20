@@ -50,7 +50,7 @@ class RedisGrailsPlugin {
     def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPREDIS" ]
     def scm = [ url: "https://github.com/SpringSource/spring-data-mapping" ]
 
-    def version = "1.0.0.M4"
+    def version = "1.0.0.M5"
     def grailsVersion = "1.3.4 > *"
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
 
