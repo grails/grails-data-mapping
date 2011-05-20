@@ -39,7 +39,7 @@ class MongodbGrailsPlugin {
     def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPMONGODB" ]
     def scm = [ url: "https://github.com/SpringSource/spring-data-mapping" ]
 
-    def version = "1.0.0.M6"
+    def version = "1.0.0.M6.1"
     def grailsVersion = "1.3.5 > *"
     def observe = ['services']
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
@@ -203,7 +203,7 @@ a GORM API onto it
                     enhancer.enhance(entity)
                 }
                 else {
-                    def staticApi = new MongoGormStaticApi(cls, datastore)
+                    def staticApi = new MongoGormStaticApi(cls, datastore, enhancer.finders)
                     def instanceApi = new MongoGormInstanceApi(cls, datastore)
                     cls.metaClass.static.getMongo = {-> staticApi }
                     cls.metaClass.getMongo = {-> new InstanceProxy(instance:delegate, target:instanceApi) }
