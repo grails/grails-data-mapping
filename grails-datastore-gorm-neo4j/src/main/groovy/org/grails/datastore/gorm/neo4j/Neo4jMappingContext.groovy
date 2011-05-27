@@ -6,7 +6,6 @@ import org.springframework.datastore.mapping.model.MappingConfigurationStrategy
 import org.springframework.datastore.mapping.model.MappingFactory
 import org.springframework.datastore.mapping.model.config.GormMappingConfigurationStrategy
 import org.springframework.datastore.mapping.document.config.Attribute
-import org.springframework.datastore.mapping.document.config.GormDocumentMappingFactory
 import org.grails.datastore.gorm.neo4j.converters.StringToCurrencyConverter
 import org.grails.datastore.gorm.neo4j.converters.StringToLocaleConverter
 import org.grails.datastore.gorm.neo4j.converters.StringToTimeZoneConverter
@@ -28,7 +27,7 @@ class Neo4jMappingContext extends AbstractMappingContext {
     MappingConfigurationStrategy syntaxStrategy
 
     Neo4jMappingContext() {
-        mappingFactory = new GormDocumentMappingFactory() //new GraphGormMappingFactory()
+        mappingFactory = new GraphGormMappingFactory()
         syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory)
         //addTypeConverter(new StringToNumberConverterFactory().getConverter(BigDecimal))
         addTypeConverter(new StringToShortConverter())

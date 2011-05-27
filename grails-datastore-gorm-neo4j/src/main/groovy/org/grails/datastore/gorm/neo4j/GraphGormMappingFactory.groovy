@@ -4,6 +4,7 @@ import org.springframework.datastore.mapping.config.AbstractGormMappingFactory
 import org.springframework.datastore.mapping.model.MappingFactory
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.model.PersistentProperty
+import org.springframework.datastore.mapping.config.Property
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,15 +13,16 @@ import org.springframework.datastore.mapping.model.PersistentProperty
  * Time: 17:39
  * To change this template use File | Settings | File Templates.
  */
-class GraphGormMappingFactory extends MappingFactory {
+class GraphGormMappingFactory extends AbstractGormMappingFactory {
+
     @Override
-    Object createMappedForm(PersistentEntity entity) {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+    protected Class getPropertyMappedFormType() {
+        Property.class
     }
 
     @Override
-    Object createMappedForm(PersistentProperty mpp) {
-        return null  //To change body of implemented methods use File | Settings | File Templates.
+    protected Class getEntityMappedFormType() {
+        null
     }
 
 }
