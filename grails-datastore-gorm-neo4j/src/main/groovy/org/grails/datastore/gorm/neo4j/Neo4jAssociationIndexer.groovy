@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.neo4j
 import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.GraphDatabaseService
+import org.neo4j.graphdb.Relationship
 import org.neo4j.graphdb.Node
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -27,16 +28,25 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
 
     void index(Object primaryKey, List foreignKeys) {
         assert nativeEntry.id == primaryKey
+        log.debug "indexing for $primaryKey : $foreignKeys"
 
-        foreignKeys.each {
-            index(primaryKey, it)
+        for (Relationship rel in nativeEntry.getRelationships(relationshipType, Direction.OUTGOING)) {
+            Long otherId = rel.endNode.id
+            if (otherId in foreignKeys) {
+                foreignKeys.remove(otherId) // TODO: check if modifying foreignKeys causes side effects
+            } else {
+                rel.delete()
+            }
+        }
+        for (def fk in foreignKeys) {
+            index(primaryKey, fk)
         }
     }
 
     List query(Object primaryKey) {
-        def ids = nativeEntry.getRelationships(relationshipType).collect {
+        def ids = nativeEntry.getRelationships(relationshipType, Direction.OUTGOING).collect {
             log.debug "relation: $it.startNode -> $it.endNode $it.type"
-            it.getOtherNode(nativeEntry).id
+            it.endNode.id
         }
 	    log.info("query $primaryKey: $ids")
 	    ids
