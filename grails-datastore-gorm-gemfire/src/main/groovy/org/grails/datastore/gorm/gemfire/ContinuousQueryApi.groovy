@@ -36,10 +36,10 @@ class ContinuousQueryApi {
 
     private dynamicFinders
 
-    ContinuousQueryApi(PersistentEntity entity, GemfireDatastore gemfire) {
+    ContinuousQueryApi(PersistentEntity entity, GemfireDatastore gemfire, List<FinderMethod> finders) {
         this.entity = entity
         this.gemfire = gemfire
-        this.dynamicFinders = DynamicFinder.getAllDynamicFinders(gemfire)
+        this.dynamicFinders = finders
     }
 
     def invokeMethod(String methodName, args) {

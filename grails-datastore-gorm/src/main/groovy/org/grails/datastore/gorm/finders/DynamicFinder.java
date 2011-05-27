@@ -339,16 +339,4 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                   query.getSession(), query);
         builder.build(additionalCriteria);
     }
-
-    public static List<FinderMethod> getAllDynamicFinders(Datastore datastore) {
-        List<FinderMethod> finders = new ArrayList<FinderMethod>();
-        finders.add(new FindOrCreateByFinder(datastore));
-        finders.add(new FindByFinder(datastore));
-        finders.add(new FindAllByFinder(datastore));
-        finders.add(new FindAllByBooleanFinder(datastore));
-        finders.add(new FindByBooleanFinder(datastore));
-        finders.add(new CountByFinder(datastore));
-        finders.add(new ListOrderByFinder(datastore));
-        return finders;
-    }
 }

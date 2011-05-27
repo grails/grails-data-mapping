@@ -14,23 +14,23 @@
  */
 package org.grails.datastore.gorm.gemfire
 
-import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.GormStaticApi
-import org.springframework.data.gemfire.GemfireCallback
-import org.springframework.data.gemfire.GemfireTemplate
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.gemfire.GemfireDatastore
-import org.springframework.datastore.mapping.query.Query
-import org.springframework.datastore.mapping.query.order.ManualEntityOrdering
-import org.springframework.util.ReflectionUtils
-
-import com.gemstone.gemfire.cache.Region
 import com.gemstone.gemfire.cache.execute.FunctionAdapter
 import com.gemstone.gemfire.cache.execute.FunctionContext
 import com.gemstone.gemfire.cache.execute.FunctionService
 import com.gemstone.gemfire.cache.execute.RegionFunctionContext
 import com.gemstone.gemfire.cache.execute.ResultSender
 import com.gemstone.gemfire.cache.partition.PartitionRegionHelper
+import com.gemstone.gemfire.cache.Region
+import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.gorm.GormEnhancer
+import org.grails.datastore.gorm.GormStaticApi
+import org.springframework.data.gemfire.GemfireCallback
+import org.springframework.data.gemfire.GemfireTemplate
+import org.springframework.datastore.mapping.core.Datastore
+import org.springframework.datastore.mapping.gemfire.GemfireDatastore
+import org.springframework.datastore.mapping.query.order.ManualEntityOrdering
+import org.springframework.datastore.mapping.query.Query
+import org.springframework.util.ReflectionUtils
 
 /**
  * Extends the default GORM capabilities adding Gemfire specific methods
@@ -46,7 +46,7 @@ class GemfireGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class cls) {
-        return new GemfireStaticApi<D> (cls, datastore)
+        return new GemfireStaticApi<D> (cls, datastore, finders)
     }
 }
 
@@ -124,10 +124,11 @@ class FunctionContextHelper implements RegionFunctionContext, ResultSender, Seri
 class GemfireStaticApi<D> extends GormStaticApi<D> {
 
     ContinuousQueryApi cqApi
+    List<FinderMethod> finders
 
-    GemfireStaticApi(Class<D> persistentClass, GemfireDatastore datastore) {
-        super(persistentClass, datastore)
-        cqApi = new ContinuousQueryApi(persistentEntity, datastore)
+    GemfireStaticApi(Class<D> persistentClass, GemfireDatastore datastore, List<FinderMethod> finders) {
+        super(persistentClass, datastore, finders)
+        cqApi = new ContinuousQueryApi(persistentEntity, datastore, finders)
     }
 
     ContinuousQueryApi getCq() { cqApi }

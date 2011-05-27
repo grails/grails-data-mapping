@@ -19,6 +19,7 @@
 package org.grails.datastore.gorm.riak
 
 import org.grails.datastore.gorm.AbstractDatastoreApi
+import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
@@ -47,7 +48,7 @@ class RiakGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new RiakGormStaticApi<D>(cls, datastore)
+        return new RiakGormStaticApi<D>(cls, datastore, finders)
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
@@ -62,7 +63,7 @@ class RiakGormInstanceApi<D> extends GormInstanceApi<D> {
     }
 
     D save(D instance, Map params) {
-        execute new SessionCallback() {
+        execute (new SessionCallback() {
             def doInSession(Session session) {
                 def currentQosParams = session.qosParameters
                 if (params?.w || params?.dw) {
@@ -81,7 +82,7 @@ class RiakGormInstanceApi<D> extends GormInstanceApi<D> {
                     }
                 }
             }
-        }
+        })
     }
 }
 
@@ -89,8 +90,8 @@ class RiakGormStaticApi<D> extends GormStaticApi<D> {
 
     MapReduceApi mapReduceApi
 
-    RiakGormStaticApi(D persistentClass, datastore) {
-        super(persistentClass, datastore)
+    RiakGormStaticApi(D persistentClass, datastore, List<FinderMethod> finders) {
+        super(persistentClass, datastore, finders)
         mapReduceApi = new MapReduceApi<D>(persistentClass, datastore)
     }
 
@@ -117,7 +118,7 @@ class MapReduceApi<D> extends AbstractDatastoreApi {
 
         log.debug "Invoking $methodName with ${args}"
 
-        execute new SessionCallback() {
+        execute (new SessionCallback() {
             def doInSession(Session session) {
                 RiakTemplate riak = session.nativeInterface
                 RiakMapReduceJob mr = new RiakMapReduceJob(riak)
@@ -133,7 +134,7 @@ class MapReduceApi<D> extends AbstractDatastoreApi {
                 }
                 riak.execute(mr)
             }
-        }
+        })
     }
 
     protected MapReduceOperation extractMapReduceOperation(param) {

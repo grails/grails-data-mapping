@@ -10,15 +10,18 @@ grails.project.dependency.resolution = {
 
     log "warn"
 
-    def version = "1.0.0.groovy-1.7-M5"
+    def version = "1.0.0.M6"
 
     repositories {
         mavenCentral()
         grailsCentral()
-        mavenRepo 'http://maven.springframework.org/milestone'
+        mavenRepo "http://repo.grails.org/grails/core"
         if (version.endsWith("-SNAPSHOT")) {
             mavenRepo "http://maven.springframework.org/snapshot"
         }
+		else {
+			mavenRepo 'http://maven.springframework.org/milestone'
+		}
     }
 
     dependencies {
@@ -30,7 +33,7 @@ grails.project.dependency.resolution = {
 
         compile("org.mongodb:mongo-java-driver:2.4")
         compile("org.springframework.data:spring-data-mongodb:1.0.0.M2", excludes)
-        runtime("com.gmongo:gmongo:0.7", excludes)
+        runtime("com.gmongo:gmongo:0.8", excludes)
         compile("org.grails:grails-datastore-gorm-mongo:$version",
                 "org.grails:grails-datastore-gorm:$version",
                 "org.springframework:spring-datastore-core:$version",
@@ -46,7 +49,7 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        build( ":maven-publisher:0.7.5" ) {
+        build( ":release:1.0.0.M2" ) {
             export = false
         }
     }

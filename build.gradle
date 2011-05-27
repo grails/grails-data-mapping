@@ -16,8 +16,8 @@ apply plugin: 'idea'
 
 subprojects {
 
-    releaseType = "M5"
-    version = "1.0.0.groovy-${groovyMajorVersion}-${releaseType}"
+    releaseType = "BUILD-SNAPSHOT"
+    version = "1.0.0.${releaseType}"
 
     def isSpringProject = project.name.contains("spring-datastore")
     def isStandardGroovyMavenProject = isGroovyProject(project)
@@ -136,33 +136,13 @@ subprojects {
 
         uploadArchives {
             description = "Does a maven deploy of archives artifacts"
-            def isDav = System.getProperty("deploy.protocol") == 'dav'
-            def protocol = isDav ? 'dav:' : ''
-//            def releaseRepositoryUrl = "https://dav.codehaus.org/repository/grails/"
-/*            def milestoneRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/milestone' :
-                                                           "${protocol}https://dav.codehaus.org/repository/grails/"
-            def snapshotRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/snapshot' :
-                                                          "${protocol}https://dav.codehaus.org/snapshots.repository/grails/"
-*/
-            def milestoneRepositoryUrl = 's3://maven.springframework.org/milestone'
-            def snapshotRepositoryUrl = 's3://maven.springframework.org/snapshot'
+            def milestoneRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/milestone' : "http://repo.grails.org/grails/libs-releases-local"
+            def snapshotRepositoryUrl = isSpringProject ? 's3://maven.springframework.org/snapshot' : "http://repo.grails.org/grails/libs-snapshots-local"
 
             // add a configuration with a classpath that includes our s3 maven deployer
             configurations { deployerJars }
             dependencies {
-
                 deployerJars "org.springframework.build.aws:org.springframework.build.aws.maven:3.0.0.RELEASE"
-
-                // NOTE!!!!!: Maven deployment over webdav is broken due to SHA1 checksum issues. To deploy
-                // you first need to run ./gradlew -Ddeploy.protocol=dav uploadArchives
-                // and then ./gradlew uploadArchives a second time to get a valid deployment
-
-                if (isDav) {
-                    deployerJars "org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-6"
-                }
-                else {
-                    deployerJars "org.apache.maven.wagon:wagon-http-lightweight:1.0-beta-6"
-                }
             }
 
             repositories.mavenDeployer {
@@ -180,15 +160,19 @@ subprojects {
                     case 'BUILD-SNAPSHOT':
                         description += snapshotRepositoryUrl
                         def credentials
-/*                        if (isSpringProject) {
-*/                        credentials = [userName: project.properties.s3AccessKey,
-                                       passphrase: project.properties.s3SecretAccessKey]
-/*                        }
-                        else {
-                        credentials = [userName: project.properties['codehaus.username'],
-                                       password: project.properties['codehaus.password']]
+                        if (isSpringProject) {
+	                        credentials = [userName: project.properties.s3AccessKey,
+	                                       passphrase: project.properties.s3SecretAccessKey]
                         }
-*/                        configuration = configurations.deployerJars
+                        else {
+  				          	final username = project.properties["artifactoryPublishUsername"]
+				          	final password = project.properties["artifactoryPublishPassword"]
+	
+	                        credentials = [userName: username,
+	                                       password: password]
+            				org.apache.ivy.util.url.CredentialsStore.INSTANCE.addCredentials("Artifactory Realm", "repo.grails.org", username, password);	
+                        }
+                        configuration = configurations.deployerJars
                         repository(url: milestoneRepositoryUrl) {
                             authentication(credentials)
                         }

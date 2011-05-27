@@ -14,11 +14,11 @@
  */
 package org.grails.datastore.gorm.jcr
 
+import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.GormEnhancer
+import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.springframework.datastore.mapping.core.Datastore
-
-import org.grails.datastore.gorm.GormInstanceApi
 import org.springframework.datastore.mapping.jcr.JcrSession
 import org.springframework.transaction.PlatformTransactionManager
 
@@ -39,7 +39,7 @@ class JcrGormEnhancer extends GormEnhancer{
     }
 
     protected GormStaticApi getStaticApi(Class cls) {
-        return new JcrGormStaticApi(cls, datastore)
+        return new JcrGormStaticApi(cls, datastore, finders)
     }
 
     protected GormInstanceApi getInstanceApi(Class cls) {
@@ -60,8 +60,8 @@ class JcrGormInstanceApi extends GormInstanceApi {
 }
 
 class JcrGormStaticApi extends GormStaticApi {
-    JcrGormStaticApi(Class persistentClass, Datastore datastore) {
-        super(persistentClass, datastore);
+    JcrGormStaticApi(Class persistentClass, Datastore datastore, List<FinderMethod> finders) {
+        super(persistentClass, datastore, finders);
     }
 
     /**

@@ -16,34 +16,25 @@ package org.grails.datastore.gorm.finders;
 
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
-
-import java.util.HashMap;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.springframework.datastore.mapping.core.Datastore;
 
-/**
- * Finder used to return a single result
- */
-public class FindOrCreateByFinder extends AbstractFindByFinder {
+public class FindOrSaveByFinder extends FindOrCreateByFinder {
 
-    private static final String METHOD_PATTERN = "(findOrCreateBy)([A-Z]\\w*)";
+    private static final String METHOD_PATTERN = "(findOrSaveBy)([A-Z]\\w*)";
 
-    public FindOrCreateByFinder(final String methodPattern, final Datastore datastore) {
-        super(Pattern.compile(methodPattern), datastore);
-    }
-    
-    public FindOrCreateByFinder(final Datastore datastore) {
-        this(METHOD_PATTERN, datastore);
+    public FindOrSaveByFinder(final Datastore datastore) {
+        super(METHOD_PATTERN, datastore);
     }
 
     @Override
     protected Object doInvokeInternal(final DynamicFinderInvocation invocation) {
         if (OPERATOR_OR.equals(invocation.getOperator())) {
             throw new UnsupportedOperationException(
-                    "'Or' expressions are not allowed in findOrCreateBy queries.");
+                    "'Or' expressions are not allowed in findOrSaveBy queries.");
         }
 
         Object result = super.doInvokeInternal(invocation);
@@ -57,14 +48,12 @@ public class FindOrCreateByFinder extends AbstractFindByFinder {
             }
             MetaClass metaClass = GroovySystem.getMetaClassRegistry().getMetaClass(invocation.getJavaClass());
             result = metaClass.invokeConstructor(new Object[]{m});
-            if(shouldSaveOnCreate()) {
-                metaClass.invokeMethod(result, "save", null);
-            }
         }
         return result;
     }
 
+    @Override
     protected boolean shouldSaveOnCreate() {
-        return false;
+        return true;
     }
 }

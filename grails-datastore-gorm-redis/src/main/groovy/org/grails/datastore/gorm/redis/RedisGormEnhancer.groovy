@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm.redis
 
+import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
@@ -37,7 +38,7 @@ class RedisGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new RedisGormStaticApi<D>(cls, datastore)
+        return new RedisGormStaticApi<D>(cls, datastore, finders)
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
@@ -52,29 +53,29 @@ class RedisGormInstanceApi<D> extends GormInstanceApi<D> {
     }
 
     void expire(D instance, int ttl) {
-        execute new VoidSessionCallback() {
+        execute (new VoidSessionCallback() {
             void doInSession(Session session) {
                 session.expire instance, ttl
             }
-        }
+        })
     }
 }
 
 class RedisGormStaticApi<D> extends GormStaticApi<D> {
 
-    RedisGormStaticApi(Class<D> persistentClass, Datastore datastore) {
-        super(persistentClass, datastore)
+    RedisGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
+        super(persistentClass, datastore, finders)
     }
 
     /**
      * Expires an entity for the given id and TTL.
      */
     void expire(Serializable id, int ttl) {
-        execute new VoidSessionCallback() {
+        execute (new VoidSessionCallback() {
             void doInSession(Session session) {
                 session.expire(persistentClass, id, ttl)
             }
-        }
+        })
     }
 
     /**
@@ -82,11 +83,11 @@ class RedisGormStaticApi<D> extends GormStaticApi<D> {
      * @return A random domain class
      */
     D random() {
-        execute new SessionCallback() {
+        execute (new SessionCallback() {
             def doInSession(Session session) {
                 session.random(persistentClass)
             }
-        }
+        })
     }
 
     /**
@@ -94,10 +95,10 @@ class RedisGormStaticApi<D> extends GormStaticApi<D> {
      * @return A random removed domain class
      */
     D pop() {
-        execute new SessionCallback() {
+        execute (new SessionCallback() {
             def doInSession(Session session) {
                 session.pop(persistentClass)
             }
-        }
+        })
     }
 }
