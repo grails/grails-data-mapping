@@ -29,6 +29,7 @@ include "spring-datastore-core",
         'grails-datastore-gorm-jpa',		
 /*        'grails-datastore-gorm-hibernate',*/
 /*        'grails-datastore-gorm-jcr',		*/
+        'grails-datastore-gorm-neo4j',
         'grails-datastore-gorm-redis',
         'grails-datastore-gorm-riak',
         'grails-datastore-gorm-mongo',
