@@ -27,14 +27,14 @@ grails.project.dependency.resolution = {
 	}
 	dependencies {
 
-        def version = "1.0.0.groovy-1.7-M5"
+        def version = "1.0.0.M6"
 
 //		def excludes = {
 //			excludes "slf4j-simple", "persistence-api", "commons-logging", "jcl-over-slf4j", "slf4j-api", "jta", "slf4j-log4j12"
 //			excludes "spring-core", "spring-beans", "spring-aop", "spring-tx", "spring-context", "spring-web"
 //        }
 
-        compile("org.grails:grails-datastore-gorm-neo4j:$version",
+        compile("org.grails:grails-datastore-gorm-neo4j:1.0.0.BUILD-SNAPSHOT",
                 "org.grails:grails-datastore-gorm:$version",
                 "org.springframework:spring-datastore-core:$version",
                 "org.springframework:spring-datastore-web:$version") {
