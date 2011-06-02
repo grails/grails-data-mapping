@@ -141,8 +141,16 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
 				}
 				nativeEntry.setProperty(key, value)
 
+                def persistentProperty = persistentEntity.getPropertyByName(key)
+                if (persistentProperty) {
+                    if (persistentProperty.mapping.mappedForm.index) {
+                        log.info "$key is indexed!"
+                        def index = graphDatabaseService.index().forNodes(persistentEntity.name)
+                        index.remove(nativeEntry, key)
+                        index.add(nativeEntry, key, value)
+                    }
+                }
 			}
-
 		}
 	}
 
