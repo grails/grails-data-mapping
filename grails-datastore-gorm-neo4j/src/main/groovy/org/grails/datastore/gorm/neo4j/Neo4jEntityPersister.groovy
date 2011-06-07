@@ -51,6 +51,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
     protected void deleteEntry(String family, Object key) {
         def node = graphDatabaseService.getNodeById(key)
         node.getRelationships(Direction.BOTH).each {
+            log.info "deleting relationship $it.startNode -> $it.endNode : ${it.type.name()}"
             it.delete()
         }
         node.delete()
@@ -125,6 +126,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
 					if (rel.endNode.id == value) {
 						return // unchanged value
 					}
+                    log.info "deleting relationship $rel.startNode -> $rel.endNode : ${rel.type.name()}"
 					rel.delete()
 				}
 

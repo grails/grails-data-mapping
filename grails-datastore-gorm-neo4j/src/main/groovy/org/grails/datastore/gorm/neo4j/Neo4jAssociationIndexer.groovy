@@ -35,6 +35,7 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
             if (otherId in foreignKeys) {
                 foreignKeys.remove(otherId) // TODO: check if modifying foreignKeys causes side effects
             } else {
+                log.info "deleting relationship $rel.startNode -> $rel.endNode : ${rel.type.name()}"
                 rel.delete()
             }
         }
@@ -49,6 +50,7 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
             it.endNode.id
         }
 	    log.info("query $primaryKey: $ids")
+        dumpNode(nativeEntry)
 	    ids
     }
 
@@ -66,7 +68,7 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
             if (!hasRelationship) {
                 def rel = startNode.createRelationshipTo(endNode, relationshipType)
                 log.info("createRelationship $rel.startNode.id -> $rel.endNode.id ($rel.type)")
-
+                dumpNode(startNode)
             }
 
             /*def keyOfOtherNode = (primaryKey == nativeEntry.id) ? foreignKey : primaryKey
@@ -86,5 +88,15 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
 
     def getRelationshipType() {
         return DynamicRelationshipType.withName(association.name)
+    }
+
+    private dumpNode(Node node) {
+        log.info("Node $node.id: $node")
+        node.propertyKeys.each {
+            log.info "Node $node.id property $it -> ${node.getProperty(it,null)}"
+        }
+        node.relationships.each {
+            log.warn "Node $node.id relationship $it.startNode -> $it.endNode : ${it.type.name()}"
+        }
     }
 }
