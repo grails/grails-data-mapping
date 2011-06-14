@@ -17,14 +17,14 @@ import org.grails.datastore.gorm.neo4j.Neo4jOpenSessionInViewInterceptor
 class Neo4jGrailsPlugin {
 
     def license = "WTFPL"
-    def organization = [ name: "Stefan Armbruster", url: "http://www.armbruster-it.de/" ]
+    def organization = [ name: "Stefan Armbruster", url: "http://blog.armbruster-it.de/" ]
     def developers = [
         [ name: "Stefan Armbruster", email: "stefan@armbruster-it.de" ] ]
     def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPNEO4J" ]
     def scm = [ url: "https://github.com/sarmbruster/spring-data-mapping" ]
 
-    def version = "0.9"
-    def grailsVersion = "1.3.5 > *"
+    def version = "0.9-SNAPSHOT"
+    def grailsVersion = "1.2 > *"
     //def observe = ['services']
     //def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']

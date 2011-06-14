@@ -48,7 +48,7 @@ grails.project.dependency.resolution = {
 
         compile('org.neo4j:neo4j:1.3')
 
-        def neo4jRestExcludes = {
+/*        def neo4jRestExcludes = {
 //            excludes "jersey-server"
 //            excludes "jersey-client"
 //            excludes  "jackson-jaxrs"
@@ -58,7 +58,8 @@ grails.project.dependency.resolution = {
             excludes  "neo4j-kernel"
 		}
 
-        compile("org.neo4j:neo4j-rest-graphdb:0.1-SNAPSHOT", neo4jRestExcludes)
+        compile("org.neo4j:neo4j-rest-graphdb:0.1-SNAPSHOT", neo4jRestExcludes) // excluded as of now since snapshot is not available via a m2 repo
+*/
 
 	}
 }
