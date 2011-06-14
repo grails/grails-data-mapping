@@ -3,3 +3,4 @@ target
 *.zip
 *.iws
 data
+plugin.xml
