@@ -36,7 +36,7 @@ UpdateWithProxyPresentSpec,
 ValidationSpec,
 WithTransactionSpec,
 
-TraverserSpec
+ApiExtensionsSpec
 
 ])
 class Neo4jSuite {

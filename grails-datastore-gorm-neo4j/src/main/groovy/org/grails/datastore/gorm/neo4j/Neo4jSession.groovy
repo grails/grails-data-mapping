@@ -9,6 +9,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.transactions.Transaction
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
+import org.neo4j.graphdb.Node
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,7 +26,7 @@ class Neo4jSession extends AbstractSession {
 
     public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
         super(datastore, mappingContext, publisher);
-        log.info("new")
+        log.debug "created new Neo4jSession"
         //beginTransactionInternal()
 
 /*        this.mongoDatastore = datastore;
@@ -61,9 +62,28 @@ class Neo4jSession extends AbstractSession {
 
     @Override
     public void disconnect() {
-        log.info "disconnect"
+        log.debug "disconnect"
         super.disconnect()
         //transaction?.commit()
+    }
+
+    def createInstanceForNode(Node node) {
+        def clazz = node.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null) as Class
+        if (!clazz) {
+            log.warn "createInstanceForNode: node property $Neo4jEntityPersister.TYPE_PROPERTY_NAME not set for id=$node.id"
+            null
+        }
+
+        log.debug "createInstanceForNode: node property $Neo4jEntityPersister.TYPE_PROPERTY_NAME = $clazz for id=$node.id"
+        def persister = getPersister(clazz)
+        assert persister
+        def object = persister.retrieve(node.id)
+        log.debug "createInstanceForNode: object = $object"
+        object
+    }
+
+    def createInstanceForNode(long id) {
+        createInstanceForNode(nativeInterface.getNodeById(id))
     }
 
 

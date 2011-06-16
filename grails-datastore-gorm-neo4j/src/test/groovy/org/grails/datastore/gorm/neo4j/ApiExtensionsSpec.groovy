@@ -7,11 +7,13 @@ import org.neo4j.graphdb.ReturnableEvaluator
 import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.TraversalPosition
 import grails.gorm.tests.Person
+import grails.gorm.tests.Pet
+import org.neo4j.graphdb.NotFoundException
 
 /**
  * check the traverser extension
  */
-class TraverserSpec extends GormDatastoreSpec {
+class ApiExtensionsSpec extends GormDatastoreSpec {
 
 
     def "test static traversing"() {
@@ -91,5 +93,27 @@ class TraverserSpec extends GormDatastoreSpec {
                         { TraversalPosition p -> true } ).size()
 
     }
+
+    def "test createInstanceForNode"() {
+        given:
+        def person = new Person(lastName: 'person1')
+        person.save()
+        def pet = new Pet(name: 'pet')
+        person.save()
+
+        when: "retrieve a instance only by id"
+        def instance = Pet.createInstanceForNode(person.id)
+
+        then:
+        instance instanceof Person
+        instance.lastName == 'person1'
+
+        when: "look up non-existing id"
+        instance = Pet.createInstanceForNode(999)
+
+        then:
+        thrown(NotFoundException)
+    }
+
 
 }

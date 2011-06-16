@@ -135,5 +135,13 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
         traverseStatic(order, stopEvaluator as StopEvaluator, returnableEvaluator as ReturnableEvaluator, args)
     }
 
+    def createInstanceForNode(def nodeOrId) {
+        execute new SessionCallback() {
+            def doInSession(Session session) {
+                session.createInstanceForNode(nodeOrId)
+            }
+        }
+    }
+
 }
 
