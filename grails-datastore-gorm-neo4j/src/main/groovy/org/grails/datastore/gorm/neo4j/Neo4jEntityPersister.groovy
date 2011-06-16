@@ -51,7 +51,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
     protected void deleteEntry(String family, Object key) {
         def node = graphDatabaseService.getNodeById(key)
         node.getRelationships(Direction.BOTH).each {
-            log.info "deleting relationship $it.startNode -> $it.endNode : ${it.type.name()}"
+            log.debug "deleting relationship $it.startNode -> $it.endNode : ${it.type.name()}"
             it.delete()
         }
         node.delete()
@@ -81,7 +81,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
         def subreferenceNode = session.datastore.subReferenceNodes[family]
         assert subreferenceNode
         subreferenceNode.createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
-	    log.info("created node $node.id with class $family")
+	    log.debug("created node $node.id with class $family")
         node
     }
 
@@ -91,15 +91,15 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
 	    if (persistentEntity.associations.find { it.name == property } ) {
 		    def relname = DynamicRelationshipType.withName(property)
 
-            if (log.infoEnabled) {
+            if (log.debugEnabled) {
                 nativeEntry.relationships.each {
-                    log.info("rels $nativeEntry.id  has relationship ${it.startNode.id} -> ${it.endNode.id}, type $it.type")
+                    log.debug("rels $nativeEntry.id  has relationship ${it.startNode.id} -> ${it.endNode.id}, type $it.type")
                 }
             }
 
 		    def rel = nativeEntry.getSingleRelationship(relname, Direction.OUTGOING)
 		    result = rel ? rel.getOtherNode(nativeEntry).id : null
-		    log.info("getting property $property via relationship on $nativeEntry = $result")
+		    log.debug("getting property $property via relationship on $nativeEntry = $result")
 	    } else {
 		    result = nativeEntry.getProperty(property, null)
             def pe = discriminatePersistentEntity(persistentEntity, nativeEntry).getPropertyByName(property)
@@ -118,7 +118,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
 	protected void setEntryValue(Object nativeEntry, String key, Object value) {
 		if ((value != null) && (key!='id')) {
 			if (persistentEntity.associations.find { it.name == key } ) {
-				log.info("setting $key via relationship to $value")
+				log.debug("setting $key via relationship to $value")
 
 				def relname = DynamicRelationshipType.withName(key)
 				def rel = nativeEntry.getSingleRelationship(relname, Direction.OUTGOING)
@@ -133,7 +133,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
                 def targetNodeId = value instanceof Long ? value : value.id
 				def targetNode = graphDatabaseService.getNodeById(targetNodeId)
 				rel = nativeEntry.createRelationshipTo(targetNode, relname)
-                log.warn("createRelationship $rel.startNode.id -> $rel.endNode.id ($rel.type)")
+                log.debug("createRelationship $rel.startNode.id -> $rel.endNode.id ($rel.type)")
 
 			} else {
 				log.debug("setting property $key = $value ${value?.class}")

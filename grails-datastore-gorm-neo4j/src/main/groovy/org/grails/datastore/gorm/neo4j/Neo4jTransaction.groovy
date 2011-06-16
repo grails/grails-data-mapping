@@ -21,12 +21,12 @@ class Neo4jTransaction implements Transaction {
     public Neo4jTransaction(GraphDatabaseService graphDatabaseService) {
         this.graphDatabaseService = graphDatabaseService
         nativeTransaction = graphDatabaseService.beginTx()
-        log.info "new: ${nativeTransaction.getClass().name}"
+        log.debug "new: ${nativeTransaction.getClass().name}"
     }
 
     @Override
     void commit() {
-        log.info "commit"
+        log.debug "commit"
         nativeTransaction.success()
         nativeTransaction.finish()
         //nativeTransaction = graphDatabaseService.beginTx()
@@ -35,7 +35,7 @@ class Neo4jTransaction implements Transaction {
 
     @Override
     void rollback() {
-        log.info "rollback"
+        log.debug "rollback"
         nativeTransaction.failure()
         nativeTransaction.finish()
         //nativeTransaction = graphDatabaseService.beginTx()
