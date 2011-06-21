@@ -1,6 +1,5 @@
 repositories {
-	//mavenRepo urls:'http://maven.springframework.org/snapshot'
-	mavenRepo urls:'http://repository.jboss.org/nexus/content/groups/public/' // necessary because of implicit dependency to jboss netty
+	mavenRepo urls:'http://m2.neo4j.org/'
 }
 dependencies {
   compile project(":grails-datastore-gorm"),
