@@ -1,0 +1,9 @@
+Below are the details of the changes across releases:
+
+h4. 0.9-SNAPSHOT
+* first GORM compliant version of the plugin
+* works with embedded and REST Neo4j databases
+* exposing traversal options to domain classes
+
+h4. up to 0.3.1
+* uses non GORM compliant implementation, for old docs see....

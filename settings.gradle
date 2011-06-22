@@ -14,6 +14,7 @@ include "spring-datastore-core",
 		'grails-documentation-mongo',
 		'grails-documentation-redis',
         'grails-documentation-riak',
+        'grails-documentation-neo4j',
         
 
 		// Core GORM Implementation projects
