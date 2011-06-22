@@ -81,11 +81,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-test/jars/spring-test-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-test/jars/spring-test-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-test/sources/spring-test-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-test/sources/spring-test-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -242,55 +242,55 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-core/jars/spring-core-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-core/jars/spring-core-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-core/sources/spring-core-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-core/sources/spring-core-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-asm/jars/spring-asm-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-asm/jars/spring-asm-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-asm/sources/spring-asm-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-asm/sources/spring-asm-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-beans/jars/spring-beans-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-beans/jars/spring-beans-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-beans/sources/spring-beans-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-beans/sources/spring-beans-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context/jars/spring-context-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context/jars/spring-context-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context/sources/spring-context-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context/sources/spring-context-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aop/jars/spring-aop-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aop/jars/spring-aop-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aop/sources/spring-aop-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aop/sources/spring-aop-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -308,11 +308,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-expression/jars/spring-expression-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-expression/jars/spring-expression-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-expression/sources/spring-expression-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-expression/sources/spring-expression-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -397,110 +397,110 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aspects/jars/spring-aspects-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aspects/jars/spring-aspects-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aspects/sources/spring-aspects-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aspects/sources/spring-aspects-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context-support/jars/spring-context-support-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context-support/jars/spring-context-support-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context-support/sources/spring-context-support-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context-support/sources/spring-context-support-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-instrument/jars/spring-instrument-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-instrument/jars/spring-instrument-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-instrument/sources/spring-instrument-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-instrument/sources/spring-instrument-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jdbc/jars/spring-jdbc-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jdbc/jars/spring-jdbc-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jdbc/sources/spring-jdbc-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jdbc/sources/spring-jdbc-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-tx/jars/spring-tx-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-tx/jars/spring-tx-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-tx/sources/spring-tx-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-tx/sources/spring-tx-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jms/jars/spring-jms-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jms/jars/spring-jms-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jms/sources/spring-jms-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jms/sources/spring-jms-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-orm/jars/spring-orm-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-orm/jars/spring-orm-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-orm/sources/spring-orm-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-orm/sources/spring-orm-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-oxm/jars/spring-oxm-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-oxm/jars/spring-oxm-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-oxm/sources/spring-oxm-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-oxm/sources/spring-oxm-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-web/jars/spring-web-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-web/jars/spring-web-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-web/sources/spring-web-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-web/sources/spring-web-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-webmvc/jars/spring-webmvc-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-webmvc/jars/spring-webmvc-springVersion.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-webmvc/sources/spring-webmvc-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-webmvc/sources/spring-webmvc-springVersion.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

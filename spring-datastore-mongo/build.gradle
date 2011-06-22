@@ -1,7 +1,3 @@
-repositories {
-    mavenRepo urls:'http://maven.springframework.org/milestone'
-}
-
 dependencies {
     compile project(":spring-datastore-core")
 

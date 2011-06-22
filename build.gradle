@@ -14,6 +14,8 @@ def isGroovyProject(project) {
 
 apply plugin: 'idea'
 
+springVersion = "3.0.5.RELEASE"
+
 subprojects {
 
     releaseType = "BUILD-SNAPSHOT"
@@ -35,13 +37,11 @@ subprojects {
     repositories {
         mavenRepo name:'mavenLocal',
                   urls:new File(System.getProperty("user.home"), ".m2/repository").toURL().toString()
-        mavenRepo name: "spock-snapshots", urls: ["http://m2repo.spockframework.org/snapshots"]
-        mavenRepo name: "springAWS", urls: 'http://maven.springframework.org/release'
-        mavenRepo name: "spring-milestone", urls: 'http://maven.springframework.org/milestone'
-        mavenRepo name: "spring-snapshot", urls: 'http://maven.springframework.org/snapshot'
-        mavenRepo name: "jboss", urls:'http://repository.jboss.org/maven2/'
-        mavenRepo name: "java.net", urls:"http://download.java.net/maven/2/"
-        mavenCentral()
+        mavenRepo(urls: "http://repo.grails.org/grails/core") {
+            if (project.hasProperty('snapshotTimeout')) {
+                setSnapshotTimeout(Long.parseLong(project.snapshotTimeout))
+            }
+        }
     }
 
     dependencies {

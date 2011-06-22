@@ -1,5 +1,4 @@
 repositories {
-    mavenRepo urls:'http://maven.springframework.org/milestone'
     mavenRepo urls:'http://dist.gemstone.com/maven/release'
 }
 
