@@ -21,9 +21,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.document.mongodb.DbCallback;
-import org.springframework.data.document.mongodb.MongoFactoryBean;
-import org.springframework.data.document.mongodb.MongoTemplate;
+import org.springframework.data.authentication.UserCredentials;
+import org.springframework.data.document.mongodb.*;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.document.config.DocumentMappingContext;
@@ -54,6 +53,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     private Mongo mongo;
     private MongoOptions mongoOptions = new MongoOptions();
     private Map<PersistentEntity, MongoTemplate> mongoTemplates = new ConcurrentHashMap<PersistentEntity, MongoTemplate>();
+    private Map<PersistentEntity, String> mongoCollections = new ConcurrentHashMap<PersistentEntity, String>();
 
     /**
      * Constructs a MongoDatastore using the default database name of "test" and defaults for the host and port.
@@ -143,6 +143,11 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         return mongoTemplates.get(entity);
     }
 
+    public String getCollectionName(PersistentEntity entity) {
+        return mongoCollections.get(entity);
+    }
+
+
     @Override
     protected Session createSession(Map<String, String> connDetails) {
         return new MongoSession(this, getMappingContext(), getApplicationEventPublisher());
@@ -186,23 +191,29 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             }
         }
 
-        final MongoTemplate mt = new MongoTemplate(mongoInstance, databaseName,collectionName);
+        final SimpleMongoDbFactory dbf;
 
         String username = read(String.class, USERNAME, connectionDetails, null);
         String password = read(String.class, PASSWORD, connectionDetails, null);
 
         if (username != null && password != null) {
-            mt.setUsername(username);
-            mt.setPassword(password);
+            UserCredentials uc = new UserCredentials(username, password);
+            dbf = new SimpleMongoDbFactory(mongoInstance, databaseName, uc);
         }
+        else {
+            dbf = new SimpleMongoDbFactory(mongoInstance, databaseName);
+        }
+
+        final MongoTemplate mt = new MongoTemplate(dbf);
 
         if (mongoCollection != null) {
             final WriteConcern writeConcern = mongoCollection.getWriteConcern();
             if (writeConcern != null) {
+                final String collectionNameToUse = collectionName;
                 mt.executeInSession(new DbCallback<Object>() {
                     public Object doInDB(DB db) throws MongoException, DataAccessException {
                         if (writeConcern != null) {
-                            DBCollection collection = db.getCollection(mt.getDefaultCollectionName());
+                            DBCollection collection = db.getCollection(collectionNameToUse);
                             collection.setWriteConcern(writeConcern);
                         }
                         return null;
@@ -211,13 +222,8 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             }
         }
 
-        try {
-            mt.afterPropertiesSet();
-        } catch (Exception e) {
-            throw new DatastoreConfigurationException("Failed to configure Mongo template for entity ["+entity+"]: " + e.getMessage(),e);
-        }
-
         mongoTemplates.put(entity, mt);
+        mongoCollections.put(entity, collectionName);
 
         initializeIndices(entity, mt);
     }
@@ -231,7 +237,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         template.execute(new DbCallback<Object>() {
             @SuppressWarnings({ "unchecked", "rawtypes" })
             public Object doInDB(DB db) throws MongoException, DataAccessException {
-                final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
+                final DBCollection collection = db.getCollection(getCollectionName(entity));
 
                 final ClassMapping<MongoCollection> classMapping = entity.getMapping();
                 if (classMapping != null) {
