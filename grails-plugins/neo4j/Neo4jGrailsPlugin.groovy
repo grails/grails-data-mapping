@@ -13,6 +13,9 @@ import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.codehaus.groovy.grails.commons.GrailsServiceClass
 import org.grails.datastore.gorm.neo4j.Neo4jOpenSessionInViewInterceptor
+import org.springframework.core.annotation.AnnotationUtils
+import org.springframework.transaction.annotation.Transactional
+import java.lang.reflect.Method
 
 class Neo4jGrailsPlugin {
 
@@ -179,6 +182,28 @@ a GORM API onto it
                     enhancer.enhance(entity)
                 }
             }
+        }
+    }
+
+    boolean shouldCreateTransactionalProxy(GrailsServiceClass serviceClass) {
+
+        if (serviceClass.getStaticPropertyValue('transactional', Boolean)) {
+            // leave it as a regular proxy
+            return false
+        }
+
+        if (!'neo4j'.equals(serviceClass.getStaticPropertyValue('transactional', String))) {
+            return false
+        }
+
+        try {
+            Class javaClass = serviceClass.clazz
+            serviceClass.transactional &&
+                !AnnotationUtils.findAnnotation(javaClass, Transactional) &&
+                !javaClass.methods.any { Method m -> AnnotationUtils.findAnnotation(m, Transactional) != null }
+        }
+        catch (e) {
+            return false
         }
     }
 
