@@ -64,9 +64,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
 
     @Override
     PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-        [
-                index: {k,v -> },
-        ] as PropertyValueIndexer
+        new Neo4jPropertyValueIndexer(persistentProperty: property, graphDatabaseService: graphDatabaseService)
     }
 
     @Override
@@ -143,15 +141,6 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
 				}
 				nativeEntry.setProperty(key, value)
 
-                def persistentProperty = persistentEntity.getPropertyByName(key)
-                if (persistentProperty) {
-                    if (persistentProperty.mapping.mappedForm.index) {
-                        log.info "$key is indexed!"
-                        def index = graphDatabaseService.index().forNodes(persistentEntity.name)
-                        index.remove(nativeEntry, key)
-                        index.add(nativeEntry, key, value)
-                    }
-                }
 			}
 		}
 	}

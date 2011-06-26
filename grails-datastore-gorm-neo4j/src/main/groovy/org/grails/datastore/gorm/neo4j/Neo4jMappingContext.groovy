@@ -41,11 +41,13 @@ class Neo4jMappingContext extends AbstractMappingContext {
 
     @Override
     protected PersistentEntity createPersistentEntity(Class javaClass) {
-        return new GraphPersistentEntity(javaClass, this)
+        def persistentEntity = new GraphPersistentEntity(javaClass, this)
+        mappingFactory.createMappedForm(persistentEntity) // populates mappingFactory.entityToPropertyMap as a side effect
+        persistentEntity
     }
 
     MappingConfigurationStrategy getMappingSyntaxStrategy() {
-        return syntaxStrategy
+        syntaxStrategy
     }
 
     MappingFactory getMappingFactory() {
