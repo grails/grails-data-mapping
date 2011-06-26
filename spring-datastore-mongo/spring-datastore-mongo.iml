@@ -24,11 +24,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data/spring-data-mongodb/jars/spring-data-mongodb-1.0.0.M1.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data/spring-data-mongodb/jars/spring-data-mongodb-1.0.0.M3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data/spring-data-mongodb/sources/spring-data-mongodb-1.0.0.M1-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data/spring-data-mongodb/sources/spring-data-mongodb-1.0.0.M3-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -134,11 +134,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data/spring-data-document-core/jars/spring-data-document-core-1.0.0.M1.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data/spring-data-document-core/jars/spring-data-document-core-1.0.0.M3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data/spring-data-document-core/sources/spring-data-document-core-1.0.0.M1-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data/spring-data-document-core/sources/spring-data-document-core-1.0.0.M3-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -264,11 +264,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.mongodb/mongo-java-driver/jars/mongo-java-driver-2.3.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.mongodb/mongo-java-driver/jars/mongo-java-driver-2.5.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.mongodb/mongo-java-driver/sources/mongo-java-driver-2.3-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.mongodb/mongo-java-driver/sources/mongo-java-driver-2.5.3-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

@@ -136,7 +136,7 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
      */
     String getCollectionName() {
         MongoDatastore ms = datastore
-        ms.getMongoTemplate(persistentEntity).getDefaultCollectionName()
+        ms.getCollectionName(persistentEntity)
     }
 
     /**
@@ -148,7 +148,7 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
         MongoDatastore ms = datastore
         def template = ms.getMongoTemplate(persistentEntity)
 
-        def coll = template.getCollection(template.getDefaultCollectionName())
+        def coll = template.getCollection(ms.getCollectionName(persistentEntity))
         DBCollectionPatcher.patch(coll)
         return coll
     }

@@ -1,7 +1,7 @@
 dependencies {
     compile project(":spring-datastore-core")
 
-    compile("org.springframework.data:spring-data-mongodb:1.0.0.M2")
+    compile("org.springframework.data:spring-data-mongodb:1.0.0.M3")
 }
 
 jar.appendix = 'mongo'

@@ -21,7 +21,7 @@ class MongoEntityConfigSpec extends GormDatastoreSpec{
             DB db = session.nativeInterface
 
             db.dropDatabase()
-            db.resetIndexCache()
+            // db.resetIndexCache() // this method is missing from more recent driver versions
 
         when:
             PersistentEntity entity = session.mappingContext.getPersistentEntity(MyMongoEntity.name)
@@ -50,7 +50,7 @@ class MongoEntityConfigSpec extends GormDatastoreSpec{
             MongoSession ms = session
             MongoTemplate mt = ms.getMongoTemplate(entity)
         then:
-            mt.getDefaultCollectionName() == "mycollection"
+            ms.getCollectionName(entity) == "mycollection"
     }
 }
 

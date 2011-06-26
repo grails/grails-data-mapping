@@ -116,9 +116,10 @@ public class MongoSession extends AbstractSession<DB> {
         // Optimizes saving multipe entities at once
         for (final PersistentEntity entity : inserts.keySet()) {
             final MongoTemplate template = getMongoTemplate(entity.isRoot() ? entity : entity.getRootEntity());
+            final String collectionNameToUse = getCollectionName(entity.isRoot() ? entity : entity.getRootEntity());
             template.execute(new DbCallback<Object>() {
                 public Object doInDB(DB db) throws MongoException, DataAccessException {
-                    final DBCollection collection = db.getCollection(template.getDefaultCollectionName());
+                    final DBCollection collection = db.getCollection(collectionNameToUse);
 
                     final Collection<PendingInsert> pendingInserts = inserts.get(entity);
                     List<DBObject> dbObjects = new LinkedList<DBObject>();
@@ -168,5 +169,9 @@ public class MongoSession extends AbstractSession<DB> {
 
     public MongoTemplate getMongoTemplate(PersistentEntity entity) {
         return mongoDatastore.getMongoTemplate(entity);
+    }
+
+    public String getCollectionName(PersistentEntity entity) {
+        return mongoDatastore.getCollectionName(entity);
     }
 }

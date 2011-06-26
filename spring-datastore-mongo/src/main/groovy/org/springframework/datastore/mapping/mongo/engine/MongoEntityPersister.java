@@ -70,6 +70,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     private static final String NEXT_ID_SUFFIX = ".next_id";
     private MongoTemplate mongoTemplate;
+    private String collectionName;
     private boolean hasNumericalIdentifier = false;
     private boolean hasStringIdentifier = false;
 
@@ -80,7 +81,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
              MongoSession mongoSession, ApplicationEventPublisher publisher) {
         super(mappingContext, entity, mongoSession, publisher);
         MongoDatastore datastore = (MongoDatastore) mongoSession.getDatastore();
-        mongoTemplate = datastore.getMongoTemplate(entity);
+        this.mongoTemplate = datastore.getMongoTemplate(entity);
+        this.collectionName = datastore.getCollectionName(entity);
 
         hasNumericalIdentifier = Long.class.isAssignableFrom(entity.getIdentity().getType());
         hasStringIdentifier = String.class.isAssignableFrom(entity.getIdentity().getType());
@@ -192,7 +194,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     @Override
     public String getEntityFamily() {
-        return mongoTemplate.getDefaultCollectionName();
+        return this.collectionName;
     }
 
     @Override
@@ -379,11 +381,11 @@ if (mongoSession.getWriteConcern() == null) {
     private String getCollectionName(PersistentEntity persistentEntity, DBObject nativeEntry) {
         String collectionName;
         if (persistentEntity.isRoot()) {
-            collectionName = mongoTemplate.getDefaultCollectionName();
+            collectionName = this.collectionName;
         }
         else {
             MongoSession mongoSession = (MongoSession) getSession();
-            collectionName = mongoSession.getMongoTemplate(persistentEntity.getRootEntity()).getDefaultCollectionName();
+            collectionName = mongoSession.getCollectionName(persistentEntity.getRootEntity());
             if (nativeEntry != null) {
                 nativeEntry.put(MONGO_CLASS_FIELD, persistentEntity.getDiscriminator());
             }

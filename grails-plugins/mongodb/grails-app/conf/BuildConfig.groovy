@@ -31,8 +31,8 @@ grails.project.dependency.resolution = {
             excludes "spring-core", "spring-beans", "spring-aop", "spring-asm","spring-webmvc","spring-tx", "spring-context", "spring-web", "log4j", "slf4j-log4j12"
         }
 
-        compile("org.mongodb:mongo-java-driver:2.4")
-        compile("org.springframework.data:spring-data-mongodb:1.0.0.M2", excludes)
+        compile("org.mongodb:mongo-java-driver:2.5.3")
+        compile("org.springframework.data:spring-data-mongodb:1.0.0.M3", excludes)
         runtime("com.gmongo:gmongo:0.8", excludes)
         compile("org.grails:grails-datastore-gorm-mongo:$version",
                 "org.grails:grails-datastore-gorm:$version",

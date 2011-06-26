@@ -184,4 +184,16 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
             }
         }
     }
+
+    @Override
+    protected void doCleanupAfterCompletion(Object transaction) {
+        TransactionObject txObject = (TransactionObject) transaction;
+
+        // Un-bind the session holder from the thread.
+        if (txObject.isNewSessionHolder()) {
+            TransactionSynchronizationManager.unbindResource(getDatastore());
+        }
+        txObject.getSessionHolder().setSynchronizedWithTransaction(false);
+
+    }
 }
