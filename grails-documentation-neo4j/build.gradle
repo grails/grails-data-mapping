@@ -6,7 +6,7 @@ dependencies {
     project(":spring-datastore-core")
     documentation "org.slf4j:jcl-over-slf4j:1.5.8"
     documentation "org.slf4j:slf4j-api:1.5.8"
-    documentation "org.slf4j:slf4j-simple:1.5.8"
+    documentation "org.slf4j:slf4j-log4j12:1.5.8"
 }
 
 task clean << {

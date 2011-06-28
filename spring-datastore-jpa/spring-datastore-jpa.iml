@@ -4,7 +4,6 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/groovy" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/groovy" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>
@@ -13,11 +12,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data/spring-data-mongodb/jars/spring-data-mongodb-1.0.0.M3.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-orm/jars/spring-orm-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data/spring-data-mongodb/sources/spring-data-mongodb-1.0.0.M3-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-orm/sources/spring-orm-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -68,22 +67,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-expression/jars/spring-expression-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jdbc/jars/spring-jdbc-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-expression/sources/spring-expression-3.0.5.RELEASE-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data/spring-data-commons-core/jars/spring-data-commons-core-1.1.0.M1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework.data/spring-data-commons-core/sources/spring-data-commons-core-1.1.0.M1-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jdbc/sources/spring-jdbc-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -101,11 +89,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context/jars/spring-context-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/aopalliance/aopalliance/jars/aopalliance-1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context/sources/spring-context-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/aopalliance/aopalliance/sources/aopalliance-1.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -123,22 +111,22 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/aopalliance/aopalliance/jars/aopalliance-1.0.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context/jars/spring-context-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/aopalliance/aopalliance/sources/aopalliance-1.0-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context/sources/spring-context-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.mongodb/mongo-java-driver/jars/mongo-java-driver-2.5.3.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-expression/jars/spring-expression-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.mongodb/mongo-java-driver/sources/mongo-java-driver-2.5.3-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-expression/sources/spring-expression-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
