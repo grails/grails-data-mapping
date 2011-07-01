@@ -52,7 +52,7 @@ grails.project.dependency.resolution = {
             transitive = false
         }
 
-        compile('org.neo4j:neo4j:1.3')
+        compile('org.neo4j:neo4j:1.4.M05')
 
 /*        def neo4jRestExcludes = {
 //            excludes "jersey-server"
