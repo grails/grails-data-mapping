@@ -59,5 +59,7 @@ public interface SimpleDBTemplate {
      * @param domainName
      * @param id
      */
-    void deleteItem(String domainName, String id);
+    void deleteItem(String domainName, String id) throws DataAccessException;
+
+    List<Item> query(String query) throws DataAccessException;
 }

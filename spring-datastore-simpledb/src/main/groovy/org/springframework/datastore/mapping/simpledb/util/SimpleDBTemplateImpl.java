@@ -78,6 +78,12 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         sdb.deleteAttributes(request);
     }
 
+    public List<Item> query(String query) {
+        SelectRequest selectRequest = new SelectRequest(query);
+        List<Item> items = sdb.select(selectRequest).getItems();
+        return items;
+    }
+
     protected UpdateCondition getOptimisticVersionCondition(String expectedVersion) {
         return new UpdateCondition("version", expectedVersion,Boolean.TRUE);
     }

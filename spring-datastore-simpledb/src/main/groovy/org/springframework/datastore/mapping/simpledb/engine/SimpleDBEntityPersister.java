@@ -103,7 +103,7 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
 //    }
 
     public Query createQuery() {
-        return new SimpleDBQuery((SimpleDBSession) getSession(), getPersistentEntity());
+        return new SimpleDBQuery((SimpleDBSession) getSession(), getPersistentEntity(), domainResolver, this, simpleDBTemplate);
     }
 
     @Override

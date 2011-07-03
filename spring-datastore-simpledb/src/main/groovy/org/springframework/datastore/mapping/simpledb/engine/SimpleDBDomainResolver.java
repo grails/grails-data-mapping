@@ -1,5 +1,7 @@
 package org.springframework.datastore.mapping.simpledb.engine;
 
+import java.util.List;
+
 /**
  * Encapsulates logic of determining SimpleDB domain name based specific a primary key, assuming that
  * this instance of the resolver is used only for one {@link org.springframework.datastore.mapping.model.PersistentEntity},
@@ -17,4 +19,10 @@ public interface SimpleDBDomainResolver {
      * @return
      */
     String resolveDomain(String id);
+
+    /**
+     * Returns all domain names for this type of entity. Without sharding this list contains always one element. 
+     * @return
+     */
+    List<String> getAllDomainsForEntity();
 }
