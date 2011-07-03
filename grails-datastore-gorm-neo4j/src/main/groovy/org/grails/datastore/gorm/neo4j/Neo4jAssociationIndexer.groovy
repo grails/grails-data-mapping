@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.datastore.mapping.engine.AssociationIndexer
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.model.types.Association
+import org.springframework.datastore.mapping.model.types.ManyToMany
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,9 +29,8 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
 
     void index(Object primaryKey, List foreignKeys) {
         assert nativeEntry.id == primaryKey
-        log.debug "indexing for $primaryKey : $foreignKeys"
-
-        for (Relationship rel in nativeEntry.getRelationships(relationshipType, Direction.OUTGOING)) {
+        log.info "indexing for $primaryKey : $foreignKeys, $association"
+        /*for (Relationship rel in nativeEntry.getRelationships(relationshipType, Direction.OUTGOING)) {
             Long otherId = rel.endNode.id
             if (otherId in foreignKeys) {
                 foreignKeys.remove(otherId) // TODO: check if modifying foreignKeys causes side effects
@@ -38,14 +38,22 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
                 log.info "deleting relationship $rel.startNode -> $rel.endNode : ${rel.type.name()}"
                 rel.delete()
             }
-        }
+        } */
         for (def fk in foreignKeys) {
             index(primaryKey, fk)
         }
     }
 
     List query(Object primaryKey) {
-        def ids = nativeEntry.getRelationships(relationshipType, Direction.OUTGOING).collect {
+
+        def direction = Direction.OUTGOING
+        def relType = relationshipType
+        if ((association instanceof ManyToMany) && (!association.owningSide)) {
+            direction = Direction.INCOMING
+            relType = inverseRelationshipType
+        }
+
+        def ids = nativeEntry.getRelationships(relType, direction).collect {
             log.debug "relation: $it.startNode -> $it.endNode $it.type"
             it.endNode.id
         }
@@ -59,44 +67,45 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
     }
 
     void index(Object primaryKey, Object foreignKey) {
+        log.info "index $primaryKey, $foreignKey, bidi: $association.bidirectional, own: $association.owningSide"
         if (primaryKey!=foreignKey) {
 
             def startNode = graphDatabaseService.getNodeById(primaryKey)
             def endNode = graphDatabaseService.getNodeById(foreignKey)
+            def relType = relationshipType
 
-            def hasRelationship = startNode.getRelationships(relationshipType, Direction.OUTGOING).any { it.endNode == endNode }
-            if (!hasRelationship) {
-                def rel = startNode.createRelationshipTo(endNode, relationshipType)
-                log.info("createRelationship $rel.startNode.id -> $rel.endNode.id ($rel.type)")
-                dumpNode(startNode)
+            if ((association instanceof ManyToMany) && (!association.owningSide)) {
+                (startNode, endNode) = [endNode, startNode]
+                relType = inverseRelationshipType
             }
 
-            /*def keyOfOtherNode = (primaryKey == nativeEntry.id) ? foreignKey : primaryKey
-            def target = graphDatabaseService.getNodeById(keyOfOtherNode)
-
-
-            def hasRelationship = nativeEntry.getRelationships(relationshipType, Direction.OUTGOING).any { it.endNode == target}
+            def hasRelationship = startNode.getRelationships(relType, Direction.OUTGOING).any { it.endNode == endNode }
             if (!hasRelationship) {
-                def rel = nativeEntry.createRelationshipTo(target, relationshipType)
-                log.warn("createRelationship $rel.startNode.id -> $rel.endNode.id ($rel.type)")
+                def rel = startNode.createRelationshipTo(endNode, relType)
+                log.info("createRelationship $rel.startNode.id -> $rel.endNode.id ($rel.type)")
+                //dumpNode(startNode)
+            }
 
-            } */
         } else {
             log.warn "selfreferecing is not yet supported"
         }
     }
 
     def getRelationshipType() {
-        return DynamicRelationshipType.withName(association.name)
+        DynamicRelationshipType.withName(association.name)
+    }
+
+    def getInverseRelationshipType() {
+        DynamicRelationshipType.withName(association.inversePropertyName)
     }
 
     private dumpNode(Node node) {
-        log.info("Node $node.id: $node")
+        log.debug ("Node $node.id: $node")
         node.propertyKeys.each {
-            log.info "Node $node.id property $it -> ${node.getProperty(it,null)}"
+            log.debug "Node $node.id property $it -> ${node.getProperty(it,null)}"
         }
         node.relationships.each {
-            log.warn "Node $node.id relationship $it.startNode -> $it.endNode : ${it.type.name()}"
+            log.debug "Node $node.id relationship $it.startNode -> $it.endNode : ${it.type.name()}"
         }
     }
 }

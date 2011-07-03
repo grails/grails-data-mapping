@@ -115,23 +115,25 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
 	@Override
 	protected void setEntryValue(Object nativeEntry, String key, Object value) {
 		if ((value != null) && (key!='id')) {
-			if (persistentEntity.associations.find { it.name == key } ) {
-				log.debug("setting $key via relationship to $value")
 
-				def relname = DynamicRelationshipType.withName(key)
-				def rel = nativeEntry.getSingleRelationship(relname, Direction.OUTGOING)
+            def persistentProperty = persistentEntity.getPropertyByName(key)
+			if (persistentProperty instanceof Association) {
+				log.info("setting $key via relationship to $value, assoc is ${persistentProperty.class.superclass.simpleName}, bidi: $persistentProperty.bidirectional, owning: $persistentProperty.owningSide")
+
+                def endNode = graphDatabaseService.getNodeById(value instanceof Long ? value : value.id)
+                def relationshipType = DynamicRelationshipType.withName(key)
+
+				def rel = nativeEntry.getSingleRelationship(relationshipType, Direction.OUTGOING)
 				if (rel) {
-					if (rel.endNode.id == value) {
+					if (rel.endNode == endNode) {
 						return // unchanged value
 					}
                     log.info "deleting relationship $rel.startNode -> $rel.endNode : ${rel.type.name()}"
 					rel.delete()
 				}
 
-                def targetNodeId = value instanceof Long ? value : value.id
-				def targetNode = graphDatabaseService.getNodeById(targetNodeId)
-				rel = nativeEntry.createRelationshipTo(targetNode, relname)
-                log.debug("createRelationship $rel.startNode.id -> $rel.endNode.id ($rel.type)")
+				rel = nativeEntry.createRelationshipTo(endNode, relationshipType)
+                log.info("createRelationship $rel.startNode.id -> $rel.endNode.id ($rel.type)")
 
 			} else {
 				log.debug("setting property $key = $value ${value?.class}")
@@ -183,6 +185,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
         assert storeId
         assert nativeEntry
         assert persistentEntity
+        log.info "storeEntry $persistentEntity $storeId"
         storeId // TODO: not sure what to do here...
     }
 

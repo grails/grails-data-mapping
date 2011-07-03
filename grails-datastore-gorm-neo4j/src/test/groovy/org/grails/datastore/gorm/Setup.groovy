@@ -13,6 +13,8 @@ import org.springframework.context.support.GenericApplicationContext
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import grails.gorm.tests.Role
+import grails.gorm.tests.User
 
 class Setup {
 
@@ -38,6 +40,8 @@ class Setup {
         def ctx = new GenericApplicationContext()
         ctx.refresh()
         datastore.applicationContext = ctx
+
+        classes << User << Role
 
         for (cls in classes) {
             datastore.mappingContext.addPersistentEntity(cls)

@@ -36,7 +36,8 @@ UpdateWithProxyPresentSpec,
 ValidationSpec,
 WithTransactionSpec,
 
-ApiExtensionsSpec
+ApiExtensionsSpec,
+ManyToManySpec
 
 ])
 class Neo4jSuite {
