@@ -12,6 +12,10 @@ def isGroovyProject(project) {
     !isGrailsPlugin && !isDocumentation
 }
 
+configurations {
+   all*.exclude group: "commons-logging"
+}
+
 apply plugin: 'idea'
 
 springVersion = "3.0.5.RELEASE"
@@ -48,7 +52,7 @@ subprojects {
         if (isStandardGroovyMavenProject) {
             groovy group: 'org.codehaus.groovy', name: 'groovy-all', version: groovyVersion
 
-            testCompile 'junit:junit:4.8.1'
+            testCompile 'junit:junit:4.8.2'
             testCompile (spockDependency) {
                 transitive = false
             }

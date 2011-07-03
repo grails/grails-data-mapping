@@ -50,7 +50,7 @@ dependencies {
       project(":grails-datastore-gorm-riak")
 
   runtime "org.aspectj:aspectjrt:1.6.8"
-  runtime "org.slf4j:slf4j-log4j12:1.5.5",
+  runtime "org.slf4j:slf4j-log4j12:1.5.8",
       "hsqldb:hsqldb:1.8.0.5",
       "net.sf.ehcache:ehcache-core:1.7.1"
   runtime 'org.codehaus.jackson:jackson-core-asl:1.6.1',
