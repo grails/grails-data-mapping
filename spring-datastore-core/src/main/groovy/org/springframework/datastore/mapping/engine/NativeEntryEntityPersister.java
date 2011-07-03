@@ -46,13 +46,7 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.PropertyMapping;
-import org.springframework.datastore.mapping.model.types.Association;
-import org.springframework.datastore.mapping.model.types.Basic;
-import org.springframework.datastore.mapping.model.types.Embedded;
-import org.springframework.datastore.mapping.model.types.EmbeddedCollection;
-import org.springframework.datastore.mapping.model.types.OneToMany;
-import org.springframework.datastore.mapping.model.types.Simple;
-import org.springframework.datastore.mapping.model.types.ToOne;
+import org.springframework.datastore.mapping.model.types.*;
 import org.springframework.datastore.mapping.proxy.ProxyFactory;
 
 /**
@@ -309,7 +303,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     }
                 }
             }
-            else if (prop instanceof OneToMany) {
+            else if ((prop instanceof OneToMany) || (prop instanceof ManyToMany)) {
                 Association association = (Association) prop;
                 PropertyMapping<Property> associationPropertyMapping = association.getMapping();
 
@@ -435,7 +429,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         entityAccess.setNativeEntry(e);
 
         final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
-        final Map<OneToMany, List<Serializable>> oneToManyKeys = new HashMap<OneToMany, List<Serializable>>();
+        final Map<Association, List<Serializable>> toManyKeys = new HashMap<Association, List<Serializable>>();
         final Map<OneToMany, Serializable> inverseCollectionUpdates = new HashMap<OneToMany, Serializable>();
         final Map<PersistentProperty, Object> toIndex = new HashMap<PersistentProperty, Object>();
         final Map<PersistentProperty, Object> toUnindex = new HashMap<PersistentProperty, Object>();
@@ -463,15 +457,15 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
                 setEntryValue(e, key, propValue);
             }
-            else if (prop instanceof OneToMany) {
-                final OneToMany oneToMany = (OneToMany) prop;
+            else if ((prop instanceof OneToMany) || (prop instanceof ManyToMany)) {
+                final Association association = (Association) prop;
 
-                final Object propValue = entityAccess.getProperty(oneToMany.getName());
+                final Object propValue = entityAccess.getProperty(association.getName());
 
                 if (propValue instanceof Collection) {
                     Collection associatedObjects = (Collection) propValue;
                     List<Serializable> keys = session.persist(associatedObjects);
-                    oneToManyKeys.put(oneToMany, keys);
+                    toManyKeys.put(association, keys);
                 }
             }
             else if (prop instanceof ToOne) {
@@ -595,7 +589,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             final K updateId = k;
             PendingOperation postOperation = new PendingOperationAdapter<T, K>(persistentEntity, k, e) {
                 public void run() {
-                    updateOneToManyIndices(e, updateId, oneToManyKeys);
+                    updateToManyIndices(e, updateId, toManyKeys);
                     if (doesRequirePropertyIndexing()) {
                         toIndex.put(persistentEntity.getIdentity(), updateId);
                         updatePropertyIndices(updateId, toIndex, toUnindex);
@@ -623,7 +617,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
             PendingOperation postOperation = new PendingOperationAdapter<T, K>(persistentEntity, k, e) {
                 public void run() {
-                    updateOneToManyIndices(e, updateId, oneToManyKeys);
+                    updateToManyIndices(e, updateId, toManyKeys);
                     if (doesRequirePropertyIndexing()) {
                         updatePropertyIndices(updateId, toIndex, toUnindex);
                     }
@@ -670,13 +664,13 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      */
     protected abstract K generateIdentifier(PersistentEntity persistentEntity, T entry);
 
-    private void updateOneToManyIndices(T nativeEntry, Object identifier, Map<OneToMany, List<Serializable>> oneToManyKeys) {
+    private void updateToManyIndices(T nativeEntry, Object identifier, Map<Association, List<Serializable>> oneToManyKeys) {
         // now cascade onto one-to-many associations
-        for (OneToMany oneToMany : oneToManyKeys.keySet()) {
-            if (oneToMany.doesCascade(CascadeType.PERSIST)) {
-                final AssociationIndexer indexer = getAssociationIndexer(nativeEntry, oneToMany);
+        for (Association association : oneToManyKeys.keySet()) {
+            if (association.doesCascade(CascadeType.PERSIST)) {
+                final AssociationIndexer indexer = getAssociationIndexer(nativeEntry, association);
                 if (indexer != null) {
-                    indexer.index(identifier, oneToManyKeys.get(oneToMany));
+                    indexer.index(identifier, oneToManyKeys.get(association));
                 }
             }
         }

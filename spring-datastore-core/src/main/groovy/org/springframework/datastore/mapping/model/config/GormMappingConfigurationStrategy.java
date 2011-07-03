@@ -46,11 +46,7 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.MappingFactory;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
-import org.springframework.datastore.mapping.model.types.Association;
-import org.springframework.datastore.mapping.model.types.Basic;
-import org.springframework.datastore.mapping.model.types.EmbeddedCollection;
-import org.springframework.datastore.mapping.model.types.OneToOne;
-import org.springframework.datastore.mapping.model.types.ToOne;
+import org.springframework.datastore.mapping.model.types.*;
 import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.springframework.datastore.mapping.reflect.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -276,6 +272,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         Map relatedClassRelationships = cpf.getPropertyValue(HAS_MANY, Map.class);
         Class<?> relatedClassPropertyType = null;
 
+        String relatedClassPropertyName = null;
         // First check whether there is an explicit relationship
         // mapping for this property (as provided by "mappedBy").
         String mappingProperty = (String)mappedByMap.get(property.getName());
@@ -308,7 +305,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             // if the related type has a relationships map it may be a many-to-many
             // figure out if there is a many-to-many relationship defined
             if (isRelationshipManyToMany(entity, relatedClassType, relatedClassRelationships)) {
-                String relatedClassPropertyName = null;
                 Map relatedClassMappedBy = cpf.getStaticPropertyValue(MAPPED_BY, Map.class);
                 if (relatedClassMappedBy == null) relatedClassMappedBy = Collections.emptyMap();
                 // retrieve the relationship property
@@ -366,6 +362,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         else if (Collection.class.isAssignableFrom(relatedClassPropertyType) || Map.class.isAssignableFrom(relatedClassPropertyType)){
             // many-to-many
             association = propertyFactory.createManyToMany(entity, context, property);
+            ((ManyToMany)association).setInversePropertyName(relatedClassPropertyName);
         }
 
         PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity,context, relatedClassType);

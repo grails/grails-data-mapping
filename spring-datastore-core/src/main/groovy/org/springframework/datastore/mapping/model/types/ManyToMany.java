@@ -26,11 +26,22 @@ import java.beans.PropertyDescriptor;
  * @since 1.0
  */
 public abstract class ManyToMany<T> extends Association<T> {
+
+    String inversePropertyName;
+
     public ManyToMany(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
     }
 
     public ManyToMany(PersistentEntity owner, MappingContext context, String name, Class type) {
         super(owner, context, name, type);
+    }
+
+    public String getInversePropertyName() {
+        return inversePropertyName;
+    }
+
+    public void setInversePropertyName(String inversePropertyName) {
+        this.inversePropertyName = inversePropertyName;
     }
 }
