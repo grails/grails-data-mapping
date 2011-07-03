@@ -42,7 +42,7 @@ import org.springframework.transaction.annotation.Transactional
 
 import org.grails.plugins.redis.PersistenceContextInterceptorAggregator
 
-class RedisGrailsPlugin {
+class RedisGormGrailsPlugin {
     def license = "Apache 2.0 License"
     def organization = [ name: "SpringSource", url: "http://www.springsource.org/" ]
     def developers = [
@@ -50,7 +50,7 @@ class RedisGrailsPlugin {
     def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPREDIS" ]
     def scm = [ url: "https://github.com/SpringSource/spring-data-mapping" ]
 
-    def version = "1.0.0.M6"
+    def version = "1.0.0.M7"
     def grailsVersion = "1.3.4 > *"
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
 
