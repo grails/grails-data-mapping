@@ -21,7 +21,7 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
-		compile( 'redis.clients:jedis:1.5.2' )
+		//compile( 'redis.clients:jedis:1.5.2' )
         compile("org.grails:grails-datastore-gorm-redis:$version",
 				"org.grails:grails-datastore-gorm:$version",
 				"org.springframework:spring-datastore-core:$version",

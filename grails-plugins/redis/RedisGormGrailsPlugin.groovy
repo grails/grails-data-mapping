@@ -52,7 +52,8 @@ class RedisGormGrailsPlugin {
 
     def version = "1.0.0.M7"
     def grailsVersion = "1.3.4 > *"
-    def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
+    def dependsOn = [redis:"1.0.0.M7 > *"]
+    def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry', 'redis']
 
     def author = "Graeme Rocher"
     def authorEmail = "graeme.rocher@springsource.com"
