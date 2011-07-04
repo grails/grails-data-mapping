@@ -21,6 +21,22 @@ class MiscSpec extends GormDatastoreSpec {
             User.count()==2
             user in User.list()
 
+    }
+
+    def "test object identity in relationships"() {
+        setup:
+            def role1 = new Role(role: 'role1')
+            def role2 = new Role(role: 'role2')
+
+            new User(username: 'user1', roles: [role1,role2]).save(flush:true)
+            session.clear()
+
+        when:
+            def user = User.findByUsername('user1')
+            def role = Role.findByRole('role1')
+
+        then:
+            role in user.roles
 
     }
 }

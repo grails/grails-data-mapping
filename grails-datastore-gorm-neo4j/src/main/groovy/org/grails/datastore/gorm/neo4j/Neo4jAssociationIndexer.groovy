@@ -58,7 +58,7 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
             it.getOtherNode(nativeEntry).id
         }
 	    log.info("query $primaryKey: $ids")
-        dumpNode(nativeEntry)
+        //dumpNode(nativeEntry)
 	    ids
     }
 
