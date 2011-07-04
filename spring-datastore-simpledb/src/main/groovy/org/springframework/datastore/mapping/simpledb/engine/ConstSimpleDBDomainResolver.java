@@ -13,8 +13,8 @@ import java.util.List;
  * the same domain name for all the primary keys (for the same type of {@link org.springframework.datastore.mapping.model.PersistentEntity}
  */
 public class ConstSimpleDBDomainResolver extends AbstractSimpleDBDomainResolver {
-    public ConstSimpleDBDomainResolver(PersistentEntity entity) {
-        super(entity);
+    public ConstSimpleDBDomainResolver(PersistentEntity entity, String domainNamePrefix) {
+        super(entity, domainNamePrefix);
         domains = new LinkedList<String>();
         domains.add(entityFamily); //just one domain without sharding
     }

@@ -5,9 +5,13 @@ import org.springframework.datastore.mapping.model.ClassMapping;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 
 public abstract class AbstractSimpleDBDomainResolver implements SimpleDBDomainResolver {
-    public AbstractSimpleDBDomainResolver(PersistentEntity entity) {
+    public AbstractSimpleDBDomainResolver(PersistentEntity entity, String domainNamePrefix) {
         ClassMapping classMapping = entity.getMapping();
         entityFamily = getFamily(entity, classMapping);
+        this.domainNamePrefix = domainNamePrefix;
+        if ( domainNamePrefix != null ) {
+            entityFamily = domainNamePrefix + entityFamily;
+        }
     }
 
     protected String getFamily(PersistentEntity persistentEntity, ClassMapping<Family> cm) {
@@ -20,4 +24,5 @@ public abstract class AbstractSimpleDBDomainResolver implements SimpleDBDomainRe
     }
 
     protected String entityFamily;
+    protected String domainNamePrefix;
 }

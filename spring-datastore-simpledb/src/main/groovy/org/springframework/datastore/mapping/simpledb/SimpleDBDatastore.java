@@ -43,6 +43,8 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         }
 
         initializeConverters(mappingContext);
+
+        domainNamePrefix = read(String.class, DOMAIN_PREFIX_KEY, connectionDetails, null);
     }
 
     public SimpleDBDatastore(MappingContext mappingContext, Map<String, String> connectionDetails) {
@@ -80,13 +82,22 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         simpleDBTemplates.put(entity, template);
     }
 
+    /**
+     * If specified, returns domain name prefix so that same AWS account can be used for more than one environment (DEV/TEST/PROD etc).
+     * @return null if name was not specified in the configuration
+     */
+    public String getDomainNamePrefix() {
+        return domainNamePrefix;
+    }
 
     public void persistentEntityAdded(PersistentEntity entity) {
         createSimpleDBTemplate(entity);
     }
 
     private Map<PersistentEntity, SimpleDBTemplate> simpleDBTemplates = new ConcurrentHashMap<PersistentEntity, SimpleDBTemplate>();
+    private String domainNamePrefix;
 
     public static final String SECRET_KEY = "secretKey";
     public static final String ACCESS_KEY = "accessKey";
+    public static final String DOMAIN_PREFIX_KEY = "domainNamePrefix";
 }

@@ -44,7 +44,7 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
 
         hasNumericalIdentifier = Long.class.isAssignableFrom(entity.getIdentity().getType());
         hasStringIdentifier = String.class.isAssignableFrom(entity.getIdentity().getType());
-        domainResolver = new ConstSimpleDBDomainResolver(entity); //todo - inject/make configurable
+        domainResolver = new ConstSimpleDBDomainResolver(entity, datastore.getDomainNamePrefix()); //todo - inject/make configurable
     }
 
 //    @Override
