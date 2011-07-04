@@ -5,8 +5,6 @@ dependencies {
   compile project(":grails-datastore-gorm"),
           project(":spring-datastore-web"),
           "org.neo4j:neo4j:1.4.M05"
-                //, 'org.springframework.data:spring-data-neo4j:1.0.0.M4'
-		  //project(":spring-datastore-neo4j"),
 		  //project(":spring-datastore-core")
   testCompile project(":grails-datastore-gorm-test"), project(":grails-datastore-gorm-tck")
 }
