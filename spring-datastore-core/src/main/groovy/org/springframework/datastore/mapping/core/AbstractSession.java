@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.persistence.FlushModeType;
 
+import org.apache.commons.collections.IteratorUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -502,13 +503,8 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public List retrieveAll(Class type, Iterable keys) {
-        Persister p = getPersister(type);
-        if (p == null) {
-            throw new NonPersistentTypeException("Cannot retrieve objects with keys [" + keys +
-                    "]. The class [" + type.getName() + "] is not a known persistent type.");
-        }
-
-        return p.retrieveAll(keys);
+        Serializable[] keysAsSerializables = (Serializable[]) IteratorUtils.toArray(keys.iterator(), Serializable.class);
+        return retrieveAll(type, keysAsSerializables);
     }
 
     public List retrieveAll(Class type, Serializable... keys) {
