@@ -30,8 +30,8 @@ class ListQueryTests extends AbstractRedisTest {
 
         assert 2 == results.size()
 
-        assert "The Stand" == results[0].title
-        assert "It" == results[1].title
+        assert null !=    results.find { it.title == "The Stand" }
+        assert null !=    results.find { it.title == "It" }
 
         q.max 1
 
