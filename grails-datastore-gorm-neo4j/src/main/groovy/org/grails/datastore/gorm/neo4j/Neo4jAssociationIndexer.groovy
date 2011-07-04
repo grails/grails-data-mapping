@@ -55,7 +55,7 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
 
         def ids = nativeEntry.getRelationships(relType, direction).collect {
             log.debug "relation: $it.startNode -> $it.endNode $it.type"
-            it.endNode.id
+            it.getOtherNode(nativeEntry).id
         }
 	    log.info("query $primaryKey: $ids")
         dumpNode(nativeEntry)
