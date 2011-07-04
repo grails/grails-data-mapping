@@ -61,11 +61,9 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
 
                 // iterate result, unmarshall nodes to domain class instances if possible
                 traverser.collect { Node node ->
-                    def clazz = node.getProperty("__type__", null)
+                    Class clazz = node.getProperty("__type__", null)
                     if (clazz) {
-                        def entityPersister = session.getPersister(clazz as Class)
-                        assert entityPersister
-                        entityPersister.createObjectFromNativeEntry(entityPersister.persistentEntity, node.id, node)
+                        session.retrieve(clazz, node.id)
                     } else {
                         node
                     }
@@ -110,11 +108,9 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
 
                 // iterate result, unmarshall nodes to domain class instances if possible
                 traverser.collect { Node node ->
-                    def clazz = node.getProperty("__type__", null)
+                    Class clazz = node.getProperty("__type__", null)
                     if (clazz) {
-                        def entityPersister = session.getPersister(clazz as Class)
-                        assert entityPersister
-                        entityPersister.createObjectFromNativeEntry(entityPersister.persistentEntity, node.id, node)
+                        session.retrieve(clazz, node.id)
                     } else {
                         node
                     }

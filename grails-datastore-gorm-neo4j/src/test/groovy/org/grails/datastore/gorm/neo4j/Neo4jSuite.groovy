@@ -37,7 +37,8 @@ ValidationSpec,
 WithTransactionSpec,
 
 ApiExtensionsSpec,
-ManyToManySpec
+ManyToManySpec,
+MiscSpec
 
 ])
 class Neo4jSuite {

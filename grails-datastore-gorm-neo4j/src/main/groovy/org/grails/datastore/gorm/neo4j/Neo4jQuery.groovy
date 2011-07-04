@@ -42,7 +42,7 @@ class Neo4jQuery extends Query {
                 assert n.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null) in validClassNames
 
                 if (invokeMethod("matchesCriterion${criteria.class.simpleName}", [n, criteria])) {
-                    result << entityPersister.createObjectFromNativeEntry(entity, n.id, n)
+                    result << session.retrieve(entity.javaClass, n.id)
                 }
             }
         }

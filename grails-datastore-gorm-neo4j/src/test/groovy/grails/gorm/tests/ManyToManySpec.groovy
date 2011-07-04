@@ -1,13 +1,6 @@
 package grails.gorm.tests
 
-import org.apache.log4j.BasicConfigurator
-
 class ManyToManySpec extends GormDatastoreSpec {
-
-
-    def setupSpec() {
-        BasicConfigurator.configure()
-    }
 
     def "check if manytomany relationsships are persistent correctly"() {
         setup:
