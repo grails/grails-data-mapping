@@ -23,6 +23,7 @@ class Neo4jSession extends AbstractSession {
     private static final Logger log = LoggerFactory.getLogger(Neo4jSession.class);
 
     Neo4jTransaction transaction
+    def persistedIds = [] as Set
 
     public Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
         super(datastore, mappingContext, publisher);
@@ -84,6 +85,35 @@ class Neo4jSession extends AbstractSession {
 
     def createInstanceForNode(long id) {
         createInstanceForNode(nativeInterface.getNodeById(id))
+    }
+
+    @Override
+    Serializable persist(Object o) {
+        def id = o.id
+        log.info "persisting $id , persistedIds $persistedIds"
+        if (!(id in persistedIds)) {
+            if (id) {
+                persistedIds << id
+                super.persist(o)
+            } else {
+                id = super.persist(o)
+                persistedIds << id
+            }
+        }
+        id
+    }
+
+    @Override
+    List<Serializable> persist(Iterable objects) {
+        objects.collect {
+            persist(it)
+        }
+    }
+
+    @Override
+    void clear() {
+        super.clear()
+        persistedIds = [] as Set
     }
 
 

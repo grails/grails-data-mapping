@@ -239,4 +239,12 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister {
         return targetEntity
     }
 
+    @Override
+    protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj, Object nativeEntry) {
+        return super.createEntityAccess(persistentEntity, obj, nativeEntry)    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+
+
+
 }
