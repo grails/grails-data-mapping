@@ -200,11 +200,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-log4j12/jars/slf4j-log4j12-1.5.8.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-simple/jars/slf4j-simple-1.5.8.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-log4j12/sources/slf4j-log4j12-1.5.8-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-simple/sources/slf4j-simple-1.5.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

@@ -35,7 +35,7 @@ dependencies {
             project(":grails-datastore-gorm-redis")
 
     runtime "org.aspectj:aspectjrt:1.6.8"
-    runtime "org.slf4j:slf4j-log4j12:1.5.8",
+    runtime "org.slf4j:slf4j-simple:1.5.8",
             "hsqldb:hsqldb:1.8.0.5",
             "net.sf.ehcache:ehcache-core:1.7.1"
     compile "org.grails:grails-crud:1.3.4",
