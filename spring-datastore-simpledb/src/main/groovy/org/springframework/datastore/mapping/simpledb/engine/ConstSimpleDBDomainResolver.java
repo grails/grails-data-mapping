@@ -1,9 +1,5 @@
 package org.springframework.datastore.mapping.simpledb.engine;
 
-import org.springframework.datastore.mapping.keyvalue.mapping.config.Family;
-import org.springframework.datastore.mapping.model.ClassMapping;
-import org.springframework.datastore.mapping.model.PersistentEntity;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,10 +9,10 @@ import java.util.List;
  * the same domain name for all the primary keys (for the same type of {@link org.springframework.datastore.mapping.model.PersistentEntity}
  */
 public class ConstSimpleDBDomainResolver extends AbstractSimpleDBDomainResolver {
-    public ConstSimpleDBDomainResolver(PersistentEntity entity, String domainNamePrefix) {
-        super(entity, domainNamePrefix);
+    public ConstSimpleDBDomainResolver(String entityFamily, String domainNamePrefix) {
+        super(entityFamily, domainNamePrefix);
         domains = new LinkedList<String>();
-        domains.add(entityFamily); //just one domain without sharding
+        domains.add(this.entityFamily); //without sharding there is just one domain
     }
 
     public String resolveDomain(String id) {

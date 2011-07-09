@@ -1,14 +1,15 @@
 package org.springframework.datastore.mapping.simpledb.config;
 
 import org.springframework.datastore.mapping.keyvalue.mapping.config.Family;
-import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValuePersistentEntity;
 import org.springframework.datastore.mapping.model.*;
+import org.springframework.datastore.mapping.simpledb.engine.ConstSimpleDBDomainResolver;
+import org.springframework.datastore.mapping.simpledb.engine.SimpleDBDomainResolver;
 
 /**
  * Models a SimpleDB-mapped entity
  *
  * @author Roman Stepanenko
- * @since 1.0
+ * @since 0.1
  */
 public class SimpleDBPersistentEntity extends AbstractPersistentEntity {
 
@@ -18,17 +19,17 @@ public class SimpleDBPersistentEntity extends AbstractPersistentEntity {
 
     @SuppressWarnings("unchecked")
     @Override
-    public ClassMapping<Family> getMapping() {
-        return new KeyValueClassMapping(this, context);
+    public ClassMapping<SimpleDBDomainClassMappedForm> getMapping() {
+        return new SimpleDBClassMapping(this, context);
     }
 
-    public class KeyValueClassMapping extends AbstractClassMapping<Family> {
-        public KeyValueClassMapping(PersistentEntity entity, MappingContext context) {
+    public class SimpleDBClassMapping extends AbstractClassMapping<SimpleDBDomainClassMappedForm> {
+        public SimpleDBClassMapping(PersistentEntity entity, MappingContext context) {
             super(entity, context);
         }
         @Override
-        public Family getMappedForm() {
-            return (Family) context.getMappingFactory().createMappedForm(SimpleDBPersistentEntity.this);
+        public SimpleDBDomainClassMappedForm getMappedForm() {
+            return (SimpleDBDomainClassMappedForm) context.getMappingFactory().createMappedForm(SimpleDBPersistentEntity.this);
         }
     }
 

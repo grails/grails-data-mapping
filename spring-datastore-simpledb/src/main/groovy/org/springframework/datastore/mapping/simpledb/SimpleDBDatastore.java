@@ -77,7 +77,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         String accessKey = read(String.class, ACCESS_KEY, connectionDetails, null);
         String secretKey = read(String.class, SECRET_KEY, connectionDetails, null);
 
-        final SimpleDBTemplate template = new SimpleDBTemplateImpl(accessKey, secretKey, entity);
+        final SimpleDBTemplate template = new SimpleDBTemplateImpl(accessKey, secretKey);
 
         simpleDBTemplates.put(entity, template);
     }

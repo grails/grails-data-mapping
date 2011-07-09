@@ -10,24 +10,22 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 import java.util.List;
 
 /**
- * A template which handle one specific type of {@link org.springframework.datastore.mapping.model.PersistentEntity}.
+ * Implementation of SimpleDBTemplate using AWS java sdk. 
  * 
  * @author Roman Stepanenko
  * @since 0.1
  */
 public class SimpleDBTemplateImpl implements SimpleDBTemplate {
-    public SimpleDBTemplateImpl(AmazonSimpleDB sdb, PersistentEntity persistentEntity) {
+    public SimpleDBTemplateImpl(AmazonSimpleDB sdb) {
         this.sdb = sdb;
-        this.persistentEntity = persistentEntity;
     }
 
-    public SimpleDBTemplateImpl(String accessKey, String secretKey, PersistentEntity persistentEntity) {
+    public SimpleDBTemplateImpl(String accessKey, String secretKey) {
         if ( accessKey == null || "".equals(accessKey) || secretKey == null || "".equals(secretKey)) {
             throw new IllegalArgumentException("Please provide accessKey and secretKey");
         }
 
         sdb = new AmazonSimpleDBClient(new BasicAWSCredentials(accessKey, secretKey));
-        this.persistentEntity = persistentEntity;
     }
 
     public Item get(String domainName, String id) {
@@ -84,10 +82,19 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         return items;
     }
 
+    public void createDomain(String domainName) throws DataAccessException {
+        CreateDomainRequest request = new CreateDomainRequest(domainName);
+        sdb.createDomain(request);
+    }
+
+    public void deleteDomain(String domainName) throws DataAccessException {
+        DeleteDomainRequest request = new DeleteDomainRequest(domainName);
+        sdb.deleteDomain(request);
+    }
+
     protected UpdateCondition getOptimisticVersionCondition(String expectedVersion) {
         return new UpdateCondition("version", expectedVersion,Boolean.TRUE);
     }
 
     private AmazonSimpleDB sdb;
-    private PersistentEntity persistentEntity; //the entity this template represents
 }

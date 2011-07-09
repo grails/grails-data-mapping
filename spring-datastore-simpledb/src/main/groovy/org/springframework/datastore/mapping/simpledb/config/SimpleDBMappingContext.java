@@ -19,7 +19,7 @@ public class SimpleDBMappingContext extends AbstractMappingContext {
     }
 
     protected MappingFactory createMappingFactory() {
-        return new GormKeyValueMappingFactory(null);
+        return new GormSimpleDBMappingFactory();
     }
 
     @Override

@@ -22,6 +22,11 @@ import org.grails.datastore.gorm.simpledb.SimpleDBGormStaticApi
 import org.grails.datastore.gorm.simpledb.SimpleDBGormInstanceApi
 import org.grails.datastore.gorm.simpledb.bean.factory.SimpleDBMappingContextFactoryBean
 import org.grails.datastore.gorm.simpledb.bean.factory.SimpleDBDatastoreFactoryBean
+import org.springframework.datastore.mapping.model.PersistentEntity
+import org.springframework.datastore.mapping.simpledb.engine.SimpleDBDomainResolver
+import org.springframework.datastore.mapping.simpledb.engine.SimpleDBDomainResolverFactory
+import org.springframework.datastore.mapping.simpledb.util.SimpleDBTemplate
+import org.springframework.datastore.mapping.simpledb.util.SimpleDBConst
 
 class SimpledbGrailsPlugin {
     def license = "Apache 2.0 License"
@@ -105,22 +110,73 @@ customizable performance tweaks according to SimpleDB best practices (dedicated 
         }
 
         // make sure validators for SimpleDB domain classes are regular GrailsDomainClassValidator
+        simpleDBDomainClassProcessor(application, manager, { dc ->
+            String validatorBeanName = "${dc.fullName}Validator"
+            def beandef = springConfig.getBeanConfig(validatorBeanName)?.beanDefinition ?:
+                          springConfig.getBeanDefinition(validatorBeanName)
+            beandef.beanClassName = GrailsDomainClassValidator.name
+        })
+    }
+
+    /**
+     * Iterates over all domain classes which are mapped with SimpleDB and passes them to the specified closure
+     */
+    def simpleDBDomainClassProcessor = { application, manager, closure ->
         def isHibernateInstalled = manager.hasGrailsPlugin("hibernate")
         for (dc in application.domainClasses) {
             def cls = dc.clazz
             def cpf = ClassPropertyFetcher.forClass(cls)
             def mappedWith = cpf.getStaticPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY, String)
-            if (mappedWith == 'simpleDB' || (!isHibernateInstalled && mappedWith == null)) {
-                String validatorBeanName = "${dc.fullName}Validator"
-                def beandef = springConfig.getBeanConfig(validatorBeanName)?.beanDefinition ?:
-                              springConfig.getBeanDefinition(validatorBeanName)
-                beandef.beanClassName = GrailsDomainClassValidator.name
+            if (mappedWith == SimpleDBConst.SIMPLE_DB_MAP_WITH_VALUE || (!isHibernateInstalled && mappedWith == null)) {
+                closure.call(dc)
             }
         }
     }
 
     def doWithApplicationContext = { applicationContext ->
-        // TODO Implement post initialization spring config (optional)
+        //determine dbCreate flag and create/delete AWS domains if needed
+        def simpleDBDomainClasses = []
+        simpleDBDomainClassProcessor(application, manager, { dc ->
+            simpleDBDomainClasses.add(dc) //collect domain classes which are stored via SimpleDB
+        })
+        def simpleDBConfig = application.config?.grails?.simpleDB
+        handleDBCreate(simpleDBConfig.dbCreate,
+                application,
+                simpleDBDomainClasses,
+                applicationContext.getBean("simpleDBMappingContext"),
+                applicationContext.getBean("simpleDBDatastore")
+        ); //similar to JDBC datastore, do 'create' or 'drop-create'
+    }
+
+    def handleDBCreate = { dbCreate, application, simpleDBDomainClasses, mappingContext, simpleDBDatastore ->
+        boolean drop = false
+        boolean create = false
+        if ("drop-create" == dbCreate){
+            drop = true
+            create = true
+        } else if ("create" == dbCreate){
+            create = true
+        }
+
+        SimpleDBDomainResolverFactory resolverFactory = new SimpleDBDomainResolverFactory();
+        for (dc in simpleDBDomainClasses) {
+            def cls = dc.clazz
+            PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName())
+            SimpleDBDomainResolver domainResolver = resolverFactory.buildResolver(entity, simpleDBDatastore);
+            def domains = domainResolver.getAllDomainsForEntity()
+            SimpleDBTemplate template = simpleDBDatastore.getSimpleDBTemplate(entity)
+
+            if (drop){
+                domains.each{ domain ->
+                    template.deleteDomain (domain)
+                }
+            }
+            if (create){
+                domains.each{ domain ->
+                    template.createDomain (domain)
+                }
+            }
+        }
     }
 
     boolean shouldCreateTransactionalProxy(GrailsServiceClass serviceClass) {
@@ -130,7 +186,7 @@ customizable performance tweaks according to SimpleDB best practices (dedicated 
             return false
         }
 
-        if (!'simpledb'.equals(serviceClass.getStaticPropertyValue('transactional', String))) {
+        if (!SimpleDBConst.SIMPLE_DB_MAP_WITH_VALUE.equals(serviceClass.getStaticPropertyValue('transactional', String))) {
             return false
         }
 
@@ -158,7 +214,7 @@ customizable performance tweaks according to SimpleDB best practices (dedicated 
             def cpf = ClassPropertyFetcher.forClass(cls)
             def mappedWith = cpf.getStaticPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY, String)
             if (isHibernateInstalled) {
-                if (mappedWith == 'simpledb') {
+                if (mappedWith == SimpleDBConst.SIMPLE_DB_MAP_WITH_VALUE) {
                     enhancer.enhance(entity)
                 }
                 else {
@@ -169,7 +225,7 @@ customizable performance tweaks according to SimpleDB best practices (dedicated 
                 }
             }
             else {
-                if (mappedWith == 'simpledb' || mappedWith == null) {
+                if (mappedWith == SimpleDBConst.SIMPLE_DB_MAP_WITH_VALUE || mappedWith == null) {
                     enhancer.enhance(entity)
                 }
             }

@@ -44,7 +44,8 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
 
         hasNumericalIdentifier = Long.class.isAssignableFrom(entity.getIdentity().getType());
         hasStringIdentifier = String.class.isAssignableFrom(entity.getIdentity().getType());
-        domainResolver = new ConstSimpleDBDomainResolver(entity, datastore.getDomainNamePrefix()); //todo - inject/make configurable
+        SimpleDBDomainResolverFactory resolverFactory = new SimpleDBDomainResolverFactory();
+        domainResolver = resolverFactory.buildResolver(entity, datastore);
     }
 
 //    @Override
@@ -104,6 +105,10 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
 
     public Query createQuery() {
         return new SimpleDBQuery((SimpleDBSession) getSession(), getPersistentEntity(), domainResolver, this, simpleDBTemplate);
+    }
+
+    public SimpleDBDomainResolver getDomainResolver() {
+        return domainResolver;
     }
 
     @Override
