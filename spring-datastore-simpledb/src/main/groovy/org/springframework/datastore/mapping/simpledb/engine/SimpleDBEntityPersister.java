@@ -20,6 +20,7 @@ import org.springframework.datastore.mapping.proxy.EntityProxy;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.simpledb.SimpleDBDatastore;
 import org.springframework.datastore.mapping.simpledb.SimpleDBSession;
+import org.springframework.datastore.mapping.simpledb.model.types.SimpleDBTypeConverterRegistrar;
 import org.springframework.datastore.mapping.simpledb.query.SimpleDBQuery;
 import org.springframework.datastore.mapping.simpledb.util.SimpleDBTemplate;
 
@@ -217,7 +218,14 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
         }
     }
 
-//    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj, NativeSimpleDBItem nativeEntry) {
+        final NativeEntryModifyingEntityAccess ea = new SimpleDBNativeEntryModifyingEntityAccess(persistentEntity, obj);
+        ea.setNativeEntry(nativeEntry);
+        return ea;
+    }
+
+    //    @SuppressWarnings({ "rawtypes", "unchecked" })
 //    private boolean shouldConvertToString(Class theClass) {
 //        for (Class classToCheck : convertToString) {
 //            if (classToCheck.isAssignableFrom(theClass)) return true;
@@ -313,6 +321,8 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
         }
     }
 
+
+
     protected ReplaceableAttribute createAttributeForVersion(EntityAccess ea) {
         ReplaceableAttribute attrToPut;
         Object updatedVersion = ea.getProperty("version");
@@ -323,7 +333,13 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
     }
 
     protected String convertVersionToString(Object currentVersion) {
-        return currentVersion == null ? null : currentVersion.toString();
+        if ( currentVersion == null) {
+            return null;
+        } else if ( currentVersion instanceof Long ) {
+            return SimpleDBTypeConverterRegistrar.LONG_TO_STRING_CONVERTER.convert((Long) currentVersion);
+        } else {
+            return currentVersion.toString();
+        }
     }
 
     @Override
@@ -332,6 +348,26 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
             deleteEntry(family, key); //todo - optimize for bulk removal
         }
     }
+
+    /**
+     * Provides proper conversion of 'version' field from Integer to Long - since we use numeric padding in SimpleDB
+     * there are different amounts of zeros for Long and Integer - and it matters for optimistic locking assertions
+     * on SimpleDB level.
+     */
+    protected class SimpleDBNativeEntryModifyingEntityAccess extends NativeEntryModifyingEntityAccess {
+        public SimpleDBNativeEntryModifyingEntityAccess(PersistentEntity persistentEntity, Object entity) {
+            super(persistentEntity, entity);
+        }
+
+        @Override
+        public void setProperty(String name, Object value) {
+            if ( "version".equals(name) && value instanceof Integer) {
+                value = ((Integer)value).longValue();
+            }
+            super.setProperty(name, value);
+        }
+    }
+
 
     protected SimpleDBTemplate simpleDBTemplate;
     protected String entityFamily;

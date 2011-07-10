@@ -3,10 +3,12 @@ package org.springframework.datastore.mapping.simpledb;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.model.*;
 import org.springframework.datastore.mapping.simpledb.config.SimpleDBMappingContext;
+import org.springframework.datastore.mapping.simpledb.model.types.SimpleDBTypeConverterRegistrar;
 import org.springframework.datastore.mapping.simpledb.util.SimpleDBTemplate;
 import org.springframework.datastore.mapping.simpledb.util.SimpleDBTemplateImpl;
 
@@ -92,6 +94,12 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
 
     public void persistentEntityAdded(PersistentEntity entity) {
         createSimpleDBTemplate(entity);
+    }
+
+    protected void initializeConverters(@SuppressWarnings("hiding") MappingContext mappingContext) {
+        final ConverterRegistry conversionService = mappingContext.getConverterRegistry();
+        SimpleDBTypeConverterRegistrar registrar = new SimpleDBTypeConverterRegistrar();
+        registrar.register(conversionService);
     }
 
     private Map<PersistentEntity, SimpleDBTemplate> simpleDBTemplates = new ConcurrentHashMap<PersistentEntity, SimpleDBTemplate>();
