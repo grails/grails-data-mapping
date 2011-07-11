@@ -206,23 +206,10 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
 
         for (int i = 0, count = redisKeys.size(); i < count; i++) {
             Serializable nativeKey = redisKeys.get(i);
-            Map nativeEntry = getNativeEntryFromList(results.get(i));
+            Map nativeEntry = (Map)results.get(i);
             entityResults.add(createObjectFromNativeEntry(getPersistentEntity(), nativeKey, nativeEntry));
         }
         return entityResults;
-    }
-
-    private Map getNativeEntryFromList(Object result) {
-        Collection flatHash = (Collection) result;
-        Map<String, String> hash = new HashMap<String, String>();
-        Iterator iterator = flatHash.iterator();
-        while (iterator.hasNext()) {
-            Object key = iterator.next();
-            Object value = iterator.next();
-
-            hash.put(convertByteArrayToString(key), convertByteArrayToString(value));
-        }
-        return hash;
     }
 
     private String convertByteArrayToString(Object byteArray) {

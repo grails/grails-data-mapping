@@ -21,7 +21,8 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
-		compile( 'redis.clients:jedis:1.5.2' )
+        // need this here till the new redis plugin that we'll rely on is released, otherwise we can't package-plugin
+		compile( 'redis.clients:jedis:2.0.0' )
         compile("org.grails:grails-datastore-gorm-redis:$version",
 				"org.grails:grails-datastore-gorm:$version",
 				"org.springframework:spring-datastore-core:$version",
