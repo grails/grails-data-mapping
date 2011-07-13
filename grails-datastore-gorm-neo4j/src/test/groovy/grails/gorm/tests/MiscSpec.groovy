@@ -39,4 +39,16 @@ class MiscSpec extends GormDatastoreSpec {
             role in user.roles
 
     }
+
+    def "test unique constraint"() {
+        setup:
+            def role1 = new Role(role: 'role')
+            role1.save(flush:true)
+            def result = new Role(role:'role').save(flush:true)
+            session.clear()
+
+        expect:
+            Role.findAllByRole('role').size() == 1
+
+    }
 }

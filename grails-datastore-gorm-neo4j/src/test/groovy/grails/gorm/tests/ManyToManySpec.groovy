@@ -84,5 +84,8 @@ class Role {
     String role
     Set people = [] as Set
     static hasMany = [ people: User]
+    static constraints = {
+		role(blank: false, unique: true)
+	}
 }
 

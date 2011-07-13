@@ -16,6 +16,8 @@ import org.grails.datastore.gorm.neo4j.Neo4jOpenSessionInViewInterceptor
 import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.transaction.annotation.Transactional
 import java.lang.reflect.Method
+import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.grails.datastore.gorm.neo4j.constraints.UniqueConstraint
 
 class Neo4jGrailsPlugin {
 
@@ -208,6 +210,7 @@ a GORM API onto it
     }
 
     def doWithApplicationContext = { applicationContext ->
+        ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint.class );
     }
 
     def onChange = { event ->

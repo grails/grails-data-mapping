@@ -15,6 +15,10 @@ import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import grails.gorm.tests.Role
 import grails.gorm.tests.User
+import org.grails.datastore.gorm.neo4j.constraints.UniqueConstraint
+import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
+import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 
 class Setup {
 
@@ -37,11 +41,17 @@ class Setup {
         storeDir = storeDir.path
         datastore = new Neo4jDatastore(storeDir: storeDir)
 
-        def ctx = new GenericApplicationContext()
-        ctx.refresh()
-        datastore.applicationContext = ctx
-
         classes << User << Role
+        ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint.class );
+
+        def grailsApplication = new DefaultGrailsApplication(classes as Class[], Setup.getClassLoader())
+        grailsApplication.mainContext = new GenericApplicationContext()
+        grailsApplication.initialise()
+
+
+        grailsApplication.mainContext.refresh()
+        datastore.applicationContext = grailsApplication.mainContext // grailsApplication.mainContext
+
 
         for (cls in classes) {
             datastore.mappingContext.addPersistentEntity(cls)
@@ -57,6 +67,13 @@ class Setup {
                 }
             }
         ] as Validator)
+        entity = datastore.mappingContext.persistentEntities.find { PersistentEntity e -> e.name.contains("Role")}
+
+        def validator = new GrailsDomainClassValidator()
+        validator.grailsApplication = grailsApplication
+        validator.domainClass = grailsApplication.getDomainClass(entity.name)
+
+        datastore.mappingContext.addEntityValidator(entity, validator);
 
         def enhancer = new Neo4jGormEnhancer(datastore, new DatastoreTransactionManager(datastore: datastore))
         enhancer.enhance()
