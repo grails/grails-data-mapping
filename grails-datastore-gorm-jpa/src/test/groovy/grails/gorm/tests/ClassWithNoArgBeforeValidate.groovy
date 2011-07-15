@@ -7,16 +7,16 @@ import javax.persistence.Transient
 class ClassWithNoArgBeforeValidate {
     Long id
     Long version
-    
+
     @Transient
     def noArgCounter = 0
-    
+
     String name
-    
+
     def beforeValidate() {
         ++noArgCounter
     }
-    
+
     static constraints = {
         name blank: false
     }

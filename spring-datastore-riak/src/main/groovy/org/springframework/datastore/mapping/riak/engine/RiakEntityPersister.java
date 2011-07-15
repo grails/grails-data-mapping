@@ -73,7 +73,7 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
     }
 
     @Override
-    protected void deleteEntry(String family, Long key) {
+    protected void deleteEntry(String family, Long key, Object entry) {
         riakTemplate.deleteKeys(String.format("%s:%s", family, key));
     }
 
@@ -130,19 +130,21 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Lon
 
     @Override
     protected void setEntryValue(Map nativeEntry, String key, Object value) {
-        if (null != value) {
-            if (value instanceof Date) {
-                // Date handling again, like above
-                nativeEntry.put(key, ((Date) value).getTime());
-            } else if (value instanceof Calendar) {
-                // Calendar handling again, like above
-                nativeEntry.put(key, ((Calendar) value).getTime().getTime());
-            } else if (value instanceof Boolean) {
-                nativeEntry.put(key, value);
-            } else if (shouldConvert(value)) {
-                final ConversionService conversionService = getMappingContext().getConversionService();
-                nativeEntry.put(key, conversionService.convert(value, String.class));
-            }
+        if (null == value) {
+            return;
+        }
+
+        if (value instanceof Date) {
+            // Date handling again, like above
+            nativeEntry.put(key, ((Date) value).getTime());
+        } else if (value instanceof Calendar) {
+            // Calendar handling again, like above
+            nativeEntry.put(key, ((Calendar) value).getTime().getTime());
+        } else if (value instanceof Boolean) {
+            nativeEntry.put(key, value);
+        } else if (shouldConvert(value)) {
+            final ConversionService conversionService = getMappingContext().getConversionService();
+            nativeEntry.put(key, conversionService.convert(value, String.class));
         }
     }
 

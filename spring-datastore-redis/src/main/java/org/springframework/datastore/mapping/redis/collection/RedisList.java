@@ -14,12 +14,17 @@
  */
 package org.springframework.datastore.mapping.redis.collection;
 
+import java.util.AbstractList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.datastore.mapping.redis.util.RedisTemplate;
 
-import java.util.*;
-
 /**
- * Creates a list that is backed onto a Redis list
+ * Creates a list that is backed onto a Redis list.
  *
  * @author Graeme Rocher
  * @since 1.0

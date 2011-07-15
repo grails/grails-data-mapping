@@ -437,8 +437,9 @@ public class GemfireQuery extends Query {
 
         final StringBuilder q = new StringBuilder();
         q.append(select);
-        if (distinct)
+        if (distinct) {
             q.append(SELECT_DISTINCT);
+        }
         if (projectionList.isEmpty()) {
             q.append(WILDCARD);
         }
@@ -523,7 +524,7 @@ public class GemfireQuery extends Query {
             final String operator = criteria instanceof Conjunction ? LOGICAL_AND : LOGICAL_OR;
             QueryHandler qh = queryHandlers.get(criterion.getClass());
             if (qh != null) {
-                index = qh.handle(entity,criterion, q, params, index);
+                index = qh.handle(entity, criterion, q, params, index);
             }
 
             if (iterator.hasNext()) {

@@ -1,28 +1,58 @@
+/* Copyright (C) 2011 SpringSource
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.datastore.mapping.simpledb.util;
+
+import java.util.List;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
-import com.amazonaws.services.simpledb.model.*;
-import org.springframework.dao.DataAccessException;
-
-import java.util.List;
+import com.amazonaws.services.simpledb.model.Attribute;
+import com.amazonaws.services.simpledb.model.CreateDomainRequest;
+import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
+import com.amazonaws.services.simpledb.model.DeleteDomainRequest;
+import com.amazonaws.services.simpledb.model.GetAttributesRequest;
+import com.amazonaws.services.simpledb.model.Item;
+import com.amazonaws.services.simpledb.model.ListDomainsRequest;
+import com.amazonaws.services.simpledb.model.ListDomainsResult;
+import com.amazonaws.services.simpledb.model.PutAttributesRequest;
+import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
+import com.amazonaws.services.simpledb.model.SelectRequest;
+import com.amazonaws.services.simpledb.model.UpdateCondition;
 
 /**
- * Implementation of SimpleDBTemplate using AWS java sdk. 
- * 
+ * Implementation of SimpleDBTemplate using AWS Java SDK.
+ *
  * @author Roman Stepanenko
  * @since 0.1
  */
 public class SimpleDBTemplateImpl implements SimpleDBTemplate {
+
+    private AmazonSimpleDB sdb;
+
     public SimpleDBTemplateImpl(AmazonSimpleDB sdb) {
         this.sdb = sdb;
     }
 
     public SimpleDBTemplateImpl(String accessKey, String secretKey) {
-        if ( accessKey == null || "".equals(accessKey) || secretKey == null || "".equals(secretKey)) {
-            throw new IllegalArgumentException("Please provide accessKey and secretKey");
-        }
+        Assert.isTrue(StringUtils.hasLength(accessKey) && StringUtils.hasLength(secretKey),
+            "Please provide accessKey and secretKey");
 
         sdb = new AmazonSimpleDBClient(new BasicAWSCredentials(accessKey, secretKey));
     }
@@ -34,13 +64,11 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
 
         GetAttributesRequest request = new GetAttributesRequest(domainName, id);
         List<Attribute> attributes = sdb.getAttributes(request).getAttributes();
-        if ( attributes.size() == 0 ) {
+        if (attributes.isEmpty()) {
             return null;
         }
 
-        Item item = new Item(id, attributes);
-
-        return item;
+        return new Item(id, attributes);
     }
 
     public void putAttributes(String domainName, String id, List<ReplaceableAttribute> attributes) throws DataAccessException {
@@ -55,7 +83,7 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
     }
 
     public void deleteAttributes(String domainName, String id, List<Attribute> attributes) throws DataAccessException {
-        if ( !attributes.isEmpty() ) {
+        if (!attributes.isEmpty()) {
             DeleteAttributesRequest request = new DeleteAttributesRequest(domainName, id, attributes);
             sdb.deleteAttributes(request);
         }
@@ -63,8 +91,8 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
 
     public void deleteAttributesVersioned(String domainName, String id, List<Attribute> attributes, String expectedVersion) throws DataAccessException {
         // If attribute list is empty AWS api will erase the whole item.
-        // Do not do that, otherwise all the callers will have to check for empty list before calling  
-        if ( !attributes.isEmpty() ) {
+        // Do not do that, otherwise all the callers will have to check for empty list before calling
+        if (!attributes.isEmpty()) {
             DeleteAttributesRequest request = new DeleteAttributesRequest(domainName, id, attributes, getOptimisticVersionCondition(expectedVersion));
             sdb.deleteAttributes(request);
         }
@@ -75,7 +103,6 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         sdb.deleteAttributes(request);
     }
 
-    @Override
     public void deleteAllItems(String domainName) throws DataAccessException {
         SelectRequest selectRequest = new SelectRequest("select itemName() from `"+domainName+"`");
         List<Item> items = sdb.select(selectRequest).getItems();
@@ -86,8 +113,7 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
 
     public List<Item> query(String query) {
         SelectRequest selectRequest = new SelectRequest(query);
-        List<Item> items = sdb.select(selectRequest).getItems();
-        return items;
+        return sdb.select(selectRequest).getItems();
     }
 
     public void createDomain(String domainName) throws DataAccessException {
@@ -95,7 +121,6 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         sdb.createDomain(request);
     }
 
-    @Override
     public List<String> listDomains() throws DataAccessException {
         ListDomainsRequest request = new ListDomainsRequest();
         ListDomainsResult result = sdb.listDomains(request);
@@ -111,6 +136,4 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
     protected UpdateCondition getOptimisticVersionCondition(String expectedVersion) {
         return new UpdateCondition("version", expectedVersion,Boolean.TRUE);
     }
-
-    private AmazonSimpleDB sdb;
 }

@@ -19,9 +19,9 @@ grails.project.dependency.resolution = {
         if (version.endsWith("-SNAPSHOT")) {
             mavenRepo "http://maven.springframework.org/snapshot"
         }
-		else {
-			mavenRepo 'http://maven.springframework.org/milestone'
-		}
+        else {
+            mavenRepo 'http://maven.springframework.org/milestone'
+        }
     }
 
     dependencies {

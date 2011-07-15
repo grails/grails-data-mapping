@@ -81,8 +81,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
              MongoSession mongoSession, ApplicationEventPublisher publisher) {
         super(mappingContext, entity, mongoSession, publisher);
         MongoDatastore datastore = (MongoDatastore) mongoSession.getDatastore();
-        this.mongoTemplate = datastore.getMongoTemplate(entity);
-        this.collectionName = datastore.getCollectionName(entity);
+        mongoTemplate = datastore.getMongoTemplate(entity);
+        collectionName = datastore.getCollectionName(entity);
 
         hasNumericalIdentifier = Long.class.isAssignableFrom(entity.getIdentity().getType());
         hasStringIdentifier = String.class.isAssignableFrom(entity.getIdentity().getType());
@@ -194,11 +194,11 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     @Override
     public String getEntityFamily() {
-        return this.collectionName;
+        return collectionName;
     }
 
     @Override
-    protected void deleteEntry(String family, final Object key) {
+    protected void deleteEntry(String family, final Object key, final Object entry) {
         mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
                 DBCollection dbCollection = getCollection(con);
@@ -362,13 +362,13 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
                 DBCollection dbCollection = con.getCollection(collectionName);
                 nativeEntry.put(MONGO_ID_FIELD, storeId);
-MongoSession mongoSession = (MongoSession) session;
-if (mongoSession.getWriteConcern() == null) {
-                dbCollection.insert(nativeEntry);
-} else {
-                dbCollection.insert(nativeEntry, mongoSession.getWriteConcern());
+                MongoSession mongoSession = (MongoSession) session;
+                if (mongoSession.getWriteConcern() == null) {
+                    dbCollection.insert(nativeEntry);
                 }
-
+                else {
+                    dbCollection.insert(nativeEntry, mongoSession.getWriteConcern());
+                }
                 return nativeEntry.get(MONGO_ID_FIELD);
             }
         });
@@ -476,7 +476,7 @@ if (mongoSession.getWriteConcern() == null) {
         }
 
         public void index(final Object primaryKey, List foreignKeys) {
-            // if the association is a unidirecitonal one-to-many we stores the keys
+            // if the association is a unidirectional one-to-many we store the keys
             // embedded in the owning entity, otherwise we use a foreign key
             if (!association.isBidirectional()) {
                 nativeEntry.put(association.getName(), foreignKeys);

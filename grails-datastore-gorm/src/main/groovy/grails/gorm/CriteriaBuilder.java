@@ -38,7 +38,7 @@ import org.springframework.datastore.mapping.query.Restrictions;
 import org.springframework.util.Assert;
 
 /**
- * Criteria builder implementation that operates against Spring datastore abstraction
+ * Criteria builder implementation that operates against Spring datastore abstraction.
  *
  * @author Graeme Rocher
  */
@@ -81,9 +81,11 @@ public class CriteriaBuilder extends GroovyObjectSupport {
         Assert.notNull(targetClass, "Argument [targetClass] cannot be null");
         Assert.notNull(session, "Argument [session] cannot be null");
 
-        persistentEntity = session.getDatastore().getMappingContext().getPersistentEntity(targetClass.getName());
+        persistentEntity = session.getDatastore().getMappingContext().getPersistentEntity(
+                targetClass.getName());
         if (persistentEntity == null) {
-            throw new IllegalArgumentException("Class [" + targetClass.getName() + "] is not a persistent entity");
+            throw new IllegalArgumentException("Class [" + targetClass.getName() +
+                    "] is not a persistent entity");
         }
 
         this.targetClass = targetClass;
@@ -352,7 +354,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
             }
         }
 
-        throw new MissingMethodException(name, getClass(), args) ;
+        throw new MissingMethodException(name, getClass(), args);
     }
 
     /**
@@ -581,7 +583,8 @@ public class CriteriaBuilder extends GroovyObjectSupport {
 
     protected void validatePropertyName(String propertyName, String methodName) {
         if (propertyName == null) {
-            throw new IllegalArgumentException("Cannot use ["+methodName+"] restriction with null property name");
+            throw new IllegalArgumentException("Cannot use [" + methodName +
+                    "] restriction with null property name");
         }
 
         PersistentProperty property = persistentEntity.getPropertyByName(propertyName);
@@ -589,7 +592,8 @@ public class CriteriaBuilder extends GroovyObjectSupport {
             property = persistentEntity.getIdentity();
         }
         if (property == null) {
-            throw new IllegalArgumentException("Property ["+propertyName+"] is not a valid property of class ["+persistentEntity+"]");
+            throw new IllegalArgumentException("Property [" + propertyName +
+                    "] is not a valid property of class [" + persistentEntity + "]");
         }
     }
 

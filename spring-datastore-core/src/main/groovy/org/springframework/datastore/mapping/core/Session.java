@@ -54,7 +54,7 @@ public interface Session {
     Object getAttribute(Object entity, String attributeName);
 
     /**
-     * @return true if connected to the datastore
+     * @return <code>true</code> if connected to the datastore
      */
     boolean isConnected();
 
@@ -115,7 +115,7 @@ public interface Session {
     /**
      * Whether the object is contained within the first level cache
      * @param o The object to check
-     * @return True if it is
+     * @return <code>true</code> if it is
      */
     boolean contains(Object o);
 
@@ -241,4 +241,11 @@ public interface Session {
      * @return The Datastore instance
      */
     Datastore getDatastore();
+
+    /**
+     * Check if the instance has been modified since loading.
+     * @param instance the instance
+     * @return <code>true</code> if one or more fields have changed
+     */
+    boolean isDirty(Object instance);
 }

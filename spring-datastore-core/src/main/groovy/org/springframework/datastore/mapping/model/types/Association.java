@@ -72,7 +72,9 @@ public abstract class Association<T> extends AbstractPersistentProperty {
         if (associatedProperty instanceof Association) {
             return (Association) associatedProperty;
         }
-        throw new IllegalMappingException("The inverse side ["+associatedEntity.getName()+"." + associatedProperty.getName() +"] of the association ["+getOwner().getName()+"." + this.getName() +"] is not valid. Associations can only map to other entities and collection types.");
+        throw new IllegalMappingException("The inverse side [" + associatedEntity.getName() + "." +
+                associatedProperty.getName() + "] of the association [" + getOwner().getName() + "." +
+                getName() + "] is not valid. Associations can only map to other entities and collection types.");
     }
 
     /**

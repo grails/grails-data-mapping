@@ -31,7 +31,7 @@ public class AggregatePersistenceContextInterceptor implements PersistenceContex
      * @param interceptors the real interceptors
      */
     public AggregatePersistenceContextInterceptor(final List<PersistenceContextInterceptor> interceptors) {
-        this.interceptors = interceptors;        
+        this.interceptors = interceptors;
     }
 
     public boolean isOpen() {

@@ -15,9 +15,8 @@
 package org.springframework.datastore.mapping.model.config;
 
 /**
- * Reserved static property names used by GORM to evaluate GORM-style
- * syntax
- * 
+ * Reserved static property names used by GORM to evaluate GORM-style syntax.
+ *
  * @author Graeme Rocher
  * @since 1.0
  */

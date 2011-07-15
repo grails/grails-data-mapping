@@ -14,7 +14,7 @@ class ClassWithOverloadedBeforeValidate implements Serializable {
         ++listArgCounter
         propertiesPassedToBeforeValidate = properties
     }
-    
+
     static constraints = {
         name blank: false
     }

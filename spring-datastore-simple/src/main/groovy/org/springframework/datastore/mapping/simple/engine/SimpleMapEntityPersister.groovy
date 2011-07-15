@@ -66,7 +66,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Objec
         return new SimpleMapQuery(session, getPersistentEntity(), this)
     }
 
-    protected void deleteEntry(String family, key) {
+    protected void deleteEntry(String family, key, entry) {
         datastore[family].remove(key)
     }
 

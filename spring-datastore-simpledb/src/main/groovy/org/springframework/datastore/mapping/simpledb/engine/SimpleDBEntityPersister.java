@@ -1,8 +1,30 @@
+/* Copyright (C) 2011 SpringSource
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.datastore.mapping.simpledb.engine;
 
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataAccessException;
@@ -25,6 +47,9 @@ import org.springframework.datastore.mapping.simpledb.util.SimpleDBTemplate;
 
 import java.io.Serializable;
 import java.util.*;
+import com.amazonaws.services.simpledb.model.Attribute;
+import com.amazonaws.services.simpledb.model.Item;
+import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 
 /**
  * A {@link org.springframework.datastore.mapping.engine.EntityPersister} implementation for the SimpleDB store
@@ -33,6 +58,13 @@ import java.util.*;
  * @since 0.1
  */
 public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSimpleDBItem, Object> {
+
+    protected SimpleDBTemplate simpleDBTemplate;
+    protected String entityFamily;
+    protected SimpleDBDomainResolver domainResolver;
+    protected boolean hasNumericalIdentifier = false;
+    protected boolean hasStringIdentifier = false;
+
     public SimpleDBEntityPersister(MappingContext mappingContext, PersistentEntity entity,
              SimpleDBSession simpleDBSession, ApplicationEventPublisher publisher) {
         super(mappingContext, entity, simpleDBSession, publisher);
@@ -101,7 +133,7 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
 //    }
 
     public Query createQuery() {
-        return new SimpleDBQuery((SimpleDBSession) getSession(), getPersistentEntity(), domainResolver, this, simpleDBTemplate);
+        return new SimpleDBQuery(getSession(), getPersistentEntity(), domainResolver, this, simpleDBTemplate);
     }
 
     public SimpleDBDomainResolver getDomainResolver() {
@@ -159,11 +191,12 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
     }
 
     @Override
-    protected void deleteEntry(String family, final Object key) {
+    protected void deleteEntry(String family, Object key, Object entry) {
         String domain = domainResolver.resolveDomain((String)key);
         simpleDBTemplate.deleteItem(domain, (String) key);
     }
 
+    @Override
     protected Object generateIdentifier(final PersistentEntity persistentEntity,
             final NativeSimpleDBItem nativeEntry) {
         return UUID.randomUUID().toString(); //todo - allow user to specify id generator using normal gorm way
@@ -176,6 +209,7 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
         return null;
     }
 
+    @Override
     @SuppressWarnings("rawtypes")
     public AssociationIndexer getAssociationIndexer(NativeSimpleDBItem nativeEntry, Association association) {
         throw new RuntimeException("not implemented: getAssociationIndexer");
@@ -200,14 +234,14 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
 //        Currency.class,
 //        URL.class);
 
+    @Override
     protected void setEntryValue(NativeSimpleDBItem nativeEntry, String key, Object value) {
-        if (value != null && !getMappingContext().isPersistentEntity(value)) {
-            String stringValue = SimpleDBConverterUtil.convertToString(value, getMappingContext());
+       if (value != null && !getMappingContext().isPersistentEntity(value)) {
+           String stringValue = SimpleDBConverterUtil.convertToString(value, getMappingContext());
 
-            nativeEntry.put(key, stringValue);
-        }
+           nativeEntry.put(key, stringValue);
+       }
     }
-
 
     @Override
     protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj, NativeSimpleDBItem nativeEntry) {
@@ -235,9 +269,9 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
 
         List<ReplaceableAttribute> puts = new LinkedList<ReplaceableAttribute>();
         for (ReplaceableAttribute attribute : allAttributes) {
-            if ( attribute.getValue() != null ) {
+            if (attribute.getValue() != null) {
                 puts.add(attribute);
-            }    
+            }
         }
 
         simpleDBTemplate.putAttributes(domain, id, puts);
@@ -268,10 +302,10 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
         }
 
         for (ReplaceableAttribute attribute : allAttributes) {
-            if ( "version".equals(attribute.getName()) ) {
+            if ("version".equals(attribute.getName())) {
                 //ignore it, it will be explicitly added later right before the insert by taking incrementing and taking new one
             } else {
-                if ( attribute.getValue() != null ) {
+                if (attribute.getValue() != null) {
                     puts.add(attribute);
                 } else {
                     deletes.add(new Attribute(attribute.getName(), null));
@@ -295,8 +329,6 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
         }
     }
 
-
-
     protected ReplaceableAttribute createAttributeForVersion(EntityAccess ea) {
         ReplaceableAttribute attrToPut;
         Object updatedVersion = ea.getProperty("version");
@@ -307,19 +339,21 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
     }
 
     protected String convertVersionToString(Object currentVersion) {
-        if ( currentVersion == null) {
+        if (currentVersion == null) {
             return null;
-        } else if ( currentVersion instanceof Long ) {
-            return SimpleDBTypeConverterRegistrar.LONG_TO_STRING_CONVERTER.convert((Long) currentVersion);
-        } else {
-            return currentVersion.toString();
         }
+
+        if (currentVersion instanceof Long) {
+            return SimpleDBTypeConverterRegistrar.LONG_TO_STRING_CONVERTER.convert((Long) currentVersion);
+        }
+
+        return currentVersion.toString();
     }
 
     @Override
     protected void deleteEntries(String family, final List<Object> keys) {
         for (Object key : keys) {
-            deleteEntry(family, key); //todo - optimize for bulk removal
+            deleteEntry(family, key, null); //todo - optimize for bulk removal
         }
     }
 
@@ -335,17 +369,10 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
 
         @Override
         public void setProperty(String name, Object value) {
-            if ( "version".equals(name) && value instanceof Integer) {
+            if ("version".equals(name) && value instanceof Integer) {
                 value = ((Integer)value).longValue();
             }
             super.setProperty(name, value);
         }
     }
-
-
-    protected SimpleDBTemplate simpleDBTemplate;
-    protected String entityFamily;
-    protected SimpleDBDomainResolver domainResolver;
-    protected boolean hasNumericalIdentifier = false;
-    protected boolean hasStringIdentifier = false;
 }

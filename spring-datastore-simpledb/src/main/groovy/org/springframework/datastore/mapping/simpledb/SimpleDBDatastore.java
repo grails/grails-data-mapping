@@ -1,30 +1,51 @@
+/* Copyright (C) 2011 SpringSource
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.datastore.mapping.simpledb;
+
+import static org.springframework.datastore.mapping.config.utils.ConfigUtils.read;
+
+import java.util.Collections;
+import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.model.*;
+import org.springframework.datastore.mapping.model.MappingContext;
+import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.simpledb.config.SimpleDBMappingContext;
 import org.springframework.datastore.mapping.simpledb.model.types.SimpleDBTypeConverterRegistrar;
 import org.springframework.datastore.mapping.simpledb.util.SimpleDBTemplate;
 import org.springframework.datastore.mapping.simpledb.util.SimpleDBTemplateImpl;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static org.springframework.datastore.mapping.config.utils.ConfigUtils.read;
-
 /**
  * A Datastore implementation for the AWS SimpleDB document store.
  *
- * @author Roman Stepanenko based on Graeme Rocher code for MongoDb and Redis 
+ * @author Roman Stepanenko based on Graeme Rocher code for MongoDb and Redis
  * @since 0.1
  */
 public class SimpleDBDatastore extends AbstractDatastore implements InitializingBean, MappingContext.Listener {
+
+    public static final String SECRET_KEY = "secretKey";
+    public static final String ACCESS_KEY = "accessKey";
+    public static final String DOMAIN_PREFIX_KEY = "domainNamePrefix";
+
+//    private Map<PersistentEntity, SimpleDBTemplate> simpleDBTemplates = new ConcurrentHashMap<PersistentEntity, SimpleDBTemplate>();
+    private SimpleDBTemplate simpleDBTemplate;  //currently there is no need to create template per entity, we can share same instance
+    private String domainNamePrefix;
 
     public SimpleDBDatastore() {
         this(new SimpleDBMappingContext(), Collections.<String, String>emptyMap(), null);
@@ -52,7 +73,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
     public SimpleDBDatastore(MappingContext mappingContext, Map<String, String> connectionDetails) {
         this(mappingContext, connectionDetails, null);
     }
-    
+
     public SimpleDBDatastore(MappingContext mappingContext) {
         this(mappingContext, Collections.<String, String>emptyMap(), null);
     }
@@ -74,7 +95,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
     public void afterPropertiesSet() throws Exception {
         for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
             // Only create SimpleDB templates for entities that are mapped with SimpleDB
-            if(!entity.isExternal()) {
+            if (!entity.isExternal()) {
                 createSimpleDBTemplate(entity);
             }
         }
@@ -100,17 +121,9 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         createSimpleDBTemplate(entity);
     }
 
+    @Override
     protected void initializeConverters(@SuppressWarnings("hiding") MappingContext mappingContext) {
         final ConverterRegistry conversionService = mappingContext.getConverterRegistry();
-        SimpleDBTypeConverterRegistrar registrar = new SimpleDBTypeConverterRegistrar();
-        registrar.register(conversionService);
+        new SimpleDBTypeConverterRegistrar().register(conversionService);
     }
-
-//    private Map<PersistentEntity, SimpleDBTemplate> simpleDBTemplates = new ConcurrentHashMap<PersistentEntity, SimpleDBTemplate>();
-    private SimpleDBTemplate simpleDBTemplate;  //currently there is no need to create template per entity, we can share same instance
-    private String domainNamePrefix;
-
-    public static final String SECRET_KEY = "secretKey";
-    public static final String ACCESS_KEY = "accessKey";
-    public static final String DOMAIN_PREFIX_KEY = "domainNamePrefix";
 }

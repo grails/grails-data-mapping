@@ -32,7 +32,7 @@ subprojects {
         apply plugin: 'groovy'
         apply plugin: 'eclipse'
         apply plugin: 'maven'
-		apply plugin: 'idea'
+        apply plugin: 'idea'
         apply from: "file:${rootDir}/clover.gradle"
     }
 
@@ -165,16 +165,15 @@ subprojects {
                         description += snapshotRepositoryUrl
                         def credentials
                         if (isSpringProject) {
-	                        credentials = [userName: project.properties.s3AccessKey,
-	                                       passphrase: project.properties.s3SecretAccessKey]
+                            credentials = [userName: project.properties.s3AccessKey,
+                                           passphrase: project.properties.s3SecretAccessKey]
                         }
                         else {
-  				          	final username = project.properties["artifactoryPublishUsername"]
-				          	final password = project.properties["artifactoryPublishPassword"]
-	
-	                        credentials = [userName: username,
-	                                       password: password]
-            				org.apache.ivy.util.url.CredentialsStore.INSTANCE.addCredentials("Artifactory Realm", "repo.grails.org", username, password);	
+                            final username = project.properties["artifactoryPublishUsername"]
+                            final password = project.properties["artifactoryPublishPassword"]
+
+                            credentials = [userName: username, password: password]
+                            org.apache.ivy.util.url.CredentialsStore.INSTANCE.addCredentials("Artifactory Realm", "repo.grails.org", username, password);
                         }
                         configuration = configurations.deployerJars
                         repository(url: milestoneRepositoryUrl) {

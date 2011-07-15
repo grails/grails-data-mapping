@@ -15,27 +15,43 @@
 
 package org.springframework.datastore.mapping.mongo;
 
-import com.mongodb.*;
+import static org.springframework.datastore.mapping.config.utils.ConfigUtils.read;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.authentication.UserCredentials;
-import org.springframework.data.document.mongodb.*;
+import org.springframework.data.document.mongodb.DbCallback;
+import org.springframework.data.document.mongodb.MongoFactoryBean;
+import org.springframework.data.document.mongodb.MongoTemplate;
+import org.springframework.data.document.mongodb.SimpleMongoDbFactory;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.document.config.DocumentMappingContext;
-import org.springframework.datastore.mapping.model.*;
+import org.springframework.datastore.mapping.model.ClassMapping;
+import org.springframework.datastore.mapping.model.MappingContext;
+import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.springframework.datastore.mapping.model.PersistentProperty;
+import org.springframework.datastore.mapping.model.PropertyMapping;
 import org.springframework.datastore.mapping.mongo.config.MongoAttribute;
 import org.springframework.datastore.mapping.mongo.config.MongoCollection;
 import org.springframework.datastore.mapping.mongo.config.MongoMappingContext;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static org.springframework.datastore.mapping.config.utils.ConfigUtils.read;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.Mongo;
+import com.mongodb.MongoException;
+import com.mongodb.MongoOptions;
+import com.mongodb.ServerAddress;
+import com.mongodb.WriteConcern;
 
 /**
  * A Datastore implementation for the Mongo document store.

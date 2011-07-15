@@ -147,53 +147,53 @@ class FindByMethodSpec extends GormDatastoreSpec {
         then:
             0 == books?.size()
     }
-    
+
     void "Test findOrCreateBy For A Record That Does Not Exist In The Database"() {
         when:
             def book = Book.findOrCreateByAuthor('Someone')
-            
+
         then:
             'Someone' == book.author
             null == book.title
             null == book.id
     }
-    
+
     void "Test findOrCreateBy With An AND Clause"() {
         when:
             def book = Book.findOrCreateByAuthorAndTitle('Someone', 'Something')
-            
+
         then:
             'Someone' == book.author
             'Something' == book.title
-            null == book.id    
+            null == book.id
     }
-    
+
     void "Test findOrCreateBy Throws Exception If An OR Clause Is Used"() {
         when:
             Book.findOrCreateByAuthorOrTitle('Someone', 'Something')
-            
+
         then:
             thrown(UnsupportedOperationException)
     }
-    
+
     void "Test findOrSaveBy For A Record That Does Not Exist In The Database"() {
         when:
             def book = Book.findOrSaveByAuthor('Some New Author')
-        
+
         then:
             'Some New Author' == book.author
             null == book.title
             book.id != null
     }
-    
+
     void "Test findOrSaveBy For A Record That Does Exist In The Database"() {
-        
+
         given:
             def originalId = new Book(author: 'Some Author', title: 'Some Title').save().id
-            
+
         when:
             def book = Book.findOrSaveByAuthor('Some Author')
-        
+
         then:
             'Some Author' == book.author
             'Some Title' == book.title

@@ -23,7 +23,7 @@ import org.springframework.datastore.mapping.query.Restrictions;
 import org.springframework.util.Assert;
 
 /**
- *  Method expression used to evaluate a dynamic finder
+ *  Method expression used to evaluate a dynamic finder.
  */
 public abstract class MethodExpression {
 
@@ -46,11 +46,11 @@ public abstract class MethodExpression {
     public void setArguments(Object[] arguments) {
         this.arguments = arguments;
     }
-    
+
     public Object[] getArguments() {
-          return Arrays.copyOf(arguments, arguments.length);
+        return Arrays.copyOf(arguments, arguments.length);
     }
-    
+
     public static class GreaterThan extends MethodExpression {
         public GreaterThan(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
@@ -226,6 +226,7 @@ public abstract class MethodExpression {
             return Restrictions.eq(propertyName, arguments[0]);
         }
     }
+
     public static class NotEqual extends MethodExpression {
         public NotEqual(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);

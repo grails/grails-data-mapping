@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.FlushModeType;
 
@@ -66,13 +67,15 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
 
             final List<PendingOperation<RedisEntry, Long>> postOperations = new LinkedList<PendingOperation<RedisEntry, Long>>();
 
-            final RedisEntityPersister persister = (RedisEntityPersister) getPersister(entity);
+            final RedisEntityPersister persister = (RedisEntityPersister)getPersister(entity);
 
             redisTemplate.pipeline(new RedisCallback<RedisTemplate>() {
                 public Object doInRedis(RedisTemplate redis) throws IOException {
                     for (PendingInsert<RedisEntry, Long> pendingInsert : pendingInserts) {
                         final EntityAccess entityAccess = pendingInsert.getEntityAccess();
-                        if (persister.cancelInsert(entity, entityAccess)) continue;
+                        if (persister.cancelInsert(entity, entityAccess)) {
+                            continue;
+                        }
 
                         List<PendingOperation<RedisEntry, Long>> preOperations = pendingInsert.getPreOperations();
                         for (PendingOperation<RedisEntry, Long> preOperation : preOperations) {
@@ -102,13 +105,15 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
 
             final List<PendingOperation<RedisEntry, Long>> postOperations = new LinkedList<PendingOperation<RedisEntry, Long>>();
 
-            final RedisEntityPersister persister = (RedisEntityPersister) getPersister(entity);
+            final RedisEntityPersister persister = (RedisEntityPersister)getPersister(entity);
 
             redisTemplate.pipeline(new RedisCallback<RedisTemplate>() {
                 public Object doInRedis(RedisTemplate redis) throws IOException {
                     for (PendingUpdate<RedisEntry, Long> pendingInsert : pendingInserts) {
                         final EntityAccess entityAccess = pendingInsert.getEntityAccess();
-                        if (persister.cancelUpdate(entity, entityAccess)) continue;
+                        if (persister.cancelUpdate(entity, entityAccess)) {
+                            continue;
+                        }
 
                         List<PendingOperation<RedisEntry, Long>> preOperations = pendingInsert.getPreOperations();
                         for (PendingOperation<RedisEntry, Long> preOperation : preOperations) {
@@ -146,7 +151,8 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
                 unlock(lockedObject);
             }
             redisTemplate.close();
-        } finally {
+        }
+        finally {
             super.disconnect();
         }
     }
@@ -156,7 +162,8 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
     protected Transaction<RedisTemplate> beginTransactionInternal() {
         try {
             redisTemplate.multi();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new CannotCreateTransactionException("Error starting Redis transaction: " + e.getMessage(), e);
         }
         return new RedisTransaction(redisTemplate);
@@ -164,9 +171,9 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
 
     @Override
     public void lock(Object o) {
-        LockableEntityPersister ep = (LockableEntityPersister) getPersister(o);
+        LockableEntityPersister ep = (LockableEntityPersister)getPersister(o);
         if (ep == null) {
-            throw new CannotAcquireLockException("Cannot lock object ["+o+"]. It is not a persistent instance!");
+            throw new CannotAcquireLockException("Cannot lock object [" + o + "]. It is not a persistent instance!");
         }
 
         Serializable id = ep.getObjectIdentifier(o);
@@ -183,7 +190,7 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
             return;
         }
 
-        LockableEntityPersister ep = (LockableEntityPersister) getPersister(o);
+        LockableEntityPersister ep = (LockableEntityPersister)getPersister(o);
         if (ep == null) {
             return;
         }
@@ -194,10 +201,9 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
 
     @Override
     public Object lock(Class type, Serializable key) {
-        LockableEntityPersister ep = (LockableEntityPersister) getPersister(type);
+        LockableEntityPersister ep = (LockableEntityPersister)getPersister(type);
         if (ep == null) {
-            throw new CannotAcquireLockException("Cannot lock key [" + key +
-                    "]. It is not a persistent instance!");
+            throw new CannotAcquireLockException("Cannot lock key [" + key + "]. It is not a persistent instance!");
         }
 
         final Object lockedObject = ep.lock(key);
@@ -216,12 +222,12 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
      */
     public Object random(Class type) {
         flushIfNecessary();
-        RedisEntityPersister ep = (RedisEntityPersister) getPersister(type);
+        RedisEntityPersister ep = (RedisEntityPersister)getPersister(type);
         if (ep == null) {
             throw new NonPersistentTypeException("The class [" + type.getName() + "] is not a known persistent type.");
         }
 
-        RedisSet set = (RedisSet) ep.getAllEntityIndex();
+        RedisSet set = (RedisSet)ep.getAllEntityIndex();
         String id = set.random();
         return retrieve(type, id);
     }
@@ -237,10 +243,10 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
             return;
         }
 
-        final RedisEntityPersister ep = (RedisEntityPersister) getPersister(instance);
+        final RedisEntityPersister ep = (RedisEntityPersister)getPersister(instance);
         if (ep == null) {
-            throw new NonPersistentTypeException("The class [" + instance.getClass().getName() +
-                    "] is not a known persistent type.");
+            throw new NonPersistentTypeException("The class [" + instance.getClass().getName()
+                    + "] is not a known persistent type.");
         }
 
         final Serializable key = ep.getObjectIdentifier(instance);
@@ -257,10 +263,10 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
      * @param ttl The time to live in seconds
      */
     public void expire(final Class type, final Serializable key, final int ttl) {
-        final RedisEntityPersister ep = (RedisEntityPersister) getPersister(type);
+        final RedisEntityPersister ep = (RedisEntityPersister)getPersister(type);
 
         if (ep == null) {
-            throw new NonPersistentTypeException("The class ["+type+"] is not a known persistent type.");
+            throw new NonPersistentTypeException("The class [" + type + "] is not a known persistent type.");
         }
 
         String entityKey = ep.getRedisKey(key);
@@ -268,19 +274,22 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    Thread.sleep(ttl*1000);
-                } catch (InterruptedException e) {
+                    Thread.sleep(ttl * 1000);
+                }
+                catch (InterruptedException e) {
                     // ignore
                 }
-                final RedisSession newSession = (RedisSession) getDatastore().connect();
-                RedisEntityPersister newEp = (RedisEntityPersister) newSession.getPersister(type);
+                final RedisSession newSession = (RedisSession)getDatastore().connect();
+                RedisEntityPersister newEp = (RedisEntityPersister)newSession.getPersister(type);
                 newEp.getAllEntityIndex().remove(key);
             }
         }).start();
     }
 
     private void flushIfNecessary() {
-        if (getFlushMode() == FlushModeType.AUTO) flush();
+        if (getFlushMode() == FlushModeType.AUTO) {
+            flush();
+        }
     }
 
     @Override
@@ -289,7 +298,7 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
             return;
         }
 
-        final java.util.Set<String> keys = redisTemplate.keys("~*");
+        final Set<String> keys = redisTemplate.keys("~*");
         if (keys != null && !keys.isEmpty()) {
             redisTemplate.del(keys.toArray(new String[keys.size()]));
         }
@@ -303,18 +312,19 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
      */
     public Object pop(Class type) {
         flushIfNecessary();
-        RedisEntityPersister ep = (RedisEntityPersister) getPersister(type);
+        RedisEntityPersister ep = (RedisEntityPersister)getPersister(type);
         if (ep == null) {
-            throw new NonPersistentTypeException("The class ["+type+"] is not a known persistent type.");
+            throw new NonPersistentTypeException("The class [" + type + "] is not a known persistent type.");
         }
 
-        RedisSet set = (RedisSet) ep.getAllEntityIndex();
+        RedisSet set = (RedisSet)ep.getAllEntityIndex();
         String id = set.pop();
         Object result = null;
         try {
             result = retrieve(type, id);
             return result;
-        } finally {
+        }
+        finally {
             if (result != null) {
                 delete(result);
             }

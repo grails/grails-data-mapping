@@ -55,7 +55,7 @@ public class MongoSession extends AbstractSession<DB> {
 
     public MongoSession(MongoDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
         super(datastore, mappingContext, publisher);
-        this.mongoDatastore = datastore;
+        mongoDatastore = datastore;
         try {
             getNativeInterface().requestStart();
         }

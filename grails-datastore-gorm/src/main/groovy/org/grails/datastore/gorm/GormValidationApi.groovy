@@ -58,9 +58,9 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
      * @return True if the instance is valid
      */
     boolean validate(D instance, List fields) {
-        
+
         beforeValidateHelper.invokeBeforeValidate instance, fields
-        
+
         if (!validator) {
             return true
         }

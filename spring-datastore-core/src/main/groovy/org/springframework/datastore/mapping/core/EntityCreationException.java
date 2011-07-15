@@ -15,8 +15,8 @@
 package org.springframework.datastore.mapping.core;
 
 /**
- * Thrown when there was an error creating an entity
- * 
+ * Thrown when there was an error creating an entity.
+ *
  * @author Graeme Rocher
  * @since 1.0
  */

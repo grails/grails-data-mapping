@@ -7,16 +7,16 @@ import javax.persistence.Transient
 class ClassWithOverloadedBeforeValidate {
     Long id
     Long version
-    
+
     @Transient
     def noArgCounter = 0
-    
+
     @Transient
     def listArgCounter = 0
-    
+
     @Transient
     def propertiesPassedToBeforeValidate
-    
+
     String name
     def beforeValidate() {
         ++noArgCounter
@@ -25,7 +25,7 @@ class ClassWithOverloadedBeforeValidate {
         ++listArgCounter
         propertiesPassedToBeforeValidate = properties
     }
-    
+
     static constraints = {
         name blank: false
     }

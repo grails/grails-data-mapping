@@ -1,11 +1,11 @@
+.settings
 .classpath
 .project
 .metadata
 .DS_Store
-build
+build/
+target/
 .gradle
-grails-plugins/redis/target
-grails-plugins/mongodb/target
 grails-plugins/mongodb/web-app
 grails-plugins/checkout
 grails-plugins/redis/web-app

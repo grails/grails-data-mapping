@@ -33,7 +33,7 @@ class SimpledbGrailsPlugin {
     def scm = [ url: "https://github.com/SpringSource/spring-data-mapping" ]
     def developers = [
         [ name: "Roman Stepanenko", email: "rs.opensource@gmail.com" ] ]
-    def version = "0.1"
+    def version = "1.0.0.M1"
     def grailsVersion = "1.3.5 > *"
     def observe = ['services']
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
@@ -49,7 +49,7 @@ class SimpledbGrailsPlugin {
 This pluging allows to use standard GORM mapping to persist in AWS SimpleDB instead of going through JPA+SimpleJPA plugins.
 This plugin will be evolved into full-fledged SimpleDB support with automatic sharding, ID generation,
 configurable large String storage (in S3 or by splitting into attributes),
-customizable performance tweaks according to SimpleDB best practices (dedicated columns for 'dummy null' for quick lookup by null values) etc.  
+customizable performance tweaks according to SimpleDB best practices (dedicated columns for 'dummy null' for quick lookup by null values) etc.
 '''
 
     // URL to the plugin's documentation
@@ -73,7 +73,6 @@ customizable performance tweaks according to SimpleDB best practices (dedicated 
             config = simpleDBConfig.toProperties()
         }
 
-  
         simpleDBPersistenceInterceptor(DatastorePersistenceContextInterceptor, ref("simpleDBDatastore"))
 
         simpleDBPersistenceContextInterceptorAggregator(PersistenceContextInterceptorAggregator)
@@ -260,10 +259,5 @@ customizable performance tweaks according to SimpleDB best practices (dedicated 
             }
         }
         beans.registerBeans(event.ctx)
-    }
-
-    def onConfigChange = { event ->
-        // TODO Implement code that is executed when the project configuration changes.
-        // The event is the same as for 'onChange'.
     }
 }

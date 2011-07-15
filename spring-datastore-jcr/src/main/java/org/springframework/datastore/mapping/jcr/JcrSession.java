@@ -1,3 +1,17 @@
+/* Copyright (C) 2010 SpringSource
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.datastore.mapping.jcr;
 
 import java.io.Serializable;
@@ -76,7 +90,6 @@ public class JcrSession extends AbstractSession<JcrSessionFactory> {
 
     @Override
     protected Transaction beginTransactionInternal() {
-        System.out.println("beging Tx");
         return new JcrTransaction(jcrSessionFactory);
     }
 
@@ -91,41 +104,48 @@ public class JcrSession extends AbstractSession<JcrSessionFactory> {
     @Override
     public void lock(Object o) {
         LockableEntityPersister ep = (LockableEntityPersister) getPersister(o);
-        if (ep != null) {
-            Serializable id = ep.getObjectIdentifier(o);
-            if (id != null) {
-                ep.lock(id);
-            } else {
-                throw new CannotAcquireLockException("Cannot lock transient instance [" + o + "]");
-            }
-        } else {
-            throw new CannotAcquireLockException("Cannot lock object [" + o + "]. It is not a persistent instance!");
+        if (ep == null) {
+            throw new CannotAcquireLockException("Cannot lock object [" + o +
+                "]. It is not a persistent instance!");
         }
+
+        Serializable id = ep.getObjectIdentifier(o);
+        if (id == null) {
+            throw new CannotAcquireLockException("Cannot lock transient instance [" + o + "]");
+        }
+
+        ep.lock(id);
     }
 
     @Override
     public void unlock(Object o) {
-        if (o != null) {
-            LockableEntityPersister ep = (LockableEntityPersister) getPersister(o);
-            if (ep != null) {
-                ep.unlock(o);
-                lockedObjects.remove(o);
-            }
+        if (o == null) {
+            return;
         }
+
+        LockableEntityPersister ep = (LockableEntityPersister) getPersister(o);
+        if (ep == null) {
+            return;
+        }
+
+        ep.unlock(o);
+        lockedObjects.remove(o);
     }
 
     @Override
     public Object lock(Class type, Serializable key) {
         LockableEntityPersister ep = (LockableEntityPersister) getPersister(type);
-        if (ep != null) {
-            final Object lockedObject = ep.lock(key);
-            if (lockedObject != null) {
-                cacheObject(key, lockedObject);
-                lockedObjects.add(lockedObject);
-            }
-            return lockedObject;
+        if (ep == null) {
+            throw new CannotAcquireLockException("Cannot lock key [" + key +
+                "]. It is not a persistent instance!");
         }
-        throw new CannotAcquireLockException("Cannot lock key [" + key + "]. It is not a persistent instance!");
+
+        final Object lockedObject = ep.lock(key);
+        if (lockedObject != null) {
+            cacheObject(key, lockedObject);
+            lockedObjects.add(lockedObject);
+        }
+        return lockedObject;
     }
 
     protected class LongToDateConverter implements Converter<Long, Date> {
@@ -134,4 +154,3 @@ public class JcrSession extends AbstractSession<JcrSessionFactory> {
         }
     }
 }
-

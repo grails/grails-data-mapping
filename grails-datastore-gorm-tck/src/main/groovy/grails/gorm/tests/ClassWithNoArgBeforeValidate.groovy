@@ -5,11 +5,11 @@ class ClassWithNoArgBeforeValidate implements Serializable {
     Long version
     def noArgCounter = 0
     String name
-    
+
     def beforeValidate() {
         ++noArgCounter
     }
-    
+
     static constraints = {
         name blank: false
     }

@@ -368,12 +368,12 @@ public class MongoQuery extends Query {
                     }
                     else {
                         DBObject query = getMongoQuery();
-
                         dbObject = collection.findOne(query);
                     }
                     final Object object = createObjectFromDBObject(dbObject);
                     return wrapObjectResultInList(object);
                 }
+
                 DBCursor cursor;
                 DBObject query = createQueryObject(entity);
 
@@ -403,7 +403,7 @@ public class MongoQuery extends Query {
                         MaxProjection mp = (MaxProjection) projection;
 
                         MongoResultList results = new MongoResultList(cursor, mongoEntityPersister);
-                        projectedResults.add( manualProjections.max((Collection) results.clone(), mp.getPropertyName()) );
+                        projectedResults.add(manualProjections.max((Collection) results.clone(), mp.getPropertyName()));
                     }
                     else if ((projection instanceof PropertyProjection) || (projection instanceof IdProjection)) {
                         final PersistentProperty persistentProperty;
@@ -432,7 +432,9 @@ public class MongoQuery extends Query {
                             projectedResults.add(propertyResults);
                         }
                         else {
-                            throw new InvalidDataAccessResourceUsageException("Cannot use ["+projection.getClass().getSimpleName()+"] projection on non-existent property: " + propertyName);
+                            throw new InvalidDataAccessResourceUsageException("Cannot use [" +
+                                    projection.getClass().getSimpleName() +
+                                    "] projection on non-existent property: " + propertyName);
                         }
                     }
                 }
@@ -659,9 +661,9 @@ public class MongoQuery extends Query {
 
             if (object instanceof DBObject) {
                 object = convertDBObject(object);
-
                 set(index, object);
             }
+
             return  object;
         }
 

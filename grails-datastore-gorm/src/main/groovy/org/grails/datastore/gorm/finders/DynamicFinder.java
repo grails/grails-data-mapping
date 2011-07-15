@@ -47,7 +47,7 @@ import org.springframework.datastore.mapping.query.Query;
 import org.springframework.util.StringUtils;
 
 /**
- * Implementation of dynamic finders
+ * Abstract base class for dynamic finders.
  */
 public abstract class DynamicFinder extends AbstractFinder implements QueryBuildingFinder {
 
@@ -75,11 +75,12 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
     static {
         // populate the default method expressions
         try {
-            Class[] classes = { Equal.class, NotEqual.class, InList.class, Between.class, Like.class,
-                                GreaterThanEquals.class, LessThanEquals.class, GreaterThan.class,
-                                LessThan.class, IsNull.class, IsNotNull.class, IsEmpty.class,
-                                IsEmpty.class, IsNotEmpty.class };
-            Class[] constructorParamTypes = { Class.class, String.class};
+            Class[] classes = {
+                      Equal.class, NotEqual.class, InList.class, Between.class, Like.class,
+                      GreaterThanEquals.class, LessThanEquals.class, GreaterThan.class,
+                      LessThan.class, IsNull.class, IsNotNull.class, IsEmpty.class,
+                      IsEmpty.class, IsNotEmpty.class };
+            Class[] constructorParamTypes = { Class.class, String.class };
             for (Class c : classes) {
                 methodExpressions.put(c.getSimpleName(), c.getConstructor(constructorParamTypes));
             }
@@ -94,7 +95,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
 
     static void resetMethodExpressionPattern() {
         String expressionPattern = DefaultGroovyMethods.join(methodExpressions.keySet(), "|");
-        methodExpressinPattern = Pattern.compile("\\p{Upper}[\\p{Lower}\\d]+("+expressionPattern+")");
+        methodExpressinPattern = Pattern.compile("\\p{Upper}[\\p{Lower}\\d]+(" + expressionPattern + ")");
     }
 
     protected DynamicFinder(final Pattern pattern, final String[] operators, final Datastore datastore) {
@@ -103,7 +104,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         this.operators = operators;
         this.operatorPatterns = new Pattern[operators.length];
         for (int i = 0; i < operators.length; i++) {
-            operatorPatterns[i] = Pattern.compile("(\\w+)("+operators[i]+")(\\p{Upper})(\\w+)");
+            operatorPatterns[i] = Pattern.compile("(\\w+)(" + operators[i] + ")(\\p{Upper})(\\w+)");
         }
     }
 
@@ -115,12 +116,17 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
      */
     public static void registerNewMethodExpression(Class methodExpression) {
         try {
-            methodExpressions.put(methodExpression.getSimpleName(), methodExpression.getConstructor(new Class[] { Class.class, String.class}));
+            methodExpressions.put(methodExpression.getSimpleName(), methodExpression.getConstructor(
+                    Class.class, String.class));
             resetMethodExpressionPattern();
         } catch (SecurityException e) {
-            throw new IllegalArgumentException("Class ["+methodExpression+"] does not provide a constructor that takes parameters of type Class and String: " + e.getMessage(), e);
+            throw new IllegalArgumentException("Class [" + methodExpression +
+                    "] does not provide a constructor that takes parameters of type Class and String: " +
+                    e.getMessage(), e);
         } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("Class ["+methodExpression+"] does not provide a constructor that takes parameters of type Class and String: " + e.getMessage(), e);
+            throw new IllegalArgumentException("Class [" + methodExpression +
+                    "] does not provide a constructor that takes parameters of type Class and String: " +
+                    e.getMessage(), e);
         }
     }
 
@@ -137,7 +143,9 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         return doInvokeInternal(invocation);
     }
 
-    public DynamicFinderInvocation createFinderInvocation(Class clazz, String methodName, Closure additionalCriteria, Object[] arguments) {
+    public DynamicFinderInvocation createFinderInvocation(Class clazz, String methodName,
+            Closure additionalCriteria, Object[] arguments) {
+
         List expressions = new ArrayList();
         if (arguments == null) arguments = EMPTY_OBJECT_ARRAY;
         Matcher match = pattern.matcher(methodName);
@@ -163,7 +171,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                 booleanProperty = booleanProperty.substring(3);
                 arg = Boolean.FALSE;
             }
-            MethodExpression booleanExpression = findMethodExpression(clazz, booleanProperty );
+            MethodExpression booleanExpression = findMethodExpression(clazz, booleanProperty);
             booleanExpression.setArguments(new Object[]{arg});
             expressions.add(booleanExpression);
         }
@@ -210,7 +218,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         }
         // otherwise there is only one expression
         if (!containsOperator && querySequence != null) {
-            MethodExpression solo =findMethodExpression(clazz,querySequence );
+            MethodExpression solo =findMethodExpression(clazz,querySequence);
 
             final int requiredArguments = solo.getArgumentsRequired();
             if (requiredArguments  > arguments.length) {
@@ -239,7 +247,8 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             }
         }
 
-        return new DynamicFinderInvocation(clazz, methodName, remainingArguments, expressions, additionalCriteria, operatorInUse);
+        return new DynamicFinderInvocation(clazz, methodName, remainingArguments,
+                expressions, additionalCriteria, operatorInUse);
     }
 
     protected MethodExpression findMethodExpression(Class clazz, String expression) {
@@ -248,12 +257,13 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         if (matcher.find()) {
             Constructor constructor = methodExpressions.get(matcher.group(1));
             try {
-                return (MethodExpression) constructor.newInstance(clazz, calcPropertyName(expression, constructor.getDeclaringClass().getSimpleName()));
+                return (MethodExpression) constructor.newInstance(clazz,
+                        calcPropertyName(expression, constructor.getDeclaringClass().getSimpleName()));
             } catch (Exception e) {
                 // ignore
             }
         }
-        return new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()) );
+        return new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()));
     }
 
     private static String calcPropertyName(String queryParameter, String clause) {
@@ -294,10 +304,10 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         Integer offsetParam = null;
         final ConversionService conversionService = q.getSession().getMappingContext().getConversionService();
         if (argMap.containsKey(ARGUMENT_MAX)) {
-            maxParam = conversionService.convert(argMap.get(ARGUMENT_MAX),Integer.class);
+            maxParam = conversionService.convert(argMap.get(ARGUMENT_MAX), Integer.class);
         }
         if (argMap.containsKey(ARGUMENT_OFFSET)) {
-            offsetParam = conversionService.convert(argMap.get(ARGUMENT_OFFSET),Integer.class);
+            offsetParam = conversionService.convert(argMap.get(ARGUMENT_OFFSET), Integer.class);
         }
         String orderParam = (String)argMap.get(ARGUMENT_ORDER);
 

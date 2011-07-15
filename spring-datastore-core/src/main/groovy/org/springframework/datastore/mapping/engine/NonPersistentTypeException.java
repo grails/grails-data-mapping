@@ -15,8 +15,8 @@
 package org.springframework.datastore.mapping.engine;
 
 /**
- * Thrown when an object cannot be persisted
- * 
+ * Thrown when an object cannot be persisted.
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
