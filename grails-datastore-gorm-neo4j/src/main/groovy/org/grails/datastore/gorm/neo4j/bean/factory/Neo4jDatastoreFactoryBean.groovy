@@ -17,12 +17,12 @@ package org.grails.datastore.gorm.neo4j.bean.factory
 
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
+import org.grails.datastore.gorm.neo4j.Neo4jDatastore
+import org.neo4j.graphdb.GraphDatabaseService
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.springframework.datastore.mapping.model.MappingContext
-import org.grails.datastore.gorm.neo4j.Neo4jDatastore
-import org.neo4j.graphdb.GraphDatabaseService
 
 /**
  * Factory bean for constructing a {@link Neo4jDatastore} instance.
@@ -38,7 +38,7 @@ class Neo4jDatastoreFactoryBean implements FactoryBean<Neo4jDatastore>, Applicat
 
     Neo4jDatastore getObject() {
 
-        def datastore = new Neo4jDatastore(mappingContext, applicationContext, graphDatabaseService)
+        Neo4jDatastore datastore = new Neo4jDatastore(mappingContext, applicationContext, graphDatabaseService)
 
         applicationContext.addApplicationListener new DomainEventListener(datastore)
         applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
@@ -47,7 +47,7 @@ class Neo4jDatastoreFactoryBean implements FactoryBean<Neo4jDatastore>, Applicat
         datastore
     }
 
-    Class<?> getObjectType() { Neo4jDatastore.class }
+    Class<?> getObjectType() { Neo4jDatastore }
 
     boolean isSingleton() { true }
 }

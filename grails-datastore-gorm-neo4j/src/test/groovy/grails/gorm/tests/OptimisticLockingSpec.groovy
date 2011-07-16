@@ -2,6 +2,7 @@ package grails.gorm.tests
 
 import org.springframework.datastore.mapping.core.OptimisticLockingException
 import org.springframework.datastore.mapping.core.Session
+
 import spock.lang.Ignore
 
 /**

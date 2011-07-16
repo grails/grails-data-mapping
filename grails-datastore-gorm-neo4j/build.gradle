@@ -1,11 +1,14 @@
 repositories {
-	mavenRepo urls:'http://m2.neo4j.org/'
+    mavenRepo urls:'http://m2.neo4j.org/'
 }
+
 dependencies {
-  compile project(":grails-datastore-gorm"),
-          project(":spring-datastore-web"),
-          "org.neo4j:neo4j:1.4.M05"
-		  //project(":spring-datastore-core")
-  testCompile project(":grails-datastore-gorm-test"), project(":grails-datastore-gorm-tck")
+    compile project(":grails-datastore-gorm"),
+            project(":spring-datastore-web"),
+            "org.neo4j:neo4j:1.4.M05"
+            //project(":spring-datastore-core")
+    testCompile project(":grails-datastore-gorm-test"),
+                project(":grails-datastore-gorm-tck")
 }
+
 jar.appendix = 'gorm-neo4j'

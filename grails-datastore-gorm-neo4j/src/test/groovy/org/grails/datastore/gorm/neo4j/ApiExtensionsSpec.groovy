@@ -1,20 +1,20 @@
 package org.grails.datastore.gorm.neo4j
 
 import grails.gorm.tests.GormDatastoreSpec
-import org.neo4j.graphdb.Traverser
-import org.neo4j.graphdb.StopEvaluator
-import org.neo4j.graphdb.ReturnableEvaluator
-import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.TraversalPosition
 import grails.gorm.tests.Person
 import grails.gorm.tests.Pet
+
+import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.NotFoundException
+import org.neo4j.graphdb.ReturnableEvaluator
+import org.neo4j.graphdb.StopEvaluator
+import org.neo4j.graphdb.TraversalPosition
+import org.neo4j.graphdb.Traverser
 
 /**
  * check the traverser extension
  */
 class ApiExtensionsSpec extends GormDatastoreSpec {
-
 
     def "test static traversing"() {
         given:
@@ -47,7 +47,7 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
 
         Person.count() == Person.traverseStatic(
                 { TraversalPosition p -> false },
-                { TraversalPosition p -> p.currentNode().getProperty("__type__",null)==Person.class.name } ).size()
+                { TraversalPosition p -> p.currentNode().getProperty("__type__",null) == Person.name } ).size()
 
         Person.count()+2 == Person.traverseStatic( // +2: referenceNode + self (aka subreferenceNode)
                         { TraversalPosition p -> true },
@@ -86,12 +86,11 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
 
         Person.count() == person.traverse(
                 { TraversalPosition p -> false },
-                { TraversalPosition p -> p.currentNode().getProperty("__type__",null)==Person.class.name } ).size()
+                { TraversalPosition p -> p.currentNode().getProperty("__type__",null) == Person.name } ).size()
 
         2 == person.traverse(
                         { TraversalPosition p -> true },
                         { TraversalPosition p -> true } ).size()
-
     }
 
     def "test createInstanceForNode"() {
@@ -114,6 +113,4 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
         then:
         thrown(NotFoundException)
     }
-
-
 }

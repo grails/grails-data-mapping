@@ -1,25 +1,35 @@
+/* Copyright (C) 2010 SpringSource
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.grails.datastore.gorm.neo4j
 
 import org.grails.datastore.gorm.GormEnhancer
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.transaction.PlatformTransactionManager
-import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.GormInstanceApi
-import org.neo4j.graphdb.ReturnableEvaluator
-import org.neo4j.graphdb.Traverser
-import org.neo4j.graphdb.StopEvaluator
+import org.grails.datastore.gorm.GormStaticApi
+import org.grails.datastore.gorm.finders.FinderMethod
 import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.Node
+import org.neo4j.graphdb.ReturnableEvaluator
+import org.neo4j.graphdb.StopEvaluator
+import org.neo4j.graphdb.Traverser
+import org.springframework.datastore.mapping.core.Datastore
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.core.SessionCallback
-import org.grails.datastore.gorm.finders.FinderMethod
+import org.springframework.transaction.PlatformTransactionManager
 
 /**
- * Created by IntelliJ IDEA.
- * User: stefan
- * Date: 25.04.11
- * Time: 13:10
- * To change this template use File | Settings | File Templates.
+ * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
 class Neo4jGormEnhancer extends GormEnhancer {
 
@@ -38,7 +48,6 @@ class Neo4jGormEnhancer extends GormEnhancer {
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
         return new Neo4jGormInstanceApi<D>(cls, datastore)
     }
-
 }
 
 class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
@@ -47,15 +56,15 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
         super(persistentClass, datastore)
     }
 
-    def traverse(def instance, Traverser.Order order, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args ) {
+    def traverse(instance, Traverser.Order order, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args ) {
 
         execute new SessionCallback() {
             def doInSession(Session session) {
 
-                def referenceNode = datastore.graphDatabaseService.getNodeById(instance.id)
+                Node referenceNode = ((Neo4jDatastore)datastore).graphDatabaseService.getNodeById(instance.id)
 
                 // run neo4j traverser
-                def traverser = args ? referenceNode.traverse(order, stopEvaluator, returnableEvaluator, args) :
+                Traverser traverser = args ? referenceNode.traverse(order, stopEvaluator, returnableEvaluator, args) :
                     referenceNode.traverse(order, stopEvaluator, returnableEvaluator,
                     GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH)
 
@@ -72,27 +81,25 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
         }
     }
 
-    Node getSubreferenceNode(def instance) {
-        datastore.subReferenceNodes[instance.getClass().name]
+    Node getSubreferenceNode(instance) {
+        ((Neo4jDatastore)datastore).subReferenceNodes[instance.getClass().name]
     }
 
-    Node getNode(def instance) {
-        datastore.graphDatabaseService.getNodeById(instance.id)
+    Node getNode(instance) {
+        ((Neo4jDatastore)datastore).graphDatabaseService.getNodeById(instance.id)
     }
 
-    def traverse(def instance, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args) {
+    def traverse(instance, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args) {
         traverse(instance, Traverser.Order.BREADTH_FIRST, stopEvaluator, returnableEvaluator, args)
     }
 
-    def traverse(def instance, Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
+    def traverse(instance, Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
         traverse(instance, Traverser.Order.BREADTH_FIRST, stopEvaluator, returnableEvaluator, args)
     }
 
-    def traverse(def instance, Traverser.Order order, Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
+    def traverse(instance, Traverser.Order order, Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
         traverse(instance, order, stopEvaluator as StopEvaluator, returnableEvaluator as ReturnableEvaluator, args)
     }
-
-
 }
 
 class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
@@ -101,16 +108,15 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
         super(persistentClass, datastore, finders)
     }
 
-
     def traverseStatic(Traverser.Order order, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args ) {
 
         execute new SessionCallback() {
             def doInSession(Session session) {
 
-                def subReferenceNode = datastore.subReferenceNodes[persistentEntity.name]
+                Node subReferenceNode = ((Neo4jDatastore)datastore).subReferenceNodes[persistentEntity.name]
 
                 // run neo4j traverser
-                def traverser = args ? subReferenceNode.traverse(order, stopEvaluator, returnableEvaluator, args) :
+                Traverser traverser = args ? subReferenceNode.traverse(order, stopEvaluator, returnableEvaluator, args) :
                     subReferenceNode.traverse(order, stopEvaluator, returnableEvaluator,
                     GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH)
 
@@ -139,13 +145,11 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
         traverseStatic(order, stopEvaluator as StopEvaluator, returnableEvaluator as ReturnableEvaluator, args)
     }
 
-    def createInstanceForNode(def nodeOrId) {
+    def createInstanceForNode(nodeOrId) {
         execute new SessionCallback() {
             def doInSession(Session session) {
                 session.createInstanceForNode(nodeOrId)
             }
         }
     }
-
 }
-

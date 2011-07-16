@@ -1,29 +1,39 @@
+/* Copyright (C) 2010 SpringSource
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.grails.datastore.gorm.neo4j
 
-import org.springframework.datastore.mapping.model.AbstractMappingContext
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.model.MappingConfigurationStrategy
-import org.springframework.datastore.mapping.model.MappingFactory
-import org.springframework.datastore.mapping.model.config.GormMappingConfigurationStrategy
-import org.springframework.datastore.mapping.document.config.Attribute
-import org.grails.datastore.gorm.neo4j.converters.StringToCurrencyConverter
-import org.grails.datastore.gorm.neo4j.converters.StringToLocaleConverter
-import org.grails.datastore.gorm.neo4j.converters.StringToTimeZoneConverter
-import org.grails.datastore.gorm.neo4j.converters.StringToURLConverter
 import org.grails.datastore.gorm.neo4j.converters.StringToBigDecimalConverter
 import org.grails.datastore.gorm.neo4j.converters.StringToBigIntegerConverter
+import org.grails.datastore.gorm.neo4j.converters.StringToCurrencyConverter
+import org.grails.datastore.gorm.neo4j.converters.StringToLocaleConverter
 import org.grails.datastore.gorm.neo4j.converters.StringToShortConverter
+import org.grails.datastore.gorm.neo4j.converters.StringToTimeZoneConverter
+import org.grails.datastore.gorm.neo4j.converters.StringToURLConverter
+import org.springframework.datastore.mapping.document.config.Attribute
+import org.springframework.datastore.mapping.model.AbstractMappingContext
+import org.springframework.datastore.mapping.model.MappingConfigurationStrategy
+import org.springframework.datastore.mapping.model.MappingFactory
+import org.springframework.datastore.mapping.model.PersistentEntity
+import org.springframework.datastore.mapping.model.config.GormMappingConfigurationStrategy
 
 /**
- * Created by IntelliJ IDEA.
- * User: stefan
- * Date: 25.04.11
- * Time: 17:24
- * To change this template use File | Settings | File Templates.
+ * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
 class Neo4jMappingContext extends AbstractMappingContext {
 
-    MappingFactory<Collection, Attribute> mappingFactory;
+    MappingFactory<Collection, Attribute> mappingFactory
     MappingConfigurationStrategy syntaxStrategy
 
     Neo4jMappingContext() {
@@ -41,7 +51,7 @@ class Neo4jMappingContext extends AbstractMappingContext {
 
     @Override
     protected PersistentEntity createPersistentEntity(Class javaClass) {
-        def persistentEntity = new GraphPersistentEntity(javaClass, this)
+        GraphPersistentEntity persistentEntity = new GraphPersistentEntity(javaClass, this)
         mappingFactory.createMappedForm(persistentEntity) // populates mappingFactory.entityToPropertyMap as a side effect
         persistentEntity
     }

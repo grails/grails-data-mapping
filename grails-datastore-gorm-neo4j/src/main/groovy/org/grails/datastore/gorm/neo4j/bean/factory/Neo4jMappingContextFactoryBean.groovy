@@ -15,8 +15,8 @@
 package org.grails.datastore.gorm.neo4j.bean.factory
 
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
-import org.springframework.datastore.mapping.model.MappingContext
 import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
+import org.springframework.datastore.mapping.model.MappingContext
 
 /**
  * Factory bean for construction the Neo4j DocumentMappingContext.
@@ -25,7 +25,6 @@ import org.grails.datastore.gorm.neo4j.Neo4jMappingContext
  */
 class Neo4jMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
 
-    @Override
     protected MappingContext createMappingContext() {
         new Neo4jMappingContext()
     }

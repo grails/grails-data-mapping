@@ -1,3 +1,17 @@
+/* Copyright (C) 2010 SpringSource
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.grails.datastore.gorm.neo4j
 
 import org.springframework.datastore.mapping.config.AbstractGormMappingFactory
@@ -5,22 +19,17 @@ import org.springframework.datastore.mapping.config.Property
 import org.springframework.datastore.mapping.keyvalue.mapping.config.Family
 
 /**
- * Created by IntelliJ IDEA.
- * User: stefan
- * Date: 25.04.11
- * Time: 17:39
- * To change this template use File | Settings | File Templates.
+ * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
 class GraphGormMappingFactory extends AbstractGormMappingFactory {
 
     @Override
     protected Class getPropertyMappedFormType() {
-        Property.class
+        Property
     }
 
     @Override
     protected Class getEntityMappedFormType() {
-        Family.class
+        Family
     }
-
 }

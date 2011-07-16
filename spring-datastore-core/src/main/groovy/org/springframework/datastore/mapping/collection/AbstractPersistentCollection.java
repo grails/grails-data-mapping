@@ -29,15 +29,15 @@ import org.springframework.datastore.mapping.engine.AssociationIndexer;
  */
 public abstract class AbstractPersistentCollection implements PersistentCollection {
 
-   private boolean initialized;
-   private Serializable associationKey;
-   private Session session;
-   private AssociationIndexer indexer;
-   private Collection keys;
-   private Class childType;
+    private boolean initialized;
+    private Serializable associationKey;
+    private Session session;
+    private AssociationIndexer indexer;
+    private Collection keys;
+    private Class childType;
     private boolean dirty = false;
 
-   protected final Collection collection;
+    protected final Collection collection;
 
     protected AbstractPersistentCollection(Collection keys, Class childType,
             Session session, Collection collection) {

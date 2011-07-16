@@ -1,24 +1,24 @@
 package org.grails.datastore.gorm
 
-import org.springframework.datastore.mapping.core.Session
+import grails.gorm.tests.Role
+import grails.gorm.tests.User
 
+import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
+import org.grails.datastore.gorm.neo4j.Neo4jDatastore
+import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
+import org.grails.datastore.gorm.neo4j.constraints.UniqueConstraint
+import org.springframework.context.support.GenericApplicationContext
+import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
-import org.grails.datastore.gorm.neo4j.Neo4jDatastore
-import org.springframework.context.support.GenericApplicationContext
-import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
-import org.grails.datastore.gorm.events.DomainEventListener
-import org.grails.datastore.gorm.events.AutoTimestampEventListener
-import grails.gorm.tests.Role
-import grails.gorm.tests.User
-import org.grails.datastore.gorm.neo4j.constraints.UniqueConstraint
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
-import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 
 class Setup {
 
@@ -42,7 +42,7 @@ class Setup {
         datastore = new Neo4jDatastore(storeDir: storeDir)
 
         classes << User << Role
-        ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint.class );
+        ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint)
 
         def grailsApplication = new DefaultGrailsApplication(classes as Class[], Setup.getClassLoader())
         grailsApplication.mainContext = new GenericApplicationContext()
@@ -61,7 +61,7 @@ class Setup {
 
         datastore.mappingContext.addEntityValidator(entity, [
             supports: { Class c -> true },
-            validate: { Object o, Errors errors ->
+            validate: { o, Errors errors ->
                 if (!StringUtils.hasText(o.name)) {
                     errors.rejectValue("name", "name.is.blank")
                 }
@@ -73,7 +73,7 @@ class Setup {
         validator.grailsApplication = grailsApplication
         validator.domainClass = grailsApplication.getDomainClass(entity.name)
 
-        datastore.mappingContext.addEntityValidator(entity, validator);
+        datastore.mappingContext.addEntityValidator(entity, validator)
 
         def enhancer = new Neo4jGormEnhancer(datastore, new DatastoreTransactionManager(datastore: datastore))
         enhancer.enhance()
@@ -92,5 +92,4 @@ class Setup {
         transaction = session.beginTransaction()
         session
     }
-
 }

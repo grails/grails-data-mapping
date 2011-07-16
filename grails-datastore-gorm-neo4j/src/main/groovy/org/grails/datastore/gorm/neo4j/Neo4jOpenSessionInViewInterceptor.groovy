@@ -1,11 +1,25 @@
+/* Copyright (C) 2010 SpringSource
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.grails.datastore.gorm.neo4j
 
-import org.springframework.web.context.request.WebRequest
-import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
-import org.springframework.datastore.mapping.core.DatastoreUtils
-import org.slf4j.LoggerFactory
 import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.datastore.mapping.core.DatastoreUtils
 import org.springframework.datastore.mapping.transactions.Transaction
+import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
+import org.springframework.web.context.request.WebRequest
 
 /**
  * provide a transaction context for each request
@@ -14,23 +28,22 @@ import org.springframework.datastore.mapping.transactions.Transaction
  */
 class Neo4jOpenSessionInViewInterceptor extends OpenSessionInViewInterceptor {
 
-    private static final Logger log = LoggerFactory.getLogger(Neo4jOpenSessionInViewInterceptor.class)
-    Stack<Transaction> transactions = new Stack()
+    protected final Logger log = LoggerFactory.getLogger(getClass())
+
+    Stack<Transaction> transactions = []
 
     @Override
     void preHandle(WebRequest request) {
         log.debug "preHandle ${request.getDescription(true)}"
         super.preHandle(request)
-        def session = DatastoreUtils.getSession(datastore, true)
-        transactions.push(session.beginTransaction())
+        transactions.push(DatastoreUtils.getSession(datastore, true).beginTransaction())
     }
 
     @Override
     void afterCompletion(WebRequest request, Exception ex) {
         super.afterCompletion(request, ex)
-        def transaction = transactions.pop()
+        Transaction transaction = transactions.pop()
         ex ? transaction.rollback() : transaction.commit()
         log.debug "afterCompletion ${request.getDescription(true)}"
     }
-
 }
