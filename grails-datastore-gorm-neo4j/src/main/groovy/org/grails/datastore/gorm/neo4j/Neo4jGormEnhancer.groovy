@@ -72,6 +72,14 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
         }
     }
 
+    Node getSubreferenceNode(def instance) {
+        datastore.subReferenceNodes[instance.getClass().name]
+    }
+
+    Node getNode(def instance) {
+        datastore.graphDatabaseService.getNodeById(instance.id)
+    }
+
     def traverse(def instance, StopEvaluator stopEvaluator, ReturnableEvaluator returnableEvaluator, Object... args) {
         traverse(instance, Traverser.Order.BREADTH_FIRST, stopEvaluator, returnableEvaluator, args)
     }

@@ -33,7 +33,7 @@ grails.project.dependency.resolution = {
     }
 	dependencies {
 
-        def version = "1.0.0.M6"
+        def version = "1.0.0.BUILD-SNAPSHOT"
 
 //		def excludes = {
 //			excludes "slf4j-simple", "persistence-api", "commons-logging", "jcl-over-slf4j", "slf4j-api", "jta", "slf4j-log4j12"
