@@ -58,7 +58,12 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
     }
 
     public SimpleDBTemplate getSimpleDBTemplate(PersistentEntity entity) {
-        return simpleDBTemplates.get(entity);
+//        return simpleDBTemplates.get(entity);
+        return simpleDBTemplate;
+    }
+
+    public SimpleDBTemplate getSimpleDBTemplate() {
+        return simpleDBTemplate;
     }
 
     @Override
@@ -79,9 +84,8 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         String accessKey = read(String.class, ACCESS_KEY, connectionDetails, null);
         String secretKey = read(String.class, SECRET_KEY, connectionDetails, null);
 
-        final SimpleDBTemplate template = new SimpleDBTemplateImpl(accessKey, secretKey);
-
-        simpleDBTemplates.put(entity, template);
+        simpleDBTemplate = new SimpleDBTemplateImpl(accessKey, secretKey);
+//        simpleDBTemplates.put(entity, template);
     }
 
     /**
@@ -102,7 +106,8 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         registrar.register(conversionService);
     }
 
-    private Map<PersistentEntity, SimpleDBTemplate> simpleDBTemplates = new ConcurrentHashMap<PersistentEntity, SimpleDBTemplate>();
+//    private Map<PersistentEntity, SimpleDBTemplate> simpleDBTemplates = new ConcurrentHashMap<PersistentEntity, SimpleDBTemplate>();
+    private SimpleDBTemplate simpleDBTemplate;  //currently there is no need to create template per entity, we can share same instance
     private String domainNamePrefix;
 
     public static final String SECRET_KEY = "secretKey";

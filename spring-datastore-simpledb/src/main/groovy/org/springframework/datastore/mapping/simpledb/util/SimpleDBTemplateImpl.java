@@ -5,7 +5,6 @@ import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
 import com.amazonaws.services.simpledb.model.*;
 import org.springframework.dao.DataAccessException;
-import org.springframework.datastore.mapping.model.PersistentEntity;
 
 import java.util.List;
 
@@ -76,6 +75,15 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         sdb.deleteAttributes(request);
     }
 
+    @Override
+    public void deleteAllItems(String domainName) throws DataAccessException {
+        SelectRequest selectRequest = new SelectRequest("select itemName() from `"+domainName+"`");
+        List<Item> items = sdb.select(selectRequest).getItems();
+        for (Item item : items) {
+            deleteItem(domainName, item.getName());
+        }
+    }
+
     public List<Item> query(String query) {
         SelectRequest selectRequest = new SelectRequest(query);
         List<Item> items = sdb.select(selectRequest).getItems();
@@ -86,6 +94,14 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         CreateDomainRequest request = new CreateDomainRequest(domainName);
         sdb.createDomain(request);
     }
+
+    @Override
+    public List<String> listDomains() throws DataAccessException {
+        ListDomainsRequest request = new ListDomainsRequest();
+        ListDomainsResult result = sdb.listDomains(request);
+        return result.getDomainNames();
+    }
+
 
     public void deleteDomain(String domainName) throws DataAccessException {
         DeleteDomainRequest request = new DeleteDomainRequest(domainName);

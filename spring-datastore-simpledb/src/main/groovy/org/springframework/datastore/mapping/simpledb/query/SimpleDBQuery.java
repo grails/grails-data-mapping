@@ -34,7 +34,11 @@ public class SimpleDBQuery extends Query {
     protected List executeQuery(PersistentEntity entity, Junction criteria) {
         String domain = domainResolver.getAllDomainsForEntity().get(
                 0); //todo - in case of sharding we should iterate over all domains for this PersistentEntity (ideally in parallel)
-        StringBuilder query = new StringBuilder("select * from `" + domain + "` where ");
+        StringBuilder query = new StringBuilder("select * from `" + domain + "`");
+        if ( !criteria.getCriteria().isEmpty() ) {
+            query.append(" where "); //things list TestEntity.list() result in empty criteria collection, so we should not have a 'where' clause at all
+        }
+
         String clause = "";
         if (criteria instanceof Conjunction) {
             clause = buildCompositeClause(criteria, "AND");

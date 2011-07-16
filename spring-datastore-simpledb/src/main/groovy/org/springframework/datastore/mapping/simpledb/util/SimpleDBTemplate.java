@@ -3,7 +3,6 @@ package org.springframework.datastore.mapping.simpledb.util;
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
-import com.amazonaws.services.simpledb.model.ReplaceableItem;
 import org.springframework.dao.DataAccessException;
 
 import java.util.List;
@@ -61,9 +60,13 @@ public interface SimpleDBTemplate {
      */
     void deleteItem(String domainName, String id) throws DataAccessException;
 
+    void deleteAllItems(String domainName) throws DataAccessException;
+
     List<Item> query(String query) throws DataAccessException;
 
     void deleteDomain(String domainName) throws DataAccessException;
 
     void createDomain(String domainName) throws DataAccessException;
+
+    List<String> listDomains() throws DataAccessException;
 }
