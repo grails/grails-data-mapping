@@ -44,5 +44,27 @@ public interface SessionImplementor<T> {
 
     T getCachedEntry(PersistentEntity entity, Serializable key);
 
+    void cacheInstance(Class type, Serializable key, Object instance);
+
+    /**
+     * Get the cached instance if it exists.
+     * @param type the object type
+     * @param key the object key
+     * @return the instance or <code>null</code>
+     */
+    Object getCachedInstance(Class type, Serializable key);
+
+    /**
+     * Whether an object with the specified key is contained within the first level cache.
+     * @param type the object type
+     * @param key The key to check
+     * @return <code>true</code> if it is
+     */
+    boolean isCached(Class type, Serializable key);
+
+    Collection getCachedCollection(PersistentEntity entity, Serializable key, String name);
+
+    void cacheCollection(PersistentEntity entity, Serializable key, Collection collection, String name);
+
     void addPostFlushOperation(Runnable runnable);
 }

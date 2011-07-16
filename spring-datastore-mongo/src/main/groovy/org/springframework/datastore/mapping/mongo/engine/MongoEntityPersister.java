@@ -45,6 +45,7 @@ import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.model.types.EmbeddedCollection;
+import org.springframework.datastore.mapping.model.types.ManyToMany;
 import org.springframework.datastore.mapping.mongo.MongoDatastore;
 import org.springframework.datastore.mapping.mongo.MongoSession;
 import org.springframework.datastore.mapping.mongo.query.MongoQuery;
@@ -129,7 +130,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             for (Object dbo : list) {
                 if (dbo instanceof BasicDBObject) {
                     BasicDBObject nativeEntry = (BasicDBObject)dbo;
-                    String embeddedClassName = (String)nativeEntry.remove("$$embeddedClassName$$");
+                    String embeddedClassName = (String)nativeEntry.remove("_embeddedClassName");
                     PersistentEntity embeddedPersistentEntity =
                         getMappingContext().getPersistentEntity(embeddedClassName);
 
@@ -413,6 +414,36 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 return null;
             }
         });
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    protected void setManyToMany(PersistentEntity persistentEntity, Object obj,
+            DBObject nativeEntry, ManyToMany manyToMany, Collection associatedObjects) {
+
+        List ids = new ArrayList();
+        if (associatedObjects != null) {
+            for (Object o : associatedObjects) {
+                if (o == null) {
+                    ids.add(null);
+                }
+                else {
+                    PersistentEntity childPersistentEntity =
+                        getMappingContext().getPersistentEntity(o.getClass().getName());
+                    EntityAccess entityAccess = createEntityAccess(childPersistentEntity, o);
+                    ids.add(entityAccess.getIdentifier());
+                }
+            }
+        }
+
+        nativeEntry.put(manyToMany.getName() + "_$$manyToManyIds", ids);
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    protected Collection getManyToManyKeys(PersistentEntity persistentEntity, Object object,
+            Serializable nativeKey, DBObject nativeEntry, ManyToMany manyToMany) {
+        return (Collection)nativeEntry.get(manyToMany.getName() + "_$$manyToManyIds");
     }
 
     protected void checkVersion(final EntityAccess ea, final DBObject previous,

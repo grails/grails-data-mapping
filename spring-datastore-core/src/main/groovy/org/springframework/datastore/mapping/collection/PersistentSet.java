@@ -12,14 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.datastore.mapping.collection;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
@@ -30,132 +28,13 @@ import org.springframework.datastore.mapping.engine.AssociationIndexer;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class PersistentSet extends HashSet implements PersistentCollection {
+public class PersistentSet extends AbstractPersistentCollection implements Set {
 
-    private boolean initialized;
-    private Serializable associationKey;
-    private Session session;
-    private AssociationIndexer indexer;
+    public PersistentSet(Collection keys, Class childType, Session session) {
+        super(keys, childType, session, new HashSet());
+    }
 
     public PersistentSet(Serializable associationKey, Session session, AssociationIndexer indexer) {
-        this.associationKey = associationKey;
-        this.session = session;
-        this.indexer = indexer;
-    }
-
-    public boolean isInitialized() {
-        return initialized;
-    }
-
-    public void initialize() {
-        if (initialized) {
-            return;
-        }
-
-        initialized = true;
-        List results = indexer.query(associationKey);
-        addAll(session.retrieveAll(indexer.getIndexedEntity().getJavaClass(), results));
-    }
-
-    @Override
-    public String toString() {
-        initialize();
-        return super.toString();
-    }
-
-    @Override
-    public Iterator iterator() {
-        initialize();
-        return super.iterator();
-    }
-
-    @Override
-    public int size() {
-        initialize();
-        return super.size();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        initialize();
-        return super.isEmpty();
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        initialize();
-        return super.contains(o);
-    }
-
-    @Override
-    public boolean add(Object o) {
-        initialize();
-        return super.add(o);
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        initialize();
-        return super.remove(o);
-    }
-
-    @Override
-    public void clear() {
-        initialize();
-        super.clear();
-    }
-
-    @Override
-    public Object clone() {
-        initialize();
-        return super.clone();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        initialize();
-        return super.equals(o);
-    }
-
-    @Override
-    public int hashCode() {
-        initialize();
-        return super.hashCode();
-    }
-
-    @Override
-    public boolean removeAll(Collection c) {
-        initialize();
-        return super.removeAll(c);
-    }
-
-    @Override
-    public Object[] toArray() {
-        initialize();
-        return super.toArray();
-    }
-
-    @Override
-    public Object[] toArray(Object[] a) {
-        initialize();
-        return super.toArray(a);
-    }
-
-    @Override
-    public boolean containsAll(Collection c) {
-        initialize();
-        return super.containsAll(c);
-    }
-
-    @Override
-    public boolean addAll(Collection c) {
-        initialize();
-        return super.addAll(c);
-    }
-
-    @Override
-    public boolean retainAll(Collection c) {
-        initialize();
-        return super.retainAll(c);
+        super(associationKey, session, indexer, new HashSet());
     }
 }

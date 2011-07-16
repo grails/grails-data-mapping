@@ -359,7 +359,7 @@ public abstract class AbstractNodeEntityPersister<T, K> extends LockableEntityPe
 
             // If the key is still at this point we have to execute the pending operation now to get the key
             if (k == null) {
-                PendingOperationExecution.executePendingInsert(pendingOperation);
+                PendingOperationExecution.executePendingOperation(pendingOperation);
             }
             else {
                 si.addPendingInsert((PendingInsert) pendingOperation);

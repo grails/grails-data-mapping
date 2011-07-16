@@ -14,22 +14,35 @@
  */
 package org.springframework.datastore.mapping.collection;
 
+import java.util.Collection;
+
 /**
- * A lazy loaded collection
+ * A lazy loaded collection.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface PersistentCollection {
+public interface PersistentCollection extends Collection {
 
     /**
-     * Check whether the collection has been loaded
-     * @return True if the collection has been initialized
+     * Check whether the collection has been loaded.
+     * @return <code>true</code> if the collection has been initialized
      */
     boolean isInitialized();
 
     /**
-     * Initializes the collection if it hasn't already been initialized
+     * Initializes the collection if it hasn't already been initialized.
      */
     void initialize();
+
+    /**
+     * Check whether the collection has been modified.
+     * @return <code>true</code> if the collection is initialized and has been changed since initialization
+     */
+    boolean isDirty();
+
+    /**
+     * Mark the collection as no longer dirty.
+     */
+    void resetDirty();
 }

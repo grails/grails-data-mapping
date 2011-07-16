@@ -12,13 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.datastore.mapping.collection;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -31,180 +29,129 @@ import org.springframework.datastore.mapping.engine.AssociationIndexer;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class PersistentList extends ArrayList implements PersistentCollection {
+public class PersistentList extends AbstractPersistentCollection implements List {
 
-    private boolean initialized;
-    private Serializable associationKey;
-    private Session session;
-    private AssociationIndexer indexer;
+    private final List list;
+
+    public PersistentList(Collection keys, Class childType, Session session) {
+        super(keys, childType, session, new ArrayList());
+        list = (List)collection;
+    }
 
     public PersistentList(Serializable associationKey, Session session, AssociationIndexer indexer) {
-        this.associationKey = associationKey;
-        this.session = session;
-        this.indexer = indexer;
+        super(associationKey, session, indexer, new ArrayList());
+        list = (List)collection;
     }
 
-    public boolean isInitialized() {
-        return initialized;
-    }
-
-    @Override
-    public int size() {
-        initialize();
-        return super.size();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        initialize();
-        return super.isEmpty();
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        initialize();
-        return super.contains(o);
-    }
-
-    @Override
     public int indexOf(Object o) {
         initialize();
-        return super.indexOf(o);
+        return list.indexOf(o);
     }
 
-    @Override
     public int lastIndexOf(Object o) {
         initialize();
-        return super.lastIndexOf(o);
+        return list.lastIndexOf(o);
     }
 
-    @Override
-    public Object clone() {
-        initialize();
-        return super.clone();
-    }
-
-    @Override
-    public Object[] toArray() {
-        initialize();
-        return super.toArray();
-    }
-
-    @Override
-    public Object[] toArray(Object[] a) {
-        initialize();
-        return super.toArray(a);
-    }
-
-    @Override
     public Object get(int index) {
         initialize();
-        return super.get(index);
+        return list.get(index);
     }
 
-    @Override
     public Object set(int index, Object element) {
         initialize();
-        return super.set(index, element);
+        Object replaced = list.set(index, element);
+        if (replaced != element) {
+            markDirty();
+        }
+        return replaced;
     }
 
-    @Override
-    public boolean add(Object o) {
-        initialize();
-        return super.add(o);
-    }
-
-    @Override
     public void add(int index, Object element) {
         initialize();
-        super.add(index, element);
+        list.add(index, element);
+        markDirty();
     }
 
-    @Override
     public Object remove(int index) {
         initialize();
-        return super.remove(index);
+        int size = size();
+        Object removed = list.remove(index);
+        if (size != size()) {
+            markDirty();
+        }
+        return removed;
     }
 
-    @Override
-    public boolean remove(Object o) {
-        initialize();
-        return super.remove(o);
-    }
-
-    @Override
-    public void clear() {
-        initialize();
-        super.clear();
-    }
-
-    @Override
-    public boolean addAll(Collection c) {
-        initialize();
-        return super.addAll(c);
-    }
-
-    @Override
     public boolean addAll(int index, Collection c) {
         initialize();
-        return super.addAll(index, c);
+        boolean changed = list.addAll(index, c);
+        if (changed) {
+            markDirty();
+        }
+        return changed;
     }
 
-    @Override
-    protected void removeRange(int fromIndex, int toIndex) {
-        initialize();
-        super.removeRange(fromIndex, toIndex);
-    }
-
-    @Override
-    public Iterator iterator() {
-        initialize();
-        return super.iterator();
-    }
-
-    @Override
     public ListIterator listIterator() {
         initialize();
-        return super.listIterator();
+        return new PersistentListIterator(list.listIterator());
     }
 
-    @Override
     public ListIterator listIterator(int index) {
         initialize();
-        return super.listIterator(index);
+        return new PersistentListIterator(list.listIterator(index));
     }
 
-    @Override
     public List subList(int fromIndex, int toIndex) {
         initialize();
-        return super.subList(fromIndex, toIndex);
+        return list.subList(fromIndex, toIndex); // not modification-aware
     }
 
-    @Override
-    public boolean equals(Object o) {
-        initialize();
-        return super.equals(o);
-    }
+    private class PersistentListIterator implements ListIterator {
 
-    @Override
-    public int hashCode() {
-        initialize();
-        return super.hashCode();
-    }
+        private final ListIterator iterator;
 
-    @Override
-    public String toString() {
-        initialize();
-        return super.toString();
-    }
-
-    public void initialize() {
-        if (initialized) {
-            return;
+        private PersistentListIterator(ListIterator iterator) {
+            this.iterator = iterator;
         }
 
-        initialized = true;
-        List results = indexer.query(associationKey);
-        addAll(session.retrieveAll(indexer.getIndexedEntity().getJavaClass(), results));
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+
+        public Object next() {
+            return iterator.next();
+        }
+
+        public boolean hasPrevious() {
+            return iterator.hasPrevious();
+        }
+
+        public Object previous() {
+            return iterator.previous();
+        }
+
+        public int nextIndex() {
+            return iterator.nextIndex();
+        }
+
+        public int previousIndex() {
+            return iterator.previousIndex();
+        }
+
+        public void remove() {
+            iterator.remove();
+            markDirty();
+        }
+
+        public void set(Object e) {
+            iterator.set(e);
+            markDirty(); // assume changed
+        }
+
+        public void add(Object e) {
+            iterator.add(e);
+            markDirty();
+        }
     }
 }

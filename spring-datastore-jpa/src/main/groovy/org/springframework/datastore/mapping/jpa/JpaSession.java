@@ -265,4 +265,9 @@ public class JpaSession extends AbstractAttributeStoringSession {
     public void setTransactionStatus(TransactionStatus transaction) {
         this.transaction = transaction;
     }
+
+    public boolean isDirty(Object instance) {
+        // TODO
+        return false;
+    }
 }

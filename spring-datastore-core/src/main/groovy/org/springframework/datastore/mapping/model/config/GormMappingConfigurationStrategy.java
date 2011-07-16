@@ -256,7 +256,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         }
 
         // set the referenced type in the property
-        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(relatedClassType);
+        ClassPropertyFetcher referencedCpf = ClassPropertyFetcher.forClass(relatedClassType);
         String referencedPropertyName = null;
 
         // if the related type is a domain class
@@ -269,25 +269,26 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
         // check the relationship defined in the referenced type
         // if it is also a Set/domain class etc.
-        Map relatedClassRelationships = cpf.getPropertyValue(HAS_MANY, Map.class);
+        Map relatedClassRelationships = referencedCpf.getPropertyValue(HAS_MANY, Map.class);
         Class<?> relatedClassPropertyType = null;
 
         String relatedClassPropertyName = null;
+        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
         // First check whether there is an explicit relationship
         // mapping for this property (as provided by "mappedBy").
         String mappingProperty = (String)mappedByMap.get(property.getName());
         if (StringUtils.hasText(mappingProperty)) {
             // First find the specified property on the related class, if it exists.
-            PropertyDescriptor pd = findProperty(cpf.getPropertiesAssignableFromType(entity.getJavaClass()), mappingProperty);
+            PropertyDescriptor pd = findProperty(referencedCpf.getPropertiesAssignableFromType(
+                    entity.getJavaClass()), mappingProperty);
 
             // If a property of the required type does not exist, search
             // for any collection properties on the related class.
             if (pd == null) {
-                pd = findProperty(cpf.getPropertiesAssignableToType(Collection.class), mappingProperty);
+                pd = findProperty(referencedCpf.getPropertiesAssignableToType(Collection.class), mappingProperty);
             }
 
-            // We've run out of options. The given "mappedBy"
-            // setting is invalid.
+            // We've run out of options. The given "mappedBy" setting is invalid.
             if (pd == null) {
                 if (entity.isExternal()) {
                     return null;
@@ -304,7 +305,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         else {
             // if the related type has a relationships map it may be a many-to-many
             // figure out if there is a many-to-many relationship defined
-            if (isRelationshipManyToMany(entity, relatedClassType, relatedClassRelationships)) {
+            if (isRelationshipToMany(entity, relatedClassType, relatedClassRelationships)) {
                 Map relatedClassMappedBy = cpf.getStaticPropertyValue(MAPPED_BY, Map.class);
                 if (relatedClassMappedBy == null) relatedClassMappedBy = Collections.emptyMap();
                 // retrieve the relationship property
@@ -318,16 +319,22 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                         break;
                     }
                 }
+//            Map classRelationships = cpf.getPropertyValue(HAS_MANY, Map.class);
+//
+//            if (isRelationshipToMany(entity, relatedClassType, classRelationships)) {
+//                String relatedClassPropertyName = findManyRelatedClassPropertyName(
+//                        property.getName(), referencedCpf, classRelationships, relatedClassType);
 
                 // if there is one defined get the type
                 if (relatedClassPropertyName != null) {
                     relatedClassPropertyType = cpf.getPropertyType(relatedClassPropertyName);
                 }
             }
+
             // otherwise figure out if there is a one-to-many relationship by retrieving any properties that are of the related type
             // if there is more than one property then (for the moment) ignore the relationship
-            if (relatedClassPropertyType == null) {
-                List<PropertyDescriptor> descriptors = cpf.getPropertiesOfType(entity.getJavaClass());
+            if (relatedClassPropertyType == null || Collection.class.isAssignableFrom(relatedClassPropertyType)) {
+                List<PropertyDescriptor> descriptors = referencedCpf.getPropertiesOfType(entity.getJavaClass());
 
                 if (descriptors.size() == 1) {
                     final PropertyDescriptor pd = descriptors.get(0);
@@ -342,9 +349,13 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                         if (entity.isExternal()) {
                             return null;
                         }
-                        throw new IllegalMappingException("Property ["+property.getName()+"] in class ["+entity.getJavaClass()+"] is a bidirectional one-to-many with two possible properties on the inverse side. "+
-                                "Either name one of the properties on other side of the relationship ["+classPropertyName+"] or use the 'mappedBy' static to define the property " +
-                                "that the relationship is mapped with. Example: static mappedBy = ["+property.getName()+":'myprop']");
+                        throw new IllegalMappingException("Property [" + property.getName() +
+                                "] in class [" + entity.getJavaClass().getName() +
+                                "] is a bidirectional one-to-many with two possible properties on the inverse side. " +
+                                "Either name one of the properties on other side of the relationship [" +
+                                classPropertyName + "] or use the 'mappedBy' static to define the property " +
+                                "that the relationship is mapped with. Example: static mappedBy = [" +
+                                property.getName() + ":'myprop']");
                     }
                     relatedClassPropertyType = pd.getPropertyType();
                     referencedPropertyName = pd.getName();
@@ -355,17 +366,25 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         // if its a many-to-many figure out the owning side of the relationship
         final boolean isInverseSideEntity = isPersistentEntity(relatedClassPropertyType);
         Association association = null;
+        boolean many = false;
         if (relatedClassPropertyType == null || isInverseSideEntity) {
             // uni-directional one-to-many
             association = propertyFactory.createOneToMany(entity, context, property);
         }
-        else if (Collection.class.isAssignableFrom(relatedClassPropertyType) || Map.class.isAssignableFrom(relatedClassPropertyType)){
+        else if (Collection.class.isAssignableFrom(relatedClassPropertyType) ||
+                 Map.class.isAssignableFrom(relatedClassPropertyType)) {
             // many-to-many
             association = propertyFactory.createManyToMany(entity, context, property);
             ((ManyToMany)association).setInversePropertyName(relatedClassPropertyName);
+            many = true;
         }
 
-        PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity,context, relatedClassType);
+        PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity, context, relatedClassType);
+        if (many) {
+            Map classRelationships = referencedCpf.getPropertyValue(HAS_MANY, Map.class);
+            referencedPropertyName = findManyRelatedClassPropertyName(null,
+                    referencedCpf, classRelationships, entity.getJavaClass());
+        }
 
         association.setAssociatedEntity(associatedEntity);
         if (referencedPropertyName != null) {
@@ -374,15 +393,32 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return association;
     }
 
+    private String findManyRelatedClassPropertyName(String propertyName,
+            ClassPropertyFetcher cpf, Map classRelationships, Class<?> classType) {
+        Map mappedBy = cpf.getStaticPropertyValue(MAPPED_BY, Map.class);
+        if (mappedBy == null) mappedBy = Collections.emptyMap();
+        // retrieve the relationship property
+        for (Object o : classRelationships.keySet()) {
+            String currentKey = (String) o;
+            String mappedByProperty = (String)mappedBy.get(currentKey);
+            if (mappedByProperty != null && !mappedByProperty.equals(propertyName)) continue;
+            Class<?> currentClass = (Class<?>)classRelationships.get(currentKey);
+            if (currentClass.isAssignableFrom(classType)) {
+                return currentKey;
+            }
+        }
+        return null;
+    }
+
     /**
-     * Find out if the relationship is a many-to-many
+     * Find out if the relationship is a 1-to-many or many-to-many.
      *
      * @param relatedClassType The related type
      * @param relatedClassRelationships The related types relationships
      * @return <code>true</code> if the relationship is a many-to-many
      */
     @SuppressWarnings("unchecked")
-    private boolean isRelationshipManyToMany(PersistentEntity entity,
+    private boolean isRelationshipToMany(PersistentEntity entity,
             Class<?> relatedClassType, Map relatedClassRelationships) {
         return relatedClassRelationships != null &&
                !relatedClassRelationships.isEmpty() &&

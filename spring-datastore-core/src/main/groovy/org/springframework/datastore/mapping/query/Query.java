@@ -14,10 +14,12 @@
  */
 package org.springframework.datastore.mapping.query;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import javax.persistence.FlushModeType;
@@ -25,6 +27,7 @@ import javax.persistence.FlushModeType;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.mapping.core.AbstractDatastore;
 import org.springframework.datastore.mapping.core.Session;
+import org.springframework.datastore.mapping.core.SessionImplementor;
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.EntityPersister;
 import org.springframework.datastore.mapping.model.PersistentEntity;
@@ -323,19 +326,19 @@ public abstract class Query {
 
     private Object resolveIdIfEntity(Object value) {
         // use the object id as the value if its a persistent entity
-        if (session.getMappingContext().isPersistentEntity(value)) {
-            EntityPersister ep = (EntityPersister) session.getPersister(value);
-            if (ep != null) {
-                value = ep.getObjectIdentifier(value);
-            }
-            else {
-                new EntityAccess(session
-                        .getMappingContext()
-                        .getPersistentEntity(value.getClass().getName()), value)
-                        .getIdentifier();
-            }
+        return session.getMappingContext().isPersistentEntity(value) ? findInstanceId(value) : value;
+    }
+
+    private Serializable findInstanceId(Object value) {
+        EntityPersister ep = (EntityPersister) session.getPersister(value);
+        if (ep != null) {
+            return ep.getObjectIdentifier(value);
         }
-        return value;
+
+        return (Serializable)new EntityAccess(session
+                .getMappingContext()
+                .getPersistentEntity(value.getClass().getName()), value)
+                .getIdentifier();
     }
 
     /**
@@ -465,19 +468,40 @@ public abstract class Query {
 
 
     /**
-     * Executes the query returning zero or many results as a list
+     * Executes the query returning zero or many results as a list.
      *
      * @return The results
      */
-    public List list() {
+    public final List list() {
         uniqueResult = false;
         flushBeforeQuery();
 
-        return executeQuery(entity, criteria);
+        List results = executeQuery(entity, criteria);
+
+        SessionImplementor sessionImplementor = (SessionImplementor)session;
+        for (ListIterator iter = results.listIterator(); iter.hasNext(); ) {
+            Object instance = iter.next();
+            EntityPersister ep = (EntityPersister) session.getPersister(instance);
+            if (ep == null) {
+            	// not persistent, could be a count() or report query
+            	continue;
+            }
+
+            Serializable id = findInstanceId(instance);
+            if (sessionImplementor.isCached(instance.getClass(), id)) {
+                iter.set(sessionImplementor.getCachedInstance(instance.getClass(), id));
+            }
+            else {
+                sessionImplementor.cacheInstance(instance.getClass(), id, instance);
+            }
+        }
+
+        return results;
     }
 
     /**
-     * Default behavior is the flush the session before a query in the case of FlushModeType.AUTO. Subclasses can override this method to disable that
+     * Default behavior is the flush the session before a query in the case of FlushModeType.AUTO.
+     * Subclasses can override this method to disable that.
      */
     protected void flushBeforeQuery() {
         // flush before query execution in FlushModeType.AUTO
@@ -493,8 +517,7 @@ public abstract class Query {
     public Object singleResult() {
         uniqueResult = true;
         List results = list();
-        if (results.isEmpty()) return null;
-        return results.get(0);
+        return results.isEmpty() ? null : results.get(0);
     }
 
     /**

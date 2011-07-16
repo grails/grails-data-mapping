@@ -18,19 +18,19 @@ package org.springframework.datastore.mapping.core.impl;
 import java.util.List;
 
 /**
- * Provides a default implementation to execute a pending operation
+ * Provides a default implementation to execute a pending operation.
  *
  * @author Graeme Rocher
  */
 public class PendingOperationExecution {
 
-    public static void executePendingInsert(PendingOperation pendingInsert) {
-        List<PendingOperation> preOperations = pendingInsert.getPreOperations();
+    public static void executePendingOperation(PendingOperation pendingOperation) {
+        List<PendingOperation> preOperations = pendingOperation.getPreOperations();
         for (PendingOperation preOperation : preOperations) {
             preOperation.run();
         }
-        pendingInsert.run();
-        List<PendingOperation> cascadeOperations = pendingInsert.getCascadeOperations();
+        pendingOperation.run();
+        List<PendingOperation> cascadeOperations = pendingOperation.getCascadeOperations();
         for (PendingOperation cascadeOperation : cascadeOperations) {
             cascadeOperation.run();
         }

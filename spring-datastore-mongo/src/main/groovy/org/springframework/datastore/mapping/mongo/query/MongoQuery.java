@@ -26,6 +26,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.data.document.mongodb.DbCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
+import org.springframework.datastore.mapping.core.SessionImplementor;
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
@@ -670,8 +671,13 @@ public class MongoQuery extends Query {
         protected Object convertDBObject(Object object) {
             final DBObject dbObject = (DBObject) object;
             Object id = dbObject.get(MongoEntityPersister.MONGO_ID_FIELD);
-            object = mongoEntityPersister.createObjectFromNativeEntry(mongoEntityPersister.getPersistentEntity(), (Serializable) id, dbObject);
-            return object;
+            Object instance = ((SessionImplementor)mongoEntityPersister.getSession()).getCachedInstance(
+                    mongoEntityPersister.getPersistentEntity().getJavaClass(), (Serializable)id);
+            if (instance == null) {
+                instance = mongoEntityPersister.createObjectFromNativeEntry(
+                    mongoEntityPersister.getPersistentEntity(), (Serializable) id, dbObject);
+            }
+            return instance;
         }
 
         @SuppressWarnings("unchecked")

@@ -215,13 +215,13 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
     private PersistentProperty createManyToMany(
             GrailsDomainClassMappingContext ctx,
             GrailsDomainClassProperty grailsDomainClassProperty) {
-        final ManyToMany oneToOne = new ManyToMany(this, ctx, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
+        final ManyToMany manyToMany = new ManyToMany(this, ctx, grailsDomainClassProperty.getName(), grailsDomainClassProperty.getType()) {
             public PropertyMapping getMapping() {
                 return null;
             }
         };
-        configureAssociation(grailsDomainClassProperty, oneToOne);
-        return oneToOne;
+        configureAssociation(grailsDomainClassProperty, manyToMany);
+        return manyToMany;
     }
 
     private PersistentProperty createOneToOne(

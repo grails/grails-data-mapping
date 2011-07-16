@@ -139,15 +139,15 @@ class GormEnhancer {
                     }
                     if (prop.bidirectional && prop.inverseSide) {
                         def otherSide = prop.inverseSide
-                        if (otherSide instanceof OneToMany) {
-                            String name = otherSide.name
-                            if (!obj[name]) {
+                        String name = otherSide.name
+                        if (otherSide instanceof OneToMany || otherSide instanceof ManyToMany) {
+                            if (obj[name] == null) {
                                 obj[name] = [].asType(otherSide.type)
                             }
-                            obj[otherSide.name].add(delegate)
+                            obj[name].add(delegate)
                         }
                         else {
-                            obj[otherSide.name] = delegate
+                            obj[name] = delegate
                         }
                     }
                     delegate

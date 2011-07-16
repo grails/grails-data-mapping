@@ -16,18 +16,23 @@ package org.springframework.datastore.mapping.engine;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
+import javax.persistence.FlushModeType;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.datastore.mapping.collection.PersistentCollection;
 import org.springframework.datastore.mapping.collection.PersistentList;
 import org.springframework.datastore.mapping.collection.PersistentSet;
 import org.springframework.datastore.mapping.config.Property;
@@ -46,7 +51,14 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.PropertyMapping;
-import org.springframework.datastore.mapping.model.types.*;
+import org.springframework.datastore.mapping.model.types.Association;
+import org.springframework.datastore.mapping.model.types.Basic;
+import org.springframework.datastore.mapping.model.types.Embedded;
+import org.springframework.datastore.mapping.model.types.EmbeddedCollection;
+import org.springframework.datastore.mapping.model.types.ManyToMany;
+import org.springframework.datastore.mapping.model.types.OneToMany;
+import org.springframework.datastore.mapping.model.types.Simple;
+import org.springframework.datastore.mapping.model.types.ToOne;
 import org.springframework.datastore.mapping.proxy.ProxyFactory;
 
 /**
@@ -97,8 +109,26 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             return;
         }
 
-        deleteEntry(getEntityFamily(), key);
+        FlushModeType flushMode = session.getFlushMode();
+        try {
+            session.setFlushMode(FlushModeType.COMMIT);
+            cascadeBeforeDelete(persistentEntity, entityAccess, key, obj);
+            deleteEntry(getEntityFamily(), key, obj);
+            cascadeAfterDelete(persistentEntity, entityAccess, key, obj);
+        }
+        finally {
+            session.setFlushMode(flushMode);
+        }
+
         firePostDeleteEvent(persistentEntity, entityAccess);
+    }
+
+    protected void cascadeDeleteCollection(Collection collection) {
+        for (Iterator iter = collection.iterator(); iter.hasNext(); ) {
+            Object child = iter.next();
+            deleteEntity(getMappingContext().getPersistentEntity(child.getClass().getName()), child);
+            iter.remove();
+        }
     }
 
     @Override
@@ -117,8 +147,95 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      *
      * @param family The family
      * @param key The key
+     * @param entry the entry
      */
-    protected abstract void deleteEntry(String family, K key);
+    protected abstract void deleteEntry(String family, K key, Object entry);
+
+    /**
+     * Delete collections before owner delete.
+     */
+    protected void cascadeBeforeDelete(PersistentEntity persistentEntity, EntityAccess entityAccess,
+            K key, Object instance) {
+
+        List<PersistentProperty> props = persistentEntity.getPersistentProperties();
+        for (PersistentProperty prop : props) {
+            PropertyMapping<Property> pm = prop.getMapping();
+            Property mappedProperty = pm.getMappedForm();
+            String propertyKey = null;
+            if (mappedProperty != null) {
+                propertyKey = mappedProperty.getTargetName();
+            }
+            if (propertyKey == null) propertyKey = prop.getName();
+
+            if (prop instanceof OneToMany) {
+                OneToMany oneToMany = (OneToMany)prop;
+                if (oneToMany.isOwningSide() && oneToMany.doesCascade(CascadeType.REMOVE)) {
+                    Object propValue = entityAccess.getProperty(oneToMany.getName());
+                    if (propValue instanceof Collection) {
+                        cascadeDeleteCollection((Collection) propValue);
+                    }
+                }
+            }
+            else if (prop instanceof ManyToMany) {
+                ManyToMany manyToMany = (ManyToMany)prop;
+                if (manyToMany.isOwningSide() && manyToMany.doesCascade(CascadeType.REMOVE)) {
+                    Object propValue = entityAccess.getProperty(manyToMany.getName());
+                    if (propValue instanceof Collection) {
+                        cascadeDeleteCollection((Collection) propValue);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Delete many-to-ones after owner delete.
+     */
+    protected void cascadeAfterDelete(PersistentEntity persistentEntity, EntityAccess entityAccess,
+            K key, Object instance) {
+
+        List<PersistentProperty> props = persistentEntity.getPersistentProperties();
+        for (PersistentProperty prop : props) {
+            PropertyMapping<Property> pm = prop.getMapping();
+            Property mappedProperty = pm.getMappedForm();
+            String propertyKey = null;
+            if (mappedProperty != null) {
+                propertyKey = mappedProperty.getTargetName();
+            }
+            if (propertyKey == null) propertyKey = prop.getName();
+            if (prop instanceof Basic) {
+                Object propValue = entityAccess.getProperty(prop.getName());
+            }
+            else if (prop instanceof OneToMany) {
+                OneToMany oneToMany = (OneToMany)prop;
+                if (oneToMany.isOwningSide() && oneToMany.doesCascade(CascadeType.REMOVE)) {
+                    Object propValue = entityAccess.getProperty(oneToMany.getName());
+                    if (propValue instanceof Collection) {
+                        cascadeDeleteCollection((Collection) propValue);
+                    }
+                }
+            }
+            else if (prop instanceof ToOne) {
+                ToOne association = (ToOne) prop;
+                if (!(prop instanceof Embedded) && !(prop instanceof EmbeddedCollection) &&
+                        association.doesCascade(CascadeType.REMOVE)) {
+
+                    Object associatedObject = entityAccess.getProperty(prop.getName());
+//                                    if (!session.contains(associatedObject)) {
+//                        Serializable tempId = associationPersister.getObjectIdentifier(associatedObject);
+//                        if (association.isBidirectional()) {
+//                            Association inverse = association.getInverseSide();
+//                            if (inverse instanceof OneToMany) {
+//                                inverseCollectionUpdates.put((OneToMany) inverse, associationId);
+//                            }
+//                            else if (inverse instanceof ToOne) {
+//                                // TODO: Implement handling of bidirectional one-to-ones with foreign key in parent
+//                            }
+//                        }
+                }
+            }
+        }
+    }
 
     @Override
     protected final void deleteEntities(PersistentEntity persistentEntity, Iterable objects) {
@@ -237,10 +354,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
     public Object createObjectFromNativeEntry(PersistentEntity persistentEntity, Serializable nativeKey, T nativeEntry) {
         persistentEntity = discriminatePersistentEntity(persistentEntity, nativeEntry);
-        Object obj = newEntityInstance(persistentEntity);
 
         cacheNativeEntry(persistentEntity, nativeKey, nativeEntry);
 
+        Object obj = newEntityInstance(persistentEntity);
         refreshObjectStateFromNativeEntry(persistentEntity, obj, nativeKey, nativeEntry);
         return obj;
     }
@@ -248,10 +365,11 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     protected void cacheNativeEntry(PersistentEntity persistentEntity,
             Serializable nativeKey, T nativeEntry) {
         SessionImplementor<Object> si = (SessionImplementor<Object>) session;
-        si.cacheEntry(persistentEntity,nativeKey, nativeEntry);
+        si.cacheEntry(persistentEntity, nativeKey, nativeEntry);
     }
 
-    protected void refreshObjectStateFromNativeEntry(PersistentEntity persistentEntity, Object obj, Serializable nativeKey, T nativeEntry) {
+    protected void refreshObjectStateFromNativeEntry(PersistentEntity persistentEntity, Object obj,
+            Serializable nativeKey, T nativeEntry) {
         EntityAccess ea = createEntityAccess(persistentEntity, obj, nativeEntry);
         ea.setConversionService(getMappingContext().getConversionService());
         String idName = ea.getIdentifierName();
@@ -303,29 +421,91 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     }
                 }
             }
-            else if ((prop instanceof OneToMany) || (prop instanceof ManyToMany)) {
+            else if (prop instanceof OneToMany) {
                 Association association = (Association) prop;
                 PropertyMapping<Property> associationPropertyMapping = association.getMapping();
 
                 boolean isLazy = isLazyAssociation(associationPropertyMapping);
                 AssociationIndexer indexer = getAssociationIndexer(nativeEntry, association);
-                nativeKey = (Serializable) getMappingContext().getConversionService().convert(nativeKey, getPersistentEntity().getIdentity().getType());
+                nativeKey = (Serializable) getMappingContext().getConversionService().convert(
+                        nativeKey, getPersistentEntity().getIdentity().getType());
                 if (isLazy) {
                     if (List.class.isAssignableFrom(association.getType())) {
-                        ea.setPropertyNoConversion(association.getName(), new PersistentList(nativeKey, session, indexer));
+                        ea.setPropertyNoConversion(association.getName(),
+                                new PersistentList(nativeKey, session, indexer));
                     }
                     else if (Set.class.isAssignableFrom(association.getType())) {
-                        ea.setPropertyNoConversion(association.getName(), new PersistentSet(nativeKey, session, indexer));
+                        ea.setPropertyNoConversion(association.getName(),
+                                new PersistentSet(nativeKey, session, indexer));
                     }
                 }
                 else {
                     if (indexer != null) {
                         List keys = indexer.query(nativeKey);
-                        ea.setProperty(association.getName(), session.retrieveAll(association.getAssociatedEntity().getJavaClass(), keys));
+                        ea.setProperty(association.getName(),
+                                session.retrieveAll(association.getAssociatedEntity().getJavaClass(), keys));
                     }
                 }
             }
+            else if (prop instanceof ManyToMany) {
+                ManyToMany manyToMany = (ManyToMany) prop;
+                PropertyMapping<Property> associationPropertyMapping = manyToMany.getMapping();
+
+                boolean isLazy = isLazyAssociation(associationPropertyMapping);
+                nativeKey = (Serializable) getMappingContext().getConversionService().convert(
+                        nativeKey, getPersistentEntity().getIdentity().getType());
+                Class childType = manyToMany.getAssociatedEntity().getJavaClass();
+                Collection cached = ((SessionImplementor)session).getCachedCollection(
+                        persistentEntity, nativeKey, manyToMany.getName());
+                if (cached == null) {
+                    Collection collection;
+                    if (isLazy) {
+                        Collection keys = getManyToManyKeys(persistentEntity, obj, nativeKey,
+                                nativeEntry, manyToMany);
+                        if (List.class.isAssignableFrom(manyToMany.getType())) {
+                            collection = new PersistentList(keys, childType, session);
+                            ea.setPropertyNoConversion(manyToMany.getName(), collection);
+                        }
+                        else if (Set.class.isAssignableFrom(manyToMany.getType())) {
+                            collection = new PersistentSet(keys, childType, session);
+                            ea.setPropertyNoConversion(manyToMany.getName(), collection);
+                        }
+                        else {
+                            collection = Collections.emptyList();
+                        }
+                    }
+                    else {
+                        AssociationIndexer indexer = getAssociationIndexer(nativeEntry, manyToMany);
+                        if (indexer == null) {
+                            if (List.class.isAssignableFrom(manyToMany.getType())) {
+                                collection = Collections.emptyList();
+                            }
+                            else if (Set.class.isAssignableFrom(manyToMany.getType())) {
+                                collection = Collections.emptySet();
+                            }
+                            else {
+                                collection = Collections.emptyList();
+                            }
+                        }
+                        else {
+                            List keys = indexer.query(nativeKey);
+                            collection = session.retrieveAll(childType, keys);
+                            ea.setProperty(manyToMany.getName(), collection);
+                        }
+                    }
+                    ((SessionImplementor)session).cacheCollection(
+                            persistentEntity, nativeKey, collection, manyToMany.getName());
+                }
+                else {
+                    ea.setProperty(manyToMany.getName(), cached);
+                }
+            }
         }
+    }
+
+    protected Collection getManyToManyKeys(PersistentEntity persistentEntity, Object obj,
+            Serializable nativeKey, T nativeEntry, ManyToMany manyToMany) {
+        return null;
     }
 
     @SuppressWarnings("unused")
@@ -457,15 +637,24 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
                 setEntryValue(e, key, propValue);
             }
-            else if ((prop instanceof OneToMany) || (prop instanceof ManyToMany)) {
-                final Association association = (Association) prop;
+            else if (prop instanceof OneToMany) {
+                final OneToMany oneToMany = (OneToMany) prop;
 
-                final Object propValue = entityAccess.getProperty(association.getName());
-
+                final Object propValue = entityAccess.getProperty(oneToMany.getName());
                 if (propValue instanceof Collection) {
                     Collection associatedObjects = (Collection) propValue;
                     List<Serializable> keys = session.persist(associatedObjects);
-                    toManyKeys.put(association, keys);
+                    toManyKeys.put(oneToMany, keys);
+                }
+            }
+            else if (prop instanceof ManyToMany) {
+                final ManyToMany manyToMany = (ManyToMany) prop;
+
+                final Object propValue = entityAccess.getProperty(manyToMany.getName());
+                if (propValue instanceof Collection) {
+                    Collection associatedObjects = (Collection) propValue;
+                    setManyToMany(persistentEntity, obj, e, manyToMany, associatedObjects);
+                    // TODO index?
                 }
             }
             else if (prop instanceof ToOne) {
@@ -509,7 +698,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                             embeddedEntries.add(entry);
                             EntityAccess embeddedEntityAccess = createEntityAccess(
                                     embeddedPersistentEntity, instance);
-                            setEntryValue(entry, "$$embeddedClassName$$", instance.getClass().getName());
+                            setEntryValue(entry, "_embeddedClassName", instance.getClass().getName());
                             for (PersistentProperty persistentProperty : embeddedProperties) {
                                 setEntryValue(entry, persistentProperty.getName(),
                                         embeddedEntityAccess.getProperty(persistentProperty.getName()));
@@ -606,7 +795,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
             // If the key is still null at this point we have to execute the pending operation now to get the key
             if (k == null) {
-                PendingOperationExecution.executePendingInsert(pendingOperation);
+                PendingOperationExecution.executePendingOperation(pendingOperation);
             }
             else {
                 si.addPendingInsert((PendingInsert) pendingOperation);
@@ -627,6 +816,13 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             si.addPendingUpdate((PendingUpdate) pendingOperation);
         }
         return (Serializable) k;
+    }
+
+//    protected abstract void setManyToMany(PersistentEntity persistentEntity, Object obj,
+//            T nativeEntry, ManyToMany manyToMany, Collection associatedObjects);
+    protected void setManyToMany(PersistentEntity persistentEntity, Object obj,
+            T nativeEntry, ManyToMany manyToMany, Collection associatedObjects) {
+        // override as necessary
     }
 
     /**
@@ -664,13 +860,13 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      */
     protected abstract K generateIdentifier(PersistentEntity persistentEntity, T entry);
 
-    private void updateToManyIndices(T nativeEntry, Object identifier, Map<Association, List<Serializable>> oneToManyKeys) {
+    private void updateToManyIndices(T nativeEntry, Object identifier, Map<Association, List<Serializable>> toManyKeys) {
         // now cascade onto one-to-many associations
-        for (Association association : oneToManyKeys.keySet()) {
+        for (Association association : toManyKeys.keySet()) {
             if (association.doesCascade(CascadeType.PERSIST)) {
                 final AssociationIndexer indexer = getAssociationIndexer(nativeEntry, association);
                 if (indexer != null) {
-                    indexer.index(identifier, oneToManyKeys.get(association));
+                    indexer.index(identifier, toManyKeys.get(association));
                 }
             }
         }
@@ -901,5 +1097,158 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         public void setNativeEntry(T nativeEntry) {
             this.nativeEntry = nativeEntry;
         }
+    }
+
+    public boolean isDirty(Object instance, Object entry) {
+        if (instance == null) {
+            return false;
+        }
+
+        T nativeEntry;
+        try {
+            nativeEntry = (T)entry;
+        }
+        catch (ClassCastException ignored) {
+            return false;
+        }
+
+        EntityAccess entityAccess = createEntityAccess(getPersistentEntity(), instance, nativeEntry);
+
+        List<PersistentProperty> props = getPersistentEntity().getPersistentProperties();
+        for (PersistentProperty prop : props) {
+            PropertyMapping<Property> pm = prop.getMapping();
+            Property mappedProperty = pm.getMappedForm();
+            String key = null;
+            if (mappedProperty != null) {
+                key = mappedProperty.getTargetName();
+            }
+            if (key == null) key = prop.getName();
+
+            Object currentValue = entityAccess.getProperty(prop.getName());
+            Object oldValue = getEntryValue(nativeEntry, key);
+            if (prop instanceof Simple || prop instanceof Basic) {
+                if (!areEqual(oldValue, currentValue, key)) {
+                    return true;
+                }
+            }
+            else if (prop instanceof OneToMany || prop instanceof ManyToMany) {
+                if (!areCollectionsEqual(oldValue, currentValue)) {
+                    return true;
+                }
+            }
+            else if (prop instanceof ToOne) {
+                if (prop instanceof Embedded) {
+                    // TODO
+                }
+                else if (prop instanceof EmbeddedCollection) {
+                    // TODO
+                }
+                else {
+                    // TODO
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean areCollectionsEqual(Object oldValue, Object currentValue) {
+        if (oldValue == currentValue) {
+            // same or both null
+            return true;
+        }
+
+        if (currentValue instanceof PersistentCollection) {
+            return !((PersistentCollection)currentValue).isDirty();
+        }
+
+        return replaceNullOrUninitialized(oldValue, currentValue).equals(
+                replaceNullOrUninitialized(currentValue, oldValue));
+    }
+
+    private Object replaceNullOrUninitialized(Object c, Object other) {
+        if (c == null) {
+            if (other instanceof Set) {
+                return Collections.emptySet();
+            }
+            return Collections.emptyList();
+        }
+
+        if (c instanceof PersistentCollection && !((PersistentCollection)c).isInitialized()) {
+            if (c instanceof Set) {
+                return Collections.emptySet();
+            }
+            return Collections.emptyList();
+        }
+
+        return c;
+    }
+
+    private boolean areEqual(Object oldValue, Object currentValue, String propName) {
+        if (oldValue == currentValue) {
+            return true;
+        }
+
+        if (oldValue == null || currentValue == null) {
+            return false;
+        }
+
+        if ("version".equals(propName)) {
+            // special case where comparing int and long would fail artifically
+            oldValue = ((Number)oldValue).longValue();
+            currentValue = ((Number)currentValue).longValue();
+        }
+
+        Class oldValueClass = oldValue.getClass();
+        if (!oldValueClass.isArray()) {
+            if (oldValue instanceof Float) {
+                return Float.floatToIntBits((Float)oldValue) == Float.floatToIntBits((Float)currentValue);
+            }
+            if (oldValue instanceof Double) {
+                return Double.doubleToLongBits((Double)oldValue) == Double.doubleToLongBits((Double)currentValue);
+            }
+            return oldValue.equals(currentValue);
+        }
+
+        // check arrays
+
+        if (oldValue.getClass() != currentValue.getClass()) {
+            // different dimension
+            return false;
+        }
+
+        if (oldValue instanceof long[]) {
+            return Arrays.equals((long[])oldValue, (long[])currentValue);
+        }
+
+        if (oldValue instanceof int[]) {
+            return Arrays.equals((int[])oldValue, (int[])currentValue);
+        }
+
+        if (oldValue instanceof short[]) {
+            return Arrays.equals((short[])oldValue, (short[])currentValue);
+        }
+
+        if (oldValue instanceof char[]) {
+            return Arrays.equals((char[])oldValue, (char[])currentValue);
+        }
+
+        if (oldValue instanceof byte[]) {
+            return Arrays.equals((byte[])oldValue, (byte[])currentValue);
+        }
+
+        if (oldValue instanceof double[]) {
+            return Arrays.equals((double[])oldValue, (double[])currentValue);
+        }
+
+        if (oldValue instanceof float[]) {
+            return Arrays.equals((float[])oldValue, (float[])currentValue);
+        }
+
+        if (oldValue instanceof boolean[]) {
+            return Arrays.equals((boolean[])oldValue, (boolean[])currentValue);
+        }
+
+        return Arrays.equals((Object[])oldValue, (Object[])currentValue);
     }
 }

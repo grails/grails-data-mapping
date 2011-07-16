@@ -14,11 +14,21 @@
  */
 package org.springframework.datastore.mapping.redis.engine;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.datastore.mapping.core.OptimisticLockingException;
+import org.springframework.datastore.mapping.core.SessionImplementor;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
@@ -36,12 +46,6 @@ import org.springframework.datastore.mapping.redis.collection.RedisSet;
 import org.springframework.datastore.mapping.redis.query.RedisQuery;
 import org.springframework.datastore.mapping.redis.util.RedisCallback;
 import org.springframework.datastore.mapping.redis.util.RedisTemplate;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * An {@link org.springframework.datastore.mapping.engine.EntityPersister} for the Redis NoSQL datastore
@@ -204,10 +208,21 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
             }
         });
 
-        for (int i = 0, count = redisKeys.size(); i < count; i++) {
-            Serializable nativeKey = redisKeys.get(i);
-            Map nativeEntry = (Map)results.get(i);
-            entityResults.add(createObjectFromNativeEntry(getPersistentEntity(), nativeKey, nativeEntry));
+        Iterator<Serializable> keyIter = redisKeys.iterator();
+        Iterator resultIter = results.iterator();
+        while (keyIter.hasNext() && resultIter.hasNext()) {
+            Serializable nativeKey = keyIter.next();
+            Object entity;
+            SessionImplementor sessionImplementor = (SessionImplementor)session;
+            if (sessionImplementor.isCached(persistentEntity.getJavaClass(), nativeKey)) {
+                entity = sessionImplementor.getCachedInstance(persistentEntity.getJavaClass(), nativeKey);
+            }
+            else {
+                Map nativeEntry = (Map)resultIter.next();
+                entity = createObjectFromNativeEntry(persistentEntity, nativeKey, nativeEntry);
+                sessionImplementor.cacheInstance(persistentEntity.getJavaClass(), nativeKey, entity);
+            }
+            entityResults.add(entity);
         }
         return entityResults;
     }
@@ -338,7 +353,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Lo
     }
 
     @Override
-    protected void deleteEntry(final String family, final Long key) {
+    protected void deleteEntry(final String family, final Long key, final Object entry) {
         final String actualKey = family + ":" + key;
         getAllEntityIndex().remove(key);
         redisTemplate.del(actualKey);
