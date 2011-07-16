@@ -21,7 +21,7 @@ import org.springframework.datastore.mapping.engine.AssociationIndexer
 import org.springframework.datastore.mapping.engine.EntityAccess
 import org.springframework.datastore.mapping.engine.EntityPersister
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer
-import org.springframework.datastore.mapping.keyvalue.engine.AbstractKeyValueEntityPesister
+import org.springframework.datastore.mapping.keyvalue.engine.AbstractKeyValueEntityPersister
 import org.springframework.datastore.mapping.model.MappingContext
 import org.springframework.datastore.mapping.model.PersistentEntity
 import org.springframework.datastore.mapping.model.PersistentProperty
@@ -37,7 +37,7 @@ import org.springframework.datastore.mapping.simple.query.SimpleMapQuery
  * @author Graeme Rocher
  * @since 1.0
  */
-class SimpleMapEntityPersister extends AbstractKeyValueEntityPesister<Map, Object> {
+class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Object> {
 
     Map<String, Map> datastore
     Map indices

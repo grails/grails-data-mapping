@@ -32,10 +32,10 @@ import org.springframework.datastore.mapping.model.PropertyMapping;
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class AbstractKeyValueEntityPesister<T,K> extends NativeEntryEntityPersister<T,K> {
+public abstract class AbstractKeyValueEntityPersister<T,K> extends NativeEntryEntityPersister<T,K> {
     protected String entityFamily;
 
-    public AbstractKeyValueEntityPesister(MappingContext context, PersistentEntity entity,
+    protected AbstractKeyValueEntityPersister(MappingContext context, PersistentEntity entity,
                Session session, ApplicationEventPublisher publisher) {
         super(context, entity, session, publisher);
         entityFamily = getFamily(entity, classMapping);

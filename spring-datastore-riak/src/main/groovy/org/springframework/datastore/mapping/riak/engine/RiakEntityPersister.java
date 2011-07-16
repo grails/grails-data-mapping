@@ -40,7 +40,7 @@ import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
-import org.springframework.datastore.mapping.keyvalue.engine.AbstractKeyValueEntityPesister;
+import org.springframework.datastore.mapping.keyvalue.engine.AbstractKeyValueEntityPersister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
@@ -59,7 +59,7 @@ import org.springframework.datastore.mapping.riak.query.RiakQuery;
  * @author J. Brisbin <jon@jbrisbin.com>
  */
 @SuppressWarnings({"unchecked"})
-public class RiakEntityPersister extends AbstractKeyValueEntityPesister<Map, Long> {
+public class RiakEntityPersister extends AbstractKeyValueEntityPersister<Map, Long> {
 
     private final static String DISCRIMINATOR = "__entity__";
     private final static String DESCENDANTS = "descendants";

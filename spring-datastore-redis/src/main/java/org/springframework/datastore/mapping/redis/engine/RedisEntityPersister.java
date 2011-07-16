@@ -32,7 +32,7 @@ import org.springframework.datastore.mapping.core.SessionImplementor;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
-import org.springframework.datastore.mapping.keyvalue.engine.AbstractKeyValueEntityPesister;
+import org.springframework.datastore.mapping.keyvalue.engine.AbstractKeyValueEntityPersister;
 import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
@@ -53,7 +53,7 @@ import org.springframework.datastore.mapping.redis.util.RedisTemplate;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class RedisEntityPersister extends AbstractKeyValueEntityPesister<Map, Long> {
+public class RedisEntityPersister extends AbstractKeyValueEntityPersister<Map, Long> {
     public static final String UTF_8 = "UTF-8";
     private RedisTemplate redisTemplate;
     private RedisCollection allEntityIndex;
