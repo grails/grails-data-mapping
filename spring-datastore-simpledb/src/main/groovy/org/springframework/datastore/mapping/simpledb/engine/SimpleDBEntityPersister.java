@@ -3,11 +3,9 @@ package org.springframework.datastore.mapping.simpledb.engine;
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
-import com.amazonaws.services.simpledb.model.ReplaceableItem;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataAccessException;
-import org.springframework.datastore.mapping.core.OptimisticLockingException;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister;
@@ -22,12 +20,10 @@ import org.springframework.datastore.mapping.simpledb.SimpleDBDatastore;
 import org.springframework.datastore.mapping.simpledb.SimpleDBSession;
 import org.springframework.datastore.mapping.simpledb.model.types.SimpleDBTypeConverterRegistrar;
 import org.springframework.datastore.mapping.simpledb.query.SimpleDBQuery;
+import org.springframework.datastore.mapping.simpledb.util.SimpleDBConverterUtil;
 import org.springframework.datastore.mapping.simpledb.util.SimpleDBTemplate;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URL;
 import java.util.*;
 
 /**
@@ -206,17 +202,12 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
 
     protected void setEntryValue(NativeSimpleDBItem nativeEntry, String key, Object value) {
         if (value != null && !getMappingContext().isPersistentEntity(value)) {
-            String stringValue = null;
-            if ( value instanceof String ) {
-                stringValue = (String)value;
-            } else if (shouldConvert(value)) {
-                final ConversionService conversionService = getMappingContext().getConversionService();
-                stringValue = conversionService.convert(value, String.class);
-            }
+            String stringValue = SimpleDBConverterUtil.convertToString(value, getMappingContext());
 
             nativeEntry.put(key, stringValue);
         }
     }
+
 
     @Override
     protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj, NativeSimpleDBItem nativeEntry) {
@@ -224,23 +215,6 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
         ea.setNativeEntry(nativeEntry);
         return ea;
     }
-
-    //    @SuppressWarnings({ "rawtypes", "unchecked" })
-//    private boolean shouldConvertToString(Class theClass) {
-//        for (Class classToCheck : convertToString) {
-//            if (classToCheck.isAssignableFrom(theClass)) return true;
-//        }
-//        return false;
-//    }
-    protected boolean shouldConvert(Object value) {
-        return !getMappingContext().isPersistentEntity(value) && !(value instanceof EntityProxy);
-    }
-
-
-//    @Override
-//    protected PersistentEntity discriminatePersistentEntity(PersistentEntity persistentEntity, DBObject nativeEntry) {
-//        throw new RuntimeException("not implemented");
-//    }
 
     @Override
     protected NativeSimpleDBItem retrieveEntry(final PersistentEntity persistentEntity,
