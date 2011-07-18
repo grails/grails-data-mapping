@@ -137,7 +137,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
     public List<PersistentProperty> getPersistentProperties(Class javaClass, MappingContext context, ClassMapping classMapping) {
         PersistentEntity entity = getPersistentEntity(javaClass, context, classMapping);
 
-        final ArrayList<PersistentProperty> persistentProperties = new ArrayList<PersistentProperty>();
+        final List<PersistentProperty> persistentProperties = new ArrayList<PersistentProperty>();
 
         if (entity != null) {
             ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
@@ -327,7 +327,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
                 // if there is one defined get the type
                 if (relatedClassPropertyName != null) {
-                    relatedClassPropertyType = cpf.getPropertyType(relatedClassPropertyName);
+                    relatedClassPropertyType = referencedCpf.getPropertyType(relatedClassPropertyName);
                 }
             }
 
