@@ -35,6 +35,9 @@ public class SimpleDBQuery extends Query {
 
     @Override
     protected List executeQuery(PersistentEntity entity, Junction criteria) {
+        //temp plug for testing to fight eventual consistency
+//        try { Thread.sleep(2*1000); } catch (InterruptedException e) { }
+
         String domain = domainResolver.getAllDomainsForEntity().get(
                 0); //todo - in case of sharding we should iterate over all domains for this PersistentEntity (ideally in parallel)
 
@@ -127,7 +130,13 @@ public class SimpleDBQuery extends Query {
                     Object value = propertyCriterion.getValue();
                     String stringValue =  SimpleDBConverterUtil.convertToString(value, entity.getMappingContext());
                     
-                    clause.append(key + " = '" + stringValue + "'");
+                    clause.append("`"+key + "` = '" + stringValue + "'");
+                } else if (NotEquals.class.equals(criterion.getClass())) {
+                    String key = extractPropertyKey(propertyName);
+                    Object value = propertyCriterion.getValue();
+                    String stringValue =  SimpleDBConverterUtil.convertToString(value, entity.getMappingContext());
+
+                    clause.append("`"+key + "` != '" + stringValue + "'");
                 } else if (IdEquals.class.equals(criterion.getClass())) {
                     clause.append("itemName() = '" + propertyCriterion.getValue() + "'");
                 } else if (Like.class.equals(criterion.getClass())) {
@@ -143,6 +152,9 @@ public class SimpleDBQuery extends Query {
             } else if ( criterion instanceof Disjunction ) {
                 String innerClause = buildCompositeClause((Disjunction) criterion, "OR", usedPropertyNames);
                 addToMainClause(criteria, clause, innerClause);
+            } else if ( criterion instanceof Negation ) {
+                String innerClause = buildCompositeClause((Negation) criterion, "OR", usedPropertyNames); //when we negate we use OR by default
+                clause.append("NOT ("+innerClause+")");
             } else {
                 throw new UnsupportedOperationException("Queries of type " + criterion.getClass()
                         .getSimpleName() + " are not supported by this implementation");
