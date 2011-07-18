@@ -250,7 +250,7 @@ public class JpaQuery extends Query {
             public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, StringBuilder whereClause,String logicalName, int position, List parameters, ConversionService conversionService) {
                 NotEquals eq = (NotEquals) criterion;
                 final String name = eq.getProperty();
-                PersistentProperty prop = validateProperty(entity, name, Equals.class);
+                PersistentProperty prop = validateProperty(entity, name, NotEquals.class);
                 Class propType = prop.getType();
                 position = appendCriteriaForOperator(whereClause, logicalName, name, position, " != ");
                 parameters.add(conversionService.convert( eq.getValue(), propType ));
@@ -376,7 +376,8 @@ public class JpaQuery extends Query {
         if (entity.getIdentity().getName().equals(name)) return entity.getIdentity();
         PersistentProperty prop = entity.getPropertyByName(name);
         if (prop == null) {
-            throw new InvalidDataAccessResourceUsageException("Cannot use ["+ criterionType.getSimpleName()+"] criterion on non-existent property: " + name);
+            throw new InvalidDataAccessResourceUsageException("Cannot use [" +
+                  criterionType.getSimpleName() + "] criterion on non-existent property: " + name);
         }
         return prop;
     }

@@ -115,7 +115,10 @@ public abstract class Query {
     public void add(Criterion criterion) {
         if (criterion instanceof Equals) {
             final Equals eq = (Equals) criterion;
-            eq.setValue(resolveIdIfEntity(eq.getValue()));
+            Object resolved = resolveIdIfEntity(eq.getValue());
+            if (resolved != eq.getValue()) {
+                criterion = Restrictions.idEq(resolved);
+            }
         }
 
         criteria.add(criterion);
@@ -229,9 +232,13 @@ public abstract class Query {
      * @return This query instance
      */
     public Query eq(String property, Object value) {
-        value = resolveIdIfEntity(value);
-
-        criteria.add(Restrictions.eq(property, value));
+        Object resolved = resolveIdIfEntity(value);
+        if (resolved == value) {
+           criteria.add(Restrictions.eq(property, value));
+        }
+        else {
+           criteria.add(Restrictions.idEq(value));
+        }
         return this;
     }
 
@@ -478,21 +485,23 @@ public abstract class Query {
 
         List results = executeQuery(entity, criteria);
 
-        SessionImplementor sessionImplementor = (SessionImplementor)session;
-        for (ListIterator iter = results.listIterator(); iter.hasNext(); ) {
-            Object instance = iter.next();
-            EntityPersister ep = (EntityPersister) session.getPersister(instance);
-            if (ep == null) {
-            	// not persistent, could be a count() or report query
-            	continue;
-            }
+        if (session instanceof SessionImplementor) {
+            SessionImplementor sessionImplementor = (SessionImplementor)session;
+            for (ListIterator iter = results.listIterator(); iter.hasNext(); ) {
+                Object instance = iter.next();
+                EntityPersister ep = (EntityPersister) session.getPersister(instance);
+                if (ep == null) {
+                    // not persistent, could be a count() or report query
+                    continue;
+                }
 
-            Serializable id = findInstanceId(instance);
-            if (sessionImplementor.isCached(instance.getClass(), id)) {
-                iter.set(sessionImplementor.getCachedInstance(instance.getClass(), id));
-            }
-            else {
-                sessionImplementor.cacheInstance(instance.getClass(), id, instance);
+                Serializable id = findInstanceId(instance);
+                if (sessionImplementor.isCached(instance.getClass(), id)) {
+                    iter.set(sessionImplementor.getCachedInstance(instance.getClass(), id));
+                }
+                else {
+                    sessionImplementor.cacheInstance(instance.getClass(), id, instance);
+                }
             }
         }
 
