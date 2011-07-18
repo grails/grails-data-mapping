@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.bson.types.ObjectId;
@@ -419,7 +420,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     protected void setManyToMany(PersistentEntity persistentEntity, Object obj,
-            DBObject nativeEntry, ManyToMany manyToMany, Collection associatedObjects) {
+            DBObject nativeEntry, ManyToMany manyToMany, Collection associatedObjects,
+            Map<Association, List<Serializable>> toManyKeys) {
 
         List ids = new ArrayList();
         if (associatedObjects != null) {

@@ -653,7 +653,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 final Object propValue = entityAccess.getProperty(manyToMany.getName());
                 if (propValue instanceof Collection) {
                     Collection associatedObjects = (Collection) propValue;
-                    setManyToMany(persistentEntity, obj, e, manyToMany, associatedObjects);
+                    setManyToMany(persistentEntity, obj, e, manyToMany, associatedObjects, toManyKeys);
                     // TODO index?
                 }
             }
@@ -818,10 +818,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         return (Serializable) k;
     }
 
-//    protected abstract void setManyToMany(PersistentEntity persistentEntity, Object obj,
-//            T nativeEntry, ManyToMany manyToMany, Collection associatedObjects);
     protected void setManyToMany(PersistentEntity persistentEntity, Object obj,
-            T nativeEntry, ManyToMany manyToMany, Collection associatedObjects) {
+            T nativeEntry, ManyToMany manyToMany, Collection associatedObjects,
+            Map<Association, List<Serializable>> toManyKeys) {
         // override as necessary
     }
 
