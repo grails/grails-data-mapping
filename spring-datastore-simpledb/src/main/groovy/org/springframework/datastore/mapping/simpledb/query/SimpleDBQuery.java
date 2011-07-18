@@ -1,6 +1,24 @@
+/* Copyright (C) 2011 SpringSource
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.datastore.mapping.simpledb.query;
 
-import com.amazonaws.services.simpledb.model.Item;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.datastore.mapping.core.Session;
 import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValue;
 import org.springframework.datastore.mapping.model.PersistentEntity;
@@ -12,11 +30,7 @@ import org.springframework.datastore.mapping.simpledb.engine.SimpleDBEntityPersi
 import org.springframework.datastore.mapping.simpledb.util.SimpleDBConverterUtil;
 import org.springframework.datastore.mapping.simpledb.util.SimpleDBTemplate;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import com.amazonaws.services.simpledb.model.Item;
 
 /**
  * A {@link org.springframework.datastore.mapping.query.Query} implementation for the SimpleDB store
@@ -26,7 +40,13 @@ import java.util.Set;
  */
 @SuppressWarnings("rawtypes")
 public class SimpleDBQuery extends Query {
-    public SimpleDBQuery(Session session, PersistentEntity entity, SimpleDBDomainResolver domainResolver, SimpleDBEntityPersister simpleDBEntityPersister, SimpleDBTemplate simpleDBTemplate) {
+
+    protected SimpleDBDomainResolver domainResolver;
+    protected SimpleDBTemplate simpleDBTemplate;
+    protected SimpleDBEntityPersister simpleDBEntityPersister;
+
+    public SimpleDBQuery(Session session, PersistentEntity entity, SimpleDBDomainResolver domainResolver,
+               SimpleDBEntityPersister simpleDBEntityPersister, SimpleDBTemplate simpleDBTemplate) {
         super(session, entity);
         this.domainResolver = domainResolver;
         this.simpleDBEntityPersister = simpleDBEntityPersister;
@@ -34,28 +54,28 @@ public class SimpleDBQuery extends Query {
     }
 
     @Override
-    protected List executeQuery(PersistentEntity entity, Junction criteria) {
+    protected List executeQuery(@SuppressWarnings("hiding") PersistentEntity entity, @SuppressWarnings("hiding") Junction criteria) {
         //temp plug for testing to fight eventual consistency
 //        try { Thread.sleep(2*1000); } catch (InterruptedException e) { }
 
-        String domain = domainResolver.getAllDomainsForEntity().get(
-                0); //todo - in case of sharding we should iterate over all domains for this PersistentEntity (ideally in parallel)
+        // TODO - in case of sharding we should iterate over all domains for this PersistentEntity (ideally in parallel)
+        String domain = domainResolver.getAllDomainsForEntity().get(0);
 
         final List<Projection> projectionList = projections().getProjectionList();
         Projection countProjection = null;
 
         StringBuilder query;
-        if ( projectionList.isEmpty() ) {
-            query = new StringBuilder("select * from `" + domain + "`");
+        if (projectionList.isEmpty()) {
+            query = new StringBuilder("select * from `").append(domain).append("`");
         } else {
             //AWS SimpleDB only supports count(*) projection, nothing else.
             countProjection = projectionList.get(0);
-            if ( !CountProjection.class.equals(countProjection.getClass())  ) {
-                throw new UnsupportedOperationException("Currently projections of type " + countProjection.getClass()
-                        .getSimpleName() + " are not supported by this implementation");
+            if (!CountProjection.class.equals(countProjection.getClass())) {
+                throw new UnsupportedOperationException("Currently projections of type " +
+                  countProjection.getClass().getSimpleName() + " are not supported by this implementation");
             }
 
-            query = new StringBuilder("select count(*) from `" + domain + "`");
+            query = new StringBuilder("select count(*) from `").append(domain).append("`");
         }
 
         if (!criteria.getCriteria().isEmpty()) {
@@ -69,35 +89,35 @@ public class SimpleDBQuery extends Query {
         } else if (criteria instanceof Disjunction) {
             clause = buildCompositeClause(criteria, "OR", usedPropertyNames);
         } else {
-            throw new RuntimeException("not implemented: " + criteria.getClass());
+            throw new RuntimeException("not implemented: " + criteria.getClass().getName());
         }
 
         query.append(clause);
 
         List<Order> orderBys = getOrderBy();
-        if ( !orderBys.isEmpty() ) {
-            if ( orderBys.size() >1 ) {
-                throw new UnsupportedOperationException("Only single 'order by' clause is supported. You have: "+orderBys.size());
+        if (!orderBys.isEmpty()) {
+            if (orderBys.size() > 1) {
+                throw new UnsupportedOperationException("Only single 'order by' clause is supported. You have: " + orderBys.size());
             }
-            Order orderBy = orderBys.get(0);
+            @SuppressWarnings("hiding") Order orderBy = orderBys.get(0);
             String orderByPropertyName = orderBy.getProperty();
             String key = extractPropertyKey(orderByPropertyName);
             //AWS SimpleDB rule: if you use ORDER BY then you have to have a condition of that attribute in the where clause, otherwise it will throw an error
             //so we check if that property was used in the clause and if not we add 'is not null condition'
-            if ( !usedPropertyNames.contains(orderByPropertyName) ) {
-                query.append(" AND "+key+" IS NOT NULL");
+            if (!usedPropertyNames.contains(orderByPropertyName)) {
+                query.append(" AND ").append(key).append(" IS NOT NULL");
             }
 
-            query.append(" ORDER BY "+key+" "+orderBy.getDirection());
+            query.append(" ORDER BY ").append(key).append(" ").append(orderBy.getDirection());
         }
 
         //specify the limit on the returned results
         int limit = max < 0 ? 2500 : max; //if user did not explicitly limit maxResults, use the maximum limit allowe dy AWS (if not specified explicitly it will use 100 limit)
-        query.append(" LIMIT "+limit);
+        query.append(" LIMIT ").append(limit);
 
         List<Item> items = simpleDBTemplate.query(query.toString());
-        List results = new LinkedList();
-        if ( countProjection == null ) {
+        List<Object> results = new LinkedList<Object>();
+        if (countProjection == null) {
             for (Item item : items) {
                 results.add(createObjectFromItem(item));
             }
@@ -109,7 +129,8 @@ public class SimpleDBQuery extends Query {
         return results;
     }
 
-    private String buildCompositeClause(Junction criteria, String booleanOperator, Set<String> usedPropertyNames) {
+    private String buildCompositeClause(@SuppressWarnings("hiding") Junction criteria,
+            String booleanOperator, Set<String> usedPropertyNames) {
         StringBuilder clause = new StringBuilder();
         boolean first = true;
         for (Criterion criterion : criteria.getCriteria()) {
@@ -119,7 +140,7 @@ public class SimpleDBQuery extends Query {
             } else {
                 clause.append(" ").append(booleanOperator).append(" "); //prepend with operator
             }
-            
+
             if (criterion instanceof PropertyCriterion) {
                 PropertyCriterion propertyCriterion = (PropertyCriterion) criterion;
                 String propertyName = propertyCriterion.getProperty();
@@ -129,48 +150,47 @@ public class SimpleDBQuery extends Query {
                     String key = extractPropertyKey(propertyName);
                     Object value = propertyCriterion.getValue();
                     String stringValue =  SimpleDBConverterUtil.convertToString(value, entity.getMappingContext());
-                    
-                    clause.append("`"+key + "` = '" + stringValue + "'");
+
+                    clause.append("`").append(key).append("` = '").append(stringValue).append("'");
                 } else if (NotEquals.class.equals(criterion.getClass())) {
                     String key = extractPropertyKey(propertyName);
                     Object value = propertyCriterion.getValue();
                     String stringValue =  SimpleDBConverterUtil.convertToString(value, entity.getMappingContext());
 
-                    clause.append("`"+key + "` != '" + stringValue + "'");
+                    clause.append("`").append(key).append("` != '").append(stringValue).append("'");
                 } else if (IdEquals.class.equals(criterion.getClass())) {
-                    clause.append("itemName() = '" + propertyCriterion.getValue() + "'");
+                    clause.append("itemName() = '").append(propertyCriterion.getValue()).append("'");
                 } else if (Like.class.equals(criterion.getClass())) {
                     String key = extractPropertyKey(propertyName);
-                    clause.append(key + " LIKE '" + propertyCriterion.getValue() + "'");
+                    clause.append(key).append(" LIKE '").append(propertyCriterion.getValue()).append("'");
                 } else {
-                    throw new UnsupportedOperationException("Queries of type " + criterion.getClass()
-                            .getSimpleName() + " are not supported by this implementation");
+                    throw new UnsupportedOperationException("Queries of type " +
+                     criterion.getClass().getSimpleName() + " are not supported by this implementation");
                 }
-            } else if ( criterion instanceof Conjunction ) {
+            } else if (criterion instanceof Conjunction) {
                 String innerClause = buildCompositeClause((Conjunction) criterion, "AND", usedPropertyNames);
                 addToMainClause(criteria, clause, innerClause);
-            } else if ( criterion instanceof Disjunction ) {
+            } else if (criterion instanceof Disjunction) {
                 String innerClause = buildCompositeClause((Disjunction) criterion, "OR", usedPropertyNames);
                 addToMainClause(criteria, clause, innerClause);
-            } else if ( criterion instanceof Negation ) {
+            } else if (criterion instanceof Negation) {
                 String innerClause = buildCompositeClause((Negation) criterion, "OR", usedPropertyNames); //when we negate we use OR by default
-                clause.append("NOT ("+innerClause+")");
+                clause.append("NOT (").append(innerClause).append(")");
             } else {
-                throw new UnsupportedOperationException("Queries of type " + criterion.getClass()
-                        .getSimpleName() + " are not supported by this implementation");
-
+                throw new UnsupportedOperationException("Queries of type " +
+                     criterion.getClass().getSimpleName() + " are not supported by this implementation");
             }
         }
         return clause.toString();
     }
 
-    private void addToMainClause(Junction criteria, StringBuilder clause, String innerClause) {
+    private void addToMainClause(@SuppressWarnings("hiding") Junction criteria, StringBuilder clause, String innerClause) {
         boolean useParenthesis = criteria.getCriteria().size() > 1; //use parenthesis only when needed
-        if ( useParenthesis ) {
+        if (useParenthesis) {
             clause.append("(");
         }
         clause.append(innerClause);
-        if ( useParenthesis ) {
+        if (useParenthesis) {
             clause.append(")");
         }
     }
@@ -189,11 +209,7 @@ public class SimpleDBQuery extends Query {
 
     protected Object createObjectFromItem(Item item) {
         final String id = item.getName();
-        return simpleDBEntityPersister.createObjectFromNativeEntry(getEntity(), (Serializable) id,
+        return simpleDBEntityPersister.createObjectFromNativeEntry(getEntity(), id,
                 new NativeSimpleDBItem(item));
     }
-
-    protected SimpleDBDomainResolver domainResolver;
-    protected SimpleDBTemplate simpleDBTemplate;
-    protected SimpleDBEntityPersister simpleDBEntityPersister;
 }

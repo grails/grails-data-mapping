@@ -14,9 +14,6 @@
  */
 package org.springframework.datastore.mapping.simpledb.engine;
 
-import com.amazonaws.services.simpledb.model.Attribute;
-import com.amazonaws.services.simpledb.model.Item;
-import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +23,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.EntityAccess;
@@ -36,7 +32,6 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Association;
-import org.springframework.datastore.mapping.proxy.EntityProxy;
 import org.springframework.datastore.mapping.query.Query;
 import org.springframework.datastore.mapping.simpledb.SimpleDBDatastore;
 import org.springframework.datastore.mapping.simpledb.SimpleDBSession;
@@ -45,8 +40,6 @@ import org.springframework.datastore.mapping.simpledb.query.SimpleDBQuery;
 import org.springframework.datastore.mapping.simpledb.util.SimpleDBConverterUtil;
 import org.springframework.datastore.mapping.simpledb.util.SimpleDBTemplate;
 
-import java.io.Serializable;
-import java.util.*;
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
