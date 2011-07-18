@@ -102,7 +102,8 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
     @Override
     protected getEntryValue(Node nativeEntry, String property) {
         def result
-        if (persistentEntity.associations.find { it.name == property } ) {
+        Association association = persistentEntity.associations.find { it.name == property }
+        if (association) {
             DynamicRelationshipType relname = DynamicRelationshipType.withName(property)
 
             if (log.debugEnabled) {
@@ -111,9 +112,15 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
                 }
             }
 
-            Relationship rel = nativeEntry.getSingleRelationship(relname, Direction.OUTGOING)
-            result = rel ? rel.getOtherNode(nativeEntry).id : null
-            log.debug("getting property $property via relationship on $nativeEntry = $result")
+            if (association instanceof ManyToMany) {
+                String relName = association.owningSide ? association.inversePropertyName : association.name
+                result = nativeEntry.getRelationships(DynamicRelationshipType.withName(relName)).collect { it.getOtherNode(nativeEntry).id }
+            }
+            else {
+                Relationship rel = nativeEntry.getSingleRelationship(relname, Direction.OUTGOING)
+                result = rel ? rel.getOtherNode(nativeEntry).id : null
+                log.debug("getting property $property via relationship on $nativeEntry = $result")
+            }
         } else {
             result = nativeEntry.getProperty(property, null)
             PersistentProperty pe = discriminatePersistentEntity(persistentEntity, nativeEntry).getPropertyByName(property)
@@ -135,7 +142,18 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
         }
 
         PersistentProperty persistentProperty = persistentEntity.getPropertyByName(key)
-        if (persistentProperty instanceof Association) {
+        if (persistentProperty instanceof ManyToMany) {
+            // called when loading instances
+            DynamicRelationshipType relationshipType = DynamicRelationshipType.withName(key)
+            for (item in value) {
+                Node endNode = graphDatabaseService.getNodeById(item instanceof Long ? item : item.id)
+                for (Relationship rel in nativeEntry.getRelationships(relationshipType, Direction.OUTGOING)) {
+                    rel.delete()
+                }
+                nativeEntry.createRelationshipTo(endNode, relationshipType)
+            }
+        }
+        else if (persistentProperty instanceof Association) {
             log.info("setting $key via relationship to $value, assoc is ${persistentProperty.getClass().superclass.simpleName}, bidi: $persistentProperty.bidirectional, owning: $persistentProperty.owningSide")
 
             Node endNode = graphDatabaseService.getNodeById(value instanceof Long ? value : value.id)
@@ -152,7 +170,8 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
 
             rel = nativeEntry.createRelationshipTo(endNode, relationshipType)
             log.info("createRelationship $rel.startNode.id -> $rel.endNode.id ($rel.type)")
-        } else {
+        }
+        else {
             log.debug("setting property $key = $value ${value?.getClass()}")
 
             if (!isAllowedNeo4jType(value.getClass())) {
@@ -254,5 +273,20 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
             assert entity
         }
         targetEntity
+    }
+
+    @Override
+    protected void setManyToMany(PersistentEntity persistentEntity, obj, Node nativeEntry,
+            ManyToMany manyToMany, Collection associatedObjects, Map<Association, List<Serializable>> toManyKeys) {
+
+        toManyKeys.put manyToMany, session.persist(associatedObjects)
+    }
+
+    @Override
+    protected Collection getManyToManyKeys(PersistentEntity persistentEntity, object,
+            Serializable nativeKey, Node nativeEntry, ManyToMany manyToMany) {
+
+        String relName = manyToMany.owningSide ? manyToMany.inversePropertyName : manyToMany.name
+        nativeEntry.getRelationships(DynamicRelationshipType.withName(relName)).collect { it.getOtherNode(nativeEntry).id }
     }
 }

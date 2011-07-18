@@ -90,7 +90,6 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
 
         if (association instanceof ManyToMany && !association.owningSide) {
             (startNode, endNode) = [endNode, startNode]
-            relType = inverseRelationshipType
         }
 
         boolean hasRelationship = startNode.getRelationships(relType, Direction.OUTGOING).any { it.endNode == endNode }
