@@ -14,18 +14,24 @@
  */
 package org.springframework.datastore.mapping.redis.util;
 
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.transaction.NoTransactionException;
-import org.springframework.util.ReflectionUtils;
-import redis.clients.jedis.*;
-import redis.clients.jedis.Response;
-import redis.clients.jedis.exceptions.JedisConnectionException;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.transaction.NoTransactionException;
+import org.springframework.util.ReflectionUtils;
+
+import redis.clients.jedis.Client;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.PipelineBlock;
+import redis.clients.jedis.Response;
+import redis.clients.jedis.SortingParams;
+import redis.clients.jedis.Transaction;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 /**
  * A Spring-style template for querying Redis and translating
@@ -61,8 +67,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
             public Object doInRedis(Jedis redis) {
                 if (transaction != null) {
                     Response response = transaction.append(key, val.toString());
-                    String result = (String)response.get();
-                    return result != null && result.equals(QUEUED);
+                    return QUEUED.equals(response.get());
                 }
                 if (pipeline != null) {
                     pipeline.append(key, val.toString());
@@ -106,11 +111,10 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         });
     }
 
-
     public List<Object> pipeline(final RedisCallback<RedisTemplate<Jedis, SortingParams>> pipeline) {
         return (List<Object>) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) throws IOException {
-                return redis.pipelined(new PipelineBlock(){
+                return redis.pipelined(new PipelineBlock() {
                     @Override
                     public void execute() {
                         try {
@@ -309,8 +313,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
             public Object doInRedis(Jedis redis) {
                 if (transaction != null) {
                     Response response = transaction.sadd(redisKey, o.toString());
-                    String result = (String)response.get();
-                    return result != null && result.equals(QUEUED);
+                    return QUEUED.equals(response.get());
                 }
                 if (pipeline != null) {
                     pipeline.sadd(redisKey, o.toString());
@@ -326,8 +329,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
             public Object doInRedis(Jedis redis) {
                 if (transaction != null) {
                     Response response = transaction.append(redisKey, o.toString());
-                    String result = (String)response.get();
-                    return result != null && result.equals(QUEUED);
+                    return QUEUED.equals(response.get());
                 }
                 if (pipeline != null) {
                     pipeline.srem(redisKey, o.toString());
@@ -885,8 +887,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
             public Object doInRedis(Jedis redis) {
                 if (transaction != null) {
                     Response response = transaction.expire(key, timeout);
-                    String result = (String)response.get();
-                    return result != null && result.equals(QUEUED);
+                    return QUEUED.equals(response.get());
                 }
                 return redis.expire(key,timeout) > 0;
             }

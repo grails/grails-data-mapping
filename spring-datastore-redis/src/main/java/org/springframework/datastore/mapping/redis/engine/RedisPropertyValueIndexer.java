@@ -14,6 +14,13 @@
  */
 package org.springframework.datastore.mapping.redis.engine;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.datastore.mapping.core.SessionImplementor;
 import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
@@ -23,12 +30,6 @@ import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.redis.collection.RedisSet;
 import org.springframework.datastore.mapping.redis.query.RedisQueryUtils;
 import org.springframework.datastore.mapping.redis.util.RedisTemplate;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Indexes property values for querying later
@@ -68,16 +69,14 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
         clearCachedIndices(entityPersister.getPropertySortKeyPattern());
         final String primaryIndex = createRedisKey(value);
         template.sadd(primaryIndex, primaryKey);
+
         // for numbers and dates we also create a list index in order to support range queries
 
         if (value instanceof Number) {
-            Number n = (Number) value;
-            template.zadd(propSortKey,n.doubleValue(),primaryKey);
+            template.zadd(propSortKey, ((Number)value).doubleValue(), primaryKey);
         }
         else if (value instanceof Date) {
-            Date d = (Date) value;
-            Long time = d.getTime();
-            template.zadd(propSortKey,time.doubleValue(),primaryKey);
+            template.zadd(propSortKey, ((Date)value).getTime(), primaryKey);
         }
     }
 
@@ -112,7 +111,7 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
         }
     }
 
-    private void deleteKeys(java.util.Set<String> toDelete) {
+    private void deleteKeys(Set<String> toDelete) {
         if (toDelete != null && !toDelete.isEmpty()) {
             template.del(toDelete.toArray(new String[toDelete.size()]));
         }
@@ -148,9 +147,7 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     }
 
     public List<Long> query(final Object value, final int offset, final int max) {
-        String redisKey = createRedisKey(value);
-
-        RedisSet set = new RedisSet(template, redisKey);
+        RedisSet set = new RedisSet(template, createRedisKey(value));
         Collection<String> results;
         if (offset > 0 || max > 0) {
             results = set.members(offset, max);

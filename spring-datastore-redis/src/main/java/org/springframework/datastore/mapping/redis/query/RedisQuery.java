@@ -14,11 +14,21 @@
  */
 package org.springframework.datastore.mapping.redis.query;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.datastore.mapping.config.Property;
-import org.springframework.datastore.mapping.engine.PropertyValueIndexer;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.model.PersistentProperty;
 import org.springframework.datastore.mapping.model.types.Identity;
@@ -31,11 +41,8 @@ import org.springframework.datastore.mapping.redis.util.RedisCallback;
 import org.springframework.datastore.mapping.redis.util.RedisTemplate;
 import org.springframework.datastore.mapping.redis.util.SortParams;
 
-import java.io.IOException;
-import java.util.*;
-
 /**
- * A Query implementation for Redis
+ * A Query implementation for Redis.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -419,10 +426,12 @@ public class RedisQuery extends Query {
         Object max = template.get(maxKey);
         if (max == null) {
             Set<String> results = template.zrevrange(sortKey, 0, 0);
-            if (!results.isEmpty()) {
+            if (results.isEmpty()) {
+                max = -1;
+            }
+            else {
                 max = template.zscore(sortKey, results.iterator().next());
             }
-            else max = -1;
 
             template.setex(maxKey, max, 500);
         }
@@ -436,10 +445,12 @@ public class RedisQuery extends Query {
         Object min = template.get(minKey);
         if (min == null) {
             Set<String> results = template.zrange(sortKey, 0, 0);
-            if (!results.isEmpty()) {
+            if (results.isEmpty()) {
+                min = -1;
+            }
+            else {
                 min = template.zscore(sortKey, results.iterator().next());
             }
-            else min = -1;
 
             template.setex(minKey, min, 500);
         }
@@ -450,11 +461,7 @@ public class RedisQuery extends Query {
         final String property = between.getProperty();
 
         PersistentProperty prop = getAndValidateProperty(entityPersister, property);
-
-        Object fromObject = between.getFrom();
-        Object toObject = between.getTo();
-
-        return executeBetweenInternal(entityPersister, prop, fromObject, toObject, false, true);
+        return executeBetweenInternal(entityPersister, prop, between.getFrom(), between.getTo(), false, true);
     }
 
     private String executeBetweenInternal(RedisEntityPersister entityPersister,
@@ -502,7 +509,8 @@ public class RedisQuery extends Query {
         final PersistentEntity entity = entityPersister.getPersistentEntity();
         PersistentProperty prop = entity.getPropertyByName(property);
         if (prop == null) {
-            throw new InvalidDataAccessResourceUsageException("Cannot execute between query on property ["+property+"] of class ["+entity+"]. Property does not exist.");
+            throw new InvalidDataAccessResourceUsageException("Cannot execute between query on property [" +
+                   property + "] of class [" + entity + "]. Property does not exist.");
         }
         return prop;
     }
@@ -534,16 +542,17 @@ public class RedisQuery extends Query {
         }
         assertIndexed(property, prop);
 
-        PropertyValueIndexer indexer = entityPersister.getPropertyIndexer(prop);
-        return indexer.getIndexName(value);
+        return entityPersister.getPropertyIndexer(prop).getIndexName(value);
     }
 
     private void assertIndexed(String property, PersistentProperty prop) {
         if (prop == null) {
-            throw new InvalidDataAccessResourceUsageException("Cannot execute query. Entity ["+getEntity()+"] does not declare a property named ["+ property +"]");
+            throw new InvalidDataAccessResourceUsageException("Cannot execute query. Entity [" +
+                   getEntity() + "] does not declare a property named [" + property + "]");
         }
-        else if (!isIndexed(prop)) {
-            throw new InvalidDataAccessResourceUsageException("Cannot query class ["+getEntity()+"] on property ["+prop+"]. The property is not indexed!");
+        if (!isIndexed(prop)) {
+            throw new InvalidDataAccessResourceUsageException("Cannot query class [" +
+                   getEntity() + "] on property [" + prop + "]. The property is not indexed!");
         }
     }
 }
