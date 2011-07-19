@@ -420,6 +420,16 @@ public class GemfireQuery extends Query {
         });
     }
 
+    @Override
+    public void add(Criterion criterion) {
+        if (criterion instanceof Equals) {
+            final Equals eq = (Equals) criterion;
+            eq.setValue(resolveIdIfEntity(eq.getValue()));
+        }
+
+        criteria.add(criterion);
+    }
+
     /**
      * Obtains the query string with variables embedded within the Query
      * @return The query string

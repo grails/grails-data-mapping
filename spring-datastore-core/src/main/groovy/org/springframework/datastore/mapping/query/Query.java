@@ -331,7 +331,7 @@ public abstract class Query {
         return this;
     }
 
-    private Object resolveIdIfEntity(Object value) {
+    protected Object resolveIdIfEntity(Object value) {
         // use the object id as the value if its a persistent entity
         return session.getMappingContext().isPersistentEntity(value) ? findInstanceId(value) : value;
     }
