@@ -115,10 +115,7 @@ public abstract class Query {
     public void add(Criterion criterion) {
         if (criterion instanceof Equals) {
             final Equals eq = (Equals) criterion;
-            Object resolved = resolveIdIfEntity(eq.getValue());
-            if (resolved != eq.getValue()) {
-                criterion = Restrictions.idEq(resolved);
-            }
+            eq.setValue(resolveIdIfEntity(eq.getValue()));
         }
 
         criteria.add(criterion);

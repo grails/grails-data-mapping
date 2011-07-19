@@ -37,6 +37,7 @@ import org.springframework.datastore.mapping.model.types.Association;
 import org.springframework.datastore.mapping.model.types.ToOne;
 import org.springframework.datastore.mapping.query.AssociationQuery;
 import org.springframework.datastore.mapping.query.Query;
+import org.springframework.datastore.mapping.query.Restrictions;
 import org.springframework.orm.jpa.JpaCallback;
 import org.springframework.orm.jpa.JpaTemplate;
 
@@ -396,6 +397,19 @@ public class JpaQuery extends Query {
     @Override
     public JpaSession getSession() {
         return (JpaSession) super.getSession();
+    }
+
+    @Override
+    public void add(Criterion criterion) {
+        if (criterion instanceof Equals) {
+            final Equals eq = (Equals) criterion;
+            Object resolved = resolveIdIfEntity(eq.getValue());
+            if (resolved != eq.getValue()) {
+                criterion = Restrictions.idEq(resolved);
+            }
+        }
+
+        criteria.add(criterion);
     }
 
     @Override
