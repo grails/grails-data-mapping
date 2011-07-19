@@ -30,7 +30,6 @@ public interface RedisTemplate<T, S> {
      */
     boolean append(String key, Object val);
 
-
     /**
      * See http://redis.io/commands/blpop
      */
@@ -61,7 +60,6 @@ public interface RedisTemplate<T, S> {
      */
     long del(String... redisKey);
 
-
     List<Object> pipeline(RedisCallback<RedisTemplate<T,S>> pipeline);
 
     boolean persist(String redisKey);
@@ -76,11 +74,9 @@ public interface RedisTemplate<T, S> {
 
     boolean sismember(String redisKey, Object o);
 
-
     long scard(String redisKey);
 
     boolean sadd(String redisKey, Object o);
-
 
     boolean srem(String redisKey, Object o);
 
@@ -144,7 +140,6 @@ public interface RedisTemplate<T, S> {
 
     long incrby(String key, int amount);
 
-
     Set<String> sinter(String...keys);
 
     Set<String> sunion(String... keys);
@@ -197,7 +192,6 @@ public interface RedisTemplate<T, S> {
 
     double zincrby(String key, double score, String member);
 
-
     long zinterstore(final String destKey, final String...keys);
 
     long zunionstore(final String destKey, final String...keys);
@@ -229,4 +223,6 @@ public interface RedisTemplate<T, S> {
     void sortstore(String key, String destKey,  SortParams<S> params);
 
     T getRedisClient();
+
+    boolean isInMulti();
 }

@@ -114,6 +114,11 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public List<Object> pipeline(final RedisCallback<RedisTemplate<Jedis, SortingParams>> pipeline) {
         return (List<Object>) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) throws IOException {
+                if (isInMulti()) {
+                    // call directly if in a transaction
+                    return pipeline.doInRedis(JedisTemplate.this);
+                }
+
                 return redis.pipelined(new PipelineBlock() {
                     @Override
                     public void execute() {
@@ -266,6 +271,10 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public boolean sismember(final String redisKey, final Object o) {
         return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
+                if (transaction != null) {
+                    Response response = transaction.sismember(redisKey, o.toString());
+                    return QUEUED.equals(response.get());
+                }
                 if (pipeline != null) {
                     pipeline.sismember(redisKey, o.toString());
                     return false;
@@ -1226,6 +1235,10 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                 return null;
             }
         });
+    }
+
+    public boolean isInMulti() {
+        return getRedisClient().getClient().isInMulti();
     }
 
     private class JedisSortParams extends SortParams<SortingParams> {

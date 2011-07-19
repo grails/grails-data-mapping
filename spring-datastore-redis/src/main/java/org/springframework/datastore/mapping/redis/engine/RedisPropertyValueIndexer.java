@@ -31,6 +31,8 @@ import org.springframework.datastore.mapping.redis.collection.RedisSet;
 import org.springframework.datastore.mapping.redis.query.RedisQueryUtils;
 import org.springframework.datastore.mapping.redis.util.RedisTemplate;
 
+import redis.clients.jedis.exceptions.JedisDataException;
+
 /**
  * Indexes property values for querying later
  *
@@ -68,7 +70,22 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
         String propSortKey = entityPersister.getPropertySortKey(property);
         clearCachedIndices(entityPersister.getPropertySortKeyPattern());
         final String primaryIndex = createRedisKey(value);
-        template.sadd(primaryIndex, primaryKey);
+        try {
+            template.sadd(primaryIndex, primaryKey);
+        }
+        catch (JedisDataException e) {
+            // TODO horrible hack workaround for a Jedis 2.0.0 bug; the command works but the
+            //      client doesn't handle the response correctly, so it's safe to ignore the
+            //      exception if we're in a transaction
+            if (e.getMessage().startsWith("Please close pipeline or multi block before calling this method")) {
+                if (!template.isInMulti()) {
+                    throw e;
+                }
+            }
+            else {
+                throw e;
+            }
+        }
 
         // for numbers and dates we also create a list index in order to support range queries
 

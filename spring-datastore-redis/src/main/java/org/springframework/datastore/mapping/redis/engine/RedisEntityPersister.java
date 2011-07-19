@@ -47,6 +47,8 @@ import org.springframework.datastore.mapping.redis.query.RedisQuery;
 import org.springframework.datastore.mapping.redis.util.RedisCallback;
 import org.springframework.datastore.mapping.redis.util.RedisTemplate;
 
+import redis.clients.jedis.exceptions.JedisDataException;
+
 /**
  * An {@link org.springframework.datastore.mapping.engine.EntityPersister} for the Redis NoSQL datastore
  *
@@ -279,12 +281,36 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPersister<Map, L
     }
 
     private void updateAllEntityIndex(PersistentEntity persistentEntity, Long storeId) {
-        getAllEntityIndex().add(storeId);
+        try {
+            getAllEntityIndex().add(storeId);
+        }
+        catch (JedisDataException e) {
+            handleJedisDataException(e);
+        }
         PersistentEntity parent = persistentEntity.getParentEntity();
         while (parent != null) {
             RedisEntityPersister persister = (RedisEntityPersister) session.getPersister(parent);
-            persister.getAllEntityIndex().add(storeId);
+            try {
+                persister.getAllEntityIndex().add(storeId);
+            }
+            catch (JedisDataException e) {
+                handleJedisDataException(e);
+            }
             parent = parent.getParentEntity();
+        }
+    }
+
+    private void handleJedisDataException(JedisDataException e) {
+        // TODO horrible hack workaround for a Jedis 2.0.0 bug; the command works but the
+        //      client doesn't handle the response correctly, so it's safe to ignore the
+        //      exception if we're in a transaction
+        if (e.getMessage().startsWith("Please close pipeline or multi block before calling this method")) {
+            if (!getRedisTemplate().isInMulti()) {
+                throw e;
+            }
+        }
+        else {
+            throw e;
         }
     }
 
