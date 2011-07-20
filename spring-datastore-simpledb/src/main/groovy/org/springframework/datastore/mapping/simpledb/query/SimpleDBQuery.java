@@ -55,9 +55,6 @@ public class SimpleDBQuery extends Query {
 
     @Override
     protected List executeQuery(@SuppressWarnings("hiding") PersistentEntity entity, @SuppressWarnings("hiding") Junction criteria) {
-        //temp plug for testing to fight eventual consistency
-//        try { Thread.sleep(2*1000); } catch (InterruptedException e) { }
-
         // TODO - in case of sharding we should iterate over all domains for this PersistentEntity (ideally in parallel)
         String domain = domainResolver.getAllDomainsForEntity().get(0);
 
@@ -112,7 +109,7 @@ public class SimpleDBQuery extends Query {
         }
 
         //specify the limit on the returned results
-        int limit = max < 0 ? 2500 : max; //if user did not explicitly limit maxResults, use the maximum limit allowe dy AWS (if not specified explicitly it will use 100 limit)
+        int limit = max < 0 ? 2500 : max; //if user did not explicitly limit maxResults, use the maximum limit allowed dy AWS (if not specified explicitly it will use 100 limit)
         query.append(" LIMIT ").append(limit);
 
         List<Item> items = simpleDBTemplate.query(query.toString());

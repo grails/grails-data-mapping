@@ -85,7 +85,13 @@ public interface SimpleDBTemplate {
      */
     void deleteItem(String domainName, String id) throws DataAccessException;
 
-    void deleteAllItems(String domainName) throws DataAccessException;
+    /**
+     * Returns true if any item was deleted, in other words if domain was empty it returns false.
+     * @param domainName
+     * @return
+     * @throws DataAccessException
+     */
+    boolean deleteAllItems(String domainName) throws DataAccessException;
 
     List<Item> query(String query) throws DataAccessException;
 

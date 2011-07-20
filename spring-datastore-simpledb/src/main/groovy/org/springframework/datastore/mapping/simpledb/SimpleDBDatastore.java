@@ -28,6 +28,7 @@ import org.springframework.datastore.mapping.model.MappingContext;
 import org.springframework.datastore.mapping.model.PersistentEntity;
 import org.springframework.datastore.mapping.simpledb.config.SimpleDBMappingContext;
 import org.springframework.datastore.mapping.simpledb.model.types.SimpleDBTypeConverterRegistrar;
+import org.springframework.datastore.mapping.simpledb.util.DelayAfterWriteSimpleDBTemplateDecorator;
 import org.springframework.datastore.mapping.simpledb.util.SimpleDBTemplate;
 import org.springframework.datastore.mapping.simpledb.util.SimpleDBTemplateImpl;
 
@@ -42,6 +43,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
     public static final String SECRET_KEY = "secretKey";
     public static final String ACCESS_KEY = "accessKey";
     public static final String DOMAIN_PREFIX_KEY = "domainNamePrefix";
+    public static final String DELAY_AFTER_WRITES = "delayAfterWrites"; //used for testing - to fight eventual consistency if this flag value is 'true' it will add about 10 sec pause after writes
 
 //    private Map<PersistentEntity, SimpleDBTemplate> simpleDBTemplates = new ConcurrentHashMap<PersistentEntity, SimpleDBTemplate>();
     private SimpleDBTemplate simpleDBTemplate;  //currently there is no need to create template per entity, we can share same instance
@@ -102,11 +104,16 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
     }
 
     protected void createSimpleDBTemplate(PersistentEntity entity) {
-        String accessKey = read(String.class, ACCESS_KEY, connectionDetails, null);
-        String secretKey = read(String.class, SECRET_KEY, connectionDetails, null);
+        if (simpleDBTemplate == null) {
+            String accessKey = read(String.class, ACCESS_KEY, connectionDetails, null);
+            String secretKey = read(String.class, SECRET_KEY, connectionDetails, null);
+            String delayAfterWrite = read(String.class, DELAY_AFTER_WRITES, connectionDetails, null);
 
-        simpleDBTemplate = new SimpleDBTemplateImpl(accessKey, secretKey);
-//        simpleDBTemplates.put(entity, template);
+            simpleDBTemplate = new SimpleDBTemplateImpl(accessKey, secretKey);
+            if (Boolean.parseBoolean(delayAfterWrite)) {
+                simpleDBTemplate = new DelayAfterWriteSimpleDBTemplateDecorator(simpleDBTemplate, 10*1000);
+            }
+        }
     }
 
     /**

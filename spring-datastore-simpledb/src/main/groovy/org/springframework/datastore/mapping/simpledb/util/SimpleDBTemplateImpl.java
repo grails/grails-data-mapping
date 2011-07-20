@@ -103,12 +103,14 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         sdb.deleteAttributes(request);
     }
 
-    public void deleteAllItems(String domainName) throws DataAccessException {
+    public boolean deleteAllItems(String domainName) throws DataAccessException {
         SelectRequest selectRequest = new SelectRequest("select itemName() from `"+domainName+"`");
         List<Item> items = sdb.select(selectRequest).getItems();
+        boolean hadItems = !items.isEmpty();
         for (Item item : items) {
             deleteItem(domainName, item.getName());
         }
+        return hadItems;
     }
 
     public List<Item> query(String query) {

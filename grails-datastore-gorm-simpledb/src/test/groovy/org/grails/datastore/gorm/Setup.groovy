@@ -39,10 +39,14 @@ class Setup {
 
     static Session setup(classes) {
         def env = System.getenv()
-        simpleDB = new SimpleDBDatastore(
-                new SimpleDBMappingContext(),
-                [accessKey: env['AWS_ACCESS_KEY'], secretKey: env['AWS_SECRET_KEY'], domainNamePrefix: "TEST_"]
-        )
+
+        def connectionDetails = [:]
+        connectionDetails.put(SimpleDBDatastore.ACCESS_KEY, env['AWS_ACCESS_KEY'])
+        connectionDetails.put(SimpleDBDatastore.SECRET_KEY, env['AWS_SECRET_KEY'])
+        connectionDetails.put(SimpleDBDatastore.DOMAIN_PREFIX_KEY, "TEST_")
+        connectionDetails.put(SimpleDBDatastore.DELAY_AFTER_WRITES, "true") //this flag will cause pausing after each write - to fight eventual consistency
+
+        simpleDB = new SimpleDBDatastore(new SimpleDBMappingContext(), connectionDetails)
         def ctx = new GenericApplicationContext()
         ctx.refresh()
         simpleDB.applicationContext = ctx
