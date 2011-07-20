@@ -561,16 +561,14 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     protected final Serializable persistEntity(final PersistentEntity persistentEntity, Object obj) {
-        ClassMapping cm = persistentEntity.getMapping();
-        String family = getEntityFamily();
-
         T tmp = null;
         final NativeEntryModifyingEntityAccess entityAccess = (NativeEntryModifyingEntityAccess) createEntityAccess(persistentEntity, obj, tmp);
-        K k = readObjectIdentifier(entityAccess, cm);
+        K k = readObjectIdentifier(entityAccess, persistentEntity.getMapping());
         boolean isUpdate = k != null;
 
         PendingOperation<T, K> pendingOperation;
 
+        String family = getEntityFamily();
         SessionImplementor<Object> si = (SessionImplementor<Object>) session;
         if (!isUpdate) {
             tmp = createNewEntry(family);
@@ -584,8 +582,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
             };
 
-            String id = entityAccess.getIdentifierName();
-            entityAccess.setProperty(id, k);
+            entityAccess.setProperty(entityAccess.getIdentifierName(), k);
         }
         else {
             tmp = (T) si.getCachedEntry(persistentEntity, (Serializable) k);
@@ -685,7 +682,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     if (embeddedInstances instanceof Collection && !((Collection)embeddedInstances).isEmpty()) {
                         Collection instances = (Collection)embeddedInstances;
                         List<T> embeddedEntries = new ArrayList<T>();
-                        int i = 0;
                         for (Object instance : instances) {
                             PersistentEntity embeddedPersistentEntity =
                                 getMappingContext().getPersistentEntity(instance.getClass().getName());
@@ -703,7 +699,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                 setEntryValue(entry, persistentProperty.getName(),
                                         embeddedEntityAccess.getProperty(persistentProperty.getName()));
                             }
-                            i++;
                         }
 
                         setEmbeddedCollection(e, key, instances, embeddedEntries);
