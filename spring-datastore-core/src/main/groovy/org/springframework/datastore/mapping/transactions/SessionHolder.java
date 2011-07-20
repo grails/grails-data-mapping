@@ -21,7 +21,7 @@ import org.springframework.datastore.mapping.core.Session;
 import org.springframework.transaction.support.ResourceHolderSupport;
 
 /**
- * Holds a reference to the session
+ * Holds a reference to one or more sessions.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -56,11 +56,11 @@ public class SessionHolder extends ResourceHolderSupport {
     }
 
     public void addSession(Session session) {
-        this.sessions.add(session);
+        sessions.add(session);
     }
 
     public void removeSession(Session session) {
-        this.sessions.remove(session);
+        sessions.remove(session);
     }
 
     public boolean containsSession(Session session) {

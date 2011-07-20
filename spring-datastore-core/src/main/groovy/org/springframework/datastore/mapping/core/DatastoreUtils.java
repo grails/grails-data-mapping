@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
  */
 public abstract class DatastoreUtils {
 
-     public static final Log logger =  LogFactory.getLog(DatastoreUtils.class);
+     public static final Log logger = LogFactory.getLog(DatastoreUtils.class);
      private static final ThreadLocal<Map<Datastore, Set<Session>>> deferredCloseHolder =
             new NamedThreadLocal<Map<Datastore, Set<Session>>>(
                     "Datastore Sessions registered for deferred close");
@@ -175,14 +175,16 @@ public abstract class DatastoreUtils {
      * @param session The Session instance
      */
     public static void closeSession(Session session) {
-        if (session != null) {
-            logger.debug("Closing Datastore Session");
-            try {
-                session.disconnect();
-            }
-            catch (Throwable ex) {
-                logger.debug("Unexpected exception on closing Datastore Session", ex);
-            }
+        if (session == null) {
+            return;
+        }
+
+        logger.debug("Closing Datastore Session");
+        try {
+            session.disconnect();
+        }
+        catch (Throwable ex) {
+            logger.debug("Unexpected exception on closing Datastore Session", ex);
         }
     }
 
@@ -258,8 +260,7 @@ public abstract class DatastoreUtils {
         Map<Datastore, Set<Session>> holderMap = deferredCloseHolder.get();
         if (holderMap != null && datastore != null && holderMap.containsKey(datastore)) {
             logger.debug("Registering Datastore Session for deferred close");
-            Set<Session> sessions = holderMap.get(datastore);
-            sessions.add(session);
+            holderMap.get(datastore).add(session);
         }
         else {
             closeSession(session);
@@ -281,7 +282,7 @@ public abstract class DatastoreUtils {
         finally {
             if (!existing) {
                 TransactionSynchronizationManager.unbindResource(session.getDatastore());
-                DatastoreUtils.closeSessionOrRegisterDeferredClose(session, datastore);
+                closeSessionOrRegisterDeferredClose(session, datastore);
             }
         }
     }
@@ -302,7 +303,7 @@ public abstract class DatastoreUtils {
         finally {
             if (!existing) {
                 TransactionSynchronizationManager.unbindResource(session.getDatastore());
-                DatastoreUtils.closeSessionOrRegisterDeferredClose(session, datastore);
+                closeSessionOrRegisterDeferredClose(session, datastore);
             }
         }
     }
@@ -320,8 +321,8 @@ public abstract class DatastoreUtils {
         }
         finally {
             if (!existing) {
-                TransactionSynchronizationManager.unbindResource(session.getDatastore());
-                DatastoreUtils.closeSessionOrRegisterDeferredClose(session, datastore);
+                TransactionSynchronizationManager.unbindResource(datastore);
+                closeSessionOrRegisterDeferredClose(session, datastore);
             }
         }
     }
