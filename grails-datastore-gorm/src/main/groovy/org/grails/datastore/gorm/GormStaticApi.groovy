@@ -22,6 +22,7 @@ import org.springframework.beans.PropertyAccessorFactory
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.datastore.mapping.core.AbstractDatastore
 import org.springframework.datastore.mapping.core.Datastore
+import org.springframework.datastore.mapping.core.DatastoreUtils
 import org.springframework.datastore.mapping.core.Session
 import org.springframework.datastore.mapping.core.SessionCallback
 import org.springframework.datastore.mapping.core.VoidSessionCallback
@@ -554,10 +555,11 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     def withNewSession(Closure callable) {
         def session = datastore.connect()
         try {
+            DatastoreUtils.bindNewSession session
             callable?.call(session)
         }
         finally {
-            session.disconnect()
+            DatastoreUtils.unbindSession session
         }
     }
 

@@ -336,4 +336,47 @@ public abstract class DatastoreUtils {
         TransactionSynchronizationManager.bindResource(session.getDatastore(), new SessionHolder(session));
         return session;
     }
+
+    /**
+     * Adds the session to the current SessionHolder's list of sessions, making it the current session.
+     * If there's no current session, calls bindSession.
+     * @param session the session
+     * @return the session
+     */
+    public static Session bindNewSession(final Session session) {
+        SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(session.getDatastore());
+        if (sessionHolder == null) {
+            return bindSession(session);
+        }
+
+        sessionHolder.addSession(session);
+        return session;
+    }
+
+    /**
+     * Unbinds and closes a session. If it's the only session in the SessionHolder, unbinds
+     * the SessionHolder, otherwise just removes the session from the holder's list.
+     * @param session the session
+     */
+    public static void unbindSession(final Session session) {
+        SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(session.getDatastore());
+        if (sessionHolder == null) {
+            logger.warn("Cannot unbind session, there's no SessionHolder registered");
+            return;
+        }
+
+        if (!sessionHolder.containsSession(session)) {
+            logger.warn("Cannot unbind session, it's not registered in a SessionHolder");
+            return;
+        }
+
+        if (sessionHolder.size() > 1) {
+            sessionHolder.removeSession(session);
+        }
+        else {
+          TransactionSynchronizationManager.unbindResource(session.getDatastore());
+        }
+
+        closeSessionOrRegisterDeferredClose(session, session.getDatastore());
+    }
 }

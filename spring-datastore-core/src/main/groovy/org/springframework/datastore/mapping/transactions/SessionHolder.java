@@ -67,6 +67,10 @@ public class SessionHolder extends ResourceHolderSupport {
         return sessions.contains(session);
     }
 
+    public int size() {
+        return sessions.size();
+    }
+
     public Session getValidatedSession() {
         Session session = getSession();
         if (session != null && !session.isConnected()) {
