@@ -565,6 +565,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         final NativeEntryModifyingEntityAccess entityAccess = (NativeEntryModifyingEntityAccess) createEntityAccess(persistentEntity, obj, tmp);
         K k = readObjectIdentifier(entityAccess, persistentEntity.getMapping());
         boolean isUpdate = k != null;
+        if (isUpdate && !getSession().isDirty(obj)) {
+            return (Serializable) k;
+        }
 
         PendingOperation<T, K> pendingOperation;
 
