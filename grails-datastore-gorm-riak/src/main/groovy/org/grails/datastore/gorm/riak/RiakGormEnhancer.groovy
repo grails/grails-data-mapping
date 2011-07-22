@@ -30,9 +30,9 @@ import org.springframework.data.keyvalue.riak.core.RiakQosParameters
 import org.springframework.data.keyvalue.riak.core.RiakTemplate
 import org.springframework.data.keyvalue.riak.core.SimpleBucketKeyPair
 import org.springframework.data.keyvalue.riak.mapreduce.*
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.core.SessionCallback
-import org.springframework.datastore.mapping.riak.RiakDatastore
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.core.SessionCallback
+import org.grails.datastore.mapping.riak.RiakDatastore
 
 /**
  * @author J. Brisbin <jon@jbrisbin.com>

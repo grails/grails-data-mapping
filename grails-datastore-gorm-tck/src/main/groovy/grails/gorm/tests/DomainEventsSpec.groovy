@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-import org.springframework.datastore.mapping.core.Session
+import org.grails.datastore.mapping.core.Session
 
 /**
  * @author graemerocher

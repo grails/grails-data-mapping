@@ -15,14 +15,14 @@
 package org.grails.plugins.redis
 
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
-import org.springframework.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
-import org.springframework.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
+import org.grails.datastore.mapping.model.MappingContext
 
 /**
  * Creates a Redis mapping context
  */
-class RedisMappingContextFactoryBean extends AbstractMappingContextFactoryBean{
-  protected MappingContext createMappingContext() {
-    new KeyValueMappingContext("");
-  }
+class RedisMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
+    protected MappingContext createMappingContext() {
+        new KeyValueMappingContext("");
+    }
 }

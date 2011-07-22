@@ -8,9 +8,9 @@ dependencies {
         transitive = false
     }
     compile project(":grails-datastore-gorm"),
-            project(":spring-datastore-jpa"),
-            project(":spring-datastore-core"),
-            project(":spring-datastore-web")
+            project(":grails-datastore-jpa"),
+            project(":grails-datastore-core"),
+            project(":grails-datastore-web")
 
     testCompile 'org.hibernate:hibernate-entitymanager:3.4.0.GA',
                 'hsqldb:hsqldb:1.8.0.10'

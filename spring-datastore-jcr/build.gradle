@@ -1,5 +1,5 @@
 dependencies {
-    compile project(":spring-datastore-core")
+    compile project(":grails-datastore-core")
     compile 'javax.jcr:jcr:1.0'
     compile 'org.springframework:se-jcr:1.0-SNAPSHOT'
     compile 'org.apache.jackrabbit:jackrabbit-core:1.6.2'

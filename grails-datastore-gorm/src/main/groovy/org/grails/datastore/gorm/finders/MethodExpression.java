@@ -17,9 +17,9 @@ package org.grails.datastore.gorm.finders;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.springframework.datastore.mapping.query.Query;
-import org.springframework.datastore.mapping.query.Query.Criterion;
-import org.springframework.datastore.mapping.query.Restrictions;
+import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.Query.Criterion;
+import org.grails.datastore.mapping.query.Restrictions;
 import org.springframework.util.Assert;
 
 /**

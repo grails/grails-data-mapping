@@ -24,20 +24,20 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.datastore.mapping.core.Datastore;
-import org.springframework.datastore.mapping.engine.EntityAccess;
-import org.springframework.datastore.mapping.engine.event.AbstractPersistenceEvent;
-import org.springframework.datastore.mapping.engine.event.AbstractPersistenceEventListener;
-import org.springframework.datastore.mapping.engine.event.PostDeleteEvent;
-import org.springframework.datastore.mapping.engine.event.PostInsertEvent;
-import org.springframework.datastore.mapping.engine.event.PostLoadEvent;
-import org.springframework.datastore.mapping.engine.event.PostUpdateEvent;
-import org.springframework.datastore.mapping.engine.event.PreDeleteEvent;
-import org.springframework.datastore.mapping.engine.event.PreInsertEvent;
-import org.springframework.datastore.mapping.engine.event.PreLoadEvent;
-import org.springframework.datastore.mapping.engine.event.PreUpdateEvent;
-import org.springframework.datastore.mapping.model.MappingContext;
-import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
+import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener;
+import org.grails.datastore.mapping.engine.event.PostDeleteEvent;
+import org.grails.datastore.mapping.engine.event.PostInsertEvent;
+import org.grails.datastore.mapping.engine.event.PostLoadEvent;
+import org.grails.datastore.mapping.engine.event.PostUpdateEvent;
+import org.grails.datastore.mapping.engine.event.PreDeleteEvent;
+import org.grails.datastore.mapping.engine.event.PreInsertEvent;
+import org.grails.datastore.mapping.engine.event.PreLoadEvent;
+import org.grails.datastore.mapping.engine.event.PreUpdateEvent;
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -164,8 +164,8 @@ public class DomainEventListener extends AbstractPersistenceEventListener
 
     /**
      * {@inheritDoc}
-     * @see org.springframework.datastore.mapping.model.MappingContext.Listener#persistentEntityAdded(
-     *     org.springframework.datastore.mapping.model.PersistentEntity)
+     * @see org.grails.datastore.mapping.model.MappingContext.Listener#persistentEntityAdded(
+     *     org.grails.datastore.mapping.model.PersistentEntity)
      */
     public void persistentEntityAdded(PersistentEntity entity) {
         createEventCaches(entity);

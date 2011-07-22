@@ -16,8 +16,8 @@ package org.grails.datastore.gorm.simpledb;
 
 import grails.gorm.CriteriaBuilder;
 
-import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.query.Query;
 
 /**
  * Extends the default CriteriaBuilder implementation.

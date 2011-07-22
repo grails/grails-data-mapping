@@ -14,8 +14,8 @@
  */
 package org.grails.datastore.gorm.finders;
 
-import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.query.Query;
 
 /**
  * Implemented by finders that build queries.

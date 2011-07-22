@@ -7,11 +7,11 @@ import org.hibernate.dialect.HSQLDialect
 import org.hibernate.ejb.Ejb3Configuration
 import org.hsqldb.jdbcDriver
 import org.springframework.context.support.GenericApplicationContext
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.jpa.JpaDatastore
-import org.springframework.datastore.mapping.jpa.config.JpaMappingContext
-import org.springframework.datastore.mapping.model.MappingContext
-import org.springframework.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.jpa.JpaDatastore
+import org.grails.datastore.mapping.jpa.config.JpaMappingContext
+import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors

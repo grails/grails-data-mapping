@@ -1,9 +1,16 @@
 dependencies {
     compile project(":grails-datastore-gorm"),
-            project(":spring-datastore-redis"),
-            project(":spring-datastore-core")
+            project(":grails-datastore-redis"),
+            project(":grails-datastore-core")
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")
 }
+
+/*
+test {
+    jvmArgs '-Xmx1024m', '-Xdebug', '-Xnoagent', '-Dgrails.full.stacktrace=true', '-Djava.compiler=NONE',
+            '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
+}
+*/
 
 jar.appendix = 'gorm-redis'

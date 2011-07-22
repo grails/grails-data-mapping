@@ -14,9 +14,9 @@
  */
 package org.grails.datastore.gorm.neo4j
 
-import org.springframework.datastore.mapping.config.AbstractGormMappingFactory
-import org.springframework.datastore.mapping.config.Property
-import org.springframework.datastore.mapping.keyvalue.mapping.config.Family
+import org.grails.datastore.mapping.config.AbstractGormMappingFactory
+import org.grails.datastore.mapping.config.Property
+import org.grails.datastore.mapping.keyvalue.mapping.config.Family
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>

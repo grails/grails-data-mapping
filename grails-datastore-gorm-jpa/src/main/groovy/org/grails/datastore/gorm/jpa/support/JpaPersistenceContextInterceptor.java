@@ -15,10 +15,10 @@
 package org.grails.datastore.gorm.jpa.support;
 
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor;
-import org.springframework.datastore.mapping.core.DatastoreUtils;
-import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.jpa.JpaDatastore;
-import org.springframework.datastore.mapping.transactions.SessionHolder;
+import org.grails.datastore.mapping.core.DatastoreUtils;
+import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.jpa.JpaDatastore;
+import org.grails.datastore.mapping.transactions.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**

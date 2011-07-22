@@ -14,10 +14,10 @@
  */
 package org.grails.datastore.gorm
 
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.core.DatastoreUtils
-import org.springframework.datastore.mapping.core.SessionCallback
-import org.springframework.datastore.mapping.core.VoidSessionCallback
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.DatastoreUtils
+import org.grails.datastore.mapping.core.SessionCallback
+import org.grails.datastore.mapping.core.VoidSessionCallback
 
 /**
  * @author Burt Beckwith

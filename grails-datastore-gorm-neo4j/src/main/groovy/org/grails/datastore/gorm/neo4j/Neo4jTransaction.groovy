@@ -17,7 +17,7 @@ package org.grails.datastore.gorm.neo4j
 import org.neo4j.graphdb.GraphDatabaseService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.datastore.mapping.transactions.Transaction
+import org.grails.datastore.mapping.transactions.Transaction
 
 /**
  * wrapping a Neo4j {@link org.neo4j.graphdb.Transaction} into a Spring data mapping {@link Transaction}

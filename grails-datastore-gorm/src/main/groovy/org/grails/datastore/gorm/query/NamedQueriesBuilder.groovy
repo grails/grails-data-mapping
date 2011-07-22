@@ -19,7 +19,7 @@ import java.lang.reflect.Modifier
 
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
-import org.springframework.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentEntity
 
 /**
  * Handles creation of named queries

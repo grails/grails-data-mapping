@@ -21,7 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.datastore.mapping.model.DatastoreConfigurationException;
+import org.grails.datastore.mapping.model.DatastoreConfigurationException;
 import org.springframework.util.Assert;
 
 import com.gmongo.GMongo;

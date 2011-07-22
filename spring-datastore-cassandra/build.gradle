@@ -3,7 +3,7 @@ repositories {
 }
 
 dependencies {
-    compile project(":spring-datastore-core")
+    compile project(":grails-datastore-core")
     compile 'com.eaio.uuid:uuid:3.2'
     compile 'me.prettyprint:hector:0.6.0-15'
     compile 'org.apache.cassandra:cassandra:0.6.0'

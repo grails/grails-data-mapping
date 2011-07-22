@@ -10,18 +10,13 @@ grails.project.dependency.resolution = {
 
     log "warn"
 
-    def version = "1.0.0.M6"
+    def version = "1.0.0.M7"
 
     repositories {
+        mavenLocal()
         mavenCentral()
         grailsCentral()
         mavenRepo "http://repo.grails.org/grails/core"
-        if (version.endsWith("-SNAPSHOT")) {
-            mavenRepo "http://maven.springframework.org/snapshot"
-        }
-        else {
-            mavenRepo 'http://maven.springframework.org/milestone'
-        }
     }
 
     dependencies {
@@ -36,14 +31,14 @@ grails.project.dependency.resolution = {
         runtime("com.gmongo:gmongo:0.8", excludes)
         compile("org.grails:grails-datastore-gorm-mongo:$version",
                 "org.grails:grails-datastore-gorm:$version",
-                "org.springframework:spring-datastore-core:$version",
-                "org.springframework:spring-datastore-mongo:$version",
-                "org.springframework:spring-datastore-web:$version") {
+                "org.springframework:grails-datastore-core:$version",
+                "org.springframework:grails-datastore-mongo:$version",
+                "org.springframework:grails-datastore-web:$version") {
             transitive = false
         }
 
         test("org.grails:grails-datastore-gorm-test:$version",
-             "org.springframework:spring-datastore-simple:$version"){
+             "org.springframework:grails-datastore-simple:$version"){
             transitive = false
         }
     }

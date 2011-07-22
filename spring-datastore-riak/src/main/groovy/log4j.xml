@@ -14,7 +14,7 @@
   <category name="org.springframework.data.riak">
     <level value="INFO"/>
   </category>
-  <category name="org.springframework.datastore.mapping.riak">
+  <category name="org.grails.datastore.mapping.riak">
     <level value="DEBUG"/>
   </category>
 

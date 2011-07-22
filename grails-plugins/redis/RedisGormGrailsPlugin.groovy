@@ -33,10 +33,10 @@ import org.grails.plugins.redis.RedisMappingContextFactoryBean
 import org.springframework.aop.scope.ScopedProxyFactoryBean
 import org.springframework.context.ApplicationContext
 import org.springframework.core.annotation.AnnotationUtils
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
-import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
-import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
+import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
+import org.grails.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.Transactional
 

@@ -19,11 +19,11 @@ import grails.gorm.CriteriaBuilder;
 
 import java.util.List;
 
-import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.mongo.query.MongoQuery.Near;
-import org.springframework.datastore.mapping.mongo.query.MongoQuery.WithinBox;
-import org.springframework.datastore.mapping.mongo.query.MongoQuery.WithinCircle;
-import org.springframework.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.mongo.query.MongoQuery.Near;
+import org.grails.datastore.mapping.mongo.query.MongoQuery.WithinBox;
+import org.grails.datastore.mapping.mongo.query.MongoQuery.WithinCircle;
+import org.grails.datastore.mapping.query.Query;
 
 /**
  * Extends the default CriteriaBuilder implementation with Geolocation methods

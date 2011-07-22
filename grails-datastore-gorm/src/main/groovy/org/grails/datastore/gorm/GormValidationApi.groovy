@@ -15,8 +15,8 @@
 package org.grails.datastore.gorm
 
 import org.grails.datastore.gorm.support.BeforeValidateHelper
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.model.MappingContext
 import org.springframework.validation.*
 
 /**

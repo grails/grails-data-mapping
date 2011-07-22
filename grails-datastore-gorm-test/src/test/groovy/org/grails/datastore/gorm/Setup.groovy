@@ -3,11 +3,11 @@ package org.grails.datastore.gorm
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.springframework.context.support.GenericApplicationContext
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.model.MappingContext
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.simple.SimpleMapDatastore
-import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.simple.SimpleMapDatastore
+import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator

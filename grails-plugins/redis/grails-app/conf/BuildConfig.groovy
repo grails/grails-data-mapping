@@ -10,12 +10,10 @@ grails.project.dependency.resolution = {
 
     log "warn"
 
-    def version = "1.0.0.M6"
-    def repo = version.endsWith("-SNAPSHOT") ? 'snapshot' : 'milestone'
+    def version = "1.0.0.M7"
 
     repositories {
         mavenRepo "http://repo.grails.org/grails/core"
-        mavenRepo "http://maven.springframework.org/$repo"
         mavenCentral()
         grailsCentral()
     }
@@ -25,13 +23,13 @@ grails.project.dependency.resolution = {
         compile('redis.clients:jedis:2.0.0')
         compile("org.grails:grails-datastore-gorm-redis:$version",
                 "org.grails:grails-datastore-gorm:$version",
-                "org.springframework:spring-datastore-core:$version",
-                "org.springframework:spring-datastore-redis:$version",
-                "org.springframework:spring-datastore-web:$version") {
+                "org.springframework:grails-datastore-core:$version",
+                "org.springframework:grails-datastore-redis:$version",
+                "org.springframework:grails-datastore-web:$version") {
             transitive = false
         }
         test("org.grails:grails-datastore-gorm-test:$version",
-             "org.springframework:spring-datastore-simple:$version") {
+             "org.springframework:grails-datastore-simple:$version") {
             transitive = false
         }
     }

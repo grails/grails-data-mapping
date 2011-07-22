@@ -16,7 +16,7 @@ package org.grails.datastore.gorm.finders;
 
 import java.util.regex.Pattern;
 
-import org.springframework.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.core.Datastore;
 
 /**
  * Finder used to return a single result

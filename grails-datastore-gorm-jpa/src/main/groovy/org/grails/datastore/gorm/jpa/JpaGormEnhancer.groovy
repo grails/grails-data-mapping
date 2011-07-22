@@ -22,14 +22,14 @@ import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.springframework.core.convert.ConversionService
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.core.SessionCallback
-import org.springframework.datastore.mapping.jpa.JpaSession
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.core.SessionCallback
+import org.grails.datastore.mapping.jpa.JpaSession
 import org.springframework.orm.jpa.JpaCallback
 import org.springframework.orm.jpa.JpaTemplate
 import org.springframework.transaction.PlatformTransactionManager
-import static org.springframework.datastore.mapping.validation.ValidatingEventListener.*
+import static org.grails.datastore.mapping.validation.ValidatingEventListener.*
 
 /**
  * Extends the default {@link GormEnhancer} adding supporting for JPQL methods

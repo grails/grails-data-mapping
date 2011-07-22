@@ -23,9 +23,9 @@ import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.ReturnableEvaluator
 import org.neo4j.graphdb.StopEvaluator
 import org.neo4j.graphdb.Traverser
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.core.SessionCallback
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.core.SessionCallback
 import org.springframework.transaction.PlatformTransactionManager
 
 /**

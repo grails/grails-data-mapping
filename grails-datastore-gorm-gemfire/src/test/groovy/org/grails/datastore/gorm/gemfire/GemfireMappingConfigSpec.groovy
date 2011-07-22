@@ -2,7 +2,7 @@ package org.grails.datastore.gorm.gemfire
 
 import grails.gorm.tests.GormDatastoreSpec
 
-import org.springframework.datastore.mapping.gemfire.config.Region
+import org.grails.datastore.mapping.gemfire.config.Region
 
 import com.gemstone.gemfire.cache.DataPolicy
 

@@ -19,8 +19,8 @@ import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.index.Index
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.datastore.mapping.engine.PropertyValueIndexer
-import org.springframework.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.engine.PropertyValueIndexer
+import org.grails.datastore.mapping.model.PersistentProperty
 
 class Neo4jPropertyValueIndexer implements PropertyValueIndexer<Long> {
 

@@ -15,8 +15,8 @@
 package org.grails.datastore.gorm.jpa.bean.factory
 
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
-import org.springframework.datastore.mapping.jpa.config.JpaMappingContext
-import org.springframework.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.jpa.config.JpaMappingContext
+import org.grails.datastore.mapping.model.MappingContext
 
 /**
  * Constructs a {@link JpaMappingContext} instance

@@ -29,12 +29,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.model.PersistentEntity;
-import org.springframework.datastore.mapping.model.PersistentProperty;
-import org.springframework.datastore.mapping.model.types.Association;
-import org.springframework.datastore.mapping.query.Query;
-import org.springframework.datastore.mapping.query.Restrictions;
+import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.Restrictions;
 import org.springframework.util.Assert;
 
 /**

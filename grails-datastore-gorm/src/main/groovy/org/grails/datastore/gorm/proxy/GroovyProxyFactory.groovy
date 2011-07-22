@@ -14,10 +14,10 @@
  */
 package org.grails.datastore.gorm.proxy
 
-import org.springframework.datastore.mapping.proxy.ProxyFactory
-import org.springframework.datastore.mapping.core.Session
+import org.grails.datastore.mapping.proxy.ProxyFactory
+import org.grails.datastore.mapping.core.Session
 
-import org.springframework.datastore.mapping.engine.EntityPersister
+import org.grails.datastore.mapping.engine.EntityPersister
 
 /**
  * Implements the proxy interface and creates a Groovy proxy by passing the need for javassist style proxies

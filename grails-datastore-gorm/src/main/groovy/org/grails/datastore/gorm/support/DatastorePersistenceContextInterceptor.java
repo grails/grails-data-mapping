@@ -19,10 +19,10 @@ import javax.persistence.FlushModeType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
-import org.springframework.datastore.mapping.core.Datastore;
-import org.springframework.datastore.mapping.core.DatastoreUtils;
-import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.transactions.SessionHolder;
+import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.core.DatastoreUtils;
+import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.transactions.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**

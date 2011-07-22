@@ -10,8 +10,8 @@ dependencies {
     }
 
     compile project(":grails-datastore-gorm"),
-            project(":spring-datastore-simpledb"),
-            project(":spring-datastore-core")
+            project(":grails-datastore-simpledb"),
+            project(":grails-datastore-core")
 
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")

@@ -25,20 +25,20 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.convert.ConversionException
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.engine.AssociationIndexer
-import org.springframework.datastore.mapping.engine.EntityAccess
-import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister
-import org.springframework.datastore.mapping.engine.PropertyValueIndexer
-import org.springframework.datastore.mapping.model.MappingContext
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.model.PersistentProperty
-import org.springframework.datastore.mapping.model.types.Association
-import org.springframework.datastore.mapping.model.types.ManyToMany
-import org.springframework.datastore.mapping.query.Query
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.engine.AssociationIndexer
+import org.grails.datastore.mapping.engine.EntityAccess
+import org.grails.datastore.mapping.engine.NativeEntryEntityPersister
+import org.grails.datastore.mapping.engine.PropertyValueIndexer
+import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.model.types.ManyToMany
+import org.grails.datastore.mapping.query.Query
 
 /**
- * Implementation of {@link org.springframework.datastore.mapping.engine.EntityPersister} that uses Neo4j database
+ * Implementation of {@link org.grails.datastore.mapping.engine.EntityPersister} that uses Neo4j database
  * as backend.
  *
  * @author Stefan Armbruster <stefan@armbruster-it.de>

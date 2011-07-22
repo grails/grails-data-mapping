@@ -22,7 +22,7 @@ import org.neo4j.graphdb.GraphDatabaseService
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
-import org.springframework.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.model.MappingContext
 
 /**
  * Factory bean for constructing a {@link Neo4jDatastore} instance.

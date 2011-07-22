@@ -2,7 +2,7 @@ buildscript {
 
     repositories {
         mavenCentral()
-        mavenRepo urls: "http://repository.jboss.org/maven2/"
+        mavenRepo urls: "http://repo.grails.org/grails/core"
     }
 
     dependencies {
@@ -29,8 +29,8 @@ repositories {
 }
 
 dependencies {
-    compile project(":spring-datastore-core"),
-            project(":spring-datastore-redis"),
+    compile project(":grails-datastore-core"),
+            project(":grails-datastore-redis"),
             project(":grails-datastore-gorm"),
             project(":grails-datastore-gorm-redis")
 

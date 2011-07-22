@@ -78,7 +78,7 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.compiler.injection.DefaultGrailsDomainClassInjector;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
-import org.springframework.datastore.mapping.model.MappingFactory;
+import org.grails.datastore.mapping.model.MappingFactory;
 
 /**
  * A AST transformation that turns a GORM entity into a JPA entity.

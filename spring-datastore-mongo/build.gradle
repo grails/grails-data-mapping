@@ -1,5 +1,5 @@
 dependencies {
-    compile project(":spring-datastore-core")
+    compile project(":grails-datastore-core")
 
     compile("org.springframework.data:spring-data-mongodb:1.0.0.M3")
 }

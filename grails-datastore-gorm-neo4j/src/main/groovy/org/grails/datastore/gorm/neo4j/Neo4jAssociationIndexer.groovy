@@ -21,10 +21,10 @@ import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Relationship
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.datastore.mapping.engine.AssociationIndexer
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.model.types.Association
-import org.springframework.datastore.mapping.model.types.ManyToMany
+import org.grails.datastore.mapping.engine.AssociationIndexer
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.model.types.ManyToMany
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>

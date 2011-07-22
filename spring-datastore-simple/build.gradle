@@ -1,4 +1,4 @@
 dependencies {
-    compile project(":spring-datastore-core")
+    compile project(":grails-datastore-core")
 }
 jar.appendix = 'simple'

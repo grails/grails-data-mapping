@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-import org.springframework.datastore.mapping.validation.ValidatingInterceptor
+import org.grails.datastore.mapping.validation.ValidatingInterceptor
 import org.springframework.validation.Errors
 
 /**

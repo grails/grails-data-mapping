@@ -20,4 +20,4 @@ def foo = {
 
 h2. Description
 
-See the @org.springframework.datastore.redis.util.RedisTemplate@ interface for the full list of available methods.
+See the @org.grails.redis.util.RedisTemplate@ interface for the full list of available methods.

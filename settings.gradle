@@ -1,40 +1,50 @@
-		// Spring Datastore Project
-include "spring-datastore-core",
-        "spring-datastore-gemfire",
-        "spring-datastore-mongo",
-        "spring-datastore-jpa",
-        "spring-datastore-redis",
-        "spring-datastore-riak",
-        "spring-datastore-simple",
-/*        "spring-datastore-jcr",*/
-        "spring-datastore-web",
-/*        "spring-datastore-cassandra",*/
+        // Datastore Project
+include "grails-datastore-core",
+        "grails-datastore-gemfire",
+        "grails-datastore-mongo",
+        "grails-datastore-jpa",
+        "grails-datastore-redis",
+        "grails-datastore-riak",
+        "grails-datastore-simple",
+        "grails-datastore-simpledb",
+/*        "grails-datastore-jcr",*/
+        "grails-datastore-web",
+/*        "grails-datastore-cassandra",*/
 
-		// Documentation
-		'grails-documentation-mongo',
-		'grails-documentation-redis',
+        // Documentation
+        'grails-documentation-mongo',
+        'grails-documentation-redis',
         'grails-documentation-riak',
         'grails-documentation-neo4j',
-        
 
-		// Core GORM Implementation projects
+        // Core GORM Implementation projects
         'grails-datastore-gorm',
         'grails-datastore-gorm-tck',
         'grails-datastore-gorm-test',
 
-		// Grails Plugins
+        // Grails Plugins
 //        'grails-plugins:redis',
 //        'grails-plugins:riak',
 
-		// GORM Implementations
-        'grails-datastore-gorm-jpa',		
+        // GORM Implementations
+        'grails-datastore-gorm-jpa',
 /*        'grails-datastore-gorm-hibernate',*/
-/*        'grails-datastore-gorm-jcr',		*/
+/*        'grails-datastore-gorm-jcr',        */
         'grails-datastore-gorm-neo4j',
         'grails-datastore-gorm-redis',
         'grails-datastore-gorm-riak',
         'grails-datastore-gorm-mongo',
-        'grails-datastore-gorm-gemfire'
+        'grails-datastore-gorm-gemfire',
+        'grails-datastore-gorm-simpledb'
 
 
+project(':grails-datastore-core').projectDir = file('spring-datastore-core') 
+project(':grails-datastore-gemfire').projectDir = file('spring-datastore-gemfire') 
+project(':grails-datastore-mongo').projectDir = file('spring-datastore-mongo') 
+project(':grails-datastore-jpa').projectDir = file('spring-datastore-jpa') 
+project(':grails-datastore-redis').projectDir = file('spring-datastore-redis') 
+project(':grails-datastore-riak').projectDir = file('spring-datastore-riak') 
+project(':grails-datastore-simple').projectDir = file('spring-datastore-simple') 
+project(':grails-datastore-simpledb').projectDir = file('spring-datastore-simpledb') 
+project(':grails-datastore-web').projectDir = file('spring-datastore-web')
 

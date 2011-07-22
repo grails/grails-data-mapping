@@ -18,10 +18,10 @@ import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Relationship
-import org.springframework.datastore.mapping.engine.EntityPersister
-import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.query.Query
+import org.grails.datastore.mapping.engine.EntityPersister
+import org.grails.datastore.mapping.engine.NativeEntryEntityPersister
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.query.Query
 
 /**
  * perform criteria queries on a Neo4j backend
@@ -109,7 +109,7 @@ class Neo4jQuery extends Query {
             for (Query.Order order in orderBy) {
                 int cmp = a."$order.property" <=> b."$order.property"
                 if (cmp) {
-                    return order.direction == org.springframework.datastore.mapping.query.Query.Order.Direction.ASC ? cmp : -cmp
+                    return order.direction == org.grails.datastore.mapping.query.Query.Order.Direction.ASC ? cmp : -cmp
                 }
             }
         }

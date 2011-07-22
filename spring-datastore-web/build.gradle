@@ -1,5 +1,5 @@
 dependencies {
-    compile project(":spring-datastore-core")
+    compile project(":grails-datastore-core")
     compile "org.springframework:spring-web:$springVersion"
     compile "org.springframework:spring-context:$springVersion"
 }

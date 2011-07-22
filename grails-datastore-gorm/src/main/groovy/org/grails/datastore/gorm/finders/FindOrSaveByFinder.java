@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.core.Datastore;
 
 public class FindOrSaveByFinder extends FindOrCreateByFinder {
 

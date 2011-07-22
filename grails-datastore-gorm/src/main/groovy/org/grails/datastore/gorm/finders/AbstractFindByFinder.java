@@ -3,10 +3,10 @@ package org.grails.datastore.gorm.finders;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.springframework.datastore.mapping.core.Datastore;
-import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.core.SessionCallback;
-import org.springframework.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.core.SessionCallback;
+import org.grails.datastore.mapping.query.Query;
 
 public abstract class AbstractFindByFinder extends DynamicFinder {
     public static final String OPERATOR_OR = "Or";

@@ -42,8 +42,8 @@ import org.grails.datastore.gorm.finders.MethodExpression.LessThanEquals;
 import org.grails.datastore.gorm.finders.MethodExpression.Like;
 import org.grails.datastore.gorm.finders.MethodExpression.NotEqual;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.datastore.mapping.core.Datastore;
-import org.springframework.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.query.Query;
 import org.springframework.util.StringUtils;
 
 /**

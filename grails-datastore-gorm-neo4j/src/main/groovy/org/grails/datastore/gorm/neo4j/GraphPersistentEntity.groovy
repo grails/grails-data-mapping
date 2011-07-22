@@ -14,8 +14,8 @@
  */
 package org.grails.datastore.gorm.neo4j
 
-import org.springframework.datastore.mapping.model.AbstractPersistentEntity
-import org.springframework.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.model.AbstractPersistentEntity
+import org.grails.datastore.mapping.model.MappingContext
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>

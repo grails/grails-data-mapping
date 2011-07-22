@@ -22,8 +22,8 @@ import org.grails.datastore.gorm.proxy.GroovyProxyFactory
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
-import org.springframework.datastore.mapping.model.MappingContext
-import org.springframework.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.model.PersistentEntity
 
  /**
  * An abstract factory bean for constructing MappingContext instances

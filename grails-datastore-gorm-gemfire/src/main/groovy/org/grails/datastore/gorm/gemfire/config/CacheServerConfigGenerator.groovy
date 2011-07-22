@@ -14,9 +14,9 @@
  */
 package org.grails.datastore.gorm.gemfire.config
 
-import org.springframework.datastore.mapping.gemfire.GemfireDatastore
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.gemfire.config.Region
+import org.grails.datastore.mapping.gemfire.GemfireDatastore
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.gemfire.config.Region
 
 /**
  * Generates a Gemfire cache.xml configuration for the Datastore.

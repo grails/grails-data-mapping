@@ -14,14 +14,14 @@
  */
 package org.grails.datastore.gorm
 
-import static org.springframework.datastore.mapping.validation.ValidatingEventListener.*
+import static org.grails.datastore.mapping.validation.ValidatingEventListener.*
 
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.core.SessionCallback
-import org.springframework.datastore.mapping.core.VoidSessionCallback
-import org.springframework.datastore.mapping.proxy.EntityProxy
-import org.springframework.datastore.mapping.validation.ValidationException
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.core.SessionCallback
+import org.grails.datastore.mapping.core.VoidSessionCallback
+import org.grails.datastore.mapping.proxy.EntityProxy
+import org.grails.datastore.mapping.validation.ValidationException
 
 /**
  * Instance methods of the GORM API.

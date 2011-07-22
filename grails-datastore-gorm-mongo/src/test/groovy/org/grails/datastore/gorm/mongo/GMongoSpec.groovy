@@ -4,8 +4,8 @@ import grails.gorm.tests.Person
 
 import org.grails.datastore.gorm.mongo.bean.factory.GMongoFactoryBean
 import org.springframework.context.support.GenericApplicationContext
-import org.springframework.datastore.mapping.mongo.MongoDatastore
-import org.springframework.datastore.mapping.mongo.config.MongoMappingContext
+import org.grails.datastore.mapping.mongo.MongoDatastore
+import org.grails.datastore.mapping.mongo.config.MongoMappingContext
 
 import spock.lang.Specification
 

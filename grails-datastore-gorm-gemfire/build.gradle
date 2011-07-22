@@ -1,8 +1,8 @@
 dependencies {
 
     compile project(":grails-datastore-gorm"),
-            project(":spring-datastore-gemfire"),
-            project(":spring-datastore-core")
+            project(":grails-datastore-gemfire"),
+            project(":grails-datastore-core")
 
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")

@@ -1,5 +1,5 @@
 dependencies {
-    compile project(":spring-datastore-core")
+    compile project(":grails-datastore-core")
     compile("commons-pool:commons-pool:1.5.5")
     compile('redis.clients:jedis:2.0.0') {
         transitive = false

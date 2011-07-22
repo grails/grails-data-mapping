@@ -26,10 +26,10 @@ import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormStaticApi
 import org.springframework.data.gemfire.GemfireCallback
 import org.springframework.data.gemfire.GemfireTemplate
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.gemfire.GemfireDatastore
-import org.springframework.datastore.mapping.query.order.ManualEntityOrdering
-import org.springframework.datastore.mapping.query.Query
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.gemfire.GemfireDatastore
+import org.grails.datastore.mapping.query.order.ManualEntityOrdering
+import org.grails.datastore.mapping.query.Query
 import org.springframework.util.ReflectionUtils
 
 /**

@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-import org.springframework.datastore.mapping.validation.ValidatingEventListener
+import org.grails.datastore.mapping.validation.ValidatingEventListener
 import org.springframework.validation.Errors
 
 /**

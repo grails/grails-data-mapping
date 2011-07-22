@@ -22,10 +22,10 @@ import org.neo4j.graphdb.Transaction
 import org.neo4j.kernel.EmbeddedGraphDatabase
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ConfigurableApplicationContext
-import org.springframework.datastore.mapping.core.AbstractDatastore
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.model.MappingContext
-import org.springframework.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.core.AbstractDatastore
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.model.PersistentEntity
 
 /**
  * Datastore implementation for Neo4j backend

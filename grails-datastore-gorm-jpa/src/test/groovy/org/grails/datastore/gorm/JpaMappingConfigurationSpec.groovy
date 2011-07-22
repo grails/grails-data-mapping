@@ -3,9 +3,9 @@ package org.grails.datastore.gorm
 import grails.gorm.JpaEntity
 import javax.persistence.OneToMany
 import javax.persistence.OneToOne
-import org.springframework.datastore.mapping.jpa.config.JpaMappingConfigurationStrategy;
-import org.springframework.datastore.mapping.jpa.config.JpaMappingContext;
-import org.springframework.datastore.mapping.jpa.config.JpaMappingFactory;
+import org.grails.datastore.mapping.jpa.config.JpaMappingConfigurationStrategy;
+import org.grails.datastore.mapping.jpa.config.JpaMappingContext;
+import org.grails.datastore.mapping.jpa.config.JpaMappingFactory;
 
 import spock.lang.Specification
 
@@ -29,12 +29,12 @@ class JpaMappingConfigurationSpec extends Specification {
         then:
             properties.size() == 3
 
-            properties[0] instanceof org.springframework.datastore.mapping.model.types.OneToMany
+            properties[0] instanceof org.grails.datastore.mapping.model.types.OneToMany
             properties[0].name == "many"
 
             properties[1].name == "name"
             properties[2].name == "other"
-            properties[2] instanceof org.springframework.datastore.mapping.model.types.OneToOne
+            properties[2] instanceof org.grails.datastore.mapping.model.types.OneToOne
     }
 
 }

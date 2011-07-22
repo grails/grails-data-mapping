@@ -18,11 +18,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.datastore.mapping.core.Datastore;
-import org.springframework.datastore.mapping.core.Session;
-import org.springframework.datastore.mapping.core.SessionCallback;
-import org.springframework.datastore.mapping.query.Query;
-import org.springframework.datastore.mapping.reflect.NameUtils;
+import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.core.SessionCallback;
+import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.reflect.NameUtils;
 
 /**
  * The "listOrderBy*" static persistent method. Allows ordered listing of instances based on their properties.

@@ -1,7 +1,7 @@
 package grails.gorm.tests
 
-import org.springframework.datastore.mapping.core.DatastoreUtils
-import org.springframework.datastore.mapping.core.Session
+import org.grails.datastore.mapping.core.DatastoreUtils
+import org.grails.datastore.mapping.core.Session
 
 import spock.lang.*
 

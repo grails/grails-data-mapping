@@ -24,10 +24,10 @@ import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.grails.datastore.gorm.GormEnhancer
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.support.GenericApplicationContext
-import org.springframework.datastore.mapping.core.DatastoreUtils
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.simple.SimpleMapDatastore
-import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
+import org.grails.datastore.mapping.core.DatastoreUtils
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.simple.SimpleMapDatastore
+import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.util.ClassUtils
 

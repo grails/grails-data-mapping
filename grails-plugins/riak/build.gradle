@@ -44,8 +44,8 @@ repositories {
 }
 
 dependencies {
-  compile project(":spring-datastore-core"),
-      project(":spring-datastore-riak"),
+  compile project(":grails-datastore-core"),
+      project(":grails-datastore-riak"),
       project(":grails-datastore-gorm"),
       project(":grails-datastore-gorm-riak")
 

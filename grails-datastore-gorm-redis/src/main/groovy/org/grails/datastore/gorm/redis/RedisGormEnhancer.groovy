@@ -18,10 +18,10 @@ import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.core.SessionCallback;
-import org.springframework.datastore.mapping.core.VoidSessionCallback;
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.core.SessionCallback;
+import org.grails.datastore.mapping.core.VoidSessionCallback;
 import org.springframework.transaction.PlatformTransactionManager
 
 /**

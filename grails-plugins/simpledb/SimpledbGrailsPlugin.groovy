@@ -9,10 +9,10 @@ import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.grails.datastore.gorm.utils.InstanceProxy
 
 import org.springframework.core.annotation.AnnotationUtils
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
-import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
-import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
+import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
+import org.grails.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.annotation.Transactional
 import org.grails.plugin.simpledb.PersistenceContextInterceptorAggregator
@@ -22,11 +22,11 @@ import org.grails.datastore.gorm.simpledb.SimpleDBGormStaticApi
 import org.grails.datastore.gorm.simpledb.SimpleDBGormInstanceApi
 import org.grails.datastore.gorm.simpledb.bean.factory.SimpleDBMappingContextFactoryBean
 import org.grails.datastore.gorm.simpledb.bean.factory.SimpleDBDatastoreFactoryBean
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.simpledb.engine.SimpleDBDomainResolver
-import org.springframework.datastore.mapping.simpledb.engine.SimpleDBDomainResolverFactory
-import org.springframework.datastore.mapping.simpledb.util.SimpleDBTemplate
-import org.springframework.datastore.mapping.simpledb.util.SimpleDBConst
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolverFactory
+import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate
+import org.grails.datastore.mapping.simpledb.util.SimpleDBConst
 
 class SimpledbGrailsPlugin {
     def license = "Apache 2.0 License"

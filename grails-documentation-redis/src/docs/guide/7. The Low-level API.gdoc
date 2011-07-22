@@ -16,7 +16,7 @@ class MyController {
 }
 {code}
 
-See the @org.springframework.datastore.redis.util.RedisTemplate@ interface for the full list of available methods.
+See the @org.grails.redis.util.RedisTemplate@ interface for the full list of available methods.
 
 The low-level API gives you an easy way to work with Redis lists, sets and hashes via the @list@, @set@ and @hash@ methods. For example, the @list@ method returns a normal Java @java.util.List@ that is backed onto a Redis list:
 

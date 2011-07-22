@@ -28,11 +28,11 @@ import org.grails.datastore.gorm.finders.FindOrCreateByFinder
 import org.grails.datastore.gorm.finders.FindOrSaveByFinder
 import org.grails.datastore.gorm.finders.ListOrderByFinder
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.model.types.ManyToMany
-import org.springframework.datastore.mapping.model.types.OneToMany
-import org.springframework.datastore.mapping.reflect.ClassPropertyFetcher
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.types.ManyToMany
+import org.grails.datastore.mapping.model.types.OneToMany
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.transaction.PlatformTransactionManager
 
  /**

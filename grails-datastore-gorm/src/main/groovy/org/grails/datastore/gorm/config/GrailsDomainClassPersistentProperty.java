@@ -16,10 +16,10 @@
 package org.grails.datastore.gorm.config;
 
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
-import org.springframework.datastore.mapping.model.PersistentEntity;
-import org.springframework.datastore.mapping.model.PersistentProperty;
-import org.springframework.datastore.mapping.model.PropertyMapping;
-import org.springframework.datastore.mapping.reflect.NameUtils;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.PropertyMapping;
+import org.grails.datastore.mapping.reflect.NameUtils;
 
 /**
  * Bridges a {@link GrailsDomainClassProperty} to the {@link PersistentProperty} interface

@@ -3,11 +3,11 @@ package org.grails.datastore.gorm.mongo
 import grails.gorm.tests.GormDatastoreSpec
 
 import org.springframework.data.document.mongodb.MongoTemplate
-import org.springframework.datastore.mapping.document.config.DocumentPersistentEntity
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.mongo.MongoSession
-import org.springframework.datastore.mapping.mongo.config.MongoAttribute
-import org.springframework.datastore.mapping.mongo.config.MongoCollection
+import org.grails.datastore.mapping.document.config.DocumentPersistentEntity
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.mongo.MongoSession
+import org.grails.datastore.mapping.mongo.config.MongoAttribute
+import org.grails.datastore.mapping.mongo.config.MongoCollection
 
 import com.mongodb.DB
 import com.mongodb.WriteConcern

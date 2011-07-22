@@ -16,8 +16,8 @@ package org.grails.plugins.redis
 
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import org.springframework.beans.factory.FactoryBean
-import org.springframework.datastore.mapping.model.MappingContext
-import org.springframework.datastore.mapping.redis.RedisDatastore
+import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.redis.RedisDatastore
 
 /**
  * Constructs a RedisDatastore instance

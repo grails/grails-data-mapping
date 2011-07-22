@@ -19,10 +19,10 @@ import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsClass;
 import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.springframework.datastore.mapping.model.AbstractMappingContext;
-import org.springframework.datastore.mapping.model.MappingConfigurationStrategy;
-import org.springframework.datastore.mapping.model.MappingFactory;
-import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.AbstractMappingContext;
+import org.grails.datastore.mapping.model.MappingConfigurationStrategy;
+import org.grails.datastore.mapping.model.MappingFactory;
+import org.grails.datastore.mapping.model.PersistentEntity;
 
 /**
  * A MappingContext that adapts the Grails domain model to the Mapping API

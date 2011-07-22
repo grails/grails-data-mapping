@@ -21,12 +21,12 @@ import org.grails.datastore.gorm.neo4j.converters.StringToLocaleConverter
 import org.grails.datastore.gorm.neo4j.converters.StringToShortConverter
 import org.grails.datastore.gorm.neo4j.converters.StringToTimeZoneConverter
 import org.grails.datastore.gorm.neo4j.converters.StringToURLConverter
-import org.springframework.datastore.mapping.document.config.Attribute
-import org.springframework.datastore.mapping.model.AbstractMappingContext
-import org.springframework.datastore.mapping.model.MappingConfigurationStrategy
-import org.springframework.datastore.mapping.model.MappingFactory
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.model.config.GormMappingConfigurationStrategy
+import org.grails.datastore.mapping.document.config.Attribute
+import org.grails.datastore.mapping.model.AbstractMappingContext
+import org.grails.datastore.mapping.model.MappingConfigurationStrategy
+import org.grails.datastore.mapping.model.MappingFactory
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>

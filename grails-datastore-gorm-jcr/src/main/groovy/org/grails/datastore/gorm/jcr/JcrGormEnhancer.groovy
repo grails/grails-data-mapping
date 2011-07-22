@@ -18,8 +18,8 @@ import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.jcr.JcrSession
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.jcr.JcrSession
 import org.springframework.transaction.PlatformTransactionManager
 
 /**

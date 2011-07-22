@@ -15,8 +15,8 @@
 package org.grails.datastore.gorm.mongo.bean.factory
 
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
-import org.springframework.datastore.mapping.model.MappingContext
-import org.springframework.datastore.mapping.mongo.config.MongoMappingContext
+import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.mongo.config.MongoMappingContext
 import org.springframework.util.Assert
 
 /**

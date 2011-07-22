@@ -16,9 +16,9 @@ package org.grails.datastore.gorm.gemfire
 
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
-import org.springframework.datastore.mapping.gemfire.GemfireDatastore
-import org.springframework.datastore.mapping.gemfire.query.GemfireQuery
-import org.springframework.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.gemfire.GemfireDatastore
+import org.grails.datastore.mapping.gemfire.query.GemfireQuery
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.springframework.util.Assert
 
 import com.gemstone.gemfire.cache.query.CqAttributes

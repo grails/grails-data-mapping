@@ -3,19 +3,19 @@ package org.grails.datastore.gorm
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.springframework.context.support.GenericApplicationContext
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.model.MappingContext
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
-import org.springframework.datastore.mapping.simpledb.SimpleDBDatastore
+import org.grails.datastore.mapping.simpledb.SimpleDBDatastore
 import org.grails.datastore.gorm.simpledb.SimpleDBGormEnhancer
-import org.springframework.datastore.mapping.simpledb.config.SimpleDBMappingContext
-import org.springframework.datastore.mapping.simpledb.util.SimpleDBTemplate
-import org.springframework.datastore.mapping.simpledb.engine.SimpleDBDomainResolver
-import org.springframework.datastore.mapping.simpledb.engine.SimpleDBDomainResolverFactory
+import org.grails.datastore.mapping.simpledb.config.SimpleDBMappingContext
+import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolverFactory
 
 /**
  * In order to run AWS SimpleDB tests you have to define two system variables: AWS_ACCESS_KEY and AWS_SECRET_KEY with

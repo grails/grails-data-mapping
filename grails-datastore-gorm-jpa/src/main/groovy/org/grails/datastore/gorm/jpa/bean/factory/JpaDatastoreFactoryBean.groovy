@@ -21,8 +21,8 @@ import org.grails.datastore.gorm.events.DomainEventListener
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
-import org.springframework.datastore.mapping.jpa.JpaDatastore
-import org.springframework.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.jpa.JpaDatastore
+import org.grails.datastore.mapping.model.MappingContext
 import org.springframework.orm.jpa.JpaTransactionManager
 
 class JpaDatastoreFactoryBean implements FactoryBean<JpaDatastore>, ApplicationContextAware {

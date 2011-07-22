@@ -14,8 +14,8 @@
  */
 package org.grails.datastore.gorm.neo4j
 
-import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister.NativeEntryModifyingEntityAccess
-import org.springframework.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.engine.NativeEntryEntityPersister.NativeEntryModifyingEntityAccess
+import org.grails.datastore.mapping.model.PersistentEntity
 
 class Neo4jEntityAccess extends NativeEntryModifyingEntityAccess {
 

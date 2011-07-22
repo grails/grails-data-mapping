@@ -20,16 +20,16 @@ import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.springframework.beans.PropertyAccessorFactory
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory
-import org.springframework.datastore.mapping.core.AbstractDatastore
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.core.DatastoreUtils
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.core.SessionCallback
-import org.springframework.datastore.mapping.core.VoidSessionCallback
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.model.PersistentProperty
-import org.springframework.datastore.mapping.model.types.Association
-import org.springframework.datastore.mapping.query.Query
+import org.grails.datastore.mapping.core.AbstractDatastore
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.DatastoreUtils
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.core.SessionCallback
+import org.grails.datastore.mapping.core.VoidSessionCallback
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.query.Query
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.support.DefaultTransactionDefinition
@@ -37,7 +37,6 @@ import org.springframework.transaction.support.TransactionCallback
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.util.Assert
 import org.springframework.validation.Errors
-
 
 /**
  * Static methods of the GORM API.

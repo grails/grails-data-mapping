@@ -18,13 +18,14 @@ import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.core.SessionCallback
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.core.SessionCallback
 import org.springframework.transaction.PlatformTransactionManager
 
-import org.springframework.datastore.mapping.engine.EntityPersister
-import org.springframework.datastore.mapping.simpledb.engine.NativeSimpleDBItem
+import org.grails.datastore.mapping.engine.EntityPersister
+import org.grails.datastore.mapping.simpledb.engine.NativeSimpleDBItem
+import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate
 
 /**
  * GORM enhancer for SimpleDB.
@@ -86,7 +87,7 @@ class SimpleDBGormInstanceApi<D> extends GormInstanceApi<D> {
 
         def dbo = getDbo(instance)
         if (dbo != null && dbo.containsField(name)) {
-            return org.springframework.datastore.mapping.simpledb.util.SimpleDBTemplate.get(name)
+            return SimpleDBTemplate.get(name)
         }
         return null
     }

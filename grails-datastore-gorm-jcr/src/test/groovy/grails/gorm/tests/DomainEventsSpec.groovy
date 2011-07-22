@@ -2,7 +2,7 @@ package grails.gorm.tests
 
 import org.grails.datastore.gorm.events.AutoTimestampInterceptor
 import org.grails.datastore.gorm.events.DomainEventInterceptor
-import org.springframework.datastore.mapping.core.Session
+import org.grails.datastore.mapping.core.Session
 
 /**
  * Override from GORM TCK to test JCR datastore

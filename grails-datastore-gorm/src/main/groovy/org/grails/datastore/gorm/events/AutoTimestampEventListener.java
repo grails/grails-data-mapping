@@ -19,14 +19,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.context.ApplicationEvent;
-import org.springframework.datastore.mapping.core.Datastore;
-import org.springframework.datastore.mapping.engine.EntityAccess;
-import org.springframework.datastore.mapping.engine.event.AbstractPersistenceEvent;
-import org.springframework.datastore.mapping.engine.event.AbstractPersistenceEventListener;
-import org.springframework.datastore.mapping.engine.event.PreInsertEvent;
-import org.springframework.datastore.mapping.engine.event.PreUpdateEvent;
-import org.springframework.datastore.mapping.model.MappingContext;
-import org.springframework.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
+import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener;
+import org.grails.datastore.mapping.engine.event.PreInsertEvent;
+import org.grails.datastore.mapping.engine.event.PreUpdateEvent;
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
 
 /**
  * An event listener that adds support for GORM-style auto-timestamping

@@ -1,54 +1,42 @@
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
-//grails.project.war.file = "target/${appName}-${appVersion}.war"
-grails.project.dependency.resolution = {
-	// inherit Grails' default dependencies
-	inherits("global") {
-		// uncomment to disable ehcache
-		// excludes 'ehcache'
-	}
-	log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
-	repositories {
-		grailsPlugins()
-		grailsHome()
-		grailsCentral()
 
-		// uncomment the below to enable remote dependency resolution
-		// from public Maven repositories
-		mavenLocal()
-//		mavenCentral()
-//		mavenRepo "http://maven.springframework.org/snapshot"
-//		mavenRepo "http://maven.springframework.org/milestone"
-            //mavenRepo "http://snapshots.repository.codehaus.org"
-            //mavenRepo "http://repository.codehaus.org"
-            //mavenRepo "http://download.java.net/maven/2/"
-            //mavenRepo "http://repository.jboss.com/maven2/"
-	}
+grails.project.dependency.resolution = {
+    inherits "global"
+    log "warn"
+    repositories {
+        grailsPlugins()
+        grailsHome()
+        grailsCentral()
+
+        mavenLocal()
+    }
+
     plugins {
         build(":release:1.0.0.M2") {
             export = false
         }
-
     }
-	dependencies {
 
-        def version = "1.0.0.BUILD-SNAPSHOT"
+    dependencies {
 
-//		def excludes = {
-//			excludes "slf4j-simple", "persistence-api", "commons-logging", "jcl-over-slf4j", "slf4j-api", "jta", "slf4j-log4j12"
-//			excludes "spring-core", "spring-beans", "spring-aop", "spring-tx", "spring-context", "spring-web"
+        def version = "1.0.0.M7"
+
+//        def excludes = {
+//            excludes "slf4j-simple", "persistence-api", "commons-logging", "jcl-over-slf4j", "slf4j-api", "jta", "slf4j-log4j12"
+//            excludes "spring-core", "spring-beans", "spring-aop", "spring-tx", "spring-context", "spring-web"
 //        }
 
         compile("org.grails:grails-datastore-gorm-neo4j:1.0.0.BUILD-SNAPSHOT",
                 "org.grails:grails-datastore-gorm:$version",
-                "org.springframework:spring-datastore-core:$version",
-                "org.springframework:spring-datastore-web:$version") {
+                "org.springframework:grails-datastore-core:$version",
+                "org.springframework:grails-datastore-web:$version") {
             transitive = false
         }
 
         test("org.grails:grails-datastore-gorm-test:$version",
-             "org.springframework:spring-datastore-simple:$version"){
+             "org.springframework:grails-datastore-simple:$version"){
             transitive = false
         }
 
@@ -62,10 +50,9 @@ grails.project.dependency.resolution = {
             excludes  "lucene-core"
             excludes  "neo4j-lucene-index"
             excludes  "neo4j-kernel"
-		}
+        }
 
         compile("org.neo4j:neo4j-rest-graphdb:0.1-SNAPSHOT", neo4jRestExcludes) // excluded as of now since snapshot is not available via a m2 repo
 */
-
-	}
+    }
 }

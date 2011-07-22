@@ -12,10 +12,10 @@ import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
 import org.grails.datastore.gorm.neo4j.constraints.UniqueConstraint
 import org.springframework.context.support.GenericApplicationContext
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.model.MappingContext
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.transactions.DatastoreTransactionManager
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator

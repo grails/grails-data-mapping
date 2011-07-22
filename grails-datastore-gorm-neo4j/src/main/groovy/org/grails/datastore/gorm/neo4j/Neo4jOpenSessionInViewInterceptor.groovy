@@ -16,9 +16,9 @@ package org.grails.datastore.gorm.neo4j
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.datastore.mapping.core.DatastoreUtils
-import org.springframework.datastore.mapping.transactions.Transaction
-import org.springframework.datastore.mapping.web.support.OpenSessionInViewInterceptor
+import org.grails.datastore.mapping.core.DatastoreUtils
+import org.grails.datastore.mapping.transactions.Transaction
+import org.grails.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import org.springframework.web.context.request.WebRequest
 
 /**

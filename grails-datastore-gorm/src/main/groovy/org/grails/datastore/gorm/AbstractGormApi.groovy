@@ -18,10 +18,10 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 import org.grails.datastore.gorm.utils.ReflectionUtils
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.core.DatastoreUtils
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.DatastoreUtils
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.model.PersistentEntity
 
 /**
  * Abstract GORM API provider.

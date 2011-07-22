@@ -19,7 +19,7 @@ dependencies {
     compile "org.springframework:spring-web:springVersion"
     compile 'org.hibernate:hibernate-entitymanager:3.4.0.GA'
     compile project(":grails-datastore-gorm"),
-            project(":spring-datastore-core")
+            project(":grails-datastore-core")
 
     runtime("org.grails:grails-docs:1.4.0.M1") {
         transitive = false

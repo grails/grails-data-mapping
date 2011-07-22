@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.springframework.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.core.Datastore;
 
 /**
  * Finder used to return a single result

@@ -9,9 +9,9 @@ import org.grails.datastore.gorm.hibernate.HibernateDatastore
 import org.grails.datastore.gorm.hibernate.HibernateGormEnhancer
 import org.hibernate.dialect.HSQLDialect
 import org.hsqldb.jdbcDriver
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.model.MappingContext
-import org.springframework.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.springframework.orm.hibernate3.HibernateTransactionManager
 import org.springframework.orm.hibernate3.SessionFactoryUtils
 import org.springframework.orm.hibernate3.SpringSessionContext

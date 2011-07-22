@@ -14,14 +14,14 @@
  */
 package grails.datastore
 
-import org.springframework.datastore.mapping.core.Datastore
-import org.springframework.datastore.mapping.core.Session
-import org.springframework.datastore.mapping.model.PersistentEntity
-import org.springframework.datastore.mapping.redis.collection.RedisCollection
-import org.springframework.datastore.mapping.redis.collection.RedisList
-import org.springframework.datastore.mapping.redis.collection.RedisMap
-import org.springframework.datastore.mapping.redis.collection.RedisSet
-import org.springframework.datastore.mapping.redis.util.RedisTemplate
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.redis.collection.RedisCollection
+import org.grails.datastore.mapping.redis.collection.RedisList
+import org.grails.datastore.mapping.redis.collection.RedisMap
+import org.grails.datastore.mapping.redis.collection.RedisSet
+import org.grails.datastore.mapping.redis.util.RedisTemplate
 
 /**
  * Convenience interface for access the Redis datastore.
