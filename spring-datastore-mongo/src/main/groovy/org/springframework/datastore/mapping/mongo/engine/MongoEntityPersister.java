@@ -37,6 +37,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.document.mongodb.DbCallback;
 import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.datastore.mapping.core.OptimisticLockingException;
+import org.springframework.datastore.mapping.core.SessionImplementor;
 import org.springframework.datastore.mapping.engine.AssociationIndexer;
 import org.springframework.datastore.mapping.engine.EntityAccess;
 import org.springframework.datastore.mapping.engine.NativeEntryEntityPersister;
@@ -349,8 +350,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         return mongoTemplate.execute(new DbCallback<DBObject>() {
             public DBObject doInDB(DB con) throws MongoException, DataAccessException {
                 DBCollection dbCollection = con.getCollection(getCollectionName(persistentEntity));
-                DBObject dbo = createDBObjectWithKey(key);
-                return dbCollection.findOne(dbo);
+                return dbCollection.findOne(createDBObjectWithKey(key));
             }
         });
     }
@@ -494,6 +494,23 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             }
         }
         return dbo;
+    }
+
+    @Override
+    public boolean isDirty(Object instance, Object entry) {
+        if (super.isDirty(instance, entry)) {
+            return true;
+        }
+
+        DBObject dbo = (DBObject)entry;
+        PersistentEntity entity = getPersistentEntity();
+
+        EntityAccess entityAccess = createEntityAccess(entity, instance, dbo);
+
+        DBObject cached = (DBObject)((SessionImplementor<?>)getSession()).getCachedEntry(
+                entity, (Serializable)entityAccess.getIdentifier(), true);
+
+        return !dbo.equals(cached);
     }
 
     @SuppressWarnings("rawtypes")

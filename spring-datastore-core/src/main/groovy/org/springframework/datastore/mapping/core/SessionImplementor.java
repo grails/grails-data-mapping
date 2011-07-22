@@ -43,6 +43,7 @@ public interface SessionImplementor<T> {
     void cacheEntry(PersistentEntity entity, Serializable key, T entry);
 
     T getCachedEntry(PersistentEntity entity, Serializable key);
+    T getCachedEntry(PersistentEntity entity, Serializable key, boolean forDirtyCheck);
 
     void cacheInstance(Class type, Serializable key, Object instance);
 

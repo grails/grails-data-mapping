@@ -365,7 +365,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     protected void cacheNativeEntry(PersistentEntity persistentEntity,
             Serializable nativeKey, T nativeEntry) {
         SessionImplementor<Object> si = (SessionImplementor<Object>) session;
-        si.cacheEntry(persistentEntity, nativeKey, nativeEntry);
+        Serializable key = (Serializable) getMappingContext().getConversionService().convert(
+      		  nativeKey, persistentEntity.getIdentity().getType());
+        si.cacheEntry(persistentEntity, key, nativeEntry);
     }
 
     protected void refreshObjectStateFromNativeEntry(PersistentEntity persistentEntity, Object obj,
@@ -1192,8 +1194,14 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
         if ("version".equals(propName)) {
             // special case where comparing int and long would fail artifically
-            oldValue = ((Number)oldValue).longValue();
-            currentValue = ((Number)currentValue).longValue();
+            if (oldValue instanceof Number && currentValue instanceof Number) {
+                oldValue = ((Number)oldValue).longValue();
+                currentValue = ((Number)currentValue).longValue();
+            }
+            else {
+                oldValue = oldValue.toString();
+                currentValue = currentValue.toString();
+            }
         }
 
         Class oldValueClass = oldValue.getClass();

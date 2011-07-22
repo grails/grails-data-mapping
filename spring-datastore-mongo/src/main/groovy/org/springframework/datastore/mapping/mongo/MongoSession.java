@@ -15,6 +15,7 @@
 
 package org.springframework.datastore.mapping.mongo;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.springframework.datastore.mapping.mongo.query.MongoQuery;
 import org.springframework.datastore.mapping.transactions.SessionOnlyTransaction;
 import org.springframework.datastore.mapping.transactions.Transaction;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -173,5 +175,15 @@ public class MongoSession extends AbstractSession<DB> {
 
     public String getCollectionName(PersistentEntity entity) {
         return mongoDatastore.getCollectionName(entity);
+    }
+
+    @Override
+    protected void cacheEntry(Serializable key, Object entry, Map<Serializable, Object> entryCache, boolean forDirtyCheck) {
+        if (forDirtyCheck) {
+            entryCache.put(key, new BasicDBObject(((DBObject)entry).toMap()));
+        }
+        else {
+            entryCache.put(key, entry);
+        }
     }
 }

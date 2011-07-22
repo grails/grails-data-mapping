@@ -81,6 +81,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     private FlushModeType flushMode = FlushModeType.AUTO;
     protected Map<Class, Map<Serializable, Object>> firstLevelCache = new ConcurrentHashMap<Class, Map<Serializable, Object>>();
     protected Map<Class, Map<Serializable, Object>> firstLevelEntryCache = new ConcurrentHashMap<Class, Map<Serializable, Object>>();
+    protected Map<Class, Map<Serializable, Object>> firstLevelEntryCacheDirtyCheck = new ConcurrentHashMap<Class, Map<Serializable, Object>>();
     protected Map<CollectionKey, Collection> firstLevelCollectionCache = new ConcurrentHashMap<CollectionKey, Collection>();
 
     protected Map<Object, Serializable> objectToKey = new ConcurrentHashMap<Object, Serializable>();
@@ -135,21 +136,31 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public Object getCachedEntry(PersistentEntity entity, Serializable key) {
-        if (key == null) {
-            return null;
-        }
-
-        return getEntryCache(entity.getJavaClass()).get(key);
+        return getCachedEntry(entity, key, false);
     }
+
+    public Object getCachedEntry(PersistentEntity entity, Serializable key, boolean forDirtyCheck) {
+       if (key == null) {
+           return null;
+       }
+
+       return getEntryCache(entity.getJavaClass(), forDirtyCheck).get(key);
+   }
 
     public void cacheEntry(PersistentEntity entity, Serializable key, Object entry) {
         if (key == null || entry == null) {
             return;
         }
 
-        getEntryCache(entity.getJavaClass()).put(key, entry);
+        cacheEntry(key, entry, getEntryCache(entity.getJavaClass(), true), true);
+        cacheEntry(key, entry, getEntryCache(entity.getJavaClass(), false), false);
     }
 
+    protected void cacheEntry(Serializable key, Object entry, Map<Serializable, Object> entryCache,
+            @SuppressWarnings("unused") boolean forDirtyCheck) {
+        entryCache.put(key, entry);
+    }
+    
     public Collection getCachedCollection(PersistentEntity entity, Serializable key, String name) {
         if (key == null || name == null) {
             return null;
@@ -241,7 +252,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             return false;
         }
 
-        Object entry = getEntryCache(instance.getClass()).get(id);
+        Object entry = getEntryCache(instance.getClass(), false).get(id);
         return ((NativeEntryEntityPersister)persister).isDirty(instance, entry);
     }
 
@@ -326,12 +337,9 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public void clear() {
-        for (Map<Serializable, Object> cache : firstLevelCache.values()) {
-            cache.clear();
-        }
-        for (Map<Serializable, Object> cache : firstLevelEntryCache.values()) {
-            cache.clear();
-        }
+        clearMaps(firstLevelCache);
+        clearMaps(firstLevelEntryCache);
+        clearMaps(firstLevelEntryCacheDirtyCheck);
         firstLevelCollectionCache.clear();
         pendingInserts.clear();
         pendingUpdates.clear();
@@ -340,7 +348,13 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         exceptionOccurred = false;
     }
 
-    public final Persister getPersister(Object o) {
+    private void clearMaps(Map<Class, Map<Serializable, Object>> mapOfMaps) {
+        for (Map<Serializable, Object> cache : mapOfMaps.values()) {
+            cache.clear();
+        }
+    }
+
+	public final Persister getPersister(Object o) {
         if (o == null) return null;
         Class cls;
         if (o instanceof Class) {
@@ -651,11 +665,12 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         return cache;
     }
 
-    private Map<Serializable, Object> getEntryCache(Class c) {
-        Map<Serializable, Object> cache = firstLevelEntryCache.get(c);
+    private Map<Serializable, Object> getEntryCache(Class c, boolean forDirtyCheck) {
+        Map<Class, Map<Serializable, Object>> caches = forDirtyCheck ? firstLevelEntryCacheDirtyCheck : firstLevelEntryCache;
+        Map<Serializable, Object> cache = caches.get(c);
         if (cache == null) {
             cache = new ConcurrentHashMap<Serializable, Object>();
-            firstLevelEntryCache.put(c, cache);
+            caches.put(c, cache);
         }
         return cache;
     }
