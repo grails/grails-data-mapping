@@ -26,7 +26,7 @@ class Neo4jGrailsPlugin {
     def developers = [
         [ name: "Stefan Armbruster", email: "stefan@armbruster-it.de" ] ]
     def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPNEO4J" ]
-    def scm = [ url: "https://github.com/sarmbruster/spring-data-mapping" ]
+    def scm = [ url: "https://github.com/sarmbruster/grails-data-mapping" ]
 
     def version = "0.9-SNAPSHOT"
     def grailsVersion = "1.2 > *"
@@ -36,10 +36,7 @@ class Neo4jGrailsPlugin {
     def author = "Stefan Armbruster"
     def authorEmail = "stefan@armbruster-it.de"
     def title = "Neo4j GORM"
-    def description = '''\\
-A plugin that integrates the Neo4j graph database into Grails, providing
-a GORM API onto it
-'''
+    def description = 'A plugin that integrates the Neo4j graph database into Grails, providing a GORM API onto it'
 
     def documentation = "http://grails.org/plugin/neo4j"
 

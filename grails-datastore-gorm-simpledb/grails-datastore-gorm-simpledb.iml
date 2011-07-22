@@ -21,8 +21,8 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="spring-datastore-simpledb" exported="" />
-    <orderEntry type="module" module-name="spring-datastore-core" exported="" />
+    <orderEntry type="module" module-name="grails-datastore-simpledb" exported="" />
+    <orderEntry type="module" module-name="grails-datastore-core" exported="" />
     <orderEntry type="module" module-name="grails-datastore-gorm" exported="" />
     <orderEntry type="module-library" scope="TEST">
       <library>

@@ -30,7 +30,7 @@ import org.grails.datastore.mapping.simpledb.util.SimpleDBConst
 
 class SimpledbGrailsPlugin {
     def license = "Apache 2.0 License"
-    def scm = [ url: "https://github.com/SpringSource/spring-data-mapping" ]
+    def scm = [ url: "https://github.com/SpringSource/grails-data-mapping" ]
     def developers = [
         [ name: "Roman Stepanenko", email: "rs.opensource@gmail.com" ] ]
     def version = "1.0.0.M1"

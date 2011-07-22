@@ -26,7 +26,7 @@
     <autodetection-disabled>
       <facet-type id="Spring">
         <modules>
-          <module name="spring-data-mapping" />
+          <module name="grails-data-mapping" />
         </modules>
       </facet-type>
     </autodetection-disabled>
@@ -66,15 +66,15 @@
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-riak/grails-datastore-gorm-riak.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-riak/grails-datastore-gorm-riak.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-tck/grails-datastore-gorm-tck.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-tck/grails-datastore-gorm-tck.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-test/grails-datastore-gorm-test.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-test/grails-datastore-gorm-test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spring-data-mapping.iml" filepath="$PROJECT_DIR$/spring-data-mapping.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spring-datastore-core/spring-datastore-core.iml" filepath="$PROJECT_DIR$/spring-datastore-core/spring-datastore-core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spring-datastore-gemfire/spring-datastore-gemfire.iml" filepath="$PROJECT_DIR$/spring-datastore-gemfire/spring-datastore-gemfire.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spring-datastore-jpa/spring-datastore-jpa.iml" filepath="$PROJECT_DIR$/spring-datastore-jpa/spring-datastore-jpa.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spring-datastore-mongo/spring-datastore-mongo.iml" filepath="$PROJECT_DIR$/spring-datastore-mongo/spring-datastore-mongo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spring-datastore-redis/spring-datastore-redis.iml" filepath="$PROJECT_DIR$/spring-datastore-redis/spring-datastore-redis.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spring-datastore-riak/spring-datastore-riak.iml" filepath="$PROJECT_DIR$/spring-datastore-riak/spring-datastore-riak.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spring-datastore-simple/spring-datastore-simple.iml" filepath="$PROJECT_DIR$/spring-datastore-simple/spring-datastore-simple.iml" />
-      <module fileurl="file://$PROJECT_DIR$/spring-datastore-web/spring-datastore-web.iml" filepath="$PROJECT_DIR$/spring-datastore-web/spring-datastore-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-data-mapping.iml" filepath="$PROJECT_DIR$/grails-data-mapping.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-core/grails-datastore-core.iml" filepath="$PROJECT_DIR$/grails-datastore-core/grails-datastore-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-gemfire/grails-datastore-gemfire.iml" filepath="$PROJECT_DIR$/grails-datastore-gemfire/grails-datastore-gemfire.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-jpa/grails-datastore-jpa.iml" filepath="$PROJECT_DIR$/grails-datastore-jpa/grails-datastore-jpa.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-mongo/grails-datastore-mongo.iml" filepath="$PROJECT_DIR$/grails-datastore-mongo/grails-datastore-mongo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-redis/grails-datastore-redis.iml" filepath="$PROJECT_DIR$/grails-datastore-redis/grails-datastore-redis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-riak/grails-datastore-riak.iml" filepath="$PROJECT_DIR$/grails-datastore-riak/grails-datastore-riak.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-simple/grails-datastore-simple.iml" filepath="$PROJECT_DIR$/grails-datastore-simple/grails-datastore-simple.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-web/grails-datastore-web.iml" filepath="$PROJECT_DIR$/grails-datastore-web/grails-datastore-web.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">

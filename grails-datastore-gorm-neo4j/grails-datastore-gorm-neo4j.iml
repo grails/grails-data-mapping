@@ -131,7 +131,7 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="spring-datastore-web" exported="" />
+    <orderEntry type="module" module-name="grails-datagrails-datastore-web" exported="" />
     <orderEntry type="module" module-name="grails-datastore-gorm" exported="" />
     <orderEntry type="module-library" scope="TEST">
       <library>

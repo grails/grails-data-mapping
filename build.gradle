@@ -125,7 +125,7 @@ subprojects {
                     license {
                         name 'The Apache Software License, Version 2.0'
                         url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        distribution 'http://github.com/SpringSource/spring-data-mapping/'
+                        distribution 'http://github.com/SpringSource/grails-data-mapping/'
                     }
                 }
             }

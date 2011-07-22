@@ -32,10 +32,10 @@
           <root url="jar://$HOME_DIR$/.ivy2/cache/org.apache.geronimo.specs/geronimo-jta_1.1_spec/jars/geronimo-jta_1.1_spec-1.1.1.jar!/" />
           <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-kernel/jars/neo4j-kernel-1.4.M05.jar!/" />
           <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j/jars/neo4j-1.4.M05.jar!/" />
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.springframework/spring-datastore-web/jars/spring-datastore-web-1.0.0.BUILD-SNAPSHOT.jar!/" />
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.springframework/spring-datastore-core/jars/spring-datastore-core-1.0.0.BUILD-SNAPSHOT.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-web/jars/grails-datastore-web-1.0.0.BUILD-SNAPSHOT.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-core/jars/grails-datastore-core-1.0.0.BUILD-SNAPSHOT.jar!/" />
           <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-gorm/jars/grails-datastore-gorm-1.0.0.BUILD-SNAPSHOT.jar!/" />
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.springframework/spring-datastore-simple/jars/spring-datastore-simple-1.0.0.BUILD-SNAPSHOT.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-simple/jars/grails-datastore-simple-1.0.0.BUILD-SNAPSHOT.jar!/" />
           <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-gorm-test/jars/grails-datastore-gorm-test-1.0.0.BUILD-SNAPSHOT.jar!/" />
           <root url="jar://$HOME_DIR$/.ivy2/cache/xml-resolver/xml-resolver/jars/xml-resolver-1.2.jar!/" />
           <root url="jar://$HOME_DIR$/.ivy2/cache/xerces/xercesImpl/jars/xercesImpl-2.8.1.jar!/" />

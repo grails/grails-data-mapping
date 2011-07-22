@@ -43,14 +43,3 @@ include "grails-datastore-core",
         'grails-datastore-gorm-simpledb'
 */
 
-
-project(':grails-datastore-core').projectDir = file('spring-datastore-core') 
-project(':grails-datastore-gemfire').projectDir = file('spring-datastore-gemfire') 
-project(':grails-datastore-mongo').projectDir = file('spring-datastore-mongo') 
-project(':grails-datastore-jpa').projectDir = file('spring-datastore-jpa') 
-project(':grails-datastore-redis').projectDir = file('spring-datastore-redis') 
-project(':grails-datastore-riak').projectDir = file('spring-datastore-riak') 
-project(':grails-datastore-simple').projectDir = file('spring-datastore-simple') 
-//project(':grails-datastore-simpledb').projectDir = file('spring-datastore-simpledb') 
-project(':grails-datastore-web').projectDir = file('spring-datastore-web')
-

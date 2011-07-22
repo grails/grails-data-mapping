@@ -12,11 +12,44 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/com.amazonaws/aws-java-sdk/jars/aws-java-sdk-1.2.0.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-web/jars/spring-web-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/com.amazonaws/aws-java-sdk/sources/aws-java-sdk-1.2.0-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-web/sources/spring-web-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context/jars/spring-context-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context/sources/spring-context-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-core/jars/spring-core-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-core/sources/spring-core-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-asm/jars/spring-asm-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-asm/sources/spring-asm-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -34,76 +67,45 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.httpcomponents/httpclient/jars/httpclient-4.1.1.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-beans/jars/spring-beans-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.httpcomponents/httpclient/sources/httpclient-4.1.1-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-beans/sources/spring-beans-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-codec/commons-codec/jars/commons-codec-1.3.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aop/jars/spring-aop-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-codec/commons-codec/sources/commons-codec-1.3-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aop/sources/spring-aop-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.httpcomponents/httpcore/jars/httpcore-4.1.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/aopalliance/aopalliance/jars/aopalliance-1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.httpcomponents/httpcore/sources/httpcore-4.1-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/aopalliance/aopalliance/sources/aopalliance-1.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.jackson/jackson-core-asl/jars/jackson-core-asl-1.8.3.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-expression/jars/spring-expression-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.jackson/jackson-core-asl/sources/jackson-core-asl-1.8.3-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-expression/sources/spring-expression-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/javax.mail/mail/jars/mail-1.4.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/javax.mail/mail/sources/mail-1.4.2-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/javax.activation/activation/jars/activation-1.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/javax.activation/activation/sources/activation-1.1-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/stax/stax-api/jars/stax-api-1.0.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
@@ -117,7 +119,7 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="spring-datastore-core" exported="" />
+    <orderEntry type="module" module-name="grails-datastore-core" exported="" />
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5f6d434d-98dd-4c98-8081-1aa1f0ce46d2" name="Default" comment="" />
-    <ignored path="spring-data-mapping.iws" />
+    <ignored path="grails-data-mapping.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -55,7 +55,7 @@
     <ui_properties />
   </component>
   <component name="FavoritesManager">
-    <favorites_list name="spring-data-mapping" />
+    <favorites_list name="grails-data-mapping" />
   </component>
   <component name="FileEditorManager">
     <leaf />
@@ -283,7 +283,7 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$USER_HOME$/Library/Caches/IntelliJIdea10/compiler/spring-data-mapping.spring-data-mapping44be0e4f/.generated/groovyStubs/spring-data-mapping44be0e4f/grails-datastore-gorm-jpa/tests/org/grails/datastore/gorm/JpaSuite.java">
+    <entry file="file://$USER_HOME$/Library/Caches/IntelliJIdea10/compiler/grails-data-mapping.grails-data-mapping44be0e4f/.generated/groovyStubs/grails-data-mapping44be0e4f/grails-datastore-gorm-jpa/tests/org/grails/datastore/gorm/JpaSuite.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="9" column="57" selection-start="215" selection-end="215" vertical-scroll-proportion="0.058139537">
           <folding />
