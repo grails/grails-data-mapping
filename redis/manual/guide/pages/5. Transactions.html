@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>5. Transactions</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    Transactions in Redis (using MULTI/EXEC) operate differently to SQL transactions. In fact they are more a way to do bulk operations that can be discarded rather than full transactions (see the documentation on <a href="http://code.google.com/p/redis/wiki/MultiExecCommand" target="blank">MULTI/EXEC</a> for further information).<p class="paragraph"/>One limitation of Redis' MULT/EXEC command is that even reads are batched up in the transaction. This trickles down to usage within GORM for Redis. So for example you can execute a transaction such as:<p class="paragraph"/><div class="code"><pre>Person.withTransaction &#123;
+    <span class="java&#45;keyword">new</span> Person(firstName:<span class="java&#45;quote">"Bob"</span>).save()
+    <span class="java&#45;keyword">new</span> Person(firstName:<span class="java&#45;quote">"Fred"</span>).save()	
+&#125;</pre></div><p class="paragraph"/>However, you cannot execute any queries (only write operations) in the middle of a transaction unless you do so with a separate connection such as:<p class="paragraph"/><div class="code"><pre>Person.withTransaction &#123;
+    <span class="java&#45;keyword">new</span> Person(firstName:<span class="java&#45;quote">"Bob"</span>).save()<p class="paragraph"/>    def fred
+    Person.withNewSession &#123;
+            fred = Person.findByFirstName(<span class="java&#45;quote">"Fred"</span>)
+    &#125; 
+    <span class="java&#45;keyword">if</span>(!fred)
+        <span class="java&#45;keyword">new</span> Person(firstName:<span class="java&#45;quote">"Fred"</span>).save()	
+&#125;</pre></div><p class="paragraph"/>In other words all read operations have to happen in a separate session/connection which can be achieved with the <code>withNewSession</code> method. 
+
+    </body>
+</html>

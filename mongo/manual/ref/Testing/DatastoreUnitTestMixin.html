@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>GORM for Mongo 1.0.0.M2 - Reference Documentation</title>
+        <link rel="stylesheet" href="../../css/ref.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    <h1>DatastoreUnitTestMixin</h1><p class="paragraph"/><h2>Purpose</h2><p class="paragraph"/>A mixin for setting up unit testing of datastores such as the Mongo datastore.<p class="paragraph"/><h2>Examples</h2><p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.datastore.test.DatastoreUnitTestMixin<p class="paragraph"/>@Mixin(DatastoreUnitTestMixin)
+class PersonTests <span class="java&#45;keyword">extends</span> GroovyTestCase &#123;
+    void testPersist() &#123;
+        mockDomain(Person)
+        def s = <span class="java&#45;keyword">new</span> Person(name:<span class="java&#45;quote">"Bob"</span>)
+        s.save()<p class="paragraph"/>        assert s.id != <span class="java&#45;keyword">null</span><p class="paragraph"/>        s = Person.get(s.id)<p class="paragraph"/>        assert s != <span class="java&#45;keyword">null</span>
+    &#125;<p class="paragraph"/>    void tearDown() &#123;
+        disconnect()
+    &#125;
+&#125;</pre></div><p class="paragraph"/><h2>Description</h2><p class="paragraph"/><code>DatastoreUnitTestMixin</code> allows you to test datastore interactions by mocking the complete GORM API including simple persistence methods, dynamic finders, criteria queries and named queries.<p class="paragraph"/>If you want to make sure that tests do not share data, add an implementation of <code>tearDown()</code> (or the equivalent in your test framework) that calls the <code>disconnect()</code> method. Also make sure to call the super class method if necessary!
+
+    </body>
+</html>

@@ -1,0 +1,15 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>3. Object Mapping</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    Object mapping works largely as described in the <a href="http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html" target="blank">documentation on GORM</a>. In general you can continue to model your associations using typical GORM notation such as <code>hasMany</code>, <code>belongsTo</code> and so on.<p class="paragraph"/>Here is an example of a domain class that can be persisted to Riak:<p class="paragraph"/><div class="code"><pre>class Person &#123;<p class="paragraph"/>    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName<p class="paragraph"/>    <span class="java&#45;keyword">static</span> constraints = &#123;
+        firstName blank:<span class="java&#45;keyword">false</span>
+        lastName blank:<span class="java&#45;keyword">false</span>
+    &#125;<p class="paragraph"/>&#125;</pre></div><p class="paragraph"/>Since Riak doesn't support the notion of saved indexes, there are no options to specify what columns to index for faster searches. The GORM support for Riak relies on Riak's Map/Reduce implementation for queries, criteria, dynamic finder methods, and so on. As such, searching for data in Riak using finder methods can be slower than on other NoSQL datastores given a very large dataset. Caveat emptor.<p class="paragraph"/>That said, finder methods are fully supported in Riak for GORM:<p class="paragraph"/><div class="code"><pre>Person.findByLastName(<span class="java&#45;quote">"Simpson"</span>)</pre></div>
+
+    </body>
+</html>

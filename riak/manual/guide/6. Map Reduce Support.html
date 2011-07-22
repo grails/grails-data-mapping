@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>6. Map Reduce Support</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    <h1><a name="6. Map Reduce Support">6. Map Reduce Support</a></h1>Since Map/Reduce is such an integral part of working with the Riak datastore, GORM for Riak provides access to this functionality both through the Map/Reduce operations exposed on the <code>RiakTemplate</code> and through a special static helper called "mapreduce".<p class="paragraph"/>To execute a Map/Reduce against all instances of a particular entity, you can do the following:<p class="paragraph"/><div class="code"><pre>def result = Person.mapreduce.execute(&#91;
+    map: &#91;
+        source: <span class="java&#45;quote">"function(v)&#123; ...perform map operations&#8230; <span class="java&#45;keyword">return</span> &#91;result&#93;; &#125;"</span>
+    &#93;,
+    reduce: &#91;
+        source: <span class="java&#45;quote">"function(v)&#123; ...perform reduce operations&#8230; <span class="java&#45;keyword">return</span> &#91;result&#93;; &#125;"</span>
+    &#93;
+&#93;)</pre></div><p class="paragraph"/>This is an easy way to execute ad hoc queries in a way that is more optimized for your application than what the <code>Query</code> implementation will generate if you use criteria projections or a finder method.
+    </body>
+</html>

@@ -1,0 +1,11 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>3.1 Dealing with Eventual Consistency</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    One of the important features of Riak is that, by default, Riak promises to be <a href="http://blog.basho.com/category/eventual-consistency/" target="blank">&#34;eventually consistent&#34; rather than synchronously up-to-date</a>. This means that when an update to data in Riak is issued, the update method might return before the data has been fully written to disk. This increases performance of writes but means operations that depend on just-inserted data being available (for queries, for example) need to be careful about when they are run.<p class="paragraph"/>If you want a <code>save()</code> call to be guaranteed to have persisted the object to disk before returning to your application, then you need to pass a QOS (Quality of Service) parameter to the entity's <code>save</code> method. You use the same names for the parameters as you would if you were specifying them on an HTTP URL: <code>w</code> for write, <code>dw</code> for durable write, and <code>r</code> for read.<p class="paragraph"/>For example, to ensure that an object has been completely flushed to disk before returning, use the "durable write" parameter:<p class="paragraph"/><div class="code"><pre>def p = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Bob"</span>)
+p.save(&#91;dw: <span class="java&#45;quote">"all"</span>&#93;)</pre></div><p class="paragraph"/>
+    </body>
+</html>

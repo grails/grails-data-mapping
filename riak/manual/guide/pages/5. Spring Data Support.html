@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>5. Spring Data Support</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    The Riak support for GORM is actually built on top of the Riak support for <a href="http://www.springsource.org/spring-data" target="blank">Spring Data</a>. As such, the Riak plugin provides full access to a <code>org.springframework.data.keyvalue.riak.core.RiakTemplate</code> or <code>org.springframework.data.keyvalue.riak.core.AsyncRiakTemplate</code> object you can inject into your own components. The former is for synchronous access to Riak, the latter is for asynchronous access.<p class="paragraph"/>For example, in a controller:<p class="paragraph"/><div class="code"><pre>class MyController &#123;
+    def riakTemplate<p class="paragraph"/>    def foo = &#123;
+        def notifs = riak.get(<span class="java&#45;quote">"notifications"</span>, <span class="java&#45;quote">"myuser"</span>)
+        render <span class="java&#45;quote">"Notifications: $notifs"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Or, for asynchronous access:<p class="paragraph"/><div class="code"><pre>class MyController &#123;
+    def asyncRiakTemplate<p class="paragraph"/>    def foo = &#123;
+        def callback = &#91;
+            completed: &#123; metadata, val &#45;&#62;
+                // Since <span class="java&#45;keyword">this</span> is run asynchronously, 
+                // put the data somewhere <span class="java&#45;keyword">else</span>&#8230;
+            &#125;,
+            failed: &#123; err &#45;&#62;
+                log.error(err.message, err)
+            &#125;
+        &#93; as AsyncKeyValueStoreOperation
+        riak.get(<span class="java&#45;quote">"notifications"</span>, <span class="java&#45;quote">"myuser"</span>, callback)<p class="paragraph"/>        // The previous call doesn't block, so we <span class="java&#45;keyword">continue</span> on&#8230;
+        render <span class="java&#45;quote">"Notifications: $notifs"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>See the Spring Data reference for more information on the methods available and on examples of using the <code>RiakTemplate</code> in your own code.
+    </body>
+</html>

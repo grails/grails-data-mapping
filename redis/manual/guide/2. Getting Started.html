@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>2. Getting Started</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    <h1><a name="2. Getting Started">2. Getting Started</a></h1>To get started with GORM for Redis you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin redis</pre></div><p class="paragraph"/>With that done you need to set up a running Redis server. GORM for Redis requires Redis 2.0.0 or above which you can download at on the <a href="http://code.google.com/p/redis/downloads/list" target="blank">Redis download page</a>. Once downloaded extract the archive and run the following commands from the <code>redis-2.0.0</code> directory:<p class="paragraph"/><div class="code"><pre>make
+./redis&#45;server</pre></div><p class="paragraph"/>With the above commands executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>&#91;66243&#93; 03 Sep 17:35:12 &#42; Server started, Redis version 2.0.0
+&#91;66243&#93; 03 Sep 17:35:12 &#42; DB loaded from disk: 0 seconds
+&#91;66243&#93; 03 Sep 17:35:12 &#42; The server is now ready to accept connections on port 6379</pre></div><p class="paragraph"/>As you can see the server is running on port 6379, but don't worry the Redis plugin for Grails will automatically configure itself to look for Redis on that port by default.<p class="paragraph"/>If you want to configure how Grails connects to redis then you can do so using the following settings in <code>grails-app/conf/Config.groovy</code>:<p class="paragraph"/><div class="code"><pre>grails.redis.host=<span class="java&#45;quote">"myserver"</span>
+grails.redis.port=6380
+grails.redis.password=<span class="java&#45;quote">"secret"</span>
+grails.redis.pooled=<span class="java&#45;keyword">true</span>
+grails.redis.resources=15
+grails.redis.timeout=5000</pre></div>
+<h2><a name="2.1 Using Redis Standalone">2.1 Using Redis Standalone</a></h2>If you plan to use Redis as your primary datastore then you need to uninstall the Hibernate plugin:<p class="paragraph"/><div class="code"><pre>grails uninstall&#45;plugin hibernate</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via Redis and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Redis.<h2><a name="2.2 Combining Redis and Hibernate">2.2 Combining Redis and Hibernate</a></h2>If you have both the Hibernate and Redis plugins installed then by default all classes in the <code>grails-app/domain</code> directory will be persisted by Hibernate and not Redis. If you want to persist a particular domain class with Redis then you must use the <code>mapWith</code> property in the domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"redis"</span></pre></div><p class="paragraph"/>Alternatively you can persist Hibernate entities to Redis using the special <code>redis</code> scope added to all Hibernate entities:<p class="paragraph"/><div class="code"><pre>def hibernatePerson = Person.get(1)<p class="paragraph"/>hibernatePerson.redis.save()<p class="paragraph"/>def redisPerson = Person.redis.get(1)</pre></div><p class="paragraph"/>This makes it really easy to use Redis as a cache for Hibernate entities and take advantage of some nice Redis features like randomization:<p class="paragraph"/><div class="code"><pre>def people = Person.list()
+people.each &#123; person &#45;&#62; person.redis.save() &#125;<p class="paragraph"/>def randomRedisPerson = Person.redis.random()</pre></div>
+    </body>
+</html>

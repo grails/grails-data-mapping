@@ -1,0 +1,13 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>Riak GORM 1.0.0.M1 - Reference Documentation</title>
+        <link rel="stylesheet" href="../../css/ref.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    <h1>riakTemplate</h1><p class="paragraph"/><h2>Purpose</h2><p class="paragraph"/>A Spring bean that provides access to the Spring Data <code>RiakTemplate</code> API.<p class="paragraph"/><h2>Examples</h2><p class="paragraph"/><div class="code"><pre>def riak<p class="paragraph"/>def foo = &#123;
+  def notifs = riak.getAsType(<span class="java&#45;quote">"notifications"</span>, <span class="java&#45;quote">"mykey"</span>, List)
+  render <span class="java&#45;quote">"Notifications: $notifs"</span>
+&#125;</pre></div><p class="paragraph"/><h2>Description</h2><p class="paragraph"/>The <code>riakTemplate</code> bean is a singleton instance of the synchronous <code>RiakTemplate</code>. Check the Spring Data Key/Value documentation for more information on the available methods and detailed usage instructions.
+    </body>
+</html>

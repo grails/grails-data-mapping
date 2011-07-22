@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>Riak GORM 1.0.0.M1 - Reference Documentation</title>
+        <link rel="stylesheet" href="../../css/ref.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    <h1>riakTemplate</h1><p class="paragraph"/><h2>Purpose</h2><p class="paragraph"/>A Spring bean that provides access to the Spring Data <code>AsyncRiakTemplate</code> API.<p class="paragraph"/><h2>Examples</h2><p class="paragraph"/><div class="code"><pre>def riak<p class="paragraph"/>def foo = &#123;
+  def callback = &#91;
+    completed: &#123; v, meta &#45;&#62; ...<span class="java&#45;keyword">do</span> something with result&#8230; &#125;,
+    failed: &#123; err &#45;&#62; ...<span class="java&#45;keyword">do</span> something with error&#8230; &#125;
+  &#93; as AsyncKeyValueStoreOperation
+  def <span class="java&#45;keyword">future</span> = riak.get(<span class="java&#45;quote">"notifications"</span>, <span class="java&#45;quote">"mykey"</span>, callback)
+  render <span class="java&#45;quote">"Notifications: $&#123;<span class="java&#45;keyword">future</span>.get()&#125;"</span>
+&#125;</pre></div><p class="paragraph"/><h2>Description</h2><p class="paragraph"/>The <code>asyncRiakTemplate</code> bean is a singleton instance of the asynchronous <code>AsyncRiakTemplate</code>. Check the Spring Data Key/Value documentation for more information on the available methods and detailed usage instructions.
+    </body>
+</html>

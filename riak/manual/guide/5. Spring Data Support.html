@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>5. Spring Data Support</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    <h1><a name="5. Spring Data Support">5. Spring Data Support</a></h1>The Riak support for GORM is actually built on top of the Riak support for <a href="http://www.springsource.org/spring-data" target="blank">Spring Data</a>. As such, the Riak plugin provides full access to a <code>org.springframework.data.keyvalue.riak.core.RiakTemplate</code> or <code>org.springframework.data.keyvalue.riak.core.AsyncRiakTemplate</code> object you can inject into your own components. The former is for synchronous access to Riak, the latter is for asynchronous access.<p class="paragraph"/>For example, in a controller:<p class="paragraph"/><div class="code"><pre>class MyController &#123;
+    def riakTemplate<p class="paragraph"/>    def foo = &#123;
+        def notifs = riak.get(<span class="java&#45;quote">"notifications"</span>, <span class="java&#45;quote">"myuser"</span>)
+        render <span class="java&#45;quote">"Notifications: $notifs"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Or, for asynchronous access:<p class="paragraph"/><div class="code"><pre>class MyController &#123;
+    def asyncRiakTemplate<p class="paragraph"/>    def foo = &#123;
+        def callback = &#91;
+            completed: &#123; metadata, val &#45;&#62;
+                // Since <span class="java&#45;keyword">this</span> is run asynchronously, 
+                // put the data somewhere <span class="java&#45;keyword">else</span>&#8230;
+            &#125;,
+            failed: &#123; err &#45;&#62;
+                log.error(err.message, err)
+            &#125;
+        &#93; as AsyncKeyValueStoreOperation
+        riak.get(<span class="java&#45;quote">"notifications"</span>, <span class="java&#45;quote">"myuser"</span>, callback)<p class="paragraph"/>        // The previous call doesn't block, so we <span class="java&#45;keyword">continue</span> on&#8230;
+        render <span class="java&#45;quote">"Notifications: $notifs"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>See the Spring Data reference for more information on the methods available and on examples of using the <code>RiakTemplate</code> in your own code.<h2><a name="5.1 RiakBuilder Support">5.1 RiakBuilder Support</a></h2>Besides direct access to the Java-language template objects, the Riak plugin for Grails exposes a Groovy Builder object call RiakBuilder for use in your controllers and services. The builder uses a declarative, DSL-style syntax for working with Riak.<p class="paragraph"/>For example, to delete all entries in a bucket using the RiakBuilder DSL (which is a dynamic method the plugin adds to any controller or service class):<p class="paragraph"/><div class="code"><pre>riak &#123;
+  test &#123;
+    foreach &#123;
+      completed &#123; v, meta &#45;&#62; delete(key: meta.key) &#125;
+      failed &#123; it.printStackTrace() &#125;
+    &#125;
+  &#125;
+&#125;</pre></div>
+<ul class="star">
+<li>The top-level node should always be "riak".</li>
+<li>The next level is optional. In this case, it sets the default bucket name to "test", so it's not necessary to specify it on operations contained within this block.</li>
+<li>When an operation is complete, if a "completed" closure is defined, the builder will call that closure, passing the results of the operation as the first parameter and optionally passing the metadata associated with that entry as the second (this might be null, depending on the context in which the completed closure is called). If no parameters are defined, the result of the operation is still available as the implicit variable "it".</li>
+<li>To handle errors, a "failed" closure should be defined, which should accept the exception just generated (the exception is also available as "it").</li>
+</ul><p class="paragraph"/>See the Spring Data reference for more information on the methods available and on examples of using the <code>RiakBuilder</code> in your own code.
+    </body>
+</html>

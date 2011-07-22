@@ -1,0 +1,11 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>2.2 Combining Redis and Hibernate</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    If you have both the Hibernate and Redis plugins installed then by default all classes in the <code>grails-app/domain</code> directory will be persisted by Hibernate and not Redis. If you want to persist a particular domain class with Redis then you must use the <code>mapWith</code> property in the domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"redis"</span></pre></div><p class="paragraph"/>Alternatively you can persist Hibernate entities to Redis using the special <code>redis</code> scope added to all Hibernate entities:<p class="paragraph"/><div class="code"><pre>def hibernatePerson = Person.get(1)<p class="paragraph"/>hibernatePerson.redis.save()<p class="paragraph"/>def redisPerson = Person.redis.get(1)</pre></div><p class="paragraph"/>This makes it really easy to use Redis as a cache for Hibernate entities and take advantage of some nice Redis features like randomization:<p class="paragraph"/><div class="code"><pre>def people = Person.list()
+people.each &#123; person &#45;&#62; person.redis.save() &#125;<p class="paragraph"/>def randomRedisPerson = Person.redis.random()</pre></div>
+    </body>
+</html>

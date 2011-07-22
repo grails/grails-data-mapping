@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>2. Getting Started</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    To get started with GORM for Mongo you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin mongodb</pre></div><p class="paragraph"/>With that done you need to set up a running Mongodb server. Refer to the <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="blank">Mongodb Quick Start guide</a> for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above commands executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>Thu Nov 11 16:54:08 MongoDB starting : pid=4600 port=27017 dbpath=/data/db/ 64&#45;bit 
+Thu Nov 11 16:54:08 db version v1.6.3, pdfile version 4.5
+Thu Nov 11 16:54:08 git version: 278bd2ac2f2efbee556f32c13c1b6803224d1c01
+Thu Nov 11 16:54:08 sys info: Darwin erh2.10gen.cc 9.6.0 Darwin Kernel Version 9.6.0: Mon Nov 24 17:37:00 PST 2008; root:xnu&#45;1228.9.59~1/RELEASE_I386 i386 BOOST_LIB_VERSION=1_40
+Thu Nov 11 16:54:08 &#91;initandlisten&#93; waiting <span class="java&#45;keyword">for</span> connections on port 27017
+Thu Nov 11 16:54:08 &#91;websvr&#93; web admin <span class="java&#45;keyword">interface</span> listening on port 28017</pre></div><p class="paragraph"/>As you can see the server is running on port 27017, but don't worry the Mongodb plugin for Grails will automatically configure itself to look for Mongodb on that port by default.<p class="paragraph"/>If you want to configure how Grails connects to Mongo then you can do so using the following settings in <code>grails-app/conf/DataSource.groovy</code>:<p class="paragraph"/><div class="code"><pre>grails &#123;
+  mongo &#123;
+    host = <span class="java&#45;quote">"localhost"</span>
+    port = 27107
+    username = <span class="java&#45;quote">"blah"</span>
+    password = <span class="java&#45;quote">"blah"</span>
+    databaseName = <span class="java&#45;quote">"foo"</span>
+  &#125;
+&#125;</pre></div>
+
+    </body>
+</html>

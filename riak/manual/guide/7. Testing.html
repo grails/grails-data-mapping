@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>7. Testing</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    <h1><a name="7. Testing">7. Testing</a></h1>The Riak plugin provides a Groovy mixin called <a href="../ref/Testing/DatastoreUnitTestMixin.html" class="testing">DatastoreUnitTestMixin</a> for testing purposes. This mixin sets up a datastore implementation that operates against an in-memory <code>ConcurrentHashMap</code>. The datastore implementation that operates against an in-memory map is as complete as the one for Riak and provides support for:
+<ul class="star">
+<li>Simple persistence methods</li>
+<li>Dynamic finders</li>
+<li>Criteria</li>
+<li>Named queries</li>
+<li>Inheritance</li>
+</ul><p class="paragraph"/>You can easily write tests that use the mixin using Groovy's <code>Mixin</code> annotation on any existing unit test:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> grails.datastore.test.DatastoreUnitTestMixin<p class="paragraph"/>@Mixin(DatastoreUnitTestMixin)
+class PersonTests <span class="java&#45;keyword">extends</span> GroovyTestCase &#123;
+    void testPersist() &#123;
+        mockDomain(Person)
+        def s = <span class="java&#45;keyword">new</span> Simple(name:<span class="java&#45;quote">"Bob"</span>)
+        s.save()<p class="paragraph"/>        assert s.id != <span class="java&#45;keyword">null</span><p class="paragraph"/>        s = Simple.get(s.id)<p class="paragraph"/>        assert s != <span class="java&#45;keyword">null</span>
+    &#125;<p class="paragraph"/>    void tearDown() &#123;
+        disconnect()
+    &#125;
+&#125;</pre></div><p class="paragraph"/>You should call the <code>mockDomain()</code> method to mock a domain instance and then the remainder of the API is the same. Note that you should call <code>disconnect()</code> in <code>tearDown()</code> otherwise your tests will share data.
+
+    </body>
+</html>

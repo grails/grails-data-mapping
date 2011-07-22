@@ -1,0 +1,15 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>3.3 Customizing the WriteConcern</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    A feature of Mongo is its ability to customize how important a database write is to the user. The Java client models this as a <a href="http://api.mongodb.org/java/current/com/mongodb/WriteConcern.html" target="blank">WriteConcern</a> and there are various options that indicate whether the client cares about server or network errors, or whether the data has been successfully written or not.<p class="paragraph"/>If you wish to customize the <code>WriteConcern</code> for a domain class you can do so in the mapping block:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> com.mongodb.WriteConcern<p class="paragraph"/>class Person &#123;
+  <span class="java&#45;object">String</span> name
+  <span class="java&#45;keyword">static</span> mapping = &#123;
+    writeConcern WriteConcern.FSYNC_SAFE	
+  &#125;	
+&#125;</pre></div>
+    </body>
+</html>

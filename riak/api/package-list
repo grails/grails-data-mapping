@@ -1,0 +1,4 @@
+org.springframework.datastore.mapping.riak
+org.springframework.datastore.mapping.riak.collection
+org.springframework.datastore.mapping.riak.engine
+org.springframework.datastore.mapping.riak.util

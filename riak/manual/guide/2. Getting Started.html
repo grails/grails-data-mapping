@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>2. Getting Started</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    <h1><a name="2. Getting Started">2. Getting Started</a></h1>To get started with GORM for Riak, you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin riak</pre></div><p class="paragraph"/>Now you need to install and configure a Riak server for your architecture. To install Riak, you have several options:
+<ul class="star">
+<li>Use a pre-compiled binary downloaded from the official download page: <a href="http://downloads.basho.com/riak/" target="blank">http://downloads.basho.com/riak/</a></li>
+<li>Install from a package manager like <code>apt</code> or <a href="http://mxcl.github.com/homebrew/" target="blank">Homebrew</a></li>
+<li>Install the source distribution</li>
+</ul><p class="paragraph"/>Once installed, you can run a Riak server in a terminal and gain access to an Erlang shell by doing the following (assuming Riak is installed to <code>/opt/riak-0.13.0</code>):<p class="paragraph"/><div class="code"><pre>cd /opt/riak&#45;0.13.0
+bin/riak console</pre></div><p class="paragraph"/>When run, you should see something like the following:<p class="paragraph"/><div class="code"><pre>Exec: /opt/riak&#45;0.13.0/erts&#45;5.8.1/bin/erlexec &#45;boot /opt/riak&#45;0.13.0/releases/0.13.0/riak &#45;embedded &#45;config /opt/riak&#45;0.13.0/etc/app.config &#45;args_file /opt/riak&#45;0.13.0/etc/vm.args &#45;&#45; console
+Root: /opt/riak&#45;0.13.0
+Erlang R14B (erts&#45;5.8.1) &#91;source&#93; &#91;64&#45;bit&#93; &#91;smp:2:2&#93; &#91;rq:2&#93; &#91;async&#45;threads:64&#93; &#91;hipe&#93; &#91;kernel&#45;poll:<span class="java&#45;keyword">true</span>&#93;
+&#8230;
+=INFO REPORT==== 13&#45;Dec&#45;2010::16:30:51 ===
+Spidermonkey VM (thread stack: 32MB, max heap: 12MB) host starting (&#60;0.147.0&#62;)
+Eshell V5.8.1  (abort with ^G)
+(riak<code>127.0.0.1)1&#62;</pre></div><p class="paragraph"/>The default port for Riak's REST interface is 8098. So the default URI built into the Riak GORM support will work. The default is </code>http://localhost:8098/riak/{bucket}/{key}<code>.<p class="paragraph"/>If you need to configure the URLs for the </code>RiakTemplate<code>, do so by adding configuration elements to </code>grails-app/conf/Config.groovy@:<p class="paragraph"/><div class="code"><pre><div class="error">code: null</div>
+grails.riak.defaultUri = "http://localhost:8098/riak/{bucket}/{key}"
+grails.riak.mapReduceUri = "http://localhost:8098/mapred"
+<div class="code"><pre><div class="error">code: null</div>
+
+    </body>
+</html>

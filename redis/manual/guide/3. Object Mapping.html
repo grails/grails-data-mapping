@@ -1,0 +1,18 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>3. Object Mapping</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    <h1><a name="3. Object Mapping">3. Object Mapping</a></h1>Object mapping works largely as described in the <a href="http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html" target="blank">documentation on GORM</a>. In general you can continue to model your associations using typical GORM notation such as <code>hasMany</code>, <code>belongsTo</code> and so on.<p class="paragraph"/>The one notable exception is that the <a href="http://grails.org/doc/latest/ref/Database%20Mapping/Usage.html" target="blank">mapping block</a> works differently to GORM for Hibernate. Most of the mapping configuration options available to GORM for Hibernate are specific to SQL databases and hence don't make sense to Redis.<p class="paragraph"/>Here is an example of a domain class that can be persisted to Redis:<p class="paragraph"/><div class="code"><pre>class Person &#123;<p class="paragraph"/>    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName<p class="paragraph"/>    <span class="java&#45;keyword">static</span> constraints = &#123;
+        firstName blank:<span class="java&#45;keyword">false</span>
+        lastName blank:<span class="java&#45;keyword">false</span>
+    &#125;<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
+        lastName index:<span class="java&#45;keyword">true</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Note that one key difference with GORM for Redis is that you <strong class="bold">must</strong> specify the properties you want to index before you can execute any query against the property. In the example above the <code>lastName</code> property can be queried with a dynamic finder such as:<p class="paragraph"/><div class="code"><pre>Person.findByLastName(<span class="java&#45;quote">"Simpson"</span>)</pre></div><p class="paragraph"/>However, the <code>firstName</code> property cannot be queried and an error will be thrown if you attempt the equivalent dynamic finder for the <code>firstName</code> property unless you specify <code>index:true</code> for that property too.<p class="paragraph"/>In other words, unlike SQL where every single property can be queried with Redis you must specify which properties can be queried up front.
+
+    </body>
+</html>

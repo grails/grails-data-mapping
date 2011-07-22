@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>3.2 Indexing Queries</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    Mongo doesn't require that you specify indices to query, but like a relational database without specifying indices your queries will be significantly slower.<p class="paragraph"/>With that in mind it is important to specify the properties you plan to query using the mapping block:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+  <span class="java&#45;object">String</span> name
+  <span class="java&#45;keyword">static</span> mapping = &#123;
+    name index:<span class="java&#45;keyword">true</span>
+  &#125;
+&#125;</pre></div><p class="paragraph"/>With the above mapping a Mongo index will be automatically created for you. You can customize the index options using the <code>indexAttributes</code> configuration parameter:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+  <span class="java&#45;object">String</span> name
+  <span class="java&#45;keyword">static</span> mapping = &#123;
+    name index:<span class="java&#45;keyword">true</span>, indexAttributes: &#91;unique:<span class="java&#45;keyword">true</span>, dropDups:<span class="java&#45;keyword">true</span>&#93;
+  &#125;
+&#125;</pre></div>
+
+    </body>
+</html>

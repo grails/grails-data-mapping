@@ -1,0 +1,10 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>2.2 Combining Mongo and Hibernate</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    If you have both the Hibernate and Mongo plugins installed then by default all classes in the <code>grails-app/domain</code> directory will be persisted by Hibernate and not Mongo. If you want to persist a particular domain class with Mongo then you must use the <code>mapWith</code> property in the domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"mongo"</span></pre></div><p class="paragraph"/>Alternatively you can persist Hibernate entities to Mongo using the special <code>mongo</code> scope added to all Hibernate entities:<p class="paragraph"/><div class="code"><pre>def hibernatePerson = Person.get(1)<p class="paragraph"/>hibernatePerson.mongo.save()<p class="paragraph"/>def mongoPerson = Person.mongo.get(1)</pre></div><p class="paragraph"/>
+    </body>
+</html>

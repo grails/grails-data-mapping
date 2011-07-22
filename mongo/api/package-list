@@ -1,0 +1,6 @@
+org.grails.datastore.gorm.mongo
+org.grails.datastore.gorm.mongo.bean.factory
+org.springframework.datastore.mapping.mongo
+org.springframework.datastore.mapping.mongo.config
+org.springframework.datastore.mapping.mongo.engine
+org.springframework.datastore.mapping.mongo.query

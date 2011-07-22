@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+        <title>5.1 RiakBuilder Support</title>
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
+    </head>
+    <body class="body">
+    Besides direct access to the Java-language template objects, the Riak plugin for Grails exposes a Groovy Builder object call RiakBuilder for use in your controllers and services. The builder uses a declarative, DSL-style syntax for working with Riak.<p class="paragraph"/>For example, to delete all entries in a bucket using the RiakBuilder DSL (which is a dynamic method the plugin adds to any controller or service class):<p class="paragraph"/><div class="code"><pre>riak &#123;
+  test &#123;
+    foreach &#123;
+      completed &#123; v, meta &#45;&#62; delete(key: meta.key) &#125;
+      failed &#123; it.printStackTrace() &#125;
+    &#125;
+  &#125;
+&#125;</pre></div>
+<ul class="star">
+<li>The top-level node should always be "riak".</li>
+<li>The next level is optional. In this case, it sets the default bucket name to "test", so it's not necessary to specify it on operations contained within this block.</li>
+<li>When an operation is complete, if a "completed" closure is defined, the builder will call that closure, passing the results of the operation as the first parameter and optionally passing the metadata associated with that entry as the second (this might be null, depending on the context in which the completed closure is called). If no parameters are defined, the result of the operation is still available as the implicit variable "it".</li>
+<li>To handle errors, a "failed" closure should be defined, which should accept the exception just generated (the exception is also available as "it").</li>
+</ul><p class="paragraph"/>See the Spring Data reference for more information on the methods available and on examples of using the <code>RiakBuilder</code> in your own code.
+    </body>
+</html>
