@@ -1,0 +1,19 @@
+dependencies {
+    compile project(":grails-datastore-gorm"),
+            project(":grails-datastore-simple"),
+            project(":grails-datastore-core")
+
+    compile "org.grails:grails-test:1.3.7"
+    compile "org.grails:grails-core:1.3.7"
+    compile("org.grails:grails-bootstrap:1.3.7") {
+        transitive = false
+    }
+
+    testCompile project(":grails-datastore-gorm-tck")
+    testRuntime "javax.servlet:servlet-api:2.5"
+    testRuntime "org.grails:grails-web:1.3.7"
+    testRuntime "log4j:log4j:1.2.16"
+    testRuntime "org.grails:grails-gorm:1.3.7"
+}
+
+jar.appendix = 'gorm-test'

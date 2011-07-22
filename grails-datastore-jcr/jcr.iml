@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/test/groovy" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/resources" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="core" />
+    <orderEntry type="library" name="Grails Libraries" level="project" />
+    <orderEntry type="library" name="JackRabbit" level="project" />
+    <orderEntry type="library" name="Java Persistence" level="project" />
+    <orderEntry type="library" name="JCR" level="project" />
+    <orderEntry type="library" name="JUnit" level="project" />
+    <orderEntry type="library" name="Spring Transaction" level="project" />
+    <orderEntry type="library" name="Spring Core" level="project" />
+    <orderEntry type="library" name="Spring Extension JCR" level="project" />
+    <orderEntry type="library" name="Groovy" level="project" />
+    <orderEntry type="library" name="Spring Beans" level="project" />
+    <orderEntry type="library" name="SLF4J" level="project" />
+    <orderEntry type="library" name="Spring Context" level="project" />
+    <orderEntry type="library" name="Spring Web" level="project" />
+    <orderEntry type="library" name="Servlet API" level="project" />
+    <orderEntry type="library" name="Spring Web MVC" level="project" />
+    <orderEntry type="library" name="JTA" level="project" />
+  </component>
+</module>
+

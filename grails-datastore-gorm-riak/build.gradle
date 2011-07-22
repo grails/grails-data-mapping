@@ -1,0 +1,33 @@
+configurations {
+    grails
+}
+
+dependencies {
+
+    grails("org.grails:grails-core:1.3.7")
+    grails("org.grails:grails-bootstrap:1.3.7") {
+        transitive = false
+    }
+
+    compile project(":grails-datastore-gorm"),
+            project(":grails-datastore-riak"),
+            project(":grails-datastore-core")
+
+    compile 'org.springframework.data:spring-data-riak:1.0.0.M2-SNAPSHOT'
+
+    testCompile project(":grails-datastore-gorm-test"),
+                project(":grails-datastore-gorm-tck")
+}
+
+jar.appendix = 'gorm-riak'
+
+configurations {
+    compile.exclude module: "org.slf4j"
+    testCompile.exclude module: "org.slf4j"
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.grails
+    }
+}

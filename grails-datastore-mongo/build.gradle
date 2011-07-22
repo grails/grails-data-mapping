@@ -1,0 +1,7 @@
+dependencies {
+    compile project(":grails-datastore-core")
+
+    compile("org.springframework.data:spring-data-mongodb:1.0.0.M3")
+}
+
+jar.appendix = 'mongo'

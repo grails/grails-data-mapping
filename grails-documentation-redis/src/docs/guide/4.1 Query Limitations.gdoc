@@ -1,0 +1,4 @@
+There are some limitations with queries in Redis that you should be aware of, after all Redis is not a relational database. Below are some of the known limitations:
+
+* Sorting can only be done on dates and numbers and not String values / complex types
+* Querying associations via nested criteria is not currently supported

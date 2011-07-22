@@ -1,0 +1,9 @@
+Redis is an advanced key-value store. It is similar to memcached except the dataset is not volatile. Like memcached, Redis can store string values, but it can also store lists, sets, and ordered sets. All these data types can be manipulated with atomic operations that push, pop, add and remove elements, perform server side union, intersection, difference between sets, and more. Redis also supports different kinds of sorting.
+
+This project aims to provide an object-mapping layer on top of Redis to ease common activities such as:
+
+* Marshalling from Redis strings to Groovy/Java types and back again
+* Creating and caching indices for querying
+* Working with transactions
+* Validating domain instances backed by the Redis datastore
+

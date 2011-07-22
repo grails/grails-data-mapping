@@ -1,0 +1,47 @@
+configurations {
+    documentation
+}
+
+dependencies {
+    documentation group: 'org.grails', name: 'grails-docs', version: '1.3.+'
+    documentation group: 'org.slf4j', name: 'slf4j-api', version: '1.6.+'
+    project(":grails-datastore-core")
+}
+
+if (Boolean.getBoolean("skip.javadoc")) {
+    task javadoc << {} // do nothing
+} else {
+    task javadoc(type: Javadoc) {
+        source groovyProjects().collect { project ->
+            if (project.name.endsWith("riak")) {
+                project.sourceSets.main.allJava
+            } else {
+                []
+            }
+        }
+        destinationDir = new File(file("$buildDir/docs"), 'api')
+        classpath = files(groovyProjects().collect { project ->
+            [project.sourceSets.main.compileClasspath, project.sourceSets.main.classes]
+        })
+        options.links("http://download.oracle.com/javase/6/docs/api/", "http://groovy.codehaus.org/gapi/")
+        doFirst {
+            title = "Datastore API $version"
+        }
+    }
+}
+
+task clean << {
+    ant.delete(dir:buildDir)
+}
+
+task assemble << {
+    group = "docs"
+    ant.taskdef (name: 'docs', classname : 'grails.doc.ant.DocPublisherTask') {
+        classpath {
+            configurations.documentation.resolve().each { f ->
+                pathelement(location:f)
+            }
+        }
+    }
+    ant.docs(src:"src/docs", dest:"build/docs", properties:"src/docs/doc.properties")
+}

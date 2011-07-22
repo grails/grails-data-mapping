@@ -1,0 +1,34 @@
+The Mongo plugin provides a Groovy mixin called [DatastoreUnitTestMixin|testing] for testing purposes. This mixin sets up a datastore implementation that operates against an in-memory @ConcurrentHashMap@. The datastore implementation that operates against an in-memory map is as complete as the one for Mongo and provides support for:
+
+* Simple persistence methods
+* Dynamic finders
+* Criteria
+* Named queries
+* Inheritance
+
+You can easily write tests that use the mixin using Groovy's @Mixin@ annotation on any existing unit test:
+
+{code}
+import grails.datastore.test.DatastoreUnitTestMixin
+
+@Mixin(DatastoreUnitTestMixin)
+class PersonTests extends GroovyTestCase {
+    void testPersist() {
+        mockDomain(Person)
+        def s = new Person(name:"Bob")
+        s.save()
+
+        assert s.id != null
+
+        s = Person.get(s.id)
+
+        assert s != null
+    }
+
+    void tearDown() {
+        disconnect()
+    }
+}
+{code}
+
+You should call the @mockDomain()@ method to mock a domain instance and then the remainder of the API is the same. Note that you should call @disconnect()@ in @tearDown()@ otherwise your tests will share data.

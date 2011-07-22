@@ -1,0 +1,20 @@
+repositories {
+    mavenRepo urls:'http://eaio.com/maven2'
+}
+
+dependencies {
+    compile project(":grails-datastore-core")
+    compile 'com.eaio.uuid:uuid:3.2'
+    compile 'me.prettyprint:hector:0.6.0-15'
+    compile 'org.apache.cassandra:cassandra:0.6.0'
+    compile 'org.apache.cassandra:cassandra-javautils:1.0.0'
+    compile 'libthrift:libthrift:917130'
+
+    runtime 'org.perf4j:perf4j:0.9.12'
+    runtime 'org.cliffc.high_scale_lib:high-scale-lib:1.0.0'
+    runtime 'com.reardencommerce:clhm-production:1.0.0'
+    runtime 'commons-collections:commons-collections:3.2'
+    runtime 'commons-lang:commons-lang:2.4'
+}
+
+jar.appendix = 'cassandra'

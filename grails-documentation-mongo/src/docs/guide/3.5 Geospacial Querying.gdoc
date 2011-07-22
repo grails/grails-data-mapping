@@ -1,0 +1,76 @@
+It is possible to use Mongo's [Geospacial querying|http://www.mongodb.org/display/DOCS/Geospatial+Indexing] capability by mapping a list or map property using the @geoIndex@ mapping:
+
+{code}
+class Hotel {
+    String name
+    List location
+
+    static mapping = {
+        location geoIndex:true
+    }
+}
+{code}
+
+By default the index creation assumes latitude/longitude and thus is configured for a -180..180 range. If you are indexing something else you can customise this with @indexAttributes@
+
+{code}
+class Hotel {
+    String name
+    List location
+
+    static mapping = {
+        location geoIndex:true, indexAttributes:[min:-500, max:500]
+    }
+}
+
+{code}
+
+You can then save Geo locations using a two dimensional list:
+
+{code}
+new Hotel(name:"Hilton", location:[50, 50]).save()
+{code}
+
+Alternatively you can use a map with keys representing latitude and longitude:
+
+{code}
+new Hotel(name:"Hilton", location:[lat: 40.739037, long: 73.992964]).save()
+{code}
+
+Once you have your data indexed you can use Mongo specific dynamic finders to find hotels near a given a location:
+
+{code}
+def h = Hotel.findByLocationNear([50, 60])
+assert h.name == 'Hilton'
+{code}
+
+You can also find a location within a box (bound queries). Boxes are defined by specifying the lower-left and upper-right corners:
+
+{code}
+def box = [[40.73083, -73.99756], [40.741404,  -73.988135]]
+def h = Hotel.findByLocationWithinBox(box)
+{code}
+
+You can also find a location within a circle. Circles are specified using a center and radius:
+
+{code}
+def center = [50, 50]
+def radius = 10
+def h = Hotel.findByLocationWithinCircle([center, radius])
+{code}
+
+If you plan on querying a location and some other value it is recommended to use a compound index:
+
+{code}
+class Hotel {
+    String name
+    List location
+    int stars
+
+    static mapping = {
+        compoundIndex location:"2d", stars:1
+    }
+}
+{code}
+
+In the example above you an index is created for both the location and the number of stars a @Hotel@ has.

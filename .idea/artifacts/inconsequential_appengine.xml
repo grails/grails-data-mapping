@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="inconsequential-appengine">
+    <output-path>$PROJECT_DIR$/out/artifacts/inconsequential-appengine</output-path>
+    <root id="archive" name="inconsequential-appengine.jar">
+      <element id="module-output" name="appengine" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,11 @@
+One of the important features of Riak is that, by default, Riak promises to be ["eventually consistent" rather than synchronously up-to-date|http://blog.basho.com/category/eventual-consistency/]. This means that when an update to data in Riak is issued, the update method might return before the data has been fully written to disk. This increases performance of writes but means operations that depend on just-inserted data being available (for queries, for example) need to be careful about when they are run.
+
+If you want a @save()@ call to be guaranteed to have persisted the object to disk before returning to your application, then you need to pass a QOS (Quality of Service) parameter to the entity's @save@ method. You use the same names for the parameters as you would if you were specifying them on an HTTP URL: @w@ for write, @dw@ for durable write, and @r@ for read.
+
+For example, to ensure that an object has been completely flushed to disk before returning, use the "durable write" parameter:
+
+{code}
+def p = new Person(firstName: "Bob")
+p.save([dw: "all"])
+{code}
+
