@@ -80,12 +80,13 @@ class GormEnhancerSpec extends GormDatastoreSpec {
     void "Test getAll() method"() {
         given:
             def age = 40
+            def ids = []
             ["Bob", "Fred", "Barney"].each {
-                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+                ids.add(new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save().id)
             }
 
         when:
-            def results = TestEntity.getAll(1,2)
+            def results = TestEntity.getAll(ids[0],ids[1])
 
         then:
             2 == results.size()
