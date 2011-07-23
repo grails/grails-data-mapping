@@ -23,11 +23,12 @@ import org.grails.datastore.mapping.core.impl.PendingUpdate;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
 /**
- * Methods for the implementation of the {@link Session} interface to implement
+ * Methods for the implementation of the {@link Session} interface to implement.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public interface SessionImplementor<T> {
 
     void addPendingInsert(PendingInsert insert);

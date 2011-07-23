@@ -25,11 +25,12 @@ import org.grails.datastore.mapping.model.MappingContext;
 
 /**
  * A simple implementation of the {@link org.grails.datastore.mapping.core.Datastore} interface that backs onto an in-memory map.
- * Mainly used for mocking and testing scenarios
+ * Mainly used for mocking and testing scenarios.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public class SimpleMapDatastore extends AbstractDatastore {
     private Map<String, Map> datastore = new ConcurrentHashMap<String, Map>();
     private Map indices = new ConcurrentHashMap();

@@ -51,7 +51,7 @@ public class CountByFinder extends DynamicFinder implements QueryBuildingFinder 
     }
 
     public Query buildQuery(DynamicFinderInvocation invocation, Session session) {
-        final Class clazz = invocation.getJavaClass();
+        final Class<?> clazz = invocation.getJavaClass();
         Query q = session.createQuery(clazz);
         applyAdditionalCriteria(q, invocation.getCriteria());
         configureQueryWithArguments(clazz, q, invocation.getArguments());

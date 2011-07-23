@@ -43,7 +43,7 @@ public class GormKeyValueMappingFactory extends AbstractGormMappingFactory<Famil
     }
 
     @Override
-    public KeyValue createMappedForm(PersistentProperty mpp) {
+    public KeyValue createMappedForm(@SuppressWarnings("rawtypes") PersistentProperty mpp) {
         KeyValue kv = super.createMappedForm(mpp);
         if (kv.getKey() == null) {
             kv.setKey(mpp.getName());

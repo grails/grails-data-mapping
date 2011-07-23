@@ -17,6 +17,7 @@ package org.grails.datastore.gorm.finders;
 /**
  * Implementation of dynamic finders.
  */
+@SuppressWarnings("rawtypes")
 public interface FinderMethod {
 
     /**

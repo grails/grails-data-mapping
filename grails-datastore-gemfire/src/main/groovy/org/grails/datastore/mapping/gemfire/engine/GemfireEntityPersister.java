@@ -69,6 +69,7 @@ import com.gemstone.gemfire.internal.cache.PartitionedRegion;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class GemfireEntityPersister extends LockableEntityPersister {
     private GemfireDatastore gemfireDatastore;
     private Map<Object, Lock> distributedLocksHeld = new ConcurrentHashMap<Object, Lock>();

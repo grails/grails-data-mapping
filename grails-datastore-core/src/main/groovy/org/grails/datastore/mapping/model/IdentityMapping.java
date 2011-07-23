@@ -18,7 +18,8 @@ package org.grails.datastore.mapping.model;
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface IdentityMapping extends PropertyMapping{
+@SuppressWarnings("rawtypes")
+public interface IdentityMapping extends PropertyMapping {
 
     /**
      * The identifier property name(s) as an array. Usually there is just one identifier

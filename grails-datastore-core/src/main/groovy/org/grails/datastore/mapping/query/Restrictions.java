@@ -57,7 +57,7 @@ public class Restrictions {
      * @param values The values
      * @return An instance of Query.In
      */
-    public static Query.In in(String property, Collection values) {
+    public static Query.In in(String property, Collection<?> values) {
         return new Query.In(property, values);
     }
 

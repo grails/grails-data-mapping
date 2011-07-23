@@ -113,7 +113,7 @@ public abstract class MethodExpression {
 
         @Override
         public Query.Criterion createCriterion() {
-            return Restrictions.in(propertyName, (Collection) arguments[0]);
+            return Restrictions.in(propertyName, (Collection<?>) arguments[0]);
         }
 
         @Override

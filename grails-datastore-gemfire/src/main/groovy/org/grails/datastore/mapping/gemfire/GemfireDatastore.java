@@ -52,11 +52,12 @@ import com.gemstone.gemfire.cache.query.QueryService;
 
 /**
  * Implementation of the {@link org.grails.datastore.mapping.core.Datastore} interface
- * that maps entities into Gemfire regions
+ * that maps entities into Gemfire regions.
  *
  * @since 1.0
  * @author Graeme Rocher
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class GemfireDatastore extends AbstractDatastore implements InitializingBean, DisposableBean, MappingContext.Listener {
 
     protected Cache gemfireCache;

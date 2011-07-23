@@ -25,11 +25,12 @@ import org.grails.datastore.mapping.model.MappingFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
 /**
- * A MappingContext that adapts the Grails domain model to the Mapping API
+ * A MappingContext that adapts the Grails domain model to the Mapping API.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public class GrailsDomainClassMappingContext extends AbstractMappingContext {
 
     private GrailsApplication grailsApplication;

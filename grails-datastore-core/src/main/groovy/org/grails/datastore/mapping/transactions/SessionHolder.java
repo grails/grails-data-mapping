@@ -29,17 +29,17 @@ import org.springframework.transaction.support.ResourceHolderSupport;
 public class SessionHolder extends ResourceHolderSupport {
 
     private Deque<Session> sessions = new LinkedBlockingDeque<Session>();
-    private Transaction transaction;
+    private Transaction<?> transaction;
 
     public SessionHolder(Session session) {
         sessions.add(session);
     }
 
-    public Transaction getTransaction() {
+    public Transaction<?> getTransaction() {
         return transaction;
     }
 
-    public void setTransaction(Transaction transaction) {
+    public void setTransaction(Transaction<?> transaction) {
         this.transaction = transaction;
     }
 

@@ -31,7 +31,7 @@ public abstract class Simple<T> extends AbstractPersistentProperty {
         super(owner, context, descriptor);
     }
 
-    public Simple(PersistentEntity owner, MappingContext context, String name, Class type) {
+    public Simple(PersistentEntity owner, MappingContext context, String name, @SuppressWarnings("rawtypes") Class type) {
         super(owner, context, name, type);
     }
 }

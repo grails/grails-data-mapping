@@ -25,11 +25,13 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 
 /**
- * MappingFactory for JPA that maps entities to {@link Table} instances and properties to {@link Column} instances
+ * MappingFactory for JPA that maps entities to {@link Table} instances and properties
+ * to {@link Column} instances.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class JpaMappingFactory extends MappingFactory<Table, Column> {
 
     @Override

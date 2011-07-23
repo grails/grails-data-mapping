@@ -45,6 +45,7 @@ public class ListOrderByFinder extends AbstractFinder {
         this.pattern = Pattern.compile(pattern);
     }
 
+    @SuppressWarnings("rawtypes")
     public Object invoke(final Class clazz, final String methodName, final Object[] arguments) {
 
         Matcher match = pattern.matcher(methodName);

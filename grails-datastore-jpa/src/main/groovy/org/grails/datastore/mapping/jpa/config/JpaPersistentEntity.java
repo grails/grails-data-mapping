@@ -20,14 +20,14 @@ import org.grails.datastore.mapping.model.AbstractPersistentEntity;
 import org.grails.datastore.mapping.model.MappingContext;
 
 /**
- * Models a JPA-mapped entity
+ * Models a JPA-mapped entity.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
 public class JpaPersistentEntity extends AbstractPersistentEntity<Table> {
 
-    public JpaPersistentEntity(Class javaClass, MappingContext context) {
+    public JpaPersistentEntity(@SuppressWarnings("rawtypes") Class javaClass, MappingContext context) {
         super(javaClass, context);
     }
 }

@@ -13,6 +13,7 @@ import java.util.Set;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public interface MappingConfigurationStrategy {
 
     /**

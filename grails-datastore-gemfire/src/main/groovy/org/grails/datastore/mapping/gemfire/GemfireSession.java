@@ -32,6 +32,7 @@ import com.gemstone.gemfire.cache.CacheTransactionManager;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public class GemfireSession extends AbstractSession<Cache> {
     public GemfireSession(GemfireDatastore datastore, MappingContext mappingContext,
                ApplicationEventPublisher publisher) {

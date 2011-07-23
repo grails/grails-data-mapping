@@ -66,6 +66,7 @@ public interface RedisTemplate<T, S> {
 
     Object execute(RedisCallback<T> callback);
 
+    @SuppressWarnings("rawtypes")
     SortParams sortParams();
 
     void save();

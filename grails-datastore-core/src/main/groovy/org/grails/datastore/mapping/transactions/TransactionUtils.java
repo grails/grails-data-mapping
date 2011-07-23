@@ -31,15 +31,15 @@ public class TransactionUtils {
         return getTransaction(datastore) != null;
     }
 
-    public static Transaction currentTransaction(Datastore datastore) {
-        final Transaction transaction = getTransaction(datastore);
+    public static Transaction<?> currentTransaction(Datastore datastore) {
+        final Transaction<?> transaction = getTransaction(datastore);
         if (transaction == null) {
             throw new NoTransactionException("No transaction started.");
         }
         return transaction;
     }
 
-    public static Transaction getTransaction(Datastore datastore) {
+    public static Transaction<?> getTransaction(Datastore datastore) {
         final SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(datastore);
         return sessionHolder == null ? null : sessionHolder.getTransaction();
     }

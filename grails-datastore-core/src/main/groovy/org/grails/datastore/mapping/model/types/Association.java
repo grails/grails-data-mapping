@@ -34,6 +34,7 @@ import org.grails.datastore.mapping.model.PersistentProperty;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public abstract class Association<T> extends AbstractPersistentProperty {
 
     public static final List<CascadeType> DEFAULT_OWNER_CASCADE = Arrays.asList(CascadeType.ALL);

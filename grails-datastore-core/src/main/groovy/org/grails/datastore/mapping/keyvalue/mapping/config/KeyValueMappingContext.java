@@ -84,7 +84,7 @@ public class KeyValueMappingContext extends AbstractMappingContext {
     }
 
     @Override
-    protected PersistentEntity createPersistentEntity(Class javaClass) {
+    protected PersistentEntity createPersistentEntity(@SuppressWarnings("rawtypes") Class javaClass) {
         return new KeyValuePersistentEntity(javaClass, this);
     }
 }

@@ -29,7 +29,8 @@ import org.springframework.util.ReflectionUtils;
  * @author Graeme Rocher
  * @since 1.1
  */
-public class AnnotationKeyValueMappingFactory extends KeyValueMappingFactory{
+@SuppressWarnings("rawtypes")
+public class AnnotationKeyValueMappingFactory extends KeyValueMappingFactory {
     public AnnotationKeyValueMappingFactory(String keyspace) {
         super(keyspace);
     }

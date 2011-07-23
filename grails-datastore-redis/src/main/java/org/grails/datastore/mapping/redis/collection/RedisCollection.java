@@ -21,6 +21,7 @@ import java.util.Set;
 /**
  * Commons interface for Redis collections.
  */
+@SuppressWarnings("rawtypes")
 public interface RedisCollection extends Collection {
 
     /**

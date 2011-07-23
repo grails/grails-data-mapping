@@ -26,6 +26,7 @@ import org.springframework.transaction.UnexpectedRollbackException;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public class RedisTransaction implements Transaction<RedisTemplate> {
     private RedisTemplate redisTemplate;
     private boolean rollbackCalled;

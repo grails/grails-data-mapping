@@ -27,6 +27,7 @@ import org.grails.datastore.mapping.query.Query.Criterion;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public class AssociationQuery extends Query implements Criterion {
 
     private Association<?> association;

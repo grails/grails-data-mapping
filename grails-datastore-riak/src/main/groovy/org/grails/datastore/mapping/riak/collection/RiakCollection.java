@@ -22,6 +22,7 @@ import java.util.Collection;
 /**
  * @author J. Brisbin <jon@jbrisbin.com>
  */
+@SuppressWarnings("rawtypes")
 public interface RiakCollection<T> extends Collection {
     String getBucket();
 }

@@ -26,6 +26,7 @@ import org.springframework.data.keyvalue.riak.core.RiakTemplate;
 /**
  * @author J. Brisbin <jon@jbrisbin.com>
  */
+@SuppressWarnings("rawtypes")
 public abstract class AbstractRiakCollection<T> implements Collection, RiakCollection {
 
     protected RiakTemplate riakTemplate;

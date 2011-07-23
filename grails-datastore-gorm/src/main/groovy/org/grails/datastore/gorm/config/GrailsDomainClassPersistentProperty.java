@@ -22,12 +22,13 @@ import org.grails.datastore.mapping.model.PropertyMapping;
 import org.grails.datastore.mapping.reflect.NameUtils;
 
 /**
- * Bridges a {@link GrailsDomainClassProperty} to the {@link PersistentProperty} interface
+ * Bridges a {@link GrailsDomainClassProperty} to the {@link PersistentProperty} interface.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-public class GrailsDomainClassPersistentProperty implements PersistentProperty{
+@SuppressWarnings("rawtypes")
+public class GrailsDomainClassPersistentProperty implements PersistentProperty {
 
     private PersistentEntity owner;
     private GrailsDomainClassProperty property;

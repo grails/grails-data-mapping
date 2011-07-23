@@ -32,6 +32,7 @@ public interface Persister {
      *
      * @return The class this persisters persists
      */
+    @SuppressWarnings("rawtypes")
     Class getType();
 
     /**
@@ -49,7 +50,7 @@ public interface Persister {
      * @param objs The objects
      * @return A list of keys
      */
-    List<Serializable> persist(Iterable objs);
+    List<Serializable> persist(@SuppressWarnings("rawtypes") Iterable objs);
 
     /**
      * Retrieves an object for the given context and Key
@@ -72,7 +73,7 @@ public interface Persister {
      * Deletes one or many objects
      * @param objects The objects to delete. Must all be of the same type or an exception will be thrown.
      */
-    void delete(Iterable objects);
+    void delete(@SuppressWarnings("rawtypes") Iterable objects);
 
     /**
      * Batch retrieve several objects in one go

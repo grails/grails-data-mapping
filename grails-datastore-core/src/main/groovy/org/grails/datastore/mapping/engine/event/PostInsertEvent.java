@@ -23,6 +23,8 @@ import org.grails.datastore.mapping.model.PersistentEntity;
  */
 public class PostInsertEvent extends AbstractPersistenceEvent {
 
+    private static final long serialVersionUID = 1L;
+
     public PostInsertEvent(final Datastore source, final PersistentEntity entity,
             final EntityAccess entityAccess) {
         super(source, entity, entityAccess);

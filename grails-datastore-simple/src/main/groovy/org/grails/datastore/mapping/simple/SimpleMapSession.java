@@ -31,6 +31,7 @@ import org.grails.datastore.mapping.transactions.Transaction;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public class SimpleMapSession extends AbstractSession<Map> {
     private Map<String, Map> datastore;
 

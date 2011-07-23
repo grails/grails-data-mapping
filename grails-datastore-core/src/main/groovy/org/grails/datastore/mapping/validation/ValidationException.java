@@ -23,6 +23,9 @@ import org.springframework.validation.ObjectError;
  * Exception thrown when a validation error occurs
  */
 public class ValidationException extends DataIntegrityViolationException {
+
+    private static final long serialVersionUID = 1;
+
     private String fullMessage;
 
     public ValidationException(String msg, Errors errors) {

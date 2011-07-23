@@ -4,6 +4,7 @@ import org.grails.datastore.mapping.transactions.Transaction;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
+@SuppressWarnings("rawtypes")
 public class JpaTransaction implements Transaction {
 
     private TransactionStatus transaction;

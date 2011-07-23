@@ -50,11 +50,12 @@ import org.grails.datastore.mapping.redis.util.RedisTemplate;
 import redis.clients.jedis.exceptions.JedisDataException;
 
 /**
- * An {@link org.grails.datastore.mapping.engine.EntityPersister} for the Redis NoSQL datastore
+ * An {@link org.grails.datastore.mapping.engine.EntityPersister} for the Redis NoSQL datastore.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RedisEntityPersister extends AbstractKeyValueEntityPersister<Map, Long> {
     public static final String UTF_8 = "UTF-8";
     private RedisTemplate redisTemplate;

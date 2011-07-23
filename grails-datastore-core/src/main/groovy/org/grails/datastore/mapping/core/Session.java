@@ -32,6 +32,7 @@ import org.grails.datastore.mapping.transactions.Transaction;
  *
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public interface Session {
 
     /**

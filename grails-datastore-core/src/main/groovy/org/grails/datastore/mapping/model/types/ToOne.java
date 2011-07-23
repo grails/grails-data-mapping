@@ -31,7 +31,7 @@ public abstract class ToOne<T> extends Association<T> {
         super(owner, context, descriptor);
     }
 
-    public ToOne(PersistentEntity owner, MappingContext context, String name, Class type) {
+    public ToOne(PersistentEntity owner, MappingContext context, String name, @SuppressWarnings("rawtypes") Class type) {
         super(owner, context, name, type);
     }
 

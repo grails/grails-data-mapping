@@ -48,6 +48,7 @@ import org.springframework.transaction.CannotCreateTransactionException;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RedisSession extends AbstractSession<RedisTemplate> {
 
     private RedisTemplate redisTemplate;
@@ -58,7 +59,6 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
         redisTemplate = template;
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     protected void flushPendingInserts(final Map<PersistentEntity, Collection<PendingInsert>> inserts) {
         // Optimizes saving multiple entities at once
@@ -96,7 +96,6 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     protected void flushPendingUpdates(Map<PersistentEntity, Collection<PendingUpdate>> updates) {
         // Optimizes saving multiple entities at once
@@ -158,7 +157,6 @@ public class RedisSession extends AbstractSession<RedisTemplate> {
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
     protected Transaction<RedisTemplate> beginTransactionInternal() {
         try {
             redisTemplate.multi();

@@ -21,8 +21,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * A Java set implementation that backs onto a Redis set
+ * A Java set implementation that backs onto a Redis set.
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RedisSet extends AbstractRedisCollection implements Set {
 
     public RedisSet(RedisTemplate redisTemplate, String redisKey) {

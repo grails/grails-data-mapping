@@ -22,6 +22,8 @@ package org.grails.datastore.mapping.model;
  */
 public class DatastoreConfigurationException extends RuntimeException{
 
+    private static final long serialVersionUID = 1;
+
     public DatastoreConfigurationException(String message) {
         super(message);
     }

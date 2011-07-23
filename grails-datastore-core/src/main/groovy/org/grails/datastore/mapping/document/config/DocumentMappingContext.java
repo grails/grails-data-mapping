@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
  *
  * @author Graeme Rocher
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class DocumentMappingContext extends AbstractMappingContext {
     String defaultDatabaseName;
     MappingFactory<Collection, Attribute> mappingFactory;

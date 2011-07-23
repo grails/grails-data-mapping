@@ -33,7 +33,7 @@ public abstract class ManyToMany<T> extends Association<T> {
         super(owner, context, descriptor);
     }
 
-    public ManyToMany(PersistentEntity owner, MappingContext context, String name, Class type) {
+    public ManyToMany(PersistentEntity owner, MappingContext context, String name, @SuppressWarnings("rawtypes") Class type) {
         super(owner, context, name, type);
     }
 

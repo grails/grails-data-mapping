@@ -22,6 +22,8 @@ package org.grails.datastore.mapping.reflect;
  */
 public class InstantiationException extends RuntimeException {
 
+    private static final long serialVersionUID = 1;
+
     public InstantiationException(String s, Throwable throwable) {
         super(s, throwable);
     }

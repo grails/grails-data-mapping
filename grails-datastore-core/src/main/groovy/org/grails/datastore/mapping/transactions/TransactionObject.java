@@ -31,11 +31,11 @@ public class TransactionObject {
         return sessionHolder;
     }
 
-    public Transaction getTransaction() {
+    public Transaction<?> getTransaction() {
         return getSessionHolder().getTransaction();
     }
 
-    public void setTransaction(Transaction transaction) {
+    public void setTransaction(Transaction<?> transaction) {
         getSessionHolder().setTransaction(transaction);
     }
 

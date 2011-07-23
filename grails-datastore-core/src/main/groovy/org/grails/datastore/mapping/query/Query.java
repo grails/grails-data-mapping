@@ -41,7 +41,7 @@ import org.springframework.util.Assert;
  * @author Graeme Rocher
  * @since 1.0
  */
-@SuppressWarnings("hiding")
+@SuppressWarnings({"hiding", "rawtypes", "unchecked"})
 public abstract class Query {
 
     protected PersistentEntity entity;

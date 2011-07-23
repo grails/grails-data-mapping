@@ -13,6 +13,7 @@ public interface PropertyMapping<T> {
      *
      * @return The ClassMapping instance
      */
+    @SuppressWarnings("rawtypes")
     ClassMapping getClassMapping();
 
     /**

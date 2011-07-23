@@ -22,7 +22,7 @@ public interface PersistentProperty<T> {
      * The type of the property
      * @return The property type
      */
-    Class getType();
+    Class<?> getType();
 
     /**
     * Specifies the mapping between this property and an external form

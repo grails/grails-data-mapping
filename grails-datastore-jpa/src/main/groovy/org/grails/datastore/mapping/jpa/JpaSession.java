@@ -42,11 +42,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 /**
- * Wraps a JPA EntityManager in the Datastore Session interface
+ * Wraps a JPA EntityManager in the Datastore Session interface.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class JpaSession extends AbstractAttributeStoringSession {
 
     private JpaDatastore datastore;

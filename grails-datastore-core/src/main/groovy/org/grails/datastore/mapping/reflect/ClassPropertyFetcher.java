@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public class ClassPropertyFetcher {
     private static final Logger LOG = LoggerFactory.getLogger(ClassPropertyFetcher.class);
 
@@ -237,6 +238,7 @@ public class ClassPropertyFetcher {
         return returnOnlyIfInstanceOf(getPropertyValue(name, false), c);
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T returnOnlyIfInstanceOf(Object value, Class<T> type) {
         if (value != null && (type == Object.class || ReflectionUtils.isAssignableFrom(type, value.getClass()))) {
             return (T)value;
@@ -274,6 +276,7 @@ public class ClassPropertyFetcher {
         return propertyDescriptorList;
     }
 
+    @SuppressWarnings("unchecked")
     public List<PropertyDescriptor> getPropertiesAssignableToType(Class assignableType) {
         List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
         for (Class type : typeToPropertyMap.keySet()) {
@@ -284,6 +287,7 @@ public class ClassPropertyFetcher {
         return properties;
     }
 
+    @SuppressWarnings("unchecked")
     public List<PropertyDescriptor> getPropertiesAssignableFromType(Class assignableType) {
         List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
         for (Class type : typeToPropertyMap.keySet()) {

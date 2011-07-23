@@ -35,6 +35,7 @@ import org.springframework.beans.BeanUtils;
 public class ReflectionUtils {
 
     public static final Map<Class<?>, Class<?>> PRIMITIVE_TYPE_COMPATIBLE_CLASSES = new HashMap<Class<?>, Class<?>>();
+    @SuppressWarnings("rawtypes")
     private static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
 
     /**
@@ -144,6 +145,7 @@ public class ReflectionUtils {
      * @param clazz The class
      * @return The instantiated object or null if the class parameter was null
      */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static Object instantiate(Class clazz) {
         if (clazz == null) return null;
         try {

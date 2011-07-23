@@ -35,6 +35,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class EntityAccess {
 
     private static final Set EXCLUDED_PROPERTIES = new HashSet(Arrays.asList("class", "metaClass"));

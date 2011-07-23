@@ -38,6 +38,7 @@ import org.springframework.validation.Validator;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public interface MappingContext {
 
     /**

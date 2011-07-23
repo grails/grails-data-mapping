@@ -29,6 +29,7 @@ import java.util.List;
 /**
  * @author J. Brisbin <jon@jbrisbin.com>
  */
+@SuppressWarnings("rawtypes")
 public class RiakPropertyValueIndexer implements PropertyValueIndexer<Long> {
 
     @SuppressWarnings("unused")
@@ -40,7 +41,8 @@ public class RiakPropertyValueIndexer implements PropertyValueIndexer<Long> {
     @SuppressWarnings("unused")
     private PersistentProperty property;
 
-    public RiakPropertyValueIndexer(RiakTemplate riakTemplate, MappingContext mappingContext, RiakEntityPersister riakEntityPersister, PersistentProperty property) {
+    public RiakPropertyValueIndexer(RiakTemplate riakTemplate, MappingContext mappingContext,
+            RiakEntityPersister riakEntityPersister, PersistentProperty property) {
         this.riakTemplate = riakTemplate;
         this.mappingContext = mappingContext;
         this.riakEntityPersister = riakEntityPersister;

@@ -31,7 +31,7 @@ public abstract class AbstractFindByFinder extends DynamicFinder {
     protected Object invokeQuery(Query q) {
         q.max(1);
 
-        List results = q.list();
+        List<?> results = q.list();
         if (results.isEmpty()) {
             return null;
         }
@@ -44,7 +44,7 @@ public abstract class AbstractFindByFinder extends DynamicFinder {
     }
 
     public Query buildQuery(DynamicFinderInvocation invocation, Session session) {
-        final Class clazz = invocation.getJavaClass();
+        final Class<?> clazz = invocation.getJavaClass();
         Query q = session.createQuery(clazz);
         applyAdditionalCriteria(q, invocation.getCriteria());
         configureQueryWithArguments(clazz, q, invocation.getArguments());
@@ -70,5 +70,4 @@ public abstract class AbstractFindByFinder extends DynamicFinder {
         }
         return q;
     }
-
 }

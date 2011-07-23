@@ -22,6 +22,7 @@ import java.util.List;
  *
  * @author Graeme Rocher
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class PendingOperationExecution {
 
     public static void executePendingOperation(PendingOperation pendingOperation) {

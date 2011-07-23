@@ -25,6 +25,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 /**
  * @author Burt Beckwith
  */
+@SuppressWarnings("serial")
 public abstract class AbstractPersistenceEvent extends ApplicationEvent {
 
     private final PersistentEntity entity;

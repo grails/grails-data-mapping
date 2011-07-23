@@ -23,6 +23,7 @@ import java.util.List;
  *
  * @author Graeme Rocher
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class SortParams<T> {
 
     List<T> paramList = new ArrayList<T>();

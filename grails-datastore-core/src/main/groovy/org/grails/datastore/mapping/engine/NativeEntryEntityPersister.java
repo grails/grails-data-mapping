@@ -68,6 +68,7 @@ import org.grails.datastore.mapping.proxy.ProxyFactory;
  * @author Graeme Rocher
  * @since  1.0
  */
+@SuppressWarnings({"unused", "rawtypes", "unchecked"})
 public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPersister {
     protected ClassMapping classMapping;
 
@@ -284,7 +285,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      * @param id The identifer
      * @param timeout The lock timeout in seconds
      */
-    @SuppressWarnings("unused")
     protected void lockEntry(PersistentEntity persistentEntity, String entityFamily, Serializable id, int timeout) {
         // do nothing,
     }
@@ -311,7 +311,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      * @param entityFamily The entity family
      * @param id The identifer
      */
-    @SuppressWarnings("unused")
     protected void unlockEntry(PersistentEntity persistentEntity, String entityFamily, Serializable id) {
         // do nothing
     }
@@ -510,7 +509,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         return null;
     }
 
-    @SuppressWarnings("unused")
     protected void loadEmbeddedCollection(EmbeddedCollection embeddedCollection, EntityAccess ea,
             Object embeddedInstances, String key) {
         // no support by default for embedded collections
@@ -523,7 +521,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      * @param key The key
      * @return The native entry of the embedded instance
      */
-    @SuppressWarnings("unused")
     protected T getEmbedded(T nativeEntry, String key) {
         return null;
     }
@@ -546,7 +543,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      * @param nativeEntry The native entry
      * @return The discriminated entity
      */
-    @SuppressWarnings("unused")
     protected PersistentEntity discriminatePersistentEntity(PersistentEntity persistentEntity, T nativeEntry) {
         return persistentEntity;
     }
@@ -560,7 +556,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         return kv.getFetchStrategy() == FetchType.LAZY;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     protected final Serializable persistEntity(final PersistentEntity persistentEntity, Object obj) {
         T tmp = null;
@@ -831,7 +826,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      * @param key The key
      * @param embeddedEntry The embedded object
      */
-    @SuppressWarnings("unused")
     protected void setEmbedded(T nativeEntry, String key, T embeddedEntry) {
         // do nothing. The default is no support for embedded instances
     }
@@ -844,7 +838,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      * @param instances the embedded instances
      * @param embeddedEntries the native entries
      */
-    @SuppressWarnings("unused")
     protected void setEmbeddedCollection(T nativeEntry, String key, Collection<?> instances, List<T> embeddedEntries) {
         // do nothing. The default is no support for embedded collections
     }
@@ -915,7 +908,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      * @param cm
      * @return The object identifier
      */
-    @SuppressWarnings("unused")
     protected K readObjectIdentifier(EntityAccess entityAccess, ClassMapping cm) {
         return (K) entityAccess.getIdentifier();
     }
@@ -986,7 +978,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      * @param identifier The identifier specified by the object
      * @return The native key which may just be a cast from the identifier parameter to K
      */
-    @SuppressWarnings("unused")
     protected Object inferNativeKey(String family, Object identifier) {
         return identifier;
     }

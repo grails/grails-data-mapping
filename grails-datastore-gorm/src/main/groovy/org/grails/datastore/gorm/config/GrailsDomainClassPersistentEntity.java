@@ -40,7 +40,7 @@ import org.grails.datastore.mapping.model.types.OneToOne;
  * @author Graeme Rocher
  * @since 1.0
  */
-@SuppressWarnings("hiding")
+@SuppressWarnings({"hiding", "rawtypes"})
 public class GrailsDomainClassPersistentEntity implements PersistentEntity {
 
     private GrailsDomainClass domainClass;

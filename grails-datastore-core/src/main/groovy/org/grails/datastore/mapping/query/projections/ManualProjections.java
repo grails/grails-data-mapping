@@ -28,6 +28,7 @@ import org.grails.datastore.mapping.query.order.ManualEntityOrdering;
  * NoSQL datastores support projections like SQL min(..), max(..) etc.
  * This class provides support for those that don't.
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ManualProjections {
 
     PersistentEntity entity;

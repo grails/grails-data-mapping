@@ -24,6 +24,7 @@ import java.util.List;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public class DynamicFinderInvocation {
 
     private Class javaClass;

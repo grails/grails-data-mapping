@@ -51,6 +51,7 @@ public class DomainEventListener extends AbstractPersistenceEventListener
 
     private Map<PersistentEntity, Map<String, Method>> entityEvents = new ConcurrentHashMap<PersistentEntity, Map<String, Method>>();
 
+    @SuppressWarnings("rawtypes")
     public static final Class[] ZERO_PARAMS = {};
     public static final String EVENT_BEFORE_INSERT  = "beforeInsert";
     private static final String EVENT_BEFORE_UPDATE = "beforeUpdate";
@@ -200,7 +201,7 @@ public class DomainEventListener extends AbstractPersistenceEventListener
     }
 
     private void createEventCaches(PersistentEntity entity) {
-        Class javaClass = entity.getJavaClass();
+        Class<?> javaClass = entity.getJavaClass();
         final ConcurrentHashMap<String, Method> events = new ConcurrentHashMap<String, Method>();
         entityEvents.put(entity, events);
 
@@ -214,7 +215,7 @@ public class DomainEventListener extends AbstractPersistenceEventListener
         findAndCacheEvent(EVENT_AFTER_LOAD,    javaClass, events);
     }
 
-    private void findAndCacheEvent(String event, Class javaClass, Map<String, Method> events) {
+    private void findAndCacheEvent(String event, Class<?> javaClass, Map<String, Method> events) {
         final Method method = ReflectionUtils.findMethod(javaClass, event);
         if (method != null) {
             events.put(event, method);

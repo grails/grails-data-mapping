@@ -33,7 +33,7 @@ import org.springframework.data.keyvalue.riak.mapreduce.RiakMapReducePhase;
 /**
  * @author J. Brisbin <jon@jbrisbin.com>
  */
-@SuppressWarnings("hiding")
+@SuppressWarnings({ "hiding", "rawtypes" })
 public class RiakEntityIndex<Long> extends AbstractList implements List, RiakCollection {
 
     private RiakTemplate riakTemplate;
@@ -46,14 +46,12 @@ public class RiakEntityIndex<Long> extends AbstractList implements List, RiakCol
 
     @Override
     public Object get(int i) {
-        MapReduceJob mapReduceJob = createFetchAtJob(i);
-        return riakTemplate.execute(mapReduceJob, Map.class);
+        return riakTemplate.execute(createFetchAtJob(i), Map.class);
     }
 
     @Override
     public int size() {
-        MapReduceJob mapReduceJob = createCountJob();
-        return riakTemplate.execute(mapReduceJob, Integer.class);
+        return riakTemplate.execute(createCountJob(), Integer.class);
     }
 
     @Override

@@ -20,7 +20,10 @@ import java.util.HashMap;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public class RedisEntry extends HashMap {
+
+    private static final long serialVersionUID = 1;
 
     protected String family;
 

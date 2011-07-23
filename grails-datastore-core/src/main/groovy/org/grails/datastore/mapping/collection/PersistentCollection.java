@@ -22,6 +22,7 @@ import java.util.Collection;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public interface PersistentCollection extends Collection {
 
     /**

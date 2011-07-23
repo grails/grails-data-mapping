@@ -37,6 +37,7 @@ import org.springframework.validation.Errors;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractDatastore implements Datastore {
 
     private ApplicationContext applicationContext;

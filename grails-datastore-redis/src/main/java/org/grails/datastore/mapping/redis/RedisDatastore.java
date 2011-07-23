@@ -44,11 +44,12 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 /**
- * A Datastore implementation for the Redis key/value datastore
+ * A Datastore implementation for the Redis key/value datastore.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RedisDatastore extends AbstractDatastore implements InitializingBean, DisposableBean {
 
     private static final boolean jedisClientAvailable =

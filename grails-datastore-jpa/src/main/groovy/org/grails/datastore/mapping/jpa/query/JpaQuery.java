@@ -42,12 +42,12 @@ import org.springframework.orm.jpa.JpaCallback;
 import org.springframework.orm.jpa.JpaTemplate;
 
 /**
- * Query implementation for JPA
+ * Query implementation for JPA.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-@SuppressWarnings("hiding")
+@SuppressWarnings({"hiding", "rawtypes", "unchecked"})
 public class JpaQuery extends Query {
 
     private static final String DISTINCT_CLAUSE = "DISTINCT ";

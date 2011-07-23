@@ -25,6 +25,7 @@ import org.grails.datastore.mapping.engine.EntityPersister
  *
  * @author Graeme Rocher
  */
+@SuppressWarnings("unchecked")
 class GroovyProxyFactory implements ProxyFactory {
 
     boolean isProxy(Object object) {

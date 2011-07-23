@@ -22,10 +22,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A map that is backed onto a Redis hash
+ * A map that is backed onto a Redis hash.
  *
  * @author Graeme Rocher
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RedisMap extends AbstractMap {
 
     private String redisKey;

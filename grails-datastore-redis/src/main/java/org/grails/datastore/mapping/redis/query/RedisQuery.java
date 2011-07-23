@@ -47,7 +47,7 @@ import org.grails.datastore.mapping.redis.util.SortParams;
  * @author Graeme Rocher
  * @since 1.0
  */
-@SuppressWarnings("hiding")
+@SuppressWarnings({"hiding", "rawtypes", "unchecked"})
 public class RedisQuery extends Query {
     private RedisEntityPersister entityPersister;
     private RedisTemplate template;
@@ -289,7 +289,7 @@ public class RedisQuery extends Query {
         return kv.isIndex();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("serial")
     private final Map<Class, CriterionHandler> criterionHandlers = new HashMap() {{
        put(Like.class, new CriterionHandler<Like>() {
            public void handle(RedisEntityPersister entityPersister, List<String> indices, Like criterion) {

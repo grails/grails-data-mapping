@@ -31,7 +31,7 @@ import org.grails.datastore.mapping.model.types.Association;
 /**
  * @author J. Brisbin <jon@jbrisbin.com>
  */
-@SuppressWarnings({"unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RiakAssociationIndexer implements AssociationIndexer<Long, Long> {
 
     @SuppressWarnings("unused")

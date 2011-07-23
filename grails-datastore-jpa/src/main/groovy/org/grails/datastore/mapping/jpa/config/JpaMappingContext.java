@@ -23,11 +23,12 @@ import org.grails.datastore.mapping.model.MappingFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
 /**
- * A MappingContext for JPA compatible entities
+ * A MappingContext for JPA compatible entities.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public class JpaMappingContext extends AbstractMappingContext{
 
     private MappingFactory<Table, Column> mappingFactory = new JpaMappingFactory();

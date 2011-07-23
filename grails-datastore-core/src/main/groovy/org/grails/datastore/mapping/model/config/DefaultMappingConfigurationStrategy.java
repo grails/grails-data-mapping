@@ -41,6 +41,7 @@ import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
  * @author Graeme Rocher
  * @since 1.1
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class DefaultMappingConfigurationStrategy implements MappingConfigurationStrategy {
 
     private static final Set EXCLUDED_PROPERTIES = new HashSet(Arrays.asList("class", "metaClass"));

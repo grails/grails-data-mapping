@@ -38,7 +38,7 @@ import org.grails.datastore.mapping.transactions.Transaction;
  *
  * @author J. Brisbin <jon@jbrisbin.com>
  */
-@SuppressWarnings({"unchecked"})
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class RiakSession extends AbstractSession {
 
     private RiakTemplate riakTemplate;

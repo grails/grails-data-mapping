@@ -50,7 +50,7 @@ import com.gemstone.gemfire.cache.query.SelectResults;
  * @author Graeme Rocher
  * @since 1.0
  */
-@SuppressWarnings("hiding")
+@SuppressWarnings({"hiding", "rawtypes", "unchecked"})
 public class GemfireQuery extends Query {
     public static final String SELECT_CLAUSE = "SELECT ";
     public static final String SELECT_DISTINCT = " DISTINCT ";

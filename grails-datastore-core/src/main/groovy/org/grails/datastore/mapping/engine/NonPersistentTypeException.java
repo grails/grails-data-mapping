@@ -22,6 +22,8 @@ package org.grails.datastore.mapping.engine;
  */
 public class NonPersistentTypeException extends RuntimeException {
 
+    private static final long serialVersionUID = 1;
+
     public NonPersistentTypeException(String s) {
         super(s);
     }

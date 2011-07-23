@@ -32,6 +32,7 @@ import org.grails.datastore.mapping.model.PropertyMapping;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractKeyValueEntityPersister<T,K> extends NativeEntryEntityPersister<T,K> {
     protected String entityFamily;
 

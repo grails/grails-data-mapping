@@ -223,6 +223,7 @@ class GormEnhancer {
     }
 }
 
+@SuppressWarnings("rawtypes")
 class InstanceMethodInvokingClosure extends Closure {
     private String methodName
     private apiDelegate
@@ -248,6 +249,7 @@ class InstanceMethodInvokingClosure extends Closure {
     Class[] getParameterTypes() { parameterTypes }
 }
 
+@SuppressWarnings("rawtypes")
 class StaticMethodInvokingClosure extends Closure {
 
     private String methodName

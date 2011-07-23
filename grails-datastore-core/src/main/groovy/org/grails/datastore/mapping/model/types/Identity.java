@@ -30,7 +30,7 @@ public abstract class Identity<T> extends AbstractPersistentProperty {
     public Identity(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);
     }
-    public Identity(PersistentEntity owner, MappingContext context, String name, Class type) {
+    public Identity(PersistentEntity owner, MappingContext context, String name, @SuppressWarnings("rawtypes") Class type) {
         super(owner, context, name, type);
     }
 }

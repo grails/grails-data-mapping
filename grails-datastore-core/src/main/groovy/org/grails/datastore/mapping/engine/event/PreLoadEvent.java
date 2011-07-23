@@ -23,6 +23,8 @@ import org.grails.datastore.mapping.model.PersistentEntity;
  */
 public class PreLoadEvent extends AbstractPersistenceEvent {
 
+    private static final long serialVersionUID = 1L;
+
     public PreLoadEvent(final Datastore source, final PersistentEntity entity,
             final EntityAccess entityAccess) {
         super(source, entity, entityAccess);

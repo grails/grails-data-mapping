@@ -49,6 +49,7 @@ import org.springframework.util.StringUtils;
 /**
  * Abstract base class for dynamic finders.
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class DynamicFinder extends AbstractFinder implements QueryBuildingFinder {
 
     public static final String ARGUMENT_MAX = "max";

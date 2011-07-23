@@ -29,11 +29,12 @@ import org.springframework.util.Assert;
 import org.springframework.validation.Validator;
 
 /**
- * Abstract implementation of the MappingContext interface
+ * Abstract implementation of the MappingContext interface.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public abstract class AbstractMappingContext implements MappingContext {
 
     protected Collection<PersistentEntity> persistentEntities = new ConcurrentLinkedQueue<PersistentEntity>();

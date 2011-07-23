@@ -40,6 +40,7 @@ import org.springframework.util.Assert;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
     protected Class javaClass;
     protected List<PersistentProperty> persistentProperties;

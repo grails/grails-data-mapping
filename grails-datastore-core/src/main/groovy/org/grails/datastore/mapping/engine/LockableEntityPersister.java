@@ -69,6 +69,7 @@ public abstract class LockableEntityPersister extends EntityPersister {
     public abstract void unlock(Object o);
 
     @Override
+    @SuppressWarnings("unchecked")
     public Object proxy(Serializable key) {
         return getProxyFactory().createProxy(session, getPersistentEntity().getJavaClass(), key);
     }

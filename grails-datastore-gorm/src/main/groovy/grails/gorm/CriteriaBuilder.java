@@ -42,6 +42,7 @@ import org.springframework.util.Assert;
  *
  * @author Graeme Rocher
  */
+@SuppressWarnings("rawtypes")
 public class CriteriaBuilder extends GroovyObjectSupport {
 
     public static final String ORDER_DESCENDING = "desc";
@@ -365,7 +366,6 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    @SuppressWarnings("rawtypes")
     public Query.Criterion eq(String propertyName, Object propertyValue) {
         validatePropertyName(propertyName, "eq");
         return addToCriteria(Restrictions.eq(propertyName, propertyValue));
@@ -378,7 +378,6 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    @SuppressWarnings("rawtypes")
     public Query.Criterion idEq(Object propertyValue) {
         return addToCriteria(Restrictions.idEq(propertyValue));
     }
@@ -391,7 +390,6 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    @SuppressWarnings("rawtypes")
     public Query.Criterion ne(String propertyName, Object propertyValue) {
         validatePropertyName(propertyName, "ne");
         return addToCriteria(Restrictions.ne(propertyName, propertyValue));
@@ -405,7 +403,6 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * @param finish The end of the range
      * @return A Criterion instance
      */
-    @SuppressWarnings("rawtypes")
     public Query.Criterion between(String propertyName, Object start, Object finish) {
         validatePropertyName(propertyName, "between");
         return addToCriteria(Restrictions.between(propertyName, start, finish));
@@ -463,7 +460,6 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    @SuppressWarnings("rawtypes")
     public Query.Criterion like(String propertyName, Object propertyValue) {
         validatePropertyName(propertyName, "like");
         Assert.notNull(propertyValue, "Cannot use like expression with null value");
@@ -478,7 +474,6 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    @SuppressWarnings("rawtypes")
     public Query.Criterion rlike(String propertyName, Object propertyValue) {
         validatePropertyName(propertyName, "like");
         Assert.notNull(propertyValue, "Cannot use like expression with null value");
@@ -493,7 +488,6 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    @SuppressWarnings("rawtypes")
     public Query.Criterion in(String propertyName, Collection values) {
         validatePropertyName(propertyName, "in");
         Assert.notNull(values, "Cannot use in expression with null values");
@@ -508,7 +502,6 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    @SuppressWarnings("rawtypes")
     public Query.Criterion inList(String propertyName, Collection values) {
         return in(propertyName, values);
     }
@@ -521,7 +514,6 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    @SuppressWarnings("rawtypes")
     public Query.Criterion inList(String propertyName, Object[] values) {
         return in(propertyName, Arrays.asList(values));
     }
@@ -534,7 +526,6 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    @SuppressWarnings("rawtypes")
     public Query.Criterion in(String propertyName, Object[] values) {
         return in(propertyName, Arrays.asList(values));
     }

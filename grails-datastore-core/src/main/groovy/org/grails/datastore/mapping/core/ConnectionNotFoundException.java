@@ -15,12 +15,15 @@
 package org.grails.datastore.mapping.core;
 
 /**
- * Thrown when a session cannot be located
+ * Thrown when a session cannot be located.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
 public class ConnectionNotFoundException extends RuntimeException {
+
+    private static final long serialVersionUID = 1;
+
     public ConnectionNotFoundException(String s) {
         super(s);
     }

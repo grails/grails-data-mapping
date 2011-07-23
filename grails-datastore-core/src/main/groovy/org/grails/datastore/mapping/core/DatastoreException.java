@@ -21,7 +21,9 @@ package org.grails.datastore.mapping.core;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class DatastoreException extends RuntimeException{
+public class DatastoreException extends RuntimeException {
+
+    private static final long serialVersionUID = 1;
 
     public DatastoreException(String s) {
         super(s);

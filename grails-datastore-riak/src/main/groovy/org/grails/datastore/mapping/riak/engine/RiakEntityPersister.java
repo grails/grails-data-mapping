@@ -58,7 +58,7 @@ import org.grails.datastore.mapping.riak.query.RiakQuery;
  *
  * @author J. Brisbin <jon@jbrisbin.com>
  */
-@SuppressWarnings({"unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RiakEntityPersister extends AbstractKeyValueEntityPersister<Map, Long> {
 
     private final static String DISCRIMINATOR = "__entity__";

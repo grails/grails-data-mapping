@@ -27,6 +27,7 @@ import org.grails.datastore.mapping.engine.AssociationIndexer;
  *
  * @author Burt Beckwith
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractPersistentCollection implements PersistentCollection {
 
     private boolean initialized;

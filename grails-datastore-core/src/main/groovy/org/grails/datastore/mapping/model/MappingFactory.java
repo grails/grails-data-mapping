@@ -64,6 +64,7 @@ import org.grails.datastore.mapping.model.types.ToOne;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class MappingFactory<R,T> {
     public static final Set<String> SIMPLE_TYPES;
 

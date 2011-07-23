@@ -22,7 +22,10 @@ import java.util.LinkedHashMap;
 /**
  * @author J. Brisbin <jon@jbrisbin.com>
  */
+@SuppressWarnings("rawtypes")
 public class RiakEntry extends LinkedHashMap {
+
+    private static final long serialVersionUID = 1;
 
     private String family;
 

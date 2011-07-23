@@ -24,6 +24,7 @@ import java.util.Iterator;
  *
  * @author Graeme Rocher
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractRedisCollection implements RedisCollection {
     protected RedisTemplate redisTemplate;
     protected String redisKey;

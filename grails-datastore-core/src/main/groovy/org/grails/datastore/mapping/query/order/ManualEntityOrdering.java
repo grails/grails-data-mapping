@@ -39,6 +39,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ManualEntityOrdering {
 
     PersistentEntity entity;

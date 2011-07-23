@@ -6,11 +6,12 @@ import org.grails.datastore.mapping.model.lifecycle.Initializable;
 import org.grails.datastore.mapping.model.types.Association;
 
 /**
- * Represents a persistent entity
+ * Represents a persistent entity.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public interface PersistentEntity extends Initializable {
 
     /**

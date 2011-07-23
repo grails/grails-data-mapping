@@ -22,6 +22,8 @@ package org.grails.datastore.mapping.core;
  */
 public class EntityCreationException extends RuntimeException {
 
+    private static final long serialVersionUID = 1;
+
     public EntityCreationException(String msg) {
         super(msg);
     }

@@ -35,6 +35,7 @@ import org.grails.datastore.mapping.reflect.ReflectionUtils;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy.ProxyFactory {
 
     private static final Map<Class, Class > PROXY_FACTORIES = new ConcurrentHashMap<Class, Class >();

@@ -40,7 +40,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
  * @author Graeme Rocher
  * @since 1.0
  */
-@SuppressWarnings("hiding")
+@SuppressWarnings({"hiding", "rawtypes", "unchecked"})
 public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     private String password;
     private Jedis redis;

@@ -30,7 +30,7 @@ public abstract class OneToOne<T> extends ToOne<T> {
         super(owner, context, descriptor);
     }
 
-    public OneToOne(PersistentEntity owner, MappingContext context, String name, Class type) {
+    public OneToOne(PersistentEntity owner, MappingContext context, String name, @SuppressWarnings("rawtypes") Class type) {
         super(owner, context, name, type);
     }
 }

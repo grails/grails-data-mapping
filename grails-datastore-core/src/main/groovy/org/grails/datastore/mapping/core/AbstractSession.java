@@ -57,6 +57,7 @@ import com.googlecode.concurrentlinkedhashmap.EvictionListener;
  * @since 1.0
  * @param <N>
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractSession<N> extends AbstractAttributeStoringSession implements SessionImplementor {
 
     private static final EvictionListener<PersistentEntity, Collection<PendingInsert>> EXCEPTION_THROWING_INSERT_LISTENER =
@@ -296,14 +297,12 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
      *
      * @param inserts The insert operations
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void flushPendingInserts(Map<PersistentEntity, Collection<PendingInsert>> inserts) {
         for (Collection<PendingInsert> pending : inserts.values()) {
             flushPendingOperations(pending);
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void flushPendingOperations(Collection operations) {
         for (Object o : operations) {
             PendingOperation pendingOperation = (PendingOperation) o;

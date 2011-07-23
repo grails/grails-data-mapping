@@ -29,6 +29,7 @@ import org.grails.datastore.mapping.redis.util.RedisTemplate;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RedisList extends AbstractList implements List, RedisCollection {
     private RedisTemplate redisTemplate;
     private String redisKey;

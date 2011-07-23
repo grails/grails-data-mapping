@@ -105,7 +105,7 @@ public class DatastoreTransactionManager extends AbstractPlatformTransactionMana
                 session.setFlushMode(FlushModeType.COMMIT);
             }
 
-            Transaction tx;
+            Transaction<?> tx;
             // Register transaction timeout.
             int timeout = determineTimeout(definition);
             if (timeout != TransactionDefinition.TIMEOUT_DEFAULT) {

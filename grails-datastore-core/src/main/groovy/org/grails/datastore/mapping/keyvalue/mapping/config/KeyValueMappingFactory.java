@@ -36,7 +36,7 @@ public class KeyValueMappingFactory extends MappingFactory<Family, KeyValue> {
     }
 
     @Override
-    public KeyValue createMappedForm(PersistentProperty mpp) {
+    public KeyValue createMappedForm(@SuppressWarnings("rawtypes") PersistentProperty mpp) {
         return new KeyValue(mpp.getName());
     }
 }

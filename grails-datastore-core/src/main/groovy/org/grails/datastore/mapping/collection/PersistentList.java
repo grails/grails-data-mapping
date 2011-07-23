@@ -29,6 +29,7 @@ import org.grails.datastore.mapping.engine.AssociationIndexer;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class PersistentList extends AbstractPersistentCollection implements List {
 
     private final List list;

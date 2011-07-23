@@ -31,6 +31,7 @@ public class FindOrSaveByFinder extends FindOrCreateByFinder {
     }
 
     @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected Object doInvokeInternal(final DynamicFinderInvocation invocation) {
         if (OPERATOR_OR.equals(invocation.getOperator())) {
             throw new UnsupportedOperationException(

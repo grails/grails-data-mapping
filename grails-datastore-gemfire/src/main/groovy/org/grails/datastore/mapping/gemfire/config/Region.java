@@ -28,6 +28,7 @@ import com.gemstone.gemfire.cache.RegionAttributes;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public class Region extends Family {
 
     private RegionAttributes regionAttributes;

@@ -39,6 +39,7 @@ import redis.clients.jedis.exceptions.JedisDataException;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
 
     private RedisTemplate template;
@@ -46,7 +47,8 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
     private RedisEntityPersister entityPersister;
     private MappingContext mappingContext;
 
-    public RedisPropertyValueIndexer(MappingContext context, RedisEntityPersister redisEntityPersister, PersistentProperty property) {
+    public RedisPropertyValueIndexer(MappingContext context, RedisEntityPersister redisEntityPersister,
+                                     PersistentProperty property) {
         this.template = redisEntityPersister.getRedisTemplate();
         this.entityPersister = redisEntityPersister;
         this.property = property;
@@ -138,6 +140,7 @@ public class RedisPropertyValueIndexer implements PropertyValueIndexer<Long> {
         return getIndexRoot() + urlEncode(value);
     }
 
+    @SuppressWarnings("serial")
     private String urlEncode(Object value) {
         try {
             return URLEncoder.encode(value.toString(), "UTF-8");

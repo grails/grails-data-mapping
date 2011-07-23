@@ -47,11 +47,12 @@ import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 
 /**
- * Configuration strategy for JPA
+ * Configuration strategy for JPA.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class JpaMappingConfigurationStrategy implements MappingConfigurationStrategy{
 
     private MappingFactory propertyFactory;
@@ -63,12 +64,10 @@ public class JpaMappingConfigurationStrategy implements MappingConfigurationStra
         this.propertyFactory = propertyFactory;
     }
 
-    @SuppressWarnings("unchecked")
     public boolean isPersistentEntity(Class javaClass) {
         return javaClass != null && javaClass.getAnnotation(Entity.class) != null;
     }
 
-    @SuppressWarnings("rawtypes")
     public List<PersistentProperty> getPersistentProperties(Class javaClass,
             MappingContext context) {
         return getPersistentProperties(javaClass, context, null);

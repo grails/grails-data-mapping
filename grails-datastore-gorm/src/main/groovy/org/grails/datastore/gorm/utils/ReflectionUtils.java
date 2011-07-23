@@ -17,13 +17,13 @@ package org.grails.datastore.gorm.utils;
 import java.lang.reflect.Method;
 
 /**
- * Utility methods for working with reflection
+ * Utility methods for working with reflection.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ReflectionUtils {
-
 
     /**
      * Tests whether a method is overridden from the parent
@@ -36,10 +36,10 @@ public class ReflectionUtils {
 
         final Class superClass = declaringClass.getSuperclass();
 
-        if(superClass != null) {
+        if (superClass != null) {
             try {
                 final Method superMethod = superClass.getMethod(method.getName(), method.getParameterTypes());
-                if(superMethod != null) {
+                if (superMethod != null) {
                     return true;
                 }
             } catch (NoSuchMethodException e) {

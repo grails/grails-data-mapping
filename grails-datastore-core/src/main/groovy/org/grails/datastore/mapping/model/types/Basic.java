@@ -25,6 +25,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public abstract class Basic extends Association {
 
     public Basic(PersistentEntity owner, MappingContext context,

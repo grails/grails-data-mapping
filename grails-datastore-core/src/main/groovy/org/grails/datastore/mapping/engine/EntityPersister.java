@@ -265,7 +265,7 @@ public abstract class EntityPersister implements Persister {
             return false;
         }
 
-        Class type = ea.getPropertyType("version");
+        Class<?> type = ea.getPropertyType("version");
         return Number.class.isAssignableFrom(type) || Date.class.isAssignableFrom(type);
     }
 

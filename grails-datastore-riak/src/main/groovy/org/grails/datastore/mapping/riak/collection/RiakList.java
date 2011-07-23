@@ -23,6 +23,7 @@ import java.util.AbstractList;
 /**
  * @author J. Brisbin <jon@jbrisbin.com>
  */
+@SuppressWarnings("rawtypes")
 public class RiakList extends AbstractList {
     @Override
     public Object get(int i) {

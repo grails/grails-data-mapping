@@ -75,6 +75,7 @@ import org.springframework.util.StringUtils;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class GormMappingConfigurationStrategy implements MappingConfigurationStrategy {
     private static final String IDENTITY_PROPERTY = "id";
     private static final String VERSION_PROPERTY = "version";
@@ -93,7 +94,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
      *
      * @return True if it is a persistent entity
      */
-    @SuppressWarnings({"unchecked"})
     public boolean isPersistentEntity(Class clazz) {
         // its not a closure
         if (clazz == null) return false;
@@ -224,7 +224,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
     /**
      * Evaluates the belongsTo property to find out who owns who
      */
-    @SuppressWarnings("unchecked")
     private Set establishRelationshipOwners(ClassPropertyFetcher cpf) {
         Set owners = null;
         Class<?> belongsTo = cpf.getStaticPropertyValue(BELONGS_TO, Class.class);
@@ -417,7 +416,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
      * @param relatedClassRelationships The related types relationships
      * @return <code>true</code> if the relationship is a many-to-many
      */
-    @SuppressWarnings("unchecked")
     private boolean isRelationshipToMany(PersistentEntity entity,
             Class<?> relatedClassType, Map relatedClassRelationships) {
         return relatedClassRelationships != null &&
@@ -449,7 +447,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
      * @param context
      * @param hasOneMap
      */
-    @SuppressWarnings("unchecked")
     private ToOne establishDomainClassRelationship(PersistentEntity entity, PropertyDescriptor property, MappingContext context, Map hasOneMap) {
         ToOne association = null;
         Class propType = property.getPropertyType();
@@ -551,7 +548,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return associatedEntity;
     }
 
-    @SuppressWarnings("unchecked")
     private boolean isNotMappedToDifferentProperty(PropertyDescriptor property,
             String relatedClassPropertyName, Map mappedBy) {
 

@@ -49,6 +49,7 @@ public class GormGemfireMappingFactory extends GormKeyValueMappingFactory {
     }
 
     @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public Family createMappedForm(PersistentEntity entity) {
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
         final Closure value = cpf.getStaticPropertyValue(GormProperties.MAPPING, Closure.class);

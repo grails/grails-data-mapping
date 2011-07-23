@@ -28,11 +28,12 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * An indexer for Redis
+ * An indexer for Redis.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
     private RedisTemplate template;
     private ConversionService typeConverter;
