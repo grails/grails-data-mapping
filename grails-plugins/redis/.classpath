@@ -4,7 +4,5 @@
 	<classpathentry kind="src" path="grails-app/conf"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="com.springsource.sts.grails.core.CLASSPATH_CONTAINER"/>
-	<classpathentry exported="true" kind="con" path="GROOVY_DSL_SUPPORT"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/grails-datastore-gorm"/>
-	<classpathentry kind="output" path="target/eclipseclasses"/>
+	<classpathentry kind="output" path="web-app/WEB-INF/classes"/>
 </classpath>
