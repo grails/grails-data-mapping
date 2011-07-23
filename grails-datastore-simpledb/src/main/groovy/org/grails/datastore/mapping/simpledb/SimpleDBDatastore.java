@@ -43,7 +43,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
     public static final String SECRET_KEY = "secretKey";
     public static final String ACCESS_KEY = "accessKey";
     public static final String DOMAIN_PREFIX_KEY = "domainNamePrefix";
-    public static final String DELAY_AFTER_WRITES = "delayAfterWrites"; //used for testing - to fight eventual consistency if this flag value is 'true' it will add about 10 sec pause after writes
+    public static final String DELAY_AFTER_WRITES_MS = "delayAfterWritesMS"; //used for testing - to fight eventual consistency if this flag value is 'true' it will add specified pause after writes
 
 //    private Map<PersistentEntity, SimpleDBTemplate> simpleDBTemplates = new ConcurrentHashMap<PersistentEntity, SimpleDBTemplate>();
     private SimpleDBTemplate simpleDBTemplate;  //currently there is no need to create template per entity, we can share same instance
@@ -91,7 +91,13 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
 
     @Override
     protected Session createSession(Map<String, String> connDetails) {
-        return new SimpleDBSession(this, getMappingContext(), getApplicationEventPublisher());
+        String delayAfterWrite = read(String.class, DELAY_AFTER_WRITES_MS, connectionDetails, null);
+
+        if (delayAfterWrite != null && !"".equals(delayAfterWrite)) {
+            return new DelayAfterWriteSimpleDBSession(this, getMappingContext(), getApplicationEventPublisher(), Integer.parseInt(delayAfterWrite));
+        } else {
+            return new SimpleDBSession(this, getMappingContext(), getApplicationEventPublisher());
+        }
     }
 
     public void afterPropertiesSet() throws Exception {
@@ -107,11 +113,11 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         if (simpleDBTemplate == null) {
             String accessKey = read(String.class, ACCESS_KEY, connectionDetails, null);
             String secretKey = read(String.class, SECRET_KEY, connectionDetails, null);
-            String delayAfterWrite = read(String.class, DELAY_AFTER_WRITES, connectionDetails, null);
+            String delayAfterWrite = read(String.class, DELAY_AFTER_WRITES_MS, connectionDetails, null);
 
             simpleDBTemplate = new SimpleDBTemplateImpl(accessKey, secretKey);
-            if (Boolean.parseBoolean(delayAfterWrite)) {
-                simpleDBTemplate = new DelayAfterWriteSimpleDBTemplateDecorator(simpleDBTemplate, 10*1000);
+            if (delayAfterWrite != null && !"".equals(delayAfterWrite)) {
+                simpleDBTemplate = new DelayAfterWriteSimpleDBTemplateDecorator(simpleDBTemplate, Integer.parseInt(delayAfterWrite));
             }
         }
     }

@@ -14,10 +14,7 @@
  */
 package org.grails.datastore.mapping.simpledb.query;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValue;
@@ -31,6 +28,7 @@ import org.grails.datastore.mapping.simpledb.util.SimpleDBConverterUtil;
 import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate;
 
 import com.amazonaws.services.simpledb.model.Item;
+import org.grails.datastore.mapping.simpledb.util.SimpleDBUtil;
 
 /**
  * A {@link org.grails.datastore.mapping.query.Query} implementation for the SimpleDB store
@@ -44,6 +42,113 @@ public class SimpleDBQuery extends Query {
     protected SimpleDBDomainResolver domainResolver;
     protected SimpleDBTemplate simpleDBTemplate;
     protected SimpleDBEntityPersister simpleDBEntityPersister;
+
+    protected static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
+    protected static final String ITEM_NAME = "itemName()";
+
+    static{
+        queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
+            @Override
+            public void handle(PersistentEntity entity, Equals criterion, StringBuilder clause) {
+                String propertyName = criterion.getProperty();
+                String key = getSmartQuotedKey(entity, propertyName);
+                String stringValue = SimpleDBConverterUtil.convertToString(criterion.getValue(), entity.getMappingContext());
+
+                addSimpleComparison(clause, key, "=", stringValue);
+            }
+        });
+        queryHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
+            @Override
+            public void handle(PersistentEntity entity, NotEquals criterion, StringBuilder clause) {
+                String propertyName = criterion.getProperty();
+                String key = getSmartQuotedKey(entity, propertyName);
+                String stringValue = SimpleDBConverterUtil.convertToString(criterion.getValue(), entity.getMappingContext());
+
+                addSimpleComparison(clause, key, "!=", stringValue);
+            }
+        });
+        queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
+            @Override
+            public void handle(PersistentEntity entity, IdEquals criterion, StringBuilder clause) {
+                String stringValue = SimpleDBConverterUtil.convertToString(criterion.getValue(), entity.getMappingContext());
+
+                addSimpleComparison(clause, ITEM_NAME, "=", stringValue);
+            }
+        });
+        queryHandlers.put(Like.class, new QueryHandler<Like>() {
+            @Override
+            public void handle(PersistentEntity entity, Like criterion, StringBuilder clause) {
+                String propertyName = criterion.getProperty();
+                String key = getSmartQuotedKey(entity, propertyName);
+                String stringValue = SimpleDBConverterUtil.convertToString(criterion.getValue(), entity.getMappingContext());
+
+                addSimpleComparison(clause, key, "LIKE", stringValue);
+            }
+        });
+        queryHandlers.put(In.class, new QueryHandler<In>() {
+            @Override
+            public void handle(PersistentEntity entity, In criterion, StringBuilder clause) {
+                String propertyName = criterion.getProperty();
+                String key = getSmartQuotedKey(entity, propertyName);
+
+                Collection<String> stringValues = SimpleDBConverterUtil.convertToStrings(criterion.getValues(), entity.getMappingContext());
+                clause.append(key).append(" IN (");
+                clause.append(SimpleDBUtil.quoteValues(stringValues)).append(")");
+            }
+        });
+        queryHandlers.put(Between.class, new QueryHandler<Between>() {
+            @Override
+            public void handle(PersistentEntity entity, Between criterion, StringBuilder clause) {
+                String propertyName = criterion.getProperty();
+                String key = getSmartQuotedKey(entity, propertyName);
+                String fromStringValue = SimpleDBConverterUtil.convertToString(criterion.getFrom(), entity.getMappingContext());
+                String toStringValue = SimpleDBConverterUtil.convertToString(criterion.getTo(), entity.getMappingContext());
+
+                clause.append(key).append(" >= ").append(SimpleDBUtil.quoteValue(fromStringValue)).append(" AND ");
+                clause.append(key).append(" <= ").append(SimpleDBUtil.quoteValue(toStringValue));
+            }
+        });
+        queryHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
+            @Override
+            public void handle(PersistentEntity entity, GreaterThan criterion, StringBuilder clause) {
+                String propertyName = criterion.getProperty();
+                String key = getSmartQuotedKey(entity, propertyName);
+                String stringValue = SimpleDBConverterUtil.convertToString(criterion.getValue(), entity.getMappingContext());
+
+                addSimpleComparison(clause, key, ">", stringValue);
+            }
+        });
+        queryHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
+            @Override
+            public void handle(PersistentEntity entity, GreaterThanEquals criterion, StringBuilder clause) {
+                String propertyName = criterion.getProperty();
+                String key = getSmartQuotedKey(entity, propertyName);
+                String stringValue = SimpleDBConverterUtil.convertToString(criterion.getValue(), entity.getMappingContext());
+
+                addSimpleComparison(clause, key, ">=", stringValue);
+            }
+        });
+        queryHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
+            @Override
+            public void handle(PersistentEntity entity, LessThan criterion, StringBuilder clause) {
+                String propertyName = criterion.getProperty();
+                String key = getSmartQuotedKey(entity, propertyName);
+                String stringValue = SimpleDBConverterUtil.convertToString(criterion.getValue(), entity.getMappingContext());
+
+                addSimpleComparison(clause, key, "<", stringValue);
+            }
+        });
+        queryHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
+            @Override
+            public void handle(PersistentEntity entity, LessThanEquals criterion, StringBuilder clause) {
+                String propertyName = criterion.getProperty();
+                String key = getSmartQuotedKey(entity, propertyName);
+                String stringValue = SimpleDBConverterUtil.convertToString(criterion.getValue(), entity.getMappingContext());
+
+                addSimpleComparison(clause, key, "<=", stringValue);
+            }
+        });
+    }
 
     public SimpleDBQuery(Session session, PersistentEntity entity, SimpleDBDomainResolver domainResolver,
                SimpleDBEntityPersister simpleDBEntityPersister, SimpleDBTemplate simpleDBTemplate) {
@@ -98,14 +203,20 @@ public class SimpleDBQuery extends Query {
             }
             @SuppressWarnings("hiding") Order orderBy = orderBys.get(0);
             String orderByPropertyName = orderBy.getProperty();
-            String key = extractPropertyKey(orderByPropertyName);
-            //AWS SimpleDB rule: if you use ORDER BY then you have to have a condition of that attribute in the where clause, otherwise it will throw an error
-            //so we check if that property was used in the clause and if not we add 'is not null condition'
+            String key = extractPropertyKey(orderByPropertyName, entity);
+            //AWS SimpleDB rule: if you use ORDER BY then you have to have a condition on that attribute in the where clause, otherwise it will throw an error
+            //so we check if that property was used in the clause and if not we add 'is not null' condition
             if (!usedPropertyNames.contains(orderByPropertyName)) {
-                query.append(" AND ").append(key).append(" IS NOT NULL");
+                if (criteria.getCriteria().isEmpty()) { //we might have a case 'select * from X order by ABC' which must be fixed into 'select * from X where ABC IS NOT NULL order by ABC'
+                    query.append(" where ");
+                } else {
+                    query.append(" AND ");
+                }
+
+                query.append(SimpleDBUtil.quoteName(key)).append(" IS NOT NULL");
             }
 
-            query.append(" ORDER BY ").append(key).append(" ").append(orderBy.getDirection());
+            query.append(" ORDER BY ").append(SimpleDBUtil.quoteName(key)).append(" ").append(orderBy.getDirection());
         }
 
         //specify the limit on the returned results
@@ -126,6 +237,7 @@ public class SimpleDBQuery extends Query {
         return results;
     }
 
+    @SuppressWarnings("unchecked")
     private String buildCompositeClause(@SuppressWarnings("hiding") Junction criteria,
             String booleanOperator, Set<String> usedPropertyNames) {
         StringBuilder clause = new StringBuilder();
@@ -143,23 +255,10 @@ public class SimpleDBQuery extends Query {
                 String propertyName = propertyCriterion.getProperty();
 
                 usedPropertyNames.add(propertyName); //register the fact that the property did have some condition - it is needed if we use order by clause
-                if (Equals.class.equals(criterion.getClass())) {
-                    String key = extractPropertyKey(propertyName);
-                    Object value = propertyCriterion.getValue();
-                    String stringValue =  SimpleDBConverterUtil.convertToString(value, entity.getMappingContext());
 
-                    clause.append("`").append(key).append("` = '").append(stringValue).append("'");
-                } else if (NotEquals.class.equals(criterion.getClass())) {
-                    String key = extractPropertyKey(propertyName);
-                    Object value = propertyCriterion.getValue();
-                    String stringValue =  SimpleDBConverterUtil.convertToString(value, entity.getMappingContext());
-
-                    clause.append("`").append(key).append("` != '").append(stringValue).append("'");
-                } else if (IdEquals.class.equals(criterion.getClass())) {
-                    clause.append("itemName() = '").append(propertyCriterion.getValue()).append("'");
-                } else if (Like.class.equals(criterion.getClass())) {
-                    String key = extractPropertyKey(propertyName);
-                    clause.append(key).append(" LIKE '").append(propertyCriterion.getValue()).append("'");
+                QueryHandler queryHandler = queryHandlers.get(criterion.getClass());
+                if (queryHandler != null) {
+                    queryHandler.handle(entity, criterion, clause);
                 } else {
                     throw new UnsupportedOperationException("Queries of type " +
                      criterion.getClass().getSimpleName() + " are not supported by this implementation");
@@ -192,8 +291,18 @@ public class SimpleDBQuery extends Query {
         }
     }
 
-    protected String extractPropertyKey(String propertyName) {
-        PersistentProperty prop = simpleDBEntityPersister.getPersistentEntity().getPropertyByName(propertyName);
+    protected Object createObjectFromItem(Item item) {
+        final String id = item.getName();
+        return simpleDBEntityPersister.createObjectFromNativeEntry(getEntity(), id,
+                new NativeSimpleDBItem(item));
+    }
+
+    protected static interface QueryHandler<T> {
+        public void handle(PersistentEntity entity, T criterion, StringBuilder clause);
+    }
+
+    protected static String extractPropertyKey(String propertyName, PersistentEntity entity) {
+        PersistentProperty prop = entity.getPropertyByName(propertyName);
         if (prop == null) {
             throw new IllegalArgumentException(
                     "Could not find property '" + propertyName + "' in entity '" + entity.getName() + "'");
@@ -204,9 +313,29 @@ public class SimpleDBQuery extends Query {
         return key;
     }
 
-    protected Object createObjectFromItem(Item item) {
-        final String id = item.getName();
-        return simpleDBEntityPersister.createObjectFromNativeEntry(getEntity(), id,
-                new NativeSimpleDBItem(item));
+    /**
+     * Assumes that the key is already quoted or is itemName()
+     * @param clause
+     * @param key
+     * @param comparison
+     * @param stringValue
+     */
+    protected static void addSimpleComparison(StringBuilder clause, String key, String comparison, String stringValue) {
+        clause.append(key).append(" ").append(comparison).append(" ").append(SimpleDBUtil.quoteValue(stringValue));
     }
+
+    /**
+     * Returns quoted mapped key OR if the property is an identity returns 'itemName()' - this is how AWS SimpleDB refers to primary key field.
+     * @param entity
+     * @param propertyName
+     * @return
+     */
+    protected static String getSmartQuotedKey(PersistentEntity entity, String propertyName) {
+        if (entity.isIdentityName(propertyName)) {
+            return ITEM_NAME;
+        } else {
+            return SimpleDBUtil.quoteName(extractPropertyKey(propertyName, entity));
+        }
+    }
+
 }

@@ -77,12 +77,12 @@ public class DelayAfterWriteSimpleDBTemplateDecorator implements SimpleDBTemplat
 
     public void putAttributes(String domainName, String id, List<ReplaceableAttribute> attributes) throws DataAccessException {
         template.putAttributes(domainName, id, attributes);
-        pause();
+//        pause();      //for tests we use DelayAfterWriteSimpleDBSession which pauses after flush
     }
 
     public void putAttributesVersioned(String domainName, String id, List<ReplaceableAttribute> attributes, String expectedVersion) throws DataAccessException {
         template.putAttributesVersioned(domainName, id, attributes, expectedVersion);
-        pause();
+//        pause();      //for tests we use DelayAfterWriteSimpleDBSession which pauses after flush
     }
 
     public List<Item> query(String query) throws DataAccessException {

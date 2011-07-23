@@ -27,4 +27,8 @@ class TestEntity {
         name blank: false
         child nullable: true
     }
+
+    static mapping = {
+        domain 'TestEntity'
+    }
 }

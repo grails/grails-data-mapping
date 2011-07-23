@@ -18,4 +18,8 @@ class ChildEntity {
     }
 
     static belongsTo = [TestEntity]
+
+    static mapping = {
+        domain 'ChildEntity'
+    }
 }

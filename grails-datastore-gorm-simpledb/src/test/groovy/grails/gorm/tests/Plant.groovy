@@ -1,19 +1,18 @@
 package grails.gorm.tests
 
-
 /**
  * Test entity for testing AWS SimpleDB.
  *
  * @author Roman Stepanenko
  * @since 0.1
  */
-class Book {
+
+class Plant {
     String id
-    String author
-    String title
-    Boolean published = false
+    boolean goesInPatch
+    String name
 
     static mapping = {
-        domain 'Book'
+        domain 'Plant'
     }
 }

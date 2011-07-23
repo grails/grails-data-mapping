@@ -1,19 +1,21 @@
 package grails.gorm.tests
 
-
 /**
  * Test entity for testing AWS SimpleDB.
  *
  * @author Roman Stepanenko
  * @since 0.1
  */
-class Book {
+
+class ModifyPerson {
     String id
-    String author
-    String title
-    Boolean published = false
+    String name
+
+    def beforeInsert() {
+        name = "Fred"
+    }
 
     static mapping = {
-        domain 'Book'
+        domain 'ModifyPerson'
     }
 }

@@ -1,5 +1,7 @@
 package org.grails.datastore.gorm
 
+import java.util.concurrent.CountDownLatch
+
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.springframework.context.support.GenericApplicationContext
@@ -44,7 +46,7 @@ class Setup {
         connectionDetails.put(SimpleDBDatastore.ACCESS_KEY, env['AWS_ACCESS_KEY'])
         connectionDetails.put(SimpleDBDatastore.SECRET_KEY, env['AWS_SECRET_KEY'])
         connectionDetails.put(SimpleDBDatastore.DOMAIN_PREFIX_KEY, "TEST_")
-        connectionDetails.put(SimpleDBDatastore.DELAY_AFTER_WRITES, "true") //this flag will cause pausing after each write - to fight eventual consistency
+        connectionDetails.put(SimpleDBDatastore.DELAY_AFTER_WRITES_MS, "7000") //this flag will cause pausing for that many MS after each write - to fight eventual consistency
 
         simpleDB = new SimpleDBDatastore(new SimpleDBMappingContext(), connectionDetails)
         def ctx = new GenericApplicationContext()
@@ -94,9 +96,14 @@ class Setup {
         SimpleDBTemplate template = simpleDBDatastore.getSimpleDBTemplate()
         List<String> existingDomains = template.listDomains()
         SimpleDBDomainResolverFactory resolverFactory = new SimpleDBDomainResolverFactory();
+        CountDownLatch latch = new CountDownLatch(domainClasses.size())
         for (dc in domainClasses) {
-            PersistentEntity entity = mappingContext.getPersistentEntity(dc.getName())
-            SimpleDBDomainResolver domainResolver = resolverFactory.buildResolver(entity, simpleDBDatastore);
+            def domainClass = dc //explicitly declare local variable which we will be using from the thread
+            //do simpleDB work in parallel threads for each domain class to speed things up
+            Thread.start{
+                try {
+                    PersistentEntity entity = mappingContext.getPersistentEntity(domainClass.getName())
+                    SimpleDBDomainResolver domainResolver = resolverFactory.buildResolver(entity, simpleDBDatastore)
             def domains = domainResolver.getAllDomainsForEntity()
             domains.each { domain ->
                 if (existingDomains.contains(domain)){
@@ -107,6 +114,11 @@ class Setup {
                     template.createDomain(domain)
                 }
             }
+                } finally {
+                    latch.countDown()
         }
+    }
+}
+        latch.await()
     }
 }

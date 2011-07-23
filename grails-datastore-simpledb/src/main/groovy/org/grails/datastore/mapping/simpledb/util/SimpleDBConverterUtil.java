@@ -1,5 +1,9 @@
 package org.grails.datastore.mapping.simpledb.util;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.springframework.core.convert.ConversionService;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.proxy.EntityProxy;
@@ -21,6 +25,16 @@ public class SimpleDBConverterUtil {
         }
         return stringValue;
     }
+
+    public static Collection<String> convertToStrings(Collection values, MappingContext mappingContext) {
+        List<String> stringValues = new LinkedList<String>();
+        for (Object value : values) {
+            stringValues.add(convertToString(value, mappingContext));
+        }
+
+        return stringValues;
+    }
+
 
     private static boolean shouldConvert(Object value, MappingContext mappingContext) {
         return !mappingContext.isPersistentEntity(value) && !(value instanceof EntityProxy);
