@@ -22,6 +22,7 @@ public class Property {
     private boolean nullable = false;
     private FetchType fetchStrategy = FetchType.LAZY;
     private String targetName;
+    private String generator;
 
     /**
      * The target to map to, could be a database column, document attribute, or hash key
@@ -65,5 +66,21 @@ public class Property {
 
     public void setNullable(boolean nullable) {
         this.nullable = nullable;
+    }
+
+    /**
+     * Set the id generator name or class.
+     * @param generator name or class
+     */
+    public void setGenerator(String generator) {
+        this.generator = generator;
+    }
+
+    /**
+     * Get the id generator.
+     * @return the name or class
+     */
+    public String getGenerator() {
+        return generator;
     }
 }

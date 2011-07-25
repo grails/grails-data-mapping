@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,6 +44,7 @@ import org.grails.datastore.mapping.engine.event.PreUpdateEvent;
 import org.grails.datastore.mapping.gemfire.GemfireDatastore;
 import org.grails.datastore.mapping.gemfire.GemfireSession;
 import org.grails.datastore.mapping.gemfire.query.GemfireQuery;
+import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValue;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.types.Association;
@@ -464,6 +466,14 @@ public class GemfireEntityPersister extends LockableEntityPersister {
         return template.execute(new GemfireCallback() {
 
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
+
+                KeyValue mf = (KeyValue)gemfireDatastore.getMappingContext().getMappingFactory().createMappedForm(persistentEntity.getIdentity());
+                if ("uuid".equals(mf.getGenerator())) {
+                    String uuid = UUID.randomUUID().toString();
+                    access.setIdentifier(uuid);
+                    return uuid;
+                }
+
                 Cache cache = CacheFactory.getAnyInstance();
                 final int uuid = PartitionedRegion.generatePRId(
                         (InternalDistributedSystem)cache.getDistributedSystem(),cache);
