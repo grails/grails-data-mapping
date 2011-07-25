@@ -103,10 +103,10 @@ public class DefaultMappingConfigurationStrategy implements MappingConfiguration
             if (annotation != null) {
                 PersistentEntity entity = context.getPersistentEntity(javaClass.getName());
                 PropertyDescriptor pd = cpf.getPropertyDescriptor(field.getName());
-                return propertyFactory.createIdentity(entity , context, pd);
+                return propertyFactory.createIdentity(entity, context, pd);
             }
         }
-        throw new IllegalMappingException("No identifier specified for persistent class: " + javaClass);
+        throw new IllegalMappingException("No identifier specified for persistent class: " + javaClass.getName());
     }
 
     public IdentityMapping getDefaultIdentityMapping(final ClassMapping classMapping) {

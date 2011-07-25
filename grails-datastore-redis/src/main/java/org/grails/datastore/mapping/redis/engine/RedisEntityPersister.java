@@ -317,8 +317,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPersister<Map, L
 
     private String getRootFamily(PersistentEntity persistentEntity) {
         final PersistentEntity root = persistentEntity.getRootEntity();
-        final RedisEntityPersister persister = (RedisEntityPersister) session.getPersister(root);
-        return persister.getFamily();
+        return ((RedisEntityPersister)session.getPersister(root)).getFamily();
     }
 
     @Override

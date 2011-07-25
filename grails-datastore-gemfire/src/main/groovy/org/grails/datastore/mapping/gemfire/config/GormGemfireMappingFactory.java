@@ -29,9 +29,8 @@ import com.gemstone.gemfire.cache.DataPolicy;
 import com.gemstone.gemfire.cache.RegionAttributes;
 
 /**
- *
  * Allows GORM-style configuration of how an entity maps to a
- * Gemfire region
+ * Gemfire region.
  *
  * @author Graeme Rocher
  * @since 1.0

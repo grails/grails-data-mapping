@@ -632,7 +632,8 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 return propertyFactory.createIdentity(entity, context, pd);
             }
             if (!entity.isExternal()) {
-                throw new IllegalMappingException("Mapped identifier ["+names[0]+"] for class ["+javaClass.getName()+"] is not a valid property");
+                throw new IllegalMappingException("Mapped identifier [" + names[0] + "] for class [" +
+                      javaClass.getName() + "] is not a valid property");
             }
             return null;
         }
