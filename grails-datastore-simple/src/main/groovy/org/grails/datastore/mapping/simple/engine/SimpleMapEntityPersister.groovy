@@ -29,6 +29,7 @@ import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.grails.datastore.mapping.simple.query.SimpleMapQuery
+import org.grails.datastore.mapping.config.Property
 
 /**
  * A simple implementation of the {@link org.grails.datastore.mapping.engine.EntityPersister} abstract class that backs onto an in-memory map.
@@ -69,6 +70,12 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
     protected void deleteEntry(String family, key, entry) {
         datastore[family].remove(key)
     }
+
+    @Override
+    protected boolean isPropertyIndexed(Property mappedProperty) {
+        return true // index all
+    }
+
 
     PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
         return new PropertyValueIndexer() {

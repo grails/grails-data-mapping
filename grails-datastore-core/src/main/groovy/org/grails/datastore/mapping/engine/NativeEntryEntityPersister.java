@@ -617,7 +617,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             if (mappedProperty != null) {
                 key = mappedProperty.getTargetName();
             }
-            final boolean indexed = mappedProperty != null && mappedProperty.isIndex();
+            final boolean indexed = isPropertyIndexed(mappedProperty);
             if (key == null) key = prop.getName();
             if ((prop instanceof Simple) || (prop instanceof Basic)) {
                 Object propValue = entityAccess.getProperty(prop.getName());
@@ -811,6 +811,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             si.addPendingUpdate((PendingUpdate) pendingOperation);
         }
         return (Serializable) k;
+    }
+
+    protected boolean isPropertyIndexed(Property mappedProperty) {
+        return mappedProperty != null && mappedProperty.isIndex();
     }
 
     protected void setManyToMany(PersistentEntity persistentEntity, Object obj,

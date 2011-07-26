@@ -419,9 +419,6 @@ class SimpleMapQuery extends Query {
                     throw new InvalidDataAccessResourceUsageException("Cannot query [" + entity + "] on non-existent property: " + criterion.property)
                 }
             }
-            else if (!isIndexed(property)) {
-                throw new InvalidDataAccessResourceUsageException("Cannot query [" + entity + "] on non-indexed property: " + property)
-            }
             return property
         }
         else if (criterion instanceof AssociationQuery) {
