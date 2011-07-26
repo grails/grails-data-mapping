@@ -41,11 +41,13 @@ class QueryNonIndexedPropertySpec extends GormDatastoreSpec{
 }
 @Entity
 class Company {
+    Long id
     String name
     CompanyAddress address
 }
 @Entity
 class CompanyAddress {
+    Long id
     String postCode
 }
 
