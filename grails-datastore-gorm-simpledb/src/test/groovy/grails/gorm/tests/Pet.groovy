@@ -1,5 +1,7 @@
 package grails.gorm.tests
 
+import grails.persistence.Entity
+
 /**
  * Test entity for testing AWS SimpleDB.
  *
@@ -7,12 +9,23 @@ package grails.gorm.tests
  * @since 0.1
  */
 
-class Pet {
+@Entity
+class Pet implements Serializable {
     String id
     String name
     Date birthDate = new Date()
-    PetType type = new PetType(name:"Unknown")
+    PetType type = new PetType(name: "Unknown")
     Person owner
+
+    public String toString() {
+        return "Pet{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", birthDate=" + birthDate +
+                ", type=" + type +
+                ", owner=" + owner +
+                '}';
+    }
 
     static mapping = {
         domain 'Pet'

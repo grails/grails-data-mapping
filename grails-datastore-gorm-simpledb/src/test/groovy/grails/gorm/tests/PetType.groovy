@@ -1,5 +1,7 @@
 package grails.gorm.tests
 
+import grails.persistence.Entity
+
 /**
  * Test entity for testing AWS SimpleDB.
  *
@@ -7,7 +9,8 @@ package grails.gorm.tests
  * @since 0.1
  */
 
-class PetType {
+@Entity
+class PetType implements Serializable {
     String id
     String name
 

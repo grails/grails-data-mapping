@@ -10,11 +10,12 @@ import grails.persistence.Entity
  */
 
 @Entity
-class OptLockVersioned implements Serializable {
+class City extends Location{
     String id
-    String name
+    BigDecimal latitude
+    BigDecimal longitude
 
     static mapping = {
-        domain 'OptLockVersioned'
+        domain 'City'
     }
 }

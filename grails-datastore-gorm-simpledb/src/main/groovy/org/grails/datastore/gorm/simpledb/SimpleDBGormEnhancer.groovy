@@ -24,7 +24,7 @@ import org.grails.datastore.mapping.core.SessionCallback
 import org.springframework.transaction.PlatformTransactionManager
 
 import org.grails.datastore.mapping.engine.EntityPersister
-import org.grails.datastore.mapping.simpledb.engine.NativeSimpleDBItem
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBNativeItem
 import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate
 
 /**
@@ -98,9 +98,9 @@ class SimpleDBGormInstanceApi<D> extends GormInstanceApi<D> {
      * @param instance The instance
      * @return The NativeSimpleDBItem instance
      */
-    NativeSimpleDBItem getDbo(D instance) {
-        execute (new SessionCallback<NativeSimpleDBItem>() {
-            NativeSimpleDBItem doInSession(Session session) {
+    SimpleDBNativeItem getDbo(D instance) {
+        execute (new SessionCallback<SimpleDBNativeItem>() {
+            SimpleDBNativeItem doInSession(Session session) {
 
                 if (!session.contains(instance) && !instance.save()) {
                     throw new IllegalStateException(

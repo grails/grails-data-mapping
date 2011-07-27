@@ -8,21 +8,26 @@ import grails.persistence.Entity
  * @author Roman Stepanenko
  * @since 0.1
  */
+
 @Entity
-class ChildEntity implements Serializable {
+class Country extends Location {
     String id
-    String name
+    Integer population
+
+    static hasMany = [residents: Person]
+    Set residents
 
     public String toString() {
-        return "ChildEntity{" +
+        return "Country{" +
                 "id='" + id + '\'' +
-                ", name='" + name + '\'' +
+                ", population=" + population +
+                ", residents=" + residents +
                 '}';
     }
 
-    static belongsTo = [TestEntity]
-
     static mapping = {
-        domain 'ChildEntity'
+        domain 'Country'
     }
+
+
 }

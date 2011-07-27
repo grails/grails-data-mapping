@@ -15,12 +15,7 @@
 package org.grails.datastore.mapping.simpledb.engine;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
@@ -50,7 +45,7 @@ import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
  * @author Roman Stepanenko based on Graeme Rocher code for MongoDb and Redis
  * @since 0.1
  */
-public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSimpleDBItem, Object> {
+public class SimpleDBEntityPersister extends NativeEntryEntityPersister<SimpleDBNativeItem, Object> {
 
     protected SimpleDBTemplate simpleDBTemplate;
     protected String entityFamily;
@@ -146,12 +141,18 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
         Query query = session.createQuery(persistentEntity.getJavaClass());
 
         if (keys instanceof List) {
+            if (((List)keys).isEmpty()) {
+                return Collections.EMPTY_LIST;
+            }
             query.in(persistentEntity.getIdentity().getName(), (List)keys);
         }
         else {
             List<Serializable> keyList = new ArrayList<Serializable>();
             for (Serializable key : keys) {
                 keyList.add(key);
+            }
+            if (keyList.isEmpty()) {
+                return Collections.EMPTY_LIST;
             }
             query.in(persistentEntity.getIdentity().getName(), keyList);
         }
@@ -162,8 +163,8 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
         while (keyIterator.hasNext() && listIterator.hasNext()) {
             Serializable key = keyIterator.next();
             Object next = listIterator.next();
-            if (next instanceof NativeSimpleDBItem) {
-                entityResults.add(createObjectFromNativeEntry(getPersistentEntity(), key, (NativeSimpleDBItem)next));
+            if (next instanceof SimpleDBNativeItem) {
+                entityResults.add(createObjectFromNativeEntry(getPersistentEntity(), key, (SimpleDBNativeItem)next));
             }
             else {
                 entityResults.add(next);
@@ -191,7 +192,7 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
 
     @Override
     protected Object generateIdentifier(final PersistentEntity persistentEntity,
-            final NativeSimpleDBItem nativeEntry) {
+            final SimpleDBNativeItem nativeEntry) {
         return UUID.randomUUID().toString(); //todo - allow user to specify id generator using normal gorm way
     }
 
@@ -204,31 +205,22 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
 
     @Override
     @SuppressWarnings("rawtypes")
-    public AssociationIndexer getAssociationIndexer(NativeSimpleDBItem nativeEntry, Association association) {
-        throw new RuntimeException("not implemented: getAssociationIndexer");
+    public AssociationIndexer getAssociationIndexer(SimpleDBNativeItem nativeEntry, Association association) {
+        return new SimpleDBAssociationIndexer(nativeEntry, association, (SimpleDBSession) session);
     }
 
     @Override
-    protected NativeSimpleDBItem createNewEntry(String family) {
-        return new NativeSimpleDBItem();
+    protected SimpleDBNativeItem createNewEntry(String family) {
+        return new SimpleDBNativeItem();
     }
 
     @Override
-    protected Object getEntryValue(NativeSimpleDBItem nativeEntry, String property) {
+    protected Object getEntryValue(SimpleDBNativeItem nativeEntry, String property) {
         return nativeEntry.get(property);
     }
 
-//    @SuppressWarnings({ "rawtypes", "unchecked" })
-//    private static List<? extends Class> convertToString = Arrays.asList(
-//        BigDecimal.class,
-//        BigInteger.class,
-//        Locale.class,
-//        TimeZone.class,
-//        Currency.class,
-//        URL.class);
-
     @Override
-    protected void setEntryValue(NativeSimpleDBItem nativeEntry, String key, Object value) {
+    protected void setEntryValue(SimpleDBNativeItem nativeEntry, String key, Object value) {
        if (value != null && !getMappingContext().isPersistentEntity(value)) {
            String stringValue = SimpleDBConverterUtil.convertToString(value, getMappingContext());
 
@@ -237,23 +229,23 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
     }
 
     @Override
-    protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj, NativeSimpleDBItem nativeEntry) {
+    protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj, SimpleDBNativeItem nativeEntry) {
         final NativeEntryModifyingEntityAccess ea = new SimpleDBNativeEntryModifyingEntityAccess(persistentEntity, obj);
         ea.setNativeEntry(nativeEntry);
         return ea;
     }
 
     @Override
-    protected NativeSimpleDBItem retrieveEntry(final PersistentEntity persistentEntity,
+    protected SimpleDBNativeItem retrieveEntry(final PersistentEntity persistentEntity,
             String family, final Serializable key) {
         String domain = domainResolver.resolveDomain((String)key);
         Item item = simpleDBTemplate.get(domain, (String) key);
-        return item == null ? null : new NativeSimpleDBItem(item);
+        return item == null ? null : new SimpleDBNativeItem(item);
     }
 
     @Override
     protected Object storeEntry(final PersistentEntity persistentEntity, final EntityAccess entityAccess,
-                                final Object storeId, final NativeSimpleDBItem entry) {
+                                final Object storeId, final SimpleDBNativeItem entry) {
         String id = storeId.toString();
         String domain = domainResolver.resolveDomain(id);
 
@@ -273,7 +265,7 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<NativeSi
 
     @Override
     public void updateEntry(final PersistentEntity persistentEntity, final EntityAccess ea,
-            final Object key, final NativeSimpleDBItem entry) {
+            final Object key, final SimpleDBNativeItem entry) {
 
         String id = key.toString();
         String domain = domainResolver.resolveDomain(id);

@@ -10,11 +10,16 @@ import grails.persistence.Entity
  */
 
 @Entity
-class OptLockVersioned implements Serializable {
+class Location implements Serializable {
     String id
     String name
+    String code = "DEFAULT"
+
+    def namedAndCode() {
+        "$name - $code"
+    }
 
     static mapping = {
-        domain 'OptLockVersioned'
+        domain 'Location'
     }
 }

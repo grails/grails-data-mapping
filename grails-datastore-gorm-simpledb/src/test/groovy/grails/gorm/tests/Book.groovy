@@ -1,5 +1,6 @@
 package grails.gorm.tests
 
+import grails.persistence.Entity
 
 /**
  * Test entity for testing AWS SimpleDB.
@@ -7,7 +8,8 @@ package grails.gorm.tests
  * @author Roman Stepanenko
  * @since 0.1
  */
-class Book {
+@Entity
+class Book implements Serializable {
     String id
     String author
     String title

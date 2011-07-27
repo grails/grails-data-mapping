@@ -21,7 +21,7 @@ import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValue;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.query.Query;
-import org.grails.datastore.mapping.simpledb.engine.NativeSimpleDBItem;
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBNativeItem;
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver;
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBEntityPersister;
 import org.grails.datastore.mapping.simpledb.util.SimpleDBConverterUtil;
@@ -294,7 +294,7 @@ public class SimpleDBQuery extends Query {
     protected Object createObjectFromItem(Item item) {
         final String id = item.getName();
         return simpleDBEntityPersister.createObjectFromNativeEntry(getEntity(), id,
-                new NativeSimpleDBItem(item));
+                new SimpleDBNativeItem(item));
     }
 
     protected static interface QueryHandler<T> {

@@ -10,11 +10,12 @@ import grails.persistence.Entity
  */
 
 @Entity
-class OptLockVersioned implements Serializable {
+class OptLockNotVersioned implements Serializable {
     String id
     String name
 
     static mapping = {
-        domain 'OptLockVersioned'
+        domain 'OptLockNotVersioned'
+        version false
     }
 }

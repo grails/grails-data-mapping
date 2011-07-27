@@ -31,13 +31,13 @@ import com.amazonaws.services.simpledb.model.ReplaceableItem;
  * @author Roman Stepanenko
  * @since 0.1
  */
-public class NativeSimpleDBItem {
+public class SimpleDBNativeItem {
 
     private Map<String, String> data = new ConcurrentHashMap<String, String>(); //todo - not sure about concurrency requirements - can it be simplified to use HashMap?
 
-    public NativeSimpleDBItem() {}
+    public SimpleDBNativeItem() {}
 
-    public NativeSimpleDBItem(Item item) {
+    public SimpleDBNativeItem(Item item) {
         //populate map with the item attributes. //todo - handle multi-value attributes/long string etc
         List<Attribute> attributes = item.getAttributes();
         for (Attribute attribute : attributes) {
@@ -72,6 +72,6 @@ public class NativeSimpleDBItem {
 
     @Override
     public String toString() {
-        return "NativeSimpleDBItem{data=" + data + '}';
+        return "SimpleDBNativeItem{data=" + data + '}';
     }
 }
