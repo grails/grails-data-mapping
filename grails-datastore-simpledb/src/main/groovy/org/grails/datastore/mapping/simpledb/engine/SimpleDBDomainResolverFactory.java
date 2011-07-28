@@ -18,6 +18,7 @@ import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.simpledb.SimpleDBDatastore;
 import org.grails.datastore.mapping.simpledb.config.SimpleDBDomainClassMappedForm;
+import org.grails.datastore.mapping.simpledb.util.SimpleDBUtil;
 
 /**
  * Encapsulates logic of building appropriately configured SimpleDBDomainResolver instance.
@@ -28,10 +29,11 @@ import org.grails.datastore.mapping.simpledb.config.SimpleDBDomainClassMappedFor
 public class SimpleDBDomainResolverFactory {
 
     public SimpleDBDomainResolver buildResolver(PersistentEntity entity, SimpleDBDatastore simpleDBDatastore) {
+        String entityFamily = SimpleDBUtil.getMappedDomainName(entity);
+
         @SuppressWarnings("unchecked")
         ClassMapping<SimpleDBDomainClassMappedForm> classMapping = entity.getMapping();
         SimpleDBDomainClassMappedForm mappedForm = classMapping.getMappedForm();
-        String entityFamily = getFamily(entity, mappedForm);
 
         if (mappedForm.isShardingEnabled()) {
             throw new RuntimeException("sharding is not implemented yet");
@@ -40,12 +42,4 @@ public class SimpleDBDomainResolverFactory {
         return new ConstSimpleDBDomainResolver(entityFamily, simpleDBDatastore.getDomainNamePrefix());
     }
 
-    protected String getFamily(PersistentEntity persistentEntity, SimpleDBDomainClassMappedForm mappedForm) {
-        String table = null;
-        if (mappedForm != null) {
-            table = mappedForm.getFamily();
-        }
-        if (table == null) table = persistentEntity.getJavaClass().getName();
-        return table;
-    }
 }

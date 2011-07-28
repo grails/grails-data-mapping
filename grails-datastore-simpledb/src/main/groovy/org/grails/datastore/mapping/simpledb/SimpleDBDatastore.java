@@ -17,8 +17,14 @@ package org.grails.datastore.mapping.simpledb;
 import static org.grails.datastore.mapping.config.utils.ConfigUtils.read;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.OneToMany;
+import org.grails.datastore.mapping.simpledb.engine.AssociationKey;
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBAssociationInfo;
+import org.grails.datastore.mapping.simpledb.util.SimpleDBUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.ConverterRegistry;
@@ -47,6 +53,8 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
 
 //    private Map<PersistentEntity, SimpleDBTemplate> simpleDBTemplates = new ConcurrentHashMap<PersistentEntity, SimpleDBTemplate>();
     private SimpleDBTemplate simpleDBTemplate;  //currently there is no need to create template per entity, we can share same instance
+    protected Map<AssociationKey, SimpleDBAssociationInfo> associationInfoMap = new HashMap<AssociationKey, SimpleDBAssociationInfo>(); //contains entries only for those associations that need a dedicated domain
+
     private String domainNamePrefix;
 
     public SimpleDBDatastore() {
@@ -132,6 +140,15 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
 
     public void persistentEntityAdded(PersistentEntity entity) {
         createSimpleDBTemplate(entity);
+        analyzeAssociations(entity); 
+    }
+
+    /**
+     * If the specified association has a dedicated AWS domains, returns info for that association,
+     * otherwise returns null.
+     */
+    public SimpleDBAssociationInfo getAssociationInfo(Association association){
+        return associationInfoMap.get(generateAssociationKey(association));
     }
 
     @Override
@@ -139,4 +156,27 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         final ConverterRegistry conversionService = mappingContext.getConverterRegistry();
         new SimpleDBTypeConverterRegistrar().register(conversionService);
     }
+
+    /**
+     * Analyzes associations and for those associations that need to be stored
+     * in a dedicated AWS domain, creates info object with details for that association.
+     */
+    protected void analyzeAssociations(PersistentEntity entity){
+        for (Association association : entity.getAssociations()) {
+            if (association instanceof OneToMany && !association.isBidirectional()){
+                String associationDomainName = generateAssociationDomainName(association);
+                associationInfoMap.put(generateAssociationKey(association), new SimpleDBAssociationInfo(associationDomainName));
+            }
+        }
+    }
+
+    protected AssociationKey generateAssociationKey(Association association) {
+        return new AssociationKey(association.getOwner(), association.getName());
+    }
+
+    protected String generateAssociationDomainName(Association association) {
+        String ownerDomainName = SimpleDBUtil.getMappedDomainName(association.getOwner());
+        return SimpleDBUtil.getPrefixedDomainName(domainNamePrefix, ownerDomainName.toUpperCase()+"_"+association.getName().toUpperCase());
+    }
+
 }

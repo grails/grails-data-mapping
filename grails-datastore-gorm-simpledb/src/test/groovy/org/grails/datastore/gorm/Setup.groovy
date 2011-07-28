@@ -18,6 +18,7 @@ import org.grails.datastore.mapping.simpledb.config.SimpleDBMappingContext
 import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolverFactory
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBAssociationInfo
 
 /**
  * In order to run AWS SimpleDB tests you have to define two system variables: AWS_ACCESS_KEY and AWS_SECRET_KEY with
@@ -100,25 +101,35 @@ class Setup {
         for (dc in domainClasses) {
             def domainClass = dc //explicitly declare local variable which we will be using from the thread
             //do simpleDB work in parallel threads for each domain class to speed things up
-            Thread.start{
+            Thread.start {
                 try {
                     PersistentEntity entity = mappingContext.getPersistentEntity(domainClass.getName())
                     SimpleDBDomainResolver domainResolver = resolverFactory.buildResolver(entity, simpleDBDatastore)
-            def domains = domainResolver.getAllDomainsForEntity()
-            domains.each { domain ->
-                if (existingDomains.contains(domain)){
-                    //delete all the records there - we should start test with a clean slate
-                    template.deleteAllItems(domain)
-                } else {
-                    //create it
-                    template.createDomain(domain)
-                }
-            }
+                    def domains = domainResolver.getAllDomainsForEntity()
+                    domains.each { domain ->
+                        clearOrDeleteDomain(template, existingDomains, domain)
+                        //create domains for associations
+                        entity.getAssociations().each{ association ->
+                            SimpleDBAssociationInfo associationInfo = simpleDBDatastore.getAssociationInfo(association)
+                            if (associationInfo){
+                                clearOrDeleteDomain(template, existingDomains, associationInfo.getDomainName())
+                            }
+                        }
+                    }
                 } finally {
                     latch.countDown()
+                }
+            }
         }
-    }
-}
         latch.await()
+    }
+
+    static clearOrDeleteDomain(template, existingDomains, domainName){
+        if (existingDomains.contains(domainName)) {
+            template.deleteAllItems(domainName) //delete all items there
+        } else {
+            //create it
+            template.createDomain(domainName)
+        }
     }
 }

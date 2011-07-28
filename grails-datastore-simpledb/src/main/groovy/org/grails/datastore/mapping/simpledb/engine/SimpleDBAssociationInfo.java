@@ -14,19 +14,25 @@
  */
 package org.grails.datastore.mapping.simpledb.engine;
 
-import org.grails.datastore.mapping.simpledb.util.SimpleDBUtil;
-
 /**
+ * For associations that are stored in dedicated domains (unidirectional onToMany), contains
+ * domain name for each association.
+ *
  * @author Roman Stepanenko
+ * @since 0.1
  */
-public abstract class AbstractSimpleDBDomainResolver implements SimpleDBDomainResolver {
-
-    protected String entityFamily;
-    protected String domainNamePrefix;
-
-    public AbstractSimpleDBDomainResolver(String entityFamily, String domainNamePrefix) {
-        this.entityFamily = entityFamily;
-        this.domainNamePrefix = domainNamePrefix;
-        this.entityFamily = SimpleDBUtil.getPrefixedDomainName(domainNamePrefix, this.entityFamily);
+public class SimpleDBAssociationInfo {
+    public SimpleDBAssociationInfo(String domainName) {
+        this.domainName = domainName;
     }
+
+    public String getDomainName() {
+        return domainName;
+    }
+
+    public void setDomainName(String domainName) {
+        this.domainName = domainName;
+    }
+
+    private String domainName;
 }

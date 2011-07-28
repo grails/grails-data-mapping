@@ -74,7 +74,7 @@ public class SimpleDBSession extends AbstractSession {
         return new SessionOnlyTransaction(null, this);
     }
 
-    public SimpleDBTemplate getSimpleDBTemplate(PersistentEntity entity) {
-        return simpleDBDatastore.getSimpleDBTemplate(entity);
+    public SimpleDBTemplate getSimpleDBTemplate() {
+        return simpleDBDatastore.getSimpleDBTemplate();
     }
 }

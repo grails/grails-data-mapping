@@ -15,6 +15,9 @@
 package org.grails.datastore.mapping.simpledb.util;
 
 import com.amazonaws.services.simpledb.util.SimpleDBUtils;
+import org.grails.datastore.mapping.model.ClassMapping;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.simpledb.config.SimpleDBDomainClassMappedForm;
 
 import java.util.Collection;
 
@@ -51,4 +54,41 @@ public class SimpleDBUtil {
     public static String quoteValues(Collection<String> values){
         return SimpleDBUtils.quoteValues(values);
     }
+
+    /**
+     * If domainNamePrefix is not null returns prefexed domain name.
+     * @param domainName
+     * @param domainNamePrefix
+     * @return
+     */
+    public static String getPrefixedDomainName(String domainNamePrefix, String domainName){
+        if (domainNamePrefix != null) {
+            return domainNamePrefix + domainName;
+        } else {
+            return domainName;
+        }
+    }
+
+    /**
+     * Returns mapped domain name (*unprefixed*) for the specified @{link PersistentEntity}.
+     * @param entity
+     * @return
+     */
+    public static String getMappedDomainName(PersistentEntity entity){
+        @SuppressWarnings("unchecked")
+        ClassMapping<SimpleDBDomainClassMappedForm> classMapping = entity.getMapping();
+        SimpleDBDomainClassMappedForm mappedForm = classMapping.getMappedForm();
+        String entityFamily = getFamily(entity, mappedForm);
+        return entityFamily;
+    }
+
+    private static String getFamily(PersistentEntity persistentEntity, SimpleDBDomainClassMappedForm mappedForm) {
+        String table = null;
+        if (mappedForm != null) {
+            table = mappedForm.getFamily();
+        }
+        if (table == null) table = persistentEntity.getJavaClass().getName();
+        return table;
+    }
+
 }
