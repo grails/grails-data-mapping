@@ -37,7 +37,7 @@ public class WithinBox extends MethodExpression {
 
     @Override
     public Criterion createCriterion() {
-        return new MongoQuery.WithinBox(propertyName, (List) arguments[0]);
+        return new MongoQuery.WithinBox(propertyName, (List<?>) arguments[0]);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class WithinBox extends MethodExpression {
         Assert.isTrue(arguments.length > 0 && arguments[0] instanceof List,
             "Only a list of elements is supported in a 'withinBox' query");
 
-        Collection argument = (Collection) arguments[0];
+        Collection<?> argument = (Collection<?>) arguments[0];
         Assert.isTrue(argument.size() == 2,
             "A 'withinBox' query requires a two dimensional list of values");
 

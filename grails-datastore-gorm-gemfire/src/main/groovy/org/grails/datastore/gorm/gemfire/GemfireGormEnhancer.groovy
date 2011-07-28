@@ -103,6 +103,7 @@ class FunctionContextHelper implements RegionFunctionContext, ResultSender, Seri
 
     Set<?> getFilter() { context.filter }
 
+    @SuppressWarnings("unchecked")
     Region getDataSet() { context.dataSet }
 
     Serializable getArguments() { context.arguments }

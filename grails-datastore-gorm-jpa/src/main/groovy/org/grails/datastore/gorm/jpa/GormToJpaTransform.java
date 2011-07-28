@@ -102,6 +102,7 @@ public class GormToJpaTransform implements ASTTransformation {
     private static final ClassNode MY_TYPE = new ClassNode(JpaEntity.class);
     private static final String MY_TYPE_NAME = "@" + MY_TYPE.getNameWithoutPackage();
 
+    @SuppressWarnings("serial")
     private static final Map<String, AnnotationNode> gormEventMethodToJpaAnnotation = new HashMap<String, AnnotationNode>() {{
         put("beforeInsert", new AnnotationNode(new ClassNode(PrePersist.class)));
         put("afterInsert", new AnnotationNode(new ClassNode(PostPersist.class)));
@@ -369,6 +370,7 @@ public class GormToJpaTransform implements ASTTransformation {
         }
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private static void populateConfigurationMapFromClosureExpression(ClassNode classNode,
             PropertyNode mappingNode, Map propertyMappings) {
         ClosureExpression ce = (ClosureExpression) mappingNode.getInitialExpression();

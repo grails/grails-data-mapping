@@ -142,7 +142,7 @@ public class EntityInterceptorInvokingEntityListener {
     }
 
     void rollbackTransaction(JpaSession jpaSession) {
-        final Transaction transaction = jpaSession.getTransaction();
+        final Transaction<?> transaction = jpaSession.getTransaction();
         if (transaction != null) {
             transaction.rollback();
         }

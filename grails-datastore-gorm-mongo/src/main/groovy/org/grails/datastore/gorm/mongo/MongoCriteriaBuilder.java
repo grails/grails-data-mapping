@@ -33,11 +33,11 @@ import org.grails.datastore.mapping.query.Query;
  */
 public class MongoCriteriaBuilder extends CriteriaBuilder {
 
-    public MongoCriteriaBuilder(final Class targetClass, final Session session, final Query query) {
+    public MongoCriteriaBuilder(final Class<?> targetClass, final Session session, final Query query) {
         super(targetClass, session, query);
     }
 
-    public MongoCriteriaBuilder(final Class targetClass, final Session session) {
+    public MongoCriteriaBuilder(final Class<?> targetClass, final Session session) {
         super(targetClass, session);
     }
 
@@ -48,7 +48,7 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      * @param value A two dimensional list of values
      * @return this Criterion
      */
-    public Query.Criterion near(String property, List value) {
+    public Query.Criterion near(String property, List<?> value) {
         validatePropertyName(property, "near");
         return addToCriteria(new Near(property, value));
     }
@@ -62,7 +62,7 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      * @param value A multi-dimensional list of values
      * @return this Criterion
      */
-    public Query.Criterion withinBox(String property, List value) {
+    public Query.Criterion withinBox(String property, List<?> value) {
         validatePropertyName(property, "withinBox");
         return addToCriteria(new WithinBox(property, value));
     }
@@ -76,7 +76,7 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      * @param value A multi-dimensional list of values
      * @return this Criterion
      */
-    public Query.Criterion withinCircle(String property, List value) {
+    public Query.Criterion withinCircle(String property, List<?> value) {
         validatePropertyName(property, "withinBox");
         return addToCriteria(new WithinCircle(property, value));
     }

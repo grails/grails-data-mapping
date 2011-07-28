@@ -30,7 +30,7 @@ public class Near extends MethodExpression {
 
     @Override
     public Criterion createCriterion() {
-        return new MongoQuery.Near(propertyName, (List) arguments[0]);
+        return new MongoQuery.Near(propertyName, (List<?>) arguments[0]);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class Near extends MethodExpression {
         Assert.isTrue(arguments.length > 0 && arguments[0] instanceof List,
             "Only a list of elements is supported in an 'near' query");
 
-        Collection argument = (Collection) arguments[0];
+        Collection<?> argument = (Collection<?>) arguments[0];
         Assert.isTrue(argument.size() == 2,
             "A 'near' query requires a two dimensional list of values");
 
