@@ -14,18 +14,13 @@
  */
 package org.grails.datastore.gorm.neo4j
 
-import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.GraphDatabaseService
-import org.neo4j.graphdb.Node
-import org.neo4j.graphdb.Relationship
-import org.neo4j.graphdb.Transaction
+import org.grails.datastore.mapping.core.AbstractDatastore
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.neo4j.kernel.EmbeddedGraphDatabase
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ConfigurableApplicationContext
-import org.grails.datastore.mapping.core.AbstractDatastore
-import org.grails.datastore.mapping.core.Session
-import org.grails.datastore.mapping.model.MappingContext
-import org.grails.datastore.mapping.model.PersistentEntity
+import org.neo4j.graphdb.*
 
 /**
  * Datastore implementation for Neo4j backend
@@ -100,8 +95,8 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
         Node referenceNode = graphDatabaseService.referenceNode
         for (Relationship rel in referenceNode.getRelationships(GrailsRelationshipTypes.SUBREFERENCE, Direction.OUTGOING)) {
             Node endNode = rel.endNode
-            Class clazz = endNode.getProperty(Neo4jEntityPersister.SUBREFERENCE_PROPERTY_NAME)
-            subReferenceNodes[clazz] = endNode
+            String clazzName = endNode.getProperty(Neo4jEntityPersister.SUBREFERENCE_PROPERTY_NAME)
+            subReferenceNodes[clazzName] = endNode
         }
 
         for (PersistentEntity pe in mappingContext.persistentEntities) {
