@@ -25,6 +25,7 @@ import org.grails.datastore.gorm.simpledb.bean.factory.SimpleDBDatastoreFactoryB
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolverFactory
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBAssociationInfo
 import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate
 import org.grails.datastore.mapping.simpledb.util.SimpleDBConst
 
@@ -173,6 +174,19 @@ customizable performance tweaks according to SimpleDB best practices (dedicated 
             if (create){
                 domains.each{ domain ->
                     template.createDomain (domain)
+                }
+            }
+
+            entity.getAssociations().each{ association ->
+                //check if this association requires a dedicated aws domain and if yes drop/create if needed
+                SimpleDBAssociationInfo associationInfo = simpleDBDatastore.getAssociationInfo(association)
+                if (associationInfo){
+                    if (drop){
+                        template.deleteDomain (associationInfo.getDomainName())
+                    }
+                    if (create){
+                        template.createDomain(associationInfo.getDomainName())
+                    }
                 }
             }
         }
