@@ -12,6 +12,8 @@ import grails.persistence.Entity
 @Entity
 class Highway implements Serializable {
     String id
+    Long version
+
     Boolean bypassed
     String name
 

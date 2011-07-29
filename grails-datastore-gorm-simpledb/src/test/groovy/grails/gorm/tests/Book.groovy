@@ -11,6 +11,7 @@ import grails.persistence.Entity
 @Entity
 class Book implements Serializable {
     String id
+    Long version
     String author
     String title
     Boolean published = false

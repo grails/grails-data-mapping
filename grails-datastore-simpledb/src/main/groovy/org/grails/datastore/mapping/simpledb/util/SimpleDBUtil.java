@@ -33,6 +33,8 @@ import java.util.List;
  * @since 0.1
  */
 public class SimpleDBUtil {
+    public static final String AWS_ERR_CODE_CONDITIONAL_CHECK_FAILED = "ConditionalCheckFailed";
+
     /**
      * Quotes and escapes an attribute name or domain name by wrapping it with backticks and escaping any backticks inside the name.
      * @param name

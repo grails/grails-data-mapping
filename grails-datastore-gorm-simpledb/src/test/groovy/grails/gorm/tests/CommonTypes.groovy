@@ -12,6 +12,8 @@ import grails.persistence.Entity
 @Entity
 class CommonTypes implements Serializable {
     String id
+    Long version
+
     Long l
     Byte b
     Short s

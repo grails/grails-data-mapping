@@ -8,19 +8,17 @@ import grails.persistence.Entity
  * @author Roman Stepanenko
  * @since 0.1
  */
-
 @Entity
-class ModifyPerson implements Serializable {
+class PlantCategory implements Serializable {
     String id
     Long version
 
+    Set plants
     String name
 
-    def beforeInsert() {
-        name = "Fred"
-    }
+    static hasMany = [plants:Plant]
 
     static mapping = {
-        domain 'ModifyPerson'
+        domain 'PlantCategory'
     }
 }

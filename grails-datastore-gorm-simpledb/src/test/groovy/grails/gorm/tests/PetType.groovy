@@ -12,6 +12,8 @@ import grails.persistence.Entity
 @Entity
 class PetType implements Serializable {
     String id
+    Long version
+
     String name
 
     static belongsTo = Pet

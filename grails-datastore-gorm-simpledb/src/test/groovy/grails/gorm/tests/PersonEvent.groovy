@@ -12,6 +12,8 @@ import grails.persistence.Entity
 @Entity
 class PersonEvent implements Serializable {
     String id
+    Long version
+
     String name
     Date dateCreated
     Date lastUpdated

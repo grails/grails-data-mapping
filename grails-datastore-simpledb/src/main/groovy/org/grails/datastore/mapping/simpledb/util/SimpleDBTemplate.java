@@ -16,6 +16,7 @@ package org.grails.datastore.mapping.simpledb.util;
 
 import java.util.List;
 
+import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.dao.DataAccessException;
 
 import com.amazonaws.services.simpledb.model.Attribute;
@@ -44,10 +45,11 @@ public interface SimpleDBTemplate {
      * @param id
      * @param attributes
      * @param expectedVersion
+     * @param persistentEntity
      * @throws DataAccessException
      */
     void putAttributesVersioned(String domainName, String id, List<ReplaceableAttribute> attributes,
-            String expectedVersion) throws DataAccessException;
+                                String expectedVersion, PersistentEntity persistentEntity) throws DataAccessException;
 
     /**
      * If attributes is empty this method will do nothing - otherwise the whole
@@ -72,9 +74,10 @@ public interface SimpleDBTemplate {
      * @param id
      * @param attributes
      * @param expectedVersion
+     * @param persistentEntity
      * @throws DataAccessException
      */
-    void deleteAttributesVersioned(String domainName, String id, List<Attribute> attributes, String expectedVersion)
+    void deleteAttributesVersioned(String domainName, String id, List<Attribute> attributes, String expectedVersion, PersistentEntity persistentEntity)
             throws DataAccessException;
 
     /**

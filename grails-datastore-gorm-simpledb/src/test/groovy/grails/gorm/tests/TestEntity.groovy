@@ -11,6 +11,7 @@ import grails.persistence.Entity
 @Entity
 class TestEntity implements Serializable {
     String id
+    Long version
 
     String name
     Integer age = 30

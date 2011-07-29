@@ -12,6 +12,8 @@ import grails.persistence.Entity
 @Entity
 class Location implements Serializable {
     String id
+    Long version
+
     String name
     String code = "DEFAULT"
 

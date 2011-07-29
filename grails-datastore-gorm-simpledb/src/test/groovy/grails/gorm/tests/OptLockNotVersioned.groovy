@@ -12,6 +12,7 @@ import grails.persistence.Entity
 @Entity
 class OptLockNotVersioned implements Serializable {
     String id
+
     String name
 
     static mapping = {

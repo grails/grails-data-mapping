@@ -12,6 +12,7 @@ import grails.persistence.Entity
 @Entity
 class City extends Location{
     String id
+    Long version
     BigDecimal latitude
     BigDecimal longitude
 

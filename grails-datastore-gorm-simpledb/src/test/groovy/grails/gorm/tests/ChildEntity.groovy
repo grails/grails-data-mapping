@@ -11,6 +11,7 @@ import grails.persistence.Entity
 @Entity
 class ChildEntity implements Serializable {
     String id
+    Long version
     String name
 
     public String toString() {

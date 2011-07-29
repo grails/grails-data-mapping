@@ -17,6 +17,7 @@ package org.grails.datastore.mapping.simpledb.util;
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
+import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.dao.DataAccessException;
 
 import java.util.List;
@@ -52,8 +53,8 @@ public class DelayAfterWriteSimpleDBTemplateDecorator implements SimpleDBTemplat
         pause();
     }
 
-    public void deleteAttributesVersioned(String domainName, String id, List<Attribute> attributes, String expectedVersion) throws DataAccessException {
-        template.deleteAttributesVersioned(domainName, id, attributes, expectedVersion);
+    public void deleteAttributesVersioned(String domainName, String id, List<Attribute> attributes, String expectedVersion, PersistentEntity persistentEntity) throws DataAccessException {
+        template.deleteAttributesVersioned(domainName, id, attributes, expectedVersion, persistentEntity);
         pause();
     }
 
@@ -80,8 +81,8 @@ public class DelayAfterWriteSimpleDBTemplateDecorator implements SimpleDBTemplat
 //        pause();      //for tests we use DelayAfterWriteSimpleDBSession which pauses after flush
     }
 
-    public void putAttributesVersioned(String domainName, String id, List<ReplaceableAttribute> attributes, String expectedVersion) throws DataAccessException {
-        template.putAttributesVersioned(domainName, id, attributes, expectedVersion);
+    public void putAttributesVersioned(String domainName, String id, List<ReplaceableAttribute> attributes, String expectedVersion, PersistentEntity persistentEntity) throws DataAccessException {
+        template.putAttributesVersioned(domainName, id, attributes, expectedVersion, persistentEntity);
 //        pause();      //for tests we use DelayAfterWriteSimpleDBSession which pauses after flush
     }
 

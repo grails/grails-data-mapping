@@ -17,6 +17,7 @@ package org.grails.datastore.mapping.simpledb.engine;
 import java.io.Serializable;
 import java.util.*;
 
+import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
@@ -300,12 +301,12 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<SimpleDB
         if (isVersioned(ea)) {
             puts.add(createAttributeForVersion(ea)); //update the version
             try {
-                simpleDBTemplate.deleteAttributesVersioned(domain, id, deletes, stringCurrentVersion);
-                simpleDBTemplate.putAttributesVersioned(domain, id, puts, stringCurrentVersion);
+                simpleDBTemplate.deleteAttributesVersioned(domain, id, deletes, stringCurrentVersion, persistentEntity);
+                simpleDBTemplate.putAttributesVersioned(domain, id, puts, stringCurrentVersion, persistentEntity);
             } catch (DataAccessException e) {
                 //we need to restore version to what it was before the attempt to update
                 ea.setProperty("version", currentVersion);
-                throw new RuntimeException(e);
+                throw e;
             }
         } else {
             simpleDBTemplate.deleteAttributes(domain, id, deletes);

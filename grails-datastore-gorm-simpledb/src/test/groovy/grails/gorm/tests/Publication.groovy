@@ -12,6 +12,8 @@ import grails.persistence.Entity
 @Entity
 class Publication implements Serializable {
     String id
+    Long version
+
     String title
     Date datePublished
     Boolean paperback = true

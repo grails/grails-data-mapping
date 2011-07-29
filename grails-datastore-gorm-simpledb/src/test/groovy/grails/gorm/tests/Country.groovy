@@ -12,6 +12,8 @@ import grails.persistence.Entity
 @Entity
 class Country extends Location {
     String id
+    Long version
+
     Integer population
 
     static hasMany = [residents: Person]

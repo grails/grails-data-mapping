@@ -12,6 +12,8 @@ import grails.persistence.Entity
 @Entity
 class Person implements Serializable {
     String id
+    Long version
+
     String firstName
     String lastName
     Set pets = [] as Set

@@ -10,17 +10,22 @@ import grails.persistence.Entity
  */
 
 @Entity
-class ModifyPerson implements Serializable {
+class ClassWithNoArgBeforeValidate implements Serializable {
     String id
     Long version
 
+    def noArgCounter = 0
     String name
 
-    def beforeInsert() {
-        name = "Fred"
+    def beforeValidate() {
+        ++noArgCounter
+    }
+
+    static constraints = {
+        name blank: false
     }
 
     static mapping = {
-        domain 'ModifyPerson'
+        domain 'ClassWithNoArgBeforeValidate'
     }
 }
