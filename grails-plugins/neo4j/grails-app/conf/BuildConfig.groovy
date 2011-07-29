@@ -11,6 +11,8 @@ grails.project.dependency.resolution = {
         grailsCentral()
 
         mavenLocal()
+        mavenCentral()
+        mavenRepo "http://repo.grails.org/grails/repo"
     }
 
     plugins {
@@ -28,19 +30,19 @@ grails.project.dependency.resolution = {
 //            excludes "spring-core", "spring-beans", "spring-aop", "spring-tx", "spring-context", "spring-web"
 //        }
 
-        compile("org.grails:grails-datastore-gorm-neo4j:1.0.0.BUILD-SNAPSHOT",
+        compile("org.grails:grails-datastore-gorm-neo4j:$version",
                 "org.grails:grails-datastore-gorm:$version",
-                "org.springframework:grails-datastore-core:$version",
-                "org.springframework:grails-datastore-web:$version") {
+                "org.grails:grails-datastore-core:$version",
+                "org.grails:grails-datastore-web:$version") {
             transitive = false
         }
 
         test("org.grails:grails-datastore-gorm-test:$version",
-             "org.springframework:grails-datastore-simple:$version"){
+             "org.grails:grails-datastore-simple:$version"){
             transitive = false
         }
 
-        compile('org.neo4j:neo4j:1.4.M05')
+        compile('org.neo4j:neo4j-community:1.4')
 
 /*        def neo4jRestExcludes = {
 //            excludes "jersey-server"

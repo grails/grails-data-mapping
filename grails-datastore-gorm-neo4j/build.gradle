@@ -5,7 +5,7 @@ repositories {
 dependencies {
     compile project(":grails-datastore-gorm"),
             project(":grails-datastore-web"),
-            "org.neo4j:neo4j:1.4.M05"
+            "org.neo4j:neo4j-community:1.4"
             //project(":grails-datastore-core")
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")

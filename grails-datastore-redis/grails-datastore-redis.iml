@@ -24,11 +24,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/redis.clients/jedis/jars/jedis-1.5.2.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/redis.clients/jedis/jars/jedis-2.0.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/redis.clients/jedis/sources/jedis-1.5.2-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/redis.clients/jedis/sources/jedis-2.0.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

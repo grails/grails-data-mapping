@@ -21,22 +21,9 @@
     <orderEntry type="module-library" exported="">
       <library name="Grails User Library (neo4j-grailsPlugins)">
         <CLASSES>
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-jmx/jars/neo4j-jmx-1.4.M05.jar!/" />
           <root url="jar://$HOME_DIR$/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.9.0-1.jar!/" />
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-cypher/jars/neo4j-cypher-1.4.M05.jar!/" />
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-graph-matching/jars/neo4j-graph-matching-1.4.M05.jar!/" />
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-udc/jars/neo4j-udc-1.4.M05.jar!/" />
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-graph-algo/jars/neo4j-graph-algo-1.4.M05.jar!/" />
           <root url="jar://$HOME_DIR$/.ivy2/cache/org.apache.lucene/lucene-core/jars/lucene-core-3.1.0.jar!/" />
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-lucene-index/jars/neo4j-lucene-index-1.4.M05.jar!/" />
           <root url="jar://$HOME_DIR$/.ivy2/cache/org.apache.geronimo.specs/geronimo-jta_1.1_spec/jars/geronimo-jta_1.1_spec-1.1.1.jar!/" />
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-kernel/jars/neo4j-kernel-1.4.M05.jar!/" />
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j/jars/neo4j-1.4.M05.jar!/" />
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-web/jars/grails-datastore-web-1.0.0.BUILD-SNAPSHOT.jar!/" />
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-core/jars/grails-datastore-core-1.0.0.BUILD-SNAPSHOT.jar!/" />
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-gorm/jars/grails-datastore-gorm-1.0.0.BUILD-SNAPSHOT.jar!/" />
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-simple/jars/grails-datastore-simple-1.0.0.BUILD-SNAPSHOT.jar!/" />
-          <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-gorm-test/jars/grails-datastore-gorm-test-1.0.0.BUILD-SNAPSHOT.jar!/" />
           <root url="jar://$HOME_DIR$/.ivy2/cache/xml-resolver/xml-resolver/jars/xml-resolver-1.2.jar!/" />
           <root url="jar://$HOME_DIR$/.ivy2/cache/xerces/xercesImpl/jars/xercesImpl-2.8.1.jar!/" />
           <root url="jar://$HOME_DIR$/.ivy2/cache/net.sourceforge.nekohtml/nekohtml/jars/nekohtml-1.9.9.jar!/" />
@@ -70,6 +57,20 @@
           <root url="jar://$HOME_DIR$/.ivy2/cache/ant/ant/jars/ant-1.6.5.jar!/" />
           <root url="jar://$HOME_DIR$/.ivy2/cache/org.apache.maven/maven-ant-tasks/jars/maven-ant-tasks-2.1.0.jar!/" />
           <root url="jar://$HOME_DIR$/.ivy2/cache/org.tmatesoft.svnkit/svnkit/jars/svnkit-1.3.5.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-jmx/jars/neo4j-jmx-1.4.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-cypher/jars/neo4j-cypher-1.4.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-graph-matching/jars/neo4j-graph-matching-1.4.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-udc/jars/neo4j-udc-1.4.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-graph-algo/jars/neo4j-graph-algo-1.4.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-lucene-index/jars/neo4j-lucene-index-1.4.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-kernel/jars/neo4j-kernel-1.4.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.neo4j/neo4j-community/jars/neo4j-community-1.4.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-web/jars/grails-datastore-web-1.0.0.M7.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-core/jars/grails-datastore-core-1.0.0.M7.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-gorm/jars/grails-datastore-gorm-1.0.0.M7.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-gorm-neo4j/jars/grails-datastore-gorm-neo4j-1.0.0.M7.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-simple/jars/grails-datastore-simple-1.0.0.M7.jar!/" />
+          <root url="jar://$HOME_DIR$/.ivy2/cache/org.grails/grails-datastore-gorm-test/jars/grails-datastore-gorm-test-1.0.0.M7.jar!/" />
           <root url="file://$DOTGRAILS$/1.3.7/projects/neo4j/plugins/svn-1.0.0.M1/lib" />
         </CLASSES>
         <JAVADOC />

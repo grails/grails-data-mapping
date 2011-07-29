@@ -57,6 +57,9 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/grails-data-mapping.iml" filepath="$PROJECT_DIR$/grails-data-mapping.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-core/grails-datastore-core.iml" filepath="$PROJECT_DIR$/grails-datastore-core/grails-datastore-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-gemfire/grails-datastore-gemfire.iml" filepath="$PROJECT_DIR$/grails-datastore-gemfire/grails-datastore-gemfire.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm/grails-datastore-gorm.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm/grails-datastore-gorm.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-gemfire/grails-datastore-gorm-gemfire.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-gemfire/grails-datastore-gorm-gemfire.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-jpa/grails-datastore-gorm-jpa.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-jpa/grails-datastore-gorm-jpa.iml" />
@@ -66,9 +69,6 @@
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-riak/grails-datastore-gorm-riak.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-riak/grails-datastore-gorm-riak.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-tck/grails-datastore-gorm-tck.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-tck/grails-datastore-gorm-tck.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-test/grails-datastore-gorm-test.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-test/grails-datastore-gorm-test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/grails-data-mapping.iml" filepath="$PROJECT_DIR$/grails-data-mapping.iml" />
-      <module fileurl="file://$PROJECT_DIR$/grails-datastore-core/grails-datastore-core.iml" filepath="$PROJECT_DIR$/grails-datastore-core/grails-datastore-core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/grails-datastore-gemfire/grails-datastore-gemfire.iml" filepath="$PROJECT_DIR$/grails-datastore-gemfire/grails-datastore-gemfire.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-jpa/grails-datastore-jpa.iml" filepath="$PROJECT_DIR$/grails-datastore-jpa/grails-datastore-jpa.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-mongo/grails-datastore-mongo.iml" filepath="$PROJECT_DIR$/grails-datastore-mongo/grails-datastore-mongo.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-redis/grails-datastore-redis.iml" filepath="$PROJECT_DIR$/grails-datastore-redis/grails-datastore-redis.iml" />
@@ -77,56 +77,18 @@
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-web/grails-datastore-web.iml" filepath="$PROJECT_DIR$/grails-datastore-web/grails-datastore-web.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
+  <component name="ProjectResources">
+    <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="$project_jdk_name$" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="SvnBranchConfigurationManager">
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="" />
+    <mapping directory="" vcs="Git" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
-  <component name="masterDetails">
-    <states>
-      <state key="ArtifactsStructureConfigurable.UI">
-        <UIState>
-          <splitter-proportions>
-            <SplitterProportionsDataImpl />
-          </splitter-proportions>
-          <settings />
-        </UIState>
-      </state>
-      <state key="Copyright.UI">
-        <UIState>
-          <splitter-proportions>
-            <SplitterProportionsDataImpl />
-          </splitter-proportions>
-        </UIState>
-      </state>
-      <state key="ProjectJDKs.UI">
-        <UIState>
-          <splitter-proportions>
-            <SplitterProportionsDataImpl>
-              <option name="proportions">
-                <list>
-                  <option value="0.2" />
-                </list>
-              </option>
-            </SplitterProportionsDataImpl>
-          </splitter-proportions>
-          <last-edited>1.6</last-edited>
-        </UIState>
-      </state>
-      <state key="ScopeChooserConfigurable.UI">
-        <UIState>
-          <splitter-proportions>
-            <SplitterProportionsDataImpl />
-          </splitter-proportions>
-          <settings />
-        </UIState>
-      </state>
-    </states>
-  </component>
 </project>
 
