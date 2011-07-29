@@ -14,14 +14,15 @@
  */
 package org.grails.datastore.mapping.simpledb.engine;
 
-import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.simpledb.SimpleDBDatastore;
 import org.grails.datastore.mapping.simpledb.SimpleDBSession;
+import org.grails.datastore.mapping.simpledb.query.SimpleDBQuery;
 import org.grails.datastore.mapping.simpledb.util.SimpleDBUtil;
 
 import java.util.Collections;
@@ -57,7 +58,7 @@ public class SimpleDBAssociationIndexer implements AssociationIndexer {
     public void index(Object primaryKey, List foreignKeys) {
 //        System.out.println("INDEX: index for id: "+primaryKey+", keys: "+foreignKeys+". entry: "+nativeEntry+", association: "+association);
         if (!association.isBidirectional()) { //we use additional table only for unidirectional
-            SimpleDBAssociationInfo associationInfo = ((SimpleDBDatastore) session.getDatastore()).getAssociationInfo(association);
+            SimpleDBAssociationInfo associationInfo = getDatastore().getAssociationInfo(association);
             //current implementation can not handle more than 255 ids because we store them in a multi-value attribute
             //and key this collection by the primary key of the entity
             List<ReplaceableAttribute> attributes = new LinkedList<ReplaceableAttribute>();
@@ -72,26 +73,35 @@ public class SimpleDBAssociationIndexer implements AssociationIndexer {
     public List query(Object primaryKey) {
 //        System.out.println("INDEX: query for id: "+primaryKey+". entry: "+nativeEntry+", association: "+association);
         if (!association.isBidirectional()) { //we use additional table only for unidirectional
-            SimpleDBAssociationInfo associationInfo = ((SimpleDBDatastore) session.getDatastore()).getAssociationInfo(association);
-            String query = "select * from "+ SimpleDBUtil.quoteName(associationInfo.getDomainName())+" where itemName() = " + SimpleDBUtil.quoteValue(primaryKey.toString());
+            SimpleDBAssociationInfo associationInfo = getDatastore().getAssociationInfo(association);
+            String query = "SELECT * FROM "+ SimpleDBUtil.quoteName(associationInfo.getDomainName())+" WHERE itemName() = " + SimpleDBUtil.quoteValue(primaryKey.toString())+" LIMIT 2500";
             List<Item> items = session.getSimpleDBTemplate().query(query);
             if (items.isEmpty()) {
                 return Collections.EMPTY_LIST;
             } else if (items.size() > 1) {
                 throw new IllegalArgumentException("current implementation stores all foreign keys in a single item, if more than one item is returned it is a data corruption");
             } else {
-                Item item = items.get(0);
-                List ids = new LinkedList();
-                for (Attribute attribute : item.getAttributes()) {
-                    if (FOREIGN_KEY_ATTRIBUTE_NAME.equals(attribute.getName())) {
-                        ids.add(attribute.getValue());
-                    }
-                }
-                return ids;
+                return SimpleDBUtil.collectAttributeValues(items.get(0), FOREIGN_KEY_ATTRIBUTE_NAME);
             }
         } else {
-            return Collections.EMPTY_LIST;
+            //for bidirectional onToMany association the use the other entity to refer to this guy's PK via FK
+            SimpleDBDomainResolver domainResolver = getDatastore().getEntityDomainResolver(association.getAssociatedEntity());
+
+            //todo - implement for sharding (must look in all shards)
+            String query = "SELECT itemName() FROM "+ SimpleDBUtil.quoteName(domainResolver.getAllDomainsForEntity().get(0))+
+                    " WHERE "+SimpleDBUtil.quoteName(association.getInverseSide().getName())+" = " + SimpleDBUtil.quoteValue(primaryKey.toString())+" LIMIT 2500";
+
+            List<Item> items = session.getSimpleDBTemplate().query(query);
+            if (items.isEmpty()) {
+                return Collections.EMPTY_LIST;
+            } else {
+                return SimpleDBUtil.collectItemNames(items);
+            }
         }
+    }
+
+    private SimpleDBDatastore getDatastore() {
+        return ((SimpleDBDatastore) session.getDatastore());
     }
 
     @Override
@@ -99,6 +109,6 @@ public class SimpleDBAssociationIndexer implements AssociationIndexer {
 //        System.out.println("INDEX: index for id: "+primaryKey+", KEY: "+foreignKey+". entry: "+nativeEntry+", association: "+association);
         if (!association.isBidirectional()) { //we use additional table only for unidirectional
             throw new RuntimeException("not implemented: index(Object primaryKey, Object foreignKey)");
-        }
+        } 
     }
 }

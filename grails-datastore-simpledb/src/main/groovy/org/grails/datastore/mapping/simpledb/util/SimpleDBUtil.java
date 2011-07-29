@@ -14,12 +14,17 @@
  */
 package org.grails.datastore.mapping.simpledb.util;
 
+import com.amazonaws.services.simpledb.model.Attribute;
+import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.util.SimpleDBUtils;
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.simpledb.config.SimpleDBDomainClassMappedForm;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Simple util class for SimpleDB.
@@ -91,4 +96,26 @@ public class SimpleDBUtil {
         return table;
     }
 
+    public static List collectAttributeValues(Item item, String attributeName) {
+        List ids = new LinkedList();
+        for (Attribute attribute : item.getAttributes()) {
+            if (attributeName.equals(attribute.getName())) {
+                ids.add(attribute.getValue());
+            }
+        }
+        return ids;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static List<String> collectItemNames(List<Item> items) {
+        if (items.isEmpty()) {
+            return Collections.EMPTY_LIST;
+        }
+
+        List ids = new LinkedList();
+        for (Item item : items) {
+            ids.add(item.getName());
+        }
+        return ids;
+    }
 }

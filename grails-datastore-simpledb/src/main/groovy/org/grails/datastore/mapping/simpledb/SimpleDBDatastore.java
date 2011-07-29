@@ -24,6 +24,8 @@ import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.OneToMany;
 import org.grails.datastore.mapping.simpledb.engine.AssociationKey;
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBAssociationInfo;
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver;
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolverFactory;
 import org.grails.datastore.mapping.simpledb.util.SimpleDBUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -54,6 +56,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
 //    private Map<PersistentEntity, SimpleDBTemplate> simpleDBTemplates = new ConcurrentHashMap<PersistentEntity, SimpleDBTemplate>();
     private SimpleDBTemplate simpleDBTemplate;  //currently there is no need to create template per entity, we can share same instance
     protected Map<AssociationKey, SimpleDBAssociationInfo> associationInfoMap = new HashMap<AssociationKey, SimpleDBAssociationInfo>(); //contains entries only for those associations that need a dedicated domain
+    protected Map<PersistentEntity, SimpleDBDomainResolver> entityDomainResolverMap = new HashMap<PersistentEntity, SimpleDBDomainResolver>(); 
 
     private String domainNamePrefix;
 
@@ -140,7 +143,8 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
 
     public void persistentEntityAdded(PersistentEntity entity) {
         createSimpleDBTemplate(entity);
-        analyzeAssociations(entity); 
+        analyzeAssociations(entity);
+        createEntityDomainResolver(entity);
     }
 
     /**
@@ -149,6 +153,22 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
      */
     public SimpleDBAssociationInfo getAssociationInfo(Association association){
         return associationInfoMap.get(generateAssociationKey(association));
+    }
+
+    /**
+     * Returns domain resolver for the specified entity.
+     * @param entity
+     * @return
+     */
+    public SimpleDBDomainResolver getEntityDomainResolver(PersistentEntity entity){
+        return entityDomainResolverMap.get(entity);
+    }
+
+    protected void createEntityDomainResolver(PersistentEntity entity) {
+        SimpleDBDomainResolverFactory resolverFactory = new SimpleDBDomainResolverFactory();
+        SimpleDBDomainResolver domainResolver = resolverFactory.buildResolver(entity, this);
+
+        entityDomainResolverMap.put(entity, domainResolver);
     }
 
     @Override
