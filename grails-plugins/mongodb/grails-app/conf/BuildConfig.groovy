@@ -10,8 +10,6 @@ grails.project.dependency.resolution = {
 
     log "warn"
 
-    def version = "1.0.0.M7"
-
     repositories {
         mavenLocal()
         mavenCentral()
@@ -29,16 +27,19 @@ grails.project.dependency.resolution = {
         compile("org.mongodb:mongo-java-driver:2.5.3")
         compile("org.springframework.data:spring-data-mongodb:1.0.0.M3", excludes)
         runtime("com.gmongo:gmongo:0.8", excludes)
-        compile("org.grails:grails-datastore-gorm-mongo:$version",
-                "org.grails:grails-datastore-gorm:$version",
-                "org.springframework:grails-datastore-core:$version",
-                "org.springframework:grails-datastore-mongo:$version",
-                "org.springframework:grails-datastore-web:$version") {
+
+        String datastoreVersion = "1.0.0.M7"
+
+        compile("org.grails:grails-datastore-gorm-mongo:$datastoreVersion",
+                "org.grails:grails-datastore-gorm:$datastoreVersion",
+                "org.grails:grails-datastore-core:$datastoreVersion",
+                "org.grails:grails-datastore-mongo:$datastoreVersion",
+                "org.grails:grails-datastore-web:$datastoreVersion") {
             transitive = false
         }
 
-        test("org.grails:grails-datastore-gorm-test:$version",
-             "org.springframework:grails-datastore-simple:$version"){
+        test("org.grails:grails-datastore-gorm-test:$datastoreVersion",
+             "org.grails:grails-datastore-simple:$datastoreVersion") {
             transitive = false
         }
     }
