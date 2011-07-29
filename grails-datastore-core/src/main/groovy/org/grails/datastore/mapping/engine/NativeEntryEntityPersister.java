@@ -1094,7 +1094,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     }
 
     public boolean isDirty(Object instance, Object entry) {
-        if (instance == null) {
+        if ((instance == null) || (entry==null)) {
             return false;
         }
 
