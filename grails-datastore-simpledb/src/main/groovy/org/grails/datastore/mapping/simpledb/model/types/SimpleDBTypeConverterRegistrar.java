@@ -98,15 +98,24 @@ public class SimpleDBTypeConverterRegistrar extends BasicTypeConverterRegistrar 
     public static final Converter<String, Byte> STRING_TO_BYTE_CONVERTER = new Converter<String, Byte>() {
         public Byte convert(String source) {
             //see conversion logic fully described in the BYTE_TO_STRING_CONVERTER
-            if ( source.charAt(0) == '0' ) {
-                //initial value was negative
-                byte raw = Byte.parseByte(source);
-                byte result = (byte)(raw - CONVERTER_NEGATIVE_BYTE_OFFSET);
-                return result;
+            if ( source.length() < PADDING_BYTE ) {
+                //it might be just a short string like '10' - in this case just parse value
+                return Byte.parseByte(source);
             } else {
-                //initial value was positive, just ignore '1' in the front
-                Integer intResult = SimpleDBUtils.decodeZeroPaddingInt(source.substring(1));
-                return intResult == null ? null : intResult.byteValue();
+                if ( source.charAt(0) == '0' ) {
+                    //initial value was negative
+                    byte raw = Byte.parseByte(source);
+                    byte result = (byte)(raw - CONVERTER_NEGATIVE_BYTE_OFFSET);
+                    return result;
+                } else if ( source.charAt(0) == '1' ) {
+                    //initial value was positive, just ignore '1' in the front
+                    Integer intResult = SimpleDBUtils.decodeZeroPaddingInt(source.substring(1));
+                    return intResult == null ? null : intResult.byteValue();
+                } else if ( source.charAt(0) == '-' ) {
+                    return Byte.parseByte(source);
+                } else {
+                    throw new IllegalArgumentException("should not happen: "+source);
+                }
             }
         }
     };
@@ -126,15 +135,24 @@ public class SimpleDBTypeConverterRegistrar extends BasicTypeConverterRegistrar 
     public static final Converter<String, Short> STRING_TO_SHORT_CONVERTER = new Converter<String, Short>() {
         public Short convert(String source) {
             //see conversion logic fully described in the BYTE_TO_STRING_CONVERTER
-            if ( source.charAt(0) == '0' ) {
-                //initial value was negative
-                short raw = Short.parseShort(source);
-                short result = (short)(raw - CONVERTER_NEGATIVE_SHORT_OFFSET);
-                return result;
+            if ( source.length() < PADDING_SHORT) {
+                //it might be just a short string like '10' - in this case just parse value
+                return Short.parseShort(source);
             } else {
-                //initial value was positive, just ignore '1' in the front
-                Integer intResult = SimpleDBUtils.decodeZeroPaddingInt(source.substring(1));
-                return intResult == null ? null : intResult.shortValue();
+                if ( source.charAt(0) == '0' ) {
+                    //initial value was negative
+                    short raw = Short.parseShort(source);
+                    short result = (short)(raw - CONVERTER_NEGATIVE_SHORT_OFFSET);
+                    return result;
+                } else if ( source.charAt(0) == '1' ) {
+                    //initial value was positive, just ignore '1' in the front
+                    Integer intResult = SimpleDBUtils.decodeZeroPaddingInt(source.substring(1));
+                    return intResult == null ? null : intResult.shortValue();
+                } else if ( source.charAt(0) == '-' ) {
+                    return Short.parseShort(source);
+                } else {
+                    throw new IllegalArgumentException("should not happen: "+source);
+                }
             }
         }
     };
@@ -154,16 +172,25 @@ public class SimpleDBTypeConverterRegistrar extends BasicTypeConverterRegistrar 
 
     public static final Converter<String, Integer> STRING_TO_INTEGER_CONVERTER = new Converter<String, Integer>() {
         public Integer convert(String source) {
-            //see conversion logic fully described in the BYTE_TO_STRING_CONVERTER
-            if ( source.charAt(0) == '0' ) {
-                //initial value was negative
-                int raw = Integer.parseInt(source);
-                int result = (int)(raw - CONVERTER_NEGATIVE_INTEGER_OFFSET);
-                return result;
+            if ( source.length() < PADDING_INTEGER) {
+                //it might be just a short string like '10' - in this case just parse value
+                return Integer.parseInt(source);
             } else {
-                //initial value was positive, just ignore '1' in the front
-                Integer intResult = SimpleDBUtils.decodeZeroPaddingInt(source.substring(1));
-                return intResult;
+                //see conversion logic fully described in the BYTE_TO_STRING_CONVERTER
+                if ( source.charAt(0) == '0' ) {
+                    //initial value was negative
+                    int raw = Integer.parseInt(source);
+                    int result = (int)(raw - CONVERTER_NEGATIVE_INTEGER_OFFSET);
+                    return result;
+                } else if ( source.charAt(0) == '1' ) {
+                    //initial value was positive, just ignore '1' in the front
+                    Integer intResult = SimpleDBUtils.decodeZeroPaddingInt(source.substring(1));
+                    return intResult;
+                } else if ( source.charAt(0) == '-' ) {
+                    return Integer.parseInt(source);
+                } else {
+                    throw new IllegalArgumentException("should not happen: "+source);
+                }
             }
         }
     };
@@ -183,15 +210,24 @@ public class SimpleDBTypeConverterRegistrar extends BasicTypeConverterRegistrar 
     public static final Converter<String, Long> STRING_TO_LONG_CONVERTER = new Converter<String, Long>() {
         public Long convert(String source) {
             //see conversion logic fully described in the BYTE_TO_STRING_CONVERTER
-            if ( source.charAt(0) == '0' ) {
-                //initial value was negative
-                long raw = Long.parseLong(source);
-                long result = (long)(raw - CONVERTER_NEGATIVE_LONG_OFFSET);
-                return result;
+            if ( source.length() < PADDING_LONG) {
+                //it might be just a short string like '10' - in this case just parse value
+                return Long.parseLong(source);
             } else {
-                //initial value was positive, just ignore '1' in the front
-                Long longResult = SimpleDBUtils.decodeZeroPaddingLong(source.substring(1));
-                return longResult;
+                if ( source.charAt(0) == '0' ) {
+                    //initial value was negative
+                    long raw = Long.parseLong(source);
+                    long result = (long)(raw - CONVERTER_NEGATIVE_LONG_OFFSET);
+                    return result;
+                } else if ( source.charAt(0) == '1' ) {
+                    //initial value was positive, just ignore '1' in the front
+                    Long longResult = SimpleDBUtils.decodeZeroPaddingLong(source.substring(1));
+                    return longResult;
+                } else if ( source.charAt(0) == '-' ) {
+                    return Long.parseLong(source);
+                } else {
+                    throw new IllegalArgumentException("should not happen: "+source);
+                }
             }
         }
     };

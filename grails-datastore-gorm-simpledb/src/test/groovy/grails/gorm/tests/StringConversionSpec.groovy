@@ -31,6 +31,17 @@ class StringConversionSpec extends GormDatastoreSpec {
             fromString.convert(toString.convert(Byte.MIN_VALUE+1 as byte)) == Byte.MIN_VALUE+1 as byte
             fromString.convert(toString.convert(Byte.MIN_VALUE+2 as byte)) == Byte.MIN_VALUE+2 as byte
             fromString.convert(toString.convert(Byte.MIN_VALUE+30 as byte)) == Byte.MIN_VALUE+30 as byte
+
+            //test that for short numeric string conversion happens as is
+            fromString.convert("1") == 1 as byte
+            fromString.convert("-1") == -1 as byte
+            fromString.convert("01") == 1 as byte
+            fromString.convert("001") == 1 as byte
+            fromString.convert("10") == 10 as byte
+            fromString.convert("-10") == -10 as byte
+            fromString.convert("010") == 10 as byte
+            fromString.convert("102") == 102 as byte
+            fromString.convert("-102") == -102 as byte
     }
 
     void "Test short conversion"() {
@@ -54,6 +65,18 @@ class StringConversionSpec extends GormDatastoreSpec {
             fromString.convert(toString.convert(Short.MIN_VALUE+1 as short)) == Short.MIN_VALUE+1 as short
             fromString.convert(toString.convert(Short.MIN_VALUE+2 as short)) == Short.MIN_VALUE+2 as short
             fromString.convert(toString.convert(Short.MIN_VALUE+30 as short)) == Short.MIN_VALUE+30 as short
+
+
+            //test that for short numeric string conversion happens as is
+            fromString.convert("1") == 1 as short
+            fromString.convert("-1") == -1 as short
+            fromString.convert("01") == 1 as short
+            fromString.convert("001") == 1 as short
+            fromString.convert("10") == 10 as short
+            fromString.convert("-10") == -10 as short
+            fromString.convert("010") == 10 as short
+            fromString.convert("102") == 102 as short
+            fromString.convert("-102") == -102 as short
     }
 
     void "Test integer conversion"() {
@@ -86,6 +109,17 @@ class StringConversionSpec extends GormDatastoreSpec {
             fromString.convert(toString.convert(Short.MIN_VALUE+1 as short)) == Short.MIN_VALUE+1 as short
             fromString.convert(toString.convert(Short.MIN_VALUE+2 as short)) == Short.MIN_VALUE+2 as short
             fromString.convert(toString.convert(Short.MIN_VALUE+30 as short)) == Short.MIN_VALUE+30 as short
+
+            //test that for short numeric string conversion happens as is
+            fromString.convert("1") == 1 as int
+            fromString.convert("-1") == -1 as int
+            fromString.convert("01") == 1 as int
+            fromString.convert("001") == 1 as int
+            fromString.convert("10") == 10 as int
+            fromString.convert("-10") == -10 as int
+            fromString.convert("010") == 10 as int
+            fromString.convert("102") == 102 as int
+            fromString.convert("-102") == -102 as int
     }
 
     void "Test long conversion"() {
@@ -118,5 +152,16 @@ class StringConversionSpec extends GormDatastoreSpec {
             fromString.convert(toString.convert(Integer.MIN_VALUE+1 as int)) == Integer.MIN_VALUE+1 as int
             fromString.convert(toString.convert(Integer.MIN_VALUE+2 as int)) == Integer.MIN_VALUE+2 as int
             fromString.convert(toString.convert(Integer.MIN_VALUE+30 as int)) == Integer.MIN_VALUE+30 as int
+        
+            //test that for short numeric string conversion happens as is
+            fromString.convert("1") == 1 as long
+            fromString.convert("-1") == -1 as long
+            fromString.convert("01") == 1 as long
+            fromString.convert("001") == 1 as long
+            fromString.convert("10") == 10 as long
+            fromString.convert("-10") == -10 as long
+            fromString.convert("010") == 10 as long
+            fromString.convert("102") == 102 as long
+            fromString.convert("-102") == -102 as long
     }
 }
