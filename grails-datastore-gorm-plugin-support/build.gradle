@@ -1,0 +1,12 @@
+dependencies {
+
+    compile project(":grails-datastore-gorm")
+    compile "org.grails:grails-test:$grailsVersion"
+    compile "org.grails:grails-core:$grailsVersion"
+
+    compile("org.grails:grails-bootstrap:$grailsVersion") {
+        transitive = false
+    }
+}
+
+jar.appendix = 'gorm-plugin-support'

@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.plugin.mongo;
-
-import java.util.List;
+package org.grails.datastore.gorm.plugin.support;
 
 import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
 
+import java.util.List;
+
 /**
- * @author Burt Beckwith
+ * @author Graeme Rocher
+ * @since 1.0
  */
 public class AggregatePersistenceContextInterceptor implements PersistenceContextInterceptor {
 

@@ -3,7 +3,7 @@ configurations {
 }
 
 dependencies {
-    compile("com.gmongo:gmongo:0.7") {
+    compile("com.gmongo:gmongo:0.8") {
         transitive = false
     }
     grails("org.grails:grails-core:$grailsVersion")
@@ -11,6 +11,7 @@ dependencies {
         transitive = false
     }
     compile project(":grails-datastore-gorm"),
+            project(":grails-datastore-gorm-plugin-support"),
             project(":grails-datastore-mongo"),
             project(":grails-datastore-core")
     testCompile project(":grails-datastore-gorm-test"),
