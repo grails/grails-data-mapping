@@ -26,6 +26,7 @@ class MongodbGrailsPlugin {
         def datastore = ctx.mongoDatastore
         def transactionManager = ctx.mongoTransactionManager
         def methodsConfigurer = new MongoMethodsConfigurer(datastore, transactionManager)    
+        methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate")        
         methodsConfigurer.configure()
     }
 

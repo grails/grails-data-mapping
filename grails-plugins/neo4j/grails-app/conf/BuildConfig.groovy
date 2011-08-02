@@ -31,6 +31,7 @@ grails.project.dependency.resolution = {
 //        }
 
         compile("org.grails:grails-datastore-gorm-neo4j:$version",
+                "org.grails:grails-datastore-gorm-plugin-support:$version",        
                 "org.grails:grails-datastore-gorm:$version",
                 "org.grails:grails-datastore-core:$version",
                 "org.grails:grails-datastore-web:$version") {

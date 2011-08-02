@@ -22,6 +22,7 @@ import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.engine.NativeEntryEntityPersister
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.Query
+import org.springframework.util.Assert
 
 /**
  * perform criteria queries on a Neo4j backend
@@ -40,14 +41,14 @@ class Neo4jQuery extends Query {
     @Override
     protected List executeQuery(PersistentEntity entity, Query.Junction criteria) {
 
-        assert entity
+        Assert.notNull( entity, "Entity should not be null" )
         List result = []
         List<Node> subReferenceNodes = getSubreferencesOfSelfAndDerived(entity)
         List<String> validClassNames = subReferenceNodes.collect { it.getProperty(Neo4jEntityPersister.SUBREFERENCE_PROPERTY_NAME)}
         for (Node subReferenceNode in subReferenceNodes) {
             for (Relationship rel in subReferenceNode.getRelationships(GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING)) {
                 Node n = rel.endNode
-                assert n.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null) in validClassNames
+                Assert.isTrue n.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null) in validClassNames
 
                 if (invokeMethod("matchesCriterion${criteria.getClass().simpleName}", [n, criteria])) {
                     result << session.retrieve(entity.javaClass, n.id)
