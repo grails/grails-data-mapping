@@ -39,17 +39,14 @@ class MongodbGrailsPlugin {
     def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPMONGODB" ]
     def scm = [ url: "https://github.com/SpringSource/grails-data-mapping" ]
 
-    def version = "1.0.0.M6.1"
+    def version = "1.0.0.M7"
     def grailsVersion = "1.3.5 > *"
     def observe = ['services']
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
     def author = "Graeme Rocher"
     def authorEmail = "graeme.rocher@springsource.com"
     def title = "MongoDB GORM"
-    def description = '''\\
-A plugin that integrates the Mongo document datastore into Grails, providing
-a GORM API onto it
-'''
+    def description = 'A plugin that integrates the Mongo document datastore into Grails, providing a GORM API onto it'
 
     def documentation = "http://grails.org/plugin/mongodb"
 
