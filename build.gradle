@@ -25,7 +25,7 @@ apply plugin: 'idea'
 
 subprojects {
 //    releaseType = "BUILD-SNAPSHOT"
-    releaseType = "M7"
+    releaseType = "M8"
     version = "1.0.0.${releaseType}"
 
     def isStandardGroovyMavenProject = isGroovyProject(project)
@@ -117,7 +117,29 @@ subprojects {
     group = "org.grails"
     archivesBaseName = "grails-datastore"
 
+
+
     if (isStandardGroovyMavenProject) {
+        configurations {
+            meta
+        }
+
+        task sourcesJar(type: Jar, dependsOn:classes) {
+            classifier = 'sources'
+            appendix = project.name[7..-1]
+            from sourceSets.main.allSource
+        }
+
+        task javadocJar(type: Jar, dependsOn:javadoc) {
+            classifier = 'javadoc'
+            appendix = project.name[7..-1]
+            from javadoc.destinationDir
+        }
+
+        artifacts {
+            meta sourcesJar
+            meta javadocJar
+        }
         configure(install.repositories.mavenInstaller) {
             pom.whenConfigured { pom ->
                 def dependency = pom.dependencies.find { dep -> dep.artifactId == 'slf4j-simple' }
@@ -185,6 +207,7 @@ subprojects {
                 }
             }
         }
+        uploadArchives.dependsOn sourcesJar, javadocJar
     }
 }
 
