@@ -1,5 +1,6 @@
 dependencies {
     compile project(":grails-datastore-gorm"),
+            project(":grails-datastore-gorm-plugin-support"),
             project(":grails-datastore-redis"),
             project(":grails-datastore-core")
     testCompile project(":grails-datastore-gorm-test"),

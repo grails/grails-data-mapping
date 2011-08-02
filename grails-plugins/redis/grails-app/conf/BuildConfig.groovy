@@ -11,6 +11,7 @@ grails.project.dependency.resolution = {
     log "warn"
 
     repositories {
+        mavenLocal()
         mavenRepo "http://repo.grails.org/grails/core"
         mavenCentral()
         grailsCentral()
@@ -23,6 +24,7 @@ grails.project.dependency.resolution = {
         def version = "1.0.0.M7"
 
         compile("org.grails:grails-datastore-gorm-redis:$version",
+                "org.grails:grails-datastore-gorm-plugin-support:$version",        
                 "org.grails:grails-datastore-gorm:$version",
                 "org.grails:grails-datastore-core:$version",
                 "org.grails:grails-datastore-redis:$version",
@@ -37,7 +39,7 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        build(":release:1.0.0.M2") {
+        build(":release:1.0.0.RC3") {
             export = false
         }
     }

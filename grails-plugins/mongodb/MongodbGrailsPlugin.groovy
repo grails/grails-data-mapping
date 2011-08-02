@@ -20,7 +20,7 @@ class MongodbGrailsPlugin {
 
     def documentation = "http://grails.org/plugin/mongodb"
 
-    def doWithSpring = new MongoSpringConfigurer().getSpringCustomizer()
+    def doWithSpring = new MongoSpringConfigurer().getConfiguration()
     def doWithDynamicMethods = { ctx ->
 
         def datastore = ctx.mongoDatastore

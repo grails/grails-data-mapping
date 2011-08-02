@@ -38,7 +38,7 @@ subprojects {
         apply from: "file:${rootDir}/clover.gradle"
     }
 
-    def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") && !project.name.endsWith("tck")
+    def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") && !project.name.endsWith("tck") && !project.name.endsWith("plugin-support")
 
     repositories {
         mavenRepo name:'mavenLocal',

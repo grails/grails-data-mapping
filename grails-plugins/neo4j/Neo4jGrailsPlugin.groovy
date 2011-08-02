@@ -30,10 +30,7 @@ class Neo4jGrailsPlugin {
             "grails-app/views/error.gsp"
     ]
 
-    def doWithWebDescriptor = { xml ->
-    }
-
-    def doWithSpring = new Neo4jSpringConfigurer().getSpringCustomizer()
+    def doWithSpring = new Neo4jSpringConfigurer().getConfiguration()
 
     def doWithDynamicMethods = { ctx ->
         def datastore = ctx.neo4jDatastore
@@ -53,6 +50,4 @@ class Neo4jGrailsPlugin {
         onChangeHandler.onChange(delegate, event)        
     }
 
-    def onConfigChange = { event ->
-    }
 }
