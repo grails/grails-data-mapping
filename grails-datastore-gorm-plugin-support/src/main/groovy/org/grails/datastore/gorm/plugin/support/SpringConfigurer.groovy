@@ -34,8 +34,18 @@ import java.lang.reflect.Method
  */
 abstract class SpringConfigurer {
 
+    /**
+     * The name of the datastore type (example "Mongo" or "Neo4j")
+     * @return
+     */
     abstract String getDatastoreType()
 
+    /**
+     * Additional Spring configuration that is specific to the underlying Datastore. The returned closure should use BeanBuilder syntax and must as a minimum
+     * define two beans named "${datastoreType.toLowerCase()}Datastore" and "${datastoreType.toLowerCase()}MappingContext" (Example "neo4jDatastore" and "neo4jMappingContext"
+     *
+     * @return BeanBuilder syntax closure.
+     */
     abstract Closure getSpringCustomizer()
 
     public Closure getConfiguration() {
