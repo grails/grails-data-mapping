@@ -18,6 +18,7 @@ dependencies {
                 project(":grails-datastore-gorm-tck")
 
     testRuntime "javax.servlet:servlet-api:2.5"
+    testRuntime "org.grails:grails-web:$grailsVersion"
 }
 
 jar.appendix = 'gorm-mongo'
