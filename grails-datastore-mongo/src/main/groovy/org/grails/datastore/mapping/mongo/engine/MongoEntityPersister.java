@@ -360,17 +360,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                                 final Object storeId, final DBObject nativeEntry) {
         return mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
-                String collectionName = getCollectionName(persistentEntity, nativeEntry);
-
-                DBCollection dbCollection = con.getCollection(collectionName);
                 nativeEntry.put(MONGO_ID_FIELD, storeId);
-                MongoSession mongoSession = (MongoSession) session;
-                if (mongoSession.getWriteConcern() == null) {
-                    dbCollection.insert(nativeEntry);
-                }
-                else {
-                    dbCollection.insert(nativeEntry, mongoSession.getWriteConcern());
-                }
                 return nativeEntry.get(MONGO_ID_FIELD);
             }
         });
