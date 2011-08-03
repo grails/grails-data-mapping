@@ -25,6 +25,7 @@ import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.core.annotation.AnnotationUtils
 import java.lang.reflect.Method
+import org.springframework.beans.factory.support.AbstractBeanDefinition
 
 /**
  * Helper class for use by plugins in configuring Spring
@@ -109,8 +110,10 @@ abstract class SpringConfigurer {
                 def mappedWith = cpf.getStaticPropertyValue(GrailsDomainClassProperty.MAPPING_STRATEGY, String)
                 if (mappedWith == typeLower || (!isHibernateInstalled && mappedWith == null)) {
                     String validatorBeanName = "${dc.fullName}Validator"
-                    def beandef = springConfig.getBeanConfig(validatorBeanName)?.beanDefinition ?:
-                                  springConfig.getBeanDefinition(validatorBeanName)
+                    AbstractBeanDefinition beandef = springConfig.getBeanConfig(validatorBeanName)?.beanDefinition ?:
+                                                        springConfig.getBeanDefinition(validatorBeanName)
+                    // remove the session factory attribute if present
+                    beandef.getPropertyValues().removePropertyValue("sessionFactory")
                     beandef.beanClassName = GrailsDomainClassValidator.name
                 }
             }
