@@ -41,8 +41,8 @@ public class EntityAccess {
     private static final Set EXCLUDED_PROPERTIES = new HashSet(Arrays.asList("class", "metaClass"));
 
     protected Object entity;
-    private BeanWrapper beanWrapper;
-    private PersistentEntity persistentEntity;
+    protected BeanWrapper beanWrapper;
+    protected PersistentEntity persistentEntity;
 
     public EntityAccess(PersistentEntity persistentEntity, Object entity) {
         this.entity = entity;
