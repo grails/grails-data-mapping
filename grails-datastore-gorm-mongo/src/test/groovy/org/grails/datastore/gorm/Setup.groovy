@@ -12,6 +12,10 @@ import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
+import org.grails.datastore.gorm.mongo.Birthday
+import com.mongodb.DBObject
+import org.grails.datastore.mapping.model.PersistentProperty
 
 /**
  * @author graemerocher
@@ -31,6 +35,27 @@ class Setup {
         ctx.refresh()
         mongo.applicationContext = ctx
         mongo.afterPropertiesSet()
+
+        mongo.mappingContext.mappingFactory.registerCustomType(new CustomTypeMarshaller<Birthday, DBObject>() {
+            @Override
+            Class<Birthday> getTargetType() {
+                return Birthday
+            }
+
+            @Override
+            Birthday read(PersistentProperty property, DBObject source) {
+                final num = source.get(property.name)
+                if(num instanceof Long) {
+                    return new Birthday(new Date(num))
+                }
+            }
+
+            @Override
+            Object convert(PersistentProperty property, Birthday value) {
+                return value.date.time
+            }
+
+        })
 
         for (cls in classes) {
             mongo.mappingContext.addPersistentEntity(cls)
