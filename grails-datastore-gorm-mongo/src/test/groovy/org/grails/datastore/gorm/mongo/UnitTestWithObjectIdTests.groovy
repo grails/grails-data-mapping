@@ -26,7 +26,7 @@ class UnitTestWithObjectIdTests extends GroovyTestCase{
     }
 
 
-    void testSomething() {
+    void testUnitTestWithObjectId() {
         mockDomain(Sample)
 
 
