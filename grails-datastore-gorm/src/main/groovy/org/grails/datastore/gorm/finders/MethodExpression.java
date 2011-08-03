@@ -143,8 +143,8 @@ public abstract class MethodExpression {
         @Override
         public void setArguments(Object[] arguments) {
             Assert.isTrue(arguments.length > 1, "A 'between' query requires at least two arguments");
-            Assert.isTrue(arguments[0] instanceof Number && arguments[1] instanceof Number,
-                "A 'between' query requires that both arguments are numbers");
+            Assert.isTrue(arguments[0] instanceof Comparable && arguments[1] instanceof Comparable,
+                "A 'between' query requires that both arguments are comparable");
 
             super.setArguments(arguments);
         }
