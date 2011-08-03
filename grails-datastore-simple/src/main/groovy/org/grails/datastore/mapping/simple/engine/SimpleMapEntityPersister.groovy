@@ -203,7 +203,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
     protected generateIdentifier(PersistentEntity persistentEntity, Map id) {
         final isRoot = persistentEntity.root
         final type = isRoot ? persistentEntity.identity.type : persistentEntity.rootEntity.identity.type
-        if((String.isAssignableFrom(type)) || (Number.isAssignableFrom(Number))) {
+        if((String.isAssignableFrom(type)) || (Number.isAssignableFrom(type))) {
             def key
             if(isRoot) {
                 key = ++lastKey
