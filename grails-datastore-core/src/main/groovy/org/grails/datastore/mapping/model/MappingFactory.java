@@ -98,10 +98,10 @@ public abstract class MappingFactory<R,T> {
             URL.class.getName())));
     }
 
-    private Map<Class, CustomTypeMarshaller> typeConverterMap = new ConcurrentHashMap<Class, CustomTypeMarshaller>();
+    private static Map<Class, CustomTypeMarshaller> typeConverterMap = new ConcurrentHashMap<Class, CustomTypeMarshaller>();
 
-    public void registerCustomType(CustomTypeMarshaller marshallerCustom) {
-        this.typeConverterMap.put(marshallerCustom.getTargetType(), marshallerCustom);
+    public static void registerCustomType(CustomTypeMarshaller marshallerCustom) {
+        typeConverterMap.put(marshallerCustom.getTargetType(), marshallerCustom);
     }
 
     public boolean isSimpleType(Class propType) {
@@ -313,7 +313,7 @@ public abstract class MappingFactory<R,T> {
         };
     }
 
-    public boolean isCustomType(Class<?> propertyType) {
+    public static boolean isCustomType(Class<?> propertyType) {
         return typeConverterMap.containsKey(propertyType);
     }
 }
