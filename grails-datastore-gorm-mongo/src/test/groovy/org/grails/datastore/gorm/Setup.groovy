@@ -12,10 +12,16 @@ import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
-import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
+
 import org.grails.datastore.gorm.mongo.Birthday
 import com.mongodb.DBObject
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
+import org.grails.datastore.mapping.query.Query.PropertyCriterion
+import org.grails.datastore.mapping.query.Query.Equals
+import org.grails.datastore.mapping.query.Query.Between
+import com.mongodb.BasicDBObject
+import org.grails.datastore.mapping.mongo.query.MongoQuery
 
 /**
  * @author graemerocher
@@ -36,24 +42,36 @@ class Setup {
         mongo.applicationContext = ctx
         mongo.afterPropertiesSet()
 
-        mongo.mappingContext.mappingFactory.registerCustomType(new CustomTypeMarshaller<Birthday, DBObject>() {
+        mongo.mappingContext.mappingFactory.registerCustomType(new AbstractMappingAwareCustomTypeMarshaller<Birthday, DBObject, DBObject>(Birthday) {
             @Override
-            Class<Birthday> getTargetType() {
-                return Birthday
+            protected void writeInternal(PersistentProperty property, String key, Birthday value, DBObject nativeTarget) {
+                nativeTarget.put(key, value.date.time)
             }
 
             @Override
-            Birthday read(PersistentProperty property, DBObject source) {
-                final num = source.get(property.name)
+            protected void queryInternal(PersistentProperty property, String key, PropertyCriterion criterion, DBObject nativeQuery) {
+                if(criterion instanceof Between) {
+                    def dbo = new BasicDBObject()
+                    dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
+                    dbo.put(MongoQuery.MONGO_LTE_OPERATOR, criterion.getTo().date.time);
+                    nativeQuery.put(key, dbo)
+                }
+                else {
+                    nativeQuery.put(key, criterion.value.date.time)
+                }
+
+            }
+
+            @Override
+            protected Birthday readInternal(PersistentProperty property, String key, DBObject source) {
+                final num = source.get(key)
                 if(num instanceof Long) {
                     return new Birthday(new Date(num))
                 }
+                return null
             }
 
-            @Override
-            Object convert(PersistentProperty property, Birthday value) {
-                return value.date.time
-            }
+
 
         })
 

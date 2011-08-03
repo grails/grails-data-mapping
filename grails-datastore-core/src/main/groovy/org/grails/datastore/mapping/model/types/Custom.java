@@ -29,14 +29,14 @@ import java.beans.PropertyDescriptor;
  * @since 1.0
  */
 public abstract class Custom<T> extends AbstractPersistentProperty{
-    private CustomTypeMarshaller<T, Object> customTypeMarshaller;
+    private CustomTypeMarshaller customTypeMarshaller;
 
-    public Custom(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor, CustomTypeMarshaller<T, Object> customTypeMarshaller) {
+    public Custom(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor, CustomTypeMarshaller customTypeMarshaller) {
         super(owner, context, descriptor);
         this.customTypeMarshaller = customTypeMarshaller;
     }
 
-    protected Custom(PersistentEntity owner, MappingContext context, String name, Class type, CustomTypeMarshaller<T, Object> customTypeMarshaller) {
+    protected Custom(PersistentEntity owner, MappingContext context, String name, Class type, CustomTypeMarshaller customTypeMarshaller) {
         super(owner, context, name, type);
         this.customTypeMarshaller = customTypeMarshaller;
     }
@@ -44,7 +44,7 @@ public abstract class Custom<T> extends AbstractPersistentProperty{
     /**
      * @return The type converter for this custom type
      */
-    public CustomTypeMarshaller<T, Object> getCustomTypeMarshaller() {
+    public CustomTypeMarshaller getCustomTypeMarshaller() {
         return customTypeMarshaller;
     }
 }

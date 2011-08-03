@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.grails.datastore.mapping.engine.internal.MappingUtils;
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
+import org.grails.datastore.mapping.model.types.Custom;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.data.document.mongodb.DbCallback;
@@ -508,6 +511,16 @@ public class MongoQuery extends Query {
                     dbo = new BasicDBObject();
                     disjunction.add(dbo);
                 }
+
+                if(criterion instanceof PropertyCriterion) {
+                    PropertyCriterion pc = (PropertyCriterion) criterion;
+                    PersistentProperty property = entity.getPropertyByName(pc.getProperty());
+                    if(property instanceof Custom) {
+                        CustomTypeMarshaller customTypeMarshaller = ((Custom) property).getCustomTypeMarshaller();
+                        customTypeMarshaller.query(property, pc, query);
+                        continue;
+                    }
+                }
                 queryHandler.handle(entity, criterion, dbo);
             }
             else {
@@ -521,6 +534,12 @@ public class MongoQuery extends Query {
         String propertyName = criterion.getProperty();
         if (entity.isIdentityName(propertyName)) {
             propertyName = MongoEntityPersister.MONGO_ID_FIELD;
+        }
+        else {
+            PersistentProperty property = entity.getPropertyByName(propertyName);
+            if(property != null) {
+                return MappingUtils.getTargetKey(property);
+            }
         }
         return propertyName;
     }

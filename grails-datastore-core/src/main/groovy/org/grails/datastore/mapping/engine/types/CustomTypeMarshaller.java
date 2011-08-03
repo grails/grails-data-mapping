@@ -14,15 +14,26 @@
  */
 package org.grails.datastore.mapping.engine.types;
 
+import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.query.Query;
 
 /**
  * Interface for defining custom datastore types beyond the simple and association types supported out of the box
  *
+ *
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface CustomTypeMarshaller<T, N> {
+public interface CustomTypeMarshaller<T, N, Q> {
+
+    /**
+     * Whether the marshaller supports the given datastore type
+     *
+     * @param datastore The datastore type
+     * @return True if it is supported
+     */
+    boolean supports(Datastore datastore);
 
     /**
      *
@@ -35,9 +46,19 @@ public interface CustomTypeMarshaller<T, N> {
      *
      * @param property The property being converted
      * @param value The value
-     * @return The converted type
+     * @param nativeTarget The nativeTarget
      */
-    public Object convert(PersistentProperty property,  T value);
+    public void write(PersistentProperty property, T value, N nativeTarget);
+
+    /**
+     * Populates a query
+     *
+     * @param property The property being converted
+
+     * @param criterion The criterion
+     * @param nativeQuery The nativeQuery
+     */
+    public void query(PersistentProperty property,  Query.PropertyCriterion criterion, Q nativeQuery);
 
     /**
      * Converts a value from its native form

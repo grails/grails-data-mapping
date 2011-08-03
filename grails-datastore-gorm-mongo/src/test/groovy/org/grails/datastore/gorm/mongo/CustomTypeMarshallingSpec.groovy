@@ -35,6 +35,15 @@ class CustomTypeMarshallingSpec extends GormDatastoreSpec{
 
         then:
             p != null
+
+        when: "A range query is executed"
+
+            p = Person.findByBirthdayBetween(new Birthday(now-1), new Birthday(now+1))
+            def p2 = Person.findByBirthdayBetween(new Birthday(now+1), new Birthday(now+2))
+
+        then:
+            p != null
+            p2 == null
     }
 
 }
@@ -44,10 +53,15 @@ class Person {
     String name
     Birthday birthday
 }
-class Birthday {
+class Birthday implements Comparable{
     Date date
 
     Birthday(Date date) {
         this.date = date
+    }
+
+    @Override
+    int compareTo(Object t) {
+        date.compareTo(t.date)
     }
 }

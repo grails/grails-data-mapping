@@ -378,8 +378,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             }
             else if(prop instanceof Custom) {
                 CustomTypeMarshaller customTypeMarshaller = ((Custom) prop).getCustomTypeMarshaller();
-                Object value = customTypeMarshaller.read(prop, nativeEntry);
-                ea.setProperty(prop.getName(), value);
+                if(customTypeMarshaller.supports(getSession().getDatastore())) {
+                    Object value = customTypeMarshaller.read(prop, nativeEntry);
+                    ea.setProperty(prop.getName(), value);
+                }
             }
             else if (prop instanceof ToOne) {
                 if (prop instanceof Embedded) {
@@ -635,10 +637,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             }
             else if((prop instanceof Custom)) {
                 CustomTypeMarshaller customTypeMarshaller = ((Custom) prop).getCustomTypeMarshaller();
-
-                Object propValue = entityAccess.getProperty(prop.getName());
-                Object converted = customTypeMarshaller.convert(prop, propValue);
-                setEntryValue(e, key, converted);
+                if(customTypeMarshaller.supports(getSession().getDatastore())) {
+                    Object propValue = entityAccess.getProperty(prop.getName());
+                    customTypeMarshaller.write(prop, propValue, e);
+                }
             }
             else if (prop instanceof OneToMany) {
                 final OneToMany oneToMany = (OneToMany) prop;
