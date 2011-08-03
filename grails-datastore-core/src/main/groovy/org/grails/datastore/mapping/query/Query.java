@@ -24,6 +24,8 @@ import java.util.Map;
 
 import javax.persistence.FlushModeType;
 
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
+import org.grails.datastore.mapping.model.types.Custom;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
@@ -115,7 +117,14 @@ public abstract class Query {
     public void add(Criterion criterion) {
         if (criterion instanceof Equals) {
             final Equals eq = (Equals) criterion;
-            eq.setValue(resolveIdIfEntity(eq.getValue()));
+            Object value = resolveIdIfEntity(eq.getValue());
+            value = convertValueIfNecessary(eq.getProperty(), value);
+            eq.setValue(value);
+        }
+        else if(criterion instanceof PropertyCriterion) {
+            PropertyCriterion pc = (PropertyCriterion) criterion;
+            Object converted = convertValueIfNecessary(pc.getProperty(), pc.getValue());
+            pc.setValue(converted);
         }
 
         criteria.add(criterion);
@@ -231,6 +240,7 @@ public abstract class Query {
     public Query eq(String property, Object value) {
         Object resolved = resolveIdIfEntity(value);
         if (resolved == value) {
+           value = convertValueIfNecessary(property, value);
            criteria.add(Restrictions.eq(property, value));
         }
         else {
@@ -353,8 +363,18 @@ public abstract class Query {
      * @return This query instance
      */
     public Query gt(String property, Object value) {
+        value = convertValueIfNecessary(property, value);
         criteria.add(Restrictions.gt(property, value));
         return this;
+    }
+
+    protected Object convertValueIfNecessary(String property, Object value) {
+        PersistentProperty pp = entity.getPropertyByName(property);
+        if(pp instanceof Custom) {
+            CustomTypeMarshaller customTypeMarshaller = ((Custom) pp).getCustomTypeMarshaller();
+            return customTypeMarshaller.convert(pp, value);
+        }
+        return value;
     }
 
     /**
@@ -365,6 +385,7 @@ public abstract class Query {
      * @return This query instance
      */
     public Query gte(String property, Object value) {
+        value = convertValueIfNecessary(property, value);
         criteria.add(Restrictions.gte(property, value));
         return this;
     }
@@ -377,8 +398,31 @@ public abstract class Query {
      * @return This query instance
      */
     public Query lte(String property, Object value) {
+        value = convertValueIfNecessary(property, value);
         criteria.add(Restrictions.lte(property, value));
         return this;
+    }
+
+    /**
+     * Used to restrict a value to be greater than or equal to the given value
+     *
+     * @param property The name of the property
+     * @param value The value to restrict by
+     * @return This query instance
+     */
+    public Query ge(String property, Object value) {
+        return gte(property, value);
+    }
+
+    /**
+     * Used to restrict a value to be less than or equal to the given value
+     *
+     * @param property The name of the property
+     * @param value The value to restrict by
+     * @return This query instance
+     */
+    public Query le(String property, Object value) {
+        return lte(property, value);
     }
 
     /**
@@ -389,6 +433,7 @@ public abstract class Query {
      * @return This query instance
      */
     public Query lt(String property, Object value) {
+        value = convertValueIfNecessary(property, value);
         criteria.add(Restrictions.lt(property, value));
         return this;
     }
@@ -414,6 +459,8 @@ public abstract class Query {
      * @return This query instance
      */
     public Query between(String property, Object start, Object end) {
+        start = convertValueIfNecessary(property, start);
+        end = convertValueIfNecessary(property, end);
         criteria.add(Restrictions.between(property, start, end));
         return this;
     }
@@ -619,6 +666,10 @@ public abstract class Query {
 
         public Object getValue() {
             return value;
+        }
+
+        public void setValue(Object v) {
+            this.value = v;
         }
     }
     /**

@@ -161,7 +161,8 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             for (PropertyDescriptor descriptor : cpf.getPropertyDescriptors()) {
                 final String propertyName = descriptor.getName();
                 if (isExcludedProperty(propertyName, classMapping, transients)) continue;
-                Class currentPropType = descriptor.getPropertyType();
+                Class<?> propertyType = descriptor.getPropertyType();
+                Class currentPropType = propertyType;
                 // establish if the property is a one-to-many
                 // if it is a Set and there are relationships defined
                 // and it is defined as persistent
@@ -193,8 +194,11 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                         persistentProperties.add(association);
                     }
                 }
-                else if (MappingFactory.isSimpleType(descriptor.getPropertyType())) {
+                else if (propertyFactory.isSimpleType(propertyType)) {
                     persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
+                }
+                else if (propertyFactory.isCustomType(propertyType)) {
+                    persistentProperties.add(propertyFactory.createCustom(entity, context, descriptor));
                 }
             }
         }

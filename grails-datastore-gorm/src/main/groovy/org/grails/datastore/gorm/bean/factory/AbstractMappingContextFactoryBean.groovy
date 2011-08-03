@@ -24,14 +24,19 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 
- /**
+/**
  * An abstract factory bean for constructing MappingContext instances
  *
  * @author Graeme Rocher
  * @since 1.0
  */
 abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingContext>, GrailsApplicationAware, ApplicationContextAware {
+
+    private static final Log LOG = LogFactory.getLog(AbstractMappingContextFactoryBean)
 
     GrailsApplication grailsApplication
     GrailsPluginManager pluginManager
@@ -42,6 +47,8 @@ abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingC
     MappingContext getObject() {
         def mappingContext = createMappingContext();
         mappingContext.proxyFactory = new GroovyProxyFactory()
+
+        registerCustomTypeMarshallers(mappingContext)
 
         if (mappingStrategy == null) {
             mappingStrategy = (getClass().simpleName - 'MappingContextFactoryBean').toLowerCase()
@@ -69,6 +76,18 @@ abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingC
             }
         }
         return mappingContext
+    }
+
+    protected void registerCustomTypeMarshallers(MappingContext mappingContext) {
+        try {
+            final typeMarshallers = applicationContext.getBeansOfType(org.grails.datastore.mapping.engine.types.CustomTypeMarshaller)
+            final mappingFactory = mappingContext.mappingFactory
+            for (marshaller in typeMarshallers.values()) {
+                mappingFactory.registerCustomType(marshaller)
+            }
+        } catch (e) {
+            LOG.error("Error configuring custom type marshallers: " + e.getMessage(), e)
+        }
     }
 
     protected abstract MappingContext createMappingContext()
