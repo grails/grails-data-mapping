@@ -86,7 +86,7 @@ class GormEnhancer {
             registerNamedQueries(e, namedQueries)
         }
 
-        ExpandoMetaClass mc = cls.metaClass
+        ExpandoMetaClass mc = org.codehaus.groovy.grails.commons.GrailsMetaClassUtils.getExpandoMetaClass(cls)
         for (currentInstanceMethods in instanceMethods) {
             def apiProvider = currentInstanceMethods
             if (GormInstanceApi.isInstance(apiProvider)) {
