@@ -25,7 +25,7 @@ class ConstraintsSpec extends GormDatastoreSpec{
 
     }
 }
-class ConstrainedEntity {
+class ConstrainedEntity implements Serializable{
     static final MAX_VALUE = 1000
     static final List<String> ALLOWABLE_VALUES=['ABC','DEF','GHI']
 
