@@ -53,8 +53,8 @@ class Setup {
             }
 
             @Override
-            protected Birthday readInternal(PersistentProperty property, String key, Map source) {
-                final num = source.get(key)
+            protected Birthday readInternal(PersistentProperty property, String key, Map nativeSource) {
+                final num = nativeSource.get(key)
                 if(num instanceof Long) {
                     return new Birthday(new Date(num))
                 }

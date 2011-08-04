@@ -68,5 +68,5 @@ public abstract class AbstractMappingAwareCustomTypeMarshaller<T, N, Q> implemen
         return readInternal(property, targetName, source);
     }
 
-    protected abstract T readInternal(PersistentProperty property, String key, N source);
+    protected abstract T readInternal(PersistentProperty property, String key, N nativeSource);
 }
