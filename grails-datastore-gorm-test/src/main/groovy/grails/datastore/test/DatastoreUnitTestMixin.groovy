@@ -30,6 +30,8 @@ import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.util.ClassUtils
+import org.grails.datastore.gorm.events.DomainEventListener
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
 
 /**
  * <p>A Groovy mixin used for testing datastore interactions. Test cases should include the mixin using
@@ -56,6 +58,8 @@ class DatastoreUnitTestMixin {
         ctx = new GenericApplicationContext()
         ctx.refresh()
         datastore = new SimpleMapDatastore(ctx)
+        ctx.addApplicationListener(new DomainEventListener(datastore))
+        ctx.addApplicationListener(new AutoTimestampEventListener(datastore))
     }
  
     Session session

@@ -24,25 +24,11 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.grails.datastore.mapping.model.types.Basic;
-import org.grails.datastore.mapping.model.types.Embedded;
-import org.grails.datastore.mapping.model.types.EmbeddedCollection;
-import org.grails.datastore.mapping.model.types.Identity;
-import org.grails.datastore.mapping.model.types.ManyToMany;
-import org.grails.datastore.mapping.model.types.ManyToOne;
-import org.grails.datastore.mapping.model.types.OneToMany;
-import org.grails.datastore.mapping.model.types.OneToOne;
-import org.grails.datastore.mapping.model.types.Simple;
-import org.grails.datastore.mapping.model.types.ToOne;
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
+import org.grails.datastore.mapping.model.types.*;
 
 /**
  * <p>An abstract factory for creating persistent property instances.</p>
@@ -66,6 +52,7 @@ import org.grails.datastore.mapping.model.types.ToOne;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class MappingFactory<R,T> {
+
     public static final Set<String> SIMPLE_TYPES;
 
     static {
@@ -111,7 +98,13 @@ public abstract class MappingFactory<R,T> {
             URL.class.getName())));
     }
 
-    public static boolean isSimpleType(Class propType) {
+    private static Map<Class, CustomTypeMarshaller> typeConverterMap = new ConcurrentHashMap<Class, CustomTypeMarshaller>();
+
+    public static void registerCustomType(CustomTypeMarshaller marshallerCustom) {
+        typeConverterMap.put(marshallerCustom.getTargetType(), marshallerCustom);
+    }
+
+    public boolean isSimpleType(Class propType) {
         if (propType == null) return false;
         if (propType.isArray()) {
             return isSimpleType(propType.getComponentType());
@@ -156,6 +149,26 @@ public abstract class MappingFactory<R,T> {
     }
 
     /**
+     * Creates a custom prpoerty type
+     *
+     * @param owner The owner
+     * @param context The context
+     * @param pd The PropertyDescriptor
+     * @return A custom property type
+     */
+    public Custom<T> createCustom(PersistentEntity owner, MappingContext context, PropertyDescriptor pd) {
+        CustomTypeMarshaller customTypeMarshaller = typeConverterMap.get(pd.getPropertyType());
+        if(customTypeMarshaller == null) {
+            throw new IllegalStateException("Cannot create a custom type without a type converter for type " + pd.getPropertyType());
+        }
+        return new Custom<T>(owner, context, pd, customTypeMarshaller) {
+            public PropertyMapping<T> getMapping() {
+                return createPropertyMapping(this, owner);
+            }
+        };
+    }
+
+    /**
      * Creates a simple property type used for mapping basic types such as String, long, integer etc.
      *
      * @param owner The owner
@@ -170,6 +183,7 @@ public abstract class MappingFactory<R,T> {
             }
         };
     }
+
 
     protected PropertyMapping<T> createPropertyMapping(final PersistentProperty<T> property, final PersistentEntity owner) {
         return new PropertyMapping<T>() {
@@ -297,5 +311,9 @@ public abstract class MappingFactory<R,T> {
                 return createPropertyMapping(this, owner);
             }
         };
+    }
+
+    public static boolean isCustomType(Class<?> propertyType) {
+        return typeConverterMap.containsKey(propertyType);
     }
 }

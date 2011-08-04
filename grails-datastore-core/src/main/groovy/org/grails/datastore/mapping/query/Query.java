@@ -115,7 +115,7 @@ public abstract class Query {
     public void add(Criterion criterion) {
         if (criterion instanceof Equals) {
             final Equals eq = (Equals) criterion;
-            eq.setValue(resolveIdIfEntity(eq.getValue()));
+            Object value = resolveIdIfEntity(eq.getValue());
         }
 
         criteria.add(criterion);
@@ -382,6 +382,28 @@ public abstract class Query {
     }
 
     /**
+     * Used to restrict a value to be greater than or equal to the given value
+     *
+     * @param property The name of the property
+     * @param value The value to restrict by
+     * @return This query instance
+     */
+    public Query ge(String property, Object value) {
+        return gte(property, value);
+    }
+
+    /**
+     * Used to restrict a value to be less than or equal to the given value
+     *
+     * @param property The name of the property
+     * @param value The value to restrict by
+     * @return This query instance
+     */
+    public Query le(String property, Object value) {
+        return lte(property, value);
+    }
+
+    /**
      * Used to restrict a value to be less than the given value
      *
      * @param property The name of the property
@@ -619,6 +641,10 @@ public abstract class Query {
 
         public Object getValue() {
             return value;
+        }
+
+        public void setValue(Object v) {
+            this.value = v;
         }
     }
     /**

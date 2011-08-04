@@ -53,6 +53,8 @@ public abstract class AbstractMappingContext implements MappingContext {
         return conversionService;
     }
 
+    public abstract MappingFactory getMappingFactory();
+
     public ProxyFactory getProxyFactory() {
         if (this.proxyFactory == null) {
             proxyFactory = DefaultProxyFactoryCreator.create();

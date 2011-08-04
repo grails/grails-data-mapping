@@ -29,6 +29,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 import javax.persistence.FlushModeType;
 
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
+import org.grails.datastore.mapping.model.types.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -51,14 +53,6 @@ import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.PropertyMapping;
-import org.grails.datastore.mapping.model.types.Association;
-import org.grails.datastore.mapping.model.types.Basic;
-import org.grails.datastore.mapping.model.types.Embedded;
-import org.grails.datastore.mapping.model.types.EmbeddedCollection;
-import org.grails.datastore.mapping.model.types.ManyToMany;
-import org.grails.datastore.mapping.model.types.OneToMany;
-import org.grails.datastore.mapping.model.types.Simple;
-import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
 
 /**
@@ -382,6 +376,13 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             if ((prop instanceof Simple) || (prop instanceof Basic)) {
                 ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propKey));
             }
+            else if(prop instanceof Custom) {
+                CustomTypeMarshaller customTypeMarshaller = ((Custom) prop).getCustomTypeMarshaller();
+                if(customTypeMarshaller.supports(getSession().getDatastore())) {
+                    Object value = customTypeMarshaller.read(prop, nativeEntry);
+                    ea.setProperty(prop.getName(), value);
+                }
+            }
             else if (prop instanceof ToOne) {
                 if (prop instanceof Embedded) {
                     Embedded embedded = (Embedded) prop;
@@ -633,6 +634,13 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     toIndex.put(prop, propValue);
                 }
                 setEntryValue(e, key, propValue);
+            }
+            else if((prop instanceof Custom)) {
+                CustomTypeMarshaller customTypeMarshaller = ((Custom) prop).getCustomTypeMarshaller();
+                if(customTypeMarshaller.supports(getSession().getDatastore())) {
+                    Object propValue = entityAccess.getProperty(prop.getName());
+                    customTypeMarshaller.write(prop, propValue, e);
+                }
             }
             else if (prop instanceof OneToMany) {
                 final OneToMany oneToMany = (OneToMany) prop;
@@ -1084,7 +1092,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         public void setProperty(String name, Object value) {
             super.setProperty(name, value);
             if (nativeEntry != null) {
-                setEntryValue(nativeEntry, name, value);
+                PersistentProperty property = persistentEntity.getPropertyByName(name);
+                if(property != null && (property instanceof Simple)) {
+                    setEntryValue(nativeEntry, name, value);
+                }
             }
         }
 

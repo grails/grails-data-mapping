@@ -30,6 +30,7 @@ import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.grails.datastore.mapping.simple.query.SimpleMapQuery
 import org.grails.datastore.mapping.config.Property
+import org.grails.datastore.mapping.core.IdentityGenerationException
 
 /**
  * A simple implementation of the {@link org.grails.datastore.mapping.engine.EntityPersister} abstract class that backs onto an in-memory map.
@@ -200,15 +201,28 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
     }
 
     protected generateIdentifier(PersistentEntity persistentEntity, Map id) {
-        if (persistentEntity.root) {
-            lastKey++
-            return persistentEntity.identity.type == String ? lastKey.toString() : lastKey
-        }
+        final isRoot = persistentEntity.root
+        final type = isRoot ? persistentEntity.identity.type : persistentEntity.rootEntity.identity.type
+        if((String.isAssignableFrom(type)) || (Number.isAssignableFrom(type))) {
+            def key
+            if(isRoot) {
+                key = ++lastKey
 
-        def root = persistentEntity.rootEntity
-        session.getPersister(root).lastKey++
-        def key = session.getPersister(root).lastKey
-        return root.identity.type == String ? key.toString() : key
+            }
+            else {
+                def root = persistentEntity.rootEntity
+                session.getPersister(root).lastKey++
+                key = session.getPersister(root).lastKey
+            }
+            return type == String ? key.toString() : key
+        }
+        else {
+            try {
+                return type.newInstance()
+            } catch (e) {
+                throw new IdentityGenerationException("Cannot generator identity for entity $persistentEntity with type $type")
+            }
+        }
     }
 
     protected storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, storeId, Map nativeEntry) {
