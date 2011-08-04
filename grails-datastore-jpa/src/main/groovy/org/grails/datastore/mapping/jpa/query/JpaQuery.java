@@ -347,6 +347,26 @@ public class JpaQuery extends Query {
             }
         });
 
+        queryHandlers.put(ILike.class, new QueryHandler() {
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, StringBuilder whereClause,String logicalName, int position, List parameters, ConversionService conversionService) {
+                ILike eq = (ILike) criterion;
+                final String name = eq.getProperty();
+                PersistentProperty prop = validateProperty(entity, name, ILike.class);
+                Class propType = prop.getType();
+                q.append("lower(")
+                 .append(logicalName)
+                 .append(DOT)
+                 .append(name)
+                 .append(")")
+                 .append(" like lower(")
+                 .append(QUESTIONMARK)
+                 .append(")")
+                 .append(++position);
+                parameters.add(conversionService.convert( eq.getValue(), propType ));
+                return position;
+            }
+        });
+
         queryHandlers.put(In.class, new QueryHandler() {
             public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, StringBuilder whereClause,String logicalName, int position, List parameters, ConversionService conversionService) {
                 In eq = (In) criterion;

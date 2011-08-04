@@ -23,6 +23,7 @@ import org.grails.datastore.mapping.engine.NativeEntryEntityPersister
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.Query
 import org.springframework.util.Assert
+import java.util.regex.Pattern
 
 /**
  * perform criteria queries on a Neo4j backend
@@ -147,6 +148,12 @@ class Neo4jQuery extends Query {
     boolean matchesCriterionLike(Node node, Query.Like criterion) {
         def value = criterion.value.replaceAll('%','.*')
         getNodeProperty(node, criterion.name) ==~ /$value/
+    }
+
+    boolean matchesCriterionILike(Node node, Query.ILike criterion) {
+        def value = criterion.value.replaceAll('%','.*')
+        def pattern = Pattern.compile(value, Pattern.CASE_INSENSITIVE)
+        pattern.matcher(getNodeProperty(node, criterion.name)).matches()
     }
 
     boolean matchesCriterionBetween(Node node, Query.Between criterion) {
