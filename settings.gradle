@@ -7,10 +7,10 @@ include "grails-datastore-core",
         "grails-datastore-riak",
         "grails-datastore-simple",
         "grails-datastore-web",
+        "grails-datastore-simpledb",
 /*
         "grails-datastore-jcr",
         "grails-datastore-cassandra",
-        "grails-datastore-simpledb",
 */
 
         // Documentation
@@ -37,7 +37,8 @@ include "grails-datastore-core",
         'grails-datastore-gorm-redis',
         'grails-datastore-gorm-riak',
         'grails-datastore-gorm-mongo',
-        'grails-datastore-gorm-gemfire'
+        'grails-datastore-gorm-gemfire',
+        'grails-datastore-gorm-simpledb'
 /*
         'grails-datastore-gorm-hibernate',
         'grails-datastore-gorm-jcr',
