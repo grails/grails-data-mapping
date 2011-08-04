@@ -162,6 +162,11 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             if (hasOneMap == null) hasOneMap = Collections.emptyMap();
 
             for (PropertyDescriptor descriptor : cpf.getPropertyDescriptors()) {
+                if (descriptor.getPropertyType() == null) {
+                    // indexed property
+                    continue;
+                }
+
                 final String propertyName = descriptor.getName();
                 if (isExcludedProperty(propertyName, classMapping, transients)) continue;
                 Class<?> propertyType = descriptor.getPropertyType();

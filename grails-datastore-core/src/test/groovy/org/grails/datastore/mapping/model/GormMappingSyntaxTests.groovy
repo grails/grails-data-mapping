@@ -1,5 +1,7 @@
 package org.grails.datastore.mapping.model
 
+import static org.junit.Assert.*
+
 import javax.persistence.Entity
 
 import org.junit.Test
@@ -118,6 +120,18 @@ class GormMappingSyntaxTests {
         assert inverse.owningSide
     }
 
+    @Test
+    void testIndexedProperty() {
+        def context = new TestMappingContext()
+        context.addPersistentEntity(EntityWithIndexedProperty)
+
+        assertEquals 1, context.persistentEntities.size()
+
+        assertNotNull context.getPersistentEntity(EntityWithIndexedProperty.name)
+
+        assertEquals 2, context.mappingSyntaxStrategy.getPersistentProperties(EntityWithIndexedProperty, context).size()
+    }
+
     @Entity
     class JavaEntity {}
 }
@@ -164,4 +178,14 @@ class SecondEntity {
     String bar
 
     static transients = ['bar']
+}
+
+@grails.persistence.Entity
+class EntityWithIndexedProperty {
+    Long id
+    String name
+    String bar
+
+    String getSectionContent(int section) {}
+    void setSectionContent(int section, String content) {}
 }
