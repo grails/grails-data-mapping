@@ -65,8 +65,13 @@ class MappingConfigurationBuilder {
             return
         }
 
-        callable.delegate = this
-        callable.resolveStrategy = Closure.DELEGATE_ONLY
-        callable.call()
+        def originalDelegate = callable.delegate
+        try {
+            callable.delegate = this
+            callable.resolveStrategy = Closure.DELEGATE_FIRST
+            callable.call()
+        } finally {
+            callable.delegate = originalDelegate
+        }
     }
 }
