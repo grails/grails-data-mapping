@@ -11,6 +11,12 @@ import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
+import org.grails.datastore.mapping.query.Query.PropertyCriterion
+import org.grails.datastore.mapping.query.Query.Between
+import org.grails.datastore.mapping.simple.query.SimpleMapQuery
+import org.grails.datastore.mapping.simple.query.SimpleMapResultList
 
 /**
  * @author graemerocher
@@ -21,6 +27,40 @@ class Setup {
         def ctx = new GenericApplicationContext()
         ctx.refresh()
         def simple = new SimpleMapDatastore(ctx)
+
+        simple.mappingContext.mappingFactory.registerCustomType(new AbstractMappingAwareCustomTypeMarshaller<Birthday, Map, SimpleMapResultList>(Birthday) {
+            @Override
+            protected Object writeInternal(PersistentProperty property, String key, Birthday value, Map nativeTarget) {
+                final converted = value.date.time
+                nativeTarget.put(key, converted)
+                return converted
+            }
+
+            @Override
+            protected void queryInternal(PersistentProperty property, String key, PropertyCriterion criterion, SimpleMapResultList nativeQuery) {
+                SimpleMapQuery query = nativeQuery.query
+                def handler = query.handlers[criterion.getClass()]
+
+                if(criterion instanceof Between) {
+                    criterion.from = criterion.from.date.time
+                    criterion.to = criterion.to.date.time
+                    nativeQuery.results << handler?.call(criterion, property) ?: []
+                }
+                else {
+                    criterion.value = criterion.value.date.time
+                    nativeQuery.results << handler?.call(criterion, property) ?: []
+                }
+            }
+
+            @Override
+            protected Birthday readInternal(PersistentProperty property, String key, Map source) {
+                final num = source.get(key)
+                if(num instanceof Long) {
+                    return new Birthday(new Date(num))
+                }
+                return null
+            }
+        })
         for (cls in classes) {
             simple.mappingContext.addPersistentEntity(cls)
         }

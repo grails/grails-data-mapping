@@ -44,17 +44,18 @@ public abstract class AbstractMappingAwareCustomTypeMarshaller<T, N, Q> implemen
     }
 
     @Override
-    public void write(PersistentProperty property, T value, N nativeTarget) {
+    public Object write(PersistentProperty property, T value, N nativeTarget) {
         String targetName = MappingUtils.getTargetKey(property);
-        writeInternal(property, targetName,value,nativeTarget);
+        return writeInternal(property, targetName,value,nativeTarget);
     }
 
-    protected abstract void writeInternal(PersistentProperty property, String key, T value, N nativeTarget);
+    protected abstract Object writeInternal(PersistentProperty property, String key, T value, N nativeTarget);
 
     @Override
-    public void query(PersistentProperty property, Query.PropertyCriterion criterion, Q nativeQuery) {
+    public Q query(PersistentProperty property, Query.PropertyCriterion criterion, Q nativeQuery) {
         String targetName = MappingUtils.getTargetKey(property);
         queryInternal(property, targetName, criterion, nativeQuery);
+        return nativeQuery;
     }
 
     protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion value, Q nativeQuery) {

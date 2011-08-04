@@ -623,23 +623,15 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             if ((prop instanceof Simple) || (prop instanceof Basic)) {
                 Object propValue = entityAccess.getProperty(prop.getName());
 
-                if (indexed) {
-                    if (isUpdate) {
-                        final Object oldValue = getEntryValue(e, key);
-                        if (oldValue != null && !oldValue.equals(propValue)) {
-                            toUnindex.put(prop, oldValue);
-                        }
-                    }
-
-                    toIndex.put(prop, propValue);
-                }
+                handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, propValue);
                 setEntryValue(e, key, propValue);
             }
             else if((prop instanceof Custom)) {
                 CustomTypeMarshaller customTypeMarshaller = ((Custom) prop).getCustomTypeMarshaller();
                 if(customTypeMarshaller.supports(getSession().getDatastore())) {
                     Object propValue = entityAccess.getProperty(prop.getName());
-                    customTypeMarshaller.write(prop, propValue, e);
+                    Object customValue = customTypeMarshaller.write(prop, propValue, e);
+                    handleIndexing(isUpdate, e, toIndex, toUnindex, prop, key, indexed, customValue);
                 }
             }
             else if (prop instanceof OneToMany) {
@@ -819,6 +811,19 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             si.addPendingUpdate((PendingUpdate) pendingOperation);
         }
         return (Serializable) k;
+    }
+
+    private void handleIndexing(boolean update, T e, Map<PersistentProperty, Object> toIndex, Map<PersistentProperty, Object> toUnindex, PersistentProperty prop, String key, boolean indexed, Object propValue) {
+        if (indexed) {
+            if (update) {
+                final Object oldValue = getEntryValue(e, key);
+                if (oldValue != null && !oldValue.equals(propValue)) {
+                    toUnindex.put(prop, oldValue);
+                }
+            }
+
+            toIndex.put(prop, propValue);
+        }
     }
 
     protected boolean isPropertyIndexed(Property mappedProperty) {

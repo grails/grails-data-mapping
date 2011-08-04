@@ -25,6 +25,8 @@ import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.Restrictions
 import org.grails.datastore.mapping.simple.SimpleMapSession
 import org.grails.datastore.mapping.simple.engine.SimpleMapEntityPersister
+import org.grails.datastore.mapping.model.types.Custom
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
 
 /**
  * Simple query implementation that queries a map of objects
@@ -347,7 +349,7 @@ class SimpleMapQuery extends Query {
         return allIds
     }
 
-    protected Map executeSubQuery(criteria, criteriaList) {
+    Map executeSubQuery(criteria, criteriaList) {
 
         def finalIdentifiers = executeSubQueryInternal(criteria, criteriaList)
 
@@ -356,21 +358,29 @@ class SimpleMapQuery extends Query {
         return queryResult
     }
 
-    protected Collection executeSubQueryInternal(criteria, criteriaList) {
-        def resultList = []
+    Collection executeSubQueryInternal(criteria, criteriaList) {
+        SimpleMapResultList resultList = new SimpleMapResultList(this)
         for (Query.Criterion criterion in criteriaList) {
             if (criterion instanceof Query.Junction) {
-                resultList << executeSubQueryInternal(criterion, criterion.criteria)
+                resultList.results << executeSubQueryInternal(criterion, criterion.criteria)
             }
             else {
                 PersistentProperty property = getValidProperty(criterion)
 
-                def handler = handlers[criterion.getClass()]
-                def results = handler?.call(criterion, property) ?: []
-                resultList << results
+                if((property instanceof Custom) && (criterion instanceof Query.PropertyCriterion)) {
+                    CustomTypeMarshaller customTypeMarshaller = ((Custom) property).getCustomTypeMarshaller();
+                    customTypeMarshaller.query(property, criterion, resultList);
+                    continue
+                }
+                else {
+                    def handler = handlers[criterion.getClass()]
+                    def results = handler?.call(criterion, property) ?: []
+                    resultList.results << results
+                }
+
             }
         }
-        return applyJunctionToResults(criteria,resultList)
+        return applyJunctionToResults(criteria,resultList.results)
     }
 
     private List applyJunctionToResults(Query.Junction criteria, List resultList) {
