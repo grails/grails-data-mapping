@@ -291,12 +291,14 @@ public class RedisQuery extends Query {
 
     @SuppressWarnings("serial")
     private final Map<Class, CriterionHandler> criterionHandlers = new HashMap() {{
-       put(Like.class, new CriterionHandler<Like>() {
+       CriterionHandler<Like> likeHandler = new CriterionHandler<Like>() {
            public void handle(RedisEntityPersister entityPersister, List<String> indices, Like criterion) {
                String key = executeSubLike(entityPersister, criterion);
                indices.add(key);
            }
-       });
+       };
+       put(Like.class, likeHandler);
+       put(ILike.class, likeHandler);
        put(Between.class, new CriterionHandler<Between>() {
            public void handle(RedisEntityPersister entityPersister, List<String> indices, Between criterion) {
                String key = executeSubBetween(entityPersister, criterion);

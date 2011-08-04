@@ -27,6 +27,7 @@ import org.grails.datastore.mapping.simple.SimpleMapSession
 import org.grails.datastore.mapping.simple.engine.SimpleMapEntityPersister
 import org.grails.datastore.mapping.model.types.Custom
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
+import java.util.regex.Pattern
 
 /**
  * Simple query implementation that queries a map of objects
@@ -151,6 +152,13 @@ class SimpleMapQuery extends Query {
             queryAssociation(allEntities, association) {
                 def regexFormat = like.pattern.replaceAll('%', '.*?')
                 it[like.property] ==~ regexFormat
+            }
+        },
+        (Query.ILike): { allEntities, Association association, Query.Like like ->
+            queryAssociation(allEntities, association) {
+                def regexFormat = like.pattern.replaceAll('%', '.*?')
+                def pattern = Pattern.compile(regexFormat, Pattern.CASE_INSENSITIVE)
+                pattern.matcher(it[like.property]).find()
             }
         },
         (Query.Equals): { allEntities, Association association, Query.Equals eq ->
@@ -287,6 +295,23 @@ class SimpleMapQuery extends Query {
             def pattern = "${root}:${regexFormat}"
             def matchingIndices = entityPersister.indices.findAll { key, value ->
                 key ==~ pattern
+            }
+
+            Set result = []
+            for (indexed in matchingIndices) {
+                result.addAll(indexed.value)
+            }
+
+            return result.toList()
+        },
+        (Query.ILike): { Query.ILike like, PersistentProperty property ->
+            def indexer = entityPersister.getPropertyIndexer(property)
+
+            def root = indexer.indexRoot
+            def regexFormat = like.pattern.replaceAll('%', '.*?')
+            def pattern = Pattern.compile("${root}:${regexFormat}", Pattern.CASE_INSENSITIVE)
+            def matchingIndices = entityPersister.indices.findAll { key, value ->
+                pattern.matcher(key).matches()
             }
 
             Set result = []

@@ -25,6 +25,8 @@ class QueryAssociationSpec extends GormDatastoreSpec {
             results.size() == 1
             results[0].name == "Fred"
 
+
+
         when: "A like criterion is executed on the child association"
             results = TestEntity.withCriteria {
                 child {
@@ -37,6 +39,31 @@ class QueryAssociationSpec extends GormDatastoreSpec {
             results.size() == 2
             results[0].name == "Fred"
             results[1].name == "Joe"
+
+        when: "An ilike criterion is executed on the child association"
+            results = TestEntity.withCriteria {
+                child {
+                    ilike 'name', 'j%'
+                }
+                order  "name"
+            }
+
+        then: "Check that we get 2 results back"
+            results.size() == 2
+            results[0].name == "Fred"
+            results[1].name == "Joe"
+
+        when: "An ilike criterion is executed on the entity"
+            results = TestEntity.withCriteria {
+                ilike 'name', '%e%'
+                order  "name"
+            }
+
+        then: "Check that we get 2 results back"
+            results.size() == 3
+            results[0].name == "Charlie"
+            results[1].name == "Fred"
+            results[2].name == "Joe"
 
         when: "A not equals criterion is executed in a child association"
             results = TestEntity.withCriteria {
