@@ -26,6 +26,9 @@ import groovy.lang.GroovyObject;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -171,6 +174,26 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                         EmbeddedCollection association = propertyFactory.createEmbeddedCollection(
                                 entity, context, descriptor);
                         persistentProperties.add(association);
+                        Class relatedClassType = (Class) hasManyMap.get(association.getName());
+                        if(relatedClassType == null) {
+                            try {
+                                Field declaredField = entity.getJavaClass().getDeclaredField(association.getName());
+                                Type genericType = declaredField.getGenericType();
+                                if(genericType instanceof ParameterizedType) {
+                                    Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
+                                    if(typeArguments.length>0) {
+                                        relatedClassType = (Class) typeArguments[0];
+                                    }
+                                }
+                            } catch (NoSuchFieldException e) {
+                                // ignore
+                            }
+                        }
+                        if(relatedClassType != null) {
+
+                            PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity, context, relatedClassType);
+                            association.setAssociatedEntity(associatedEntity);
+                        }
                     }
                     else {
                         ToOne association = propertyFactory.createEmbedded(entity, context, descriptor);

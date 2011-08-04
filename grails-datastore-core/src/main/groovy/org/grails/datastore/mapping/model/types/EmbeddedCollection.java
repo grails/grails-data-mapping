@@ -25,7 +25,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
  * @author Burt Beckwith
  * @since 1.0
  */
-public abstract class EmbeddedCollection<T> extends ToOne<T> {
+public abstract class EmbeddedCollection<T> extends Association<T> {
 
     public EmbeddedCollection(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor) {
         super(owner, context, descriptor);

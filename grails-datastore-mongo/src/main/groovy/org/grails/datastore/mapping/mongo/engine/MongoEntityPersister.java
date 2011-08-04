@@ -146,6 +146,11 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         ea.setProperty(propertyKey, instances);
     }
 
+    @Override
+    protected boolean isEmbeddedEntry(Object tmp) {
+        return tmp instanceof DBObject;
+    }
+
     public Query createQuery() {
         return new MongoQuery((MongoSession) getSession(), getPersistentEntity());
     }

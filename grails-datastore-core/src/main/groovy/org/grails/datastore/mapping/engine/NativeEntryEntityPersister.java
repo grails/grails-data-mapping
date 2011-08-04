@@ -377,11 +377,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propKey));
             }
             else if(prop instanceof Custom) {
-                CustomTypeMarshaller customTypeMarshaller = ((Custom) prop).getCustomTypeMarshaller();
-                if(customTypeMarshaller.supports(getSession().getDatastore())) {
-                    Object value = customTypeMarshaller.read(prop, nativeEntry);
-                    ea.setProperty(prop.getName(), value);
-                }
+                handleCustom(prop, ea, nativeEntry);
             }
             else if (prop instanceof ToOne) {
                 if (prop instanceof Embedded) {
@@ -396,13 +392,16 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                         ea.setProperty(propKey, embeddedInstance);
                     }
                 }
-                else if (prop instanceof EmbeddedCollection) {
-                    final Object embeddedInstances = getEntryValue(nativeEntry, propKey);
-                    loadEmbeddedCollection((EmbeddedCollection)prop, ea, embeddedInstances, propKey);
-                }
+
                 else {
                     Serializable tmp = (Serializable) getEntryValue(nativeEntry, propKey);
-                    if (tmp != null && !prop.getType().isInstance(tmp)) {
+                    if(isEmbeddedEntry(tmp)) {
+                        PersistentEntity associatedEntity = ((ToOne) prop).getAssociatedEntity();
+                        Object instance = newEntityInstance(associatedEntity);
+                        refreshObjectStateFromNativeEntry(associatedEntity,instance, null, (T) tmp);
+                        ea.setProperty(prop.getName(), instance);
+                    }
+                    else if (tmp != null && !prop.getType().isInstance(tmp)) {
                         PersistentEntity associatedEntity = ((Association)prop).getAssociatedEntity();
                         final Serializable associationKey = (Serializable) getMappingContext().getConversionService().convert(
                               tmp, associatedEntity.getIdentity().getType());
@@ -422,6 +421,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                         }
                     }
                 }
+            }
+            else if (prop instanceof EmbeddedCollection) {
+                    final Object embeddedInstances = getEntryValue(nativeEntry, propKey);
+                    loadEmbeddedCollection((EmbeddedCollection)prop, ea, embeddedInstances, propKey);
             }
             else if (prop instanceof OneToMany) {
                 Association association = (Association) prop;
@@ -502,6 +505,18 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     ea.setProperty(manyToMany.getName(), cached);
                 }
             }
+        }
+    }
+
+    protected boolean isEmbeddedEntry(Object tmp) {
+        return false;
+    }
+
+    private void handleCustom(PersistentProperty prop, EntityAccess ea, T nativeEntry) {
+        CustomTypeMarshaller customTypeMarshaller = ((Custom) prop).getCustomTypeMarshaller();
+        if(customTypeMarshaller.supports(getSession().getDatastore())) {
+            Object value = customTypeMarshaller.read(prop, nativeEntry);
+            ea.setProperty(prop.getName(), value);
         }
     }
 
@@ -659,51 +674,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 if (prop instanceof Embedded) {
                     // For embedded properties simply set the entry value, the underlying implementation
                     // will have to store the embedded entity in an appropriate way (as a sub-document in a document store for example)
-
-                    Object embeddedInstance = entityAccess.getProperty(prop.getName());
-                    if (embeddedInstance != null) {
-                        NativeEntryEntityPersister<T,K> embeddedPersister = (NativeEntryEntityPersister<T,K>) session.getPersister(embeddedInstance);
-                        T embeddedEntry = embeddedPersister.createNewEntry(embeddedPersister.getEntityFamily());
-
-                        final PersistentEntity associatedEntity = association.getAssociatedEntity();
-                        final List<PersistentProperty> embeddedProperties = associatedEntity.getPersistentProperties();
-                        final EntityAccess embeddedEntityAccess = createEntityAccess(associatedEntity, embeddedInstance);
-                        for (PersistentProperty persistentProperty : embeddedProperties) {
-                            setEntryValue(embeddedEntry, persistentProperty.getName(), embeddedEntityAccess.getProperty(persistentProperty.getName()));
-                        }
-
-                        setEmbedded(e, key, embeddedEntry);
-                    }
+                    handleEmbeddedToOne(association, key, entityAccess, e);
                 }
-                else if (prop instanceof EmbeddedCollection) {
-                    // For embedded properties simply set the entry value, the underlying implementation
-                    // will have to store the embedded entity in an appropriate way (as a sub-document in a document store for example)
-                    Object embeddedInstances = entityAccess.getProperty(prop.getName());
-                    if (embeddedInstances instanceof Collection && !((Collection)embeddedInstances).isEmpty()) {
-                        Collection instances = (Collection)embeddedInstances;
-                        List<T> embeddedEntries = new ArrayList<T>();
-                        for (Object instance : instances) {
-                            PersistentEntity embeddedPersistentEntity =
-                                getMappingContext().getPersistentEntity(instance.getClass().getName());
-                            List<PersistentProperty> embeddedProperties =
-                                embeddedPersistentEntity.getPersistentProperties();
-                            NativeEntryEntityPersister<T,K> embeddedPersister =
-                                (NativeEntryEntityPersister<T,K>) session.getPersister(instance);
 
-                            T entry = embeddedPersister.createNewEntry(embeddedPersister.getEntityFamily());
-                            embeddedEntries.add(entry);
-                            EntityAccess embeddedEntityAccess = createEntityAccess(
-                                    embeddedPersistentEntity, instance);
-                            setEntryValue(entry, "_embeddedClassName", instance.getClass().getName());
-                            for (PersistentProperty persistentProperty : embeddedProperties) {
-                                setEntryValue(entry, persistentProperty.getName(),
-                                        embeddedEntityAccess.getProperty(persistentProperty.getName()));
-                            }
-                        }
-
-                        setEmbeddedCollection(e, key, instances, embeddedEntries);
-                    }
-                }
                 else if (association.doesCascade(CascadeType.PERSIST)) {
 
                     if (!association.isForeignKeyInChild()) {
@@ -764,6 +737,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     }
                 }
             }
+            else if (prop instanceof EmbeddedCollection) {
+                handleEmbeddedToMany(entityAccess, e, prop, key);
+
+            }
         }
 
         if (!isUpdate) {
@@ -811,6 +788,60 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             si.addPendingUpdate((PendingUpdate) pendingOperation);
         }
         return (Serializable) k;
+    }
+
+    protected void handleEmbeddedToMany(EntityAccess entityAccess, T e, PersistentProperty prop, String key) {
+        // For embedded properties simply set the entry value, the underlying implementation
+        // will have to store the embedded entity in an appropriate way (as a sub-document in a document store for example)
+        Object embeddedInstances = entityAccess.getProperty(prop.getName());
+        if (embeddedInstances instanceof Collection && !((Collection)embeddedInstances).isEmpty()) {
+            Collection instances = (Collection)embeddedInstances;
+            List<T> embeddedEntries = new ArrayList<T>();
+            for (Object instance : instances) {
+                T entry = handleEmbeddedInstance((Association) prop, instance);
+                embeddedEntries.add(entry);
+                setEntryValue(entry, "_embeddedClassName", instance.getClass().getName());
+            }
+
+            setEmbeddedCollection(e, key, instances, embeddedEntries);
+        }
+    }
+
+    protected void handleEmbeddedToOne(Association association, String key, EntityAccess entityAccess, T nativeEntry) {
+        Object embeddedInstance = entityAccess.getProperty(association.getName());
+        if (embeddedInstance != null) {
+            T embeddedEntry = handleEmbeddedInstance(association, embeddedInstance);
+
+            setEmbedded(nativeEntry, key, embeddedEntry);
+        }
+    }
+
+    protected T handleEmbeddedInstance(Association association, Object embeddedInstance) {
+        NativeEntryEntityPersister<T,K> embeddedPersister = (NativeEntryEntityPersister<T,K>) session.getPersister(embeddedInstance);
+        T embeddedEntry = embeddedPersister.createNewEntry(embeddedPersister.getEntityFamily());
+
+        final PersistentEntity associatedEntity = association.getAssociatedEntity();
+        if(associatedEntity != null) {
+            final List<PersistentProperty> embeddedProperties = associatedEntity.getPersistentProperties();
+            final EntityAccess embeddedEntityAccess = createEntityAccess(associatedEntity, embeddedInstance);
+            for (PersistentProperty persistentProperty : embeddedProperties) {
+                if(persistentProperty instanceof Simple) {
+                    setEntryValue(embeddedEntry, persistentProperty.getName(), embeddedEntityAccess.getProperty(persistentProperty.getName()));
+                }
+                else if(persistentProperty instanceof Custom) {
+                    handleCustom(association, embeddedEntityAccess, embeddedEntry);
+                }
+                else if(persistentProperty instanceof Association) {
+                    if(persistentProperty instanceof ToOne) {
+                        handleEmbeddedToOne((Association) persistentProperty, persistentProperty.getName(), embeddedEntityAccess, embeddedEntry);
+                    }
+                    else {
+                        handleEmbeddedToMany(embeddedEntityAccess, embeddedEntry, persistentProperty, persistentProperty.getName());
+                    }
+                }
+            }
+        }
+        return embeddedEntry;
     }
 
     private void handleIndexing(boolean update, T e, Map<PersistentProperty, Object> toIndex, Map<PersistentProperty, Object> toUnindex, PersistentProperty prop, String key, boolean indexed, Object propValue) {
