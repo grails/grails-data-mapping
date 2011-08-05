@@ -126,13 +126,13 @@ subprojects {
 
         task sourcesJar(type: Jar, dependsOn:classes) {
             classifier = 'sources'
-            appendix = project.name[7..-1]
+            appendix = project.name[17..-1]
             from sourceSets.main.allSource
         }
 
         task javadocJar(type: Jar, dependsOn:javadoc) {
             classifier = 'javadoc'
-            appendix = project.name[7..-1]
+            appendix = project.name[17..-1]
             from javadoc.destinationDir
         }
 

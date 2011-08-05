@@ -45,6 +45,7 @@ abstract class DynamicMethodsConfigurer {
     abstract String getDatastoreType()
 
     boolean hasExistingDatastore = false
+    boolean failOnError = false
 
     void configure() {
         def enhancer = createEnhancer()
@@ -63,6 +64,7 @@ abstract class DynamicMethodsConfigurer {
                 else {
                     def staticApi = createGormStaticApi(cls, enhancer.finders)
                     def instanceApi = createGormInstanceApi(cls)
+                    instanceApi.failOnError = failOnError
                     cls.metaClass.static."get$type" = {-> staticApi }
                     cls.metaClass."get$type" = {-> new InstanceProxy(instance:delegate, target:instanceApi) }
                 }

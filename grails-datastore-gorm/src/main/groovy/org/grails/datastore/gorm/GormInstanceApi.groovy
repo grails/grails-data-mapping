@@ -21,7 +21,7 @@ import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.core.VoidSessionCallback
 import org.grails.datastore.mapping.proxy.EntityProxy
-import org.grails.datastore.mapping.validation.ValidationException
+import grails.validation.ValidationException
 
 /**
  * Instance methods of the GORM API.
@@ -32,6 +32,7 @@ import org.grails.datastore.mapping.validation.ValidationException
 class GormInstanceApi<D> extends AbstractGormApi<D> {
 
     Class<Exception> validationException = ValidationException
+    boolean failOnError = false
 
     GormInstanceApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
@@ -160,7 +161,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
         }
 
         if (hasErrors) {
-            if (params?.failOnError) {
+            if (params?.failOnError || failOnError) {
                 throw validationException.newInstance( "Validation error occured during call to save()", instance.errors)
             }
             return null

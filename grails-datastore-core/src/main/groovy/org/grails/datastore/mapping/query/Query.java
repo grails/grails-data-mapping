@@ -234,7 +234,7 @@ public abstract class Query {
            criteria.add(Restrictions.eq(property, value));
         }
         else {
-           criteria.add(Restrictions.idEq(value));
+           criteria.add(Restrictions.idEq(resolved));
         }
         return this;
     }

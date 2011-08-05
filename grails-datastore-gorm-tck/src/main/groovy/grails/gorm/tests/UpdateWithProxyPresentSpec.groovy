@@ -45,6 +45,10 @@ class Pet implements Serializable {
     Date birthDate = new Date()
     PetType type = new PetType(name:"Unknown")
     Person owner
+
+    static mapping = {
+        name index:true
+    }
 }
 
 @Entity

@@ -1,5 +1,11 @@
 Below are the details of the changes across releases:
 
+h4. 1.0 Milestone 7
+
+* Support for hasOne associations
+* Support for custom user types
+* Associations now linked via DBRef
+
 h4. 1.0 Milestone 6
 
 * Support for embedded collections of Mongo domain classes
