@@ -44,8 +44,10 @@ class Setup {
 
         mongo.mappingContext.mappingFactory.registerCustomType(new AbstractMappingAwareCustomTypeMarshaller<Birthday, DBObject, DBObject>(Birthday) {
             @Override
-            protected void writeInternal(PersistentProperty property, String key, Birthday value, DBObject nativeTarget) {
-                nativeTarget.put(key, value.date.time)
+            protected Object writeInternal(PersistentProperty property, String key, Birthday value, DBObject nativeTarget) {
+                final converted = value.date.time
+                nativeTarget.put(key, converted)
+                return converted
             }
 
             @Override
@@ -63,16 +65,13 @@ class Setup {
             }
 
             @Override
-            protected Birthday readInternal(PersistentProperty property, String key, DBObject source) {
-                final num = source.get(key)
+            protected Birthday readInternal(PersistentProperty property, String key, DBObject nativeSource) {
+                final num = nativeSource.get(key)
                 if(num instanceof Long) {
                     return new Birthday(new Date(num))
                 }
                 return null
             }
-
-
-
         })
 
         for (cls in classes) {

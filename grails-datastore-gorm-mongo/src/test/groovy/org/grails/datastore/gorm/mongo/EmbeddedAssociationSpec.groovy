@@ -65,7 +65,7 @@ class Individual2 {
     Long id
     String name
     Address address
-    List otherAddresses
+    List<Address> otherAddresses
     static embedded = ['address', 'otherAddresses']
 
     static mapping = {

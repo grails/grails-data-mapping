@@ -797,6 +797,15 @@ public abstract class Query {
     }
 
     /**
+     * Criterion used to restrict the results based on a pattern (likeness)
+     */
+    public static class ILike extends Like {
+        public ILike(String name, String expression) {
+            super(name, expression);
+        }
+    }
+
+    /**
      * Criterion used to restrict the results based on a regular expression pattern
      */
     public static class RLike extends Like {

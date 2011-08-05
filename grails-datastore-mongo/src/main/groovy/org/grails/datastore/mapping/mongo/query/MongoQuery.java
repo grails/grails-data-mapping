@@ -97,15 +97,13 @@ public class MongoQuery extends Query {
 
         queryHandlers.put(Like.class, new QueryHandler<Like>() {
             public void handle(PersistentEntity entity, Like like, DBObject query) {
-                Object value = like.getValue();
-                if (value == null) value = "null";
-                String expr = value.toString().replace("%", ".*");
-                if (!expr.startsWith(".*")) {
-                    expr = '^'+expr;
-                }
-                Pattern regex = Pattern.compile(expr);
-                String propertyName = getPropertyName(entity, like);
-                query.put(propertyName, regex);
+                handleLike(entity, like, query, false);
+            }
+        });
+
+      queryHandlers.put(ILike.class, new QueryHandler<Like>() {
+            public void handle(PersistentEntity entity, Like like, DBObject query) {
+                handleLike(entity, like, query, true);
             }
         });
 
@@ -317,6 +315,18 @@ public class MongoQuery extends Query {
                 queryHandlers.get(GreaterThanEquals.class).handle(entity, Restrictions.gte(criterion.getProperty(), criterion.getValue()), query);
             }
         });
+    }
+
+    private static void handleLike(PersistentEntity entity, Like like, DBObject query, boolean caseSensitive) {
+        Object value = like.getValue();
+        if (value == null) value = "null";
+        String expr = value.toString().replace("%", ".*");
+        if (!expr.startsWith(".*")) {
+            expr = '^'+expr;
+        }
+        Pattern regex = caseSensitive ? Pattern.compile(expr) : Pattern.compile(expr, Pattern.CASE_INSENSITIVE);
+        String propertyName = getPropertyName(entity, like);
+        query.put(propertyName, regex);
     }
 
     private MongoSession mongoSession;

@@ -467,6 +467,20 @@ public class CriteriaBuilder extends GroovyObjectSupport {
     }
 
     /**
+     * Creates an ilike Criterion based on the specified property name and value. Unlike a like condition, ilike is case insensitive
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    public Query.Criterion ilike(String propertyName, Object propertyValue) {
+        validatePropertyName(propertyName, "ilike");
+        Assert.notNull(propertyValue, "Cannot use ilike expression with null value");
+        return addToCriteria(Restrictions.ilike(propertyName, propertyValue.toString()));
+    }
+
+    /**
      * Creates an rlike Criterion based on the specified property name and value.
      *
      * @param propertyName The property name

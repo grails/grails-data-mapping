@@ -103,6 +103,9 @@ class DatastoreUnitTestMixin {
 
     def disconnect() {
         session?.disconnect()
+        if(PluginManagerHolder.pluginManager?.is(mockPluginManager)) {
+            PluginManagerHolder.pluginManager = null
+        }
         datastore.clearData()
     }
 }

@@ -47,8 +47,9 @@ public interface CustomTypeMarshaller<T, N, Q> {
      * @param property The property being converted
      * @param value The value
      * @param nativeTarget The nativeTarget
+     * @return The written value
      */
-    public void write(PersistentProperty property, T value, N nativeTarget);
+    public Object write(PersistentProperty property, T value, N nativeTarget);
 
     /**
      * Populates a query
@@ -57,8 +58,9 @@ public interface CustomTypeMarshaller<T, N, Q> {
 
      * @param criterion The criterion
      * @param nativeQuery The nativeQuery
+     * @return The native query
      */
-    public void query(PersistentProperty property,  Query.PropertyCriterion criterion, Q nativeQuery);
+    public Q query(PersistentProperty property,  Query.PropertyCriterion criterion, Q nativeQuery);
 
     /**
      * Converts a value from its native form

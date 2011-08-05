@@ -42,10 +42,19 @@ class Setup {
 
     static Session setup(classes) {
         def env = System.getenv()
-
+        final userHome = System.getProperty("user.home")
+        def settingsFile = new File(userHome, "aws.properties")
         def connectionDetails = [:]
-        connectionDetails.put(SimpleDBDatastore.ACCESS_KEY, env['AWS_ACCESS_KEY'])
-        connectionDetails.put(SimpleDBDatastore.SECRET_KEY, env['AWS_SECRET_KEY'])
+        if(settingsFile.exists()) {
+            def props = new Properties()
+            settingsFile.withReader { reader ->
+                props.load(reader)
+            }
+            connectionDetails.put(SimpleDBDatastore.ACCESS_KEY, props['AWS_ACCESS_KEY'])
+            connectionDetails.put(SimpleDBDatastore.SECRET_KEY, props['AWS_SECRET_KEY'])
+        }
+
+
         connectionDetails.put(SimpleDBDatastore.DOMAIN_PREFIX_KEY, "TEST_")
         connectionDetails.put(SimpleDBDatastore.DELAY_AFTER_WRITES_MS, "7000") //this flag will cause pausing for that many MS after each write - to fight eventual consistency
 

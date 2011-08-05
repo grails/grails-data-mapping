@@ -71,6 +71,11 @@ public class Restrictions {
         return new Query.Like(property, expression);
     }
 
+    public static Query.ILike ilike(String property, String expression) {
+        return new Query.ILike(property, expression);
+    }
+
+
     /**
      * Restricts the property match the given regular expressions.
      *
@@ -181,4 +186,5 @@ public class Restrictions {
     public static Query.IsNotNull isNotNull(String property) {
         return new Query.IsNotNull(property);
     }
+
 }
