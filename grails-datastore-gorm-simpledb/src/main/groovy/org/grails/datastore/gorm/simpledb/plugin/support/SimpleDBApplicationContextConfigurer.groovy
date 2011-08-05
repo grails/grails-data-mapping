@@ -15,6 +15,8 @@ import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import java.util.concurrent.Executors
 import java.util.concurrent.Executor
 import java.util.concurrent.CountDownLatch
+import org.grails.datastore.mapping.simpledb.SimpleDBDatastore
+import org.grails.datastore.mapping.simpledb.config.SimpleDBMappingContext
 
 class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer {
 
@@ -29,17 +31,27 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
         GrailsPluginManager pluginManager = (GrailsPluginManager) ctx.getBean("pluginManager");
         GrailsApplication application = (GrailsApplication) ctx.getBean("grailsApplication");
 
-        //determine dbCreate flag and create/delete AWS domains if needed
         def simpleDBDomainClasses = []
         simpleDBDomainClassProcessor(application, pluginManager, { dc ->
             simpleDBDomainClasses.add(dc) //collect domain classes which are stored via SimpleDB
         })
+
+        //explicitly register simpledb domain classes with datastore
+        SimpleDBDatastore simpleDBDatastore = (SimpleDBDatastore) ctx.getBean("simpledbDatastore")
+        SimpleDBMappingContext mappingContext = (SimpleDBMappingContext) ctx.getBean("simpledbMappingContext")
+
+        simpleDBDomainClasses.each{ domainClass ->
+            PersistentEntity entity = mappingContext.getPersistentEntity(domainClass.clazz.getName())
+            simpleDBDatastore.persistentEntityAdded(entity)
+        }
+
         def simpleDBConfig = application.config?.grails?.simpleDB
+        //determine dbCreate flag and create/delete AWS domains if needed
         handleDBCreate(simpleDBConfig.dbCreate,
                 application,
                 simpleDBDomainClasses,
-                ctx.getBean("simpledbMappingContext"),
-                ctx.getBean("simpledbDatastore")
+                mappingContext,
+                simpleDBDatastore
         ); //similar to JDBC datastore, do 'create' or 'drop-create'
     }
 
