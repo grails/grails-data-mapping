@@ -480,7 +480,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(propType);
 
         // establish relationship to type
-        Map relatedClassRelationships = getAssociationMap(cpf);
+        Map relatedClassRelationships = getAllAssociationMap(cpf);
         Map mappedBy = cpf.getStaticPropertyValue(MAPPED_BY, Map.class);
         if (mappedBy == null) mappedBy = Collections.emptyMap();
 
@@ -612,16 +612,36 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
      * @return The association map
      */
     protected Map getAssociationMap(ClassPropertyFetcher cpf) {
-        Map relationshipMap = cpf.getStaticPropertyValue(HAS_MANY, Map.class);
+        return getAssociationMap(cpf, HAS_MANY);
+    }
+
+    /**
+     * Retrieves the association map
+     * @param cpf The ClassPropertyFetcher instance
+     * @return The association map
+     */
+    protected Map getAllAssociationMap(ClassPropertyFetcher cpf) {
+
+        Map associationMap = getAssociationMap(cpf, HAS_MANY);
+        associationMap.putAll(getAssociationMap(cpf, HAS_ONE));
+        associationMap.putAll(getAssociationMap(cpf, BELONGS_TO));
+        return associationMap;
+    }
+
+    private Map getAssociationMap(ClassPropertyFetcher cpf, String relationshipType) {
+        Map relationshipMap = cpf.getStaticPropertyValue(relationshipType, Map.class);
         if (relationshipMap == null) {
             relationshipMap = new HashMap();
+        }
+        else {
+            relationshipMap = new HashMap(relationshipMap);
         }
 
         Class theClass = cpf.getJavaClass();
         while (theClass != Object.class) {
             theClass = theClass.getSuperclass();
             ClassPropertyFetcher propertyFetcher = ClassPropertyFetcher.forClass(theClass);
-            Map superRelationshipMap = propertyFetcher.getStaticPropertyValue(HAS_MANY, Map.class);
+            Map superRelationshipMap = propertyFetcher.getStaticPropertyValue(relationshipType, Map.class);
             if (superRelationshipMap != null && !superRelationshipMap.equals(relationshipMap)) {
                 relationshipMap.putAll(superRelationshipMap);
             }

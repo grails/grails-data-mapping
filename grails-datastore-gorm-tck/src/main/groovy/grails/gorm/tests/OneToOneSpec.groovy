@@ -1,5 +1,7 @@
 package grails.gorm.tests
 
+import grails.persistence.Entity
+
 /**
  * Created by IntelliJ IDEA.
  * User: graemerocher
@@ -8,6 +10,10 @@ package grails.gorm.tests
  * To change this template use File | Settings | File Templates.
  */
 class OneToOneSpec extends GormDatastoreSpec{
+
+    static {
+        TEST_CLASSES  << Face << Nose
+    }
 
     def "Test persist and retrieve unidirectional many-to-one"() {
         given:"A domain model with a many-to-one"
@@ -28,4 +34,48 @@ class OneToOneSpec extends GormDatastoreSpec{
             pet.owner.firstName == "Fred"
 
     }
+
+    def "Test persist and retrieve one-to-one with inverse key"() {
+        given:"A domain model with a one-to-one"
+            def face = new Face(name:"Joe")
+            def nose = new Nose(hasFreckles: true, face:face)
+            face.nose = nose
+            face.save(flush:true)
+            session.clear()
+
+        when:"The association is queried"
+            face = Face.get(face.id)
+
+        then:"The domain model is valid"
+
+            face != null
+            face.nose != null
+            face.nose.hasFreckles == true
+
+        when:"The inverse association is queried"
+            session.clear()
+            nose = Nose.get(nose.id)
+
+        then:"The domain model is valid"
+            nose != null
+            nose.hasFreckles == true
+            nose.face != null
+            nose.face.name == "Joe"
+    }
+}
+
+@Entity
+class Face implements Serializable{
+    Long id
+    String name
+    Nose nose
+    static hasOne = [nose:Nose]
+}
+
+@Entity
+class Nose implements Serializable{
+    Long id
+    boolean hasFreckles
+    Face face
+    static belongsTo = [face:Face]
 }

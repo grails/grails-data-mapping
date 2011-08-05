@@ -31,6 +31,7 @@ import javax.persistence.FlushModeType;
 
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.types.*;
+import org.grails.datastore.mapping.query.Query;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -394,7 +395,27 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
 
                 else {
-                    Serializable tmp = (Serializable) getEntryValue(nativeEntry, propKey);
+                    ToOne association = (ToOne) prop;
+
+                    Serializable tmp = null;
+                    if(!association.isForeignKeyInChild()) {
+                        tmp = (Serializable) getEntryValue(nativeEntry, propKey);
+                    }
+                    else {
+                        if(association.isBidirectional()) {
+
+                            Query query = session.createQuery(association.getAssociatedEntity().getJavaClass());
+                            query.eq(association.getInverseSide().getName(), obj)
+                                  .projections().id();
+
+                            tmp = (Serializable) query.singleResult();
+                        }
+                        else {
+                            // TODO: handle unidirectional?
+                        }
+
+
+                    }
                     if(isEmbeddedEntry(tmp)) {
                         PersistentEntity associatedEntity = ((ToOne) prop).getAssociatedEntity();
                         Object instance = newEntityInstance(associatedEntity);
@@ -402,7 +423,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                         ea.setProperty(prop.getName(), instance);
                     }
                     else if (tmp != null && !prop.getType().isInstance(tmp)) {
-                        PersistentEntity associatedEntity = ((Association)prop).getAssociatedEntity();
+                        PersistentEntity associatedEntity = association.getAssociatedEntity();
                         final Serializable associationKey = (Serializable) getMappingContext().getConversionService().convert(
                               tmp, associatedEntity.getIdentity().getType());
                         if (associationKey != null) {
@@ -633,8 +654,8 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             if (mappedProperty != null) {
                 key = mappedProperty.getTargetName();
             }
-            final boolean indexed = isPropertyIndexed(mappedProperty);
             if (key == null) key = prop.getName();
+            final boolean indexed = isPropertyIndexed(mappedProperty);
             if ((prop instanceof Simple) || (prop instanceof Basic)) {
                 Object propValue = entityAccess.getProperty(prop.getName());
 
@@ -678,30 +699,47 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
 
                 else if (association.doesCascade(CascadeType.PERSIST)) {
+                    final Object associatedObject = entityAccess.getProperty(prop.getName());
+                    if (associatedObject != null) {
+                        @SuppressWarnings("hiding")
+                        ProxyFactory proxyFactory = getProxyFactory();
+                        // never cascade to proxies
+                        if (!proxyFactory.isProxy(associatedObject)) {
+                            Serializable associationId = null;
+                            NativeEntryEntityPersister associationPersister = (NativeEntryEntityPersister) session.getPersister(associatedObject);
+                            if (!session.contains(associatedObject)) {
+                                Serializable tempId = associationPersister.getObjectIdentifier(associatedObject);
+                                if (tempId == null) {
+                                    if (association.isOwningSide()) {
+                                        tempId = session.persist(associatedObject);
+                                    }
+                                }
+                                associationId = tempId;
+                            }
+                            else {
+                                associationId = associationPersister.getObjectIdentifier(associatedObject);
+                            }
 
-                    if (!association.isForeignKeyInChild()) {
-
-                        final Object associatedObject = entityAccess.getProperty(prop.getName());
-                        if (associatedObject != null) {
-                            @SuppressWarnings("hiding")
-                            ProxyFactory proxyFactory = getProxyFactory();
-                            // never cascade to proxies
-                            if (!proxyFactory.isProxy(associatedObject)) {
-                                Serializable associationId = null;
-                                NativeEntryEntityPersister associationPersister = (NativeEntryEntityPersister) session.getPersister(associatedObject);
-                                if (!session.contains(associatedObject)) {
-                                    Serializable tempId = associationPersister.getObjectIdentifier(associatedObject);
-                                    if (tempId == null) {
-                                        if (association.isOwningSide()) {
-                                            tempId = session.persist(associatedObject);
+                            // handling of hasOne inverse key
+                            if (association.isForeignKeyInChild()) {
+                                T cachedAssociationEntry = (T) si.getCachedEntry(association.getAssociatedEntity(), associationId);
+                                if(cachedAssociationEntry != null) {
+                                    if(association.isBidirectional()) {
+                                        Association inverseSide = association.getInverseSide();
+                                        if(inverseSide != null) {
+                                            setEntryValue(cachedAssociationEntry, inverseSide.getName(), formulateDatabaseReference(association.getAssociatedEntity(), association, (Serializable) k));
+                                        }
+                                        else {
+                                            setEntryValue(cachedAssociationEntry, key,  formulateDatabaseReference(association.getAssociatedEntity(), association, (Serializable) k));
                                         }
                                     }
-                                    associationId = tempId;
+                                    else {
+                                        setEntryValue(cachedAssociationEntry, key,  formulateDatabaseReference(association.getAssociatedEntity(), association, (Serializable) k));
+                                    }
                                 }
-                                else {
-                                    associationId = associationPersister.getObjectIdentifier(associatedObject);
-                                }
-
+                            }
+                            // handle of standard many-to-one
+                            else {
                                 if (associationId != null) {
                                     if (indexed && doesRequirePropertyIndexing()) {
                                         toIndex.put(prop, associationId);
@@ -719,22 +757,25 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                         if (inverse instanceof OneToMany) {
                                             inverseCollectionUpdates.put((OneToMany) inverse, associationId);
                                         }
-                                        else if (inverse instanceof ToOne) {
-                                            // TODO: Implement handling of bidirectional one-to-ones with foreign key in parent
+                                        else if (inverse instanceof OneToOne) {
+                                            Object inverseEntity = entityAccess.getProperty(association.getName());
+                                            if(inverseEntity != null) {
+                                                EntityAccess inverseAccess = createEntityAccess(association.getAssociatedEntity(), inverseEntity);
+                                                inverseAccess.setProperty(inverse.getName(), entityAccess.getEntity());
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                        else {
-                            if (!association.isNullable() && !association.isCircular()) {
-                                throw new DataIntegrityViolationException("Cannot save object ["+entityAccess.getEntity()+"] of type ["+persistentEntity+"]. The association ["+association+"] is cannot be null.");
-                            }
+
                         }
                     }
                     else {
-                        // TODO: Implement hasOne inverse association
+                        if (!association.isNullable() && !association.isCircular()) {
+                            throw new DataIntegrityViolationException("Cannot save object ["+entityAccess.getEntity()+"] of type ["+persistentEntity+"]. The association ["+association+"] is cannot be null.");
+                        }
                     }
+
                 }
             }
             else if (prop instanceof EmbeddedCollection) {
