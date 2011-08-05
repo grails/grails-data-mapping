@@ -37,6 +37,9 @@ class Neo4jGrailsPlugin {
         def  transactionManager = null // ctx.neo4jTransactionManager
         def methodsConfigurer = new Neo4jMethodsConfigurer(datastore, transactionManager)    
         methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate")
+        def foe = application?.config?.grails?.gorm?.failOnError
+        methodsConfigurer.failOnError = foe instanceof Boolean ? foe : false
+        
         methodsConfigurer.configure()
     }
 

@@ -52,6 +52,8 @@ a GORM-like API onto it
         def transactionManager = ctx.redisDatastoreTransactionManager
         def methodsConfigurer = new RedisMethodsConfigurer(datastore, transactionManager)    
         methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate")        
+        def foe = application?.config?.grails?.gorm?.failOnError
+        methodsConfigurer.failOnError = foe instanceof Boolean ? foe : false        
         methodsConfigurer.configure()
     }
 

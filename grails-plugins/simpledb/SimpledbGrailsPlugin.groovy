@@ -47,6 +47,9 @@ customizable performance tweaks according to SimpleDB best practices (dedicated 
         def transactionManager = ctx.simpledbTransactionManager
         def methodsConfigurer = new SimpleDBMethodsConfigurer(datastore, transactionManager)
         methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate")
+        def foe = application?.config?.grails?.gorm?.failOnError
+        methodsConfigurer.failOnError = foe instanceof Boolean ? foe : false
+        
         methodsConfigurer.configure()
     }
 
