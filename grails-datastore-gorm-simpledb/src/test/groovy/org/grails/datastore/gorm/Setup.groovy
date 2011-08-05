@@ -116,12 +116,12 @@ class Setup {
                     SimpleDBDomainResolver domainResolver = resolverFactory.buildResolver(entity, simpleDBDatastore)
                     def domains = domainResolver.getAllDomainsForEntity()
                     domains.each { domain ->
-                        clearOrDeleteDomain(template, existingDomains, domain)
+                        clearOrCreateDomain(template, existingDomains, domain)
                         //create domains for associations
                         entity.getAssociations().each{ association ->
                             SimpleDBAssociationInfo associationInfo = simpleDBDatastore.getAssociationInfo(association)
                             if (associationInfo){
-                                clearOrDeleteDomain(template, existingDomains, associationInfo.getDomainName())
+                                clearOrCreateDomain(template, existingDomains, associationInfo.getDomainName())
                             }
                         }
                     }
@@ -133,7 +133,7 @@ class Setup {
         latch.await()
     }
 
-    static clearOrDeleteDomain(template, existingDomains, domainName){
+    static clearOrCreateDomain(template, existingDomains, domainName){
         if (existingDomains.contains(domainName)) {
             template.deleteAllItems(domainName) //delete all items there
         } else {
