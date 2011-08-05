@@ -193,21 +193,21 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     /**
      * Creates a criteria builder instance
      */
-    def createCriteria() {
+    CriteriaBuilder createCriteria() {
         new CriteriaBuilder(persistentClass, datastore.currentSession)
     }
 
     /**
      * Creates a criteria builder instance
      */
-    def withCriteria(Closure callable) {
+    List<D> withCriteria(Closure callable) {
         return createCriteria().list(callable)
     }
 
     /**
      * Creates a criteria builder instance
      */
-    def withCriteria(Map builderArgs, Closure callable) {
+    List<D> withCriteria(Map builderArgs, Closure callable) {
         def criteriaBuilder = createCriteria()
         def builderBean = PropertyAccessorFactory.forBeanPropertyAccess(criteriaBuilder)
         for (entry in builderArgs) {
@@ -551,7 +551,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     /**
      * Creates and binds a new session for the scope of the given closure
      */
-    def withNewSession(Closure callable) {
+    void withNewSession(Closure callable) {
         def session = datastore.connect()
         try {
             DatastoreUtils.bindNewSession session
@@ -566,7 +566,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * Get the thread-local map used to store Errors when validating.
      * @return the map
      */
-    Map<Object, Errors> getValidationErrorsMap() {
+    Map<D, Errors> getValidationErrorsMap() {
         AbstractDatastore.getValidationErrorsMap()
     }
 
@@ -574,28 +574,28 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * Get the thread-local map used to store whether to skip validation.
      * @return the map
      */
-    Map<Object, Boolean> getValidationSkipMap() {
+    Map<D, Boolean> getValidationSkipMap() {
         AbstractDatastore.getValidationErrorsMap()
     }
 
     // TODO: In the first version no support will exist for String-based queries
-    def executeQuery(String query) {
+    List<D> executeQuery(String query) {
         unsupported("executeQuery")
     }
 
-    def executeQuery(String query, Map args) {
+    List<D> executeQuery(String query, Map args) {
         unsupported("executeQuery")
     }
 
-    def executeQuery(String query, Map params, Map args) {
+    List<D> executeQuery(String query, Map params, Map args) {
         unsupported("executeQuery")
     }
 
-    def executeQuery(String query, Collection params) {
+    List<D> executeQuery(String query, Collection params) {
         unsupported("executeQuery")
     }
 
-    def executeQuery(String query, Collection params, Map args) {
+    List<D> executeQuery(String query, Collection params, Map args) {
         unsupported("executeQuery")
     }
 
@@ -619,43 +619,43 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         unsupported("executeUpdate")
     }
 
-    def find(String query) {
+    D find(String query) {
         unsupported("find")
     }
 
-    def find(String query, Map args) {
+    D find(String query, Map args) {
         unsupported("find")
     }
 
-    def find(String query, Map params, Map args) {
+    D find(String query, Map params, Map args) {
         unsupported("find")
     }
 
-    def find(String query, Collection params) {
+    D find(String query, Collection params) {
         unsupported("find")
     }
 
-    def find(String query, Collection params, Map args) {
+    D find(String query, Collection params, Map args) {
         unsupported("find")
     }
 
-    List findAll(String query) {
+    List<D> findAll(String query) {
         unsupported("findAll")
     }
 
-    List findAll(String query, Map args) {
+    List<D> findAll(String query, Map args) {
         unsupported("findAll")
     }
 
-    List findAll(String query, Map params, Map args) {
+    List<D> findAll(String query, Map params, Map args) {
         unsupported("findAll")
     }
 
-    List findAll(String query, Collection params) {
+    List<D> findAll(String query, Collection params) {
         unsupported("find")
     }
 
-    List findAll(String query, Collection params, Map args) {
+    List<D> findAll(String query, Collection params, Map args) {
         unsupported("findAll")
     }
 
