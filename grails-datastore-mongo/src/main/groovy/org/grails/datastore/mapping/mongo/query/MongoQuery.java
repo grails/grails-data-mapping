@@ -538,7 +538,7 @@ public class MongoQuery extends Query {
                 queryHandler.handle(entity, criterion, dbo);
             }
             else {
-                throw new UnsupportedOperationException("Queries of type "+criterion.getClass().getSimpleName()+" are not supported by this implementation");
+                throw new InvalidDataAccessResourceUsageException("Queries of type "+criterion.getClass().getSimpleName()+" are not supported by this implementation");
             }
         }
     }
