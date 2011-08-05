@@ -91,6 +91,9 @@ class Neo4jQuery extends Query {
                 case Query.PropertyProjection:
                     return collection.collect { it."$projection.propertyName" }
                     break
+                case Query.IdProjection:
+                    return collection.collect { it."${entity.identity.name}" }
+                    break
                 default:
                     throw new IllegalArgumentException("projections do not support ${projection.getClass().name}")
             }
