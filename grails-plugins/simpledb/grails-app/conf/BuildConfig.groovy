@@ -8,7 +8,7 @@ grails.project.dependency.resolution = {
 
     log "warn"
 
-    def version = "1.0.0.M7"
+    String datastoreVersion = "1.0.0.M8"
 
     repositories {
         grailsPlugins()
@@ -27,11 +27,11 @@ grails.project.dependency.resolution = {
             excludes "spring-core", "spring-beans", "spring-aop", "spring-asm", "spring-webmvc", "spring-tx", "spring-context", "spring-web", "log4j", "slf4j-log4j12"
             excludes "stax-api" //this is needed for AWS api //http://grails.1312388.n4.nabble.com/How-can-I-solve-this-jar-conflict-issue-td3067041.html
         }
-        runtime("org.grails:grails-datastore-gorm:$version", excludes)
-        runtime("org.grails:grails-datastore-gorm-simpledb:1.0.0.BUILD-SNAPSHOT", excludes)
-        runtime("org.springframework:grails-datastore-web:$version", excludes)
+        runtime("org.grails:grails-datastore-gorm:$datastoreVersion", excludes)
+        runtime("org.grails:grails-datastore-gorm-simpledb:$datastoreVersion", excludes)
+        runtime("org.springframework:grails-datastore-web:$datastoreVersion", excludes)
         runtime("stax:stax:1.2.0", excludes)
 
-        test("org.grails:grails-datastore-gorm-test:$version", excludes)
+        test("org.grails:grails-datastore-gorm-test:$datastoreVersion", excludes)
     }
 }

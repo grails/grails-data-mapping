@@ -43,8 +43,8 @@ customizable performance tweaks according to SimpleDB best practices (dedicated 
 
     def doWithDynamicMethods = { ctx ->
 
-        def datastore = ctx.simpleDBDatastore
-        def transactionManager = ctx.simpleDBTransactionManager
+        def datastore = ctx.simpledbDatastore
+        def transactionManager = ctx.simpledbTransactionManager
         def methodsConfigurer = new SimpleDBMethodsConfigurer(datastore, transactionManager)
         methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate")
         methodsConfigurer.configure()

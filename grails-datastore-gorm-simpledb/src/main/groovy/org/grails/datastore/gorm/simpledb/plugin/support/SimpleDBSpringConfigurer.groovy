@@ -37,18 +37,17 @@ class SimpleDBSpringConfigurer extends SpringConfigurer {
         return {
             def simpleDBConfig = application.config?.grails?.simpleDB
 
-            simpleDBTransactionManager(DatastoreTransactionManager) {
-                datastore = ref("simpleDBDatastore")
+            simpledbTransactionManager(DatastoreTransactionManager) {
+                datastore = ref("simpledbDatastore")
             }
 
-            simpleDBMappingContext(SimpleDBMappingContextFactoryBean) {
+            simpledbMappingContext(SimpleDBMappingContextFactoryBean) {
                 grailsApplication = ref('grailsApplication')
                 pluginManager = ref('pluginManager')
             }
 
-//        simpleDBDatastore(SimpleDBDatastore, ref("simpleDBMappingContext"), simpleDBConfig.toProperties(), )
-            simpleDBDatastore(SimpleDBDatastoreFactoryBean) {
-                mappingContext = ref("simpleDBMappingContext")
+            simpledbDatastore(SimpleDBDatastoreFactoryBean) {
+                mappingContext = ref("simpledbMappingContext")
                 config = simpleDBConfig.toProperties()
             }
         }
