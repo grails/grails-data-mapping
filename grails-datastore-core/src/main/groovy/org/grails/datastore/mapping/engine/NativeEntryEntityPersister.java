@@ -712,7 +712,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                             }
                                         }
                                     }
-                                    setEntryValue(e, key, associationId);
+                                    setEntryValue(e, key, formulateDatabaseReference(persistentEntity, association, associationId));
 
                                     if (association.isBidirectional()) {
                                         Association inverse = association.getInverseSide();
@@ -788,6 +788,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             si.addPendingUpdate((PendingUpdate) pendingOperation);
         }
         return (Serializable) k;
+    }
+
+    protected Object formulateDatabaseReference(PersistentEntity persistentEntity, ToOne association, Serializable associationId) {
+        return associationId;
     }
 
     protected void handleEmbeddedToMany(EntityAccess entityAccess, T e, PersistentProperty prop, String key) {

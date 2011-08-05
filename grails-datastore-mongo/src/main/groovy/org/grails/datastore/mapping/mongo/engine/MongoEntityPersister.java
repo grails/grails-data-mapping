@@ -31,7 +31,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import com.mongodb.*;
 import org.bson.types.ObjectId;
+import org.grails.datastore.mapping.model.types.ToOne;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.document.mongodb.DbCallback;
@@ -52,16 +54,6 @@ import org.grails.datastore.mapping.mongo.MongoDatastore;
 import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query;
-
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.CommandResult;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.MongoException;
-import com.mongodb.WriteResult;
 
 /**
  * A {@link org.grails.datastore.mapping.engine.EntityPersister} implementation for the Mongo document store
@@ -168,7 +160,15 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         Query query = session.createQuery(persistentEntity.getJavaClass());
 
         if (keys instanceof List) {
-            query.in(persistentEntity.getIdentity().getName(), (List)keys);
+            List actualKeys = new ArrayList();
+            Iterator<Serializable> iterator = keys.iterator();
+            while (iterator.hasNext()) {
+                Object key = iterator.next();
+                Object id = getIdentifierForKey(key);
+                actualKeys.add(id);
+
+            }
+            query.in(persistentEntity.getIdentity().getName(), actualKeys);
         }
         else {
             List<Serializable> keyList = new ArrayList<Serializable>();
@@ -182,10 +182,10 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         Iterator<Serializable> keyIterator = keys.iterator();
         Iterator<Object> listIterator = query.list().iterator();
         while (keyIterator.hasNext() && listIterator.hasNext()) {
-            Serializable key = keyIterator.next();
+            Object key = getIdentifierForKey(keyIterator.next());
             Object next = listIterator.next();
             if (next instanceof DBObject) {
-                entityResults.add(createObjectFromNativeEntry(getPersistentEntity(), key, (DBObject)next));
+                entityResults.add(createObjectFromNativeEntry(getPersistentEntity(), (Serializable) key, (DBObject)next));
             }
             else {
                 entityResults.add(next);
@@ -193,6 +193,15 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         }
 
         return entityResults;
+    }
+
+    private Object getIdentifierForKey(Object key) {
+        Object id = key;
+        if(key instanceof DBRef) {
+            DBRef ref = (DBRef) key;
+            id = ref.getId();
+        }
+        return id;
     }
 
     @Override
@@ -300,7 +309,11 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     @Override
     protected Object getEntryValue(DBObject nativeEntry, String property) {
-        return nativeEntry.get(property);
+        Object value = nativeEntry.get(property);
+        if(value instanceof DBRef) {
+            return getIdentifierForKey(value);
+        }
+        return value;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -311,6 +324,12 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         TimeZone.class,
         Currency.class,
         URL.class);
+
+    @Override
+    protected Object formulateDatabaseReference(PersistentEntity persistentEntity, ToOne association, Serializable associationId) {
+        DB db = (DB) session.getNativeInterface();
+        return new DBRef(db, getCollectionName(association.getAssociatedEntity()), associationId);
+    }
 
     @Override
     protected void setEntryValue(DBObject nativeEntry, String key, Object value) {
@@ -520,13 +539,18 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             this.session = session;
         }
 
-        public void index(final Object primaryKey, List foreignKeys) {
+        public void index(final Object primaryKey, final List foreignKeys) {
             // if the association is a unidirectional one-to-many we store the keys
             // embedded in the owning entity, otherwise we use a foreign key
             if (!association.isBidirectional()) {
-                nativeEntry.put(association.getName(), foreignKeys);
                 mongoTemplate.execute(new DbCallback<Object>() {
                     public Object doInDB(DB db) throws MongoException, DataAccessException {
+                        List<DBRef> dbRefs = new ArrayList<DBRef>();
+                        for (Object foreignKey : foreignKeys) {
+                            dbRefs.add(new DBRef(db, getCollectionName(association.getAssociatedEntity()), foreignKey));
+                        }
+                        nativeEntry.put(association.getName(), dbRefs);
+
                         final DBCollection collection = db.getCollection(getCollectionName(association.getOwner()));
                         DBObject query = new BasicDBObject(MONGO_ID_FIELD, primaryKey);
                         collection.update(query, nativeEntry);
