@@ -26,6 +26,7 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public abstract class AbstractMappingAwareCustomTypeMarshaller<T, N, Q> implements CustomTypeMarshaller<T, N, Q>{
 
     private Class<T> targetType;
@@ -34,17 +35,14 @@ public abstract class AbstractMappingAwareCustomTypeMarshaller<T, N, Q> implemen
         this.targetType = targetType;
     }
 
-    @Override
     public boolean supports(Datastore datastore) {
         return true;
     }
 
-    @Override
     public Class<T> getTargetType() {
         return this.targetType;
     }
 
-    @Override
     public Object write(PersistentProperty property, T value, N nativeTarget) {
         String targetName = MappingUtils.getTargetKey(property);
         return writeInternal(property, targetName,value,nativeTarget);
@@ -52,18 +50,18 @@ public abstract class AbstractMappingAwareCustomTypeMarshaller<T, N, Q> implemen
 
     protected abstract Object writeInternal(PersistentProperty property, String key, T value, N nativeTarget);
 
-    @Override
     public Q query(PersistentProperty property, Query.PropertyCriterion criterion, Q nativeQuery) {
         String targetName = MappingUtils.getTargetKey(property);
         queryInternal(property, targetName, criterion, nativeQuery);
         return nativeQuery;
     }
 
+    @SuppressWarnings("unused")
     protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion value, Q nativeQuery) {
-        throw new InvalidDataAccessResourceUsageException("Custom type ["+getTargetType().getName()+"] does not support querying");
+        throw new InvalidDataAccessResourceUsageException("Custom type [" + getTargetType().getName() +
+                "] does not support querying");
     }
 
-    @Override
     public T read(PersistentProperty property, N source) {
         String targetName = MappingUtils.getTargetKey(property);
         return readInternal(property, targetName, source);

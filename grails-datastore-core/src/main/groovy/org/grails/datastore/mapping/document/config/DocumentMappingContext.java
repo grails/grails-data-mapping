@@ -53,6 +53,7 @@ public class DocumentMappingContext extends AbstractMappingContext {
         return syntaxStrategy;
     }
 
+    @Override
     public MappingFactory<Collection, Attribute> getMappingFactory() {
         return mappingFactory;
     }

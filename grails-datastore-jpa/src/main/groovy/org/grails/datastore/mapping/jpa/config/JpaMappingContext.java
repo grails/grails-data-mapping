@@ -38,6 +38,7 @@ public class JpaMappingContext extends AbstractMappingContext{
         return jpaMappingSyntaxStrategy ;
     }
 
+    @Override
     public MappingFactory getMappingFactory() {
         return mappingFactory;
     }

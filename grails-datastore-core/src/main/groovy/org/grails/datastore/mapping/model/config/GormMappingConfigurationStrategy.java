@@ -225,7 +225,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 else if (propertyFactory.isSimpleType(propertyType)) {
                     persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
                 }
-                else if (propertyFactory.isCustomType(propertyType)) {
+                else if (MappingFactory.isCustomType(propertyType)) {
                     persistentProperties.add(propertyFactory.createCustom(entity, context, descriptor));
                 }
             }

@@ -13,8 +13,7 @@ public abstract class AbstractFindByFinder extends DynamicFinder {
     public static final String OPERATOR_AND = "And";
     public static final String[] OPERATORS = new String[]{ OPERATOR_AND, OPERATOR_OR };
 
-    protected AbstractFindByFinder(Pattern pattern,
-            Datastore datastore) {
+    protected AbstractFindByFinder(Pattern pattern, Datastore datastore) {
         super(pattern, OPERATORS, datastore);
     }
 
@@ -22,8 +21,7 @@ public abstract class AbstractFindByFinder extends DynamicFinder {
     protected Object doInvokeInternal(final DynamicFinderInvocation invocation) {
         return execute(new SessionCallback<Object>() {
             public Object doInSession(final Session session) {
-                Query q = buildQuery(invocation, session);
-                return invokeQuery(q);
+                return invokeQuery(buildQuery(invocation, session));
             }
         });
     }
@@ -65,7 +63,7 @@ public abstract class AbstractFindByFinder extends DynamicFinder {
         }
         else {
             for (MethodExpression expression : invocation.getExpressions()) {
-                q.add( expression.createCriterion() );
+                q.add(expression.createCriterion());
             }
         }
         return q;

@@ -20,6 +20,7 @@ import org.grails.datastore.mapping.model.MappingContext
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
+@SuppressWarnings("unchecked")
 class GraphPersistentEntity extends AbstractPersistentEntity {
 
     GraphPersistentEntity(Class javaClass, MappingContext context) {

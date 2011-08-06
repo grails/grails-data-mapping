@@ -31,13 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import com.mongodb.*;
 import org.bson.types.ObjectId;
-import org.grails.datastore.mapping.model.types.ToOne;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.document.mongodb.DbCallback;
-import org.springframework.data.document.mongodb.MongoTemplate;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
@@ -50,10 +44,26 @@ import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.EmbeddedCollection;
 import org.grails.datastore.mapping.model.types.ManyToMany;
+import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.mongo.MongoDatastore;
 import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.document.mongodb.DbCallback;
+import org.springframework.data.document.mongodb.MongoTemplate;
+
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.CommandResult;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.DBRef;
+import com.mongodb.MongoException;
+import com.mongodb.WriteResult;
 
 /**
  * A {@link org.grails.datastore.mapping.engine.EntityPersister} implementation for the Mongo document store
@@ -326,7 +336,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         URL.class);
 
     @Override
-    protected Object formulateDatabaseReference(PersistentEntity persistentEntity, ToOne association, Serializable associationId) {
+    protected Object formulateDatabaseReference(PersistentEntity persistentEntity,
+              @SuppressWarnings("rawtypes") ToOne association, Serializable associationId) {
         DB db = (DB) session.getNativeInterface();
         return new DBRef(db, getCollectionName(association.getAssociatedEntity()), associationId);
     }

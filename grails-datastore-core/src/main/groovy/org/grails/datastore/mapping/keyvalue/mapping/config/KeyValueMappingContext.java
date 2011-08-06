@@ -79,6 +79,7 @@ public class KeyValueMappingContext extends AbstractMappingContext {
         return syntaxStrategy;
     }
 
+    @Override
     public MappingFactory<Family, KeyValue> getMappingFactory() {
         return mappingFactory;
     }

@@ -14,14 +14,13 @@
  */
 package org.grails.datastore.gorm.plugin.support
 
-import org.springframework.context.ApplicationContext
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
-import org.springframework.context.ConfigurableApplicationContext
 import org.grails.datastore.mapping.core.Datastore
+import org.springframework.context.ConfigurableApplicationContext
 
 /**
- * Common logic for the configuration of the ApplicationContext
+ * Common logic for the configuration of the ApplicationContext.
  *
  * @author Graeme Rocher
  * @since 2.0
@@ -29,7 +28,6 @@ import org.grails.datastore.mapping.core.Datastore
 class ApplicationContextConfigurer {
 
     String datastoreType
-
 
     ApplicationContextConfigurer(String datastoreType) {
         this.datastoreType = datastoreType
@@ -39,6 +37,5 @@ class ApplicationContextConfigurer {
         final datastore = ctx.getBean("${datastoreType.toLowerCase()}Datastore", Datastore)
         ctx.addApplicationListener new DomainEventListener(datastore)
         ctx.addApplicationListener new AutoTimestampEventListener(datastore)
-
     }
 }

@@ -17,14 +17,12 @@ package org.grails.datastore.gorm.neo4j.plugin.support
 import org.grails.datastore.gorm.plugin.support.OnChangeHandler
 
 /**
- * onChange handler for neo4j
+ * onChange handler for neo4j.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-class Neo4jOnChangeHandler extends OnChangeHandler{
+class Neo4jOnChangeHandler extends OnChangeHandler {
     @Override
-    String getDatastoreType() {
-        return "Neo4j"
-    }
+    String getDatastoreType() { "Neo4j" }
 }

@@ -656,6 +656,7 @@ public abstract class Query {
             super(name, value);
         }
 
+        @Override
         public void setValue(Object value) {
             this.value = value;
         }
@@ -672,6 +673,7 @@ public abstract class Query {
             super(ID, value);
         }
 
+        @Override
         public void setValue(Object value) {
             this.value = value;
         }
@@ -686,6 +688,7 @@ public abstract class Query {
             super(name, value);
         }
 
+        @Override
         public void setValue(Object value) {
             this.value = value;
         }

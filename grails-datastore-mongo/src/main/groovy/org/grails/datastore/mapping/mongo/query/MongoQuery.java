@@ -22,32 +22,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.mongodb.*;
-import org.grails.datastore.mapping.core.AbstractDatastore;
-import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.engine.internal.MappingUtils;
-import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
-import org.grails.datastore.mapping.model.types.Custom;
-import org.grails.datastore.mapping.mongo.MongoDatastore;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
-import org.springframework.data.document.mongodb.DbCallback;
-import org.springframework.data.document.mongodb.MongoTemplate;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.engine.internal.MappingUtils;
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.Custom;
 import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
 import org.grails.datastore.mapping.query.projections.ManualProjections;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.data.document.mongodb.DbCallback;
+import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
+
 /**
- * A {@link org.grails.datastore.mapping.query.Query} implementation for the Mongo document store
+ * A {@link org.grails.datastore.mapping.query.Query} implementation for the Mongo document store.
  *
  * @author Graeme Rocher
  * @since 1.0
