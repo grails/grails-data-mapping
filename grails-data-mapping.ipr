@@ -22,6 +22,9 @@
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
+  <component name="EntryPointsManager">
+    <entry_points version="2.0" />
+  </component>
   <component name="FacetAutodetectingManager">
     <autodetection-disabled>
       <facet-type id="Spring">
@@ -65,6 +68,7 @@
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-jpa/grails-datastore-gorm-jpa.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-jpa/grails-datastore-gorm-jpa.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-mongo/grails-datastore-gorm-mongo.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-mongo/grails-datastore-gorm-mongo.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-neo4j/grails-datastore-gorm-neo4j.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-neo4j/grails-datastore-gorm-neo4j.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-plugin-support/grails-datastore-gorm-plugin-support.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-plugin-support/grails-datastore-gorm-plugin-support.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-redis/grails-datastore-gorm-redis.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-redis/grails-datastore-gorm-redis.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-riak/grails-datastore-gorm-riak.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-riak/grails-datastore-gorm-riak.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-gorm-tck/grails-datastore-gorm-tck.iml" filepath="$PROJECT_DIR$/grails-datastore-gorm-tck/grails-datastore-gorm-tck.iml" />
