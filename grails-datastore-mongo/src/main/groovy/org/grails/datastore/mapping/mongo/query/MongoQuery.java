@@ -401,7 +401,7 @@ public class MongoQuery extends Query {
                 final List<Projection> projectionList = projections().getProjectionList();
                 if (projectionList.isEmpty()) {
                     cursor = executeQuery(entity, criteria, collection, query);
-                    return new MongoResultList(cursor, mongoEntityPersister);
+                    return (List)new MongoResultList(cursor, mongoEntityPersister).clone();
                 }
 
                 List projectedResults = new ArrayList();
