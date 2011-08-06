@@ -18,6 +18,7 @@ import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jMappingContextFactoryBean
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jDatastoreFactoryBean
 import org.springframework.util.Assert
+import org.grails.datastore.gorm.neo4j.Neo4jOpenSessionInViewInterceptor
 
 /**
  * Spring configurer for Neo4j
@@ -72,6 +73,36 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
                 mappingContext = neo4jMappingContext
 
             }
+
+            neo4jOpenSessionInViewInterceptor(Neo4jOpenSessionInViewInterceptor) {
+                datastore = ref("neo4jDatastore")
+            }
+
+
+///*
+//        indexService(LuceneFulltextQueryIndexService, ref("graphDatabaseService")) { bean ->
+//        //indexService(LuceneFulltextIndexService, ref("graphDatabaseService")) { bean ->
+//            bean.destroyMethod = "shutdown"
+//        }
+//*/
+//
+//        if (manager?.hasGrailsPlugin("controllers")) {
+//            neo4jOpenSessionInViewInterceptor(Neo4jOpenSessionInViewInterceptor) {
+//                datastore = ref("neo4jDatastore")
+//            }
+//            if (getSpringConfig().containsBean("controllerHandlerMappings")) {
+//                controllerHandlerMappings.interceptors << neo4jOpenSessionInViewInterceptor
+//            }
+//            if (getSpringConfig().containsBean("annotationHandlerMapping")) {
+//                if (annotationHandlerMapping.interceptors) {
+//                    annotationHandlerMapping.interceptors << neo4jOpenSessionInViewInterceptor
+//                }
+//                else {
+//                    annotationHandlerMapping.interceptors = [neo4jOpenSessionInViewInterceptor]
+//                }
+//            }
+//        }
+//
         }
     }
 }

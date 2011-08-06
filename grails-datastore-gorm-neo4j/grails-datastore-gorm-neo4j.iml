@@ -13,121 +13,88 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-community/jars/neo4j-community-1.4.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-community/jars/neo4j-community-1.4.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-community/sources/neo4j-community-1.4-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-community/sources/neo4j-community-1.4.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-kernel/jars/neo4j-kernel-1.4.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-kernel/jars/neo4j-kernel-1.4.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-kernel/sources/neo4j-kernel-1.4-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-kernel/sources/neo4j-kernel-1.4.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.geronimo.specs/geronimo-jta_1.1_spec/jars/geronimo-jta_1.1_spec-1.1.1.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-lucene-index/jars/neo4j-lucene-index-1.4.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.geronimo.specs/geronimo-jta_1.1_spec/sources/geronimo-jta_1.1_spec-1.1.1-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-lucene-index/sources/neo4j-lucene-index-1.4.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-lucene-index/jars/neo4j-lucene-index-1.4.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-algo/jars/neo4j-graph-algo-1.4.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-lucene-index/sources/neo4j-lucene-index-1.4-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-algo/sources/neo4j-graph-algo-1.4.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.lucene/lucene-core/jars/lucene-core-3.1.0.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-udc/jars/neo4j-udc-1.4.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.lucene/lucene-core/sources/lucene-core-3.1.0-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-udc/sources/neo4j-udc-1.4.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-algo/jars/neo4j-graph-algo-1.4.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-matching/jars/neo4j-graph-matching-1.4.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-algo/sources/neo4j-graph-algo-1.4-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-matching/sources/neo4j-graph-matching-1.4.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-udc/jars/neo4j-udc-1.4.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-cypher/jars/neo4j-cypher-1.4.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-udc/sources/neo4j-udc-1.4-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-cypher/sources/neo4j-cypher-1.4.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-matching/jars/neo4j-graph-matching-1.4.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-jmx/jars/neo4j-jmx-1.4.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-matching/sources/neo4j-graph-matching-1.4-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-cypher/jars/neo4j-cypher-1.4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-cypher/sources/neo4j-cypher-1.4-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.scala-lang/scala-library/jars/scala-library-2.9.0-1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.scala-lang/scala-library/sources/scala-library-2.9.0-1-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-jmx/jars/neo4j-jmx-1.4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-jmx/sources/neo4j-jmx-1.4-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-jmx/sources/neo4j-jmx-1.4.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -143,6 +110,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="grails-datastore-gorm" exported="" />
+    <orderEntry type="module" module-name="grails-datastore-gorm-plugin-support" exported="" />
     <orderEntry type="module" module-name="grails-datastore-web" exported="" />
     <orderEntry type="module-library" scope="TEST">
       <library>
