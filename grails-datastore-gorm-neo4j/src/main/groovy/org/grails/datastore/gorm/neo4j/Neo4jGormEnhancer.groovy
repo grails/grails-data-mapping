@@ -70,9 +70,9 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
 
                 // iterate result, unmarshall nodes to domain class instances if possible
                 traverser.collect { Node node ->
-                    Class clazz = node.getProperty("__type__", null)
-                    if (clazz) {
-                        session.retrieve(clazz, node.id)
+                    String className = node.getProperty("__type__", null)
+                    if (className) {
+                        session.retrieve(className, node.id)
                     } else {
                         node
                     }
