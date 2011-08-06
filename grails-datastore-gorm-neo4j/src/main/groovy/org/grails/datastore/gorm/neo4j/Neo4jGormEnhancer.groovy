@@ -27,6 +27,7 @@ import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
 import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.util.ClassUtils
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -72,7 +73,7 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
                 traverser.collect { Node node ->
                     String className = node.getProperty("__type__", null)
                     if (className) {
-                        session.retrieve(className, node.id)
+                        session.retrieve(ClassUtils.forName(className), node.id)
                     } else {
                         node
                     }
@@ -122,9 +123,9 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
 
                 // iterate result, unmarshall nodes to domain class instances if possible
                 traverser.collect { Node node ->
-                    Class clazz = node.getProperty("__type__", null)
-                    if (clazz) {
-                        session.retrieve(clazz, node.id)
+                    String className = node.getProperty("__type__", null)
+                    if (className) {
+                        session.retrieve(ClassUtils.forName(className), node.id)
                     } else {
                         node
                     }
