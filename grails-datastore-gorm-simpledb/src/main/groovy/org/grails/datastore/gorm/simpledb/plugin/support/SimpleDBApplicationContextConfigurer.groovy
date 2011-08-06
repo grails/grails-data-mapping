@@ -111,10 +111,10 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
                     latch.countDown()
                 }
             })
-
-            latch.await()
-            executor.shutdown()
         }
+
+        latch.await()
+        executor.shutdown()
     }
 
     def clearOrCreateDomain(template, existingDomains, domainName) {
