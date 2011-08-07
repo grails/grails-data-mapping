@@ -16,6 +16,7 @@ package org.grails.datastore.mapping.simpledb.util;
 
 import java.util.List;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -66,17 +67,33 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         //todo - handle exceptions and retries
 
         GetAttributesRequest request = new GetAttributesRequest(domainName, id);
-        List<Attribute> attributes = sdb.getAttributes(request).getAttributes();
-        if (attributes.isEmpty()) {
-            return null;
-        }
+        try {
+            List<Attribute> attributes = sdb.getAttributes(request).getAttributes();
+            if (attributes.isEmpty()) {
+                return null;
+            }
 
-        return new Item(id, attributes);
+            return new Item(id, attributes);
+        } catch (AmazonServiceException e) {
+            if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
+                throw new IllegalArgumentException("no such domain: "+domainName, e);
+            } else {
+                throw e;
+            }
+        }
     }
 
     public void putAttributes(String domainName, String id, List<ReplaceableAttribute> attributes) throws DataAccessException {
-        PutAttributesRequest request = new PutAttributesRequest(domainName, id, attributes);
-        sdb.putAttributes(request);
+        try {
+            PutAttributesRequest request = new PutAttributesRequest(domainName, id, attributes);
+            sdb.putAttributes(request);
+        } catch (AmazonServiceException e) {
+            if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
+                throw new IllegalArgumentException("no such domain: "+domainName, e);
+            } else {
+                throw e;
+            }
+        }
     }
 
     public void putAttributesVersioned(String domainName, String id, List<ReplaceableAttribute> attributes, String expectedVersion, PersistentEntity persistentEntity) throws DataAccessException {
@@ -87,6 +104,8 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         } catch (AmazonServiceException e) {
             if (SimpleDBUtil.AWS_ERR_CODE_CONDITIONAL_CHECK_FAILED.equals(e.getErrorCode())) {
                 throw new OptimisticLockingException(persistentEntity, id);
+            } else if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
+                throw new IllegalArgumentException("no such domain: " + domainName, e);
             } else {
                 throw e;
             }
@@ -96,7 +115,15 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
     public void deleteAttributes(String domainName, String id, List<Attribute> attributes) throws DataAccessException {
         if (!attributes.isEmpty()) {
             DeleteAttributesRequest request = new DeleteAttributesRequest(domainName, id, attributes);
-            sdb.deleteAttributes(request);
+            try {
+                sdb.deleteAttributes(request);
+            } catch (AmazonServiceException e) {
+                if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
+                    throw new IllegalArgumentException("no such domain: "+domainName, e);
+                } else {
+                    throw e;
+                }
+            }
         }
     }
 
@@ -110,6 +137,8 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
             } catch (AmazonServiceException e) {
                 if (SimpleDBUtil.AWS_ERR_CODE_CONDITIONAL_CHECK_FAILED.equals(e.getErrorCode())) {
                     throw new OptimisticLockingException(persistentEntity, id);
+                } else if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
+                    throw new IllegalArgumentException("no such domain: " + domainName, e);
                 } else {
                     throw e;
                 }
@@ -119,7 +148,15 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
 
     public void deleteItem(String domainName, String id) {
         DeleteAttributesRequest request = new DeleteAttributesRequest(domainName, id);
-        sdb.deleteAttributes(request);
+        try {
+            sdb.deleteAttributes(request);
+        } catch (AmazonServiceException e) {
+            if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
+                throw new IllegalArgumentException("no such domain: " + domainName, e);
+            } else {
+                throw e;
+            }
+        }
     }
 
     public boolean deleteAllItems(String domainName) throws DataAccessException {
