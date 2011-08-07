@@ -16,7 +16,6 @@ class OptLockNotVersioned implements Serializable {
     String name
 
     static mapping = {
-        domain 'OptLockNotVersioned'
         version false
     }
 }

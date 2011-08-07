@@ -15,8 +15,4 @@ class Book implements Serializable {
     String author
     String title
     Boolean published = false
-
-    static mapping = {
-        domain 'Book'
-    }
 }

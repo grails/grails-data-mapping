@@ -26,10 +26,4 @@ class Country extends Location {
                 ", residents=" + residents +
                 '}';
     }
-
-    static mapping = {
-        domain 'Country'
-    }
-
-
 }

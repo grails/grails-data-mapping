@@ -54,8 +54,4 @@ class CommonTypes implements Serializable {
                 ", cur=" + cur +
                 '}';
     }
-
-    static mapping = {
-        domain 'CommonTypes'
-    }
 }

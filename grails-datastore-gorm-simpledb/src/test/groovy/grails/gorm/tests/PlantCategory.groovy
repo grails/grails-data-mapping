@@ -17,8 +17,4 @@ class PlantCategory implements Serializable {
     String name
 
     static hasMany = [plants:Plant]
-
-    static mapping = {
-        domain 'PlantCategory'
-    }
 }
