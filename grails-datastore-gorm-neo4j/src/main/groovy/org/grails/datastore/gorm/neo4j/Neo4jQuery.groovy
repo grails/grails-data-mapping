@@ -24,6 +24,9 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.Query
 import org.springframework.util.Assert
 import java.util.regex.Pattern
+import org.grails.datastore.mapping.query.Restrictions
+import org.grails.datastore.mapping.query.Query.PropertyCriterion
+import org.grails.datastore.mapping.model.PersistentProperty
 
 /**
  * perform criteria queries on a Neo4j backend
@@ -184,6 +187,23 @@ class Neo4jQuery extends Query {
         node.id == criterion.value
     }
 
+    boolean matchesCriterionIdEqualsWithName(Node node, IdEqualsWithName criterion) {
+        PersistentProperty persistentProperty = entity.getPropertyByName(criterion.name)
+        String relationshipTypeName = persistentProperty.name
+        Direction direction = Direction.OUTGOING
+
+        if (persistentProperty.bidirectional && !persistentProperty.owningSide) {
+            relationshipTypeName = persistentProperty.referencedPropertyName
+            direction = Direction.INCOMING
+        }
+        DynamicRelationshipType relationshipType = DynamicRelationshipType.withName(relationshipTypeName)
+
+        Relationship rel = node.getSingleRelationship(relationshipType, direction)
+
+        def result = rel?.getOtherNode(node).id == criterion.value
+        result
+    }
+
     protected getNodePropertyAsType(Node node, String propertyName, Class targetClass) {
         def val = getNodeProperty(node, propertyName)
         session.mappingContext.conversionService.convert(val, targetClass)
@@ -195,5 +215,23 @@ class Neo4jQuery extends Query {
         } else {
             node.getProperty(propertyName, null)
         }
+    }
+
+    @Override
+    Query eq(String property, Object value) {
+        Object resolved = resolveIdIfEntity(value)
+        if (resolved == value) {
+           criteria.add(Restrictions.eq(property, value))
+        }
+        else {
+           criteria.add(new IdEqualsWithName(property, resolved))
+        }
+        this
+    }
+}
+
+public static class IdEqualsWithName extends PropertyCriterion {
+    def IdEqualsWithName(property, value) {
+        super(property,value)
     }
 }
