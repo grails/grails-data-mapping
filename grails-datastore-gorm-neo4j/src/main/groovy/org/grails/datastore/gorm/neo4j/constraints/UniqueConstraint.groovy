@@ -46,7 +46,8 @@ class UniqueConstraint extends AbstractConstraint {
         // TODO: consider using index for this
 
         Relationship hasMatchingNode = subreferenceNode.getRelationships(GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING).find {
-            it.endNode.getProperty(constraintPropertyName, null) == propertyValue
+            (it.endNode.id != target.id) && (it.endNode.getProperty(constraintPropertyName, null) == propertyValue)
+
         }
         log.debug "hasMatchingNode $hasMatchingNode"
 
