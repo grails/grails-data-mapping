@@ -36,6 +36,8 @@ import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.query.Query
+import org.grails.datastore.mapping.model.types.OneToMany
+import org.neo4j.graphdb.Direction
 
 /**
  * Implementation of {@link org.grails.datastore.mapping.engine.EntityPersister} that uses Neo4j database
@@ -100,11 +102,12 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
     }
 
     @Override
-    protected getEntryValue(Node nativeEntry, String property) {
+    protected getEntryValue(Node nativeEntry, String key) {
+
         def result
-        Association association = persistentEntity.associations.find { it.name == property }
-        if (association) {
-            DynamicRelationshipType relname = DynamicRelationshipType.withName(property)
+        PersistentProperty persistentProperty = persistentEntity.getPropertyByName(key)
+
+        if (persistentProperty instanceof Association) {
 
             if (log.debugEnabled) {
                 nativeEntry.relationships.each {
@@ -112,25 +115,33 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
                 }
             }
 
-            if (association instanceof ManyToMany) {
-                String relName = association.owningSide ? association.inversePropertyName : association.name
-                result = nativeEntry.getRelationships(DynamicRelationshipType.withName(relName)).collect { it.getOtherNode(nativeEntry).id }
+            String relationshipTypeName = persistentProperty.name
+            Direction direction = Direction.OUTGOING
+
+            if (persistentProperty.bidirectional && !persistentProperty.owningSide) {
+                relationshipTypeName = persistentProperty.referencedPropertyName
+                direction = Direction.INCOMING
             }
-            else {
-                Relationship rel = nativeEntry.getSingleRelationship(relname, Direction.OUTGOING)
+            DynamicRelationshipType relationshipType = DynamicRelationshipType.withName(relationshipTypeName)
+
+            if ((persistentProperty instanceof ManyToMany) || (persistentProperty instanceof OneToMany)) {
+                result = nativeEntry.getRelationships(relationshipType, direction).collect { it.getOtherNode(nativeEntry).id }
+            } else {
+                Relationship rel = nativeEntry.getSingleRelationship(relationshipType, direction)
                 result = rel ? rel.getOtherNode(nativeEntry).id : null
-                log.debug("getting property $property via relationship on $nativeEntry = $result")
+                log.debug("getting property $key via relationship on $nativeEntry = $result")
             }
+
         } else {
-            result = nativeEntry.getProperty(property, null)
-            PersistentProperty pe = discriminatePersistentEntity(persistentEntity, nativeEntry).getPropertyByName(property)
+            result = nativeEntry.getProperty(key, null)
+            PersistentProperty pe = discriminatePersistentEntity(persistentEntity, nativeEntry).getPropertyByName(key)
             try {
                 result = mappingContext.conversionService.convert(result, pe.type)
             } catch (ConversionException e) {
-                log.error("prop $property: $e.message")
+                log.error("prop $key: $e.message")
                 throw e
             }
-            log.debug("getting property $property on $nativeEntry = $result")
+            log.debug("getting property $key on $nativeEntry = $result")
         }
         result
     }
@@ -156,20 +167,29 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
         else if (persistentProperty instanceof Association) {
             log.info("setting $key via relationship to $value, assoc is ${persistentProperty.getClass().superclass.simpleName}, bidi: $persistentProperty.bidirectional, owning: $persistentProperty.owningSide")
 
+            Node startNode = nativeEntry
             Node endNode = graphDatabaseService.getNodeById(value instanceof Long ? value : value.id)
-            DynamicRelationshipType relationshipType = DynamicRelationshipType.withName(key)
+            String relationshipTypeName = persistentProperty.name
+            Direction direction = Direction.OUTGOING
 
-            Relationship rel = nativeEntry.getSingleRelationship(relationshipType, Direction.OUTGOING)
+            if (persistentProperty.bidirectional && !persistentProperty.owningSide) {
+                relationshipTypeName = persistentProperty.referencedPropertyName
+                direction = Direction.INCOMING
+                (startNode,endNode) = [endNode,startNode]
+            }
+            DynamicRelationshipType relationshipType = DynamicRelationshipType.withName(relationshipTypeName)
+
+            Relationship rel = startNode.getSingleRelationship(relationshipType, direction)
             if (rel) {
-                if (rel.endNode == endNode) {
+                if (rel.getOtherNode(startNode) == endNode) {
                     return // unchanged value
                 }
                 log.info "deleting relationship $rel.startNode -> $rel.endNode : ${rel.type.name()}"
                 rel.delete()
             }
 
-            rel = nativeEntry.createRelationshipTo(endNode, relationshipType)
-            log.info("createRelationship $rel.startNode.id -> $rel.endNode.id ($rel.type)")
+            rel = startNode.createRelationshipTo(endNode, relationshipType)
+            log.info("createRelationship $rel.startNode.id (${rel.startNode.getProperty(TYPE_PROPERTY_NAME,null)})-> $rel.endNode.id (${rel.endNode.getProperty(TYPE_PROPERTY_NAME,null)}) type: ($rel.type)")
         }
         else {
             log.debug("setting property $key = $value ${value?.getClass()}")
