@@ -21,6 +21,7 @@ import org.neo4j.kernel.EmbeddedGraphDatabase
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ConfigurableApplicationContext
 import org.neo4j.graphdb.*
+import org.slf4j.LoggerFactory
 
 /**
  * Datastore implementation for Neo4j backend
@@ -105,4 +106,17 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
             }
         }
     }
+
+    static void dumpNode(Node node, logger = null) {
+
+        logger = logger ?: LoggerFactory.getLogger(Neo4jDatastore.class)
+        logger.warn "Node $node.id: $node"
+        node.propertyKeys.each {
+            logger.warn "Node $node.id property $it -> ${node.getProperty(it,null)}"
+        }
+        node.relationships.each {
+            logger.warn "Node $node.id relationship $it.startNode -> $it.endNode : ${it.type.name()}"
+        }
+    }
+
 }
