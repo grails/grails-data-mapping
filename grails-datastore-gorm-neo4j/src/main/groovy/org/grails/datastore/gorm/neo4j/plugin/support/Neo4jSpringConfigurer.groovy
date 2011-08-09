@@ -61,7 +61,8 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
 
             graphDatabaseService(
                      neo4jGraphDatabaseClass as Class,
-                     neo4jConfig.location ?: neo4jDefaultLocation
+                     neo4jConfig.location ?: neo4jDefaultLocation,
+                     neo4jConfig.params ?: [:]
 
             ) { bean ->
                 bean.destroyMethod = "shutdown"
