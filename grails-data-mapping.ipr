@@ -79,6 +79,8 @@
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-riak/grails-datastore-riak.iml" filepath="$PROJECT_DIR$/grails-datastore-riak/grails-datastore-riak.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-simple/grails-datastore-simple.iml" filepath="$PROJECT_DIR$/grails-datastore-simple/grails-datastore-simple.iml" />
       <module fileurl="file://$PROJECT_DIR$/grails-datastore-web/grails-datastore-web.iml" filepath="$PROJECT_DIR$/grails-datastore-web/grails-datastore-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-plugins/neo4j/neo4j.iml" filepath="$PROJECT_DIR$/grails-plugins/neo4j/neo4j.iml" />
+      <module fileurl="file://$PROJECT_DIR$/grails-plugins/neo4j/neo4j-grailsPlugins.iml" filepath="$PROJECT_DIR$/grails-plugins/neo4j/neo4j-grailsPlugins.iml" />
     </modules>
   </component>
   <component name="ProjectResources">
