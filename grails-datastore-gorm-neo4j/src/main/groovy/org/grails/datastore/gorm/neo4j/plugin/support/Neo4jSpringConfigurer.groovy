@@ -44,6 +44,10 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
                     neo4jGraphDatabaseClass = "org.neo4j.rest.graphdb.RestGraphDatabase"
                     neo4jDefaultLocation = "http://localhost:7474/db/data/"
                     break
+                case "ha":
+                    neo4jGraphDatabaseClass = "org.neo4j.kernel.HighlyAvailableGraphDatabase"
+                    neo4jDefaultLocation = "data/neo4j"
+                    break
                 case "embedded":
                     neo4jGraphDatabaseClass = "org.neo4j.kernel.EmbeddedGraphDatabase"
                     neo4jDefaultLocation = "data/neo4j"

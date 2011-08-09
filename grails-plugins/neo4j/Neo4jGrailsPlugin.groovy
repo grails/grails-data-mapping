@@ -34,7 +34,7 @@ class Neo4jGrailsPlugin {
 
     def doWithDynamicMethods = { ctx ->
         def datastore = ctx.neo4jDatastore
-        def  transactionManager = null // ctx.neo4jTransactionManager
+        def transactionManager = null // ctx.neo4jTransactionManager
         def methodsConfigurer = new Neo4jMethodsConfigurer(datastore, transactionManager)    
         methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate")
         def foe = application?.config?.grails?.gorm?.failOnError
