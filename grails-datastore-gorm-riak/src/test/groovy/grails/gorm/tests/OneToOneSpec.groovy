@@ -1,6 +1,5 @@
 package grails.gorm.tests
 
-import grails.persistence.Entity
 import spock.lang.Ignore
 
 /**
@@ -64,22 +63,4 @@ class OneToOneSpec extends GormDatastoreSpec{
             nose.face != null
             nose.face.name == "Joe"
     }
-}
-
-@Entity
-class Face implements Serializable{
-    Long id
-    Long version
-    String name
-    Nose nose
-    static hasOne = [nose:Nose]
-}
-
-@Entity
-class Nose implements Serializable{
-    Long id
-    Long version
-    boolean hasFreckles
-    Face face
-    static belongsTo = [face:Face]
 }
