@@ -129,7 +129,7 @@ class GormMappingSyntaxTests {
 
         assertNotNull context.getPersistentEntity(EntityWithIndexedProperty.name)
 
-        assertEquals 2, context.mappingSyntaxStrategy.getPersistentProperties(EntityWithIndexedProperty, context).size()
+        assertEquals 3, context.mappingSyntaxStrategy.getPersistentProperties(EntityWithIndexedProperty, context).size()
     }
 
     @Entity
@@ -183,6 +183,7 @@ class SecondEntity {
 @grails.persistence.Entity
 class EntityWithIndexedProperty {
     Long id
+    Long version
     String name
     String bar
 
