@@ -136,8 +136,10 @@ class Neo4jQuery extends Query {
     }
 
     boolean matchesCriterionEquals(Node node, Query.Criterion criterion) {
-        if (entityPersister.persistentEntity.associations.any { it.name == criterion.name}) {
-            node.getSingleRelationship(DynamicRelationshipType.withName(criterion.name), Direction.BOTH)?.getOtherNode(node).id == criterion.value
+        def association = entityPersister.persistentEntity.associations.find { it.name == criterion.name}
+        if (association) {
+            def relationshipType = DynamicRelationshipType.withName(Neo4jDatastore.relationshipTypeName(association))
+            node.getSingleRelationship(relationshipType, Direction.BOTH)?.getOtherNode(node)?.id == criterion.value
         } else {
             getNodeProperty(node, criterion.name) == criterion.value
         }
@@ -189,11 +191,11 @@ class Neo4jQuery extends Query {
 
     boolean matchesCriterionIdEqualsWithName(Node node, IdEqualsWithName criterion) {
         PersistentProperty persistentProperty = entity.getPropertyByName(criterion.name)
-        String relationshipTypeName = persistentProperty.name
+        String relationshipTypeName = Neo4jDatastore.relationshipTypeName(persistentProperty)
         Direction direction = Direction.OUTGOING
 
         if (persistentProperty.bidirectional && !persistentProperty.owningSide) {
-            relationshipTypeName = persistentProperty.referencedPropertyName
+            relationshipTypeName = Neo4jDatastore.relationshipTypeName(persistentProperty.inverseSide)
             direction = Direction.INCOMING
         }
         DynamicRelationshipType relationshipType = DynamicRelationshipType.withName(relationshipTypeName)

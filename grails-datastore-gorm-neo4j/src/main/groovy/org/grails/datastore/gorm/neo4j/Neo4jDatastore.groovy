@@ -22,6 +22,7 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ConfigurableApplicationContext
 import org.neo4j.graphdb.*
 import org.slf4j.LoggerFactory
+import org.grails.datastore.mapping.model.types.Association
 
 /**
  * Datastore implementation for Neo4j backend
@@ -117,6 +118,10 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
         node.relationships.each {
             logger.warn "Node $node.id relationship $it.startNode -> $it.endNode : ${it.type.name()}"
         }
+    }
+
+    static def relationshipTypeName(Association association) {
+        "${association.owner.decapitalizedName}_${association.name}"
     }
 
 }

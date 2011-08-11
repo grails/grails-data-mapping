@@ -25,6 +25,7 @@ import org.grails.datastore.mapping.engine.AssociationIndexer
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.model.types.ManyToMany
+import org.neo4j.graphdb.RelationshipType
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -57,12 +58,13 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
     List query(primaryKey) {
 
         Direction direction = Direction.OUTGOING
-        DynamicRelationshipType relType = relationshipType
+        String relTypeName = Neo4jDatastore.relationshipTypeName(association)
         if ((association instanceof ManyToMany) && (!association.owningSide)) {
             direction = Direction.INCOMING
-            relType = inverseRelationshipType
+            relTypeName = Neo4jDatastore.relationshipTypeName(association.inverseSide)
         }
 
+        RelationshipType relType = DynamicRelationshipType.withName(relTypeName)
         List<Long> ids = nativeEntry.getRelationships(relType, direction).collect {
             log.debug "relation: $it.startNode -> $it.endNode $it.type"
             it.getOtherNode(nativeEntry).id
@@ -86,11 +88,14 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
 
         Node startNode = graphDatabaseService.getNodeById(primaryKey)
         Node endNode = graphDatabaseService.getNodeById(foreignKey)
-        DynamicRelationshipType relType = relationshipType
+        String relTypeName = Neo4jDatastore.relationshipTypeName(association)
 
         if (association instanceof ManyToMany && !association.owningSide) {
             (startNode, endNode) = [endNode, startNode]
+            relTypeName = Neo4jDatastore.relationshipTypeName(association.inverseSide)
         }
+
+        RelationshipType relType = DynamicRelationshipType.withName(relTypeName)
 
         boolean hasRelationship = startNode.getRelationships(relType, Direction.OUTGOING).any { it.endNode == endNode }
         if (!hasRelationship) {
@@ -98,14 +103,6 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
             log.info("createRelationship $rel.startNode.id -> $rel.endNode.id ($rel.type)")
             //dumpNode(startNode)
         }
-    }
-
-    DynamicRelationshipType getRelationshipType() {
-        DynamicRelationshipType.withName(association.name)
-    }
-
-    DynamicRelationshipType getInverseRelationshipType() {
-        DynamicRelationshipType.withName(association.inversePropertyName)
     }
 
     protected void dumpNode(Node node) {

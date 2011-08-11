@@ -115,11 +115,11 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
                 }
             }
 
-            String relationshipTypeName = persistentProperty.name
+            String relationshipTypeName = Neo4jDatastore.relationshipTypeName(persistentProperty)
             Direction direction = Direction.OUTGOING
 
             if (persistentProperty.bidirectional && !persistentProperty.owningSide) {
-                relationshipTypeName = persistentProperty.referencedPropertyName
+                relationshipTypeName = Neo4jDatastore.relationshipTypeName(persistentProperty.inverseSide)
                 direction = Direction.INCOMING
             }
             DynamicRelationshipType relationshipType = DynamicRelationshipType.withName(relationshipTypeName)
@@ -127,8 +127,15 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
             if ((persistentProperty instanceof ManyToMany) || (persistentProperty instanceof OneToMany)) {
                 result = nativeEntry.getRelationships(relationshipType, direction).collect { it.getOtherNode(nativeEntry).id }
             } else {
-                Relationship rel = nativeEntry.getSingleRelationship(relationshipType, direction)
-                result = rel ? rel.getOtherNode(nativeEntry).id : null
+
+                result = nativeEntry.getRelationships(relationshipType, direction).collect { it.getOtherNode(nativeEntry) }
+                if (result.size()>1) {
+                    log.error "duplicate relationship detected: $rel.startNode.id (${rel.startNode.getProperty(TYPE_PROPERTY_NAME,null)})-> $rel.endNode.id (${rel.endNode.getProperty(TYPE_PROPERTY_NAME,null)}) type: ($rel.type)"
+                    result = result[0]
+                } else {
+                    Relationship rel = nativeEntry.getSingleRelationship(relationshipType, direction)
+                    result = rel ? rel.getOtherNode(nativeEntry).id : null
+                }
                 log.debug("getting property $key via relationship on $nativeEntry = $result")
             }
 
@@ -155,40 +162,43 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
         PersistentProperty persistentProperty = persistentEntity.getPropertyByName(key)
         if (persistentProperty instanceof ManyToMany) {
             // called when loading instances
-            DynamicRelationshipType relationshipType = DynamicRelationshipType.withName(key)
+            DynamicRelationshipType relationshipType = DynamicRelationshipType.withName(Neo4jDatastore.relationshipTypeName(persistentProperty))
             for (item in value) {
                 Node endNode = graphDatabaseService.getNodeById(item instanceof Long ? item : item.id)
                 for (Relationship rel in nativeEntry.getRelationships(relationshipType, Direction.OUTGOING)) {
                     rel.delete()
                 }
-                nativeEntry.createRelationshipTo(endNode, relationshipType)
+                //nativeEntry.createRelationshipTo(endNode, relationshipType)
+                createRelationshipTo(nativeEntry, endNode, relationshipType)
             }
         }
         else if (persistentProperty instanceof Association) {
             log.info("setting $key via relationship to $value, assoc is ${persistentProperty.getClass().superclass.simpleName}, bidi: $persistentProperty.bidirectional, owning: $persistentProperty.owningSide")
 
             Node startNode = nativeEntry
-            Node endNode = graphDatabaseService.getNodeById(value instanceof Long ? value : value.id)
-            String relationshipTypeName = persistentProperty.name
+            Node target = graphDatabaseService.getNodeById(value instanceof Long ? value : value.id)
+            Node endNode = target
+            String relationshipTypeName = Neo4jDatastore.relationshipTypeName(persistentProperty)
             Direction direction = Direction.OUTGOING
 
             if (persistentProperty.bidirectional && !persistentProperty.owningSide) {
-                relationshipTypeName = persistentProperty.referencedPropertyName
+                relationshipTypeName = Neo4jDatastore.relationshipTypeName(persistentProperty.inverseSide)
                 direction = Direction.INCOMING
                 (startNode,endNode) = [endNode,startNode]
             }
             DynamicRelationshipType relationshipType = DynamicRelationshipType.withName(relationshipTypeName)
 
-            Relationship rel = startNode.getSingleRelationship(relationshipType, direction)
+            Relationship rel = nativeEntry.getSingleRelationship(relationshipType, direction)
             if (rel) {
-                if (rel.getOtherNode(startNode) == endNode) {
+                if (rel.getOtherNode(nativeEntry) == target) {
                     return // unchanged value
                 }
                 log.info "deleting relationship $rel.startNode -> $rel.endNode : ${rel.type.name()}"
                 rel.delete()
             }
 
-            rel = startNode.createRelationshipTo(endNode, relationshipType)
+            //rel = startNode.createRelationshipTo(endNode, relationshipType)
+            rel = createRelationshipTo(startNode, endNode, relationshipType)
             log.info("createRelationship $rel.startNode.id (${rel.startNode.getProperty(TYPE_PROPERTY_NAME,null)})-> $rel.endNode.id (${rel.endNode.getProperty(TYPE_PROPERTY_NAME,null)}) type: ($rel.type)")
         }
         else {
@@ -306,7 +316,15 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
     protected Collection getManyToManyKeys(PersistentEntity persistentEntity, object,
             Serializable nativeKey, Node nativeEntry, ManyToMany manyToMany) {
 
-        String relName = manyToMany.owningSide ? manyToMany.inversePropertyName : manyToMany.name
-        nativeEntry.getRelationships(DynamicRelationshipType.withName(relName)).collect { it.getOtherNode(nativeEntry).id }
+        String relName = manyToMany.owningSide ? Neo4jDatastore.relationshipTypeName(manyToMany) : Neo4jDatastore.relationshipTypeName(manyToMany.inverseSide)
+        def relationshipType = DynamicRelationshipType.withName(relName)
+        nativeEntry.getRelationships(relationshipType).collect { it.getOtherNode(nativeEntry).id }
+    }
+
+    private Relationship createRelationshipTo(Node start, Node end, DynamicRelationshipType type) {
+        if (start.getRelationships(type, Direction.OUTGOING).find { it.endNode == end}) {
+            log.error "duplicate relationship detected before write: $rel.startNode.id (${rel.startNode.getProperty(TYPE_PROPERTY_NAME,null)})-> $rel.endNode.id (${rel.endNode.getProperty(TYPE_PROPERTY_NAME,null)}) type: ($rel.type)"
+        }
+        start.createRelationshipTo(end, type)
     }
 }
