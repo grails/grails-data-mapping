@@ -299,7 +299,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
     protected void setManyToMany(PersistentEntity persistentEntity, obj, Node nativeEntry,
             ManyToMany manyToMany, Collection associatedObjects, Map<Association, List<Serializable>> toManyKeys) {
 
-        toManyKeys.put manyToMany, session.persist(associatedObjects)
+        toManyKeys.put manyToMany, associatedObjects.collect { it.id ?: session.persist(it) }
     }
 
     @Override

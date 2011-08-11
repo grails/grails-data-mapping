@@ -40,14 +40,6 @@ class Neo4jSession extends AbstractSession {
         super(datastore, mappingContext, publisher)
         log.debug "created new Neo4jSession"
         //beginTransactionInternal()
-
-/*        this.mongoDatastore = datastore
-        try {
-            getNativeInterface().requestStart()
-        }
-        catch (IllegalStateException ignored) {
-            // can't call authenticate() twice, and it's probably been called at startup
-        }*/
     }
 
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
@@ -97,30 +89,4 @@ class Neo4jSession extends AbstractSession {
         createInstanceForNode(nativeInterface.getNodeById(id))
     }
 
-    @Override
-    Serializable persist(o) {
-        Long id = o.id
-        log.info "persisting $id , persistedIds $persistedIds"
-        if (!(id in persistedIds)) {
-            if (id) {
-                persistedIds << id
-                super.persist(o)
-            } else {
-                id = super.persist(o)
-                persistedIds << id
-            }
-        }
-        id
-    }
-
-    @Override
-    List<Serializable> persist(Iterable objects) {
-        objects.collect { persist(it) }
-    }
-
-    @Override
-    void clear() {
-        super.clear()
-        persistedIds = []
-    }
 }

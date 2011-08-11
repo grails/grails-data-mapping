@@ -48,4 +48,20 @@ class MiscSpec extends GormDatastoreSpec {
             Role.findAllByRole('role').size() == 1
 
     }
+
+    void "Test modification of a persistent instance with explicit save"() {
+        given:
+            def t = new TestEntity(name:"Bob")
+            t.save(flush:true)
+            session.clear()
+        when:
+            t = TestEntity.get(t.id)
+            t.name = "Sam"
+            t.save()  // explicit save necessary
+            session.flush()
+            session.clear()
+        then:
+            TestEntity.findByName("Bob") == null
+            TestEntity.findByName("Sam") != null
+    }
 }
