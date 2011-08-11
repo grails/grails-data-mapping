@@ -1212,7 +1212,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
             Object currentValue = entityAccess.getProperty(prop.getName());
             Object oldValue = getEntryValue(nativeEntry, key);
-            if (prop instanceof Simple || prop instanceof Basic) {
+            if (prop instanceof Simple || prop instanceof Basic || prop instanceof ToOne ) {
                 if (!areEqual(oldValue, currentValue, key)) {
                     return true;
                 }
@@ -1222,16 +1222,11 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     return true;
                 }
             }
-            else if (prop instanceof ToOne) {
-                if (prop instanceof Embedded) {
-                    // TODO
-                }
-                else if (prop instanceof EmbeddedCollection) {
-                    // TODO
-                }
-                else {
-                    // TODO
-                }
+            else if (prop instanceof EmbeddedCollection) {
+                // TODO
+            }
+            else {
+                throw new UnsupportedOperationException("dirty not detected for property " + prop.toString() + " " + prop.getClass().getSuperclass().toString());
             }
         }
 
