@@ -15,7 +15,6 @@
 package org.grails.datastore.gorm.neo4j
 
 import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Relationship
 import org.grails.datastore.mapping.engine.EntityPersister
@@ -138,8 +137,8 @@ class Neo4jQuery extends Query {
     boolean matchesCriterionEquals(Node node, Query.Criterion criterion) {
         def association = entityPersister.persistentEntity.associations.find { it.name == criterion.name}
         if (association) {
-            def relationshipType = DynamicRelationshipType.withName(Neo4jDatastore.relationshipTypeName(association))
-            node.getSingleRelationship(relationshipType, Direction.BOTH)?.getOtherNode(node)?.id == criterion.value
+            def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(association)
+            node.getSingleRelationship(relationshipType, direction)?.getOtherNode(node)?.id == criterion.value
         } else {
             getNodeProperty(node, criterion.name) == criterion.value
         }
@@ -191,17 +190,8 @@ class Neo4jQuery extends Query {
 
     boolean matchesCriterionIdEqualsWithName(Node node, IdEqualsWithName criterion) {
         PersistentProperty persistentProperty = entity.getPropertyByName(criterion.name)
-        String relationshipTypeName = Neo4jDatastore.relationshipTypeName(persistentProperty)
-        Direction direction = Direction.OUTGOING
-
-        if (persistentProperty.bidirectional && !persistentProperty.owningSide) {
-            relationshipTypeName = Neo4jDatastore.relationshipTypeName(persistentProperty.inverseSide)
-            direction = Direction.INCOMING
-        }
-        DynamicRelationshipType relationshipType = DynamicRelationshipType.withName(relationshipTypeName)
-
+        def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(persistentProperty)
         Relationship rel = node.getSingleRelationship(relationshipType, direction)
-
         def result = rel?.getOtherNode(node).id == criterion.value
         result
     }

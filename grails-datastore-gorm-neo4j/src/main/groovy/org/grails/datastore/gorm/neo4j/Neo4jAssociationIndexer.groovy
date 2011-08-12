@@ -15,7 +15,6 @@
 package org.grails.datastore.gorm.neo4j
 
 import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Relationship
@@ -24,8 +23,6 @@ import org.slf4j.LoggerFactory
 import org.grails.datastore.mapping.engine.AssociationIndexer
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
-import org.grails.datastore.mapping.model.types.ManyToMany
-import org.neo4j.graphdb.RelationshipType
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -41,8 +38,12 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
     void index(primaryKey, List foreignKeys) {
         assert nativeEntry.id == primaryKey
         log.info "indexing for $primaryKey : $foreignKeys, $association"
-        /*for (Relationship rel in nativeEntry.getRelationships(relationshipType, Direction.OUTGOING)) {
-            Long otherId = rel.endNode.id
+        /*def (relType, direction) = Neo4jUtils.relationTypeAndDirection(association)
+        for (Relationship rel in nativeEntry.getRelationships(relType, direction)) {
+            if (foreignKeys.empty) {
+                Thread.dump()
+            }
+            Long otherId = rel.getOtherNode(nativeEntry).id
             if (otherId in foreignKeys) {
                 foreignKeys.remove(otherId) // TODO: check if modifying foreignKeys causes side effects
             } else {
@@ -57,20 +58,12 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
 
     List query(primaryKey) {
 
-        Direction direction = Direction.OUTGOING
-        String relTypeName = Neo4jDatastore.relationshipTypeName(association)
-        if ((association instanceof ManyToMany) && (!association.owningSide)) {
-            direction = Direction.INCOMING
-            relTypeName = Neo4jDatastore.relationshipTypeName(association.inverseSide)
-        }
-
-        RelationshipType relType = DynamicRelationshipType.withName(relTypeName)
+        def (relType, direction) = Neo4jUtils.relationTypeAndDirection(association)
         List<Long> ids = nativeEntry.getRelationships(relType, direction).collect {
             log.debug "relation: $it.startNode -> $it.endNode $it.type"
             it.getOtherNode(nativeEntry).id
         }
         log.info("query $primaryKey: $ids")
-        //dumpNode(nativeEntry)
         ids
     }
 
@@ -85,33 +78,19 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
         }
 
         log.info "index $primaryKey, $foreignKey, bidi: $association.bidirectional, own: $association.owningSide"
-
         Node startNode = graphDatabaseService.getNodeById(primaryKey)
         Node endNode = graphDatabaseService.getNodeById(foreignKey)
-        String relTypeName = Neo4jDatastore.relationshipTypeName(association)
 
-        if (association instanceof ManyToMany && !association.owningSide) {
+        def (relType, direction) = Neo4jUtils.relationTypeAndDirection(association)
+        if (direction==Direction.INCOMING) {
             (startNode, endNode) = [endNode, startNode]
-            relTypeName = Neo4jDatastore.relationshipTypeName(association.inverseSide)
         }
-
-        RelationshipType relType = DynamicRelationshipType.withName(relTypeName)
 
         boolean hasRelationship = startNode.getRelationships(relType, Direction.OUTGOING).any { it.endNode == endNode }
         if (!hasRelationship) {
             Relationship rel = startNode.createRelationshipTo(endNode, relType)
             log.info("createRelationship $rel.startNode.id -> $rel.endNode.id ($rel.type)")
-            //dumpNode(startNode)
         }
     }
 
-    protected void dumpNode(Node node) {
-        log.debug ("Node $node.id: $node")
-        node.propertyKeys.each {
-            log.debug "Node $node.id property $it -> ${node.getProperty(it,null)}"
-        }
-        node.relationships.each {
-            log.debug "Node $node.id relationship $it.startNode -> $it.endNode : ${it.type.name()}"
-        }
-    }
 }
