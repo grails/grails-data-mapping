@@ -299,9 +299,9 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
     protected PersistentEntity discriminatePersistentEntity(PersistentEntity persistentEntity, Node nativeEntry) {
         String className = nativeEntry.getProperty(TYPE_PROPERTY_NAME, null)
         PersistentEntity targetEntity = mappingContext.getPersistentEntity(className)
-        for (def entity = targetEntity; entity != persistentEntity || entity == null; entity = entity.parentEntity) {
+        /*for (def entity = targetEntity; entity != persistentEntity || entity == null; entity = entity.parentEntity) {
             assert entity
-        }
+        }*/
         targetEntity
     }
 
