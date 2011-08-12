@@ -1,12 +1,10 @@
 package grails.gorm.tests
 
-//import org.apache.log4j.BasicConfigurator
-
 class ManyToManySpec extends GormDatastoreSpec {
 
-    def setupSpec() {
-        //new BasicConfigurator().configure()
-    }
+    /*def setupSpec() {
+        new BasicConfigurator().configure()
+    }*/
 
     def "check if manytomany relationships are persistent correctly"() {
         setup:
@@ -63,13 +61,67 @@ class ManyToManySpec extends GormDatastoreSpec {
             2 == Role.findByRole('ROLE_USER').people.size()
             2 == Role.findByRole('ROLE_ADMIN').people.size()
     }
+
+    // TODO: this testcase belongs semantically into OneToManySpec
+    def "check multiple one-to-many relationships of the same type"() {
+        setup:
+        def user = new User(username: 'person1')
+        user.save(flush:true)
+        session.clear()
+
+        when: "creating a lonely user"
+        user = User.findByUsername('person1')
+
+        then: "user has no friends and foes"
+        user
+        user.friends.size() == 0
+        user.foes.size() == 0
+        user.bestBuddy == null
+
+        when: "adding some friend and foe"
+        user.addToFriends(username:'friend1')
+        user.addToFoes(username:'foe1')
+        user.save()
+        session.flush()
+        session.clear()
+        user = User.findByUsername('person1')
+
+        then: "friends and foes are found"
+        user
+        user.friends.size() == 1
+        user.friends.every { it.username =~ /friend\d/ }
+        user.foes.size() == 1
+        user.foes.every { it.username =~ /foe\d/ }
+        user.bestBuddy == null
+
+        when: "setting bestbuddy"
+        user.bestBuddy = new User(username:'bestBuddy')
+        user.save()
+        session.flush()
+        session.clear()
+        user = User.findByUsername('person1')
+
+        then: "bestBuddy is there"
+        user.bestBuddy.username == 'bestBuddy'
+
+        and: 'friends and foes are not modified'
+        user.friends.size() == 1
+        user.friends.every { it.username =~ /friend\d/ }
+        user.foes.size() == 1
+        user.foes.every { it.username =~ /foe\d/ }
+
+    }
+
 }
 
 class User {
     Long id
     Long version
     String username
+    User bestBuddy
     Set roles = []
+    Set friends = []
+    Set foes = []
 
     boolean equals(other) {
         other?.username == username
@@ -79,8 +131,13 @@ class User {
         username ? username.hashCode() : 0
     }
 
-    static hasMany = [roles: Role]
+    static hasMany = [ roles: Role, friends: User, foes: User ]
+    static forceUnidirectional = [ 'friends', 'foes', 'bestBuddy' ]
     static belongsTo = Role
+
+    static constraints = {
+        bestBuddy nullable:true
+    }
 }
 
 class Role {
