@@ -35,4 +35,5 @@ public interface GormProperties {
     String LAST_UPDATED = "lastUpdated";
     String EMBEDDED = "embedded";
     String CONSTRAINTS = "constraints";
+    String FORCE_UNIDIRECTIONAL = "forceUnidirectional";
 }

@@ -132,6 +132,24 @@ class GormMappingSyntaxTests {
         assertEquals 3, context.mappingSyntaxStrategy.getPersistentProperties(EntityWithIndexedProperty, context).size()
     }
 
+    @Test
+    void testForceUnidirectional() {
+        def context = new TestMappingContext()
+        context.addPersistentEntity(User)
+        assert 1 == context.persistentEntities.size()
+
+        def user = context.getPersistentEntity(User.name)
+
+        Association foesAssociation = user.getPropertyByName("foes")
+        assert (foesAssociation instanceof OneToMany)
+        assert !foesAssociation.isBidirectional()
+
+        Association bestBuddyAssociation = user.getPropertyByName("bestBuddy")
+        assert (bestBuddyAssociation instanceof OneToOne)
+        assert !bestBuddyAssociation.isBidirectional()
+
+    }
+
     @Entity
     class JavaEntity {}
 }
@@ -190,3 +208,17 @@ class EntityWithIndexedProperty {
     String getSectionContent(int section) {}
     void setSectionContent(int section, String content) {}
 }
+
+@grails.persistence.Entity
+class User {
+    Long id
+    Long version
+    String name
+    User bestBuddy
+    Set foes
+    static hasMany = [ foes: User]
+
+    // if no forceUnidirectional is given, bestBuddy is inverse of foes (sic)
+    static forceUnidirectional = ['foes', 'bestBuddy']
+}
+
