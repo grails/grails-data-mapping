@@ -248,7 +248,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         return mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
 
-                String collectionName = getCollectionName(persistentEntity, nativeEntry);
+                @SuppressWarnings("hiding") String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
                 DBCollection dbCollection = con.getCollection(collectionName + NEXT_ID_SUFFIX);
 
@@ -345,17 +345,19 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     @Override
     protected void setEntryValue(DBObject nativeEntry, String key, Object value) {
 
-        // test whether the value can be BSON encoded, if it can't convert to String
-        if (value != null && !getMappingContext().isPersistentEntity(value)) {
-            if (shouldConvertToString(value.getClass())) {
-                value = value.toString();
-            }
-            else if (value instanceof Calendar) {
-                value = ((Calendar)value).getTime();
-            }
-
-            nativeEntry.put(key, value);
+        if (value == null || getMappingContext().isPersistentEntity(value)) {
+            return;
         }
+
+        // test whether the value can be BSON encoded, if it can't convert to String
+        if (shouldConvertToString(value.getClass())) {
+            value = value.toString();
+        }
+        else if (value instanceof Calendar) {
+            value = ((Calendar)value).getTime();
+        }
+
+        nativeEntry.put(key, value);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -406,7 +408,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     private String getCollectionName(PersistentEntity persistentEntity, DBObject nativeEntry) {
-        String collectionName;
+        @SuppressWarnings("hiding") String collectionName;
         if (persistentEntity.isRoot()) {
             collectionName = this.collectionName;
         }
@@ -425,7 +427,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             final Object key, final DBObject entry) {
         mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
-                String collectionName = getCollectionName(persistentEntity, entry);
+                @SuppressWarnings("hiding") String collectionName = getCollectionName(persistentEntity, entry);
                 DBCollection dbCollection = con.getCollection(collectionName);
                 DBObject dbo = createDBObjectWithKey(key);
 
@@ -491,7 +493,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     protected void deleteEntries(String family, final List<Object> keys) {
         mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
-                String collectionName = getCollectionName(getPersistentEntity());
+                @SuppressWarnings("hiding") String collectionName = getCollectionName(getPersistentEntity());
                 DBCollection dbCollection = con.getCollection(collectionName);
 
                 MongoSession mongoSession = (MongoSession) getSession();

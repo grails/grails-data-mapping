@@ -83,7 +83,7 @@ public class MongoQuery extends Query {
                 String propertyName = getPropertyName(entity, criterion);
                 Object value = criterion.getValue();
                 PersistentProperty property = entity.getPropertyByName(criterion.getProperty());
-                if(property instanceof ToOne) {
+                if (property instanceof ToOne) {
                     query.put(propertyName + MONGO_ID_REFERENCE_SUFFIX, value);
                 }
                 else {
@@ -383,16 +383,14 @@ public class MongoQuery extends Query {
                             dbObject = collection.findOne();
                         }
                         else {
-                            DBObject query = new BasicDBObject(MongoEntityPersister.MONGO_CLASS_FIELD, entity.getDiscriminator());
-                            dbObject = collection.findOne(query);
+                            dbObject = collection.findOne(new BasicDBObject(
+                                  MongoEntityPersister.MONGO_CLASS_FIELD, entity.getDiscriminator()));
                         }
                     }
                     else {
-                        DBObject query = getMongoQuery();
-                        dbObject = collection.findOne(query);
+                        dbObject = collection.findOne(getMongoQuery());
                     }
-                    final Object object = createObjectFromDBObject(dbObject);
-                    return wrapObjectResultInList(object);
+                    return wrapObjectResultInList(createObjectFromDBObject(dbObject));
                 }
 
                 DBCursor cursor;
@@ -472,7 +470,7 @@ public class MongoQuery extends Query {
                 }
                 else {
                     populateMongoQuery(entity, query, criteria);
-                    cursor = executeQueryAndApplyPagination(collection,query);
+                    cursor = executeQueryAndApplyPagination(collection, query);
                 }
                 return cursor;
             }
@@ -488,7 +486,7 @@ public class MongoQuery extends Query {
                     cursor.limit(max);
                 }
 
-                if(!orderBy.isEmpty()) {
+                if (!orderBy.isEmpty()) {
                     DBObject orderObject = new BasicDBObject();
                     for (Order order : orderBy) {
                         orderObject.put(order.getProperty(), order.getDirection() == Order.Direction.DESC ? -1 : 1);
@@ -518,7 +516,7 @@ public class MongoQuery extends Query {
         List disjunction = null;
         if (criteria instanceof Disjunction) {
             disjunction = new ArrayList();
-            query.put(MONGO_OR_OPERATOR,disjunction);
+            query.put(MONGO_OR_OPERATOR, disjunction);
         }
         for (Criterion criterion : criteria.getCriteria()) {
             final QueryHandler queryHandler = queryHandlers.get(criterion.getClass());
@@ -529,10 +527,10 @@ public class MongoQuery extends Query {
                     disjunction.add(dbo);
                 }
 
-                if(criterion instanceof PropertyCriterion) {
+                if (criterion instanceof PropertyCriterion) {
                     PropertyCriterion pc = (PropertyCriterion) criterion;
                     PersistentProperty property = entity.getPropertyByName(pc.getProperty());
-                    if(property instanceof Custom) {
+                    if (property instanceof Custom) {
                         CustomTypeMarshaller customTypeMarshaller = ((Custom) property).getCustomTypeMarshaller();
                         customTypeMarshaller.query(property, pc, query);
                         continue;
@@ -554,7 +552,7 @@ public class MongoQuery extends Query {
         }
         else {
             PersistentProperty property = entity.getPropertyByName(propertyName);
-            if(property != null) {
+            if (property != null) {
                 return MappingUtils.getTargetKey(property);
             }
         }
