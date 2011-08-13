@@ -167,7 +167,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
                 }
             }
             else  {
-                log.info("setting $key via relationship to $value, assoc is ${persistentProperty.getClass().superclass.simpleName}, bidi: $persistentProperty.bidirectional, owning: $persistentProperty.owningSide")
+                log.info("setting $key via relationship to $value, assoc is $persistentProperty ${persistentProperty.getClass().superclass.simpleName}, bidi: $persistentProperty.bidirectional, owning: $persistentProperty.owningSide")
 
                 Node startNode = nativeEntry
                 Node target = graphDatabaseService.getNodeById(value instanceof Long ? value : value.id)

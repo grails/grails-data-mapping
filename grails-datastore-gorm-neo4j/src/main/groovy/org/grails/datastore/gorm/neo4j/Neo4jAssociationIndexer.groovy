@@ -38,19 +38,22 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
     void index(primaryKey, List foreignKeys) {
         assert nativeEntry.id == primaryKey
         log.info "indexing ${association.getClass().superclass} for $primaryKey : $foreignKeys, $association"
-        /*def (relType, direction) = Neo4jUtils.relationTypeAndDirection(association)
-        for (Relationship rel in nativeEntry.getRelationships(relType, direction)) {
-            if (foreignKeys.empty) {
-                Thread.dump()
+
+        if (!foreignKeys.empty) { // TODO: for weird reasons, this gets called unreproducable using an empty foreignkey list sometimes causing the collection being emptied
+            def (relType, direction) = Neo4jUtils.relationTypeAndDirection(association)
+            for (Relationship rel in nativeEntry.getRelationships(relType, direction)) {
+                if (foreignKeys.empty) {
+                    Thread.dump()
+                }
+                Long otherId = rel.getOtherNode(nativeEntry).id
+                if (otherId in foreignKeys) {
+                    foreignKeys.remove(otherId) // TODO: check if modifying foreignKeys causes side effects
+                } else {
+                    log.info "deleting relationship $rel.startNode -> $rel.endNode : ${rel.type.name()}"
+                    rel.delete()
+                }
             }
-            Long otherId = rel.getOtherNode(nativeEntry).id
-            if (otherId in foreignKeys) {
-                foreignKeys.remove(otherId) // TODO: check if modifying foreignKeys causes side effects
-            } else {
-                log.info "deleting relationship $rel.startNode -> $rel.endNode : ${rel.type.name()}"
-                rel.delete()
-            }
-        } */
+        }
         for (fk in foreignKeys) {
             index(primaryKey, fk)
         }
