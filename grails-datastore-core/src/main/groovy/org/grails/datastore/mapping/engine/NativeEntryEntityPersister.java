@@ -757,12 +757,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                         if (inverse instanceof OneToMany) {
                                             inverseCollectionUpdates.put((OneToMany) inverse, associationId);
                                         }
-                                        else if (inverse instanceof OneToOne) {
-                                            Object inverseEntity = entityAccess.getProperty(association.getName());
-                                            if(inverseEntity != null) {
-                                                EntityAccess inverseAccess = createEntityAccess(association.getAssociatedEntity(), inverseEntity);
-                                                inverseAccess.setProperty(inverse.getName(), entityAccess.getEntity());
-                                            }
+                                        Object inverseEntity = entityAccess.getProperty(association.getName());
+                                        if(inverseEntity != null) {
+                                            EntityAccess inverseAccess = createEntityAccess(association.getAssociatedEntity(), inverseEntity);
+                                            inverseAccess.setProperty(inverse.getName(), entityAccess.getEntity());
                                         }
                                     }
                                 }
