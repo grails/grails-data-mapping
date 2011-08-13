@@ -122,7 +122,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
 
                 result = nativeEntry.getRelationships(relationshipType, direction).collect { it.getOtherNode(nativeEntry) }
                 if (result.size()>1) {
-                    log.error "duplicate relationship detected: $rel.startNode.id (${rel.startNode.getProperty(TYPE_PROPERTY_NAME,null)})-> $rel.endNode.id (${rel.endNode.getProperty(TYPE_PROPERTY_NAME,null)}) type: ($rel.type)"
+                    log.error "found ${result.size()} relationships for node ${nativeEntry.id}, $relationshipType, $direction: ${result}"
                     result = result[0]
                 } else {
                     Relationship rel = nativeEntry.getSingleRelationship(relationshipType, direction)

@@ -37,7 +37,7 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
 
     void index(primaryKey, List foreignKeys) {
         assert nativeEntry.id == primaryKey
-        log.info "indexing for $primaryKey : $foreignKeys, $association"
+        log.info "indexing ${association.getClass().superclass} for $primaryKey : $foreignKeys, $association"
         /*def (relType, direction) = Neo4jUtils.relationTypeAndDirection(association)
         for (Relationship rel in nativeEntry.getRelationships(relType, direction)) {
             if (foreignKeys.empty) {

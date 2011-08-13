@@ -71,10 +71,11 @@ class Neo4jSession extends AbstractSession {
 
     def createInstanceForNode(Node node) {
         String className = node.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null)
-        PersistentEntity persistentEntity = mappingContext.getPersistentEntity(className)
+        PersistentEntity persistentEntity = className ? mappingContext.getPersistentEntity(className) : null
         if (!persistentEntity) {
             log.warn "createInstanceForNode: node property $Neo4jEntityPersister.TYPE_PROPERTY_NAME not set for id=$node.id"
-            null
+            Neo4jUtils.dumpNode(node, log)
+            return null
         }
 
         log.debug "createInstanceForNode: node property $Neo4jEntityPersister.TYPE_PROPERTY_NAME = $className for id=$node.id"
