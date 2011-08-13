@@ -172,6 +172,10 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                     // indexed property
                     continue;
                 }
+                if (descriptor.getReadMethod() == null || descriptor.getWriteMethod() == null) {
+                    // non-persistent getter or setter
+                    continue;
+                }
 
                 final String propertyName = descriptor.getName();
                 if (isExcludedProperty(propertyName, classMapping, transients)) continue;
