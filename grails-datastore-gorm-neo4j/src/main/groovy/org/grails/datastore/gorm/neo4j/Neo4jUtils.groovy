@@ -3,10 +3,10 @@ package org.grails.datastore.gorm.neo4j
 import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.Node
 import org.grails.datastore.mapping.model.types.ManyToMany
-import org.grails.datastore.mapping.model.types.OneToMany
 import org.neo4j.graphdb.DynamicRelationshipType
 import org.grails.datastore.mapping.model.types.Association
 import org.slf4j.LoggerFactory
+import org.grails.datastore.mapping.model.types.ManyToOne
 
 /**
  * Collection of static util methods regarding Neo4j
@@ -24,7 +24,7 @@ abstract class Neo4jUtils {
         // switch direction and name if we have a bidi and ( (many2many with not owning side) or (onetomany))
         if (association.bidirectional &&
             ((association instanceof ManyToMany && (!association.owningSide)) ||
-            association instanceof OneToMany)) {
+            association instanceof ManyToOne)) {
                 direction = Direction.INCOMING
                 relTypeName = relationshipTypeName(association.inverseSide)
         }
