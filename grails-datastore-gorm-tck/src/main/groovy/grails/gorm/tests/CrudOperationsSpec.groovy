@@ -1,5 +1,7 @@
 package grails.gorm.tests
 
+import org.grails.datastore.mapping.validation.ValidationException
+
 /**
  * @author graemerocher
  */
@@ -54,5 +56,17 @@ class CrudOperationsSpec extends GormDatastoreSpec{
             t = TestEntity.get(t.id)
         then:
             t.id != null
+    }
+
+    void "Test failOnError"() {
+        given:
+            def t = new TestEntity(child: new ChildEntity(name:"Child"))
+
+        when:
+            t.save(failOnError: true)
+
+        then:
+            thrown ValidationException
+            t.id == null
     }
 }
