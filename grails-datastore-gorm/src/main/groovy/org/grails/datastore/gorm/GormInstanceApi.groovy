@@ -38,6 +38,10 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
         super(persistentClass, datastore)
     }
 
+    protected Class<Exception> getValidationException() {
+        this.validationException
+    }
+
     /**
      * Proxy aware instanceOf implementation.
      */
