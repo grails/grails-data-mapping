@@ -1,11 +1,11 @@
 package grails.gorm.tests
 
-import org.grails.datastore.mapping.validation.ValidationException
+import grails.validation.ValidationException
 
 /**
  * @author graemerocher
  */
-class CrudOperationsSpec extends GormDatastoreSpec{
+class CrudOperationsSpec extends GormDatastoreSpec {
 
     void "Test get using a string-based key"() {
         given:
