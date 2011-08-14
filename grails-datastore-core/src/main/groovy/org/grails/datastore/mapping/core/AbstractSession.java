@@ -353,7 +353,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         }
     }
 
-	public final Persister getPersister(Object o) {
+    public final Persister getPersister(Object o) {
         if (o == null) return null;
         Class cls;
         if (o instanceof Class) {

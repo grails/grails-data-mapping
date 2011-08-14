@@ -2,14 +2,8 @@ package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
 
-/**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 8/3/11
- * Time: 11:03 PM
- * To change this template use File | Settings | File Templates.
- */
-class CustomTypeMarshallingSpec extends GormDatastoreSpec{
+class CustomTypeMarshallingSpec extends GormDatastoreSpec {
+
     static {
         TEST_CLASSES << Person
     }
@@ -36,7 +30,6 @@ class CustomTypeMarshallingSpec extends GormDatastoreSpec{
             p != null
 
         when: "A range query is executed"
-
             p = Person.findByBirthdayBetween(new Birthday(now-1), new Birthday(now+1))
             def p2 = Person.findByBirthdayBetween(new Birthday(now+1), new Birthday(now+2))
 
@@ -44,7 +37,6 @@ class CustomTypeMarshallingSpec extends GormDatastoreSpec{
             p != null
             p2 == null
     }
-
 }
 
 class Person {
@@ -52,7 +44,8 @@ class Person {
     String name
     Birthday birthday
 }
-class Birthday implements Comparable{
+
+class Birthday implements Comparable {
     Date date
 
     Birthday(Date date) {
@@ -60,7 +53,7 @@ class Birthday implements Comparable{
     }
 
     @Override
-    int compareTo(Object t) {
+    int compareTo(t) {
         date.compareTo(t.date)
     }
 }

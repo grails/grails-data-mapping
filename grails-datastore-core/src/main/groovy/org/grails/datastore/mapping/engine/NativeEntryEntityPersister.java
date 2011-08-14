@@ -359,7 +359,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             Serializable nativeKey, T nativeEntry) {
         SessionImplementor<Object> si = (SessionImplementor<Object>) session;
         Serializable key = (Serializable) getMappingContext().getConversionService().convert(
-      		  nativeKey, persistentEntity.getIdentity().getType());
+                nativeKey, persistentEntity.getIdentity().getType());
         si.cacheEntry(persistentEntity, key, nativeEntry);
     }
 

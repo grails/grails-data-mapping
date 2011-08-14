@@ -3,14 +3,7 @@ package org.grails.datastore.gorm.mongo
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
-/**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 8/4/11
- * Time: 4:27 PM
- * To change this template use File | Settings | File Templates.
- */
-class EmbeddedWithinEmbeddedAssociationSpec extends GormDatastoreSpec{
+class EmbeddedWithinEmbeddedAssociationSpec extends GormDatastoreSpec {
 
     static {
         TEST_CLASSES << Customer << Vehicle << Maker << Part << Component
@@ -27,6 +20,7 @@ class EmbeddedWithinEmbeddedAssociationSpec extends GormDatastoreSpec{
             def vehicle3 = new Vehicle(type: 'bus', owners: [customer], parts: [new Part(type: 'plate', maker: maker, components: [new Component(type: 'scribble')])]).save(failOnError: true, flush: true)
 
             session.clear()
+
         when:"The domain model is queries"
             customer = Customer.findByName('Kruttik Aggarwal')
 
@@ -62,10 +56,6 @@ class EmbeddedWithinEmbeddedAssociationSpec extends GormDatastoreSpec{
             busPart.type == "plate"
             busPart.maker.name == "Good Year"
             busPart.components.size() == 1
-
-
-
-
     }
 }
 
@@ -73,62 +63,42 @@ class EmbeddedWithinEmbeddedAssociationSpec extends GormDatastoreSpec{
 class Customer {
 
     Long id
-	String name
+    String name
 
     Set vehicles
-	static hasMany = [vehicles: Vehicle]
-
-    static constraints = {
-    }
+    static hasMany = [vehicles: Vehicle]
 }
-
 
 @Entity
 class Vehicle {
-
     Long id
-	String type
-	List<Part> parts = new ArrayList<Part>()
+    String type
+    List<Part> parts = new ArrayList<Part>()
 
     Set owners
-	static hasMany = [owners: Customer]
-	static belongsTo = Customer
-	static embedded = ['parts']
-
-    static constraints = {
-    }
+    static hasMany = [owners: Customer]
+    static belongsTo = Customer
+    static embedded = ['parts']
 }
 
 @Entity
 class Part {
-
     Long id
-	String type
-	Maker maker
-	List<Component> components = new ArrayList<Component>()
-	static embedded = ['components']
-	static belongsTo = Maker
-
-    static constraints = {
-    }
+    String type
+    Maker maker
+    List<Component> components = new ArrayList<Component>()
+    static embedded = ['components']
+    static belongsTo = Maker
 }
 
 @Entity
 class Maker {
-
     Long id
-	String name
-
-    static constraints = {
-    }
+    String name
 }
 
 @Entity
 class Component {
-
     Long id
-	String type
-
-    static constraints = {
-    }
+    String type
 }

@@ -2,14 +2,7 @@ package grails.gorm.tests
 
 import grails.persistence.Entity
 
-/**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 8/5/11
- * Time: 11:17 AM
- * To change this template use File | Settings | File Templates.
- */
-class OneToOneSpec extends GormDatastoreSpec{
+class OneToOneSpec extends GormDatastoreSpec {
 
     static {
         TEST_CLASSES  << Face << Nose
@@ -27,12 +20,10 @@ class OneToOneSpec extends GormDatastoreSpec{
             pet = Pet.findByName("Dino")
 
         then:"The domain model is valid"
-
             pet != null
             pet.name == "Dino"
             pet.owner != null
             pet.owner.firstName == "Fred"
-
     }
 
     def "Test persist and retrieve one-to-one with inverse key"() {
@@ -65,19 +56,19 @@ class OneToOneSpec extends GormDatastoreSpec{
 }
 
 @Entity
-class Face implements Serializable{
+class Face implements Serializable {
     Long id
     Long version
     String name
     Nose nose
-    static hasOne = [nose:Nose]
+    static hasOne = [nose: Nose]
 }
 
 @Entity
-class Nose implements Serializable{
+class Nose implements Serializable {
     Long id
     Long version
     boolean hasFreckles
     Face face
-    static belongsTo = [face:Face]
+    static belongsTo = [face: Face]
 }
