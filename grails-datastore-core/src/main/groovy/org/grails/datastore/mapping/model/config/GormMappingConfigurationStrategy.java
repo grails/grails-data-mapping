@@ -232,7 +232,8 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                         persistentProperties.add(association);
                     }
                 }
-                else if (propertyFactory.isSimpleType(propertyType)) {
+                else if (Enum.class.isAssignableFrom(currentPropType) ||
+                       propertyFactory.isSimpleType(propertyType)) {
                     persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
                 }
                 else if (MappingFactory.isCustomType(propertyType)) {

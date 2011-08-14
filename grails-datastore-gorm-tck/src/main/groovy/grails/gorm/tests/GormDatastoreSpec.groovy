@@ -20,13 +20,12 @@ import spock.lang.*
 abstract class GormDatastoreSpec extends Specification {
 
     static final SETUP_CLASS_NAME = 'org.grails.datastore.gorm.Setup'
-//    static final TEST_CLASSES = []
     static final TEST_CLASSES = [
          Task, Person, ModifyPerson, Pet, PetType, PersonEvent, Book, Highway,
          TestEntity, ChildEntity, CommonTypes, Location, City, Country, Plant,
          PlantCategory, Publication, OptLockVersioned, OptLockNotVersioned,
          ClassWithNoArgBeforeValidate, ClassWithListArgBeforeValidate,
-         ClassWithOverloadedBeforeValidate]
+         ClassWithOverloadedBeforeValidate, EnumThing]
 
     @Shared Class setupClass
 

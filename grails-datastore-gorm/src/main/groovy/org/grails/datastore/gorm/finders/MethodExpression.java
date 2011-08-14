@@ -45,6 +45,13 @@ public abstract class MethodExpression {
 
     public void setArguments(Object[] arguments) {
         this.arguments = arguments;
+        if (arguments != null) {
+            for (int i = 0; i < arguments.length; i++) {
+                if (arguments[i] instanceof Enum) {
+                    arguments[i] = arguments[i].toString();
+                }
+            }
+        }
     }
 
     public Object[] getArguments() {

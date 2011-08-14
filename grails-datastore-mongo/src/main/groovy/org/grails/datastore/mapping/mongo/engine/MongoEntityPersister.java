@@ -333,7 +333,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         Locale.class,
         TimeZone.class,
         Currency.class,
-        URL.class);
+        URL.class,
+        Enum.class);
 
     @Override
     protected Object formulateDatabaseReference(PersistentEntity persistentEntity,

@@ -93,7 +93,8 @@ class Setup {
          "grails.gorm.tests.Pet",
          "grails.gorm.tests.Person",
          "grails.gorm.tests.Task",
-         "grails.gorm.tests.Plant"].each { type ->
+         "grails.gorm.tests.Plant",
+         "grails.gorm.tests.EnumThing"].each { type ->
             def schema = riakTmpl.getBucketSchema(type, true)
             schema.keys.each { key ->
                 try {
