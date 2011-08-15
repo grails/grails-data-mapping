@@ -21,21 +21,22 @@ import org.springframework.context.ApplicationEventPublisher;
  * Simple extension used in testing to fight eventual consistency of SimpleDB.
  */
 public class DelayAfterWriteSimpleDBSession extends SimpleDBSession {
+
+    private long delayMillis;
+
     public DelayAfterWriteSimpleDBSession(SimpleDBDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, long delayMillis) {
         super(datastore, mappingContext, publisher);
         this.delayMillis = delayMillis;
     }
 
     @Override
-    protected void postFlush(@SuppressWarnings("unused") boolean hasUpdates) {
+    protected void postFlush(boolean hasUpdates) {
         if (hasUpdates) {
             pause();
         }
     }
 
     private void pause(){
-        try { Thread.sleep(delayMillis); } catch (InterruptedException e) { }
+        try { Thread.sleep(delayMillis); } catch (InterruptedException e) { /* ignored */ }
     }
-
-    private long delayMillis;
 }

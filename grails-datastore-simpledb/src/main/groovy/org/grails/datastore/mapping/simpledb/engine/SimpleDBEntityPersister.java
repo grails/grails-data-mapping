@@ -15,11 +15,14 @@
 package org.grails.datastore.mapping.simpledb.engine;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
-import org.grails.datastore.mapping.core.OptimisticLockingException;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.dao.DataAccessException;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.NativeEntryEntityPersister;
@@ -35,13 +38,15 @@ import org.grails.datastore.mapping.simpledb.model.types.SimpleDBTypeConverterRe
 import org.grails.datastore.mapping.simpledb.query.SimpleDBQuery;
 import org.grails.datastore.mapping.simpledb.util.SimpleDBConverterUtil;
 import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataAccessException;
 
 import com.amazonaws.services.simpledb.model.Attribute;
 import com.amazonaws.services.simpledb.model.Item;
 import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 
 /**
- * A {@link org.grails.datastore.mapping.engine.EntityPersister} implementation for the SimpleDB store
+ * A {@link org.grails.datastore.mapping.engine.EntityPersister} implementation for the SimpleDB store.
  *
  * @author Roman Stepanenko based on Graeme Rocher code for MongoDb and Redis
  * @since 0.1

@@ -87,9 +87,8 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         } catch (AmazonServiceException e) {
             if (SimpleDBUtil.AWS_ERR_CODE_CONDITIONAL_CHECK_FAILED.equals(e.getErrorCode())) {
                 throw new OptimisticLockingException(persistentEntity, id);
-            } else {
-                throw e;
             }
+            throw e;
         }
     }
 
@@ -110,9 +109,8 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
             } catch (AmazonServiceException e) {
                 if (SimpleDBUtil.AWS_ERR_CODE_CONDITIONAL_CHECK_FAILED.equals(e.getErrorCode())) {
                     throw new OptimisticLockingException(persistentEntity, id);
-                } else {
-                    throw e;
                 }
+                throw e;
             }
         }
     }
@@ -148,7 +146,6 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         ListDomainsResult result = sdb.listDomains(request);
         return result.getDomainNames();
     }
-
 
     public void deleteDomain(String domainName) throws DataAccessException {
         DeleteDomainRequest request = new DeleteDomainRequest(domainName);

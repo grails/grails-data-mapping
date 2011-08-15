@@ -2,14 +2,7 @@ package grails.gorm.tests
 
 import spock.lang.Ignore
 
-/**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 8/5/11
- * Time: 11:17 AM
- * To change this template use File | Settings | File Templates.
- */
-class OneToOneSpec extends GormDatastoreSpec{
+class OneToOneSpec extends GormDatastoreSpec {
 
     static {
         TEST_CLASSES  << Face << Nose
@@ -32,7 +25,6 @@ class OneToOneSpec extends GormDatastoreSpec{
             pet.name == "Dino"
             pet.owner != null
             pet.owner.firstName == "Fred"
-
     }
 
     @Ignore

@@ -25,8 +25,7 @@ public abstract class AbstractSimpleDBDomainResolver implements SimpleDBDomainRe
     protected String domainNamePrefix;
 
     public AbstractSimpleDBDomainResolver(String entityFamily, String domainNamePrefix) {
-        this.entityFamily = entityFamily;
         this.domainNamePrefix = domainNamePrefix;
-        this.entityFamily = SimpleDBUtil.getPrefixedDomainName(domainNamePrefix, this.entityFamily);
+        this.entityFamily = SimpleDBUtil.getPrefixedDomainName(domainNamePrefix, entityFamily);
     }
 }

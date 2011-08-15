@@ -71,9 +71,8 @@ public class SimpleDBUtil {
     public static String getPrefixedDomainName(String domainNamePrefix, String domainName){
         if (domainNamePrefix != null) {
             return domainNamePrefix + domainName;
-        } else {
-            return domainName;
         }
+        return domainName;
     }
 
     /**
@@ -98,8 +97,8 @@ public class SimpleDBUtil {
         return table;
     }
 
-    public static List collectAttributeValues(Item item, String attributeName) {
-        List ids = new LinkedList();
+    public static List<String> collectAttributeValues(Item item, String attributeName) {
+        List<String> ids = new LinkedList<String>();
         for (Attribute attribute : item.getAttributes()) {
             if (attributeName.equals(attribute.getName())) {
                 ids.add(attribute.getValue());
@@ -108,13 +107,12 @@ public class SimpleDBUtil {
         return ids;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public static List<String> collectItemNames(List<Item> items) {
         if (items.isEmpty()) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
 
-        List ids = new LinkedList();
+        List<String> ids = new LinkedList<String>();
         for (Item item : items) {
             ids.add(item.getName());
         }
