@@ -71,4 +71,8 @@ class Nose implements Serializable {
     boolean hasFreckles
     Face face
     static belongsTo = [face: Face]
+
+    static mapping = {
+        face index:true
+    }
 }
