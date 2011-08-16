@@ -5,43 +5,44 @@
         <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
     </head>
     <body class="body">
-    <h1><a name="2. Getting Started">2. Getting Started</a></h1>To get started with GORM for Mongo you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin mongodb</pre></div><p class="paragraph"/>With that done you need to set up a running Mongodb server. Refer to the <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="blank">Mongodb Quick Start guide</a> for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above commands executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>Thu Nov 11 16:54:08 MongoDB starting : pid=4600 port=27017 dbpath=/data/db/ 64&#45;bit 
+    <h1><a name="2. Getting Started">2. Getting Started</a></h1>To get started with GORM for Mongo you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin mongodb</pre></div><p class="paragraph"/>With that done you need to set up a running Mongodb server. Refer to the <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="blank">Mongodb Quick Start guide</a> for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above commands executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>Thu Nov 11 16:54:08 MongoDB starting : pid=4600 port=27017 dbpath=/data/db/ 64&#45;bit
 Thu Nov 11 16:54:08 db version v1.6.3, pdfile version 4.5
 Thu Nov 11 16:54:08 git version: 278bd2ac2f2efbee556f32c13c1b6803224d1c01
 Thu Nov 11 16:54:08 sys info: Darwin erh2.10gen.cc 9.6.0 Darwin Kernel Version 9.6.0: Mon Nov 24 17:37:00 PST 2008; root:xnu&#45;1228.9.59~1/RELEASE_I386 i386 BOOST_LIB_VERSION=1_40
 Thu Nov 11 16:54:08 &#91;initandlisten&#93; waiting <span class="java&#45;keyword">for</span> connections on port 27017
 Thu Nov 11 16:54:08 &#91;websvr&#93; web admin <span class="java&#45;keyword">interface</span> listening on port 28017</pre></div><p class="paragraph"/>As you can see the server is running on port 27017, but don't worry the Mongodb plugin for Grails will automatically configure itself to look for Mongodb on that port by default.<p class="paragraph"/>If you want to configure how Grails connects to Mongo then you can do so using the following settings in <code>grails-app/conf/DataSource.groovy</code>:<p class="paragraph"/><div class="code"><pre>grails &#123;
-  mongo &#123;
-    host = <span class="java&#45;quote">"localhost"</span>
-    port = 27107
-    username = <span class="java&#45;quote">"blah"</span>
-    password = <span class="java&#45;quote">"blah"</span>
-    databaseName = <span class="java&#45;quote">"foo"</span>
-  &#125;
+    mongo &#123;
+        host = <span class="java&#45;quote">"localhost"</span>
+        port = 27107
+        username = <span class="java&#45;quote">"blah"</span>
+        password = <span class="java&#45;quote">"blah"</span>
+        databaseName = <span class="java&#45;quote">"foo"</span>
+    &#125;
 &#125;</pre></div>
 <h2><a name="2.1 Using Mongo Standalone">2.1 Using Mongo Standalone</a></h2>If you plan to use Mongo as your primary datastore then you need to uninstall the Hibernate plugin:<p class="paragraph"/><div class="code"><pre>grails uninstall&#45;plugin hibernate</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via Mongo and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Mongo.<h2><a name="2.2 Combining Mongo and Hibernate">2.2 Combining Mongo and Hibernate</a></h2>If you have both the Hibernate and Mongo plugins installed then by default all classes in the <code>grails-app/domain</code> directory will be persisted by Hibernate and not Mongo. If you want to persist a particular domain class with Mongo then you must use the <code>mapWith</code> property in the domain class:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"mongo"</span></pre></div><p class="paragraph"/>Alternatively you can persist Hibernate entities to Mongo using the special <code>mongo</code> scope added to all Hibernate entities:<p class="paragraph"/><div class="code"><pre>def hibernatePerson = Person.get(1)<p class="paragraph"/>hibernatePerson.mongo.save()<p class="paragraph"/>def mongoPerson = Person.mongo.get(1)</pre></div><p class="paragraph"/><h2><a name="2.3 Advanced Configuration">2.3 Advanced Configuration</a></h2>As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your <code>grails-app/conf/DataSource.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
-  mongo &#123;
-    host = <span class="java&#45;quote">"localhost"</span>
-    port = 27107
-    username = <span class="java&#45;quote">"blah"</span>
-    password = <span class="java&#45;quote">"blah"</span>
-    databaseName = <span class="java&#45;quote">"foo"</span>
-  &#125;
-&#125;</pre></div><p class="paragraph"/>The <code>databaseName</code> setting configures the default database name. If not specified the <code>databaseName</code> will default to the name of your application.<p class="paragraph"/>You can also customize the Mongo connection settings using an <code>options</code> block:<p class="paragraph"/><div class="code"><pre>grails &#123;
-  mongo &#123;
-    options &#123;
-       autoConnectRetry = <span class="java&#45;keyword">true</span>
-       connectTimeout = 300
+    mongo &#123;
+        host = <span class="java&#45;quote">"localhost"</span>
+        port = 27107
+        username = <span class="java&#45;quote">"blah"</span>
+        password = <span class="java&#45;quote">"blah"</span>
+        databaseName = <span class="java&#45;quote">"foo"</span>
     &#125;
-  &#125;
+&#125;</pre></div><p class="paragraph"/>The <code>databaseName</code> setting configures the default database name. If not specified the <code>databaseName</code> will default to the name of your application.<p class="paragraph"/>You can also customize the Mongo connection settings using an <code>options</code> block:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    mongo &#123;
+        options &#123;
+            autoConnectRetry = <span class="java&#45;keyword">true</span>
+            connectTimeout = 300
+        &#125;
+    &#125;
 &#125;</pre></div><p class="paragraph"/>Available options and their descriptions are defined in the <a href="http://api.mongodb.org/java/current/com/mongodb/MongoOptions.html" target="blank">MongoOptions</a> javadoc.<p class="paragraph"/>In production scenarios you will typically use more than one Mongo server in either <a href="http://www.mongodb.org/display/DOCS/Master+Slave" target="blank">master/slave</a> or <a href="http://www.mongodb.org/display/DOCS/Replication" target="blank">replication</a> scenarios. The plugin allows you to configure <a href="http://www.mongodb.org/display/DOCS/Replica+Pairs" target="blank">replica pairs</a>:<p class="paragraph"/><div class="code"><pre>grails &#123;
-  mongo &#123;
-    replicaPair = &#91; <span class="java&#45;quote">"localhost:27017"</span>, <span class="java&#45;quote">"localhost:27018"</span>&#93;
-  &#125;
+    mongo &#123;
+        replicaPair = &#91; <span class="java&#45;quote">"localhost:27017"</span>, <span class="java&#45;quote">"localhost:27018"</span>&#93;
+    &#125;
 &#125;</pre></div><p class="paragraph"/>Or <a href="http://www.mongodb.org/display/DOCS/Replica+Sets" target="blank">replica sets</a>:<p class="paragraph"/><div class="code"><pre>grails &#123;
-  mongo &#123;
-    replicaSet = &#91; <span class="java&#45;quote">"localhost:27017"</span>, <span class="java&#45;quote">"localhost:27018"</span>&#93;
-  &#125;
+    mongo &#123;
+        replicaSet = &#91; <span class="java&#45;quote">"localhost:27017"</span>, <span class="java&#45;quote">"localhost:27018"</span>&#93;
+    &#125;
 &#125;</pre></div><p class="paragraph"/>The replica sets are defined using a list of strings that conform to the Mongo <a href="http://api.mongodb.org/java/current/com/mongodb/DBAddress.html" target="blank">DBAddress</a> specification.
+
     </body>
 </html>

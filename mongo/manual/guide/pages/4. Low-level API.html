@@ -10,7 +10,7 @@ There is an excellent tutorial on how to use the Mongo Java driver's API directl
 </blockquote><p class="paragraph"/>An example of GMongo usage can be seen below:<p class="paragraph"/><div class="code"><pre>// Get a db reference in the old fashion way
 def db = mongo.getDB(<span class="java&#45;quote">"gmongo"</span>)<p class="paragraph"/>// Collections can be accessed as a db property (like the javascript API)
 assert db.myCollection <span class="java&#45;keyword">instanceof</span> com.mongodb.DBCollection
-// They also can be accessed with array notation 
+// They also can be accessed with array notation
 assert db&#91;'my.collection'&#93; <span class="java&#45;keyword">instanceof</span> com.mongodb.DBCollection<p class="paragraph"/>// Insert a document
 db.languages.insert(&#91;name: 'Groovy'&#93;)
 // A less verbose way to <span class="java&#45;keyword">do</span> it
@@ -20,11 +20,11 @@ db.languages &#60;&#60; &#91;name: 'Python'&#93;<p class="paragraph"/>// Insert 
 db.languages &#60;&#60; &#91;&#91;name: 'Javascript', type: 'prototyped'&#93;, &#91;name: 'Ioke', type: 'prototyped'&#93;&#93;</pre></div><p class="paragraph"/>
 To get hold of the <code>mongo</code> instance (which is an of the <a href="http://api.mongodb.org/java/current/com/mongodb/Mongo.html" target="blank">com.mongodb.Mongo</a> class) inside a controller or service simple define a <code>mongo</code> property:<p class="paragraph"/><div class="code"><pre>def mongo
 def myAction = &#123;
-  def db = mongo.getDB(<span class="java&#45;quote">"mongo"</span>)
-  db.languages.insert(&#91;name: 'Groovy'&#93;)	
+    def db = mongo.getDB(<span class="java&#45;quote">"mongo"</span>)
+    db.languages.insert(&#91;name: 'Groovy'&#93;)
 &#125;</pre></div><p class="paragraph"/>A request scoped bean is also available for the default database (typically the name of your application, unless specified by the <code>databaseName</code> config option, plus the suffix "DB").<p class="paragraph"/><div class="code"><pre>def peopleDB
 def myAction = &#123;
-  peopleDB.languages.insert(&#91;name: 'Fred'&#93;)	
+    peopleDB.languages.insert(&#91;name: 'Fred'&#93;)
 &#125;</pre></div><p class="paragraph"/>Each domain class you define also has a <code>collection</code> property that allows easy access to the underlying <code>DBCollection</code> instance and hence the GMongo API:<p class="paragraph"/><div class="code"><pre>Person.collection.count() == 1
 Person.collection.findOne(firstName:<span class="java&#45;quote">"Fred"</span>).lastName == <span class="java&#45;quote">"Flintstone"</span></pre></div><p class="paragraph"/><blockquote class="note">
 If you are using Hibernate entities with Mongo then the collection will be scoped in the <code>mongo</code> namespace. Example: Person.mongo.collection.count()

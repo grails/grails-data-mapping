@@ -6,28 +6,29 @@
     </head>
     <body class="body">
     As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your <code>grails-app/conf/DataSource.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
-  mongo &#123;
-    host = <span class="java&#45;quote">"localhost"</span>
-    port = 27107
-    username = <span class="java&#45;quote">"blah"</span>
-    password = <span class="java&#45;quote">"blah"</span>
-    databaseName = <span class="java&#45;quote">"foo"</span>
-  &#125;
-&#125;</pre></div><p class="paragraph"/>The <code>databaseName</code> setting configures the default database name. If not specified the <code>databaseName</code> will default to the name of your application.<p class="paragraph"/>You can also customize the Mongo connection settings using an <code>options</code> block:<p class="paragraph"/><div class="code"><pre>grails &#123;
-  mongo &#123;
-    options &#123;
-       autoConnectRetry = <span class="java&#45;keyword">true</span>
-       connectTimeout = 300
+    mongo &#123;
+        host = <span class="java&#45;quote">"localhost"</span>
+        port = 27107
+        username = <span class="java&#45;quote">"blah"</span>
+        password = <span class="java&#45;quote">"blah"</span>
+        databaseName = <span class="java&#45;quote">"foo"</span>
     &#125;
-  &#125;
+&#125;</pre></div><p class="paragraph"/>The <code>databaseName</code> setting configures the default database name. If not specified the <code>databaseName</code> will default to the name of your application.<p class="paragraph"/>You can also customize the Mongo connection settings using an <code>options</code> block:<p class="paragraph"/><div class="code"><pre>grails &#123;
+    mongo &#123;
+        options &#123;
+            autoConnectRetry = <span class="java&#45;keyword">true</span>
+            connectTimeout = 300
+        &#125;
+    &#125;
 &#125;</pre></div><p class="paragraph"/>Available options and their descriptions are defined in the <a href="http://api.mongodb.org/java/current/com/mongodb/MongoOptions.html" target="blank">MongoOptions</a> javadoc.<p class="paragraph"/>In production scenarios you will typically use more than one Mongo server in either <a href="http://www.mongodb.org/display/DOCS/Master+Slave" target="blank">master/slave</a> or <a href="http://www.mongodb.org/display/DOCS/Replication" target="blank">replication</a> scenarios. The plugin allows you to configure <a href="http://www.mongodb.org/display/DOCS/Replica+Pairs" target="blank">replica pairs</a>:<p class="paragraph"/><div class="code"><pre>grails &#123;
-  mongo &#123;
-    replicaPair = &#91; <span class="java&#45;quote">"localhost:27017"</span>, <span class="java&#45;quote">"localhost:27018"</span>&#93;
-  &#125;
+    mongo &#123;
+        replicaPair = &#91; <span class="java&#45;quote">"localhost:27017"</span>, <span class="java&#45;quote">"localhost:27018"</span>&#93;
+    &#125;
 &#125;</pre></div><p class="paragraph"/>Or <a href="http://www.mongodb.org/display/DOCS/Replica+Sets" target="blank">replica sets</a>:<p class="paragraph"/><div class="code"><pre>grails &#123;
-  mongo &#123;
-    replicaSet = &#91; <span class="java&#45;quote">"localhost:27017"</span>, <span class="java&#45;quote">"localhost:27018"</span>&#93;
-  &#125;
+    mongo &#123;
+        replicaSet = &#91; <span class="java&#45;quote">"localhost:27017"</span>, <span class="java&#45;quote">"localhost:27018"</span>&#93;
+    &#125;
 &#125;</pre></div><p class="paragraph"/>The replica sets are defined using a list of strings that conform to the Mongo <a href="http://api.mongodb.org/java/current/com/mongodb/DBAddress.html" target="blank">DBAddress</a> specification.
+
     </body>
 </html>

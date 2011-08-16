@@ -6,28 +6,35 @@
     </head>
     <body class="body">
     The way GORM for Mongo works is to map each domain class to a Mongo collection. For example given a domain class such as:<p class="paragraph"/><div class="code"><pre>class Person &#123;
-  <span class="java&#45;object">String</span> firstName
-  <span class="java&#45;object">String</span> lastName
-  <span class="java&#45;keyword">static</span> hasMany = &#91;pets:Pet&#93;
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName
+    <span class="java&#45;keyword">static</span> hasMany = &#91;pets:Pet&#93;
 &#125;</pre></div><p class="paragraph"/>This will map onto a Mongo <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html" target="blank">DBCollection</a> called "person".<p class="paragraph"/>It is quite common in Mongo to embed documents within documents (nested documents). This can be done with GORM embedded types:<p class="paragraph"/><div class="code"><pre>class Person &#123;
-  <span class="java&#45;object">String</span> firstName
-  <span class="java&#45;object">String</span> lastName
-  Address address
-  <span class="java&#45;keyword">static</span> embedded = &#91;'address'&#93;
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName
+    Address address
+    <span class="java&#45;keyword">static</span> embedded = &#91;'address'&#93;
+&#125;</pre></div><p class="paragraph"/>You can map embedded lists and sets of documents/domain classes:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName
+    Address address
+    List otherAddresses
+    <span class="java&#45;keyword">static</span> embedded = &#91;'address', 'otherAddresses'&#93;
 &#125;</pre></div><p class="paragraph"/>You can also map lists and maps of basic types (such as strings) simply by defining the appropriate collection type:<p class="paragraph"/><div class="code"><pre>class Person &#123;
-	List&#60;<span class="java&#45;object">String</span>&#62; friends
-	Map pets
+    List&#60;<span class="java&#45;object">String</span>&#62; friends
+    Map pets
 &#125;<p class="paragraph"/>...<p class="paragraph"/><span class="java&#45;keyword">new</span> Person(friends:&#91;'Fred', 'Bob'&#93;, pets:&#91;chuck:<span class="java&#45;quote">"Dog"</span>, eddie:'Parrot'&#93;).save(flush:<span class="java&#45;keyword">true</span>)</pre></div><p class="paragraph"/>Basic collection types are stored as native ArrayList and BSON documents within the Mongo documents.<p class="paragraph"/>You may wish to customize how a domain class maps onto a <code>DBCollection</code>. This is possible using the <code>mapping</code> block as follows:<p class="paragraph"/><div class="code"><pre>class Person &#123;
-   ..
-  <span class="java&#45;keyword">static</span> mapping = &#123;
-    collection <span class="java&#45;quote">"mycollection"</span>
-    database <span class="java&#45;quote">"mydb"</span>
-  &#125;
+    ..
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        collection <span class="java&#45;quote">"mycollection"</span>
+        database <span class="java&#45;quote">"mydb"</span>
+    &#125;
 &#125;</pre></div><p class="paragraph"/>In this example we see that the <code>Person</code> entity has been mapped to a collection called "mycollection" in a database called "mydb".<p class="paragraph"/>You can also control how an individual property maps onto a Mongo Document field (the default is to use the property name itself):<p class="paragraph"/><div class="code"><pre>class Person &#123;
-   ..
-  <span class="java&#45;keyword">static</span> mapping = &#123;
-	firstName field:<span class="java&#45;quote">"first_name"</span>
-  &#125;
-&#125;</pre></div><p class="paragraph"/>
+    ..
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        firstName field:<span class="java&#45;quote">"first_name"</span>
+    &#125;
+&#125;</pre></div>
+
     </body>
 </html>
