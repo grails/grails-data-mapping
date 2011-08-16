@@ -28,7 +28,7 @@ grails.project.dependency.resolution = {
         compile("org.springframework.data:spring-data-mongodb:1.0.0.M3", excludes)
         runtime("com.gmongo:gmongo:0.8", excludes)
 
-        String datastoreVersion = "1.0.0.M7"
+        String datastoreVersion = "1.0.0.M8"
 
         compile("org.grails:grails-datastore-gorm-mongo:$datastoreVersion",
                 "org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
