@@ -411,7 +411,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     private String getCollectionName(PersistentEntity persistentEntity, DBObject nativeEntry) {
         @SuppressWarnings("hiding") String collectionName;
         if (persistentEntity.isRoot()) {
-            collectionName = this.collectionName;
+            MongoSession mongoSession = (MongoSession) getSession();
+            collectionName = mongoSession.getCollectionName(persistentEntity);
         }
         else {
             MongoSession mongoSession = (MongoSession) getSession();

@@ -728,14 +728,11 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                     if (association.isBidirectional()) {
                                         Association inverseSide = association.getInverseSide();
                                         if (inverseSide != null) {
-                                            setEntryValue(cachedAssociationEntry, inverseSide.getName(), formulateDatabaseReference(association.getAssociatedEntity(), association, (Serializable) k));
+                                            setEntryValue(cachedAssociationEntry, inverseSide.getName(), formulateDatabaseReference(association.getAssociatedEntity(), (ToOne) inverseSide, (Serializable) k));
                                         }
                                         else {
-                                            setEntryValue(cachedAssociationEntry, key,  formulateDatabaseReference(association.getAssociatedEntity(), association, (Serializable) k));
+                                            setEntryValue(cachedAssociationEntry, key,  formulateDatabaseReference(association.getAssociatedEntity(), (ToOne) inverseSide, (Serializable) k));
                                         }
-                                    }
-                                    else {
-                                        setEntryValue(cachedAssociationEntry, key,  formulateDatabaseReference(association.getAssociatedEntity(), association, (Serializable) k));
                                     }
                                 }
                             }
@@ -840,6 +837,14 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         return (Serializable) k;
     }
 
+    /**
+     * Formulates a database reference for the given entity, association and association id
+     *
+     * @param persistentEntity The entity being persisted
+     * @param association The association
+     * @param associationId The association id
+     * @return A database reference
+     */
     protected Object formulateDatabaseReference(PersistentEntity persistentEntity, ToOne association, Serializable associationId) {
         return associationId;
     }
