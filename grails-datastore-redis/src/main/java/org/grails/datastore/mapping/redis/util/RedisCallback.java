@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 SpringSource
+/* Copyright (C) 2011 SpringSource
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@ import java.io.IOException;
 
 /**
  * @author Graeme Rocher
- * @since 1.1
  */
 public interface RedisCallback<T> {
 
     /**
-     * Executes redis logic whilst handling exce
+     * Executes redis logic whilst handling exec.
+     *
      * @param redis The RedisClient instance
      * @return The result of the calling jredis
      */

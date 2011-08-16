@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 SpringSource
+/* Copyright (C) 2011 SpringSource
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,13 +40,15 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
  * @author Graeme Rocher
  * @since 1.0
  */
-@SuppressWarnings({"hiding", "rawtypes", "unchecked"})
+@SuppressWarnings({"hiding", "unchecked"})
 public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
+
+    public static final String QUEUED = "QUEUED";
+
     private String password;
     private Jedis redis;
     private Transaction transaction;
     private JedisPool pool;
-    public static final String QUEUED = "QUEUED";
     private PipelineBlock pipeline;
     private String host = "localhost";
     private int port;
@@ -66,7 +68,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 if (transaction != null) {
-                    Response response = transaction.append(key, val.toString());
+                    Response<?> response = transaction.append(key, val.toString());
                     return QUEUED.equals(response.get());
                 }
                 if (pipeline != null) {
@@ -84,7 +86,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                 return redis.blpop(timeout, keys);
             }
         });
-
     }
 
     public List<String> brpop(final int timeout, final String... keys) {
@@ -234,6 +235,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     public SortParams sortParams() {
         return new JedisSortParams();
     }
@@ -272,7 +274,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 if (transaction != null) {
-                    Response response = transaction.sismember(redisKey, o.toString());
+                    Response<?> response = transaction.sismember(redisKey, o.toString());
                     return QUEUED.equals(response.get());
                 }
                 if (pipeline != null) {
@@ -321,7 +323,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 if (transaction != null) {
-                    Response response = transaction.sadd(redisKey, o.toString());
+                    Response<?> response = transaction.sadd(redisKey, o.toString());
                     return QUEUED.equals(response.get());
                 }
                 if (pipeline != null) {
@@ -337,7 +339,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 if (transaction != null) {
-                    Response response = transaction.append(redisKey, o.toString());
+                    Response<?> response = transaction.append(redisKey, o.toString());
                     return QUEUED.equals(response.get());
                 }
                 if (pipeline != null) {
@@ -435,7 +437,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                 if (transaction != null) {
                     transaction.rename(old, newKey);
                 }
-                else if(pipeline != null) {
+                else if (pipeline != null) {
                     pipeline.rename(old, newKey);
                 }
                 else {
@@ -454,7 +456,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                 if (transaction != null) {
                     transaction.rpop(redisKey);
                 }
-                else if(pipeline != null) {
+                else if (pipeline != null) {
                     pipeline.rpop(redisKey);
                 }
                 else {
@@ -895,7 +897,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
         return (Boolean)execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
                 if (transaction != null) {
-                    Response response = transaction.expire(key, timeout);
+                    Response<?> response = transaction.expire(key, timeout);
                     return QUEUED.equals(response.get());
                 }
                 return redis.expire(key,timeout) > 0;
@@ -1082,7 +1084,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public long zinterstore(final String destKey, final String...keys) {
         return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
-                if(pipeline != null) {
+                if (pipeline != null) {
                     pipeline.zinterstore(destKey, keys);
                     return 0;
                 }
@@ -1094,7 +1096,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public long zunionstore(final String destKey, final String... keys) {
         return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
-                if(pipeline != null) {
+                if (pipeline != null) {
                     pipeline.zunionstore(destKey, keys);
                     return 0;
                 }
@@ -1114,7 +1116,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public long zrank(final String key, final Object member) {
         return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
-                if(pipeline != null) {
+                if (pipeline != null) {
                     redis.zrank(key, member.toString());
                     return 0;
                 }
@@ -1126,7 +1128,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public long zrem(final String key, final Object member) {
         return (Long) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
-                if(pipeline != null) {
+                if (pipeline != null) {
                     pipeline.zrem(key, member.toString());
                     return 0;
                 }
@@ -1183,7 +1185,7 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
     public Double zscore(final String key, final String member) {
         return (Double) execute(new RedisCallback<Jedis>() {
             public Object doInRedis(Jedis redis) {
-                if(pipeline != null) {
+                if (pipeline != null) {
                     pipeline.zscore(key, member);
                     return 0;
                 }
