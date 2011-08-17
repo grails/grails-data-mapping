@@ -20,7 +20,6 @@ import static org.grails.datastore.mapping.model.config.GormProperties.HAS_MANY;
 import static org.grails.datastore.mapping.model.config.GormProperties.HAS_ONE;
 import static org.grails.datastore.mapping.model.config.GormProperties.MAPPED_BY;
 import static org.grails.datastore.mapping.model.config.GormProperties.TRANSIENT;
-import static org.grails.datastore.mapping.model.config.GormProperties.FORCE_UNIDIRECTIONAL;
 import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 
@@ -162,11 +161,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             Map hasOneMap = cpf.getStaticPropertyValue(HAS_ONE, Map.class);
             if (hasOneMap == null) hasOneMap = Collections.emptyMap();
 
-            // forceUnidirectional forces associations to stay unidirectional and disables all the magic
-            // used for autodiscovering reverse associations
-            List forceUnidirectionalList = cpf.getStaticPropertyValue(FORCE_UNIDIRECTIONAL , List.class);
-            if (forceUnidirectionalList  == null) forceUnidirectionalList = Collections.emptyList();
-
             for (PropertyDescriptor descriptor : cpf.getPropertyDescriptors()) {
                 if (descriptor.getPropertyType() == null) {
                     // indexed property
@@ -218,7 +212,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                     }
                 }
                 else if (isCollectionType(currentPropType)) {
-                    final Association association = establishRelationshipForCollection(descriptor, entity, context, hasManyMap, mappedByMap, forceUnidirectionalList);
+                    final Association association = establishRelationshipForCollection(descriptor, entity, context, hasManyMap, mappedByMap);
                     if (association != null) {
                         configureOwningSide(association);
                         persistentProperties.add(association);
@@ -226,7 +220,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 }
                 // otherwise if the type is a domain class establish relationship
                 else if (isPersistentEntity(currentPropType)) {
-                    final ToOne association = establishDomainClassRelationship(entity, descriptor, context, hasOneMap, forceUnidirectionalList);
+                    final ToOne association = establishDomainClassRelationship(entity, descriptor, context, hasOneMap);
                     if (association != null) {
                         configureOwningSide(association);
                         persistentProperties.add(association);
@@ -290,7 +284,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return owners;
     }
 
-    private Association establishRelationshipForCollection(PropertyDescriptor property, PersistentEntity entity, MappingContext context, Map<String, Class> hasManyMap, Map mappedByMap, List forceUnidirectionalList) {
+    private Association establishRelationshipForCollection(PropertyDescriptor property, PersistentEntity entity, MappingContext context, Map<String, Class> hasManyMap, Map mappedByMap) {
         // is it a relationship
         Class relatedClassType = hasManyMap.get(property.getName());
         if (relatedClassType == null) {
@@ -346,7 +340,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         }
         else {
 
-            if (!forceUnidirectionalList.contains(property.getName())) {
+            if (!forceUnidirectional(property, mappedByMap)) {
                 // if the related type has a relationships map it may be a many-to-many
                 // figure out if there is a many-to-many relationship defined
                 if (isRelationshipToMany(entity, relatedClassType, relatedClassRelationships)) {
@@ -493,7 +487,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
      * @param context
      * @param hasOneMap
      */
-    private ToOne establishDomainClassRelationship(PersistentEntity entity, PropertyDescriptor property, MappingContext context, Map hasOneMap, List forceUnidirectionalList) {
+    private ToOne establishDomainClassRelationship(PersistentEntity entity, PropertyDescriptor property, MappingContext context, Map hasOneMap) {
         ToOne association = null;
         Class propType = property.getPropertyType();
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(propType);
@@ -509,7 +503,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         // whether it is mapped to a Set
         String relatedClassPropertyName = null;
 
-        if (!forceUnidirectionalList.contains(property.getName())) {
+        if (!forceUnidirectional(property, mappedBy)) {
             if (relatedClassRelationships != null && !relatedClassRelationships.isEmpty()) {
 
                 PropertyDescriptor[] descriptors = ReflectionUtils.getPropertiesOfType(entity.getJavaClass(), propType);
@@ -582,6 +576,16 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         }
 
         return association;
+    }
+
+    /**
+     * check if mappedBy is set explicitly to null for the given property.
+     * @param property
+     * @param mappedBy
+     * @return
+     */
+    private boolean forceUnidirectional(PropertyDescriptor property, Map mappedBy) {
+        return mappedBy.containsKey(property.getName()) && (mappedBy.get(property.getName())==null);
     }
 
     private PersistentEntity getOrCreateAssociatedEntity(PersistentEntity entity, MappingContext context, Class propType) {
