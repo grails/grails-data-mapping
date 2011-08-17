@@ -45,7 +45,7 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
             simpleDBDatastore.persistentEntityAdded(entity)
         }
 
-        def simpleDBConfig = application.config?.grails?.simpleDB
+        def simpleDBConfig = application.config?.grails?.simpledb
         //determine dbCreate flag and create/delete AWS domains if needed
         handleDBCreate(simpleDBConfig.dbCreate,
                 application,
@@ -78,6 +78,8 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
             create = true
         } else if ("create" == dbCreate) {
             create = true
+        } else if ("drop" == dbCreate) {
+            drop = true
         }
 
         def numOfThreads = 30 //how many parallel threads are used to create dbCreate functionality in parallel
@@ -132,11 +134,19 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
         }
     }
 
+    def deleteDomainIfExists (template, existingDomains, domainName) {
+        if (existingDomains.contains(domainName)) {
+            template.deleteDomain(domainName)
+        }
+    }
+
     def handleDomain(template, existingDomains, domainName, boolean drop, boolean create) {
         if (drop && create) {
             clearOrCreateDomain(template, existingDomains, domainName)
         } else if (create) {
             createDomainIfDoesNotExist(template, existingDomains, domainName)
+        } else if (drop) {
+            deleteDomainIfExists(template, existingDomains, domainName)
         }
     }
 }
