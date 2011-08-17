@@ -43,9 +43,6 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
         if (!foreignKeys.empty) { // TODO: for weird reasons, this gets called unreproducable using an empty foreignkey list sometimes causing the collection being emptied
             def (relType, direction) = Neo4jUtils.relationTypeAndDirection(association)
             for (Relationship rel in nativeEntry.getRelationships(relType, direction)) {
-                if (foreignKeys.empty) {
-                    Thread.dump()
-                }
                 Long otherId = rel.getOtherNode(nativeEntry).id
                 if (otherId in foreignKeys) {
                     foreignKeys.remove(otherId) // TODO: check if modifying foreignKeys causes side effects
