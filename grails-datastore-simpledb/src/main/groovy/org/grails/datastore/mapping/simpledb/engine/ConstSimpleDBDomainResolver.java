@@ -29,7 +29,7 @@ public class ConstSimpleDBDomainResolver extends AbstractSimpleDBDomainResolver 
     public ConstSimpleDBDomainResolver(String entityFamily, String domainNamePrefix) {
         super(entityFamily, domainNamePrefix);
         domains = new LinkedList<String>();
-        domains.add(this.entityFamily); // without sharding there is just one domain
+        domains.add(entityFamily); // without sharding there is just one domain
     }
 
     public String resolveDomain(String id) {

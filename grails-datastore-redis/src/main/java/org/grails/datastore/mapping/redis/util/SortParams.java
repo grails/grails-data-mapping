@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 SpringSource
+/* Copyright (C) 2011 SpringSource
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.grails.datastore.mapping.redis.util;
 
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ import java.util.List;
  *
  * @author Graeme Rocher
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class SortParams<T> {
 
     List<T> paramList = new ArrayList<T>();
@@ -32,32 +30,37 @@ public abstract class SortParams<T> {
         return paramList;
     }
 
+    @SuppressWarnings("rawtypes")
     public SortParams by(final String pattern) {
         paramList.add(createBy(pattern));
         return this;
     }
 
+    @SuppressWarnings("rawtypes")
     public SortParams limit(final int start, final int count) {
-
         paramList.add(createLimit(start, count));
         return this;
     }
 
+    @SuppressWarnings("rawtypes")
     public SortParams get(final String pattern) {
         paramList.add(createGet(pattern));
         return this;
     }
 
+    @SuppressWarnings("rawtypes")
     public SortParams asc() {
         paramList.add(createAsc());
         return this;
     }
 
+    @SuppressWarnings("rawtypes")
     public SortParams desc() {
         paramList.add(createDesc());
         return this;
     }
 
+    @SuppressWarnings("rawtypes")
     public SortParams alpha() {
         paramList.add(createAlpha());
         return this;
@@ -75,6 +78,7 @@ public abstract class SortParams<T> {
 
     protected abstract T createBy(String pattern);
 
+    @SuppressWarnings("unchecked")
     public T[] getParamArray() {
         return (T[])paramList.toArray();
     }

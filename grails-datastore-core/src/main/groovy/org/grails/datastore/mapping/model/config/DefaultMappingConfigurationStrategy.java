@@ -90,10 +90,9 @@ public class DefaultMappingConfigurationStrategy implements MappingConfiguration
                 if (propertyFactory.isSimpleType(propertyType)) {
                     persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
                 }
-                else if (propertyFactory.isCustomType(propertyType)) {
+                else if (MappingFactory.isCustomType(propertyType)) {
                     persistentProperties.add(propertyFactory.createCustom(entity, context, descriptor));
                 }
-
             }
         }
 

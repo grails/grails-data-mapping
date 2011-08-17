@@ -15,7 +15,6 @@
 package org.grails.datastore.gorm.neo4j
 
 import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Relationship
 import org.grails.datastore.mapping.engine.EntityPersister
@@ -24,6 +23,9 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.Query
 import org.springframework.util.Assert
 import java.util.regex.Pattern
+import org.grails.datastore.mapping.query.Restrictions
+import org.grails.datastore.mapping.query.Query.PropertyCriterion
+import org.grails.datastore.mapping.model.PersistentProperty
 
 /**
  * perform criteria queries on a Neo4j backend
@@ -133,8 +135,10 @@ class Neo4jQuery extends Query {
     }
 
     boolean matchesCriterionEquals(Node node, Query.Criterion criterion) {
-        if (entityPersister.persistentEntity.associations.any { it.name == criterion.name}) {
-            node.getSingleRelationship(DynamicRelationshipType.withName(criterion.name), Direction.BOTH)?.getOtherNode(node).id == criterion.value
+        def association = entityPersister.persistentEntity.associations.find { it.name == criterion.name}
+        if (association) {
+            def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(association)
+            node.getSingleRelationship(relationshipType, direction)?.getOtherNode(node)?.id == criterion.value
         } else {
             getNodeProperty(node, criterion.name) == criterion.value
         }
@@ -184,6 +188,14 @@ class Neo4jQuery extends Query {
         node.id == criterion.value
     }
 
+    boolean matchesCriterionIdEqualsWithName(Node node, IdEqualsWithName criterion) {
+        PersistentProperty persistentProperty = entity.getPropertyByName(criterion.name)
+        def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(persistentProperty)
+        Relationship rel = node.getSingleRelationship(relationshipType, direction)
+        def result = rel?.getOtherNode(node).id == criterion.value
+        result
+    }
+
     protected getNodePropertyAsType(Node node, String propertyName, Class targetClass) {
         def val = getNodeProperty(node, propertyName)
         session.mappingContext.conversionService.convert(val, targetClass)
@@ -195,5 +207,23 @@ class Neo4jQuery extends Query {
         } else {
             node.getProperty(propertyName, null)
         }
+    }
+
+    @Override
+    Query eq(String property, Object value) {
+        Object resolved = resolveIdIfEntity(value)
+        if (resolved == value) {
+           criteria.add(Restrictions.eq(property, value))
+        }
+        else {
+           criteria.add(new IdEqualsWithName(property, resolved))
+        }
+        this
+    }
+}
+
+public static class IdEqualsWithName extends PropertyCriterion {
+    def IdEqualsWithName(property, value) {
+        super(property,value)
     }
 }

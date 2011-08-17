@@ -17,12 +17,16 @@ package org.grails.datastore.mapping.simpledb.engine;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
 /**
- * Simple key object for looking up Associations from a map
+ * Simple key object for looking up Associations from a map.
  *
  * @author Roman Stepanenko
  * @since 0.1
  */
 public class AssociationKey {
+
+    private PersistentEntity owner;
+    private String name;
+
     public AssociationKey(PersistentEntity owner, String name) {
         this.owner = owner;
         this.name = name;
@@ -55,7 +59,4 @@ public class AssociationKey {
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
     }
-
-    private PersistentEntity owner;
-    private String name;
 }

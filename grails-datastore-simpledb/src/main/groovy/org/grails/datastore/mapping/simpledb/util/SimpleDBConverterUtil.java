@@ -9,7 +9,7 @@ import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.proxy.EntityProxy;
 
 /**
- * Simple conversion utility for SimpleDB. 
+ * Simple conversion utility for SimpleDB.
  *
  * @author Roman Stepanenko
  * @since 0.1
@@ -17,7 +17,7 @@ import org.grails.datastore.mapping.proxy.EntityProxy;
 public class SimpleDBConverterUtil {
     public static String convertToString(Object value, MappingContext mappingContext) {
         String stringValue = null;
-        if ( value instanceof String ) {
+        if (value instanceof String) {
             stringValue = (String)value;
         } else if (shouldConvert(value, mappingContext)) {
             final ConversionService conversionService = mappingContext.getConversionService();
@@ -26,7 +26,7 @@ public class SimpleDBConverterUtil {
         return stringValue;
     }
 
-    public static Collection<String> convertToStrings(Collection values, MappingContext mappingContext) {
+    public static Collection<String> convertToStrings(Collection<?> values, MappingContext mappingContext) {
         List<String> stringValues = new LinkedList<String>();
         for (Object value : values) {
             stringValues.add(convertToString(value, mappingContext));
@@ -35,9 +35,7 @@ public class SimpleDBConverterUtil {
         return stringValues;
     }
 
-
     private static boolean shouldConvert(Object value, MappingContext mappingContext) {
         return !mappingContext.isPersistentEntity(value) && !(value instanceof EntityProxy);
     }
-
 }

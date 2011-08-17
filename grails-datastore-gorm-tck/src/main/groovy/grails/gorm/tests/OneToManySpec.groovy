@@ -98,4 +98,26 @@ class OneToManySpec extends GormDatastoreSpec {
             pet.type != null
             pet.type.name == 'Dinosaur'
     }
+
+    void "test update inverse side of bidirectional one to many happens before flushing the session"() {
+        given:
+            Person person = new Person(firstName: "Fred", lastName: "Flinstone").save()
+            Pet dino = new Pet(name: "Dino", type: new PetType(name: "Dinosaur"), owner:person).save()
+            Pet trex = new Pet(name: "Trex", type: new PetType(name: "Dinosaur"), owner:person).save()
+
+        expect:
+            dino.owner == person
+            trex.owner == person
+            person.pets.size() == 2
+
+        when:
+            session.flush()
+            session.clear()
+            person = Person.findByLastName('Flinstone')
+
+        then:
+            person
+            person.pets.size()==2
+
+    }
 }

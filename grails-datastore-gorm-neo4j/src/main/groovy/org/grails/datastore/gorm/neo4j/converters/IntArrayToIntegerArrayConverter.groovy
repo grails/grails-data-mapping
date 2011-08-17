@@ -12,17 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.plugins.redis
+package org.grails.datastore.gorm.neo4j.converters
 
-import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
-import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
-import org.grails.datastore.mapping.model.MappingContext
+import org.springframework.core.convert.converter.Converter
 
 /**
- * Creates a Redis mapping context
+ * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
-class RedisMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
-    protected MappingContext createMappingContext() {
-        new KeyValueMappingContext("");
+class IntArrayToIntegerArrayConverter implements Converter<int[], Integer[]> {
+    Integer[] convert(int[] source) {
+        source as Integer[]
     }
 }

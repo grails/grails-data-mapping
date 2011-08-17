@@ -1,9 +1,11 @@
 package grails.gorm.tests
 
+import grails.validation.ValidationException
+
 /**
  * @author graemerocher
  */
-class CrudOperationsSpec extends GormDatastoreSpec{
+class CrudOperationsSpec extends GormDatastoreSpec {
 
     void "Test get using a string-based key"() {
         given:
@@ -54,5 +56,17 @@ class CrudOperationsSpec extends GormDatastoreSpec{
             t = TestEntity.get(t.id)
         then:
             t.id != null
+    }
+
+    void "Test failOnError"() {
+        given:
+            def t = new TestEntity(child: new ChildEntity(name:"Child"))
+
+        when:
+            t.save(failOnError: true)
+
+        then:
+            thrown ValidationException
+            t.id == null
     }
 }

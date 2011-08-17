@@ -106,9 +106,8 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
                 throw new OptimisticLockingException(persistentEntity, id);
             } else if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
                 throw new IllegalArgumentException("no such domain: " + domainName, e);
-            } else {
-                throw e;
             }
+            throw e;
         }
     }
 
@@ -139,9 +138,8 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
                     throw new OptimisticLockingException(persistentEntity, id);
                 } else if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
                     throw new IllegalArgumentException("no such domain: " + domainName, e);
-                } else {
-                    throw e;
                 }
+                throw e;
             }
         }
     }
@@ -185,7 +183,6 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         ListDomainsResult result = sdb.listDomains(request);
         return result.getDomainNames();
     }
-
 
     public void deleteDomain(String domainName) throws DataAccessException {
         DeleteDomainRequest request = new DeleteDomainRequest(domainName);

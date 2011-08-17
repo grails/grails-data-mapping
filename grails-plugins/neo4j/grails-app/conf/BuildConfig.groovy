@@ -23,7 +23,7 @@ grails.project.dependency.resolution = {
 
     dependencies {
 
-        def version = "1.0.0.M7"
+        def version = "1.0.0.M8"
 
         compile("org.grails:grails-datastore-gorm-neo4j:$version",
                 "org.grails:grails-datastore-gorm-plugin-support:$version",        
@@ -38,6 +38,6 @@ grails.project.dependency.resolution = {
             transitive = false
         }
 
-        compile('org.neo4j:neo4j-community:1.4')
+        compile('org.neo4j:neo4j-community:1.4.1')
     }
 }

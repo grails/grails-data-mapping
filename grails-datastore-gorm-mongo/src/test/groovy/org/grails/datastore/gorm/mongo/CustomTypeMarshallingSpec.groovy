@@ -3,14 +3,8 @@ package org.grails.datastore.gorm.mongo
 import grails.gorm.tests.GormDatastoreSpec
 import org.bson.types.ObjectId
 
-/**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 8/3/11
- * Time: 4:22 PM
- * To change this template use File | Settings | File Templates.
- */
-class CustomTypeMarshallingSpec extends GormDatastoreSpec{
+class CustomTypeMarshallingSpec extends GormDatastoreSpec {
+
     static {
         TEST_CLASSES << Person
     }
@@ -45,7 +39,6 @@ class CustomTypeMarshallingSpec extends GormDatastoreSpec{
             p != null
             p2 == null
     }
-
 }
 
 class Person {
@@ -53,15 +46,15 @@ class Person {
     String name
     Birthday birthday
 }
-class Birthday implements Comparable{
+
+class Birthday implements Comparable {
     Date date
 
     Birthday(Date date) {
         this.date = date
     }
 
-    @Override
-    int compareTo(Object t) {
+    int compareTo(t) {
         date.compareTo(t.date)
     }
 }

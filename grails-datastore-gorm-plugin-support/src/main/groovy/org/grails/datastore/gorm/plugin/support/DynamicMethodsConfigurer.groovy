@@ -14,18 +14,20 @@
  */
 package org.grails.datastore.gorm.plugin.support
 
-import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.mapping.core.Datastore
-import org.springframework.transaction.PlatformTransactionManager
-import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
-import org.grails.datastore.gorm.utils.InstanceProxy
+import org.grails.datastore.gorm.GormEnhancer
+import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
-import org.grails.datastore.gorm.GormInstanceApi
+import org.grails.datastore.gorm.utils.InstanceProxy
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
+import org.springframework.transaction.PlatformTransactionManager
 
 /**
- * Utility class for use by plugins in configuration of dynamic methods. Subclasses should provide the implementation of getDatastoreType and override protected methods to configure behavior
+ * Utility class for use by plugins in configuration of dynamic methods.
+ * Subclasses should provide the implementation of getDatastoreType and
+ * override protected methods to configure behavior.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -34,8 +36,6 @@ abstract class DynamicMethodsConfigurer {
 
     Datastore datastore
     PlatformTransactionManager transactionManager
-
-
 
     DynamicMethodsConfigurer(Datastore datastore, PlatformTransactionManager transactionManager) {
         this.datastore = datastore

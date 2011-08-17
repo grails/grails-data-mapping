@@ -31,13 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import com.mongodb.*;
 import org.bson.types.ObjectId;
-import org.grails.datastore.mapping.model.types.ToOne;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.document.mongodb.DbCallback;
-import org.springframework.data.document.mongodb.MongoTemplate;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
@@ -50,10 +44,26 @@ import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.EmbeddedCollection;
 import org.grails.datastore.mapping.model.types.ManyToMany;
+import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.mongo.MongoDatastore;
 import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.document.mongodb.DbCallback;
+import org.springframework.data.document.mongodb.MongoTemplate;
+
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.CommandResult;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.DBRef;
+import com.mongodb.MongoException;
+import com.mongodb.WriteResult;
 
 /**
  * A {@link org.grails.datastore.mapping.engine.EntityPersister} implementation for the Mongo document store
@@ -238,7 +248,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         return mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
 
-                String collectionName = getCollectionName(persistentEntity, nativeEntry);
+                @SuppressWarnings("hiding") String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
                 DBCollection dbCollection = con.getCollection(collectionName + NEXT_ID_SUFFIX);
 
@@ -323,10 +333,12 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         Locale.class,
         TimeZone.class,
         Currency.class,
-        URL.class);
+        URL.class,
+        Enum.class);
 
     @Override
-    protected Object formulateDatabaseReference(PersistentEntity persistentEntity, ToOne association, Serializable associationId) {
+    protected Object formulateDatabaseReference(PersistentEntity persistentEntity,
+              @SuppressWarnings("rawtypes") ToOne association, Serializable associationId) {
         DB db = (DB) session.getNativeInterface();
         return new DBRef(db, getCollectionName(association.getAssociatedEntity()), associationId);
     }
@@ -334,17 +346,19 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     @Override
     protected void setEntryValue(DBObject nativeEntry, String key, Object value) {
 
-        // test whether the value can be BSON encoded, if it can't convert to String
-        if (value != null && !getMappingContext().isPersistentEntity(value)) {
-            if (shouldConvertToString(value.getClass())) {
-                value = value.toString();
-            }
-            else if (value instanceof Calendar) {
-                value = ((Calendar)value).getTime();
-            }
-
-            nativeEntry.put(key, value);
+        if (value == null || getMappingContext().isPersistentEntity(value)) {
+            return;
         }
+
+        // test whether the value can be BSON encoded, if it can't convert to String
+        if (shouldConvertToString(value.getClass())) {
+            value = value.toString();
+        }
+        else if (value instanceof Calendar) {
+            value = ((Calendar)value).getTime();
+        }
+
+        nativeEntry.put(key, value);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -395,9 +409,10 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     private String getCollectionName(PersistentEntity persistentEntity, DBObject nativeEntry) {
-        String collectionName;
+        @SuppressWarnings("hiding") String collectionName;
         if (persistentEntity.isRoot()) {
-            collectionName = this.collectionName;
+            MongoSession mongoSession = (MongoSession) getSession();
+            collectionName = mongoSession.getCollectionName(persistentEntity);
         }
         else {
             MongoSession mongoSession = (MongoSession) getSession();
@@ -414,7 +429,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             final Object key, final DBObject entry) {
         mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
-                String collectionName = getCollectionName(persistentEntity, entry);
+                @SuppressWarnings("hiding") String collectionName = getCollectionName(persistentEntity, entry);
                 DBCollection dbCollection = con.getCollection(collectionName);
                 DBObject dbo = createDBObjectWithKey(key);
 
@@ -480,7 +495,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     protected void deleteEntries(String family, final List<Object> keys) {
         mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
-                String collectionName = getCollectionName(getPersistentEntity());
+                @SuppressWarnings("hiding") String collectionName = getCollectionName(getPersistentEntity());
                 DBCollection dbCollection = con.getCollection(collectionName);
 
                 MongoSession mongoSession = (MongoSession) getSession();

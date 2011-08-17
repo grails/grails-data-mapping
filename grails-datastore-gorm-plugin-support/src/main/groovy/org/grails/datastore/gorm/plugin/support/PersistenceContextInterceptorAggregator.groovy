@@ -15,14 +15,14 @@
  */
 package org.grails.datastore.gorm.plugin.support
 
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.support.PersistenceContextInterceptor
 import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor
 import org.springframework.core.Ordered
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 
 /**
  * Works around the issue where Grails only finds the first PersistenceContextInterceptor by

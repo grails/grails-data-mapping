@@ -14,33 +14,31 @@
  */
 package org.grails.datastore.gorm.neo4j.plugin.support
 
+import org.grails.datastore.gorm.GormEnhancer
+import org.grails.datastore.gorm.GormInstanceApi
+import org.grails.datastore.gorm.GormStaticApi
+import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
+import org.grails.datastore.gorm.neo4j.Neo4jGormInstanceApi
+import org.grails.datastore.gorm.neo4j.Neo4jGormStaticApi
 import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
 import org.grails.datastore.mapping.core.Datastore
 import org.springframework.transaction.PlatformTransactionManager
-import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
-import org.grails.datastore.gorm.GormStaticApi
-import org.grails.datastore.gorm.finders.FinderMethod
-import org.grails.datastore.gorm.neo4j.Neo4jGormStaticApi
-import org.grails.datastore.gorm.GormInstanceApi
-import org.grails.datastore.gorm.neo4j.Neo4jGormInstanceApi
 
 /**
- * Methods configurer implementation for Neo4j
+ * Methods configurer implementation for Neo4j.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-class Neo4jMethodsConfigurer extends DynamicMethodsConfigurer{
+class Neo4jMethodsConfigurer extends DynamicMethodsConfigurer {
 
     Neo4jMethodsConfigurer(Datastore datastore, PlatformTransactionManager transactionManager) {
         super(datastore, transactionManager)
     }
 
     @Override
-    String getDatastoreType() {
-        return "Neo4j"
-    }
+    String getDatastoreType() { "Neo4j" }
 
     @Override
     protected GormStaticApi createGormStaticApi(Class cls, List<FinderMethod> finders) {
@@ -54,13 +52,10 @@ class Neo4jMethodsConfigurer extends DynamicMethodsConfigurer{
 
     @Override
     protected GormEnhancer createEnhancer() {
-        if(transactionManager != null) {
+        if (transactionManager) {
             return new Neo4jGormEnhancer(datastore, transactionManager)
         }
-        else {
-            return new Neo4jGormEnhancer(datastore)
-        }
+
+        new Neo4jGormEnhancer(datastore)
     }
-
-
 }

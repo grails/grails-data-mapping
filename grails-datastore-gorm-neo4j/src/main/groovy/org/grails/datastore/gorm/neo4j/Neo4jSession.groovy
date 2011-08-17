@@ -40,14 +40,6 @@ class Neo4jSession extends AbstractSession {
         super(datastore, mappingContext, publisher)
         log.debug "created new Neo4jSession"
         //beginTransactionInternal()
-
-/*        this.mongoDatastore = datastore
-        try {
-            getNativeInterface().requestStart()
-        }
-        catch (IllegalStateException ignored) {
-            // can't call authenticate() twice, and it's probably been called at startup
-        }*/
     }
 
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
@@ -79,10 +71,11 @@ class Neo4jSession extends AbstractSession {
 
     def createInstanceForNode(Node node) {
         String className = node.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null)
-        PersistentEntity persistentEntity = mappingContext.getPersistentEntity(className)
+        PersistentEntity persistentEntity = className ? mappingContext.getPersistentEntity(className) : null
         if (!persistentEntity) {
             log.warn "createInstanceForNode: node property $Neo4jEntityPersister.TYPE_PROPERTY_NAME not set for id=$node.id"
-            null
+            Neo4jUtils.dumpNode(node, log)
+            return null
         }
 
         log.debug "createInstanceForNode: node property $Neo4jEntityPersister.TYPE_PROPERTY_NAME = $className for id=$node.id"
@@ -97,30 +90,4 @@ class Neo4jSession extends AbstractSession {
         createInstanceForNode(nativeInterface.getNodeById(id))
     }
 
-    @Override
-    Serializable persist(o) {
-        Long id = o.id
-        log.info "persisting $id , persistedIds $persistedIds"
-        if (!(id in persistedIds)) {
-            if (id) {
-                persistedIds << id
-                super.persist(o)
-            } else {
-                id = super.persist(o)
-                persistedIds << id
-            }
-        }
-        id
-    }
-
-    @Override
-    List<Serializable> persist(Iterable objects) {
-        objects.collect { persist(it) }
-    }
-
-    @Override
-    void clear() {
-        super.clear()
-        persistedIds = []
-    }
 }

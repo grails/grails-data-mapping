@@ -23,20 +23,22 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import java.beans.PropertyDescriptor;
 
 /**
- * Represents a custom type ie. a type whose database read/write semantics are specified by the user
+ * Represents a custom type ie. a type whose database read/write semantics are specified by the user.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-public abstract class Custom<T> extends AbstractPersistentProperty{
-    private CustomTypeMarshaller customTypeMarshaller;
+public abstract class Custom<T> extends AbstractPersistentProperty {
+    private CustomTypeMarshaller<?, ?, ?> customTypeMarshaller;
 
-    public Custom(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor, CustomTypeMarshaller customTypeMarshaller) {
+    public Custom(PersistentEntity owner, MappingContext context, PropertyDescriptor descriptor,
+             CustomTypeMarshaller<?, ?, ?> customTypeMarshaller) {
         super(owner, context, descriptor);
         this.customTypeMarshaller = customTypeMarshaller;
     }
 
-    protected Custom(PersistentEntity owner, MappingContext context, String name, Class type, CustomTypeMarshaller customTypeMarshaller) {
+    protected Custom(PersistentEntity owner, MappingContext context, String name, Class<?> type,
+             CustomTypeMarshaller<?, ?, ?> customTypeMarshaller) {
         super(owner, context, name, type);
         this.customTypeMarshaller = customTypeMarshaller;
     }
@@ -44,6 +46,7 @@ public abstract class Custom<T> extends AbstractPersistentProperty{
     /**
      * @return The type converter for this custom type
      */
+    @SuppressWarnings("rawtypes")
     public CustomTypeMarshaller getCustomTypeMarshaller() {
         return customTypeMarshaller;
     }

@@ -21,6 +21,8 @@ import org.neo4j.kernel.EmbeddedGraphDatabase
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ConfigurableApplicationContext
 import org.neo4j.graphdb.*
+import org.slf4j.LoggerFactory
+import org.grails.datastore.mapping.model.types.Association
 
 /**
  * Datastore implementation for Neo4j backend
@@ -105,4 +107,5 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
             }
         }
     }
+
 }

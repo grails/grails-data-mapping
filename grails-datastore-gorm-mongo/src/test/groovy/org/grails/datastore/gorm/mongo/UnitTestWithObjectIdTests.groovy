@@ -1,34 +1,25 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.datastore.test.DatastoreUnitTestMixin
-import org.bson.types.ObjectId
 import grails.persistence.Entity
-/**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 8/3/11
- * Time: 1:06 PM
- * To change this template use File | Settings | File Templates.
- */
+
+import org.bson.types.ObjectId
+
 @Mixin(DatastoreUnitTestMixin)
-class UnitTestWithObjectIdTests extends GroovyTestCase{
+class UnitTestWithObjectIdTests extends GroovyTestCase {
 
     protected void setUp() {
         super.setUp()
-
         connect()
     }
 
     protected void tearDown() {
         disconnect()
-
         super.tearDown()
     }
 
-
     void testUnitTestWithObjectId() {
         mockDomain(Sample)
-
 
         def s = new Sample(name: 'Sample1')
         s.save()
@@ -48,7 +39,4 @@ class Sample {
     Long version
 
     String name
-
-    static constraints = {
-    }
 }

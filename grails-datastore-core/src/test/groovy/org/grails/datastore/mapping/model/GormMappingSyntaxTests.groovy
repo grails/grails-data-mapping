@@ -1,5 +1,7 @@
 package org.grails.datastore.mapping.model
 
+import static org.junit.Assert.*
+
 import javax.persistence.Entity
 
 import org.junit.Test
@@ -118,6 +120,40 @@ class GormMappingSyntaxTests {
         assert inverse.owningSide
     }
 
+    @Test
+    void testIndexedProperty() {
+        def context = new TestMappingContext()
+        context.addPersistentEntity(EntityWithIndexedProperty)
+
+        assertEquals 1, context.persistentEntities.size()
+
+        assertNotNull context.getPersistentEntity(EntityWithIndexedProperty.name)
+
+        assertEquals 3, context.mappingSyntaxStrategy.getPersistentProperties(EntityWithIndexedProperty, context).size()
+    }
+
+    @Test
+    void testForceUnidirectional() {
+        def context = new TestMappingContext()
+        context.addPersistentEntity(User)
+        assert 1 == context.persistentEntities.size()
+
+        def user = context.getPersistentEntity(User.name)
+
+        Association foesAssociation = user.getPropertyByName("foes")
+        assert (foesAssociation instanceof OneToMany)
+        assert !foesAssociation.isBidirectional()
+
+        Association friendsAssociation = user.getPropertyByName("friends")
+        assert (friendsAssociation instanceof OneToMany)
+        assert !friendsAssociation.isBidirectional()
+
+        Association bestBuddyAssociation = user.getPropertyByName("bestBuddy")
+        assert (bestBuddyAssociation instanceof OneToOne)
+        assert !bestBuddyAssociation.isBidirectional()
+
+    }
+
     @Entity
     class JavaEntity {}
 }
@@ -165,3 +201,29 @@ class SecondEntity {
 
     static transients = ['bar']
 }
+
+@grails.persistence.Entity
+class EntityWithIndexedProperty {
+    Long id
+    Long version
+    String name
+    String bar
+
+    String getSectionContent(int section) {}
+    void setSectionContent(int section, String content) {}
+}
+
+@grails.persistence.Entity
+class User {
+    Long id
+    Long version
+    String name
+    User bestBuddy
+    Set foes
+    Set friends
+    static hasMany = [ foes: User, friends: User]
+
+    // prevent bidirectional associations here
+    static mappedBy = [ bestBuddy:null, foes:null, friends:null]
+}
+

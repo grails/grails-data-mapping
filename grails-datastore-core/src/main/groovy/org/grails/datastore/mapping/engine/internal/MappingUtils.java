@@ -19,19 +19,21 @@ import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.PropertyMapping;
 
 /**
- * Utility methods for mapping logic
+ * Utility methods for mapping logic.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
 public class MappingUtils {
-    public static String getTargetKey(PersistentProperty property) {
+
+    public static String getTargetKey(@SuppressWarnings("rawtypes") PersistentProperty property) {
+        @SuppressWarnings("unchecked")
         PropertyMapping<Property> mapping = property.getMapping();
         String targetName;
 
-        if(mapping != null && mapping.getMappedForm() != null) {
+        if (mapping != null && mapping.getMappedForm() != null) {
             String tmp = mapping.getMappedForm().getTargetName();
-            targetName =  tmp != null ? tmp : property.getName() ;
+            targetName = tmp != null ? tmp : property.getName();
         }
         else {
             targetName = property.getName();

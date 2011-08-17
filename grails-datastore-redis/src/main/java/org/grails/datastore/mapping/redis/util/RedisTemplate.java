@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 SpringSource
+/* Copyright (C) 2011 SpringSource
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Interface for RedisTemplate implementations to implement
+ * Interface for RedisTemplate implementations to implement.
  *
  * @param <T> The concrete Redis client class
  */
@@ -33,12 +33,12 @@ public interface RedisTemplate<T, S> {
     /**
      * See http://redis.io/commands/blpop
      */
-    List<String> blpop(int timeout, String...keys);
+    List<String> blpop(int timeout, String... keys);
 
     /**
      * See http://redis.io/commands/brpop
      */
-    List<String> brpop(int timeout, String...keys);
+    List<String> brpop(int timeout, String... keys);
 
     /**
      * See http://redis.io/commands/decr
@@ -60,7 +60,7 @@ public interface RedisTemplate<T, S> {
      */
     long del(String... redisKey);
 
-    List<Object> pipeline(RedisCallback<RedisTemplate<T,S>> pipeline);
+    List<Object> pipeline(RedisCallback<RedisTemplate<T, S>> pipeline);
 
     boolean persist(String redisKey);
 

@@ -15,20 +15,21 @@
 
 package org.grails.datastore.gorm.plugin.support
 
-import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
-import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
-import org.grails.datastore.mapping.web.support.OpenSessionInViewInterceptor
-import org.codehaus.groovy.grails.commons.GrailsServiceClass
-import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
-import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.core.annotation.AnnotationUtils
 import java.lang.reflect.Method
+
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
+import org.codehaus.groovy.grails.commons.GrailsServiceClass
+import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
+import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
+import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
+import org.grails.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import org.springframework.beans.factory.support.AbstractBeanDefinition
+import org.springframework.core.annotation.AnnotationUtils
+import org.springframework.transaction.annotation.Transactional
 
 /**
- * Helper class for use by plugins in configuring Spring
+ * Helper class for use by plugins in configuring Spring.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -49,8 +50,8 @@ abstract class SpringConfigurer {
      */
     abstract Closure getSpringCustomizer()
 
-    public Closure getConfiguration() {
-        return configureSpring( getSpringCustomizer() )
+    Closure getConfiguration() {
+        return configureSpring(getSpringCustomizer())
     }
 
     protected Closure configureSpring(Closure customizer) {
@@ -58,13 +59,11 @@ abstract class SpringConfigurer {
         String type = getDatastoreType()
         String typeLower = type.toLowerCase()
 
-
         return {
 
             "${typeLower}TransactionManager"(DatastoreTransactionManager) {
                 datastore = ref("${typeLower}Datastore")
             }
-
 
             "${typeLower}PersistenceInterceptor"(DatastorePersistenceContextInterceptor, ref("${typeLower}Datastore"))
 

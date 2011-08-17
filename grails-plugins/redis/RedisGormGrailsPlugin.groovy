@@ -13,8 +13,10 @@
  * limitations under the License.
  */
 
-import org.grails.datastore.gorm.redis.plugin.support.*
-import org.grails.datastore.gorm.plugin.support.*
+import org.grails.datastore.gorm.plugin.support.ApplicationContextConfigurer
+import org.grails.datastore.gorm.redis.plugin.support.RedisMethodsConfigurer
+import org.grails.datastore.gorm.redis.plugin.support.RedisOnChangeHandler
+import org.grails.datastore.gorm.redis.plugin.support.RedisSpringConfigurer
 
 class RedisGormGrailsPlugin {
     def license = "Apache 2.0 License"
@@ -32,10 +34,7 @@ class RedisGormGrailsPlugin {
     def author = "Graeme Rocher"
     def authorEmail = "graeme.rocher@springsource.com"
     def title = "Redis GORM"
-    def description = '''\\
-A plugin that integrates the Redis key/value datastore into Grails, providing
-a GORM-like API onto it
-'''
+    def description = 'A plugin that integrates the Redis key/value datastore into Grails, providing a GORM-like API onto it'
 
     def pluginExcludes = [
         "grails-app/domain/*.groovy",
@@ -62,7 +61,6 @@ a GORM-like API onto it
     }
     
     def onChange = {
-        def onChangeHandler = new RedisOnChangeHandler()
-        onChangeHandler.onChange(delegate, event)        
+        new RedisOnChangeHandler().onChange(delegate, event)        
     }
 }

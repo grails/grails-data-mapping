@@ -48,7 +48,6 @@ public class SimpleDBQuery extends Query {
 
     static{
         queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
-            @Override
             public void handle(PersistentEntity entity, Equals criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -58,7 +57,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
-            @Override
             public void handle(PersistentEntity entity, NotEquals criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -68,7 +66,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
-            @Override
             public void handle(PersistentEntity entity, IdEquals criterion, StringBuilder clause) {
                 String stringValue = SimpleDBConverterUtil.convertToString(criterion.getValue(), entity.getMappingContext());
 
@@ -76,7 +73,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(Like.class, new QueryHandler<Like>() {
-            @Override
             public void handle(PersistentEntity entity, Like criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -86,7 +82,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(In.class, new QueryHandler<In>() {
-            @Override
             public void handle(PersistentEntity entity, In criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -97,7 +92,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(Between.class, new QueryHandler<Between>() {
-            @Override
             public void handle(PersistentEntity entity, Between criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -109,7 +103,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
-            @Override
             public void handle(PersistentEntity entity, GreaterThan criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -119,7 +112,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
-            @Override
             public void handle(PersistentEntity entity, GreaterThanEquals criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -129,7 +121,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
-            @Override
             public void handle(PersistentEntity entity, LessThan criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -139,7 +130,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
-            @Override
             public void handle(PersistentEntity entity, LessThanEquals criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -384,9 +374,7 @@ public class SimpleDBQuery extends Query {
     protected static String getSmartQuotedKey(PersistentEntity entity, String propertyName) {
         if (entity.isIdentityName(propertyName)) {
             return ITEM_NAME;
-        } else {
-            return SimpleDBUtil.quoteName(extractPropertyKey(propertyName, entity));
         }
+        return SimpleDBUtil.quoteName(extractPropertyKey(propertyName, entity));
     }
-
 }

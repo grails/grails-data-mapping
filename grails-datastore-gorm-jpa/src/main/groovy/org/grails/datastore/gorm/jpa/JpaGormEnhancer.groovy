@@ -94,7 +94,8 @@ class JpaInstanceApi<D> extends GormInstanceApi<D> {
 
                 if (hasErrors) {
                     if (params?.failOnError) {
-                        throw validationException.newInstance("Validation error occured during call to save()", instance.errors)
+                        throw getValidationException().newInstance(
+                            "Validation error occured during call to save()", instance.errors)
                     }
                     rollbackTransaction(session)
                     return null

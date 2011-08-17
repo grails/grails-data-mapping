@@ -142,6 +142,8 @@ public class RiakEntityPersister extends AbstractKeyValueEntityPersister<Map, Lo
             nativeEntry.put(key, ((Calendar) value).getTime().getTime());
         } else if (value instanceof Boolean) {
             nativeEntry.put(key, value);
+        } else if (value instanceof Enum) {
+            nativeEntry.put(key, value.toString());
         } else if (shouldConvert(value)) {
             final ConversionService conversionService = getMappingContext().getConversionService();
             nativeEntry.put(key, conversionService.convert(value, String.class));

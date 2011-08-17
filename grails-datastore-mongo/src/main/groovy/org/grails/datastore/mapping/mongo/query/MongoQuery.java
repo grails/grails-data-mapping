@@ -22,32 +22,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.mongodb.*;
-import org.grails.datastore.mapping.core.AbstractDatastore;
-import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.engine.internal.MappingUtils;
-import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
-import org.grails.datastore.mapping.model.types.Custom;
-import org.grails.datastore.mapping.mongo.MongoDatastore;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
-import org.springframework.data.document.mongodb.DbCallback;
-import org.springframework.data.document.mongodb.MongoTemplate;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.engine.internal.MappingUtils;
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.Custom;
 import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
 import org.grails.datastore.mapping.query.projections.ManualProjections;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.data.document.mongodb.DbCallback;
+import org.springframework.data.document.mongodb.MongoTemplate;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
+
 /**
- * A {@link org.grails.datastore.mapping.query.Query} implementation for the Mongo document store
+ * A {@link org.grails.datastore.mapping.query.Query} implementation for the Mongo document store.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -80,7 +83,7 @@ public class MongoQuery extends Query {
                 String propertyName = getPropertyName(entity, criterion);
                 Object value = criterion.getValue();
                 PersistentProperty property = entity.getPropertyByName(criterion.getProperty());
-                if(property instanceof ToOne) {
+                if (property instanceof ToOne) {
                     query.put(propertyName + MONGO_ID_REFERENCE_SUFFIX, value);
                 }
                 else {
@@ -380,16 +383,14 @@ public class MongoQuery extends Query {
                             dbObject = collection.findOne();
                         }
                         else {
-                            DBObject query = new BasicDBObject(MongoEntityPersister.MONGO_CLASS_FIELD, entity.getDiscriminator());
-                            dbObject = collection.findOne(query);
+                            dbObject = collection.findOne(new BasicDBObject(
+                                  MongoEntityPersister.MONGO_CLASS_FIELD, entity.getDiscriminator()));
                         }
                     }
                     else {
-                        DBObject query = getMongoQuery();
-                        dbObject = collection.findOne(query);
+                        dbObject = collection.findOne(getMongoQuery());
                     }
-                    final Object object = createObjectFromDBObject(dbObject);
-                    return wrapObjectResultInList(object);
+                    return wrapObjectResultInList(createObjectFromDBObject(dbObject));
                 }
 
                 DBCursor cursor;
@@ -398,7 +399,7 @@ public class MongoQuery extends Query {
                 final List<Projection> projectionList = projections().getProjectionList();
                 if (projectionList.isEmpty()) {
                     cursor = executeQuery(entity, criteria, collection, query);
-                    return new MongoResultList(cursor, mongoEntityPersister);
+                    return (List)new MongoResultList(cursor, mongoEntityPersister).clone();
                 }
 
                 List projectedResults = new ArrayList();
@@ -469,7 +470,7 @@ public class MongoQuery extends Query {
                 }
                 else {
                     populateMongoQuery(entity, query, criteria);
-                    cursor = executeQueryAndApplyPagination(collection,query);
+                    cursor = executeQueryAndApplyPagination(collection, query);
                 }
                 return cursor;
             }
@@ -485,7 +486,7 @@ public class MongoQuery extends Query {
                     cursor.limit(max);
                 }
 
-                if(!orderBy.isEmpty()) {
+                if (!orderBy.isEmpty()) {
                     DBObject orderObject = new BasicDBObject();
                     for (Order order : orderBy) {
                         orderObject.put(order.getProperty(), order.getDirection() == Order.Direction.DESC ? -1 : 1);
@@ -515,7 +516,7 @@ public class MongoQuery extends Query {
         List disjunction = null;
         if (criteria instanceof Disjunction) {
             disjunction = new ArrayList();
-            query.put(MONGO_OR_OPERATOR,disjunction);
+            query.put(MONGO_OR_OPERATOR, disjunction);
         }
         for (Criterion criterion : criteria.getCriteria()) {
             final QueryHandler queryHandler = queryHandlers.get(criterion.getClass());
@@ -526,10 +527,10 @@ public class MongoQuery extends Query {
                     disjunction.add(dbo);
                 }
 
-                if(criterion instanceof PropertyCriterion) {
+                if (criterion instanceof PropertyCriterion) {
                     PropertyCriterion pc = (PropertyCriterion) criterion;
                     PersistentProperty property = entity.getPropertyByName(pc.getProperty());
-                    if(property instanceof Custom) {
+                    if (property instanceof Custom) {
                         CustomTypeMarshaller customTypeMarshaller = ((Custom) property).getCustomTypeMarshaller();
                         customTypeMarshaller.query(property, pc, query);
                         continue;
@@ -551,7 +552,7 @@ public class MongoQuery extends Query {
         }
         else {
             PersistentProperty property = entity.getPropertyByName(propertyName);
-            if(property != null) {
+            if (property != null) {
                 return MappingUtils.getTargetKey(property);
             }
         }

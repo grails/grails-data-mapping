@@ -1,13 +1,15 @@
 
-import org.grails.datastore.gorm.mongo.plugin.support.*
+import org.grails.datastore.gorm.mongo.plugin.support.MongoMethodsConfigurer
+import org.grails.datastore.gorm.mongo.plugin.support.MongoOnChangeHandler
+import org.grails.datastore.gorm.mongo.plugin.support.MongoSpringConfigurer
 
 class MongodbGrailsPlugin {
     def license = "Apache 2.0 License"
-    def organization = [ name: "SpringSource", url: "http://www.springsource.org/" ]
+    def organization = [name: "SpringSource", url: "http://www.springsource.org/"]
     def developers = [
-        [ name: "Graeme Rocher", email: "grocher@vmware.com" ] ]
-    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPMONGODB" ]
-    def scm = [ url: "https://github.com/SpringSource/grails-data-mapping" ]
+        [name: "Graeme Rocher", email: "grocher@vmware.com"]]
+    def issueManagement = [system: "JIRA", url: "http://jira.grails.org/browse/GPMONGODB"]
+    def scm = [url: "https://github.com/SpringSource/grails-data-mapping"]
 
     def version = "1.0.0.M7"
     def grailsVersion = "1.3.5 > *"
@@ -21,8 +23,8 @@ class MongodbGrailsPlugin {
     def documentation = "http://grails.org/plugin/mongodb"
 
     def doWithSpring = new MongoSpringConfigurer().getConfiguration()
-    def doWithDynamicMethods = { ctx ->
 
+    def doWithDynamicMethods = { ctx ->
         def datastore = ctx.mongoDatastore
         def transactionManager = ctx.mongoTransactionManager
         def methodsConfigurer = new MongoMethodsConfigurer(datastore, transactionManager)    
@@ -33,10 +35,6 @@ class MongodbGrailsPlugin {
     }
 
     def onChange = { event ->
-        def onChangeHandler = new MongoOnChangeHandler()
-        onChangeHandler.onChange(delegate, event)
-    }
-    
-
-    
+        new MongoOnChangeHandler().onChange(delegate, event)
+    }   
 }

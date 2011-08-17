@@ -25,6 +25,7 @@ ListOrderBySpec,
 NamedQuerySpec,
 NegationSpec,
 OneToManySpec,
+OneToOneSpec,
 //OptimisticLockingSpec,
 OrderBySpec,
 ProxyLoadingSpec,
@@ -37,7 +38,7 @@ ValidationSpec,
 WithTransactionSpec,
 
 ApiExtensionsSpec,
-//ManyToManySpec,
+ManyToManySpec,
 MiscSpec
 
 ])

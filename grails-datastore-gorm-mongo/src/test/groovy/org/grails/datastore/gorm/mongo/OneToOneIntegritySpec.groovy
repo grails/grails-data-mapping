@@ -1,15 +1,21 @@
-package grails.gorm.tests
+package org.grails.datastore.gorm.mongo
 
-import spock.lang.Ignore
+import grails.gorm.tests.Nose
+import grails.gorm.tests.Face
+import grails.gorm.tests.Pet
+import grails.gorm.tests.GormDatastoreSpec
+
+import grails.gorm.tests.Person
+import com.mongodb.DBRef
 
 /**
  * Created by IntelliJ IDEA.
  * User: graemerocher
- * Date: 8/5/11
- * Time: 5:03 PM
+ * Date: 8/16/11
+ * Time: 5:07 PM
  * To change this template use File | Settings | File Templates.
  */
-class OneToOneSpec extends GormDatastoreSpec{
+class OneToOneIntegritySpec extends GormDatastoreSpec {
 
     static {
         TEST_CLASSES  << Face << Nose
@@ -27,15 +33,24 @@ class OneToOneSpec extends GormDatastoreSpec{
             pet = Pet.findByName("Dino")
 
         then:"The domain model is valid"
-
             pet != null
             pet.name == "Dino"
             pet.owner != null
             pet.owner.firstName == "Fred"
 
+        when:"The low level API is accessed"
+            def petDbo = Pet.collection.findOne(name:"Dino")
+            def ownerRef =petDbo.owner
+            def ownerDbo = ownerRef.fetch()
+        then:"check the state is valid"
+            petDbo != null
+            ownerDbo != null
+            ownerDbo.firstName == 'Fred'
+            ownerRef.id == person.id
+            ownerRef.ref == 'person'
+
     }
 
-    @Ignore // TODO Implement propery support for hasOne in Neo4j
     def "Test persist and retrieve one-to-one with inverse key"() {
         given:"A domain model with a one-to-one"
             def face = new Face(name:"Joe")
@@ -62,5 +77,18 @@ class OneToOneSpec extends GormDatastoreSpec{
             nose.hasFreckles == true
             nose.face != null
             nose.face.name == "Joe"
+
+        when:"The low level API is accessed"
+            def noseDbo = Nose.collection.findOne(hasFreckles:true)
+            def faceRef = noseDbo.face
+        then:"check the state is valid"
+            noseDbo != null
+            noseDbo.hasFreckles == true
+            faceRef instanceof DBRef
+            faceRef.id == face.id
+            faceRef.ref == 'face'
+            faceRef.fetch().name == "Joe"
+
+
     }
 }

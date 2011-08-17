@@ -14,17 +14,18 @@
  */
 package org.grails.datastore.gorm.plugin.support
 
-import org.codehaus.groovy.grails.plugins.GrailsPlugin
+import java.lang.reflect.Method
+
+import org.codehaus.groovy.grails.commons.GrailsServiceClass
 import org.codehaus.groovy.grails.commons.ServiceArtefactHandler
 import org.codehaus.groovy.grails.commons.spring.TypeSpecifyableTransactionProxyFactoryBean
 import org.codehaus.groovy.grails.orm.support.GroovyAwareNamedTransactionAttributeSource
-import org.codehaus.groovy.grails.commons.GrailsServiceClass
+import org.codehaus.groovy.grails.plugins.GrailsPlugin
 import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.transaction.annotation.Transactional
-import java.lang.reflect.Method
 
 /**
- * Common onChange handling logic
+ * Common onChange handling logic.
  *
  * @author Graeme Rocher
  * @since 1.0
