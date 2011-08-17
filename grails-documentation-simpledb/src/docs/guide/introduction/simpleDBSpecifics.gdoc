@@ -1,0 +1,104 @@
+AWS SimpleDB imposes several critical restrictions.
+
+h3. Eventual consistency model
+
+SimpleDB is based on the premise of eventual consistency model.
+With eventual consistency, when you submit an update to SimpleDB, the database server handling your 
+request will forward the update to the other database servers where that domain 
+is replicated. The full update of all replicas does not happen before your update 
+request returns. The replication continues in the background while other requests are handled. 
+In other words, 
+if you update an object and do a query right after 
+updating it, you might get an old value back. There are ways to force strong consistency behavior but they go against the 
+whole premise of choosing SimpleDB in the first place - SimpleDB is best used by applications able to deal with
+eventual consistency and benefit from the ability to remain available in the midst of a failure. Future
+versions of the plugin might add support for strong consistency though.
+
+The best way to fight eventual consistency in the application is *not* to assume that the information is
+available right after create/update/delete and store the objects you just modified or created in the cache. Generally,
+information becomes visible within a couple of seconds, however it is a really bad idea to try to 
+implement artificial delay in the application layer because when AWS experiences some problems the 
+eventually consistency window might be 
+drastically increased. Design for failure and you will get fewer surprises when they happen.
+
+h3. Everything is a String
+In AWS SimpleDB the only supported datatype is String, furthermore queries using LIKE keyword
+string are compared in a _case-sensitive_ approach.
+
+The simpledb plugin automatically takes care of conversion to and from String for main data types. It must be noted
+that proper implementation of the back-end of persistence layer must not only provide conversion to and from String
+but provide conversion to and from String in format able to support comparison of resulting strings lexicographically (at least for
+datatypes on which comparison is likely to be used).
+Because everything is a string,
+comparing naive toString representation of numbers will not work (89 is lexicographically greater than 321).
+
+Current implementation provides sorting and lexicographical comparison -friendly persistence of 
+the following data types (including negative values for numeric types):
+* byte
+* short
+* int
+* long
+* Date
+
+The algorithm used to save numeric types is as follows (illustrated on the Byte example):
+the goal is to move all negatives into the positives realms so that we can
+compare strings lexicographically and it should be accurate for any mix of positives and negatives.
+
+Byte is -128..127. Let's say if the value is negative we shift it by adding 128 and pad with zeroes into 4 digits.
+This way we can cover all negatives and turn them into positives.
+* -128 -> 0000
+* -127 -> 0001
+* . . .
+* -1   -> 0127 (this is the maximum a Byte can hold)
+
+so now we need to take care of how to convert remaining range of 0..127 values.
+Lets say that for those values which are initially positive we just do toString and prepend them with '1' and pad
+with zeroes into 4 digits.
+* 0   -> 1000
+* 1   -> 1001
+* . . .
+* 126 -> 1126
+* 127 -> 1127
+
+With this logic initially positive values when converted will be greater than 
+converted negatives and yet conversion back/forth is faster than dealing with BigInteger (quick
+note why BigIntegers are mentioned here. For byte, short, and int we can always step into 'next' storage bucket 
+when shifting negatives into positives: for example if when dealing with bytes we say that result value is of type
+@short@ we can simply add the same 128 to *all* values byte values.
+Unfortunately when we get to longs (which are used a lot, for example for versions), 
+there is no 'next' bucket to hold sum of two longs, and the only choice would be to deal with BigIntegers,
+which is very slow. Also, it would lead to inconsistent representation of numbers among all numerics - one algorithm
+for @byte@/@short@/@int@ and another for @long@)
+
+A helpful side effect is that initially positive values when converted would look pretty much the same 
+in the converted format (with leading 1), which is handy when looking at raw DB values.
+
+(Decoding is simple - we look at the first char to decide how to proceed because we know exactly how we got it)
+
+The short summary is that for this class
+
+{code}
+class Book  {
+    String id
+    String title
+    int pages
+
+    static mapWith = "simpledb"
+}
+{code}
+
+You can fire standard dynamic finders and not worry about SimpleDB specifics.
+{code}
+Book.findAllByPagesGreaterThan(123)
+{code}
+
+_In the current version, for numeric data types other than those listed above, dynamic finders with comparison will not produce correct results and should not be used._
+
+h3. Transactions
+AWS SimpleDB doesn't support explicit transactional boundaries or isolation levels. There is no notion of 
+a commit or a rollback. There is some implicit support for atomic writes, but it only applies within the 
+scope of each individual item being written.
+
+However, GORM for SimpleDB does batch up inserts 
+and updates until the session is flushed. This makes it possible to support some rollback options. See more details
+in 'Transactions' chapter
