@@ -18,6 +18,7 @@ include "grails-datastore-core",
         'grails-documentation-redis',
         'grails-documentation-riak',
         'grails-documentation-neo4j',
+        'grails-documentation-simpledb',
 
         // Core GORM Implementation projects
         'grails-datastore-gorm',
