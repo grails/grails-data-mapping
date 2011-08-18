@@ -20,6 +20,8 @@ import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValue;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBNativeItem;
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver;
@@ -218,7 +220,14 @@ public class SimpleDBQuery extends Query {
                 int count = Integer.parseInt(items.get(0).getAttributes().get(0).getValue());
                 results.add(count);
             } else {
-                //todo
+                for (Projection projection : projectionList) {
+                    if (IdProjection.class.equals(projection.getClass())) {
+                        for (Item item : items) {
+                            results.add(item.getName());
+                        }
+                    }
+                    //todo for property projection
+                }
             }
         }
 
