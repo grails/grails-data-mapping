@@ -3,7 +3,7 @@ configurations {
 }
 
 dependencies {
-    compile("com.gmongo:gmongo:0.9") {
+    compile("com.gmongo:gmongo:0.8") {
         transitive = false
     }
     grails("org.grails:grails-core:$grailsVersion")
