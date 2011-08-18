@@ -25,6 +25,7 @@ import org.grails.datastore.mapping.engine.Persister
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.transactions.Transaction
+import org.springframework.util.Assert
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -80,7 +81,7 @@ class Neo4jSession extends AbstractSession {
 
         log.debug "createInstanceForNode: node property $Neo4jEntityPersister.TYPE_PROPERTY_NAME = $className for id=$node.id"
         Persister persister = getPersister(persistentEntity)
-        assert persister
+        Assert.notNull persister
         def object = persister.retrieve(node.id)
         log.debug "createInstanceForNode: object = $object"
         object

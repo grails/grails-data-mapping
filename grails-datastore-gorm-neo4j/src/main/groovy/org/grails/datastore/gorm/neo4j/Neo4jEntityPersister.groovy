@@ -38,6 +38,7 @@ import org.grails.datastore.mapping.model.types.OneToMany
 import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.RelationshipType
 import org.grails.datastore.mapping.model.types.ToOne
+import org.springframework.util.Assert
 
 /**
  * Implementation of {@link org.grails.datastore.mapping.engine.EntityPersister} that uses Neo4j database
@@ -95,7 +96,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
         Node node = graphDatabaseService.createNode()
         node.setProperty(TYPE_PROPERTY_NAME, family)
         Node subreferenceNode = ((Neo4jDatastore)session.datastore).subReferenceNodes[family]
-        assert subreferenceNode
+        Assert.notNull subreferenceNode
         subreferenceNode.createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
         log.debug("created node $node.id with class $family")
         node
@@ -127,7 +128,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
                 }.findAll {
                     Neo4jUtils.doesNodeMatchType(it, persistentProperty.type)
                 }
-                assert endNodes.size() <= 1
+                Assert.isTrue endNodes.size() <= 1
                 result = endNodes ? endNodes[0].id : null
                 log.debug("getting property $key via relationship on $nativeEntry = $result")
             }
@@ -185,7 +186,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
                     def existingRelationsships = nativeEntry.getRelationships(relationshipType, direction).findAll {
                         Neo4jUtils.doesNodeMatchType(it.getOtherNode(nativeEntry), persistentProperty.type)
                     }
-                    assert existingRelationsships.size() <= 1
+                    Assert.isTrue existingRelationsships.size() <= 1
                     if (existingRelationsships) {
                         rel = existingRelationsships[0]
                     }
@@ -256,9 +257,9 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
      */
     @Override
     protected Long storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Long storeId, Node nativeEntry) {
-        assert storeId
-        assert nativeEntry
-        assert persistentEntity
+        Assert.notNull storeId
+        Assert.notNull nativeEntry
+        Assert.notNull persistentEntity
         log.info "storeEntry $persistentEntity $storeId"
         storeId // TODO: not sure what to do here...
     }

@@ -23,6 +23,7 @@ import org.springframework.context.ConfigurableApplicationContext
 import org.neo4j.graphdb.*
 import org.slf4j.LoggerFactory
 import org.grails.datastore.mapping.model.types.Association
+import org.springframework.util.Assert
 
 /**
  * Datastore implementation for Neo4j backend
@@ -72,7 +73,7 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
 
     void afterPropertiesSet() {
         if (!graphDatabaseService) {
-            assert storeDir
+            Assert.notNull storeDir
             graphDatabaseService = new EmbeddedGraphDatabase(storeDir)
         }
         initializeConverters(mappingContext)

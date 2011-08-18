@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory
 import org.grails.datastore.mapping.engine.AssociationIndexer
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
+import org.springframework.util.Assert
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -36,7 +37,7 @@ class Neo4jAssociationIndexer implements AssociationIndexer {
     GraphDatabaseService graphDatabaseService
 
     void index(primaryKey, List foreignKeys) {
-        assert nativeEntry.id == primaryKey
+        Assert.isTrue nativeEntry.id == primaryKey
         log.info "indexing ${association.getClass().superclass} for $primaryKey : $foreignKeys, $association"
 
         if (!foreignKeys.empty) { // TODO: for weird reasons, this gets called unreproducable using an empty foreignkey list sometimes causing the collection being emptied
