@@ -29,12 +29,7 @@ class SimpledbGrailsPlugin {
     def author = "Roman Stepanenko"
     def authorEmail = "rs.opensource@gmail.com"
     def title = "SimpleDB GORM"
-    def description = '''\\
-This pluging allows to use standard GORM mapping to persist in AWS SimpleDB instead of going through JPA+SimpleJPA plugins.
-This plugin will be evolved into full-fledged SimpleDB support with automatic sharding, ID generation,
-configurable large String storage (in S3 or by splitting into attributes),
-customizable performance tweaks according to SimpleDB best practices (dedicated columns for 'dummy null' for quick lookup by null values) etc.
-'''
+    def description = 'A plugin that integrates the AWS SimpleDB datastore into Grails, providing a GORM API onto it'
 
     // URL to the plugin's documentation
     def documentation = "http://grails.org/plugin/simpledb"
