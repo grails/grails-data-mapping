@@ -97,11 +97,9 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A list of object identifiers
      */
     List<Serializable> saveAll(D... objectsToSave) {
-        execute(new SessionCallback<List<Serializable>>() {
-            List<Serializable> doInSession(Session session) {
-                session.persist Arrays.asList(objectsToSave)
-            }
-        })
+        execute({ Session session ->
+           session.persist Arrays.asList(objectsToSave)
+        } as SessionCallback)
     }
 
     /**
@@ -109,11 +107,9 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @param objectsToDelete The objects to delete
      */
     void deleteAll(D... objectsToDelete) {
-        execute(new VoidSessionCallback() {
-            void doInSession(Session session) {
-                session.delete objectsToDelete
-            }
-        })
+        execute({ Session session ->
+           session.delete objectsToDelete
+        } as SessionCallback)
     }
 
     /**
@@ -131,11 +127,9 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * Retrieves and object from the datastore. eg. Book.get(1)
      */
     D get(Serializable id) {
-        execute(new SessionCallback() {
-            def doInSession(Session session) {
-                session.retrieve(persistentClass, id)
-            }
-        })
+        execute({ Session session ->
+           session.retrieve(persistentClass, id)
+        } as SessionCallback)
     }
 
     /**
@@ -145,22 +139,18 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * just delegates to {@link #get(Serializable)}
      */
     D read(Serializable id) {
-        execute (new SessionCallback() {
-            def doInSession(Session session) {
-                session.retrieve(persistentClass, id)
-            }
-        })
+        execute ({ Session session ->
+           session.retrieve(persistentClass, id)
+        } as SessionCallback)
     }
 
     /**
      * Retrieves and object from the datastore as a proxy. eg. Book.load(1)
      */
     D load(Serializable id) {
-        execute (new SessionCallback() {
-            def doInSession(Session session) {
-                session.proxy(persistentClass, id)
-            }
-        })
+        execute ({ Session session ->
+           session.proxy(persistentClass, id)
+        } as SessionCallback)
     }
 
     /**
@@ -176,11 +166,9 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A list of identifiers
      */
     List<D> getAll(Serializable... ids) {
-        execute (new SessionCallback<List>() {
-            List doInSession(Session session) {
-                session.retrieveAll(persistentClass, ids.flatten())
-            }
-        })
+        execute ({ Session session ->
+           session.retrieveAll(persistentClass, ids.flatten())
+        } as SessionCallback)
     }
 
     /**
@@ -225,11 +213,9 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The instance
      */
     D lock(Serializable id) {
-        execute (new SessionCallback() {
-            def doInSession(Session session) {
+        execute ({ Session session ->
                 session.lock(persistentClass, id)
-            }
-        })
+        } as SessionCallback)
     }
 
     /**
@@ -238,12 +224,10 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The instance
      */
     D merge(D d) {
-        execute (new SessionCallback() {
-            def doInSession(Session session) {
-                session.persist(d)
-                return d
-            }
-        })
+        execute ({ Session session ->
+            session.persist(d)
+            return d
+        } as SessionCallback)
     }
 
     /**
@@ -251,22 +235,21 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The number of persisted entities
      */
     Integer count() {
-        execute (new SessionCallback<Integer>() {
-            Integer doInSession(Session session) {
-                def q = session.createQuery(persistentClass)
-                q.projections().count()
-                def result = q.singleResult()
-                if (!(result instanceof Number)) {
-                    result = result.toString()
-                }
-                try {
-                    return result as Integer
-                }
-                catch (NumberFormatException e) {
-                    return 0
-                }
+        execute ({ Session session ->
+
+            def q = session.createQuery(persistentClass)
+            q.projections().count()
+            def result = q.singleResult()
+            if (!(result instanceof Number)) {
+                result = result.toString()
             }
-        })
+            try {
+                return result as Integer
+            }
+            catch (NumberFormatException e) {
+                return 0
+            }
+        } as SessionCallback)
     }
 
     /**
@@ -290,13 +273,11 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A list of results
      */
     List<D> list(Map params) {
-        execute (new SessionCallback<List>() {
-            List doInSession(Session session) {
-                Query q = session.createQuery(persistentClass)
-                DynamicFinder.populateArgumentsForCriteria(persistentClass, q, params)
-                q.list()
-            }
-        })
+        execute ({ Session session ->
+            Query q = session.createQuery(persistentClass)
+            DynamicFinder.populateArgumentsForCriteria(persistentClass, q, params)
+            q.list()
+        } as SessionCallback)
     }
 
     /**
@@ -305,11 +286,9 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The list of all entities
      */
     List<D> list() {
-        execute (new SessionCallback<List>() {
-            List doInSession(Session session) {
+        execute ({ Session session ->
                 session.createQuery(persistentClass).list()
-            }
-        })
+        } as SessionCallback)
     }
 
     /**
