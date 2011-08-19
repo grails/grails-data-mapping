@@ -16,8 +16,4 @@ class Highway implements Serializable {
 
     Boolean bypassed
     String name
-
-    static mapping = {
-        domain 'Highway'
-    }
 }

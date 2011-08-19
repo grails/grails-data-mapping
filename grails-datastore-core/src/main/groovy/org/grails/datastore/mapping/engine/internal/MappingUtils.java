@@ -18,6 +18,8 @@ import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.PropertyMapping;
 
+import java.util.*;
+
 /**
  * Utility methods for mapping logic.
  *
@@ -39,5 +41,28 @@ public class MappingUtils {
             targetName = property.getName();
         }
         return targetName;
+    }
+
+    /**
+     * Creates a concrete collection for the suppied interface
+     * @param interfaceType The interface
+     * @return ArrayList for List, TreeSet for SortedSet, HashSet for Set etc.
+     */
+    @SuppressWarnings("rawtypes")
+    public static Collection createConcreteCollection(Class interfaceType) {
+        Collection elements;
+        if (interfaceType.equals(List.class)) {
+            elements = new ArrayList();
+        }
+        else if (interfaceType.equals(SortedSet.class)) {
+            elements = new TreeSet();
+        }
+        else if (interfaceType.equals(Queue.class)) {
+            elements = new ArrayDeque();
+        }
+        else {
+            elements = new HashSet();
+        }
+        return elements;
     }
 }

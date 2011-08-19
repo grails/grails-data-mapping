@@ -28,8 +28,4 @@ class Pet implements Serializable {
                 ", owner=" + owner +
                 '}';
     }
-
-    static mapping = {
-        domain 'Pet'
-    }
 }

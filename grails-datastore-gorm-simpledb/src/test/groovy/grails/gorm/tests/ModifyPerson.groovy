@@ -19,8 +19,4 @@ class ModifyPerson implements Serializable {
     def beforeInsert() {
         name = "Fred"
     }
-
-    static mapping = {
-        domain 'ModifyPerson'
-    }
 }

@@ -67,11 +67,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.jackson/jackson-core-asl/jars/jackson-core-asl-1.8.3.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.jackson/jackson-core-asl/jars/jackson-core-asl-1.8.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.jackson/jackson-core-asl/sources/jackson-core-asl-1.8.3-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.jackson/jackson-core-asl/sources/jackson-core-asl-1.8.5-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

@@ -28,4 +28,12 @@ public abstract class AbstractSimpleDBDomainResolver implements SimpleDBDomainRe
         this.domainNamePrefix = domainNamePrefix;
         this.entityFamily = SimpleDBUtil.getPrefixedDomainName(domainNamePrefix, entityFamily);
     }
+
+    /**
+     * Helper getter for subclasses.
+     * @return entityFamily
+     */
+    protected String getEntityFamily(){
+        return entityFamily;
+    }
 }

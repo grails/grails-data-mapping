@@ -1,0 +1,83 @@
+h3. Mapping to AWS Domains
+
+The way GORM for SimpleDB works is to map each domain class to a AWS SimpleDB domain.
+For example, given a domain class such as:
+
+{code}
+class Person {
+    String id
+    String firstName
+    String lastName
+    static hasMany = [pets:Pet]
+
+    static mapWith = "simpledb"
+}
+{code}
+
+The plugin will map @Person@ class to a SimpleDB domain called "Person".
+By default the domain name will be the class name, however it can be explicitly specified:
+
+{code}
+class Person {
+    String id
+    String firstName
+    String lastName
+    static hasMany = [pets:Pet]
+
+    static mapWith = "simpledb"
+    static mapping = {
+        domain 'PEOPLE'
+    }
+}
+{code}
+
+In this case @Person@ class will be mapped to 'PEOPLE' SimpleDB domain.
+
+Please note: _if you specified a domain name prefix in the configuration, all domain names will be prefixed_. For example, if you specified
+{code}
+grails {
+    simpledb {
+        accessKey = '...'
+        secretKey = '...'
+        domainNamePrefix = 'DEV_' //optional, used when the same AWS account is shared between more than one environment
+    }
+}
+{code}
+then resulting domain name will be DEV_Person for first example and DEV_PEOPLE for second example.
+
+h3. Mapping to AWS Attributes
+
+By default, each java property will be mapped as an identically named AWS SimpleDB attribute.
+For example, given a domain class such as:
+
+{code}
+class Person {
+    String id
+    String firstName
+    String lastName
+
+    static mapWith = "simpledb"
+}
+{code}
+
+will result in the following attribute names in 'Person' domain:
+* firstName
+* lastName
+
+@id@ field is always mapped to @itemName()@ for the record representing this domain class instance.
+
+It is possible to specify custom AWS attribute names for each java attribute:
+
+{code}
+class Person {
+    String id
+    String firstName
+    String lastName
+
+    static mapWith = "simpledb"
+    static mapping = {
+        firstName key:'FIRST_NAME'
+        lastName key:'LAST_NAME'
+    }
+}
+{code}

@@ -27,8 +27,4 @@ class Person implements Serializable {
                 ", pets=" + pets +
                 '}';
     }
-
-    static mapping = {
-        domain 'Person'
-    }
 }

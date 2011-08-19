@@ -17,8 +17,4 @@ class PetType implements Serializable {
     String name
 
     static belongsTo = Pet
-
-    static mapping = {
-        domain 'PetType'
-    }
 }

@@ -1,0 +1,14 @@
+The plugin works only with String identifiers. Assignment and generation of ids is done automatically, however the String
+id field must be currently explicitly declared in the domain class:
+
+{code}
+class Person {
+    String id
+    String firstName
+    String lastName
+
+    static mapWith = "simpledb"
+}
+{code}
+
+Generated ids are generated with @java.lang.UUID@. In the next version it might be changed for a faster UUID implementation.

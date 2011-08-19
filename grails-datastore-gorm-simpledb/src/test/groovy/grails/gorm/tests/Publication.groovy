@@ -27,10 +27,6 @@ class Publication implements Serializable {
                 '}';
     }
 
-    static mapping = {
-        domain 'Publication'
-    }
-
     static namedQueries = {
         recentPublications {
             def now = new Date()
