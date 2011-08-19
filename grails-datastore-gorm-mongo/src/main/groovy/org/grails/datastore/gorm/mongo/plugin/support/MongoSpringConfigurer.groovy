@@ -14,25 +14,25 @@
  */
 package org.grails.datastore.gorm.mongo.plugin.support
 
-import org.grails.datastore.gorm.plugin.support.SpringConfigurer
-import org.grails.datastore.gorm.mongo.bean.factory.MongoDatastoreFactoryBean
-import com.mongodb.DBAddress
 import org.grails.datastore.gorm.mongo.bean.factory.GMongoFactoryBean
-import org.springframework.data.document.mongodb.MongoOptionsFactoryBean
+import org.grails.datastore.gorm.mongo.bean.factory.MongoDatastoreFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoMappingContextFactoryBean
+import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
+import org.springframework.data.document.mongodb.MongoOptionsFactoryBean
+
+import com.mongodb.DBAddress
 
 /**
- * Mongo specific configuration logic for Spring
+ * Mongo-specific configuration logic for Spring.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
 class MongoSpringConfigurer extends SpringConfigurer {
+
     @Override
-    String getDatastoreType() {
-        return "Mongo"
-    }
+    String getDatastoreType() { "Mongo" }
 
     @Override
     Closure getSpringCustomizer() {
