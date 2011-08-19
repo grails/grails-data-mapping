@@ -17,10 +17,13 @@ package org.grails.datastore.mapping.mongo;
 
 import static org.grails.datastore.mapping.config.utils.ConfigUtils.read;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bson.BSON;
+import org.bson.Transformer;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -119,6 +122,15 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         mappingContext.getConverterRegistry().addConverter(new Converter<ObjectId, String>() {
             public String convert(ObjectId source) {
                 return source.toString();
+            }
+        });
+
+        BSON.addEncodingHook(BigDecimal.class, new Transformer() {
+            public Object transform(Object o) {
+                if (o instanceof BigDecimal) {
+                    return ((BigDecimal)o).doubleValue();
+                }
+                return o;
             }
         });
     }
