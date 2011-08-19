@@ -34,11 +34,8 @@ import org.grails.datastore.mapping.model.PersistentProperty
  */
 class Neo4jQuery extends Query {
 
-    NativeEntryEntityPersister entityPersister
-
-    Neo4jQuery(Neo4jSession session, PersistentEntity entity, EntityPersister entityPersister) {
+    Neo4jQuery(Neo4jSession session, PersistentEntity entity) {
         super(session, entity)
-        this.entityPersister = entityPersister
     }
 
     @Override
@@ -69,7 +66,7 @@ class Neo4jQuery extends Query {
     List<Node> getSubreferencesOfSelfAndDerived(entity) {
         Map<Class, Node> subReferenceNodes = session.datastore.subReferenceNodes
         // TODO: handle inheritence recursively
-        List<Node> result = entityPersister.mappingContext.persistentEntities.findAll { it.parentEntity == entity }.collect {
+        List<Node> result = session.mappingContext.persistentEntities.findAll { it.parentEntity == entity }.collect {
             subReferenceNodes[it.name]
         }
         if (subReferenceNodes.containsKey(entity.name)) {
@@ -135,7 +132,7 @@ class Neo4jQuery extends Query {
     }
 
     boolean matchesCriterionEquals(Node node, Query.Criterion criterion) {
-        def association = entityPersister.persistentEntity.associations.find { it.name == criterion.name}
+        def association = entity.associations.find { it.name == criterion.name}
         if (association) {
             def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(association)
             node.getSingleRelationship(relationshipType, direction)?.getOtherNode(node)?.id == criterion.value

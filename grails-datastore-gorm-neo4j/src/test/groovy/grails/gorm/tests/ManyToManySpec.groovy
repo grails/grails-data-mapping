@@ -147,6 +147,9 @@ class Role {
     Set people = []
 
     boolean equals(other) {
+        if ((other==null) || !(other instanceof Role)) {
+            return false
+        }
         other?.role == role
     }
 

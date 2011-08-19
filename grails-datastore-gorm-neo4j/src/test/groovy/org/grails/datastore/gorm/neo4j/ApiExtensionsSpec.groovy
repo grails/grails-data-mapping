@@ -111,6 +111,6 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
         instance = Pet.createInstanceForNode(999)
 
         then:
-        thrown(NotFoundException)
+        instance == null
     }
 }
