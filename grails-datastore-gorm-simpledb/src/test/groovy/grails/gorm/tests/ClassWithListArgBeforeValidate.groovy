@@ -26,7 +26,4 @@ class ClassWithListArgBeforeValidate implements Serializable {
     static constraints = {
         name blank: false
     }
-    static mapping = {
-        domain 'ClassWithListArgBeforeValidate'
-    }
 }

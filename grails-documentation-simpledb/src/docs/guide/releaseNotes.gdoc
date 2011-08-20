@@ -1,0 +1,14 @@
+Below are the details of the changes across releases:
+
+h4. Version 0.1
+
+Initial implementation of the SimpleDB support with
+* Dynamic finders
+* Criteria queries
+* Named queries
+* Lexicographical comparison -friendly persistence of the following data types (including negative values):
+** byte
+** short
+** int
+** long
+** Date

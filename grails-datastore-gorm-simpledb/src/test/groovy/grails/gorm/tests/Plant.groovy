@@ -15,8 +15,4 @@ class Plant implements Serializable {
 
     boolean goesInPatch
     String name
-
-    static mapping = {
-        domain 'Plant'
-    }
 }

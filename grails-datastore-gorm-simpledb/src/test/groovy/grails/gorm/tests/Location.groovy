@@ -20,8 +20,4 @@ class Location implements Serializable {
     def namedAndCode() {
         "$name - $code"
     }
-
-    static mapping = {
-        domain 'Location'
-    }
 }

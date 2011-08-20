@@ -425,6 +425,16 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * @param value The value
      * @return The Criterion instance
      */
+    public Query.Criterion ge(String property, Object value) {
+        return gte(property, value);
+    }
+
+    /**
+     * Used to restrict a value to be greater than or equal to the given value
+     * @param property The property
+     * @param value The value
+     * @return The Criterion instance
+     */
     public Query.Criterion gt(String property, Object value) {
         validatePropertyName(property, "gt");
         return addToCriteria(Restrictions.gt(property, value));
@@ -440,6 +450,17 @@ public class CriteriaBuilder extends GroovyObjectSupport {
         validatePropertyName(property, "lte");
         return addToCriteria(Restrictions.lte(property, value));
     }
+
+    /**
+     * Used to restrict a value to be less than or equal to the given value
+     * @param property The property
+     * @param value The value
+     * @return The Criterion instance
+     */
+    public Query.Criterion le(String property, Object value) {
+        return lte(property, value);
+    }
+
 
     /**
      * Used to restrict a value to be less than or equal to the given value

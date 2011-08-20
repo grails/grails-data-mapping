@@ -35,7 +35,7 @@ class SimpleDBSpringConfigurer extends SpringConfigurer {
     @Override
     Closure getSpringCustomizer() {
         return {
-            def simpleDBConfig = application.config?.grails?.simpleDB
+            def simpleDBConfig = application.config?.grails?.simpledb
 
             simpledbTransactionManager(DatastoreTransactionManager) {
                 datastore = ref("simpledbDatastore")

@@ -29,6 +29,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 import javax.persistence.FlushModeType;
 
+import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.query.Query;
@@ -761,7 +762,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                             if (inverse instanceof OneToMany) {
                                                 Collection existingValues = (Collection) inverseAccess.getProperty(inverse.getName());
                                                 if (existingValues == null) {
-                                                    existingValues = new ArrayList(); // TODO: not sure if arraylist is always the correct implementation
+                                                    existingValues = MappingUtils.createConcreteCollection(inverse.getType());
                                                     inverseAccess.setProperty(inverse.getName(), existingValues);
                                                 }
                                                 existingValues.add(entityAccess.getEntity());

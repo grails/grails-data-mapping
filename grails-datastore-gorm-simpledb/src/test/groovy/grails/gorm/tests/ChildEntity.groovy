@@ -22,8 +22,4 @@ class ChildEntity implements Serializable {
     }
 
     static belongsTo = [TestEntity]
-
-    static mapping = {
-        domain 'ChildEntity'
-    }
 }

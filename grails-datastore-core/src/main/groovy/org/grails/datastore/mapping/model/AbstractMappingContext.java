@@ -122,6 +122,9 @@ public abstract class AbstractMappingContext implements MappingContext {
 
     private PersistentEntity addPersistentEntityInternal(Class javaClass, boolean isExternal) {
         PersistentEntity entity = createPersistentEntity(javaClass);
+        if (entity == null) {
+            return null;
+        }        
         entity.setExternal(isExternal);
 
         persistentEntities.remove(entity); persistentEntities.add(entity);
