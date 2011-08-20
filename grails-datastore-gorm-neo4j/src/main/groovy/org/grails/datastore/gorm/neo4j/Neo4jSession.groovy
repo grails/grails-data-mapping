@@ -120,7 +120,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
             Node subreferenceNode = datastore.subReferenceNodes[name]
             Assert.notNull subreferenceNode
             subreferenceNode.createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
-            log.info("created node $node.id with class $name")
+            log.debug "created node $node.id with class $name"
             o.id = node.id
             inserts << o
 
@@ -190,7 +190,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
             if ((obj in alreadyPersisted) || isProxy(obj)) {
                 continue
             }
-            log.info "flush obj $obj $id"
+            log.debug "flush obj $obj $id"
             alreadyPersisted << obj
             PersistentEntity pe = mappingContext.getPersistentEntity(obj.getClass().name)
 
@@ -233,7 +233,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
                         def endNodeId = rel?.getOtherNode(thisNode)?.id
                         if (endNodeId && ((value==null) || ( value.id!=endNodeId ))) {
                             rel.delete()
-                            log.info "delete relationship ${rel.startNode.id} -> ${rel.endNode.id} ($rel.type.name()}"
+                            log.debug "delete relationship ${rel.startNode.id} -> ${rel.endNode.id} ($rel.type.name()}"
                         }
 
                         if ((value!=null) && (value.id!=endNodeId)) {
@@ -243,7 +243,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
                                 (startNode, endNode) = [endNode, startNode]
                             }
                             startNode.createRelationshipTo(endNode, relationshipType)
-                            log.info "created relationship ${startNode.id} -> ${endNode.id} ($relationshipType}"
+                            log.debug "created relationship ${startNode.id} -> ${endNode.id} ($relationshipType}"
 
                             if (prop.bidirectional) {
                                 def referencePropertyAccess = new EntityAccess(toOne.associatedEntity, value)
@@ -291,7 +291,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
                                     existingNodesIds << target
                                 } else {
                                     it.delete()
-                                    log.info "delete relationship ${it.startNode.id} -> ${it.endNode.id} ($it.type.name()}"
+                                    log.debug "delete relationship ${it.startNode.id} -> ${it.endNode.id} ($it.type.name()}"
                                 }
                             }
 
@@ -302,7 +302,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
                                     (startNode, endNode) = [endNode, startNode]
                                 }
                                 startNode.createRelationshipTo(endNode, relationshipType)
-                                log.info "created relationship ${startNode.id} -> ${endNode.id} ($relationshipType}"
+                                log.debug "created relationship ${startNode.id} -> ${endNode.id} ($relationshipType}"
                             }
                         }
                         break
@@ -375,7 +375,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
 
     @Override
     def <T> T retrieve(Class<T> type, Serializable key) {
-        log.info "retrieving $type for id $key"
+        log.debug "retrieving $type for id $key"
         def id = key as long
         def result = objectToKey[id]
         if ((result==null) || isProxy(result) ) {
@@ -397,7 +397,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
                             def value = node.getProperty(prop.name, null)
                             value = mappingContext.conversionService.convert(value, prop.type)
                             entityAccess.setProperty(prop.name, value)
-                            log.info "reading simple for $prop $value"
+                            log.debug "reading simple for $prop $value"
                             break
 
                         case ToOne:
@@ -426,19 +426,18 @@ class Neo4jSession extends AbstractAttributeStoringSession {
                 }
                 applicationEventPublisher.publishEvent(new PostLoadEvent(datastore, pe, entityAccess))
                 objectToKey[id] = result
-                //log.warn "loaded node $result.node from db"
             } catch (NotFoundException e) {
                 log.warn "no node for $id found: $e.message"
                 return null
             }
         }
-        log.warn "returning for $key ${System.identityHashCode(result)}"
+        log.debug "returning for $key ${System.identityHashCode(result)}"
         result
     }
 
     @Override
     def <T> T proxy(Class<T> type, Serializable key) {
-        log.info "creating proxy for $type, id $key"
+        log.debug "creating proxy for $type, id $key"
         mappingContext.proxyFactory.createProxy(this, type, key)
     }
 
@@ -542,7 +541,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
             default:
                 throw new NotImplementedException()
         }
-        log.error "property value $propertyValue"
+        log.debug "addObjectToReverseSide: property value $propertyValue"
     }
 
 
