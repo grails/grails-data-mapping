@@ -59,6 +59,7 @@ import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.mapping.collection.PersistentSet
 import org.grails.datastore.mapping.collection.AbstractPersistentCollection
 import org.grails.datastore.mapping.model.types.ManyToMany
+import org.neo4j.graphdb.RelationshipType
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -170,6 +171,10 @@ class Neo4jSession extends AbstractAttributeStoringSession {
         objectToKey[o.id] = o
     }
 
+    private boolean isProxy(object) {
+        object.metaClass.methods.any { it.name=='isProxy'}
+    }
+
     @Override
     void flush() {
 
@@ -182,7 +187,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
         while (!objects.empty) {
             def obj = objects.poll()
             def id = obj.id
-            if (obj in alreadyPersisted) {
+            if ((obj in alreadyPersisted) || isProxy(obj)) {
                 continue
             }
             log.info "flush obj $obj $id"
@@ -223,7 +228,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
                         }
 
                         def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(prop)
-                        Relationship rel = thisNode.getSingleRelationship(relationshipType,direction)
+                        Relationship rel = findRelationshipWithMatchingType(thisNode, relationshipType, direction, prop.type)
 
                         def endNodeId = rel?.getOtherNode(thisNode)?.id
                         if (endNodeId && ((value==null) || ( value.id!=endNodeId ))) {
@@ -351,23 +356,35 @@ class Neo4jSession extends AbstractAttributeStoringSession {
         objects.collect { persist(it) }
     }
 
+    /**
+     * @param node
+     * @return {@link PersistentEntity} matching the node's {@link Neo4jEntityPersister#TYPE_PROPERTY_NAME} or null
+     */
+    private PersistentEntity getTypeForNode(Node node) {
+        String nodeType = node.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null)
+        nodeType == null ? null : mappingContext.getPersistentEntity(nodeType)
+    }
+
+    private Relationship findRelationshipWithMatchingType(Node node, RelationshipType relationshipType, Direction direction, Class type) {
+        node.getRelationships(relationshipType, direction).find {
+            def otherNode = it.getOtherNode(node)
+            PersistentEntity pe = getTypeForNode(otherNode)
+            type.isAssignableFrom(pe.javaClass)
+        }
+    }
+
     @Override
     def <T> T retrieve(Class<T> type, Serializable key) {
         log.info "retrieving $type for id $key"
         def id = key as long
         def result = objectToKey[id]
-        if (result==null) {
+        if ((result==null) || isProxy(result) ) {
             try {
                 Node node = nativeInterface.getNodeById(id)
-                String nodeType = node.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null)
-                if (nodeType==null) {
+                PersistentEntity pe = getTypeForNode(node)
+                if ((pe==null) || (type && !type.isAssignableFrom(pe.javaClass))) {
                     return null
                 }
-                PersistentEntity pe = mappingContext.getPersistentEntity(nodeType)
-                if (type && (!type.isAssignableFrom(pe.javaClass))) {
-                    return null
-                }
-
                 result = pe.javaClass.newInstance()
                 result.id = id
 
@@ -385,7 +402,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
 
                         case ToOne:
                             def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(prop)
-                            def rel = node.getSingleRelationship(relationshipType,direction)
+                            def rel = findRelationshipWithMatchingType(node, relationshipType, direction, prop.type)
                             if (rel) {
                                 Node end = rel.getOtherNode(node)
                                 def value = objectToKey[end.id] ?: proxy(ClassUtils.forName(end.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null)), end.id)
@@ -411,7 +428,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
                 objectToKey[id] = result
                 //log.warn "loaded node $result.node from db"
             } catch (NotFoundException e) {
-                log.info "no node for $id found"
+                log.warn "no node for $id found: $e.message"
                 return null
             }
         }

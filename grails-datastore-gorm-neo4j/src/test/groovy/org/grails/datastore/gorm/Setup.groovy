@@ -22,6 +22,9 @@ import org.springframework.validation.Validator
 import org.grails.datastore.gorm.neo4j.Neo4jSession
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
+import grails.gorm.tests.Tournament
+import grails.gorm.tests.Team
+import grails.gorm.tests.Club
 
 class Setup {
 
@@ -61,7 +64,7 @@ class Setup {
             }
         }*/
 
-        classes << User << Role
+        classes << User << Role << Tournament << Team << Club
         ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint)
 
         def grailsApplication = new DefaultGrailsApplication(classes as Class[], Setup.getClassLoader())

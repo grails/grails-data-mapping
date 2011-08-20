@@ -111,4 +111,45 @@ class MiscSpec extends GormDatastoreSpec {
             new ArrayList(user2.friends) == [ user1 ]
     }
 
+    void "test multiple relations with the same name"() {
+        setup:
+        def team = new Team(name: 'team')
+        def club = new Club(name: 'club')
+        club.addToTeams(team).save()
+        def tournament = new Tournament(name:'tournament')
+        tournament.addToTeams(team).save(flush:true)
+        session.clear()
+
+        when:
+        tournament = tournament.get(tournament.id)
+
+        then:
+        tournament.teams.size() == 1
+        tournament.teams*.name == ['team']
+        tournament.teams[0].club.name == 'club'
+    }
+
+}
+
+class Tournament {
+    Long id
+    Long version
+    String name
+    List teams
+    static hasMany = [teams: Team ]
+}
+
+class Team {
+    Long id
+    Long version
+    String name
+    Club club
+}
+
+class Club {
+    Long id
+    Long version
+    String name
+    List teams
+    static hasMany = [teams: Team ]
 }
