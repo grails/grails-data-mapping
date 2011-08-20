@@ -56,7 +56,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
 //    private Map<PersistentEntity, SimpleDBTemplate> simpleDBTemplates = new ConcurrentHashMap<PersistentEntity, SimpleDBTemplate>();
     private SimpleDBTemplate simpleDBTemplate;  //currently there is no need to create template per entity, we can share same instance
     protected Map<AssociationKey, SimpleDBAssociationInfo> associationInfoMap = new HashMap<AssociationKey, SimpleDBAssociationInfo>(); //contains entries only for those associations that need a dedicated domain
-    protected Map<PersistentEntity, SimpleDBDomainResolver> entityDomainResolverMap = new HashMap<PersistentEntity, SimpleDBDomainResolver>(); 
+    protected Map<PersistentEntity, SimpleDBDomainResolver> entityDomainResolverMap = new HashMap<PersistentEntity, SimpleDBDomainResolver>();
 
     private String domainNamePrefix;
 
@@ -91,7 +91,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         this(mappingContext, Collections.<String, String>emptyMap(), null);
     }
 
-    public SimpleDBTemplate getSimpleDBTemplate(PersistentEntity entity) {
+    public SimpleDBTemplate getSimpleDBTemplate(@SuppressWarnings("unused") PersistentEntity entity) {
 //        return simpleDBTemplates.get(entity);
         return simpleDBTemplate;
     }
@@ -106,9 +106,8 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
 
         if (delayAfterWrite != null && !"".equals(delayAfterWrite)) {
             return new DelayAfterWriteSimpleDBSession(this, getMappingContext(), getApplicationEventPublisher(), Integer.parseInt(delayAfterWrite));
-        } else {
-            return new SimpleDBSession(this, getMappingContext(), getApplicationEventPublisher());
         }
+        return new SimpleDBSession(this, getMappingContext(), getApplicationEventPublisher());
     }
 
     public void afterPropertiesSet() throws Exception {
@@ -120,16 +119,18 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         }
     }
 
-    protected void createSimpleDBTemplate(PersistentEntity entity) {
-        if (simpleDBTemplate == null) {
-            String accessKey = read(String.class, ACCESS_KEY, connectionDetails, null);
-            String secretKey = read(String.class, SECRET_KEY, connectionDetails, null);
-            String delayAfterWrite = read(String.class, DELAY_AFTER_WRITES_MS, connectionDetails, null);
+    protected void createSimpleDBTemplate(@SuppressWarnings("unused") PersistentEntity entity) {
+        if (simpleDBTemplate != null) {
+            return;
+        }
 
-            simpleDBTemplate = new SimpleDBTemplateImpl(accessKey, secretKey);
-            if (delayAfterWrite != null && !"".equals(delayAfterWrite)) {
-                simpleDBTemplate = new DelayAfterWriteSimpleDBTemplateDecorator(simpleDBTemplate, Integer.parseInt(delayAfterWrite));
-            }
+        String accessKey = read(String.class, ACCESS_KEY, connectionDetails, null);
+        String secretKey = read(String.class, SECRET_KEY, connectionDetails, null);
+        String delayAfterWrite = read(String.class, DELAY_AFTER_WRITES_MS, connectionDetails, null);
+
+        simpleDBTemplate = new SimpleDBTemplateImpl(accessKey, secretKey);
+        if (delayAfterWrite != null && !"".equals(delayAfterWrite)) {
+            simpleDBTemplate = new DelayAfterWriteSimpleDBTemplateDecorator(simpleDBTemplate, Integer.parseInt(delayAfterWrite));
         }
     }
 
@@ -151,7 +152,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
      * If the specified association has a dedicated AWS domains, returns info for that association,
      * otherwise returns null.
      */
-    public SimpleDBAssociationInfo getAssociationInfo(Association association){
+    public SimpleDBAssociationInfo getAssociationInfo(Association<?> association) {
         return associationInfoMap.get(generateAssociationKey(association));
     }
 
@@ -160,7 +161,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
      * @param entity
      * @return
      */
-    public SimpleDBDomainResolver getEntityDomainResolver(PersistentEntity entity){
+    public SimpleDBDomainResolver getEntityDomainResolver(PersistentEntity entity) {
         return entityDomainResolverMap.get(entity);
     }
 
@@ -181,22 +182,21 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
      * Analyzes associations and for those associations that need to be stored
      * in a dedicated AWS domain, creates info object with details for that association.
      */
-    protected void analyzeAssociations(PersistentEntity entity){
-        for (Association association : entity.getAssociations()) {
-            if (association instanceof OneToMany && !association.isBidirectional()){
+    protected void analyzeAssociations(PersistentEntity entity) {
+        for (Association<?> association : entity.getAssociations()) {
+            if (association instanceof OneToMany && !association.isBidirectional()) {
                 String associationDomainName = generateAssociationDomainName(association);
                 associationInfoMap.put(generateAssociationKey(association), new SimpleDBAssociationInfo(associationDomainName));
             }
         }
     }
 
-    protected AssociationKey generateAssociationKey(Association association) {
+    protected AssociationKey generateAssociationKey(Association<?> association) {
         return new AssociationKey(association.getOwner(), association.getName());
     }
 
-    protected String generateAssociationDomainName(Association association) {
+    protected String generateAssociationDomainName(Association<?> association) {
         String ownerDomainName = SimpleDBUtil.getMappedDomainName(association.getOwner());
         return SimpleDBUtil.getPrefixedDomainName(domainNamePrefix, ownerDomainName.toUpperCase()+"_"+association.getName().toUpperCase());
     }
-
 }

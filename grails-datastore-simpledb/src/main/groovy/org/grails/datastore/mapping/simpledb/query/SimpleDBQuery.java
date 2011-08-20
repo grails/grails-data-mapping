@@ -20,6 +20,8 @@ import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValue;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBNativeItem;
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver;
@@ -48,7 +50,6 @@ public class SimpleDBQuery extends Query {
 
     static{
         queryHandlers.put(Equals.class, new QueryHandler<Equals>() {
-            @Override
             public void handle(PersistentEntity entity, Equals criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -58,7 +59,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
-            @Override
             public void handle(PersistentEntity entity, NotEquals criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -68,7 +68,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
-            @Override
             public void handle(PersistentEntity entity, IdEquals criterion, StringBuilder clause) {
                 String stringValue = SimpleDBConverterUtil.convertToString(criterion.getValue(), entity.getMappingContext());
 
@@ -76,7 +75,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(Like.class, new QueryHandler<Like>() {
-            @Override
             public void handle(PersistentEntity entity, Like criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -86,7 +84,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(In.class, new QueryHandler<In>() {
-            @Override
             public void handle(PersistentEntity entity, In criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -97,7 +94,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(Between.class, new QueryHandler<Between>() {
-            @Override
             public void handle(PersistentEntity entity, Between criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -109,7 +105,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
-            @Override
             public void handle(PersistentEntity entity, GreaterThan criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -119,7 +114,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
-            @Override
             public void handle(PersistentEntity entity, GreaterThanEquals criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -129,7 +123,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
-            @Override
             public void handle(PersistentEntity entity, LessThan criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -139,7 +132,6 @@ public class SimpleDBQuery extends Query {
             }
         });
         queryHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
-            @Override
             public void handle(PersistentEntity entity, LessThanEquals criterion, StringBuilder clause) {
                 String propertyName = criterion.getProperty();
                 String key = getSmartQuotedKey(entity, propertyName);
@@ -164,20 +156,14 @@ public class SimpleDBQuery extends Query {
         String domain = domainResolver.getAllDomainsForEntity().get(0);
 
         final List<Projection> projectionList = projections().getProjectionList();
-        Projection countProjection = null;
+        boolean hasCountProjection = false;
 
         StringBuilder query;
         if (projectionList.isEmpty()) {
             query = new StringBuilder("select * from `").append(domain).append("`");
         } else {
-            //AWS SimpleDB only supports count(*) projection, nothing else.
-            countProjection = projectionList.get(0);
-            if (!CountProjection.class.equals(countProjection.getClass())) {
-                throw new UnsupportedOperationException("Currently projections of type " +
-                  countProjection.getClass().getSimpleName() + " are not supported by this implementation");
-            }
-
-            query = new StringBuilder("select count(*) from `").append(domain).append("`");
+            hasCountProjection = validateProjectionsAndCheckIfCountIsPresent(projectionList);
+            query = buildQueryForProjections(entity, domain, projectionList);
         }
 
         if (!criteria.getCriteria().isEmpty()) {
@@ -225,16 +211,80 @@ public class SimpleDBQuery extends Query {
 
         List<Item> items = simpleDBTemplate.query(query.toString());
         List<Object> results = new LinkedList<Object>();
-        if (countProjection == null) {
+        if (projectionList.isEmpty()) {
             for (Item item : items) {
                 results.add(createObjectFromItem(item));
             }
         } else {
-            int count = Integer.parseInt(items.get(0).getAttributes().get(0).getValue());
-            results.add(count);
+            if (hasCountProjection) { //count (*) is returned by AWS in a special way...
+                int count = Integer.parseInt(items.get(0).getAttributes().get(0).getValue());
+                results.add(count);
+            } else {
+                for (Projection projection : projectionList) {
+                    if (IdProjection.class.equals(projection.getClass())) {
+                        for (Item item : items) {
+                            results.add(item.getName());
+                        }
+                    }
+                    //todo for property projection
+                }
+            }
         }
 
         return results;
+    }
+
+    private StringBuilder buildQueryForProjections(PersistentEntity entity, String domain, List<Projection> projectionList) {
+        StringBuilder query = new StringBuilder("select ");
+        boolean isFirst = true;
+        for (Projection projection : projectionList) {
+            if (projectionList.size() > 1 && !isFirst) {
+                query.append(", ");
+            }
+            if (isFirst) {
+                isFirst = false;
+            }
+            if (CountProjection.class.equals(projection.getClass())) {
+                query.append("count(*)");
+            } else if (IdProjection.class.equals(projection.getClass())) {
+                query.append("itemName()");
+            } else if (PropertyProjection.class.equals(projection.getClass())) {
+                String key = getSmartQuotedKey(entity, ((PropertyProjection)projection).getPropertyName());
+                query.append(key);
+            }
+        }
+        query.append(" from `").append(domain).append("`");
+        return query;
+    }
+
+    /**
+     * make sure that only property, id, or count projections are provided, and that the combination of them is meaningful.
+     * Throws exception if something is invalid.
+     * @param projections
+     * @returns true if count projection is present, false otherwise.
+     */
+    private boolean validateProjectionsAndCheckIfCountIsPresent(List<Projection> projections) {
+        //of the grouping projects AWS SimpleDB only supports count(*) projection, nothing else. Other kinds will have
+        //to be explicitly coded later...
+        boolean hasCountProjection = false;
+        for (Projection projection : projections) {
+            if (! (PropertyProjection.class.equals(projection.getClass()) ||
+                    IdProjection.class.equals(projection.getClass()) ||
+                    CountProjection.class.equals(projection.getClass())
+            ) ) {
+                throw new UnsupportedOperationException("Currently projections of type " +
+                  projection.getClass().getSimpleName() + " are not supported by this implementation");
+            }
+
+
+            if (CountProjection.class.equals(projection.getClass())) {
+                hasCountProjection = true;
+            }
+        }
+        if ( projections.size() > 1 && hasCountProjection ) {
+            throw new IllegalArgumentException("Can not mix count projection and other types of projections. You requested: "+projections);
+        }
+        return hasCountProjection;
     }
 
     @SuppressWarnings("unchecked")
@@ -333,9 +383,7 @@ public class SimpleDBQuery extends Query {
     protected static String getSmartQuotedKey(PersistentEntity entity, String propertyName) {
         if (entity.isIdentityName(propertyName)) {
             return ITEM_NAME;
-        } else {
-            return SimpleDBUtil.quoteName(extractPropertyKey(propertyName, entity));
         }
+        return SimpleDBUtil.quoteName(extractPropertyKey(propertyName, entity));
     }
-
 }

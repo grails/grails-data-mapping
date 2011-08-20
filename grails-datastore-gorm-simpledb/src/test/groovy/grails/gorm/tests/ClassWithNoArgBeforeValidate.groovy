@@ -24,8 +24,4 @@ class ClassWithNoArgBeforeValidate implements Serializable {
     static constraints = {
         name blank: false
     }
-
-    static mapping = {
-        domain 'ClassWithNoArgBeforeValidate'
-    }
 }

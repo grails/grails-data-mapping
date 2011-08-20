@@ -14,34 +14,31 @@
  */
 package org.grails.datastore.gorm.mongo.plugin.support
 
+import org.grails.datastore.gorm.GormEnhancer
+import org.grails.datastore.gorm.GormInstanceApi
+import org.grails.datastore.gorm.GormStaticApi
+import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.gorm.mongo.MongoGormEnhancer
+import org.grails.datastore.gorm.mongo.MongoGormInstanceApi
+import org.grails.datastore.gorm.mongo.MongoGormStaticApi
 import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
 import org.grails.datastore.mapping.core.Datastore
 import org.springframework.transaction.PlatformTransactionManager
-import org.grails.datastore.gorm.GormStaticApi
-import org.grails.datastore.gorm.finders.FinderMethod
-import org.grails.datastore.gorm.GormInstanceApi
-import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.mongo.MongoGormStaticApi
-import org.grails.datastore.gorm.mongo.MongoGormInstanceApi
-import org.grails.datastore.gorm.mongo.MongoGormEnhancer
 
 /**
- *
- * Mongo specific dynamic methods configurer
+ * Mongo-specific dynamic methods configurer.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
+class MongoMethodsConfigurer extends DynamicMethodsConfigurer {
 
     MongoMethodsConfigurer(Datastore datastore, PlatformTransactionManager transactionManager) {
         super(datastore, transactionManager)
     }
 
     @Override
-    String getDatastoreType() {
-        return "Mongo"
-    }
+    String getDatastoreType() { "Mongo" }
 
     @Override
     protected GormStaticApi createGormStaticApi(Class cls, List<FinderMethod> finders) {
@@ -55,11 +52,10 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
 
     @Override
     protected GormEnhancer createEnhancer() {
-        if(transactionManager != null)
-            return new MongoGormEnhancer(datastore, transactionManager)
-        else
+        if (transactionManager == null) {
             return new MongoGormEnhancer(datastore)
+        }
+
+        return new MongoGormEnhancer(datastore, transactionManager)
     }
-
-
 }

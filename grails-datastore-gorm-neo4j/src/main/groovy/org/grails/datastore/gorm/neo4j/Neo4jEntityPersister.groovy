@@ -37,6 +37,8 @@ import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.model.types.OneToMany
 import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.RelationshipType
+import org.grails.datastore.mapping.model.types.ToOne
+import org.springframework.util.Assert
 
 /**
  * Implementation of {@link org.grails.datastore.mapping.engine.EntityPersister} that uses Neo4j database
@@ -94,7 +96,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
         Node node = graphDatabaseService.createNode()
         node.setProperty(TYPE_PROPERTY_NAME, family)
         Node subreferenceNode = ((Neo4jDatastore)session.datastore).subReferenceNodes[family]
-        assert subreferenceNode
+        Assert.notNull subreferenceNode
         subreferenceNode.createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
         log.debug("created node $node.id with class $family")
         node
@@ -118,17 +120,20 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
 
             if ((persistentProperty instanceof ManyToMany) || (persistentProperty instanceof OneToMany)) {
                 result = nativeEntry.getRelationships(relationshipType, direction).collect { it.getOtherNode(nativeEntry).id }
-            } else {
+            }
+            else if (persistentProperty instanceof ToOne) {
 
-                result = nativeEntry.getRelationships(relationshipType, direction).collect { it.getOtherNode(nativeEntry) }
-                if (result.size()>1) {
-                    log.error "found ${result.size()} relationships for node ${nativeEntry.id}, $relationshipType, $direction: ${result}"
-                    result = result[0]
-                } else {
-                    Relationship rel = nativeEntry.getSingleRelationship(relationshipType, direction)
-                    result = rel ? rel.getOtherNode(nativeEntry).id : null
+                def endNodes = nativeEntry.getRelationships(relationshipType, direction).collect {
+                    it.getOtherNode(nativeEntry)
+                }.findAll {
+                    Neo4jUtils.doesNodeMatchType(it, persistentProperty.type)
                 }
+                Assert.isTrue endNodes.size() <= 1
+                result = endNodes ? endNodes[0].id : null
                 log.debug("getting property $key via relationship on $nativeEntry = $result")
+            }
+            else {
+                throw new IllegalArgumentException("${persistentProperty.class.superclass} associations ($persistentProperty) not yet implemented")
             }
 
         } else {
@@ -166,7 +171,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
                     createRelationshipTo(nativeEntry, endNode, relationshipType)
                 }
             }
-            else  {
+            else if (persistentProperty instanceof ToOne) {
                 log.info("setting $key via relationship to $value, assoc is $persistentProperty ${persistentProperty.getClass().superclass.simpleName}, bidi: $persistentProperty.bidirectional, owning: $persistentProperty.owningSide")
 
                 Node startNode = nativeEntry
@@ -176,7 +181,21 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
                     (startNode,endNode) = [endNode,startNode]
                 }
 
-                Relationship rel = nativeEntry.getSingleRelationship(relationshipType, direction)
+                Relationship rel
+                if (persistentProperty.bidirectional) {
+                    def existingRelationsships = nativeEntry.getRelationships(relationshipType, direction).findAll {
+                        Neo4jUtils.doesNodeMatchType(it.getOtherNode(nativeEntry), persistentProperty.type)
+                    }
+                    Assert.isTrue existingRelationsships.size() <= 1
+                    if (existingRelationsships) {
+                        rel = existingRelationsships[0]
+                    }
+                }
+                else {
+                    rel = nativeEntry.getSingleRelationship(relationshipType, direction)
+                }
+
+                //def rels = nativeEntry.getRelationships(relationshipType, direction)
                 if (rel) {
                     if (rel.getOtherNode(nativeEntry) == target) {
                         return // unchanged value
@@ -188,6 +207,9 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
                 //rel = startNode.createRelationshipTo(endNode, relationshipType)
                 rel = createRelationshipTo(startNode, endNode, relationshipType)
                 log.info("createRelationship $rel.startNode.id (${rel.startNode.getProperty(TYPE_PROPERTY_NAME,null)})-> $rel.endNode.id (${rel.endNode.getProperty(TYPE_PROPERTY_NAME,null)}) type: ($rel.type)")
+            }
+            else {
+                throw new IllegalArgumentException("handling ${persistentProperty.getClass().superclass.simpleName} not yet supported. key $key, value  $value, assoc is $persistentProperty")
             }
         }
         else {
@@ -235,9 +257,9 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
      */
     @Override
     protected Long storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Long storeId, Node nativeEntry) {
-        assert storeId
-        assert nativeEntry
-        assert persistentEntity
+        Assert.notNull storeId
+        Assert.notNull nativeEntry
+        Assert.notNull persistentEntity
         log.info "storeEntry $persistentEntity $storeId"
         storeId // TODO: not sure what to do here...
     }
@@ -310,7 +332,7 @@ class Neo4jEntityPersister extends NativeEntryEntityPersister<Node, Long> {
 
     private Relationship createRelationshipTo(Node start, Node end, RelationshipType type) {
         if (start.getRelationships(type, Direction.OUTGOING).find { it.endNode == end}) {
-            log.error "duplicate relationship detected before write: $rel.startNode.id (${rel.startNode.getProperty(TYPE_PROPERTY_NAME,null)})-> $rel.endNode.id (${rel.endNode.getProperty(TYPE_PROPERTY_NAME,null)}) type: ($rel.type)"
+            log.error "duplicate relationship detected before write: $start.id (${start.getProperty(TYPE_PROPERTY_NAME,null)})-> $end.id (${end.getProperty(TYPE_PROPERTY_NAME,null)}) type: ($type)"
         }
         start.createRelationshipTo(end, type)
     }

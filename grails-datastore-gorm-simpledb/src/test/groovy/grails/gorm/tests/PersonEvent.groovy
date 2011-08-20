@@ -63,8 +63,4 @@ class PersonEvent implements Serializable {
     void afterLoad() {
         STORE.afterLoad++
     }
-
-    static mapping = {
-        domain 'PersonEvent'
-    }
 }

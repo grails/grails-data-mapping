@@ -21,9 +21,10 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="grails-datastore-gorm" exported="" />
     <orderEntry type="module" module-name="grails-datastore-simpledb" exported="" />
     <orderEntry type="module" module-name="grails-datastore-core" exported="" />
-    <orderEntry type="module" module-name="grails-datastore-gorm" exported="" />
+    <orderEntry type="module" module-name="grails-datastore-gorm-plugin-support" exported="" />
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>

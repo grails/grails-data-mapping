@@ -132,7 +132,7 @@ class User {
     }
 
     static hasMany = [ roles: Role, friends: User, foes: User ]
-    static forceUnidirectional = [ 'friends', 'foes', 'bestBuddy' ]
+    static mappedBy = [ bestBuddy:null, friends: null, foes: null ]
     static belongsTo = Role
 
     static constraints = {

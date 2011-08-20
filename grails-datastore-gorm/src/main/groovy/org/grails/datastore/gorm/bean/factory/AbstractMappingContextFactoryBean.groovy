@@ -80,7 +80,7 @@ abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingC
 
     protected void registerCustomTypeMarshallers(MappingContext mappingContext) {
         try {
-            final typeMarshallers = applicationContext.getBeansOfType(org.grails.datastore.mapping.engine.types.CustomTypeMarshaller)
+            final typeMarshallers = applicationContext.getBeansOfType(CustomTypeMarshaller)
             final mappingFactory = mappingContext.mappingFactory
             for (marshaller in typeMarshallers.values()) {
                 mappingFactory.registerCustomType(marshaller)

@@ -22,6 +22,9 @@ package org.grails.datastore.mapping.simpledb.engine;
  * @since 0.1
  */
 public class SimpleDBAssociationInfo {
+
+    private String domainName;
+
     public SimpleDBAssociationInfo(String domainName) {
         this.domainName = domainName;
     }
@@ -33,6 +36,4 @@ public class SimpleDBAssociationInfo {
     public void setDomainName(String domainName) {
         this.domainName = domainName;
     }
-
-    private String domainName;
 }

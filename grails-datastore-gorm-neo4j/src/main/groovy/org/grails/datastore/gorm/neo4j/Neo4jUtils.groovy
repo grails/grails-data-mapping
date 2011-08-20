@@ -7,6 +7,7 @@ import org.neo4j.graphdb.DynamicRelationshipType
 import org.grails.datastore.mapping.model.types.Association
 import org.slf4j.LoggerFactory
 import org.grails.datastore.mapping.model.types.ManyToOne
+import org.apache.commons.lang.ClassUtils
 
 /**
  * Collection of static util methods regarding Neo4j
@@ -31,9 +32,8 @@ abstract class Neo4jUtils {
         [DynamicRelationshipType.withName(relTypeName), direction ]
     }
 
-
     static String relationshipTypeName(Association association) {
-        "${association.owner.decapitalizedName}_${association.name}"
+        association.name
     }
 
     /**
@@ -52,4 +52,18 @@ abstract class Neo4jUtils {
         }
     }
 
+    /**
+     * check if a given node is valid for a given class
+     * @param node
+     * @param persistentProperty
+     * @return
+     */
+    static boolean doesNodeMatchType(Node node, Class clazz) {
+        try {
+            def nodeClass = ClassUtils.getClass(node.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null))
+            clazz.isAssignableFrom(nodeClass)
+        } catch (ClassNotFoundException e) {
+            false
+        }
+    }
 }

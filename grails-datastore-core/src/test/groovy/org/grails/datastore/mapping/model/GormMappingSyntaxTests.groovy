@@ -144,6 +144,10 @@ class GormMappingSyntaxTests {
         assert (foesAssociation instanceof OneToMany)
         assert !foesAssociation.isBidirectional()
 
+        Association friendsAssociation = user.getPropertyByName("friends")
+        assert (friendsAssociation instanceof OneToMany)
+        assert !friendsAssociation.isBidirectional()
+
         Association bestBuddyAssociation = user.getPropertyByName("bestBuddy")
         assert (bestBuddyAssociation instanceof OneToOne)
         assert !bestBuddyAssociation.isBidirectional()
@@ -216,9 +220,10 @@ class User {
     String name
     User bestBuddy
     Set foes
-    static hasMany = [ foes: User]
+    Set friends
+    static hasMany = [ foes: User, friends: User]
 
-    // if no forceUnidirectional is given, bestBuddy is inverse of foes (sic)
-    static forceUnidirectional = ['foes', 'bestBuddy']
+    // prevent bidirectional associations here
+    static mappedBy = [ bestBuddy:null, foes:null, friends:null]
 }
 

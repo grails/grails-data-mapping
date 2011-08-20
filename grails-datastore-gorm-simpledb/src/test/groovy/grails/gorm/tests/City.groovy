@@ -15,8 +15,4 @@ class City extends Location{
     Long version
     BigDecimal latitude
     BigDecimal longitude
-
-    static mapping = {
-        domain 'City'
-    }
 }
