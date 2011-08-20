@@ -39,7 +39,7 @@ class OptimisticLockingSpec extends GormDatastoreSpec {
             o.version == 1
     }
 
-    @Ignore
+    @Ignore("fails due to neo4j's flat transaction model")
     void "Test optimistic locking"() {
 
         given:
@@ -77,6 +77,7 @@ class OptimisticLockingSpec extends GormDatastoreSpec {
             o.name == 'locked in new session'
     }
 
+    @Ignore("fails due to neo4j's flat transaction model")
     void "Test optimistic locking disabled with 'version false'"() {
 
         given:

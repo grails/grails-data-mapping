@@ -64,4 +64,92 @@ class MiscSpec extends GormDatastoreSpec {
             TestEntity.findByName("Bob") == null
             TestEntity.findByName("Sam") != null
     }
+
+    void "test if addtoXXXX gets persisted correctly"() {
+        given:
+        new PlantCategory(name: 'category').save(flush:true)
+        session.clear()
+
+        when:
+        def category = PlantCategory.findByName('category')
+        session.clear()
+
+        category = PlantCategory.get(category.id)
+        def plant1 = new Plant(name:'plant1')
+        category.addToPlants(plant1).save()
+        category.save(flush:true)
+        session.clear()
+        category = PlantCategory.get(category.id)
+
+        then:
+        category
+        category.name =='category'
+        category.plants.size() == 1
+        category.plants*.name == ['plant1']
+
+    }
+
+    // this test belongs semantically to grails.gorm.tests.CircularOneToManySpec but will fail in some existing
+    // implementations, that's why it's located here
+    void "test circular one-to-many using addToXX"() {
+        setup:
+            def user1 = new User(username: 'user1')
+            def user2 = new User(username: 'user2')
+            user1.addToFriends( user2)
+            user2.addToFriends( user1)
+            user1.save()
+            user2.save()
+            session.flush()
+            session.clear()
+
+        when:
+            user1 = User.get(user1.id)
+            user2 = User.get(user2.id)
+
+        then:
+            new ArrayList(user1.friends) == [ user2 ]
+            new ArrayList(user2.friends) == [ user1 ]
+    }
+
+    void "test multiple relations with the same name"() {
+        setup:
+        def team = new Team(name: 'team')
+        def club = new Club(name: 'club')
+        club.addToTeams(team).save()
+        def tournament = new Tournament(name:'tournament')
+        tournament.addToTeams(team).save(flush:true)
+        session.clear()
+
+        when:
+        tournament = tournament.get(tournament.id)
+
+        then:
+        tournament.teams.size() == 1
+        tournament.teams*.name == ['team']
+        tournament.teams[0].club.name == 'club'
+    }
+
+}
+
+class Tournament {
+    Long id
+    Long version
+    String name
+    List teams
+    static hasMany = [teams: Team ]
+}
+
+class Team {
+    Long id
+    Long version
+    String name
+    Club club
+}
+
+class Club {
+    Long id
+    Long version
+    String name
+    List teams
+    static hasMany = [teams: Team ]
 }
