@@ -405,7 +405,10 @@ class Neo4jSession extends AbstractAttributeStoringSession {
                             def rel = findRelationshipWithMatchingType(node, relationshipType, direction, prop.type)
                             if (rel) {
                                 Node end = rel.getOtherNode(node)
-                                def value = objectToKey[end.id] ?: proxy(ClassUtils.forName(end.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null)), end.id)
+                                def value = objectToKey[end.id]
+                                if (value == null) {
+                                    value = proxy(ClassUtils.forName(end.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null)), end.id)
+                                }
                                 entityAccess.setProperty(prop.name, value)
                             }
                             break
