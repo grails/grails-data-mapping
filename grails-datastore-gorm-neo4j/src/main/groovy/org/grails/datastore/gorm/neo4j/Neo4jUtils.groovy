@@ -60,7 +60,7 @@ abstract class Neo4jUtils {
      */
     static boolean doesNodeMatchType(Node node, Class clazz) {
         try {
-            def nodeClass = ClassUtils.getClass(node.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null))
+            def nodeClass = ClassUtils.getClass(node.getProperty(Neo4jSession.TYPE_PROPERTY_NAME, null))
             clazz.isAssignableFrom(nodeClass)
         } catch (ClassNotFoundException e) {
             false

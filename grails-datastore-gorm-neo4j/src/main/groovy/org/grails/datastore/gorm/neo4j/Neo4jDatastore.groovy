@@ -86,7 +86,7 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
         Transaction tx = graphDatabaseService.beginTx()
         try {
             Node subReferenceNode = graphDatabaseService.createNode()
-            subReferenceNode.setProperty(Neo4jEntityPersister.SUBREFERENCE_PROPERTY_NAME, name)
+            subReferenceNode.setProperty(Neo4jSession.SUBREFERENCE_PROPERTY_NAME, name)
             graphDatabaseService.referenceNode.createRelationshipTo(subReferenceNode, GrailsRelationshipTypes.SUBREFERENCE)
             tx.success()
             return subReferenceNode
@@ -100,7 +100,7 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
         Node referenceNode = graphDatabaseService.referenceNode
         for (Relationship rel in referenceNode.getRelationships(GrailsRelationshipTypes.SUBREFERENCE, Direction.OUTGOING)) {
             Node endNode = rel.endNode
-            String clazzName = endNode.getProperty(Neo4jEntityPersister.SUBREFERENCE_PROPERTY_NAME)
+            String clazzName = endNode.getProperty(Neo4jSession.SUBREFERENCE_PROPERTY_NAME)
             subReferenceNodes[clazzName] = endNode
         }
 

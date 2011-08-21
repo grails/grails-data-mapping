@@ -66,6 +66,8 @@ import org.neo4j.graphdb.RelationshipType
  */
 class Neo4jSession extends AbstractAttributeStoringSession {
 
+    public static final TYPE_PROPERTY_NAME = "__type__"
+    public static final String SUBREFERENCE_PROPERTY_NAME = "__subreference__"
     protected final Logger log = LoggerFactory.getLogger(getClass())
     
     static final ALLOWED_CLASSES_NEO4J_PROPERTIES = [
@@ -116,7 +118,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
             def name = pe.javaClass.name
 
             Node node = nativeInterface.createNode()
-            node.setProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, name)
+            node.setProperty(TYPE_PROPERTY_NAME, name)
             Node subreferenceNode = datastore.subReferenceNodes[name]
             Assert.notNull subreferenceNode
             subreferenceNode.createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
@@ -358,10 +360,10 @@ class Neo4jSession extends AbstractAttributeStoringSession {
 
     /**
      * @param node
-     * @return {@link PersistentEntity} matching the node's {@link Neo4jEntityPersister#TYPE_PROPERTY_NAME} or null
+     * @return {@link PersistentEntity} matching the node's {@link org.grails.datastore.gorm.neo4j.Neo4jSession#TYPE_PROPERTY_NAME} or null
      */
     private PersistentEntity getTypeForNode(Node node) {
-        String nodeType = node.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null)
+        String nodeType = node.getProperty(TYPE_PROPERTY_NAME, null)
         nodeType == null ? null : mappingContext.getPersistentEntity(nodeType)
     }
 
@@ -407,7 +409,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
                                 Node end = rel.getOtherNode(node)
                                 def value = objectToKey[end.id]
                                 if (value == null) {
-                                    value = proxy(ClassUtils.forName(end.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null)), end.id)
+                                    value = proxy(ClassUtils.forName(end.getProperty(TYPE_PROPERTY_NAME, null)), end.id)
                                 }
                                 entityAccess.setProperty(prop.name, value)
                             }
@@ -517,7 +519,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
 
     protected Persister createPersister(Class cls, MappingContext mappingContext) {
         final PersistentEntity entity = mappingContext.getPersistentEntity(cls.name)
-        entity ? new Neo4jEntityPersister(mappingContext, entity, this, applicationEventPublisher) : null
+        entity ? new DummyEntityPersister(mappingContext, entity) : null
     }
 
     @Override
