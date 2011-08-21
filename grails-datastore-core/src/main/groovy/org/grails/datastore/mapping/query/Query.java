@@ -459,6 +459,18 @@ public abstract class Query {
      * @param expr The expression to restrict by
      * @return This query instance
      */
+    public Query ilike(String property, String expr) {
+        criteria.add(Restrictions.ilike(property, expr));
+        return this;
+    }
+
+    /**
+     * Restricts the results by the given properties value
+     *
+     * @param property The name of the property
+     * @param expr The expression to restrict by
+     * @return This query instance
+     */
     public Query rlike(String property, String expr) {
         criteria.add(Restrictions.rlike(property, expr));
         return this;

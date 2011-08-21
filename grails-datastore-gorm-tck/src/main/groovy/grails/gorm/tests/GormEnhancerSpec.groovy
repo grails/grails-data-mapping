@@ -156,6 +156,22 @@ class GormEnhancerSpec extends GormDatastoreSpec {
             results.find { it.name == "Frank" } != null
     }
 
+    void "Test ilike query"() {
+        given:
+            def age = 40
+            ["Bob", "Fred", "Barney", "Frank"].each {
+                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+            }
+
+        when:
+            def results = TestEntity.findAllByNameIlike("fr%")
+
+        then:
+            2 == results.size()
+            results.find { it.name == "Fred" } != null
+            results.find { it.name == "Frank" } != null
+    }
+
     void "Test count by query"() {
 
         given:
