@@ -60,6 +60,7 @@ import org.grails.datastore.mapping.collection.PersistentSet
 import org.grails.datastore.mapping.collection.AbstractPersistentCollection
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.neo4j.graphdb.RelationshipType
+import org.grails.datastore.mapping.model.types.Basic
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -223,92 +224,28 @@ class Neo4jSession extends AbstractAttributeStoringSession {
                         break
 
                     case ToOne:
-                        ToOne toOne = prop
-                        if (value!=null) {
-                            persist(value)
-                            objects << value
-                        }
-
-                        def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(prop)
-                        Relationship rel = findRelationshipWithMatchingType(thisNode, relationshipType, direction, prop.type)
-
-                        def endNodeId = rel?.getOtherNode(thisNode)?.id
-                        if (endNodeId && ((value==null) || ( value.id!=endNodeId ))) {
-                            rel.delete()
-                            log.debug "delete relationship ${rel.startNode.id} -> ${rel.endNode.id} ($rel.type.name()}"
-                        }
-
-                        if ((value!=null) && (value.id!=endNodeId)) {
-                            Node startNode = thisNode
-                            Node endNode = value?.node
-                            if (direction==Direction.INCOMING) {
-                                (startNode, endNode) = [endNode, startNode]
-                            }
-                            startNode.createRelationshipTo(endNode, relationshipType)
-                            log.debug "created relationship ${startNode.id} -> ${endNode.id} ($relationshipType}"
-
-                            if (prop.bidirectional) {
-                                def referencePropertyAccess = new EntityAccess(toOne.associatedEntity, value)
-                                switch (prop) {
-                                    case OneToOne:
-                                        referencePropertyAccess.setProperty(toOne.referencedPropertyName, obj)
-                                        //value."${prop.referencedPropertyName}" = obj
-                                        break
-                                    case ManyToOne:
-                                        addObjectToReverseSide(referencePropertyAccess, prop, obj)
-                                        break
-                                    default:
-                                        throw new NotImplementedException("setting inverse side of bidi, ${prop.getClass().superclass}")
-
-                                }
-                            }
+                        def toAdd = writeToOneProperty(prop, thisNode, value, obj)
+                        if (toAdd) {
+                            objects << toAdd
                         }
                         break
 
                     case ManyToMany:
                     case OneToMany:
-                        boolean doPersist = true
-                        if (value == null) {
-                            doPersist = false
-                        } else {
-                            // prevent persisting an not initialized APS
-                            if (value instanceof AbstractPersistentCollection) {
-                                doPersist = value.initialized
-                            }
+                        objects.addAll(writeToManyProperty(value, prop, thisNode))
+                        break
+
+                    case Basic:
+                        if (prop.type instanceof Collection) {
+                            objects.addAll(writeToManyProperty(value, prop, thisNode))
                         }
-
-                        if (doPersist) {
-                            def nodesIds = value?.collect {
-                                persist(it)
-                                objects << it
-                                it.node.id
-                            } ?: []
-
-                            def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(prop)
-
-                            def existingNodesIds = []
-                            thisNode.getRelationships(relationshipType,direction).each {
-                                def target = it.getOtherNode(thisNode).id
-                                if (target in nodesIds) {
-                                    existingNodesIds << target
-                                } else {
-                                    it.delete()
-                                    log.debug "delete relationship ${it.startNode.id} -> ${it.endNode.id} ($it.type.name()}"
-                                }
-                            }
-
-                            (nodesIds - existingNodesIds).each {
-                                Node startNode = thisNode
-                                Node endNode = nativeInterface.getNodeById(it)
-                                if (direction==Direction.INCOMING) {
-                                    (startNode, endNode) = [endNode, startNode]
-                                }
-                                startNode.createRelationshipTo(endNode, relationshipType)
-                                log.debug "created relationship ${startNode.id} -> ${endNode.id} ($relationshipType}"
+                        else {
+                            def toAdd = writeToOneProperty(prop, thisNode, value, obj)
+                            if (toAdd) {
+                                objects << toAdd
                             }
                         }
                         break
-
 
                     default:
                         throw new NotImplementedException("don't know how to store $prop ${prop.getClass().superclass}")
@@ -322,6 +259,94 @@ class Neo4jSession extends AbstractAttributeStoringSession {
             applicationEventPublisher.publishEvent(event)
         }
         inserts.clear()
+    }
+
+    private def writeToManyProperty(value, PersistentProperty prop, Node thisNode) {
+        def returnValue = []
+        boolean doPersist = true
+        if (value == null) {
+            doPersist = false
+        } else {
+            // prevent persisting an not initialized APS
+            if (value instanceof AbstractPersistentCollection) {
+                doPersist = value.initialized
+            }
+        }
+
+        if (doPersist) {
+            def nodesIds = value?.collect {
+                persist(it)
+                returnValue << it
+                it.node.id
+            } ?: []
+
+            def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(prop)
+
+            def existingNodesIds = []
+            thisNode.getRelationships(relationshipType, direction).each {
+                def target = it.getOtherNode(thisNode).id
+                if (target in nodesIds) {
+                    existingNodesIds << target
+                } else {
+                    it.delete()
+                    log.debug "delete relationship ${it.startNode.id} -> ${it.endNode.id} ($it.type.name()}"
+                }
+            }
+
+            (nodesIds - existingNodesIds).each {
+                Node startNode = thisNode
+                Node endNode = nativeInterface.getNodeById(it)
+                if (direction == Direction.INCOMING) {
+                    (startNode, endNode) = [endNode, startNode]
+                }
+                startNode.createRelationshipTo(endNode, relationshipType)
+                log.debug "created relationship ${startNode.id} -> ${endNode.id} ($relationshipType}"
+            }
+        }
+        returnValue
+    }
+
+    private def writeToOneProperty(Association association, Node thisNode, value, obj) {
+        def returnValue = null
+        if (value!=null) {
+            persist(value)
+            returnValue = value
+        }
+
+        def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(association)
+        Relationship rel = findRelationshipWithMatchingType(thisNode, relationshipType, direction, association.type)
+
+        def endNodeId = rel?.getOtherNode(thisNode)?.id
+        if (endNodeId && ((value == null) || (value.id != endNodeId))) {
+            rel.delete()
+            log.debug "delete relationship ${rel.startNode.id} -> ${rel.endNode.id} ($rel.type.name()}"
+        }
+
+        if ((value != null) && (value.id != endNodeId)) {
+            Node startNode = thisNode
+            Node endNode = value?.node
+            if (direction == Direction.INCOMING) {
+                (startNode, endNode) = [endNode, startNode]
+            }
+            startNode.createRelationshipTo(endNode, relationshipType)
+            log.debug "created relationship ${startNode.id} -> ${endNode.id} ($relationshipType}"
+
+            if (association.bidirectional) {
+                def referencePropertyAccess = new EntityAccess(association.associatedEntity, value)
+                switch (association) {
+                    case OneToOne:
+                        referencePropertyAccess.setProperty(association.referencedPropertyName, obj)
+                        //value."${prop.referencedPropertyName}" = obj
+                        break
+                    case ManyToOne:
+                        addObjectToReverseSide(referencePropertyAccess, association, obj)
+                        break
+                    default:
+                        throw new NotImplementedException("setting inverse side of bidi, ${association.getClass().superclass}")
+                }
+            }
+        }
+        returnValue
     }
 
     @Override
@@ -403,27 +428,22 @@ class Neo4jSession extends AbstractAttributeStoringSession {
                             break
 
                         case ToOne:
-                            def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(prop)
-                            def rel = findRelationshipWithMatchingType(node, relationshipType, direction, prop.type)
-                            if (rel) {
-                                Node end = rel.getOtherNode(node)
-                                def value = objectToKey[end.id]
-                                if (value == null) {
-                                    value = proxy(ClassUtils.forName(end.getProperty(TYPE_PROPERTY_NAME, null)), end.id)
-                                }
-                                entityAccess.setProperty(prop.name, value)
-                            }
+                            readToOneProperty(prop, node, entityAccess)
                             break
 
                         case OneToMany:
                         case ManyToMany:
-                            def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(prop)
-                            def keys = node.getRelationships(relationshipType, direction).collect { it.getOtherNode(node).id }
-                            def collection = List.class.isAssignableFrom(prop.type) ?
-                                new PersistentList(keys, prop.associatedEntity.javaClass, this) :
-                                new PersistentSet(keys, prop.associatedEntity.javaClass, this)
-                            entityAccess.setPropertyNoConversion(prop.name, collection)
+                            readToManyProperty(prop, node, entityAccess)
                             break
+
+                        case Basic:
+                            if (prop.type instanceof Collection) {
+                                readToManyProperty(prop, node, entityAccess)
+                            }
+                            else {
+                                readToOneProperty(prop, node, entityAccess)
+                            }
+
 
                         default:
                             throw new NotImplementedException("don't know how to read $prop ${prop.getClass().superclass}")
@@ -438,6 +458,28 @@ class Neo4jSession extends AbstractAttributeStoringSession {
         }
         log.debug "returning for $key ${System.identityHashCode(result)}"
         result
+    }
+
+    private def readToManyProperty(Association association, Node node, EntityAccess entityAccess) {
+        def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(association)
+        def keys = node.getRelationships(relationshipType, direction).collect { it.getOtherNode(node).id }
+        def collection = List.class.isAssignableFrom(association.type) ?
+            new PersistentList(keys, association.associatedEntity.javaClass, this) :
+            new PersistentSet(keys, association.associatedEntity.javaClass, this)
+        entityAccess.setPropertyNoConversion(association.name, collection)
+    }
+
+    private def readToOneProperty(Association association, Node node, EntityAccess entityAccess) {
+        def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(association)
+        def rel = findRelationshipWithMatchingType(node, relationshipType, direction, association.type)
+        if (rel) {
+            Node end = rel.getOtherNode(node)
+            def value = objectToKey[end.id]
+            if (value == null) {
+                value = proxy(ClassUtils.forName(end.getProperty(TYPE_PROPERTY_NAME, null)), end.id)
+            }
+            entityAccess.setProperty(association.name, value)
+        }
     }
 
     @Override
