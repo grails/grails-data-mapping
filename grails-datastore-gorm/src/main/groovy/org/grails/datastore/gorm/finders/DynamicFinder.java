@@ -39,11 +39,12 @@ import org.grails.datastore.gorm.finders.MethodExpression.IsNotNull;
 import org.grails.datastore.gorm.finders.MethodExpression.IsNull;
 import org.grails.datastore.gorm.finders.MethodExpression.LessThan;
 import org.grails.datastore.gorm.finders.MethodExpression.LessThanEquals;
+import org.grails.datastore.gorm.finders.MethodExpression.Ilike;
 import org.grails.datastore.gorm.finders.MethodExpression.Like;
 import org.grails.datastore.gorm.finders.MethodExpression.NotEqual;
-import org.springframework.core.convert.ConversionService;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.query.Query;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.util.StringUtils;
 
 /**
@@ -77,7 +78,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         // populate the default method expressions
         try {
             Class[] classes = {
-                      Equal.class, NotEqual.class, InList.class, Between.class, Like.class,
+                      Equal.class, NotEqual.class, InList.class, Between.class, Like.class, Ilike.class,
                       GreaterThanEquals.class, LessThanEquals.class, GreaterThan.class,
                       LessThan.class, IsNull.class, IsNotNull.class, IsEmpty.class,
                       IsEmpty.class, IsNotEmpty.class };
