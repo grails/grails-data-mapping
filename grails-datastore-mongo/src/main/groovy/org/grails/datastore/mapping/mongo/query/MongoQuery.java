@@ -108,9 +108,9 @@ public class MongoQuery extends Query {
             }
         });
 
-      queryHandlers.put(ILike.class, new QueryHandler<Like>() {
-            public void handle(PersistentEntity entity, Like like, DBObject query) {
-                handleLike(entity, like, query, true);
+      queryHandlers.put(ILike.class, new QueryHandler<ILike>() {
+            public void handle(PersistentEntity entity, ILike like, DBObject query) {
+                handleLike(entity, like, query, false);
             }
         });
 
