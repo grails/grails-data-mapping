@@ -404,6 +404,9 @@ class Neo4jSession extends AbstractAttributeStoringSession {
     def <T> T retrieve(Class<T> type, Serializable key) {
         log.debug "retrieving $type for id $key"
         def id = key as long
+        if (id==null) {
+            return null
+        }
         def result = objectToKey[id]
         if ((result==null) || isProxy(result) ) {
             try {
