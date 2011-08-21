@@ -5,7 +5,6 @@ import grails.gorm.tests.Person
 import grails.gorm.tests.Pet
 
 import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.NotFoundException
 import org.neo4j.graphdb.ReturnableEvaluator
 import org.neo4j.graphdb.StopEvaluator
 import org.neo4j.graphdb.TraversalPosition
@@ -113,4 +112,43 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
         then:
         instance == null
     }
+
+    def "test handling of non-declared properties"() {
+        when:
+        def person = new Person(lastName:'person1').save()
+        person['notDeclaredProperty'] = 'someValue'   // n.b. the 'dot' notation is not valid for undeclared properties
+        person['emptyArray'] = []
+        person['someIntArray'] = [1,2,3]
+        person['someStringArray'] = ['a', 'b', 'c']
+        person['someDoubleArray'] = [0.9, 1.0, 1.1]
+        session.flush()
+        session.clear()
+        person = Person.get(person.id)
+
+        then:
+        person['notDeclaredProperty'] == 'someValue'
+        person['lastName'] == 'person1'  // declared properties are also available via map semantics
+        person['someIntArray'] == [1,2,3]
+        person['someStringArray'] == ['a', 'b', 'c']
+        person['someDoubleArray'] == [0.9, 1.0, 1.1]
+    }
+
+    def "test handling of non-declared properties on transient instance"() {
+        when:
+        def person = new Person(lastName:'person1')
+        person['notDeclaredProperty'] = 'someValue'
+
+        then:
+        thrown(IllegalStateException)
+    }
+
+    def "test handling of non-declared properties that do not match valid types in neo4j"() {
+        when:
+        def person = new Person(lastName:'person1')
+        person['notDeclaredProperty'] = new Date()
+
+        then:
+        thrown(IllegalStateException)
+    }
+
 }
