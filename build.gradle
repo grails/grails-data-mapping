@@ -24,8 +24,8 @@ apply plugin: 'idea'
 
 
 subprojects {
-    releaseType = "BUILD-SNAPSHOT"
-/*    releaseType = "M8"*/
+/*    releaseType = "BUILD-SNAPSHOT"*/
+    releaseType = "M9"
     version = "1.0.0.${releaseType}"
 
     def isStandardGroovyMavenProject = isGroovyProject(project)
