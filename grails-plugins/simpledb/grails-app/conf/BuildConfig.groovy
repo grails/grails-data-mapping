@@ -8,13 +8,13 @@ grails.project.dependency.resolution = {
 
     log "warn"
 
-    String datastoreVersion = "1.0.0.M8"
+    String datastoreVersion = "1.0.0.M9"
 
     repositories {
         grailsPlugins()
         grailsHome()
         grailsCentral()
-
+        mavenRepo "http://repo.grails.org/grails/core"
         mavenLocal()
         mavenCentral()
         mavenRepo 'http://repository.codehaus.org'
@@ -23,15 +23,29 @@ grails.project.dependency.resolution = {
     dependencies {
 
         def excludes = {
-            excludes "slf4j-simple", "persistence-api", "commons-logging", "jcl-over-slf4j", "slf4j-api", "jta"
-            excludes "spring-core", "spring-beans", "spring-aop", "spring-asm", "spring-webmvc", "spring-tx", "spring-context", "spring-web", "log4j", "slf4j-log4j12"
-            excludes "stax-api" //this is needed for AWS api //http://grails.1312388.n4.nabble.com/How-can-I-solve-this-jar-conflict-issue-td3067041.html
+            transitive = false
         }
-        runtime("org.grails:grails-datastore-gorm:$datastoreVersion", excludes)
-        runtime("org.grails:grails-datastore-gorm-simpledb:$datastoreVersion", excludes)
-        runtime("org.springframework:grails-datastore-web:$datastoreVersion", excludes)
-        runtime("stax:stax:1.2.0", excludes)
+        compile("org.grails:grails-datastore-gorm-simpledb:$datastoreVersion",
+                 "org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
+                 "org.grails:grails-datastore-gorm:$datastoreVersion",
+                 "org.grails:grails-datastore-core:$datastoreVersion",
+                 "org.grails:grails-datastore-simpledb:$datastoreVersion",
+                 "org.grails:grails-datastore-web:$datastoreVersion") {
+             transitive = false
+         }        
 
-        test("org.grails:grails-datastore-gorm-test:$datastoreVersion", excludes)
+        runtime("stax:stax:1.2.0", excludes)
+        runtime('com.amazonaws:aws-java-sdk:1.2.0')
+
+        test("org.grails:grails-datastore-gorm-test:$datastoreVersion",
+             "org.grails:grails-datastore-simple:$datastoreVersion") {
+            transitive = false
+        }
+    }
+    
+    plugins {
+        build ":release:1.0.0.RC3", {
+            exported = false
+        }
     }
 }
