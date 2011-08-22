@@ -1,5 +1,7 @@
 package grails.gorm.tests
 
+import spock.lang.Ignore
+
 /**
  * @author graemerocher
  */
@@ -156,6 +158,7 @@ class GormEnhancerSpec extends GormDatastoreSpec {
             results.find { it.name == "Frank" } != null
     }
 
+	@Ignore
     void "Test ilike query"() {
         given:
             def age = 40
