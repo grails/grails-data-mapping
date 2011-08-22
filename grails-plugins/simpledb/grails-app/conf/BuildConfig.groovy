@@ -8,13 +8,13 @@ grails.project.dependency.resolution = {
 
     log "warn"
 
-    String datastoreVersion = "1.0.0.M8"
+    String datastoreVersion = "1.0.0.M9"
 
     repositories {
         grailsPlugins()
         grailsHome()
         grailsCentral()
-
+        mavenRepo "http://repo.grails.org/grails/core"
         mavenLocal()
         mavenCentral()
         mavenRepo 'http://repository.codehaus.org'
