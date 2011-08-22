@@ -104,7 +104,7 @@ public class MongoQuery extends Query {
 
         queryHandlers.put(Like.class, new QueryHandler<Like>() {
             public void handle(PersistentEntity entity, Like like, DBObject query) {
-                handleLike(entity, like, query, false);
+                handleLike(entity, like, query, true);
             }
         });
 
