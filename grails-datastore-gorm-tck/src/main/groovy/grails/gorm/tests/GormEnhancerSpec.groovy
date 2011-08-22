@@ -143,7 +143,7 @@ class GormEnhancerSpec extends GormDatastoreSpec {
     void "Test like query"() {
         given:
             def age = 40
-            ["Bob", "Fred", "Barney", "Frank"].each {
+            ["Bob", "Fred", "Barney", "Frank", "frita"].each {
                 new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
             }
 
@@ -159,7 +159,7 @@ class GormEnhancerSpec extends GormDatastoreSpec {
     void "Test ilike query"() {
         given:
             def age = 40
-            ["Bob", "Fred", "Barney", "Frank"].each {
+            ["Bob", "Fred", "Barney", "Frank", "frita"].each {
                 new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
             }
 
@@ -167,9 +167,10 @@ class GormEnhancerSpec extends GormDatastoreSpec {
             def results = TestEntity.findAllByNameIlike("fr%")
 
         then:
-            2 == results.size()
+            3 == results.size()
             results.find { it.name == "Fred" } != null
             results.find { it.name == "Frank" } != null
+            results.find { it.name == "frita" } != null
     }
 
     void "Test count by query"() {
