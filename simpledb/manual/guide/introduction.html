@@ -1,0 +1,260 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>1 Introduction 0.1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/mapping.html"><strong>3</strong><span>Mapping Domain Classes to SimpleDB</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/transactions.html"><strong>4</strong><span>Transactions</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/releaseNotes.html"><strong>5</strong><span>Release Notes</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>1 Introduction - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Roman Stepanenko</p>
+
+                    <p><strong>Version:</strong> 0.1</p>
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#currentFeatureSet"><strong>1.1</strong><span>Current Feature Set</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#simpleDBSpecifics"><strong>1.2</strong><span>SimpleDB Specifics</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="introduction">1 Introduction</h1>
+SimpleDB is a web service providing structured data storage in the cloud and backed by clusters
+of Amazon-managed database servers.<p class="paragraph"/>The simpledb plugin aims to provide an object-mapping layer on top of SimpleDB to ease common activities such as:
+<ul class="star">
+<li>Marshalling from SimpleDB to Groovy/Java types and back again</li>
+<li>Support for GORM dynamic finders, criteria and named queries</li>
+<li>Session-managed transactions</li>
+<li>Validating domain instances backed by the SimpleDB datastore</li>
+</ul><p class="paragraph"/>For example, this is all that is needed to persist a domain class in SimpleDB:<p class="paragraph"/><div class="code"><pre>class Book  &#123;
+    <span class="java&#45;object">String</span> id
+    <span class="java&#45;object">String</span> title
+    <span class="java&#45;object">int</span> pages<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"simpledb"</span>
+&#125;</pre></div>
+
+
+
+<h2 id="currentFeatureSet">1.1 Current Feature Set</h2>
+This implementation tries to be as compatible as possible with GORM for Hibernate. 
+In general you can refer to the <a href="http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html" target="blank">GORM documentation</a>
+for usage information.<p class="paragraph"/>The following key features are supported by the current version simpledb plugin:
+<ul class="star">
+<li>Simple persistence methods</li>
+<li>Dynamic finders</li>
+<li>Criteria queries</li>
+<li>Named queries</li>
+<li>Inheritance of domain classes (parent properties are stored in the child)</li>
+<li>Query by example</li>
+<li>Customizable AWS SimpleDB domain name per domain object</li>
+<li>Customizable AWS SimpleDB attribute name per attribute in domain object</li>
+<li>Customizable (optional) prefix for all AWS SimpleDB domain - useful when same AWS account is used for more than one environment (DEV and QA)</li>
+<li>Sorting and lexicographical comparison -friendly persistence of the following data types (including negative values for numeric types):</li>
+<ul class="star">
+<li>byte</li>
+<li>short</li>
+<li>int</li>
+<li>long</li>
+<li>Date</li>
+</ul></ul><p class="paragraph"/>The current version of simpledb plugin has the following limitations:
+<ul class="star">
+<li>Does not support Embedded types</li>
+<li>Does not support HQL queries</li>
+<li>Does not support Dirty checking methods</li>
+<li>Does not support Composite primary keys</li>
+<li>Does not support Many-to-many associations (these can be modelled with a mapping class)</li>
+<li>Does not support Any direct interaction with the Hibernate API</li>
+<li>Does not support Custom Hibernate user types</li>
+<li>Maximum size of String attribute or toString representation is 1024 bytes (will be solved in the next version)</li>
+<li>Sorting and lexicographical comparison -friendly persistence is not implemented for the following data types:</li>
+<ul class="star">
+<li>float</li>
+<li>double</li>
+<li>BigDecimal</li>
+<li>BigInteger</li>
+</ul></ul><p class="paragraph"/>There may be other limitations not mentioned here so in general it shouldn't be 
+expected that an application based on GORM for Hibernate will work without some tweaking involved.
+Furthermore, migration from SQL to NoSQL storage with eventual consistency (such as SimpleDB)
+will require a re-design of the application
+at the fundamental level (see 'eventual consistency' in the next chapter).
+Having said that, the large majority of common GORM functionality is supported, and this simpledb plugin is a good option
+(in author's eyes) for a from-scratch rapid project development. In this scenario AWS SimpleDB allows developer to
+focus purely on the grails application without setting up and managing a dev/production cluster of database server instances.<p class="paragraph"/>
+
+
+<h2 id="simpleDBSpecifics">1.2 SimpleDB Specifics</h2>
+AWS SimpleDB imposes several critical restrictions.<p class="paragraph"/><h3>Eventual consistency model</h3><p class="paragraph"/>SimpleDB is based on the premise of eventual consistency model.
+With eventual consistency, when you submit an update to SimpleDB, the database server handling your 
+request will forward the update to the other database servers where that domain 
+is replicated. The full update of all replicas does not happen before your update 
+request returns. The replication continues in the background while other requests are handled. 
+In other words, 
+if you update an object and do a query right after 
+updating it, you might get an old value back. There are ways to force strong consistency behavior but they go against the 
+whole premise of choosing SimpleDB in the first place - SimpleDB is best used by applications able to deal with
+eventual consistency and benefit from the ability to remain available in the midst of a failure. Future
+versions of the plugin might add support for strong consistency though.<p class="paragraph"/>The best way to fight eventual consistency in the application is <strong class="bold">not</strong> to assume that the information is
+available right after create/update/delete and store the objects you just modified or created in the cache. Generally,
+information becomes visible within a couple of seconds, however it is a really bad idea to try to 
+implement artificial delay in the application layer because when AWS experiences some problems the 
+eventually consistency window might be 
+drastically increased. Design for failure and you will get fewer surprises when they happen.<p class="paragraph"/><h3>Everything is a String</h3>
+In AWS SimpleDB the only supported datatype is String, furthermore queries using LIKE keyword
+string are compared in a  <em class="italic">case-sensitive</em>  approach.<p class="paragraph"/>The simpledb plugin automatically takes care of conversion to and from String for main data types. It must be noted
+that proper implementation of the back-end of persistence layer must not only provide conversion to and from String
+but provide conversion to and from String in format able to support comparison of resulting strings lexicographically (at least for
+datatypes on which comparison is likely to be used).
+Because everything is a string,
+comparing naive toString representation of numbers will not work (89 is lexicographically greater than 321).<p class="paragraph"/>Current implementation provides sorting and lexicographical comparison -friendly persistence of 
+the following data types (including negative values for numeric types):
+<ul class="star">
+<li>byte</li>
+<li>short</li>
+<li>int</li>
+<li>long</li>
+<li>Date</li>
+</ul><p class="paragraph"/>The algorithm used to save numeric types is as follows (illustrated on the Byte example):
+the goal is to move all negatives into the positives realms so that we can
+compare strings lexicographically and it should be accurate for any mix of positives and negatives.<p class="paragraph"/>Byte is -128..127. Let's say if the value is negative we shift it by adding 128 and pad with zeroes into 4 digits.
+This way we can cover all negatives and turn them into positives.
+<ul class="star">
+<li>-128 -&#62; 0000</li>
+<li>-127 -&#62; 0001</li>
+<li>. . .</li>
+<li>-1   -&#62; 0127 (this is the maximum a Byte can hold)</li>
+</ul><p class="paragraph"/>so now we need to take care of how to convert remaining range of 0..127 values.
+Lets say that for those values which are initially positive we just do toString and prepend them with '1' and pad
+with zeroes into 4 digits.
+<ul class="star">
+<li>0   -&#62; 1000</li>
+<li>1   -&#62; 1001</li>
+<li>. . .</li>
+<li>126 -&#62; 1126</li>
+<li>127 -&#62; 1127</li>
+</ul><p class="paragraph"/>With this logic initially positive values when converted will be greater than 
+converted negatives and yet conversion back/forth is faster than dealing with BigInteger (quick
+note why BigIntegers are mentioned here. For byte, short, and int we can always step into 'next' storage bucket 
+when shifting negatives into positives: for example if when dealing with bytes we say that result value is of type
+<code>short</code> we can simply add the same 128 to <strong class="bold">all</strong> values byte values.
+Unfortunately when we get to longs (which are used a lot, for example for versions), 
+there is no 'next' bucket to hold sum of two longs, and the only choice would be to deal with BigIntegers,
+which is very slow. Also, it would lead to inconsistent representation of numbers among all numerics - one algorithm
+for <code>byte</code>/<code>short</code>/<code>int</code> and another for <code>long</code>)<p class="paragraph"/>A helpful side effect is that initially positive values when converted would look pretty much the same 
+in the converted format (with leading 1), which is handy when looking at raw DB values.<p class="paragraph"/>(Decoding is simple - we look at the first char to decide how to proceed because we know exactly how we got it)<p class="paragraph"/>The short summary is that for this class<p class="paragraph"/><div class="code"><pre>class Book  &#123;
+    <span class="java&#45;object">String</span> id
+    <span class="java&#45;object">String</span> title
+    <span class="java&#45;object">int</span> pages<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"simpledb"</span>
+&#125;</pre></div><p class="paragraph"/>You can fire standard dynamic finders and not worry about SimpleDB specifics.
+<div class="code"><pre>Book.findAllByPagesGreaterThan(123)</pre></div><p class="paragraph"/> <em class="italic">In the current version, for numeric data types other than those listed above, dynamic finders with comparison will not produce correct results and should not be used.</em> <p class="paragraph"/><h3>Transactions</h3>
+AWS SimpleDB doesn't support explicit transactional boundaries or isolation levels. There is no notion of 
+a commit or a rollback. There is some implicit support for atomic writes, but it only applies within the 
+scope of each individual item being written.<p class="paragraph"/>However, GORM for SimpleDB does batch up inserts 
+and updates until the session is flushed. This makes it possible to support some rollback options. See more details
+in 'Transactions' chapter
+
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    Official production and development support for plugin is available via OSMoss: <a href="http://www.osmoss.com/project/grails-gorm-simpledb">http://www.osmoss.com/project/grails-gorm-simpledb</a>
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

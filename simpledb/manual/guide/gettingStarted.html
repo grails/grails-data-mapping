@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>2 Getting Started 0.1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/mapping.html"><strong>3</strong><span>Mapping Domain Classes to SimpleDB</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/transactions.html"><strong>4</strong><span>Transactions</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/releaseNotes.html"><strong>5</strong><span>Release Notes</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/mapping.html"><strong>3</strong><span>Mapping Domain Classes to SimpleDB</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>2 Getting Started - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Roman Stepanenko</p>
+
+                    <p><strong>Version:</strong> 0.1</p>
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#configurationOptions"><strong>2.1</strong><span>Configuration Options</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="gettingStarted">2 Getting Started</h1>
+To get started with GORM for SimpleDB you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin simpledb</pre></div><p class="paragraph"/>
+
+
+<h2 id="configurationOptions">2.1 Configuration Options</h2>
+<h3>Configuration options for simpledb plugin.</h3><p class="paragraph"/>simpledb plugin supports the following configuration options:
+<table class="wiki-table" cellpadding="0" cellspacing="0" border="0"><tr><th><strong class="bold">Name</strong></th><th><strong class="bold">Required</strong></th><th><strong class="bold">Description</strong></th></tr><tr class="table-odd"><td>accessKey</td><td>Y</td><td>AWS access key value. IMPORTANT: <strong class="bold">You have to properly guard this value. Do not keep it in version control system if anyone except authorized persons has access to your VCS</strong></td></tr><tr class="table-even"><td>secretKey</td><td>Y</td><td>AWS secret key value. IMPORTANT: <strong class="bold">You have to properly guard this value. Do not keep it in version control system if anyone except authorized persons has access to your VCS</strong></td></tr><tr class="table-odd"><td>domainNamePrefix</td><td>N</td><td>if this property is specified, the value will be prefixed to all AWS domain names. It is handy when the same AWS account is shared between more than one environment.</td></tr><tr class="table-even"><td>dbCreate</td><td>N</td><td>similar to GORM for hibernate. Currently supports <strong class="bold">'drop'</strong> (will drop the domains for domain classes at startup), <strong class="bold">'create'</strong> (will create domains for domain classes at startup if they do not exist), <strong class="bold">'drop-create'</strong> (at startup will ensure that all domains are present and are <strong class="bold">empty</strong> - do not use in PROD environment!)</td></tr></table><p class="paragraph"/>To configure, provide the following in the Config.groovy or your custom MyApp.groovy config file:
+<div class="code"><pre>grails &#123;
+    simpledb &#123;
+        accessKey = '...'
+        secretKey = '...'
+        domainNamePrefix = 'DEV_' //optional, used when the same AWS account is shared between more than one environment
+        dbCreate = 'drop&#45;create' // optional, one of 'drop', 'create', 'drop&#45;create'
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Per-environment configuration works as well. For example:
+<div class="code"><pre>grails &#123;
+    simpledb &#123;
+        accessKey = '...'
+        secretKey = '...'
+    &#125;
+&#125;<p class="paragraph"/>environments &#123;
+    production &#123;
+        grails &#123;
+            simpledb &#123;
+                domainNamePrefix = 'PROD_' //<span class="java&#45;keyword">this</span> setting is optional, used when the same AWS account is shared between more than one environment
+                dbCreate = 'create' // one of 'drop, 'create', 'drop&#45;create'
+            &#125;
+        &#125;
+    &#125;
+    development &#123;
+        grails &#123;
+            simpledb &#123;
+                domainNamePrefix = 'DEV_' //<span class="java&#45;keyword">this</span> setting is optional, used when the same AWS account is shared between more than one environment
+                dbCreate = 'drop&#45;create' // one of 'drop, 'create', 'drop&#45;create'
+            &#125;
+        &#125;
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Or, if you use separate AWS accounts for PROD and dev:
+<div class="code"><pre>environments &#123;
+    production &#123;
+        grails &#123;
+            simpledb &#123;
+                accessKey = '&#8230; production account ...'
+                secretKey = '&#8230; production account ...'
+                dbCreate = 'create' // one of 'drop, 'create', 'drop&#45;create'
+            &#125;
+        &#125;
+    &#125;
+    development &#123;
+        grails &#123;
+            simpledb &#123;
+                accessKey = '&#8230; dev account ...'
+                secretKey = '&#8230; dev account ...'
+                domainNamePrefix = 'DEV_' //<span class="java&#45;keyword">this</span> setting is optional, used when the same AWS account is shared between more than one environment
+                dbCreate = 'drop&#45;create' // one of 'drop, 'create', 'drop&#45;create'
+            &#125;
+        &#125;
+    &#125;
+&#125;</pre></div><p class="paragraph"/><p class="paragraph"/>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/mapping.html"><strong>3</strong><span>Mapping Domain Classes to SimpleDB</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    Official production and development support for plugin is available via OSMoss: <a href="http://www.osmoss.com/project/grails-gorm-simpledb">http://www.osmoss.com/project/grails-gorm-simpledb</a>
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>
