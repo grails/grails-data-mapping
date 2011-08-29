@@ -89,7 +89,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
             }
             instance.errors = objectErrors
         }
-        return !errors.hasErrors()
+        return !instance.errors.hasErrors()
     }
 
     private Errors filterErrors(Errors errors, Set validatedFields, Object target) {
