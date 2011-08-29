@@ -196,6 +196,11 @@ subprojects {
                     break;
                 }
 
+                beforeDeployment { deployment ->
+                      ["sources", "javadoc"].each { type ->
+                          deployment.addArtifact configurations.meta.artifacts.find { it.classifier == type }
+                      }
+                }
                 pom.project {
                     licenses {
                         license {
