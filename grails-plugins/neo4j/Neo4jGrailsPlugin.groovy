@@ -11,7 +11,7 @@ class Neo4jGrailsPlugin {
     def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPNEO4J" ]
     def scm = [ url: "https://github.com/sarmbruster/grails-data-mapping" ]
 
-    def version = "0.9-SNAPSHOT"
+    def version = "1.0-SNAPSHOT"
     def grailsVersion = "1.2 > *"
     //def observe = ['services']
     //def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
@@ -34,7 +34,7 @@ class Neo4jGrailsPlugin {
 
     def doWithDynamicMethods = { ctx ->
         def datastore = ctx.neo4jDatastore
-        def transactionManager = null // ctx.neo4jTransactionManager
+        def transactionManager = ctx.neo4jTransactionManager
         def methodsConfigurer = new Neo4jMethodsConfigurer(datastore, transactionManager)    
         methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate")
         def foe = application?.config?.grails?.gorm?.failOnError
