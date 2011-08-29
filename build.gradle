@@ -27,6 +27,8 @@ subprojects {
     releaseType = "BUILD-SNAPSHOT"
 /*    releaseType = "M8"*/
     version = "1.0.0.${releaseType}"
+    group = "org.grails"
+    archivesBaseName = "grails-datastore"
 
     def isStandardGroovyMavenProject = isGroovyProject(project)
 
@@ -36,6 +38,18 @@ subprojects {
         apply plugin: 'maven'
         apply plugin: 'idea'
         apply from: "file:${rootDir}/clover.gradle"
+
+        install.doLast {
+            def gradleArtifactCache = new File(gradle.gradleUserHomeDir, "cache")
+            configurations.archives.artifacts.findAll { it.type == "jar" && !it.classifier }.each { artifact ->
+
+                // Gradle's cache layout is internal and may change in future versions, this is written for gradle 1.0-milestone-3
+                def artifactInCache = file("${gradleArtifactCache}/${project.group}/${project.name}/jars/${project.name}-${version}.jar")
+                if (artifactInCache.exists()) {
+                    artifactInCache.withOutputStream { destination ->  artifact.file.withInputStream { destination << it } }
+                }
+            }
+        }
     }
 
     def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") && !project.name.endsWith("tck") && !project.name.endsWith("plugin-support")
@@ -114,8 +128,6 @@ subprojects {
         }
     }
 
-    group = "org.grails"
-    archivesBaseName = "grails-datastore"
 
 
 
