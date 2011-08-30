@@ -147,6 +147,17 @@ public class GemfireQuery extends Query {
                 return index;
             }
         });
+        queryHandlers.put(IsNull.class, new QueryHandler() {
+        	public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, List params, int index) {
+        		IsNull eq = (IsNull) criterion;
+        		final String name = eq.getProperty();
+        		validateProperty(entity, name, IsNull.class);
+        		q.append(calculateName(entity, name))
+        		.append(" = NULL ");
+        		
+        		return index;
+        	}
+        });
         queryHandlers.put(Disjunction.class, new QueryHandler() {
             public int handle(PersistentEntity entity, Criterion criterion, StringBuilder query, List params, int index) {
                 return buildWhereClause(entity, (Junction) criterion,query, index, params);
