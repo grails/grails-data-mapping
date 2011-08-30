@@ -28,7 +28,6 @@ subprojects {
 /*    releaseType = "M8"*/
     version = "1.0.0.${releaseType}"
     group = "org.grails"
-    archivesBaseName = "grails-datastore"
 
     def isStandardGroovyMavenProject = isGroovyProject(project)
 
@@ -128,8 +127,7 @@ subprojects {
         }
     }
 
-
-
+    archivesBaseName = "grails-datastore"
 
     if (isStandardGroovyMavenProject) {
         configurations {
