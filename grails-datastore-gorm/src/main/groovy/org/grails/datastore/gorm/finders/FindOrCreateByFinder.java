@@ -16,6 +16,7 @@ package org.grails.datastore.gorm.finders;
 
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
+import groovy.lang.MissingMethodException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,9 +43,9 @@ public class FindOrCreateByFinder extends AbstractFindByFinder {
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected Object doInvokeInternal(final DynamicFinderInvocation invocation) {
+    	
         if (OPERATOR_OR.equals(invocation.getOperator())) {
-            throw new UnsupportedOperationException(
-                    "'Or' expressions are not allowed in findOrCreateBy queries.");
+    		throw new MissingMethodException(invocation.getMethodName(), invocation.getJavaClass(), invocation.getArguments());
         }
 
         Object result = super.doInvokeInternal(invocation);
@@ -52,6 +53,9 @@ public class FindOrCreateByFinder extends AbstractFindByFinder {
             Map m = new HashMap();
             List<MethodExpression> expressions = invocation.getExpressions();
             for (MethodExpression me : expressions) {
+            	if(!(me instanceof MethodExpression.Equal)) {
+            		throw new MissingMethodException(invocation.getMethodName(), invocation.getJavaClass(), invocation.getArguments());
+            	}
                 String propertyName = me.propertyName;
                 Object[] arguments = me.getArguments();
                 m.put(propertyName, arguments[0]);
