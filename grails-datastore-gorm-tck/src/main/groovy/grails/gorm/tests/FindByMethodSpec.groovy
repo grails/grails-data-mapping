@@ -101,11 +101,11 @@ class FindByMethodSpec extends GormDatastoreSpec {
         then:
             'Fly Fishing For Everyone'== book.title
 
-//        when:
-//            book = Book.findPublishedByTitleOrAuthor('Fly Fishing For Everyone', 'Dierk')
-//        then:
-//            'GINA'== book.title
-//            Book.findPublished() != null
+        when:
+            book = Book.findPublishedByTitleOrAuthor('Fly Fishing For Everyone', 'Dierk')
+        then:
+            'GINA'== book.title
+            Book.findPublished() != null
 
         when:
             book = Book.findNotPublished()
@@ -132,10 +132,10 @@ class FindByMethodSpec extends GormDatastoreSpec {
         then:
             1 == books?.size()
 
-//        when:
-//            books = Book.findAllPublishedByAuthorOrTitle('Graeme', 'GINA')
-//        then:
-//            2 == books?.size()
+        when:
+            books = Book.findAllPublishedByAuthorOrTitle('Graeme', 'GINA')
+        then:
+            2 == books?.size()
 
         when:
             books = Book.findAllNotPublishedByAuthor('Jeff')

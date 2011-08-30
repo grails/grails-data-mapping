@@ -37,4 +37,9 @@ public class FindAllByBooleanFinder extends FindAllByFinder{
         super(datastore);
         setPattern(METHOD_PATTERN);
     }
+    
+    @Override
+    public boolean firstExpressionIsRequiredBoolean() {
+    	return true;
+    }
 }

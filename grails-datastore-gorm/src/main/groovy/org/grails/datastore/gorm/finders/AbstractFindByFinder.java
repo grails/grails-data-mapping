@@ -37,7 +37,7 @@ public abstract class AbstractFindByFinder extends DynamicFinder {
         return results.get(0);
     }
 
-    private boolean firstExpressionIsRequiredBoolean() {
+    public boolean firstExpressionIsRequiredBoolean() {
         return false;
     }
 

@@ -49,7 +49,7 @@ public class FindAllByFinder extends DynamicFinder {
         return q.list();
     }
 
-    private boolean firstExpressionIsRequiredBoolean() {
+    public boolean firstExpressionIsRequiredBoolean() {
         return false;
     }
 
