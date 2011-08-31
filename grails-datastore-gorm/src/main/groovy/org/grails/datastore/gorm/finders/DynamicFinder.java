@@ -200,7 +200,6 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                     for (String queryParameter : queryParameters) {
                         MethodExpression currentExpression = findMethodExpression(clazz, queryParameter);
                         final int requiredArgs = currentExpression.getArgumentsRequired();
-                        totalRequiredArguments += requiredArgs;
                         // populate the arguments into the GrailsExpression from the argument list
                         Object[] currentArguments = new Object[requiredArgs];
                         if ((argumentCursor + requiredArgs) > arguments.length) {
@@ -210,8 +209,9 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                         for (int k = 0; k < requiredArgs; k++, argumentCursor++) {
                             currentArguments[k] = arguments[argumentCursor];
                         }
-                        currentExpression.setArguments(currentArguments);
+                        currentExpression = getInitializedExpression(currentExpression, currentArguments);
                         // add to list of expressions
+                        totalRequiredArguments += currentExpression.argumentsRequired;
                         expressions.add(currentExpression);
                     }
                     break;
@@ -228,10 +228,9 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             }
 
             totalRequiredArguments += requiredArguments;
-            Object[] soloArgs = new Object[requiredArguments];
-
-            System.arraycopy(arguments, 0, soloArgs, 0, requiredArguments);
-            solo.setArguments(soloArgs);
+        	Object[] soloArgs = new Object[requiredArguments];
+        	System.arraycopy(arguments, 0, soloArgs, 0, requiredArguments);
+        	solo = getInitializedExpression(solo, arguments);
             expressions.add(solo);
         }
 
@@ -252,6 +251,24 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         return new DynamicFinderInvocation(clazz, methodName, remainingArguments,
                 expressions, additionalCriteria, operatorInUse);
     }
+
+    /**
+     * Initializes the arguments of the specified expression with the specified arguments.  If the
+     * expression is an Equal expression and the argument is null then a new expression is created
+     * and returned of type IsNull.
+     * 
+     * @param expression expression to initialize
+     * @param arguments arguments to the expression
+     * @return the initialized expression
+     */
+	private MethodExpression getInitializedExpression(MethodExpression expression, Object[] arguments) {
+		if(expression instanceof Equal && arguments.length == 1 && arguments[0] == null) {
+			expression = new IsNull(expression.targetClass, expression.propertyName);
+		} else {
+			expression.setArguments(arguments);
+		}
+		return expression;
+	}
 
     protected MethodExpression findMethodExpression(Class clazz, String expression) {
         final Matcher matcher = methodExpressinPattern.matcher(expression);
