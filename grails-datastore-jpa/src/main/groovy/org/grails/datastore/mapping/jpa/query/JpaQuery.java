@@ -509,6 +509,9 @@ public class JpaQuery extends Query {
                                .append(logicalName)
                                .append(CLOSE_BRACKET);
                 }
+                else if (projection instanceof DistinctProjection) {
+                	queryString.append(DISTINCT_CLAUSE).append(logicalName);
+                }
                 else if (projection instanceof IdProjection) {
                     queryString.append(logicalName)
                                .append(DOT)
