@@ -22,8 +22,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.data.gemfire.GemfireCallback;
+import org.springframework.data.gemfire.GemfireTemplate;
 import org.grails.datastore.mapping.gemfire.GemfireDatastore;
 import org.grails.datastore.mapping.gemfire.GemfireSession;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -32,9 +33,6 @@ import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.order.ManualEntityOrdering;
 import org.grails.datastore.mapping.query.projections.ManualProjections;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
-import org.springframework.data.gemfire.GemfireCallback;
-import org.springframework.data.gemfire.GemfireTemplate;
 
 import com.gemstone.gemfire.GemFireCheckedException;
 import com.gemstone.gemfire.GemFireException;
@@ -324,18 +322,14 @@ public class GemfireQuery extends Query {
             return (List) gemfireDatastore.getTemplate(entity).execute(new GemfireCallback() {
 
                 public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
-                	Collection<Projection> projectionsToProcess = CollectionUtils.select(projectionList.getProjectionList(), new Predicate() {
-						public boolean evaluate(Object object) {
-							return !(object instanceof DistinctProjection);
-						}
-                	});
+
                     List finalResults;
-                    if (projectionsToProcess.isEmpty()) {
+                    if (projectionList.isEmpty()) {
                         finalResults = new ArrayList(region.values());
                     }
                     else {
                         List results = new ArrayList();
-						for (Projection projection : projectionsToProcess) {
+                        for (Projection projection : projectionList.getProjectionList()) {
                             Collection values = null;
                             if (projection instanceof CountProjection) {
                                 results.add(region.size());
@@ -362,13 +356,14 @@ public class GemfireQuery extends Query {
                                     values = region.values();
                                 }
                                 final List propertyProjectionResults = manualProjections.property(values, ((PropertyProjection) projection).getPropertyName());
-                                if (projectionsToProcess.size() == 1) {
+                                if (projectionList.getProjectionList().size() == 1) {
                                     results = propertyProjectionResults;
                                 }
                                 else {
                                     results.add(propertyProjectionResults);
                                 }
                             }
+
                         }
                         finalResults = results;
                     }

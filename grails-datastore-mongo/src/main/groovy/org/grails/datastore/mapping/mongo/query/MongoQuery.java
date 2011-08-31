@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
@@ -37,8 +35,6 @@ import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
-import org.grails.datastore.mapping.query.Query.DistinctProjection;
-import org.grails.datastore.mapping.query.Query.Projection;
 import org.grails.datastore.mapping.query.projections.ManualProjections;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -400,12 +396,7 @@ public class MongoQuery extends Query {
                 DBCursor cursor;
                 DBObject query = createQueryObject(entity);
 
-            	Collection<Projection> projectionList = CollectionUtils.select(projections().getProjectionList(), new Predicate() {
-					public boolean evaluate(Object object) {
-						return !(object instanceof DistinctProjection);
-					}
-            	});
-
+                final List<Projection> projectionList = projections().getProjectionList();
                 if (projectionList.isEmpty()) {
                     cursor = executeQuery(entity, criteria, collection, query);
                     return (List)new MongoResultList(cursor, mongoEntityPersister).clone();

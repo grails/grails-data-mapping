@@ -984,7 +984,6 @@ public abstract class Query {
         }
         
         public ProjectionList distinct() {
-        	add(Projections.distinct());
         	return this;
         }
 
