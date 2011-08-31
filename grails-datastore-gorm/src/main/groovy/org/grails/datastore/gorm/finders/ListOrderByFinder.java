@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.gorm.finders;
 
+import groovy.lang.Closure;
+
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,6 +49,10 @@ public class ListOrderByFinder extends AbstractFinder {
 
     @SuppressWarnings("rawtypes")
     public Object invoke(final Class clazz, final String methodName, final Object[] arguments) {
+    	return invoke(clazz, methodName, null, arguments);
+    }
+    	@SuppressWarnings("rawtypes")
+    public Object invoke(final Class clazz, final String methodName, final Closure additionalCriteria, final Object[] arguments) {
 
         Matcher match = pattern.matcher(methodName);
         match.find();
@@ -57,13 +63,13 @@ public class ListOrderByFinder extends AbstractFinder {
         return execute(new SessionCallback<Object>() {
             public Object doInSession(final Session session) {
                 Query q = session.createQuery(clazz);
-
+                applyAdditionalCriteria(q, additionalCriteria);
                 if (arguments.length > 0 && (arguments[0] instanceof Map)) {
                     DynamicFinder.populateArgumentsForCriteria(clazz, q, (Map) arguments[0]);
                 }
 
                 q.order(Query.Order.asc(propertyName));
-
+                q.projections().distinct();
                 return invokeQuery(q);
             }
         });
@@ -76,4 +82,5 @@ public class ListOrderByFinder extends AbstractFinder {
     public boolean isMethodMatch(String methodName) {
         return pattern.matcher(methodName.subSequence(0, methodName.length())).find();
     }
+
 }

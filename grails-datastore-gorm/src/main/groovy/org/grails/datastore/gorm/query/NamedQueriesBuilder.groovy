@@ -184,7 +184,7 @@ class NamedCriteriaProxy {
     def methodMissing(String methodName, args) {
 
         def javaClass = entity.javaClass
-        DynamicFinder method = finders.find { FinderMethod f ->  f.isMethodMatch(methodName) }
+        FinderMethod method = finders.find { FinderMethod f ->  f.isMethodMatch(methodName) }
 
         if (method) {
             def preparedClosure = getPreparedCriteriaClosure()

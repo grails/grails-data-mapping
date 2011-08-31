@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.gorm.finders;
 
+import groovy.lang.Closure;
+
 /**
  * Implementation of dynamic finders.
  */
@@ -33,6 +35,16 @@ public interface FinderMethod {
      * @return The return value
      */
     Object invoke(Class clazz, String methodName, Object[] arguments);
+    
+    /**
+     * Invokes the method
+     * @param clazz The class
+     * @param methodName The method name
+     * @param additionalCriteria additional criteria closure
+     * @param arguments The arguments
+     * @return The return value
+     */
+    Object invoke(Class clazz, String methodName, Closure additionalCriteria, Object[] arguments);
 
     /**
      * Whether the given method name matches this finder
