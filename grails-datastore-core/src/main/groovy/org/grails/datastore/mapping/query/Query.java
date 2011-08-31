@@ -899,6 +899,9 @@ public abstract class Query {
      * Used to count the results of a query
      */
     public static class CountProjection extends Projection {}
+    
+    public static class DistinctProjection extends Projection {}
+    
 
     /**
      * A projection that obtains the value of a property of an entity
@@ -978,6 +981,11 @@ public abstract class Query {
 
         public boolean isEmpty() {
             return projections.isEmpty();
+        }
+        
+        public ProjectionList distinct() {
+        	add(Projections.distinct());
+        	return this;
         }
 
         /**
