@@ -341,14 +341,4 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         Map<?, ?> argMap = (Map<?, ?>)arguments[0];
         populateArgumentsForCriteria(clazz, query, argMap);
     }
-
-    protected void applyAdditionalCriteria(Query query, Closure additionalCriteria) {
-        if (additionalCriteria == null) {
-            return;
-        }
-
-        CriteriaBuilder builder = new CriteriaBuilder(query.getEntity().getJavaClass(),
-                  query.getSession(), query);
-        builder.build(additionalCriteria);
-    }
 }

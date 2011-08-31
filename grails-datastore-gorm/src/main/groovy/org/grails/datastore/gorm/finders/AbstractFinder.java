@@ -14,10 +14,14 @@
  */
 package org.grails.datastore.gorm.finders;
 
+import grails.gorm.CriteriaBuilder;
+import groovy.lang.Closure;
+
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.DatastoreUtils;
 import org.grails.datastore.mapping.core.SessionCallback;
 import org.grails.datastore.mapping.core.VoidSessionCallback;
+import org.grails.datastore.mapping.query.Query;
 
 /**
  * Abstract base class for finders.
@@ -39,4 +43,14 @@ public abstract class AbstractFinder implements FinderMethod {
     protected void execute(final VoidSessionCallback callback) {
         DatastoreUtils.execute(datastore, callback);
     }
+
+	protected void applyAdditionalCriteria(Query query, Closure additionalCriteria) {
+	    if (additionalCriteria == null) {
+	        return;
+	    }
+	
+	    CriteriaBuilder builder = new CriteriaBuilder(query.getEntity().getJavaClass(),
+	              query.getSession(), query);
+	    builder.build(additionalCriteria);
+	}
 }
