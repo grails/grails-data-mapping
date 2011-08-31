@@ -5,5 +5,3 @@ dependencies {
         transitive = false
     }
 }
-
-jar.appendix = 'redis'

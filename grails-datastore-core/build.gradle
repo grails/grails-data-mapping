@@ -23,5 +23,3 @@ dependencies {
     }
     testCompile "org.grails:grails-core:$grailsVersion"
 }
-
-jar.appendix = 'core'

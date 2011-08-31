@@ -8,5 +8,3 @@ dependencies {
         transitive = false
     }
 }
-
-jar.appendix = 'gorm-plugin-support'

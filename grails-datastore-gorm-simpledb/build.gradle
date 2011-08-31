@@ -18,8 +18,6 @@ dependencies {
                 project(":grails-datastore-gorm-tck")
 }
 
-jar.appendix = 'gorm-simpledb'
-
 configurations {
     compile.exclude module: "org.slf4j"
     testCompile.exclude module: "org.slf4j"

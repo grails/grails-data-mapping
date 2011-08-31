@@ -37,8 +37,6 @@ test {
     jvmArgs "-Xmx1024m"
 }
 
-jar.appendix = 'gorm-hibernate'
-
 sourceSets {
     main {
         compileClasspath += configurations.grails

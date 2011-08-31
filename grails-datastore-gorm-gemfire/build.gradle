@@ -7,5 +7,3 @@ dependencies {
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")
 }
-
-jar.appendix = 'gorm-gemfire'

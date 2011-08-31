@@ -12,5 +12,3 @@ dependencies {
         exclude module:'antlr'
     }
 }
-
-jar.appendix = 'gemfire'

@@ -21,8 +21,6 @@ dependencies {
     testRuntime "org.grails:grails-web:$grailsVersion"
 }
 
-jar.appendix = 'gorm-mongo'
-
 sourceSets {
     main {
         compileClasspath += configurations.grails

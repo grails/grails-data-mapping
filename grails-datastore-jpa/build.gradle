@@ -19,5 +19,3 @@ sourceSets {
         compileClasspath += configurations.grails
     }
 }
-
-jar.appendix = 'jpa'

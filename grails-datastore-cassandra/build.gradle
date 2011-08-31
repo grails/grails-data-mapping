@@ -16,5 +16,3 @@ dependencies {
     runtime 'commons-collections:commons-collections:3.2'
     runtime 'commons-lang:commons-lang:2.4'
 }
-
-jar.appendix = 'cassandra'
