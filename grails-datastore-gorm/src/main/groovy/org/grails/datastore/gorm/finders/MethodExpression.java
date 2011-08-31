@@ -124,6 +124,17 @@ public abstract class MethodExpression {
     	}
     }
     
+    public static class Rlike extends MethodExpression {
+    	public Rlike(Class<?> targetClass, String propertyName) {
+    		super(targetClass, propertyName);
+    	}
+    	
+    	@Override
+    	public Query.Criterion createCriterion() {
+    		return Restrictions.rlike(propertyName, arguments[0].toString());
+    	}
+    }
+    
     public static class InList extends MethodExpression {
         public InList(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);

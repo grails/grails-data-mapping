@@ -14,7 +14,6 @@
  */
 package org.grails.datastore.gorm.finders;
 
-import grails.gorm.CriteriaBuilder;
 import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 
@@ -32,6 +31,7 @@ import org.grails.datastore.gorm.finders.MethodExpression.Between;
 import org.grails.datastore.gorm.finders.MethodExpression.Equal;
 import org.grails.datastore.gorm.finders.MethodExpression.GreaterThan;
 import org.grails.datastore.gorm.finders.MethodExpression.GreaterThanEquals;
+import org.grails.datastore.gorm.finders.MethodExpression.Ilike;
 import org.grails.datastore.gorm.finders.MethodExpression.InList;
 import org.grails.datastore.gorm.finders.MethodExpression.IsEmpty;
 import org.grails.datastore.gorm.finders.MethodExpression.IsNotEmpty;
@@ -39,9 +39,9 @@ import org.grails.datastore.gorm.finders.MethodExpression.IsNotNull;
 import org.grails.datastore.gorm.finders.MethodExpression.IsNull;
 import org.grails.datastore.gorm.finders.MethodExpression.LessThan;
 import org.grails.datastore.gorm.finders.MethodExpression.LessThanEquals;
-import org.grails.datastore.gorm.finders.MethodExpression.Ilike;
 import org.grails.datastore.gorm.finders.MethodExpression.Like;
 import org.grails.datastore.gorm.finders.MethodExpression.NotEqual;
+import org.grails.datastore.gorm.finders.MethodExpression.Rlike;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.query.Query;
 import org.springframework.core.convert.ConversionService;
@@ -78,7 +78,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         // populate the default method expressions
         try {
             Class[] classes = {
-                      Equal.class, NotEqual.class, InList.class, Between.class, Like.class, Ilike.class,
+                      Equal.class, NotEqual.class, InList.class, Between.class, Like.class, Ilike.class, Rlike.class,
                       GreaterThanEquals.class, LessThanEquals.class, GreaterThan.class,
                       LessThan.class, IsNull.class, IsNotNull.class, IsEmpty.class,
                       IsEmpty.class, IsNotEmpty.class };
