@@ -76,6 +76,7 @@ public class FindAllByFinder extends DynamicFinder {
                 q.add( expression.createCriterion() );
             }
         }
+        q.projections().distinct();
         return q;
     }
 }
