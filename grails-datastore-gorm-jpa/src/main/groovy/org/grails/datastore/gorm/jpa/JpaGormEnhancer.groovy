@@ -131,27 +131,27 @@ class JpaStaticApi<D> extends GormStaticApi<D> {
     }
 
     @Override
-    Object executeQuery(String query) {
+    List<D> executeQuery(String query) {
         doQuery query
     }
 
     @Override
-    Object executeQuery(String query, Map args) {
+    List<D> executeQuery(String query, Map args) {
         doQuery query, null, args
     }
 
     @Override
-    Object executeQuery(String query, Map params, Map args) {
+    List<D> executeQuery(String query, Map params, Map args) {
         doQuery query, params, args, false
     }
 
     @Override
-    Object executeQuery(String query, Collection params) {
+    List<D> executeQuery(String query, Collection params) {
         doQuery query, params
     }
 
     @Override
-    Object executeQuery(String query, Collection params, Map args) {
+    List<D> executeQuery(String query, Collection params, Map args) {
         doQuery query, params, args
     }
 
@@ -181,52 +181,52 @@ class JpaStaticApi<D> extends GormStaticApi<D> {
     }
 
     @Override
-    Object find(String query) {
+    D find(String query) {
         doQuery query, null, null, true
     }
 
     @Override
-    Object find(String query, Map args) {
+    D find(String query, Map args) {
         doQuery query, null, args, true
     }
 
     @Override
-    Object find(String query, Map params, Map args) {
+    D find(String query, Map params, Map args) {
         doQuery query, params, args, true
     }
 
     @Override
-    Object find(String query, Collection params) {
+    D find(String query, Collection params) {
         doQuery query, params, null, true
     }
 
     @Override
-    Object find(String query, Collection params, Map args) {
+    D find(String query, Collection params, Map args) {
         doQuery query, params, args, true
     }
 
     @Override
-    List findAll(String query) {
+    List<D> findAll(String query) {
         doQuery query
     }
 
     @Override
-    List findAll(String query, Map args) {
+    List<D> findAll(String query, Map args) {
         doQuery query, null, args
     }
 
     @Override
-    List findAll(String query, Map params, Map args) {
+    List<D> findAll(String query, Map params, Map args) {
         doQuery query, params, args
     }
 
     @Override
-    List findAll(String query, Collection params) {
+    List<D> findAll(String query, Collection params) {
         doQuery query, params
     }
 
     @Override
-    List findAll(String query, Collection params, Map args) {
+    List<D> findAll(String query, Collection params, Map args) {
         doQuery query, params, args
     }
 

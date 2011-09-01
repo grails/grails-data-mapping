@@ -153,22 +153,22 @@ class GemfireStaticApi<D> extends GormStaticApi<D> {
         return resultCollector.getResult()
     }
 
-    List executeQuery(String query) {
+    List<D> executeQuery(String query) {
         GemfireDatastore gemfire = datastore
         GemfireTemplate template = gemfire.getTemplate(persistentClass)
 
         template?.query(query)?.asList() ?: Collections.emptyList()
     }
 
-    def executeQuery(String query, Collection params) {
+    List<D> executeQuery(String query, Collection params) {
         executeQuery(query, params, Collections.emptyMap())
     }
 
-    def executeQuery(String query, Map args) {
+    List<D> executeQuery(String query, Map args) {
         executeQuery(query, Collections.emptyList(), args)
     }
 
-    def executeQuery(String query, Collection params, Map args) {
+    List<D> executeQuery(String query, Collection params, Map args) {
         GemfireDatastore gemfire = datastore
         GemfireTemplate template = gemfire.getTemplate(persistentClass)
 
@@ -194,35 +194,35 @@ class GemfireStaticApi<D> extends GormStaticApi<D> {
         } as GemfireCallback)
     }
 
-    def find(String query) {
+    D find(String query) {
         executeQuery("$query LIMIT 1")[0]
     }
 
-    def find(String query, Collection params) {
+    D find(String query, Collection params) {
         executeQuery("$query LIMIT 1", params)[0]
     }
 
-    def find(String query, Map args) {
+    D find(String query, Map args) {
         executeQuery("$query LIMIT 1", args)[0]
     }
 
-    def find(String query, Collection params, Map args) {
+    D find(String query, Collection params, Map args) {
         executeQuery("$query LIMIT 1", params, args)[0]
     }
 
-    List findAll(String query) {
+    List<D> findAll(String query) {
         executeQuery(query)
     }
 
-    List findAll(String query, Collection params) {
+    List<D> findAll(String query, Collection params) {
         executeQuery(query, params)
     }
 
-    List findAll(String query, Collection params, Map args) {
+    List<D> findAll(String query, Collection params, Map args) {
         executeQuery(query, params, args)
     }
 
-    List findAll(String query, Map args) {
+    List<D> findAll(String query, Map args) {
         executeQuery(query, args)
     }
 }
