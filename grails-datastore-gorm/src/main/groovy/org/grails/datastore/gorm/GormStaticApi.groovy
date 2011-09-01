@@ -181,7 +181,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     /**
      * Creates a criteria builder instance
      */
-    CriteriaBuilder createCriteria() {
+    def createCriteria() {
         new CriteriaBuilder(persistentClass, datastore.currentSession)
     }
 
