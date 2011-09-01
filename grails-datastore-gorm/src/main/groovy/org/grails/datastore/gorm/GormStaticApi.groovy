@@ -188,14 +188,14 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     /**
      * Creates a criteria builder instance
      */
-    List<D> withCriteria(Closure callable) {
+    def withCriteria(Closure callable) {
         return createCriteria().list(callable)
     }
 
     /**
      * Creates a criteria builder instance
      */
-    List<D> withCriteria(Map builderArgs, Closure callable) {
+    def withCriteria(Map builderArgs, Closure callable) {
         def criteriaBuilder = createCriteria()
         def builderBean = PropertyAccessorFactory.forBeanPropertyAccess(criteriaBuilder)
         for (entry in builderArgs) {
