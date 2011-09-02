@@ -292,8 +292,9 @@ class RiakQuery extends Query {
                         // Is this necessary?
                         log.warn "Only the first PropertyProjection is used: " + propProjs[0]
                     }
-                    String propName = propProjs[0].propertyName
-                    finalResult.collect { entry ->
+                    final propProj = propProjs[0]
+                    String propName = propProj.propertyName
+                    final collectedResults = finalResult.collect { entry ->
                         try {
                             // Try to return the object as the right data type.
                             entry."${propName}".asType(entity.getPropertyByName(propName).type)
@@ -307,6 +308,13 @@ class RiakQuery extends Query {
                                 entry."${propName}"
                             }
                         }
+                    }
+
+                    if(propProj instanceof CountDistinctProjection) {
+                        return [collectedResults.unique().size()]
+                    }
+                    else {
+                        return collectedResults
                     }
                 } else {
                     // Use the built-in Groovy functions to operate on the List returned

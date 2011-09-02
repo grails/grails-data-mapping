@@ -7,6 +7,30 @@ import spock.lang.Ignore;
  */
 class CriteriaBuilderSpec extends GormDatastoreSpec {
 
+    void "Test count distinct projection"() {
+        given:
+            def age = 40
+            ["Bob", "Fred", "Barney", "Frank"].each {
+                new TestEntity(name:it, age: age++, child:new ChildEntity(name:"$it Child")).save()
+            }
+
+             new TestEntity(name:"Chuck", age: age-1, child:new ChildEntity(name:"Chuckie")).save()
+
+            5 == ChildEntity.count()
+
+            def criteria = TestEntity.createCriteria()
+
+        when:
+            def result = criteria.get {
+                projections {
+                    countDistinct "age"
+                }
+            }
+
+        then:
+            result == 4
+    }
+
     @Ignore // ignored this test because the id() projection does not actually exist in GORM for Hibernate
     void "Test id projection"() {
         given:
@@ -259,4 +283,6 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
             results.find { it.name = "Barney Child"}
             results.find { it.name = "Frank Child"}
     }
+
+
 }

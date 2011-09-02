@@ -351,6 +351,12 @@ public class GemfireQuery extends Query {
                             else if (projection instanceof IdProjection) {
                                 results.add(region.keySet());
                             }
+                            else if(projection instanceof CountDistinctProjection) {
+                                if (values == null) {
+                                    values = region.values();
+                                }
+                                results.add(manualProjections.countDistinct(values, ((PropertyProjection) projection).getPropertyName()));
+                            }
                             else if (projection.getClass() ==  PropertyProjection.class) {
                                 if (values == null) {
                                     values = region.values();

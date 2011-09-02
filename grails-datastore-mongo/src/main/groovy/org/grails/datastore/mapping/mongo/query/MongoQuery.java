@@ -393,7 +393,7 @@ public class MongoQuery extends Query {
                     return wrapObjectResultInList(createObjectFromDBObject(dbObject));
                 }
 
-                DBCursor cursor;
+                DBCursor cursor = null;
                 DBObject query = createQueryObject(entity);
 
                 final List<Projection> projectionList = projections().getProjectionList();
@@ -407,22 +407,34 @@ public class MongoQuery extends Query {
                     if (projection instanceof CountProjection) {
                         // For some reason the below doesn't return the expected result whilst executing the query and returning the cursor does
                         //projectedResults.add(collection.getCount(query));
-                        cursor = executeQuery(entity, criteria, collection, query);
+                        if(cursor == null)
+                            cursor = executeQuery(entity, criteria, collection, query);
                         projectedResults.add(cursor.size());
                     }
                     else if (projection instanceof MinProjection) {
-                        cursor = executeQuery(entity, criteria, collection, query);
+                        if(cursor == null)
+                            cursor = executeQuery(entity, criteria, collection, query);
                         MinProjection mp = (MinProjection) projection;
 
                         MongoResultList results = new MongoResultList(cursor, mongoEntityPersister);
                         projectedResults.add(manualProjections.min((Collection) results.clone(), mp.getPropertyName()));
                     }
                     else if (projection instanceof MaxProjection) {
-                        cursor = executeQuery(entity, criteria, collection, query);
+                        if(cursor == null)
+                            cursor = executeQuery(entity, criteria, collection, query);
                         MaxProjection mp = (MaxProjection) projection;
 
                         MongoResultList results = new MongoResultList(cursor, mongoEntityPersister);
                         projectedResults.add(manualProjections.max((Collection) results.clone(), mp.getPropertyName()));
+                    }
+                    else if(projection instanceof CountDistinctProjection) {
+                        if(cursor == null)
+                            cursor = executeQuery(entity, criteria, collection, query);
+                        CountDistinctProjection mp = (CountDistinctProjection) projection;
+
+                        MongoResultList results = new MongoResultList(cursor, mongoEntityPersister);
+                        projectedResults.add(manualProjections.countDistinct((Collection) results.clone(), mp.getPropertyName()));
+
                     }
                     else if ((projection instanceof PropertyProjection) || (projection instanceof IdProjection)) {
                         final PersistentProperty persistentProperty;

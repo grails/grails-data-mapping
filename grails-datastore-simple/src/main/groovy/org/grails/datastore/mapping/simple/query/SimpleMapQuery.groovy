@@ -84,6 +84,10 @@ class SimpleMapQuery extends Query {
                 else if (p instanceof Query.CountProjection) {
                     results.add(entityList.size())
                 }
+                else if(p instanceof Query.CountDistinctProjection) {
+                    final uniqueList = new ArrayList(entityList).unique { it."$p.propertyName"}
+                    results.add(uniqueList.size() )
+                }
                 else if (p instanceof Query.PropertyProjection) {
                     def propertyValues = entityList.collect { it."$p.propertyName"}
                     if (p instanceof Query.MaxProjection) {

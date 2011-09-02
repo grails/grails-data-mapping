@@ -544,6 +544,13 @@ public class JpaQuery extends Query {
                                    .append(pp.getPropertyName())
                                    .append(CLOSE_BRACKET);
                     }
+                    else if (projection instanceof CountDistinctProjection) {
+                        queryString.append("COUNT(DISTINCT ")
+                                   .append(logicalName)
+                                   .append(DOT)
+                                   .append(pp.getPropertyName())
+                                   .append(CLOSE_BRACKET);
+                    }
                     else {
                         queryString.append(logicalName)
                                    .append(DOT)

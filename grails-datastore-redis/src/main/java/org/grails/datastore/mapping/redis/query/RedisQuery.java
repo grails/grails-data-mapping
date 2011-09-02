@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import org.grails.datastore.mapping.query.projections.ManualProjections;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -117,25 +119,19 @@ public class RedisQuery extends Query {
                     else if (projection instanceof AvgProjection) {
                         return unsupportedProjection(projectionType);
                     }
-                    else if (projection instanceof PropertyProjection) {
+                    else if (projection instanceof CountDistinctProjection) {
+                        List resultList = new ArrayList();
                         PropertyProjection propertyProjection = (PropertyProjection) projection;
                         final PersistentProperty validProperty = getValidProperty(propertyProjection);
-                        if (postSortAndPaginationKey == null) postSortAndPaginationKey = storeSortedKey(finalKey);
-
-                        String entityKey = entityPersister.getEntityBaseKey();
-                        final List<String> values = template.sort(postSortAndPaginationKey, template.sortParams().get(entityKey + ":*->" + validProperty.getName()));
+                        final List<String> values = projectProperty(finalKey, postSortAndPaginationKey, validProperty);
+                        projectionResults.add( DefaultGroovyMethods.unique(values).size() );
+                    }
+                    else if (projection instanceof PropertyProjection) {
                         List resultList = new ArrayList();
-                        Class type = validProperty.getType();
-                        final PersistentEntity associatedEntity = getSession().getMappingContext().getPersistentEntity(type.getName());
-                        final boolean isEntityType = associatedEntity != null;
-                        if (isEntityType) {
-                             return getSession().retrieveAll(type, values);
-                        }
-                        for (String value : values) {
-                            resultList.add(conversionService.convert(value, type));
-                        }
-
-                        return resultList;
+                        PropertyProjection propertyProjection = (PropertyProjection) projection;
+                        final PersistentProperty validProperty = getValidProperty(propertyProjection);
+                        final List<String> values = projectProperty(finalKey, postSortAndPaginationKey, validProperty);
+                        return convertProjectedListToActual(resultList, validProperty, values);
                     }
                     else if (projection instanceof IdProjection) {
                         idProjection = (IdProjection) projection;
@@ -154,6 +150,27 @@ public class RedisQuery extends Query {
             return getSession().retrieveAll(getEntity().getJavaClass(), results);
         }
         return Collections.emptyList();
+    }
+
+    private List convertProjectedListToActual(List resultList, PersistentProperty validProperty, List<String> values) {
+        Class type = validProperty.getType();
+        final PersistentEntity associatedEntity = getSession().getMappingContext().getPersistentEntity(type.getName());
+        final boolean isEntityType = associatedEntity != null;
+        if (isEntityType) {
+             return getSession().retrieveAll(type, values);
+        }
+        for (String value : values) {
+            resultList.add(conversionService.convert(value, type));
+        }
+
+        return resultList;
+    }
+
+    private List<String> projectProperty(String finalKey, String postSortAndPaginationKey, PersistentProperty validProperty) {
+        if (postSortAndPaginationKey == null) postSortAndPaginationKey = storeSortedKey(finalKey);
+
+        String entityKey = entityPersister.getEntityBaseKey();
+        return template.sort(postSortAndPaginationKey, template.sortParams().get(entityKey + ":*->" + validProperty.getName()));
     }
 
     private List unsupportedProjection(String projectionType) {

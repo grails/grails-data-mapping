@@ -26,6 +26,7 @@ import java.util.regex.Pattern
 import org.grails.datastore.mapping.query.Restrictions
 import org.grails.datastore.mapping.query.Query.PropertyCriterion
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.query.projections.ManualProjections
 
 /**
  * perform criteria queries on a Neo4j backend
@@ -89,6 +90,9 @@ class Neo4jQuery extends Query {
                     break
                 case Query.MaxProjection:
                     return collection.collect { it."$projection.propertyName" }.max()
+                    break
+                case Query.CountDistinctProjection:
+                    return new ManualProjections(entity).countDistinct(collection, projection.propertyName)
                     break
                 case Query.PropertyProjection:
                     return collection.collect { it."$projection.propertyName" }

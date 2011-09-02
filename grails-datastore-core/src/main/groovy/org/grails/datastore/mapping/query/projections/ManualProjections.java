@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.query.Query;
@@ -59,7 +60,25 @@ public class ManualProjections {
         return o;
     }
 
-   /**
+    /**
+     * Counts the number of distinct values
+     *
+     * @param results The results
+     * @param property The property
+     * @return A count of the distinct values
+     */
+    public int countDistinct(Collection results, String property) {
+        Collection propertyValues = distinct(results, property);
+        return propertyValues.size();
+    }
+
+    private Collection distinct(Collection results, String property) {
+        List propertyValues = property(results, property);
+
+        return DefaultGroovyMethods.unique(propertyValues);
+    }
+
+    /**
      * Calculates the maximum value of a property
      *
      * @param results The results
