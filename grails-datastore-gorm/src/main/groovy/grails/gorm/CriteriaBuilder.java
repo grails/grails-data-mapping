@@ -214,10 +214,13 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
     }
 
     private void invokeClosureNode(Object args) {
-        Closure callable = (Closure)args;
-        callable.setDelegate(this);
-        callable.setResolveStrategy(Closure.DELEGATE_FIRST);
-        callable.call();
+        if(args instanceof Closure) {
+
+            Closure callable = (Closure)args;
+            callable.setDelegate(this);
+            callable.setResolveStrategy(Closure.DELEGATE_FIRST);
+            callable.call();
+        }
     }
 
     @Override
@@ -225,12 +228,8 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
         Object[] args = obj.getClass().isArray() ? (Object[])obj : new Object[]{obj};
 
         if (isCriteriaConstructionMethod(name, args)) {
-            if (query != null) {
-                throw new IllegalArgumentException("call to [" + name + "] not supported here");
-            }
 
-            query = session.createQuery(targetClass);
-            queryMetaClass = GroovySystem.getMetaClassRegistry().getMetaClass(query.getClass());
+            initializeQuery();
 
             if (name.equals(GET_CALL)) {
                 uniqueResult = true;
@@ -285,31 +284,6 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
         }
 
         if (args.length == 1 && args[0] instanceof Closure) {
-            if (name.equals(AND) || name.equals(OR) || name.equals(NOT)) {
-
-                if (name.equals(AND)) {
-                    logicalExpressionStack.add(new Query.Conjunction());
-                }
-                else if (name.equals(NOT)) {
-                    logicalExpressionStack.add(new Query.Negation());
-                }
-                else {
-                    logicalExpressionStack.add(new Query.Disjunction());
-                }
-                invokeClosureNode(args[0]);
-
-                Query.Junction logicalExpression = logicalExpressionStack.remove(logicalExpressionStack.size()-1);
-                addToCriteria(logicalExpression);
-
-                return name;
-            }
-
-            if (name.equals(PROJECTIONS) && args.length == 1 && (args[0] instanceof Closure)) {
-
-                projectionList = query.projections();
-                invokeClosureNode(args[0]);
-                return name;
-            }
 
             final PersistentProperty property = persistentEntity.getPropertyByName(name);
             if (property instanceof Association) {
@@ -329,42 +303,76 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
                 }
             }
         }
-        else if (args.length == 1 && args[0] != null) {
-            Object value = args[0];
-            Query.Criterion c = null;
-            if (name.equals(ID_EQUALS)) {
-                return eq("id", value);
-            }
-
-            if (name.equals(IS_NULL) ||
-                    name.equals(IS_NOT_NULL) ||
-                    name.equals(IS_EMPTY) ||
-                    name.equals(IS_NOT_EMPTY)) {
-                if (!(value instanceof String)) {
-                    throw new IllegalArgumentException("call to [" + name + "] with value [" +
-                            value + "] requires a String value.");
-                }
-                String propertyName = value.toString();
-                if (name.equals(IS_NULL)) {
-                    c = Restrictions.isNull(propertyName) ;
-                }
-                else if (name.equals(IS_NOT_NULL)) {
-                    c = Restrictions.isNotNull(propertyName);
-                }
-                else if (name.equals(IS_EMPTY)) {
-                    c = Restrictions.isEmpty(propertyName);
-                }
-                else if (name.equals(IS_NOT_EMPTY)) {
-                    c = Restrictions.isNotEmpty(propertyName);
-                }
-            }
-
-            if (c != null) {
-                return addToCriteria(c);
-            }
-        }
 
         throw new MissingMethodException(name, getClass(), args);
+    }
+
+    private void initializeQuery() {
+        query = session.createQuery(targetClass);
+        queryMetaClass = GroovySystem.getMetaClassRegistry().getMetaClass(query.getClass());
+    }
+
+    public Projections projections(Closure callable) {
+        projectionList = query.projections();
+        invokeClosureNode(callable);
+        return projectionList;
+    }
+
+    public Criteria and(Closure callable) {
+        handleJunction(new Query.Conjunction(), callable);
+        return this;
+    }
+
+    public Criteria or(Closure callable) {
+        handleJunction(new Query.Disjunction(), callable);
+        return this;
+    }
+
+    public Criteria not(Closure callable) {
+        handleJunction(new Query.Negation(), callable);
+        return this;
+    }
+
+    private void handleJunction(Query.Junction junction, Closure callable) {
+        logicalExpressionStack.add(junction);
+        try {
+            if(callable != null) {
+                invokeClosureNode(callable);
+            }
+        } finally {
+            Query.Junction logicalExpression = logicalExpressionStack.remove(logicalExpressionStack.size()-1);
+            addToCriteria(logicalExpression);
+        }
+    }
+
+
+    public Criteria idEquals(Object value) {
+        addToCriteria(Restrictions.idEq(value));
+        return this;
+    }
+
+    public Criteria isEmpty(String propertyName) {
+        validatePropertyName(propertyName, "isEmpty");
+        addToCriteria(Restrictions.isEmpty(propertyName));
+        return this;
+    }
+
+    public Criteria isNotEmpty(String propertyName) {
+        validatePropertyName(propertyName, "isNotEmpty");
+        addToCriteria(Restrictions.isNotEmpty(propertyName));
+        return this;
+    }
+
+    public Criteria isNull(String propertyName) {
+        validatePropertyName(propertyName, "isNull");
+        addToCriteria(Restrictions.isNull(propertyName));
+        return this;
+    }
+
+    public Criteria isNotNull(String propertyName) {
+        validatePropertyName(propertyName, "isNotNull");
+        addToCriteria(Restrictions.isNotNull(propertyName));
+        return this;
     }
 
     /**
@@ -657,6 +665,9 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
             logicalExpressionStack.get(logicalExpressionStack.size() - 1).add(c);
         }
         else {
+            if(query == null) {
+                initializeQuery();
+            }
             query.add(c);
         }
         return c;

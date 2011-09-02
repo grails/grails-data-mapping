@@ -27,12 +27,50 @@ import java.util.Collection;
 public interface Criteria extends Projections{
 
     /**
+     * Creates a criterion that restricts the id to the given value
+     * @param value The value
+     * @return The criteria
+     */
+    Criteria idEquals(Object value);
+
+    /**
+     * Creates a criterion that asserts the given property is empty (such as a blank string)
+     *
+     * @param propertyName The property name
+     * @return The criteria
+     */
+    Criteria isEmpty(String propertyName);
+
+    /**
+     * Creates a criterion that asserts the given property is not empty
+     *
+     * @param propertyName The property name
+     * @return The criteria
+     */
+    Criteria isNotEmpty(String propertyName);
+    /**
+     * Creates a criterion that asserts the given property is null
+     * 
+     * @param propertyName The property name
+     * @return The criteria
+     */
+    Criteria isNull(String propertyName);
+
+    /**
+     * Creates a criterion that asserts the given property is not null
+     *
+     * @param propertyName The property name
+     * @return The criteria
+     */
+    Criteria isNotNull(String propertyName);
+
+    /**
      * Creates an "equals" Criterion based on the specified property name and value.
      *
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return The criteria
      */
     Criteria eq(String propertyName, Object propertyValue);
 
@@ -41,7 +79,7 @@ public interface Criteria extends Projections{
      *
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return The criteria
      */
     Criteria idEq(Object propertyValue);
 
@@ -51,7 +89,7 @@ public interface Criteria extends Projections{
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return The criteria
      */
     Criteria ne(String propertyName, Object propertyValue);
 
@@ -62,7 +100,7 @@ public interface Criteria extends Projections{
      *
      * @param start The start of the range
      * @param finish The end of the range
-     * @return A Criterion instance
+     * @return The criteria
      */
     Criteria between(String propertyName, Object start, Object finish);
 
@@ -120,7 +158,7 @@ public interface Criteria extends Projections{
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return The criteria
      */
     Criteria like(String propertyName, Object propertyValue);
 
@@ -130,7 +168,7 @@ public interface Criteria extends Projections{
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return The criteria
      */
     Criteria ilike(String propertyName, Object propertyValue);
 
@@ -140,7 +178,7 @@ public interface Criteria extends Projections{
      * @param propertyName The property name
      * @param propertyValue The property value
      *
-     * @return A Criterion instance
+     * @return The criteria
      */
     Criteria rlike(String propertyName, Object propertyValue);
 
@@ -150,7 +188,7 @@ public interface Criteria extends Projections{
      * @param propertyName The property name
      * @param values The values
      *
-     * @return A Criterion instance
+     * @return The criteria
      */
     Criteria in(String propertyName, Collection values);
 
@@ -160,7 +198,7 @@ public interface Criteria extends Projections{
      * @param propertyName The property name
      * @param values The values
      *
-     * @return A Criterion instance
+     * @return The criteria
      */
     Criteria inList(String propertyName, Collection values);
 
@@ -170,7 +208,7 @@ public interface Criteria extends Projections{
      * @param propertyName The property name
      * @param values The values
      *
-     * @return A Criterion instance
+     * @return The criteria
      */
     Criteria inList(String propertyName, Object[] values);
 
@@ -180,7 +218,7 @@ public interface Criteria extends Projections{
       * @param propertyName The property name
       * @param values The values
       *
-      * @return A Criterion instance
+      * @return The criteria
       */
     Criteria in(String propertyName, Object[] values);
 
