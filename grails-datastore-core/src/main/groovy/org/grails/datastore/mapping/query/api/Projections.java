@@ -37,6 +37,7 @@ public interface Projections {
 
     /**
      * Count the number of records returned
+     * @param property The property name to count
      * @return The projection list
      */
     Projections countDistinct(String property);
@@ -49,7 +50,9 @@ public interface Projections {
     Projections distinct();
 
     /**
-     * Projection to return only distinct records
+     * Projection to return only distinct properties
+     *
+     * @param property The property name to use
      *
      * @return The projection list
      */
