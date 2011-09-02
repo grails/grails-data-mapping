@@ -310,7 +310,7 @@ class RiakQuery extends Query {
                         }
                     }
 
-                    if(propProj instanceof CountDistinctProjection) {
+                    if(propProj instanceof Query.CountDistinctProjection) {
                         return [collectedResults.unique().size()]
                     }
                     else {
