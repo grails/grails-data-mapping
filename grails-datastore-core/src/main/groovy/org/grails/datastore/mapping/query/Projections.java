@@ -104,11 +104,21 @@ public class Projections {
     /**
      * Projection that signifies to return only distinct results
      *
+     * @param property The name of the property
      * @return Distinct projection
      */
-    public static Query.DistinctPropertyProjection distinct(String name) {
-    	return new Query.DistinctPropertyProjection(name);
+    public static Query.DistinctPropertyProjection distinct(String property) {
+    	return new Query.DistinctPropertyProjection(property);
     }
 
+    /**
+     * Projection that signifies to return only distinct results
+     *
+     * @param property The name of the property
+     * @return Distinct projection
+     */
+    public static Query.CountDistinctProjection countDistinct(String property) {
+    	return new Query.CountDistinctProjection(property);
+    }
 
 }

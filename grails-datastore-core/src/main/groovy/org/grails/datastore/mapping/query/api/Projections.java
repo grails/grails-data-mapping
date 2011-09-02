@@ -36,6 +36,12 @@ public interface Projections {
     Projections count();
 
     /**
+     * Count the number of records returned
+     * @return The projection list
+     */
+    Projections countDistinct(String property);
+
+    /**
      * Projection to return only distinct records
      *
      * @return The projection list
