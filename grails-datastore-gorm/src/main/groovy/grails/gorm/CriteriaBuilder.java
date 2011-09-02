@@ -35,6 +35,8 @@ import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
+import org.grails.datastore.mapping.query.api.Criteria;
+import org.grails.datastore.mapping.query.api.Projections;
 import org.springframework.util.Assert;
 
 /**
@@ -43,7 +45,7 @@ import org.springframework.util.Assert;
  * @author Graeme Rocher
  */
 @SuppressWarnings("rawtypes")
-public class CriteriaBuilder extends GroovyObjectSupport {
+public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
 
     public static final String ORDER_DESCENDING = "desc";
     public static final String ORDER_ASCENDING = "asc";
@@ -121,11 +123,18 @@ public class CriteriaBuilder extends GroovyObjectSupport {
         return projectionList;
     }
 
+    public Projections distinct() {
+        if (projectionList != null) {
+            projectionList.distinct();
+        }
+        return projectionList;
+    }
+
     /**
      * Count the number of records returned
      * @return The project list
      */
-    public Query.ProjectionList rowCount() {
+    public Projections rowCount() {
         return count();
     }
 
@@ -134,7 +143,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * @param name The name of the property
      * @return The projection list
      */
-    public Query.ProjectionList property(String name) {
+    public Projections property(String name) {
         if (projectionList != null) {
             projectionList.property(name);
         }
@@ -147,7 +156,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * @param name The name of the property
      * @return The projection list
      */
-    public Query.ProjectionList sum(String name) {
+    public Projections sum(String name) {
         if (projectionList != null) {
             projectionList.sum(name);
         }
@@ -160,7 +169,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * @param name The name of the property
      * @return The projection list
      */
-    public Query.ProjectionList min(String name) {
+    public Projections min(String name) {
         if (projectionList != null) {
             projectionList.min(name);
         }
@@ -173,7 +182,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * @param name The name of the property
      * @return The PropertyProjection instance
      */
-    public Query.ProjectionList max(String name) {
+    public Projections max(String name) {
         if (projectionList != null) {
             projectionList.max(name);
         }
@@ -186,7 +195,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * @param name The name of the property
      * @return The PropertyProjection instance
      */
-    public Query.ProjectionList avg(String name) {
+    public Projections avg(String name) {
        if (projectionList != null) {
            projectionList.avg(name);
        }
@@ -366,9 +375,10 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    public Query.Criterion eq(String propertyName, Object propertyValue) {
+    public Criteria eq(String propertyName, Object propertyValue) {
         validatePropertyName(propertyName, "eq");
-        return addToCriteria(Restrictions.eq(propertyName, propertyValue));
+        addToCriteria(Restrictions.eq(propertyName, propertyValue));
+        return this;
     }
 
     /**
@@ -378,8 +388,9 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    public Query.Criterion idEq(Object propertyValue) {
-        return addToCriteria(Restrictions.idEq(propertyValue));
+    public Criteria idEq(Object propertyValue) {
+        addToCriteria(Restrictions.idEq(propertyValue));
+        return this;
     }
 
     /**
@@ -390,9 +401,10 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    public Query.Criterion ne(String propertyName, Object propertyValue) {
+    public Criteria ne(String propertyName, Object propertyValue) {
         validatePropertyName(propertyName, "ne");
-        return addToCriteria(Restrictions.ne(propertyName, propertyValue));
+        addToCriteria(Restrictions.ne(propertyName, propertyValue));
+        return this;
     }
     /**
      * Restricts the results by the given property value range (inclusive)
@@ -403,9 +415,10 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * @param finish The end of the range
      * @return A Criterion instance
      */
-    public Query.Criterion between(String propertyName, Object start, Object finish) {
+    public Criteria between(String propertyName, Object start, Object finish) {
         validatePropertyName(propertyName, "between");
-        return addToCriteria(Restrictions.between(propertyName, start, finish));
+        addToCriteria(Restrictions.between(propertyName, start, finish));
+        return this;
     }
 
     /**
@@ -414,9 +427,10 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * @param value The value
      * @return The Criterion instance
      */
-    public Query.Criterion gte(String property, Object value) {
+    public Criteria gte(String property, Object value) {
         validatePropertyName(property, "gte");
-        return addToCriteria(Restrictions.gte(property, value));
+        addToCriteria(Restrictions.gte(property, value));
+        return this;
     }
 
     /**
@@ -425,8 +439,9 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * @param value The value
      * @return The Criterion instance
      */
-    public Query.Criterion ge(String property, Object value) {
-        return gte(property, value);
+    public Criteria ge(String property, Object value) {
+        gte(property, value);
+        return this;
     }
 
     /**
@@ -435,9 +450,10 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * @param value The value
      * @return The Criterion instance
      */
-    public Query.Criterion gt(String property, Object value) {
+    public Criteria gt(String property, Object value) {
         validatePropertyName(property, "gt");
-        return addToCriteria(Restrictions.gt(property, value));
+        addToCriteria(Restrictions.gt(property, value));
+        return this;
     }
 
     /**
@@ -446,9 +462,10 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * @param value The value
      * @return The Criterion instance
      */
-    public Query.Criterion lte(String property, Object value) {
+    public Criteria lte(String property, Object value) {
         validatePropertyName(property, "lte");
-        return addToCriteria(Restrictions.lte(property, value));
+        addToCriteria(Restrictions.lte(property, value));
+        return this;
     }
 
     /**
@@ -457,8 +474,9 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * @param value The value
      * @return The Criterion instance
      */
-    public Query.Criterion le(String property, Object value) {
-        return lte(property, value);
+    public Criteria le(String property, Object value) {
+        lte(property, value);
+        return this;
     }
 
 
@@ -468,9 +486,10 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * @param value The value
      * @return The Criterion instance
      */
-    public Query.Criterion lt(String property, Object value) {
+    public Criteria lt(String property, Object value) {
         validatePropertyName(property, "lt");
-        return addToCriteria(Restrictions.lt(property, value));
+        addToCriteria(Restrictions.lt(property, value));
+        return this;
     }
 
     /**
@@ -481,10 +500,11 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    public Query.Criterion like(String propertyName, Object propertyValue) {
+    public Criteria like(String propertyName, Object propertyValue) {
         validatePropertyName(propertyName, "like");
         Assert.notNull(propertyValue, "Cannot use like expression with null value");
-        return addToCriteria(Restrictions.like(propertyName, propertyValue.toString()));
+        addToCriteria(Restrictions.like(propertyName, propertyValue.toString()));
+        return this;
     }
 
     /**
@@ -495,10 +515,11 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    public Query.Criterion ilike(String propertyName, Object propertyValue) {
+    public Criteria ilike(String propertyName, Object propertyValue) {
         validatePropertyName(propertyName, "ilike");
         Assert.notNull(propertyValue, "Cannot use ilike expression with null value");
-        return addToCriteria(Restrictions.ilike(propertyName, propertyValue.toString()));
+        addToCriteria(Restrictions.ilike(propertyName, propertyValue.toString()));
+        return this;
     }
 
     /**
@@ -509,10 +530,11 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    public Query.Criterion rlike(String propertyName, Object propertyValue) {
+    public Criteria rlike(String propertyName, Object propertyValue) {
         validatePropertyName(propertyName, "like");
         Assert.notNull(propertyValue, "Cannot use like expression with null value");
-        return addToCriteria(Restrictions.rlike(propertyName, propertyValue.toString()));
+        addToCriteria(Restrictions.rlike(propertyName, propertyValue.toString()));
+        return this;
     }
 
     /**
@@ -523,10 +545,11 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    public Query.Criterion in(String propertyName, Collection values) {
+    public Criteria in(String propertyName, Collection values) {
         validatePropertyName(propertyName, "in");
         Assert.notNull(values, "Cannot use in expression with null values");
-        return addToCriteria(Restrictions.in(propertyName, values));
+        addToCriteria(Restrictions.in(propertyName, values));
+        return this;
     }
 
     /**
@@ -537,8 +560,9 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    public Query.Criterion inList(String propertyName, Collection values) {
-        return in(propertyName, values);
+    public Criteria inList(String propertyName, Collection values) {
+        in(propertyName, values);
+        return this;
     }
 
     /**
@@ -549,7 +573,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    public Query.Criterion inList(String propertyName, Object[] values) {
+    public Criteria inList(String propertyName, Object[] values) {
         return in(propertyName, Arrays.asList(values));
     }
 
@@ -561,7 +585,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Criterion instance
      */
-    public Query.Criterion in(String propertyName, Object[] values) {
+    public Criteria in(String propertyName, Object[] values) {
         return in(propertyName, Arrays.asList(values));
     }
 
@@ -571,7 +595,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      * @param propertyName The property name to order by
      * @return A Order instance
      */
-    public Object order(String propertyName) {
+    public Criteria order(String propertyName) {
         Query.Order o = Query.Order.asc(propertyName);
         if (paginationEnabledList) {
             orderEntries.add(o);
@@ -579,7 +603,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
         else {
             query.order(o);
         }
-        return o;
+        return this;
     }
 
     /**
@@ -590,7 +614,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
      *
      * @return A Order instance
      */
-    public Object order(String propertyName, String direction) {
+    public Criteria order(String propertyName, String direction) {
         Query.Order o;
         if (direction.equals(ORDER_DESCENDING)) {
             o = Query.Order.desc(propertyName);
@@ -604,7 +628,7 @@ public class CriteriaBuilder extends GroovyObjectSupport {
         else {
             query.order(o);
         }
-        return o;
+        return this;
     }
 
     protected void validatePropertyName(String propertyName, String methodName) {

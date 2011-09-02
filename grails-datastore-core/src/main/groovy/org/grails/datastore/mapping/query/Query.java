@@ -956,7 +956,7 @@ public abstract class Query {
     /**
      * A list of projections
      */
-    public static class ProjectionList {
+    public static class ProjectionList implements org.grails.datastore.mapping.query.api.Projections{
 
         private List<Projection> projections = new ArrayList();
 
@@ -969,12 +969,12 @@ public abstract class Query {
             return this;
         }
 
-        public ProjectionList id() {
+        public org.grails.datastore.mapping.query.api.Projections id() {
             add(Projections.id());
             return this;
         }
 
-        public ProjectionList count() {
+        public org.grails.datastore.mapping.query.api.Projections count() {
             add(Projections.count());
             return this;
         }
@@ -987,12 +987,16 @@ public abstract class Query {
         	return this;
         }
 
+        public org.grails.datastore.mapping.query.api.Projections rowCount() {
+            return count();
+        }
+
         /**
          * A projection that obtains the value of a property of an entity
          * @param name The name of the property
          * @return The PropertyProjection instance
          */
-        public ProjectionList property(String name) {
+        public org.grails.datastore.mapping.query.api.Projections property(String name) {
             add(Projections.property(name));
             return this;
         }
@@ -1003,7 +1007,7 @@ public abstract class Query {
          * @param name The name of the property
          * @return The PropertyProjection instance
          */
-        public ProjectionList sum(String name) {
+        public org.grails.datastore.mapping.query.api.Projections sum(String name) {
             add(Projections.sum(name));
             return this;
         }
@@ -1014,7 +1018,7 @@ public abstract class Query {
          * @param name The name of the property
          * @return The PropertyProjection instance
          */
-        public ProjectionList min(String name) {
+        public org.grails.datastore.mapping.query.api.Projections min(String name) {
             add(Projections.min(name));
             return this;
         }
@@ -1025,7 +1029,7 @@ public abstract class Query {
          * @param name The name of the property
          * @return The PropertyProjection instance
          */
-        public ProjectionList max(String name) {
+        public org.grails.datastore.mapping.query.api.Projections max(String name) {
             add(Projections.max(name));
             return this;
         }
@@ -1036,7 +1040,7 @@ public abstract class Query {
          * @param name The name of the property
          * @return The PropertyProjection instance
          */
-        public ProjectionList avg(String name) {
+        public org.grails.datastore.mapping.query.api.Projections avg(String name) {
             add(Projections.avg(name));
             return this;
         }

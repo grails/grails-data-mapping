@@ -24,6 +24,7 @@ import org.grails.datastore.mapping.mongo.query.MongoQuery.Near;
 import org.grails.datastore.mapping.mongo.query.MongoQuery.WithinBox;
 import org.grails.datastore.mapping.mongo.query.MongoQuery.WithinCircle;
 import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.api.Criteria;
 
 /**
  * Extends the default CriteriaBuilder implementation with Geolocation methods
@@ -48,9 +49,10 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      * @param value A two dimensional list of values
      * @return this Criterion
      */
-    public Query.Criterion near(String property, List<?> value) {
+    public Criteria near(String property, List<?> value) {
         validatePropertyName(property, "near");
-        return addToCriteria(new Near(property, value));
+        addToCriteria(new Near(property, value));
+        return this;
     }
 
     /**
@@ -62,9 +64,10 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      * @param value A multi-dimensional list of values
      * @return this Criterion
      */
-    public Query.Criterion withinBox(String property, List<?> value) {
+    public Criteria withinBox(String property, List<?> value) {
         validatePropertyName(property, "withinBox");
-        return addToCriteria(new WithinBox(property, value));
+        addToCriteria(new WithinBox(property, value));
+        return this;
     }
 
     /**
@@ -76,8 +79,9 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
      * @param value A multi-dimensional list of values
      * @return this Criterion
      */
-    public Query.Criterion withinCircle(String property, List<?> value) {
+    public Criteria withinCircle(String property, List<?> value) {
         validatePropertyName(property, "withinBox");
-        return addToCriteria(new WithinCircle(property, value));
+        addToCriteria(new WithinCircle(property, value));
+        return this;
     }
 }
