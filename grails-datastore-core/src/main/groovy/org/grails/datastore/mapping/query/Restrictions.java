@@ -220,14 +220,38 @@ public class Restrictions {
         return new Query.SizeGreaterThanEquals(property, size);
     }
 
+    /**
+     * Creates a Criterion that contrains a collection property to be less than or equal to the given size
+     *
+     * @param property The property name
+     * @param size The size to constrain by
+     *
+     * @return A Criterion instance
+     */
     public static Query.SizeLessThanEquals sizeLe(String property, int size) {
         return new Query.SizeLessThanEquals(property, size);
     }
 
+    /**
+     * Creates a Criterion that contrains a collection property to be less than to the given size
+     *
+     * @param property The property name
+     * @param size The size to constrain by
+     *
+     * @return A Criterion instance
+     */
     public static Query.SizeLessThan sizeLt(String property, int size) {
         return new Query.SizeLessThan(property, size);
     }
 
+    /**
+     * Creates a Criterion that contrains a collection property to be not equal to the given size
+     *
+     * @param property The property name
+     * @param size The size to constrain by
+     *
+     * @return A Criterion instance
+     */
     public static Query.SizeNotEquals sizeNe(String property, int size) {
         return new Query.SizeNotEquals(property, size);
     }
