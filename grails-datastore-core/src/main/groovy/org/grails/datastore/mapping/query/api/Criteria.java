@@ -14,7 +14,6 @@
  */
 package org.grails.datastore.mapping.query.api;
 
-import org.grails.datastore.mapping.query.Query;
 
 import java.util.Collection;
 

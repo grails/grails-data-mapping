@@ -917,6 +917,13 @@ public abstract class Query {
             return propertyName;
         }
     }
+
+    public static class DistinctPropertyProjection extends PropertyProjection{
+        protected DistinctPropertyProjection(String propertyName) {
+            super(propertyName);
+        }
+    }
+
     /**
      * Computes the average value of a property
      */
@@ -987,6 +994,11 @@ public abstract class Query {
         	return this;
         }
 
+        public org.grails.datastore.mapping.query.api.Projections distinct(String property) {
+            add(Projections.distinct(property));
+            return this;
+        }
+
         public org.grails.datastore.mapping.query.api.Projections rowCount() {
             return count();
         }
@@ -1045,4 +1057,5 @@ public abstract class Query {
             return this;
         }
     }
+
 }

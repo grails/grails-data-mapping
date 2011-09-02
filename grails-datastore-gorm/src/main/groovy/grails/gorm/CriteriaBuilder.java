@@ -130,6 +130,13 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
         return projectionList;
     }
 
+    public Projections distinct(String property) {
+        if (projectionList != null) {
+            projectionList.distinct(property);
+        }
+        return projectionList;
+    }
+
     /**
      * Count the number of records returned
      * @return The project list

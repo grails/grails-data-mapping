@@ -91,8 +91,24 @@ public class Projections {
     public static Query.AvgProjection avg(String name) {
         return new Query.AvgProjection(name);
     }
-    
+
+    /**
+     * Projection that signifies to return only distinct results
+     *
+     * @return Distinct projection
+     */
     public static Query.DistinctProjection distinct() {
     	return new Query.DistinctProjection();
     }
+
+    /**
+     * Projection that signifies to return only distinct results
+     *
+     * @return Distinct projection
+     */
+    public static Query.DistinctPropertyProjection distinct(String name) {
+    	return new Query.DistinctPropertyProjection(name);
+    }
+
+
 }
