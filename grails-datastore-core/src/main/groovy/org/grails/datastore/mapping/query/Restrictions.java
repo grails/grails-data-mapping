@@ -187,4 +187,48 @@ public class Restrictions {
         return new Query.IsNotNull(property);
     }
 
+    /**
+     * Used to restrict the size of a collection property
+     *
+     * @param property The property
+     * @param size The size to restrict
+     * @return The result
+     */
+    public static Query.SizeEquals sizeEq(String property, int size) {
+        return new Query.SizeEquals(property, size);
+    }
+
+    /**
+     * Used to restrict the size of a collection property to be greater than the given value
+     *
+     * @param property The property
+     * @param size The size to restrict
+     * @return The result
+     */
+    public static Query.SizeGreaterThan sizeGt(String property, int size) {
+        return new Query.SizeGreaterThan(property, size);
+    }
+
+    /**
+     * Used to restrict the size of a collection property to be greater than or equal to the given value
+     *
+     * @param property The property
+     * @param size The size to restrict
+     * @return The result
+     */
+    public static Query.SizeGreaterThanEquals sizeGe(String property, int size) {
+        return new Query.SizeGreaterThanEquals(property, size);
+    }
+
+    public static Query.SizeLessThanEquals sizeLe(String property, int size) {
+        return new Query.SizeLessThanEquals(property, size);
+    }
+
+    public static Query.SizeLessThan sizeLt(String property, int size) {
+        return new Query.SizeLessThan(property, size);
+    }
+
+    public static Query.SizeNotEquals sizeNe(String property, int size) {
+        return new Query.SizeNotEquals(property, size);
+    }
 }

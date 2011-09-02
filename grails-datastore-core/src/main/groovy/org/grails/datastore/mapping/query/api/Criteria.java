@@ -238,4 +238,64 @@ public interface Criteria extends Projections{
      * @return A Order instance
      */
     Criteria order(String propertyName, String direction);
+
+    /**
+     * Creates a Criterion that contrains a collection property by size
+     *
+     * @param propertyName The property name
+     * @param size The size to constrain by
+     *
+     * @return A Criterion instance
+     */
+    Criteria sizeEq(String propertyName, int size) ;
+
+    /**
+     * Creates a Criterion that contrains a collection property to be greater than the given size
+     *
+     * @param propertyName The property name
+     * @param size The size to constrain by
+     *
+     * @return A Criterion instance
+     */
+    Criteria sizeGt(String propertyName, int size);
+
+    /**
+     * Creates a Criterion that contrains a collection property to be greater than or equal to the given size
+     *
+     * @param propertyName The property name
+     * @param size The size to constrain by
+     *
+     * @return A Criterion instance
+     */
+    Criteria sizeGe(String propertyName, int size);
+
+    /**
+     * Creates a Criterion that contrains a collection property to be less than or equal to the given size
+     *
+     * @param propertyName The property name
+     * @param size The size to constrain by
+     *
+     * @return A Criterion instance
+     */
+    Criteria sizeLe(String propertyName, int size);
+
+    /**
+     * Creates a Criterion that contrains a collection property to be less than to the given size
+     *
+     * @param propertyName The property name
+     * @param size The size to constrain by
+     *
+     * @return A Criterion instance
+     */
+    Criteria sizeLt(String propertyName, int size);
+
+    /**
+     * Creates a Criterion that contrains a collection property to be not equal to the given size
+     *
+     * @param propertyName The property name
+     * @param size The size to constrain by
+     *
+     * @return A Criterion instance
+     */
+    Criteria sizeNe(String propertyName, int size);
 }

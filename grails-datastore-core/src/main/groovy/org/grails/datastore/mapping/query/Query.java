@@ -674,6 +674,43 @@ public abstract class Query {
         }
     }
 
+    public static class SizeEquals extends PropertyCriterion{
+        public SizeEquals(String name, int value) {
+            super(name, value);
+        }
+    }
+
+    public static class SizeNotEquals extends PropertyCriterion{
+        public SizeNotEquals(String name, int value) {
+            super(name, value);
+        }
+    }
+
+    public static class SizeGreaterThan extends PropertyCriterion{
+        public SizeGreaterThan(String name, int value) {
+            super(name, value);
+        }
+    }
+
+    public static class SizeGreaterThanEquals extends PropertyCriterion{
+        public SizeGreaterThanEquals(String name, int value) {
+            super(name, value);
+        }
+    }
+
+    public static class SizeLessThanEquals extends PropertyCriterion{
+        public SizeLessThanEquals(String name, int value) {
+            super(name, value);
+        }
+    }
+
+    public static class SizeLessThan extends PropertyCriterion{
+        public SizeLessThan(String name, int value) {
+            super(name, value);
+        }
+    }
+
+
     /**
      * A criterion that restricts the results based on the equality of the identifier
      */

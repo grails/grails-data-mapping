@@ -611,6 +611,43 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
         return in(propertyName, Arrays.asList(values));
     }
 
+    public Criteria sizeEq(String propertyName, int size) {
+        validatePropertyName(propertyName, "sizeEq");
+        addToCriteria(Restrictions.sizeEq(propertyName, size));
+        return this;
+
+    }
+
+    public Criteria sizeGt(String propertyName, int size) {
+        validatePropertyName(propertyName, "sizeGt");
+        addToCriteria(Restrictions.sizeGt(propertyName, size));
+        return this;
+    }
+
+    public Criteria sizeGe(String propertyName, int size) {
+        validatePropertyName(propertyName, "sizeGe");
+        addToCriteria(Restrictions.sizeGe(propertyName, size));
+        return this;
+    }
+
+    public Criteria sizeLe(String propertyName, int size) {
+        validatePropertyName(propertyName, "sizeLe");
+        addToCriteria(Restrictions.sizeLe(propertyName, size));
+        return this;
+    }
+
+    public Criteria sizeLt(String propertyName, int size) {
+        validatePropertyName(propertyName, "sizeLt");
+        addToCriteria(Restrictions.sizeLt(propertyName, size));
+        return this;
+    }
+
+    public Criteria sizeNe(String propertyName, int size) {
+        validatePropertyName(propertyName, "sizeNe");
+        addToCriteria(Restrictions.sizeNe(propertyName, size));
+        return this;
+    }
+
     /**
      * Orders by the specified property name (defaults to ascending)
      *
