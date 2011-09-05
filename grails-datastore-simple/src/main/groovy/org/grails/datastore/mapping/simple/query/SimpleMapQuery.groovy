@@ -359,6 +359,13 @@ class SimpleMapQuery extends Query {
 
             allEntities.findAll { it.value[name] > value }.collect { it.key }
         },
+        (Query.EqualsProperty): { Query.EqualsProperty gt, PersistentProperty property ->
+            def name = gt.property
+            def other = gt.otherProperty
+            def allEntities = datastore[family]
+
+            allEntities.findAll { it.value[name] == it.value[other] }.collect { it.key }
+        },
         (Query.SizeEquals): { Query.SizeEquals se, PersistentProperty property ->
             def allEntities = datastore[family]
             queryAssociationList(allEntities, property) { it.size() == se.value }

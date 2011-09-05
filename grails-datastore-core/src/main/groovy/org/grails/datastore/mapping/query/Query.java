@@ -647,7 +647,7 @@ public abstract class Query {
         protected String otherProperty;
 
         public PropertyComparisonCriterion(String property, String otherProperty) {
-            this.name = name;
+            this.name = property;
             this.otherProperty = otherProperty;
         }
 
