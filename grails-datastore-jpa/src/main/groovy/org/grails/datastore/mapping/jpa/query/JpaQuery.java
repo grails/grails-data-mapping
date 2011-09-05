@@ -166,6 +166,84 @@ public class JpaQuery extends Query {
             }
         });
 
+       queryHandlers.put(EqualsProperty.class, new QueryHandler() {
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, StringBuilder whereClause,String logicalName, int position, List parameters, ConversionService conversionService) {
+                EqualsProperty eq = (EqualsProperty) criterion;
+                final String propertyName = eq.getProperty();
+                String otherProperty = eq.getOtherProperty();
+
+                validateProperty(entity, propertyName, EqualsProperty.class);
+                validateProperty(entity, otherProperty, EqualsProperty.class);
+                appendPropertyComparison(whereClause, logicalName, propertyName, otherProperty, "=");
+                return position;
+            }
+        });
+
+       queryHandlers.put(NotEqualsProperty.class, new QueryHandler() {
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, StringBuilder whereClause,String logicalName, int position, List parameters, ConversionService conversionService) {
+                PropertyComparisonCriterion eq = (PropertyComparisonCriterion) criterion;
+                final String propertyName = eq.getProperty();
+                String otherProperty = eq.getOtherProperty();
+
+                validateProperty(entity, propertyName, NotEqualsProperty.class);
+                validateProperty(entity, otherProperty, NotEqualsProperty.class);
+                appendPropertyComparison(whereClause, logicalName, propertyName, otherProperty, "!=");
+                return position;
+            }
+        });
+
+       queryHandlers.put(GreaterThanProperty.class, new QueryHandler() {
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, StringBuilder whereClause,String logicalName, int position, List parameters, ConversionService conversionService) {
+                PropertyComparisonCriterion eq = (PropertyComparisonCriterion) criterion;
+                final String propertyName = eq.getProperty();
+                String otherProperty = eq.getOtherProperty();
+
+                validateProperty(entity, propertyName, GreaterThanProperty.class);
+                validateProperty(entity, otherProperty, GreaterThanProperty.class);
+                appendPropertyComparison(whereClause, logicalName, propertyName, otherProperty, ">");
+                return position;
+            }
+        });
+
+       queryHandlers.put(GreaterThanEqualsProperty.class, new QueryHandler() {
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, StringBuilder whereClause,String logicalName, int position, List parameters, ConversionService conversionService) {
+                PropertyComparisonCriterion eq = (PropertyComparisonCriterion) criterion;
+                final String propertyName = eq.getProperty();
+                String otherProperty = eq.getOtherProperty();
+
+                validateProperty(entity, propertyName, GreaterThanEqualsProperty.class);
+                validateProperty(entity, otherProperty, GreaterThanEqualsProperty.class);
+                appendPropertyComparison(whereClause, logicalName, propertyName, otherProperty, ">=");
+                return position;
+            }
+        });
+
+       queryHandlers.put(LessThanProperty.class, new QueryHandler() {
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, StringBuilder whereClause,String logicalName, int position, List parameters, ConversionService conversionService) {
+                PropertyComparisonCriterion eq = (PropertyComparisonCriterion) criterion;
+                final String propertyName = eq.getProperty();
+                String otherProperty = eq.getOtherProperty();
+
+                validateProperty(entity, propertyName, LessThanProperty.class);
+                validateProperty(entity, otherProperty, LessThanProperty.class);
+                appendPropertyComparison(whereClause, logicalName, propertyName, otherProperty, "<");
+                return position;
+            }
+        });
+
+       queryHandlers.put(LessThanEqualsProperty.class, new QueryHandler() {
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, StringBuilder whereClause,String logicalName, int position, List parameters, ConversionService conversionService) {
+                PropertyComparisonCriterion eq = (PropertyComparisonCriterion) criterion;
+                final String propertyName = eq.getProperty();
+                String otherProperty = eq.getOtherProperty();
+
+                validateProperty(entity, propertyName, LessThanEqualsProperty.class);
+                validateProperty(entity, otherProperty, LessThanEqualsProperty.class);
+                appendPropertyComparison(whereClause, logicalName, propertyName, otherProperty, "<=");
+                return position;
+            }
+        });
+
         queryHandlers.put(IsNull.class, new QueryHandler() {
             public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, StringBuilder whereClause,String logicalName, int position, List parameters, ConversionService conversionService) {
                 IsNull isNull = (IsNull) criterion;
@@ -393,6 +471,16 @@ public class JpaQuery extends Query {
         });
     }
 
+    private static void appendPropertyComparison(StringBuilder q, String logicalName, String propertyName, String otherProperty, String operator) {
+        q.append(logicalName)
+         .append(DOT)
+         .append(propertyName)
+         .append(operator)
+         .append(logicalName)
+         .append(DOT)
+         .append(otherProperty);
+    }
+
     private static PersistentProperty validateProperty(PersistentEntity entity, String name, Class criterionType) {
         if (entity.getIdentity().getName().equals(name)) return entity.getIdentity();
         PersistentProperty prop = entity.getPropertyByName(name);
@@ -610,6 +698,9 @@ public class JpaQuery extends Query {
             if (qh != null) {
                 position = qh.handle(entity, criterion, q, whereClause, logicalName,
                         position, parameters, conversionService);
+            }
+            else {
+                throw new InvalidDataAccessResourceUsageException("Queries of type "+criterion.getClass().getSimpleName()+" are not supported by this implementation");
             }
 
             if (iterator.hasNext()) {
