@@ -640,6 +640,63 @@ public abstract class Query {
     }
 
     /**
+     * A Criterion that compares to properties
+     */
+    public static class PropertyComparisonCriterion implements Criterion {
+        protected String name;
+        protected String otherProperty;
+
+        public PropertyComparisonCriterion(String property, String otherProperty) {
+            this.name = name;
+            this.otherProperty = otherProperty;
+        }
+
+        public String getProperty() {
+            return name;
+        }
+
+        public String getOtherProperty() {
+            return otherProperty;
+        }
+    }
+
+    public static class EqualsProperty extends PropertyComparisonCriterion {
+        public EqualsProperty(String property, String otherProperty) {
+            super(property, otherProperty);
+        }
+    }
+
+    public static class NotEqualsProperty extends PropertyComparisonCriterion {
+        public NotEqualsProperty(String property, String otherProperty) {
+            super(property, otherProperty);
+        }
+    }
+
+    public static class GreaterThanProperty extends PropertyComparisonCriterion {
+        public GreaterThanProperty(String property, String otherProperty) {
+            super(property, otherProperty);
+        }
+    }
+
+    public static class GreaterThanEqualsProperty extends PropertyComparisonCriterion {
+        public GreaterThanEqualsProperty(String property, String otherProperty) {
+            super(property, otherProperty);
+        }
+    }
+
+    public static class LessThanProperty extends PropertyComparisonCriterion {
+        public LessThanProperty(String property, String otherProperty) {
+            super(property, otherProperty);
+        }
+    }
+
+    public static class LessThanEqualsProperty extends PropertyComparisonCriterion {
+        public LessThanEqualsProperty(String property, String otherProperty) {
+            super(property, otherProperty);
+        }
+    }
+
+    /**
      * Criterion that applies to a property and value
      */
     public static class PropertyCriterion extends PropertyNameCriterion {

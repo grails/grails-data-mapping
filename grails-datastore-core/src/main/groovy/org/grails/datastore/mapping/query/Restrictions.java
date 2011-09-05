@@ -255,4 +255,70 @@ public class Restrictions {
     public static Query.SizeNotEquals sizeNe(String property, int size) {
         return new Query.SizeNotEquals(property, size);
     }
+
+    /**
+     * Constraints a property to be equal to a specified other property
+     *
+     * @param propertyName      The property
+     * @param otherPropertyName The other property
+     * @return The criterion instance
+     */
+    public static Query.EqualsProperty eqProperty(String propertyName, String otherPropertyName) {
+        return new Query.EqualsProperty(propertyName, otherPropertyName);
+    }
+
+    /**
+     * Constraints a property to be not equal to a specified other property
+     *
+     * @param propertyName      The property
+     * @param otherPropertyName The other property
+     * @return This criterion instance
+     */
+    public static Query.NotEqualsProperty neProperty(String propertyName, String otherPropertyName) {
+        return new Query.NotEqualsProperty(propertyName, otherPropertyName);
+    }
+
+    /**
+     * Constraints a property to be greater than a specified other property
+     *
+     * @param propertyName      The property
+     * @param otherPropertyName The other property
+     * @return The criterion
+     */
+    public static Query.GreaterThanProperty gtProperty(String propertyName, String otherPropertyName) {
+        return new Query.GreaterThanProperty(propertyName, otherPropertyName);
+    }
+
+    /**
+     * Constraints a property to be greater than or equal to a specified other property
+     *
+     * @param propertyName      The property
+     * @param otherPropertyName The other property
+     * @return The criterion
+     */
+    public static Query.GreaterThanEqualsProperty geProperty(String propertyName, String otherPropertyName) {
+        return new Query.GreaterThanEqualsProperty(propertyName, otherPropertyName);
+    }
+
+    /**
+     * Constraints a property to be less than a specified other property
+     *
+     * @param propertyName      The property
+     * @param otherPropertyName The other property
+     * @return The criterion
+     */
+    public static Query.LessThanProperty ltProperty(String propertyName, String otherPropertyName) {
+        return new Query.LessThanProperty(propertyName, otherPropertyName);
+    }
+
+    /**
+     * Constraints a property to be less than or equal to a specified other property
+     *
+     * @param propertyName      The property
+     * @param otherPropertyName The other property
+     * @return The criterion
+     */
+    public static Query.LessThanEqualsProperty leProperty(String propertyName, String otherPropertyName) {
+        return new Query.LessThanEqualsProperty(propertyName, otherPropertyName);
+    }
 }

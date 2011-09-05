@@ -225,7 +225,7 @@ public interface Criteria extends Projections{
      * Orders by the specified property name (defaults to ascending)
      *
      * @param propertyName The property name to order by
-     * @return A Order instance
+     * @return This criteria
      */
     Criteria order(String propertyName);
 
@@ -235,7 +235,7 @@ public interface Criteria extends Projections{
      * @param propertyName The property name to order by
      * @param direction Either "asc" for ascending or "desc" for descending
      *
-     * @return A Order instance
+     * @return This criteria
      */
     Criteria order(String propertyName, String direction);
 
@@ -245,7 +245,7 @@ public interface Criteria extends Projections{
      * @param propertyName The property name
      * @param size The size to constrain by
      *
-     * @return A Criterion instance
+     * @return This criteria
      */
     Criteria sizeEq(String propertyName, int size) ;
 
@@ -255,7 +255,7 @@ public interface Criteria extends Projections{
      * @param propertyName The property name
      * @param size The size to constrain by
      *
-     * @return A Criterion instance
+     * @return This criteria
      */
     Criteria sizeGt(String propertyName, int size);
 
@@ -265,7 +265,7 @@ public interface Criteria extends Projections{
      * @param propertyName The property name
      * @param size The size to constrain by
      *
-     * @return A Criterion instance
+     * @return This criteria
      */
     Criteria sizeGe(String propertyName, int size);
 
@@ -275,7 +275,7 @@ public interface Criteria extends Projections{
      * @param propertyName The property name
      * @param size The size to constrain by
      *
-     * @return A Criterion instance
+     * @return This criteria
      */
     Criteria sizeLe(String propertyName, int size);
 
@@ -285,7 +285,7 @@ public interface Criteria extends Projections{
      * @param propertyName The property name
      * @param size The size to constrain by
      *
-     * @return A Criterion instance
+     * @return This criteria
      */
     Criteria sizeLt(String propertyName, int size);
 
@@ -295,7 +295,62 @@ public interface Criteria extends Projections{
      * @param propertyName The property name
      * @param size The size to constrain by
      *
-     * @return A Criterion instance
+     * @return This criteria
      */
     Criteria sizeNe(String propertyName, int size);
+
+    /**
+     * Constraints a property to be equal to a specified other property
+     *
+     * @param propertyName The property
+     * @param otherPropertyName The other property
+     * @return This criteria
+     */
+    Criteria eqProperty(java.lang.String propertyName, java.lang.String otherPropertyName);
+
+    /**
+     * Constraints a property to be not equal to a specified other property
+     *
+     * @param propertyName The property
+     * @param otherPropertyName The other property
+     * @return This criteria
+     */
+    Criteria neProperty(java.lang.String propertyName, java.lang.String otherPropertyName);
+
+    /**
+     * Constraints a property to be greater than a specified other property
+     *
+     * @param propertyName The property
+     * @param otherPropertyName The other property
+     * @return This criteria
+     */
+    Criteria gtProperty(java.lang.String propertyName, java.lang.String otherPropertyName);
+
+    /**
+     * Constraints a property to be greater than or equal to a specified other property
+     *
+     * @param propertyName The property
+     * @param otherPropertyName The other property
+     * @return This criteria
+     */
+    Criteria geProperty(java.lang.String propertyName, java.lang.String otherPropertyName);
+
+    /**
+     * Constraints a property to be less than a specified other property
+     *
+     * @param propertyName The property
+     * @param otherPropertyName The other property
+     * @return This criteria
+     */
+    Criteria ltProperty(java.lang.String propertyName, java.lang.String otherPropertyName);
+
+    /**
+     * Constraints a property to be less than or equal to a specified other property
+     *
+     * @param propertyName The property
+     * @param otherPropertyName The other property
+     * @return This criteria
+     */
+    Criteria leProperty(java.lang.String propertyName, java.lang.String otherPropertyName);
+
 }

@@ -660,6 +660,95 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
     }
 
     /**
+     * Constraints a property to be equal to a specified other property
+     *
+     * @param propertyName      The property
+     * @param otherPropertyName The other property
+     * @return This criteria
+     */
+    public Criteria eqProperty(String propertyName, String otherPropertyName) {
+        validatePropertyName(propertyName, "eqProperty");
+        validatePropertyName(otherPropertyName, "eqProperty");
+        addToCriteria(Restrictions.eqProperty(propertyName, otherPropertyName));
+        return this;
+    }
+
+    /**
+     * Constraints a property to be not equal to a specified other property
+     *
+     * @param propertyName      The property
+     * @param otherPropertyName The other property
+     * @return This criteria
+     */
+    public Criteria neProperty(String propertyName, String otherPropertyName) {
+        validatePropertyName(propertyName, "neProperty");
+        validatePropertyName(otherPropertyName, "neProperty");
+        addToCriteria(Restrictions.neProperty(propertyName, otherPropertyName));
+        return this;
+
+    }
+
+    /**
+     * Constraints a property to be greater than a specified other property
+     *
+     * @param propertyName      The property
+     * @param otherPropertyName The other property
+     * @return This criteria
+     */
+    public Criteria gtProperty(String propertyName, String otherPropertyName) {
+        validatePropertyName(propertyName, "gtProperty");
+        validatePropertyName(otherPropertyName, "gtProperty");
+        addToCriteria(Restrictions.gtProperty(propertyName, otherPropertyName));
+        return this;
+
+    }
+
+    /**
+     * Constraints a property to be greater than or equal to a specified other property
+     *
+     * @param propertyName      The property
+     * @param otherPropertyName The other property
+     * @return This criteria
+     */
+    public Criteria geProperty(String propertyName, String otherPropertyName) {
+        validatePropertyName(propertyName, "geProperty");
+        validatePropertyName(otherPropertyName, "geProperty");
+        addToCriteria(Restrictions.geProperty(propertyName, otherPropertyName));
+        return this;
+
+    }
+
+    /**
+     * Constraints a property to be less than a specified other property
+     *
+     * @param propertyName      The property
+     * @param otherPropertyName The other property
+     * @return This criteria
+     */
+    public Criteria ltProperty(String propertyName, String otherPropertyName) {
+        validatePropertyName(propertyName, "ltProperty");
+        validatePropertyName(otherPropertyName, "ltProperty");
+        addToCriteria(Restrictions.ltProperty(propertyName, otherPropertyName));
+        return this;
+
+    }
+
+    /**
+     * Constraints a property to be less than or equal to a specified other property
+     *
+     * @param propertyName      The property
+     * @param otherPropertyName The other property
+     * @return This criteria
+     */
+    public Criteria leProperty(String propertyName, String otherPropertyName) {
+        validatePropertyName(propertyName, "leProperty");
+        validatePropertyName(otherPropertyName, "leProperty");
+        addToCriteria(Restrictions.leProperty(propertyName, otherPropertyName));
+        return this;
+
+    }
+
+    /**
      * Orders by the specified property name (defaults to ascending)
      *
      * @param propertyName The property name to order by
