@@ -144,10 +144,6 @@ class NamedCriteriaProxy {
         def countClosure = {
             queryBuilder = delegate
             invokeCriteriaClosure(additionalCriteriaClosure)
-            uniqueResult = true
-            projections {
-                rowCount()
-            }
         }
         entity.javaClass.createCriteria().count(countClosure)
     }
