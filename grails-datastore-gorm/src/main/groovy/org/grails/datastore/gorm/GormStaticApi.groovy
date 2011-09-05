@@ -37,6 +37,7 @@ import org.springframework.transaction.support.TransactionCallback
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.util.Assert
 import org.springframework.validation.Errors
+import org.grails.datastore.mapping.query.api.Criteria
 
 /**
  * Static methods of the GORM API.
@@ -181,7 +182,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     /**
      * Creates a criteria builder instance
      */
-    def createCriteria() {
+    Criteria createCriteria() {
         new CriteriaBuilder(persistentClass, datastore.currentSession)
     }
 
