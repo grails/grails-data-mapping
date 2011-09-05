@@ -43,6 +43,7 @@ import org.springframework.util.Assert;
  * Criteria builder implementation that operates against Spring datastore abstraction.
  *
  * @author Graeme Rocher
+ * @since 1.0
  */
 @SuppressWarnings("rawtypes")
 public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
@@ -50,29 +51,14 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
     public static final String ORDER_DESCENDING = "desc";
     public static final String ORDER_ASCENDING = "asc";
 
-    public static final String AND = "and"; // builder
-    public static final String NOT = "not";// builder
-    public static final String OR = "or"; // builder
-    public static final String IS_NULL = "isNull"; // builder
-    public static final String IS_NOT_NULL = "isNotNull"; // builder
-    public static final String ID_EQUALS = "idEq"; // builder
-    public static final String IS_EMPTY = "isEmpty"; //builder
-    public static final String IS_NOT_EMPTY = "isNotEmpty"; //builder
-
     private static final String ROOT_DO_CALL = "doCall";
     private static final String ROOT_CALL = "call";
-    private static final String LIST_CALL = "list";
-    private static final String LIST_DISTINCT_CALL = "listDistinct";
-    private static final String COUNT_CALL = "count";
-    private static final String GET_CALL = "get";
     private static final String SCROLL_CALL = "scroll";
-    private static final String PROJECTIONS = "projections";
 
     private Class targetClass;
     private Session session;
     private Query query;
     private boolean uniqueResult = false;
-    private boolean count = false;
     private boolean paginationEnabledList;
     private List<Query.Order> orderEntries = new ArrayList<Query.Order>();
     private List<Query.Junction> logicalExpressionStack = new ArrayList<Query.Junction>();
@@ -102,7 +88,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
 
    public void setUniqueResult(boolean uniqueResult) {
         this.uniqueResult = uniqueResult;
-    }
+   }
 
    public Query.ProjectionList id() {
        if (projectionList != null) {
@@ -123,6 +109,12 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
         return projectionList;
     }
 
+    /**
+     * Projection that signifies to count distinct results
+     *
+     * @param property The name of the property
+     * @return The projection list
+     */
     public Projections countDistinct(String property) {
         if (projectionList != null) {
             projectionList.countDistinct(property);
@@ -130,6 +122,11 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
         return projectionList;
     }
 
+    /**
+     * Projection that signifies to return only distinct results
+     *
+     * @return The projection list
+     */
     public Projections distinct() {
         if (projectionList != null) {
             projectionList.distinct();
@@ -137,6 +134,12 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
         return projectionList;
     }
 
+    /**
+     * Projection that signifies to return only distinct results
+     *
+     * @param property The name of the property
+     * @return The projection list
+     */
     public Projections distinct(String property) {
         if (projectionList != null) {
             projectionList.distinct(property);
@@ -216,25 +219,71 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
        return projectionList;
     }
 
-    private boolean isCriteriaConstructionMethod(String name, Object[] args) {
-        return (name.equals(LIST_CALL) && args.length == 2 && args[0] instanceof Map && args[1] instanceof Closure) ||
-                  (name.equals(ROOT_CALL) ||
-                   name.equals(ROOT_DO_CALL) ||
-                   name.equals(LIST_CALL) ||
-                   name.equals(LIST_DISTINCT_CALL) ||
-                   name.equals(GET_CALL) ||
-                   name.equals(COUNT_CALL) ||
-                   name.equals(SCROLL_CALL) && args.length == 1 && args[0] instanceof Closure);
+    /**
+     * Defines an executes a list query in a single call. Example: Foo.createCriteria.list { }
+     * @param callable The closure to execute
+     *
+     * @return The result list
+     */
+    public List list(Closure callable) {
+        initializeQuery();
+        invokeClosureNode(callable);
+
+        return query.list();
     }
 
-    private void invokeClosureNode(Object args) {
-        if(args instanceof Closure) {
+    /**
+     * Defines an executes a get query ( a single result) in a single call. Example: Foo.createCriteria.get { }
+     *
+     *
+     * @param callable The closure to execute
+     *
+     * @return A single result
+     */
+    public Object get(Closure callable) {
+        initializeQuery();
+        invokeClosureNode(callable);
 
-            Closure callable = (Closure)args;
-            callable.setDelegate(this);
-            callable.setResolveStrategy(Closure.DELEGATE_FIRST);
-            callable.call();
-        }
+        uniqueResult = true;
+        return query.singleResult();
+    }
+
+    /**
+     * Defines an executes a list distinct query in a single call. Example: Foo.createCriteria.listDistinct { }
+     * @param callable The closure to execute
+     *
+     * @return The result list
+     */
+    public List listDistinct(Closure callable) {
+        initializeQuery();
+        invokeClosureNode(callable);
+
+        query.projections().distinct();
+        return query.list();
+    }
+
+    public List list(Map paginateParams, Closure callable) {
+        initializeQuery();
+
+        paginationEnabledList = true;
+        orderEntries = new ArrayList<Query.Order>();
+        invokeClosureNode(callable);
+        populateArgumentsForCriteria(targetClass, query, paginateParams);
+        return query.list();
+    }
+
+    /**
+     * Defines an executes a count query in a single call. Example: Foo.createCriteria.count { }
+     * @param callable The closure to execute
+     *
+     * @return The result count
+     */
+    public Number count(Closure callable) {
+        initializeQuery();
+        invokeClosureNode(callable);
+        uniqueResult = true;
+        query.projections().count();
+        return (Number) query.singleResult();
     }
 
     @Override
@@ -245,40 +294,13 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
 
             initializeQuery();
 
-            if (name.equals(GET_CALL)) {
-                uniqueResult = true;
-            }
-            else if (name.equals(COUNT_CALL)) {
-                count = true;
-            }
-            else {
-                uniqueResult = false;
-                count = false;
-            }
+            uniqueResult = false;
 
-            // Check for pagination params
-            if (name.equals(LIST_CALL) && args.length == 2) {
-                paginationEnabledList = true;
-                orderEntries = new ArrayList<Query.Order>();
-                invokeClosureNode(args[1]);
-            }
-            else {
-                invokeClosureNode(args[0]);
-            }
+            invokeClosureNode(args[0]);
 
             Object result;
             if (!uniqueResult) {
-                if (count) {
-                    query.projections().count();
-                    result = query.singleResult();
-                }
-                else if (paginationEnabledList) {
-                    populateArgumentsForCriteria(targetClass, query, (Map)args[0]);
-                    result = query.list();
-                }
-                else {
-                    result = query.list();
-                }
+                result = query.list();
             }
             else {
                 result = query.singleResult();
@@ -321,11 +343,12 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
         throw new MissingMethodException(name, getClass(), args);
     }
 
-    private void initializeQuery() {
-        query = session.createQuery(targetClass);
-        queryMetaClass = GroovySystem.getMetaClassRegistry().getMetaClass(query.getClass());
-    }
-
+    /**
+     * Defines projections
+     *
+     * @param callable The closure defining the projections
+     * @return The projections list
+     */
     public Projections projections(Closure callable) {
         projectionList = query.projections();
         invokeClosureNode(callable);
@@ -347,23 +370,11 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
         return this;
     }
 
-    private void handleJunction(Query.Junction junction, Closure callable) {
-        logicalExpressionStack.add(junction);
-        try {
-            if(callable != null) {
-                invokeClosureNode(callable);
-            }
-        } finally {
-            Query.Junction logicalExpression = logicalExpressionStack.remove(logicalExpressionStack.size()-1);
-            addToCriteria(logicalExpression);
-        }
-    }
-
-
     public Criteria idEquals(Object value) {
         addToCriteria(Restrictions.idEq(value));
         return this;
     }
+
 
     public Criteria isEmpty(String propertyName) {
         validatePropertyName(propertyName, "isEmpty");
@@ -428,6 +439,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
         addToCriteria(Restrictions.ne(propertyName, propertyValue));
         return this;
     }
+
     /**
      * Restricts the results by the given property value range (inclusive)
      *
@@ -442,7 +454,6 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
         addToCriteria(Restrictions.between(propertyName, start, finish));
         return this;
     }
-
     /**
      * Used to restrict a value to be greater than or equal to the given value
      * @param property The property
@@ -501,7 +512,6 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
         return this;
     }
 
-
     /**
      * Used to restrict a value to be less than or equal to the given value
      * @param property The property
@@ -513,6 +523,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
         addToCriteria(Restrictions.lt(property, value));
         return this;
     }
+
 
     /**
      * Creates an like Criterion based on the specified property name and value.
@@ -703,6 +714,39 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
         if (property == null) {
             throw new IllegalArgumentException("Property [" + propertyName +
                     "] is not a valid property of class [" + persistentEntity + "]");
+        }
+    }
+
+    private void initializeQuery() {
+        query = session.createQuery(targetClass);
+        queryMetaClass = GroovySystem.getMetaClassRegistry().getMetaClass(query.getClass());
+    }
+
+    private boolean isCriteriaConstructionMethod(String name, Object[] args) {
+        return (name.equals(ROOT_CALL) ||
+                name.equals(ROOT_DO_CALL) ||
+                name.equals(SCROLL_CALL) && args.length == 1 && args[0] instanceof Closure);
+    }
+
+    private void invokeClosureNode(Object args) {
+        if(args instanceof Closure) {
+
+            Closure callable = (Closure)args;
+            callable.setDelegate(this);
+            callable.setResolveStrategy(Closure.DELEGATE_FIRST);
+            callable.call();
+        }
+    }
+
+    private void handleJunction(Query.Junction junction, Closure callable) {
+        logicalExpressionStack.add(junction);
+        try {
+            if(callable != null) {
+                invokeClosureNode(callable);
+            }
+        } finally {
+            Query.Junction logicalExpression = logicalExpressionStack.remove(logicalExpressionStack.size()-1);
+            addToCriteria(logicalExpression);
         }
     }
 
