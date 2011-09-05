@@ -183,11 +183,6 @@ class SimpleMapQuery extends Query {
                 it[eq.property] != eq.value
             }
         },
-       (Query.SizeEquals): { allEntities, Association association, Query.SizeEquals eq ->
-            queryAssociation(allEntities, association) {
-                it[eq.property]?.size() == eq.value
-            }
-        },
         (Query.IsNotNull): { allEntities, Association association, Query.IsNotNull eq ->
             queryAssociation(allEntities, association) {
                 it[eq.property] != null
@@ -366,10 +361,27 @@ class SimpleMapQuery extends Query {
         },
         (Query.SizeEquals): { Query.SizeEquals se, PersistentProperty property ->
             def allEntities = datastore[family]
-            def results = queryAssociationList(allEntities, property) {
-                it.size() == se.value
-            }
-            return results
+            queryAssociationList(allEntities, property) { it.size() == se.value }
+        },
+       (Query.SizeNotEquals): { Query.SizeNotEquals se, PersistentProperty property ->
+            def allEntities = datastore[family]
+            queryAssociationList(allEntities, property) { it.size() != se.value }
+        },
+        (Query.SizeGreaterThan): { Query.SizeGreaterThan se, PersistentProperty property ->
+            def allEntities = datastore[family]
+            queryAssociationList(allEntities, property) { it.size() > se.value }
+        },
+        (Query.SizeGreaterThanEquals): { Query.SizeGreaterThanEquals se, PersistentProperty property ->
+            def allEntities = datastore[family]
+            queryAssociationList(allEntities, property) { it.size() >= se.value }
+        },
+        (Query.SizeLessThan): { Query.SizeLessThan se, PersistentProperty property ->
+            def allEntities = datastore[family]
+            queryAssociationList(allEntities, property) { it.size() < se.value }
+        },
+        (Query.SizeLessThanEquals): { Query.SizeLessThanEquals se, PersistentProperty property ->
+            def allEntities = datastore[family]
+            queryAssociationList(allEntities, property) { it.size() <= se.value }
         },
         (Query.GreaterThanEquals): { Query.GreaterThanEquals gt, PersistentProperty property ->
             def name = gt.property
