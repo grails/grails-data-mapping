@@ -70,6 +70,9 @@ public class MongoQuery extends Query {
     public static final String MONGO_NE_OPERATOR = "$ne";
     public static final String MONGO_NIN_OPERATOR = "$nin";
     public static final String MONGO_ID_REFERENCE_SUFFIX = ".$id";
+    public static final String MONGO_WHERE_OPERATOR = "$where";
+
+    private static final String MONGO_THIS_PREFIX = "this.";
 
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
@@ -91,6 +94,50 @@ public class MongoQuery extends Query {
                 }
             }
         });
+
+        queryHandlers.put(EqualsProperty.class, new QueryHandler<EqualsProperty>() {
+            public void handle(PersistentEntity entity, EqualsProperty criterion, DBObject query) {
+                String propertyName = getPropertyName(entity, criterion);
+                String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
+                addWherePropertyComparison(query, propertyName, otherPropertyName, "==");
+            }
+        });
+        queryHandlers.put(NotEqualsProperty.class, new QueryHandler<NotEqualsProperty>() {
+            public void handle(PersistentEntity entity, NotEqualsProperty criterion, DBObject query) {
+                String propertyName = getPropertyName(entity, criterion);
+                String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
+                addWherePropertyComparison(query, propertyName, otherPropertyName, "!=");
+            }
+        });
+        queryHandlers.put(GreaterThanProperty.class, new QueryHandler<GreaterThanProperty>() {
+            public void handle(PersistentEntity entity, GreaterThanProperty criterion, DBObject query) {
+                String propertyName = getPropertyName(entity, criterion);
+                String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
+                addWherePropertyComparison(query, propertyName, otherPropertyName, ">");
+            }
+        });
+        queryHandlers.put(LessThanProperty.class, new QueryHandler<LessThanProperty>() {
+            public void handle(PersistentEntity entity, LessThanProperty criterion, DBObject query) {
+                String propertyName = getPropertyName(entity, criterion);
+                String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
+                addWherePropertyComparison(query, propertyName, otherPropertyName, "<");
+            }
+        });
+        queryHandlers.put(GreaterThanEqualsProperty.class, new QueryHandler<GreaterThanEqualsProperty>() {
+            public void handle(PersistentEntity entity, GreaterThanEqualsProperty criterion, DBObject query) {
+                String propertyName = getPropertyName(entity, criterion);
+                String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
+                addWherePropertyComparison(query, propertyName, otherPropertyName, ">=");
+            }
+        });
+        queryHandlers.put(LessThanEqualsProperty.class, new QueryHandler<LessThanEqualsProperty>() {
+            public void handle(PersistentEntity entity, LessThanEqualsProperty criterion, DBObject query) {
+                String propertyName = getPropertyName(entity, criterion);
+                String otherPropertyName = getPropertyName(entity, criterion.getOtherProperty());
+                addWherePropertyComparison(query, propertyName, otherPropertyName, "<=");
+            }
+        });
+
 
         queryHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
             public void handle(PersistentEntity entity, NotEquals criterion, DBObject query) {
@@ -322,6 +369,10 @@ public class MongoQuery extends Query {
                 queryHandlers.get(GreaterThanEquals.class).handle(entity, Restrictions.gte(criterion.getProperty(), criterion.getValue()), query);
             }
         });
+    }
+
+    private static void addWherePropertyComparison(DBObject query, String propertyName, String otherPropertyName, String operator) {
+        query.put(MONGO_WHERE_OPERATOR, new StringBuilder(MONGO_THIS_PREFIX).append(propertyName).append(operator).append(MONGO_THIS_PREFIX).append(otherPropertyName).toString());
     }
 
     private static void handleLike(PersistentEntity entity, Like like, DBObject query, boolean caseSensitive) {
@@ -557,8 +608,12 @@ public class MongoQuery extends Query {
     }
 
     protected static String getPropertyName(PersistentEntity entity,
-            PropertyCriterion criterion) {
+            PropertyNameCriterion criterion) {
         String propertyName = criterion.getProperty();
+        return getPropertyName(entity, propertyName);
+    }
+
+    private static String getPropertyName(PersistentEntity entity, String propertyName) {
         if (entity.isIdentityName(propertyName)) {
             propertyName = MongoEntityPersister.MONGO_ID_FIELD;
         }

@@ -642,17 +642,12 @@ public abstract class Query {
     /**
      * A Criterion that compares to properties
      */
-    public static class PropertyComparisonCriterion implements Criterion {
-        protected String name;
+    public static class PropertyComparisonCriterion extends PropertyNameCriterion{
         protected String otherProperty;
 
         public PropertyComparisonCriterion(String property, String otherProperty) {
-            this.name = property;
+            super(property);
             this.otherProperty = otherProperty;
-        }
-
-        public String getProperty() {
-            return name;
         }
 
         public String getOtherProperty() {
