@@ -189,7 +189,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * Creates a criteria builder instance
      */
     def withCriteria(Closure callable) {
-        return createCriteria().list(callable)
+        return createCriteria().call(callable)
     }
 
     /**
