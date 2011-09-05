@@ -359,12 +359,47 @@ class SimpleMapQuery extends Query {
 
             allEntities.findAll { it.value[name] > value }.collect { it.key }
         },
+        (Query.GreaterThanProperty): { Query.GreaterThanProperty gt, PersistentProperty property ->
+            def name = gt.property
+            def other = gt.otherProperty
+            def allEntities = datastore[family]
+
+            allEntities.findAll { it.value[name] > it.value[other] }.collect { it.key }
+        },
+        (Query.GreaterThanEqualsProperty): { Query.GreaterThanEqualsProperty gt, PersistentProperty property ->
+            def name = gt.property
+            def other = gt.otherProperty
+            def allEntities = datastore[family]
+
+            allEntities.findAll { it.value[name] >= it.value[other] }.collect { it.key }
+        },
+        (Query.LessThanProperty): { Query.LessThanProperty gt, PersistentProperty property ->
+            def name = gt.property
+            def other = gt.otherProperty
+            def allEntities = datastore[family]
+
+            allEntities.findAll { it.value[name] < it.value[other] }.collect { it.key }
+        },
+        (Query.LessThanEqualsProperty): { Query.LessThanEqualsProperty gt, PersistentProperty property ->
+            def name = gt.property
+            def other = gt.otherProperty
+            def allEntities = datastore[family]
+
+            allEntities.findAll { it.value[name] <= it.value[other] }.collect { it.key }
+        },
         (Query.EqualsProperty): { Query.EqualsProperty gt, PersistentProperty property ->
             def name = gt.property
             def other = gt.otherProperty
             def allEntities = datastore[family]
 
             allEntities.findAll { it.value[name] == it.value[other] }.collect { it.key }
+        },
+        (Query.NotEqualsProperty): { Query.NotEqualsProperty gt, PersistentProperty property ->
+            def name = gt.property
+            def other = gt.otherProperty
+            def allEntities = datastore[family]
+
+            allEntities.findAll { it.value[name] != it.value[other] }.collect { it.key }
         },
         (Query.SizeEquals): { Query.SizeEquals se, PersistentProperty property ->
             def allEntities = datastore[family]
