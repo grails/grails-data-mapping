@@ -1,4 +1,4 @@
-package org.grails.datastore.gorm
+package grails.gorm.tests
 
 import grails.gorm.tests.GormDatastoreSpec
 import org.junit.Ignore
