@@ -60,9 +60,12 @@ class SimpleMapQuery extends Query {
             if (!entity.isRoot()) {
                 def childKeys = datastore[family].keySet()
                 entityMap = entityMap.subMap(childKeys)
+
             }
         }
 
+        def nullEntries = entityMap.entrySet().findAll { it.value == null }
+        entityMap.keySet().removeAll(nullEntries.collect { it.key })
         if (projections.isEmpty()) {
             results = entityMap.values() as List
         }
@@ -180,6 +183,11 @@ class SimpleMapQuery extends Query {
                 it[eq.property] != eq.value
             }
         },
+       (Query.SizeEquals): { allEntities, Association association, Query.SizeEquals eq ->
+            queryAssociation(allEntities, association) {
+                it[eq.property]?.size() == eq.value
+            }
+        },
         (Query.IsNotNull): { allEntities, Association association, Query.IsNotNull eq ->
             queryAssociation(allEntities, association) {
                 it[eq.property] != null
@@ -224,7 +232,7 @@ class SimpleMapQuery extends Query {
         }
     ]
 
-    def queryAssociation(allEntities, Association association, Closure callable) {
+    protected queryAssociation(allEntities, Association association, Closure callable) {
         allEntities.findAll {
             def propertyName = association.name
             if (association instanceof ToOne) {
@@ -244,6 +252,14 @@ class SimpleMapQuery extends Query {
                     return associatedEntities.any(callable)
                 }
             }
+        }.keySet().toList()
+    }
+
+    protected queryAssociationList(allEntities, Association association, Closure callable) {
+        allEntities.findAll {
+            def indexer = entityPersister.getAssociationIndexer(it.value, association)
+            def results = indexer.query(it.key)
+            callable.call(results)
         }.keySet().toList()
     }
 
@@ -347,6 +363,13 @@ class SimpleMapQuery extends Query {
             def allEntities = datastore[family]
 
             allEntities.findAll { it.value[name] > value }.collect { it.key }
+        },
+        (Query.SizeEquals): { Query.SizeEquals se, PersistentProperty property ->
+            def allEntities = datastore[family]
+            def results = queryAssociationList(allEntities, property) {
+                it.size() == se.value
+            }
+            return results
         },
         (Query.GreaterThanEquals): { Query.GreaterThanEquals gt, PersistentProperty property ->
             def name = gt.property
