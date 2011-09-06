@@ -19,8 +19,17 @@ import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
+import org.grails.datastore.gorm.neo4j.Neo4jSession
+import org.slf4j.LoggerFactory
+import org.slf4j.Logger
+import grails.gorm.tests.Tournament
+import grails.gorm.tests.Team
+import grails.gorm.tests.Club
 
 class Setup {
+
+    protected final Logger log = LoggerFactory.getLogger(getClass())
+
 
     static session
     static datastore
@@ -41,7 +50,21 @@ class Setup {
         storeDir = storeDir.path
         datastore = new Neo4jDatastore(storeDir: storeDir)
 
-        classes << User << Role
+        /*Neo4jSession.metaClass.invokeMethod = { String name, args ->
+            def metaMethod = Neo4jSession.metaClass.getMetaMethod(name, args)
+            if (metaMethod==null) {
+                metaMethod = Neo4jSession.metaClass.methods.find {it.name==name}
+            }
+            log.warn "START $name ($args)"
+            try {
+                metaMethod.invoke(delegate, args)
+
+            } finally {
+                log.warn "DONE $name"
+            }
+        }*/
+
+        classes << User << Role << Tournament << Team << Club
         ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint)
 
         def grailsApplication = new DefaultGrailsApplication(classes as Class[], Setup.getClassLoader())

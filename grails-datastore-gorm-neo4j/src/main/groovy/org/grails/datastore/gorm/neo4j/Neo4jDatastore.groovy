@@ -21,8 +21,6 @@ import org.neo4j.kernel.EmbeddedGraphDatabase
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ConfigurableApplicationContext
 import org.neo4j.graphdb.*
-import org.slf4j.LoggerFactory
-import org.grails.datastore.mapping.model.types.Association
 import org.springframework.util.Assert
 
 /**
@@ -68,7 +66,11 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
-        new Neo4jSession(this, mappingContext, applicationEventPublisher)
+        new Neo4jSession(
+                datastore: this,
+                mappingContext: mappingContext,
+                applicationEventPublisher: applicationEventPublisher
+        )
     }
 
     void afterPropertiesSet() {
@@ -84,7 +86,7 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
         Transaction tx = graphDatabaseService.beginTx()
         try {
             Node subReferenceNode = graphDatabaseService.createNode()
-            subReferenceNode.setProperty(Neo4jEntityPersister.SUBREFERENCE_PROPERTY_NAME, name)
+            subReferenceNode.setProperty(Neo4jSession.SUBREFERENCE_PROPERTY_NAME, name)
             graphDatabaseService.referenceNode.createRelationshipTo(subReferenceNode, GrailsRelationshipTypes.SUBREFERENCE)
             tx.success()
             return subReferenceNode
@@ -98,7 +100,7 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
         Node referenceNode = graphDatabaseService.referenceNode
         for (Relationship rel in referenceNode.getRelationships(GrailsRelationshipTypes.SUBREFERENCE, Direction.OUTGOING)) {
             Node endNode = rel.endNode
-            String clazzName = endNode.getProperty(Neo4jEntityPersister.SUBREFERENCE_PROPERTY_NAME)
+            String clazzName = endNode.getProperty(Neo4jSession.SUBREFERENCE_PROPERTY_NAME)
             subReferenceNodes[clazzName] = endNode
         }
 

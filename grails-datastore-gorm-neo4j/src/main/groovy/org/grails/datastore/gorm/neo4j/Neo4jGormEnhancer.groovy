@@ -101,6 +101,69 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
     def traverse(instance, Traverser.Order order, Closure stopEvaluator, Closure returnableEvaluator, Object... args) {
         traverse(instance, order, stopEvaluator as StopEvaluator, returnableEvaluator as ReturnableEvaluator, args)
     }
+
+    /**
+     * Allows subscript access to schemaless attributes.
+     *
+     * @param instance The instance
+     * @param name The name of the field
+     */
+    void putAt(D instance, String name, value) {
+        if (instance.hasProperty(name)) {
+            instance.setProperty(name, value)
+        }
+        else {
+            execute new SessionCallback() {
+                @Override
+                Object doInSession(Session session) {
+                    if (!session.contains(instance)) {
+                        throw new IllegalStateException("cannot store a non declared property on a transient instance")
+                    }
+                    session.persist(instance)
+                    Node node = instance.node
+                    if (value instanceof Collection) {
+
+                        Class c = String[]
+                        if (!value.empty) {
+                            def first = value.iterator().next()
+                            def baseClass = first.getClass()
+                            switch (first) {
+                                case BigDecimal:  // BigDeciaml is not allowed in neo4j -> storing doubles instead
+                                    baseClass = Double.class
+                                    break
+                            }
+                            c = ClassUtils.forName("[L${baseClass.name};")
+                        }
+                        value = value.asType(c)
+                    }
+                    node.setProperty(name, value)
+                }
+            }
+        }
+    }
+
+    /**
+     * Allows subscript access to schemaless attributes.
+     *
+     * @param instance The instance
+     * @param name The name of the field
+     * @return the value
+     */
+    def getAt(D instance, String name) {
+        if (instance.hasProperty(name)) {
+            return instance.getProperty(name)
+        }
+        else {
+            execute new SessionCallback() {
+                @Override
+                Object doInSession(Session session) {
+                    session.persist(instance)
+                    Node node = instance.node
+                    node.getProperty(name)
+                }
+            }
+        }
+    }
 }
 
 class Neo4jGormStaticApi<D> extends GormStaticApi<D> {

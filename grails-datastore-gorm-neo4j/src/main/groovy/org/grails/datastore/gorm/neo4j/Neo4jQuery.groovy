@@ -17,8 +17,7 @@ package org.grails.datastore.gorm.neo4j
 import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Relationship
-import org.grails.datastore.mapping.engine.EntityPersister
-import org.grails.datastore.mapping.engine.NativeEntryEntityPersister
+
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.Query
 import org.springframework.util.Assert
@@ -35,11 +34,8 @@ import org.grails.datastore.mapping.query.projections.ManualProjections
  */
 class Neo4jQuery extends Query {
 
-    NativeEntryEntityPersister entityPersister
-
-    Neo4jQuery(Neo4jSession session, PersistentEntity entity, EntityPersister entityPersister) {
+    Neo4jQuery(Neo4jSession session, PersistentEntity entity) {
         super(session, entity)
-        this.entityPersister = entityPersister
     }
 
     @Override
@@ -48,11 +44,11 @@ class Neo4jQuery extends Query {
         Assert.notNull( entity, "Entity should not be null" )
         List result = []
         List<Node> subReferenceNodes = getSubreferencesOfSelfAndDerived(entity)
-        List<String> validClassNames = subReferenceNodes.collect { it.getProperty(Neo4jEntityPersister.SUBREFERENCE_PROPERTY_NAME)}
+        List<String> validClassNames = subReferenceNodes.collect { it.getProperty(Neo4jSession.SUBREFERENCE_PROPERTY_NAME)}
         for (Node subReferenceNode in subReferenceNodes) {
             for (Relationship rel in subReferenceNode.getRelationships(GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING)) {
                 Node n = rel.endNode
-                Assert.isTrue n.getProperty(Neo4jEntityPersister.TYPE_PROPERTY_NAME, null) in validClassNames
+                Assert.isTrue n.getProperty(Neo4jSession.TYPE_PROPERTY_NAME, null) in validClassNames
 
                 if (invokeMethod("matchesCriterion${criteria.getClass().simpleName}", [n, criteria])) {
                     result << session.retrieve(entity.javaClass, n.id)
@@ -70,7 +66,7 @@ class Neo4jQuery extends Query {
     List<Node> getSubreferencesOfSelfAndDerived(entity) {
         Map<Class, Node> subReferenceNodes = session.datastore.subReferenceNodes
         // TODO: handle inheritence recursively
-        List<Node> result = entityPersister.mappingContext.persistentEntities.findAll { it.parentEntity == entity }.collect {
+        List<Node> result = session.mappingContext.persistentEntities.findAll { it.parentEntity == entity }.collect {
             subReferenceNodes[it.name]
         }
         if (subReferenceNodes.containsKey(entity.name)) {
@@ -139,7 +135,7 @@ class Neo4jQuery extends Query {
     }
 
     boolean matchesCriterionEquals(Node node, Query.Criterion criterion) {
-        def association = entityPersister.persistentEntity.associations.find { it.name == criterion.name}
+        def association = entity.associations.find { it.name == criterion.name}
         if (association) {
             def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(association)
             node.getSingleRelationship(relationshipType, direction)?.getOtherNode(node)?.id == criterion.value
