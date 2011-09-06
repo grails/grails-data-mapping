@@ -38,6 +38,7 @@ import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.util.Assert
 import org.springframework.validation.Errors
 import org.grails.datastore.mapping.query.api.Criteria
+import grails.gorm.DetachedCriteria
 
 /**
  * Static methods of the GORM API.
@@ -96,6 +97,17 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
             }
         }
         return method.invoke(cls, methodName, args)
+    }
+
+    /**
+     *
+     * @param callable Callable closure containing detached criteria definition
+     * @return The DetachedCriteria instance
+     */
+    DetachedCriteria<D> where(Closure callable) {
+        def criteria = new DetachedCriteria(persistentClass)
+        criteria.build callable
+        return criteria
     }
 
     /**

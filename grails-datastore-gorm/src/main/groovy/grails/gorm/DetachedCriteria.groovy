@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 SpringSource
+/* Copyright (C) 2011 SpringSource
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.mapping.query.Query.Junction
 
 /**
  * Represents criteria that is not bound to the current connection and can be built up and re-used at a later date
@@ -41,6 +42,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
     private List<Projection> projections = []
     private Class targetClass
     private List<DynamicFinder> dynamicFinders = []
+    private List<Junction> junctions = []
 
     ProjectionList projectionList = new DetachedProjections(projections)
 
@@ -58,7 +60,12 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
     }
 
     public void add(Criterion criterion) {
-        criteria << criterion
+        if(junctions)  {
+            junctions[-1].add criterion
+        }
+        else {
+            criteria << criterion
+        }
     }
 
     public List<Criterion> getCriteria() { criteria }
@@ -79,6 +86,23 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
         return projectionList
     }
 
+    /**
+     * Handles a conjunction
+     * @param callable Callable closure
+     * @return This criterion
+     */
+    Criteria and(Closure callable) {
+        junctions << new Query.Conjunction()
+        try {
+            callable.delegate = this
+            callable.call()
+            criteria << junctions[-1]
+            return this
+        }
+        finally {
+            junctions.remove(junctions.size()-1)
+        }
+    }
     /**
      * @see Criteria
      */
@@ -111,7 +135,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria inList(String propertyName, Collection values) {
-        criteria << Restrictions.in(propertyName, values)
+        add Restrictions.in(propertyName, values)
         return this
     }
 
@@ -119,7 +143,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria inList(String propertyName, Object[] values) {
-        criteria << Restrictions.in(propertyName, Arrays.asList(values))
+        add Restrictions.in(propertyName, Arrays.asList(values))
         return this
     }
 
@@ -127,7 +151,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria sizeEq(String propertyName, int size) {
-        criteria << Restrictions.sizeEq(propertyName, size)
+        add Restrictions.sizeEq(propertyName, size)
         return this
     }
 
@@ -135,7 +159,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria sizeGt(String propertyName, int size) {
-        criteria << Restrictions.sizeGt(propertyName, size)
+        add Restrictions.sizeGt(propertyName, size)
         return this
     }
 
@@ -143,7 +167,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria sizeGe(String propertyName, int size) {
-        criteria << Restrictions.sizeGe(propertyName, size)
+        add Restrictions.sizeGe(propertyName, size)
         return this
     }
 
@@ -151,7 +175,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria sizeLe(String propertyName, int size) {
-        criteria << Restrictions.sizeLe(propertyName, size)
+        add Restrictions.sizeLe(propertyName, size)
         return this
     }
 
@@ -159,7 +183,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria sizeLt(String propertyName, int size) {
-        criteria << Restrictions.sizeLt(propertyName, size)
+        add Restrictions.sizeLt(propertyName, size)
         return this
     }
 
@@ -167,7 +191,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria sizeNe(String propertyName, int size) {
-        criteria << Restrictions.sizeNe(propertyName, size)
+        add Restrictions.sizeNe(propertyName, size)
         return this
     }
 
@@ -175,7 +199,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria eqProperty(String propertyName, String otherPropertyName) {
-        criteria << Restrictions.eqProperty(propertyName,otherPropertyName)
+        add Restrictions.eqProperty(propertyName,otherPropertyName)
         return this
     }
 
@@ -183,7 +207,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria neProperty(String propertyName, String otherPropertyName) {
-        criteria << Restrictions.neProperty(propertyName,otherPropertyName)
+        add Restrictions.neProperty(propertyName,otherPropertyName)
         return this
     }
 
@@ -191,7 +215,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria gtProperty(String propertyName, String otherPropertyName) {
-        criteria << Restrictions.gtProperty(propertyName,otherPropertyName)
+        add Restrictions.gtProperty(propertyName,otherPropertyName)
         return this
     }
 
@@ -199,7 +223,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria geProperty(String propertyName, String otherPropertyName) {
-        criteria << Restrictions.geProperty(propertyName,otherPropertyName)
+        add Restrictions.geProperty(propertyName,otherPropertyName)
         return this
     }
 
@@ -207,7 +231,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria ltProperty(String propertyName, String otherPropertyName) {
-        criteria << Restrictions.ltProperty(propertyName,otherPropertyName)
+        add Restrictions.ltProperty(propertyName,otherPropertyName)
         return this
     }
 
@@ -215,7 +239,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria leProperty(String propertyName, String otherPropertyName) {
-        criteria << Restrictions.leProperty(propertyName,otherPropertyName)
+        add Restrictions.leProperty(propertyName,otherPropertyName)
         return this
     }
 
@@ -223,7 +247,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria idEquals(Object value) {
-        criteria << Restrictions.idEq(value)
+        add Restrictions.idEq(value)
         return this
     }
 
@@ -232,7 +256,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria isEmpty(String propertyName) {
-        criteria << Restrictions.isEmpty(propertyName)
+        add Restrictions.isEmpty(propertyName)
         return this
     }
 
@@ -240,7 +264,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria isNotEmpty(String propertyName) {
-        criteria << Restrictions.isNotEmpty(propertyName)
+        add Restrictions.isNotEmpty(propertyName)
         return this
     }
 
@@ -248,7 +272,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria isNull(String propertyName) {
-        criteria << Restrictions.isNull(propertyName)
+        add Restrictions.isNull(propertyName)
         return this
     }
 
@@ -256,7 +280,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria isNotNull(String propertyName) {
-        criteria << Restrictions.isNotNull(propertyName)
+        add Restrictions.isNotNull(propertyName)
         return this
     }
 
@@ -264,7 +288,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria eq(String propertyName, Object propertyValue) {
-        criteria << Restrictions.eq(propertyName,propertyValue)
+        add Restrictions.eq(propertyName,propertyValue)
         return this
     }
 
@@ -272,7 +296,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria idEq(Object propertyValue) {
-        criteria << Restrictions.idEq(propertyValue)
+        add Restrictions.idEq(propertyValue)
         return this
     }
 
@@ -280,7 +304,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria ne(String propertyName, Object propertyValue) {
-        criteria << Restrictions.ne(propertyName,propertyValue)
+        add Restrictions.ne(propertyName,propertyValue)
         return this
     }
 
@@ -288,7 +312,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria between(String propertyName, Object start, Object finish) {
-        criteria << Restrictions.between(propertyName, start, finish)
+        add Restrictions.between(propertyName, start, finish)
         return this
     }
 
@@ -296,7 +320,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria gte(String property, Object value) {
-        criteria << Restrictions.gte(property,value)
+        add Restrictions.gte(property,value)
         return this
     }
 
@@ -311,7 +335,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria gt(String property, Object value) {
-        criteria << Restrictions.gt(property,value)
+        add Restrictions.gt(property,value)
         return this
     }
 
@@ -319,7 +343,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria lte(String property, Object value) {
-        criteria << Restrictions.lte(property, value)
+        add Restrictions.lte(property, value)
         return this
     }
 
@@ -334,7 +358,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria lt(String property, Object value) {
-        criteria << Restrictions.lt(property,value)
+        add Restrictions.lt(property,value)
         return this
     }
 
@@ -342,7 +366,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria like(String propertyName, Object propertyValue) {
-        criteria << Restrictions.like(propertyName,propertyValue.toString())
+        add Restrictions.like(propertyName,propertyValue.toString())
         return this
     }
 
@@ -350,7 +374,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria ilike(String propertyName, Object propertyValue) {
-        criteria << Restrictions.ilike(propertyName, propertyValue.toString())
+        add Restrictions.ilike(propertyName, propertyValue.toString())
         return this
     }
 
@@ -358,7 +382,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @see Criteria
      */
     Criteria rlike(String propertyName, Object propertyValue) {
-        criteria << Restrictions.rlike(propertyName, propertyValue.toString())
+        add Restrictions.rlike(propertyName, propertyValue.toString())
         return this
     }
 
