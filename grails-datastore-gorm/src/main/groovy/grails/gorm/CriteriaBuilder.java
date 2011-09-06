@@ -36,7 +36,7 @@ import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
 import org.grails.datastore.mapping.query.api.Criteria;
-import org.grails.datastore.mapping.query.api.Projections;
+import org.grails.datastore.mapping.query.api.ProjectionList;
 import org.springframework.util.Assert;
 
 /**
@@ -46,7 +46,7 @@ import org.springframework.util.Assert;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
+public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, ProjectionList {
 
     public static final String ORDER_DESCENDING = "desc";
     public static final String ORDER_ASCENDING = "asc";
@@ -115,7 +115,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
      * @param property The name of the property
      * @return The projection list
      */
-    public Projections countDistinct(String property) {
+    public ProjectionList countDistinct(String property) {
         if (projectionList != null) {
             projectionList.countDistinct(property);
         }
@@ -127,7 +127,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
      *
      * @return The projection list
      */
-    public Projections distinct() {
+    public ProjectionList distinct() {
         if (projectionList != null) {
             projectionList.distinct();
         }
@@ -140,7 +140,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
      * @param property The name of the property
      * @return The projection list
      */
-    public Projections distinct(String property) {
+    public ProjectionList distinct(String property) {
         if (projectionList != null) {
             projectionList.distinct(property);
         }
@@ -151,7 +151,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
      * Count the number of records returned
      * @return The project list
      */
-    public Projections rowCount() {
+    public ProjectionList rowCount() {
         return count();
     }
 
@@ -160,7 +160,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
      * @param name The name of the property
      * @return The projection list
      */
-    public Projections property(String name) {
+    public ProjectionList property(String name) {
         if (projectionList != null) {
             projectionList.property(name);
         }
@@ -173,7 +173,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
      * @param name The name of the property
      * @return The projection list
      */
-    public Projections sum(String name) {
+    public ProjectionList sum(String name) {
         if (projectionList != null) {
             projectionList.sum(name);
         }
@@ -186,7 +186,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
      * @param name The name of the property
      * @return The projection list
      */
-    public Projections min(String name) {
+    public ProjectionList min(String name) {
         if (projectionList != null) {
             projectionList.min(name);
         }
@@ -199,7 +199,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
      * @param name The name of the property
      * @return The PropertyProjection instance
      */
-    public Projections max(String name) {
+    public ProjectionList max(String name) {
         if (projectionList != null) {
             projectionList.max(name);
         }
@@ -212,7 +212,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
      * @param name The name of the property
      * @return The PropertyProjection instance
      */
-    public Projections avg(String name) {
+    public ProjectionList avg(String name) {
        if (projectionList != null) {
            projectionList.avg(name);
        }
@@ -349,7 +349,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria {
      * @param callable The closure defining the projections
      * @return The projections list
      */
-    public Projections projections(Closure callable) {
+    public ProjectionList projections(Closure callable) {
         projectionList = query.projections();
         invokeClosureNode(callable);
         return projectionList;

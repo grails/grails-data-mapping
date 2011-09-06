@@ -22,32 +22,32 @@ package org.grails.datastore.mapping.query.api;
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface Projections {
+public interface ProjectionList {
     /**
       * A Projection that obtains the id of an object
       * @return The projection list
       */
-    Projections id();
+    ProjectionList id();
 
     /**
      * Count the number of records returned
      * @return The projection list
      */
-    Projections count();
+    ProjectionList count();
 
     /**
      * Count the number of records returned
      * @param property The property name to count
      * @return The projection list
      */
-    Projections countDistinct(String property);
+    ProjectionList countDistinct(String property);
 
     /**
      * Projection to return only distinct records
      *
      * @return The projection list
      */
-    Projections distinct();
+    ProjectionList distinct();
 
     /**
      * Projection to return only distinct properties
@@ -56,20 +56,20 @@ public interface Projections {
      *
      * @return The projection list
      */
-    Projections distinct(String property);
+    ProjectionList distinct(String property);
 
     /**
      * Count the number of records returned
      * @return The projection list
      */
-    Projections rowCount();
+    ProjectionList rowCount();
 
     /**
      * A projection that obtains the value of a property of an entity
      * @param name The name of the property
      * @return The PropertyProjection instance
      */
-    Projections property(String name);
+    ProjectionList property(String name);
 
     /**
      * Computes the sum of a property
@@ -77,7 +77,7 @@ public interface Projections {
      * @param name The name of the property
      * @return The PropertyProjection instance
      */
-    Projections sum(String name);
+    ProjectionList sum(String name);
 
     /**
      * Computes the min value of a property
@@ -85,7 +85,7 @@ public interface Projections {
      * @param name The name of the property
      * @return The PropertyProjection instance
      */
-    Projections min(String name);
+    ProjectionList min(String name);
 
     /**
      * Computes the max value of a property
@@ -93,7 +93,7 @@ public interface Projections {
      * @param name The name of the property
      * @return The PropertyProjection instance
      */
-    Projections max(String name);
+    ProjectionList max(String name);
 
     /**
      * Computes the average value of a property
@@ -101,5 +101,5 @@ public interface Projections {
      * @param name The name of the property
      * @return The PropertyProjection instance
      */
-    Projections avg(String name);
+    ProjectionList avg(String name);
 }

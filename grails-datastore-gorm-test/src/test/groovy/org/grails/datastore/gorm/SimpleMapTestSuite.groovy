@@ -17,6 +17,7 @@ import grails.gorm.tests.FindByMethodSpec
 import grails.gorm.tests.InheritanceSpec
 import grails.gorm.tests.CircularOneToManySpec
 import grails.gorm.tests.ProxyLoadingSpec
+import grails.gorm.tests.DetachedCriteriaSpec
 
 /**
  * @author graemerocher
@@ -30,7 +31,8 @@ import grails.gorm.tests.ProxyLoadingSpec
 //  FindByMethodSpec,
 //  ListOrderBySpec,
 //  GroovyProxySpec,
-  DomainEventsSpec,
+//  DomainEventsSpec,
+DetachedCriteriaSpec
 //  CriteriaBuilderSpec,
 //  NegationSpec,
 //  UpdateWithProxyPresentSpec,

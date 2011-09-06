@@ -68,6 +68,12 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     /**
+     * @return The FinderMethods for this class
+     */
+    List<FinderMethod> getDynamicFinders() {
+        this.dynamicFinders
+    }
+    /**
      * Method missing handler that deals with the invocation of dynamic finders
      *
      * @param methodName The method name
@@ -470,6 +476,20 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The result of the closure
      */
     def withSession(Closure callable) {
+        execute (new SessionCallback() {
+            def doInSession(Session session) {
+                callable.call session
+            }
+        })
+    }
+
+    /**
+     * Same as withSession, but present for the case where withSession is overridden to use the Hibernate session
+     *
+     * @param callable the closure
+     * @return The result of the closure
+     */
+    def withDatastoreSession(Closure callable) {
         execute (new SessionCallback() {
             def doInSession(Session session) {
                 callable.call session
