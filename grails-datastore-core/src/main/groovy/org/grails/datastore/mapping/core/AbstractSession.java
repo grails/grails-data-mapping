@@ -253,7 +253,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             return false;
         }
 
-        Object entry = getCachedEntry(persister.getPersistentEntity(), id, true);
+        Object entry = getCachedEntry(persister.getPersistentEntity(), id, false);
         return ((NativeEntryEntityPersister)persister).isDirty(instance, entry);
     }
 
@@ -268,12 +268,10 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
                 continue;
             }
 
-//TODO once an instance is flushed, its collections need to be non-dirty
-
+            //TODO once an instance is flushed, its collections need to be non-dirty
             CollectionKey key = entry.getKey();
             Object owner = getInstanceCache(key.clazz).get(key.key);
             boolean d = isDirty(owner);
-            System.out.println("TODO - UPDATE " + key);
         }
     }
 
