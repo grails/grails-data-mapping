@@ -459,26 +459,29 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      *
      * @return A list of matching instances
      */
-    List<T> list( Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
-        (List)withPopulatedQuery(args, additionalCriteria) { Query query ->
-            query.list()
+    T get( Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
+        (T)withPopulatedQuery(args, additionalCriteria) { Query query ->
+            query.singleResult()
         }
     }
 
-    private withPopulatedQuery(Map args, Closure additionalCriteria, Closure callable)  {
-        targetClass.withDatastoreSession { Session session ->
-            Query query = session.createQuery(targetClass)
-            populateQueryFromDetached(this, query)
+    /**
+     * Lists all records matching the criterion contained within this DetachedCriteria instance
+     *
+     * @return A list of matching instances
+     */
+    T get( Closure additionalCriteria) {
+        get(Collections.emptyMap(), additionalCriteria)
+    }
 
-            if(additionalCriteria != null) {
-                def additionalDetached = new DetachedCriteria(targetClass)
-                additionalDetached.build additionalCriteria
-                populateQueryFromDetached(additionalDetached, query)
-            }
-
-            DynamicFinder.populateArgumentsForCriteria(targetClass, query, args)
-
-            callable.call(query)
+    /**
+     * Lists all records matching the criterion contained within this DetachedCriteria instance
+     *
+     * @return A list of matching instances
+     */
+    List<T> list( Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
+        (List)withPopulatedQuery(args, additionalCriteria) { Query query ->
+            query.list()
         }
     }
 
@@ -503,6 +506,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
             query.singleResult()
         }
     }
+
 
     /**
      * Counts the number of records returned by the query
@@ -556,5 +560,21 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
         return this
     }
 
+    private withPopulatedQuery(Map args, Closure additionalCriteria, Closure callable)  {
+        targetClass.withDatastoreSession { Session session ->
+            Query query = session.createQuery(targetClass)
+            populateQueryFromDetached(this, query)
+
+            if(additionalCriteria != null) {
+                def additionalDetached = new DetachedCriteria(targetClass)
+                additionalDetached.build additionalCriteria
+                populateQueryFromDetached(additionalDetached, query)
+            }
+
+            DynamicFinder.populateArgumentsForCriteria(targetClass, query, args)
+
+            callable.call(query)
+        }
+    }
 
 }
