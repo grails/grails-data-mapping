@@ -3,10 +3,12 @@ package org.grails.datastore.gorm.finders;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import grails.gorm.DetachedCriteria;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionCallback;
 import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.api.ProjectionList;
 
 public abstract class AbstractFindByFinder extends DynamicFinder {
     public static final String OPERATOR_OR = "Or";
@@ -45,6 +47,7 @@ public abstract class AbstractFindByFinder extends DynamicFinder {
         final Class<?> clazz = invocation.getJavaClass();
         Query q = session.createQuery(clazz);
         applyAdditionalCriteria(q, invocation.getCriteria());
+        applyDetachedCriteria(q, invocation.getDetachedCriteria());
         configureQueryWithArguments(clazz, q, invocation.getArguments());
 
         final String operatorInUse = invocation.getOperator();
@@ -68,4 +71,5 @@ public abstract class AbstractFindByFinder extends DynamicFinder {
         }
         return q;
     }
+
 }

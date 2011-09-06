@@ -26,6 +26,7 @@ import org.grails.datastore.mapping.query.Projections
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.gorm.finders.DynamicFinder
+import org.grails.datastore.gorm.finders.FinderMethod
 
 /**
  * Represents criteria that is not bound to the current connection and can be built up and re-used at a later date
@@ -39,6 +40,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
     private List<Order> orders = []
     private List<Projection> projections = []
     private Class targetClass
+    private List<DynamicFinder> dynamicFinders = []
 
     ProjectionList projectionList = new DetachedProjections(projections)
 
@@ -48,6 +50,11 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      */
     DetachedCriteria(Class<T> targetClass) {
         this.targetClass = targetClass
+        try {
+            this.dynamicFinders = targetClass.dynamicFinders
+        } catch (MissingPropertyException mpe) {
+            throw new IllegalArgumentException("Class [$targetClass.name] is not a domain class")
+        }
     }
 
     public void add(Criterion criterion) {
@@ -532,22 +539,21 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
         this.with callable
         return this
     }
-    /**
-     * Counts all the records matching the criterion contained within this DetachedCriteria instance
-     * @param args Any arguments to the query
-     * @return The count of all records
-     */
 
-    protected void populateQueryFromDetached(DetachedCriteria current, Query query) {
-        for (criterion in current.criteria) {
-            query.add criterion
+    /**
+     * Method missing handler that deals with the invocation of dynamic finders
+     *
+     * @param methodName The method name
+     * @param args The arguments
+     * @return The result of the method call
+     */
+    def methodMissing(String methodName, args) {
+        def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
+        if(method != null) {
+            return method.invoke(targetClass, methodName,this, args)
         }
-        final projectionList = query.projections()
-        for (projection in current.projections) {
-            projectionList.add projection
-        }
-        for (order in current.orders) {
-            query.order(order)
+        else {
+            throw new MissingMethodException(methodName, DetachedCriteria, args)
         }
     }
 
@@ -563,12 +569,12 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
     private withPopulatedQuery(Map args, Closure additionalCriteria, Closure callable)  {
         targetClass.withDatastoreSession { Session session ->
             Query query = session.createQuery(targetClass)
-            populateQueryFromDetached(this, query)
+            DynamicFinder.applyDetachedCriteria(query, this)
 
             if(additionalCriteria != null) {
                 def additionalDetached = new DetachedCriteria(targetClass)
                 additionalDetached.build additionalCriteria
-                populateQueryFromDetached(additionalDetached, query)
+                DynamicFinder.applyDetachedCriteria(query, additionalDetached)
             }
 
             DynamicFinder.populateArgumentsForCriteria(targetClass, query, args)

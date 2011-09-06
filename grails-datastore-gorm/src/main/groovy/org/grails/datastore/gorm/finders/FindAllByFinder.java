@@ -57,6 +57,7 @@ public class FindAllByFinder extends DynamicFinder {
         final Class<?> clazz = invocation.getJavaClass();
         Query q = session.createQuery(clazz);
         applyAdditionalCriteria(q, invocation.getCriteria());
+        applyDetachedCriteria(q, invocation.getDetachedCriteria());
         configureQueryWithArguments(clazz, q, invocation.getArguments());
 
         final String operatorInUse = invocation.getOperator();

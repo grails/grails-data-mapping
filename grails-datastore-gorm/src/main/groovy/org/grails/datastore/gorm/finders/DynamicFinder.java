@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm.finders;
 
+import grails.gorm.DetachedCriteria;
 import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 
@@ -142,6 +143,14 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
 
     public Object invoke(final Class clazz, String methodName, Closure additionalCriteria, Object[] arguments) {
         DynamicFinderInvocation invocation = createFinderInvocation(clazz, methodName, additionalCriteria, arguments);
+        return doInvokeInternal(invocation);
+    }
+
+    public Object invoke(final Class clazz, String methodName, DetachedCriteria detachedCriteria, Object[] arguments) {
+        DynamicFinderInvocation invocation = createFinderInvocation(clazz, methodName, null, arguments);
+        if(detachedCriteria != null ) {
+            invocation.setDetachedCriteria(detachedCriteria);
+        }
         return doInvokeInternal(invocation);
     }
 
@@ -310,7 +319,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
     protected abstract Object doInvokeInternal(DynamicFinderInvocation invocation);
 
     public Object invoke(final Class clazz, String methodName, Object[] arguments) {
-        return invoke(clazz, methodName, null, arguments);
+        return invoke(clazz, methodName, (Closure)null, arguments);
     }
 
     public static void populateArgumentsForCriteria(@SuppressWarnings("unused") Class<?> targetClass,
@@ -357,5 +366,22 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
 
         Map<?, ?> argMap = (Map<?, ?>)arguments[0];
         populateArgumentsForCriteria(clazz, query, argMap);
+    }
+
+    public static void applyDetachedCriteria(Query q, DetachedCriteria detachedCriteria) {
+        if(detachedCriteria != null) {
+            List<Query.Criterion> criteria = detachedCriteria.getCriteria();
+            for (Query.Criterion criterion : criteria) {
+                q.add(criterion);
+            }
+            List<Query.Projection> projections = detachedCriteria.getProjections();
+            for (Query.Projection projection : projections) {
+                q.projections().add(projection);
+            }
+            List<Query.Order> orders = detachedCriteria.getOrders();
+            for (Query.Order order : orders) {
+                q.order(order);
+            }
+        }
     }
 }

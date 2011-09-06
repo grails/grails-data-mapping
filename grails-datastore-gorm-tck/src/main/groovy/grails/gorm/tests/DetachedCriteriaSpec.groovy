@@ -11,6 +11,29 @@ import grails.gorm.DetachedCriteria
  */
 class DetachedCriteriaSpec extends GormDatastoreSpec{
 
+    void "Test dynamic finder on detached criteria"() {
+        given:"A bunch of people"
+            new Person(firstName:"Homer", lastName: "Simpson").save()
+            new Person(firstName:"Marge", lastName: "Simpson").save()
+            new Person(firstName:"Bart", lastName: "Simpson").save()
+            new Person(firstName:"Lisa", lastName: "Simpson").save()
+            new Person(firstName:"Barney", lastName: "Rubble").save()
+            new Person(firstName:"Fred", lastName: "Flinstone").save()
+
+
+        when:"A detached criteria instance is created matching the last name"
+            def criteria = new DetachedCriteria(Person)
+            criteria.with {
+                eq 'lastName', 'Simpson'
+            }
+
+            def result = criteria.findByFirstNameLike("B%")
+
+        then:"The list method returns the right results"
+            result != null
+            result.firstName == "Bart"
+    }
+
     void "Test get method on detached criteria and additional criteria"() {
         given:"A bunch of people"
             new Person(firstName:"Homer", lastName: "Simpson").save()
