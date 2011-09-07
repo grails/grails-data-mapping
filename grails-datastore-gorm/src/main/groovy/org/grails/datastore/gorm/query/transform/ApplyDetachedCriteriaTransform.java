@@ -12,6 +12,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-@GroovyASTTransformationClass("org.grails.datastore.gorm.query.transform.DetachedCriteriaTransform")
+@GroovyASTTransformationClass("org.grails.datastore.gorm.query.transform.DetachedCriteriaASTTransformation")
 public @interface  ApplyDetachedCriteriaTransform {
 }
