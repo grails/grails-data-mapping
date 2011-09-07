@@ -12,6 +12,24 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @ApplyDetachedCriteriaTransform
 class WhereMethodSpec extends GormDatastoreSpec {
 
+   def "Test eqProperty query"() {
+       given:"A bunch of people"
+            createPeople()
+            new Person(firstName: "Frank", lastName: "Frank").save()
+
+       when:"We query for a person with the same first name and last name"
+             def query = Person.where {
+                  firstName == lastName
+             }
+             Person result = query.get()
+             int count = query.count()
+
+       then:"The correct result is returned"
+            result != null
+            count == 1
+            result.firstName == "Frank"
+
+   }
    def "Test rlike query"() {
        given:"A bunch of people"
             createPeople()

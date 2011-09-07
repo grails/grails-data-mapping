@@ -57,12 +57,14 @@ class Person implements Serializable {
     Long version
     String firstName
     String lastName
+    Integer age = 0
     Set pets = [] as Set
     static hasMany = [pets:Pet]
 
     static mapping = {
         firstName index:true
         lastName index:true
+        age index:true
     }
 }
 

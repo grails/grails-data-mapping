@@ -78,6 +78,15 @@ public class DetachedCriteriaTransform implements ASTTransformation{
             put("in", "inList");
 
         }};
+        private final Map<String, String> PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP = new HashMap<String, String>() {{
+            put("==", "eqProperty");
+            put("!=", "neProperty");
+            put(">", "gtProperty");
+            put("<", "ltProperty");
+            put(">=", "geProperty");
+            put("<=", "leProperty");
+
+        }};
 
         QueryTransformer(SourceUnit sourceUnit) {
             this.sourceUnit = sourceUnit;
@@ -150,14 +159,21 @@ public class DetachedCriteriaTransform implements ASTTransformation{
                 VariableExpression leftVariable  = (VariableExpression) leftExpression;
                 String propertyName = leftVariable.getText();
                 if(propertyNames.contains(propertyName)) {
-
-
                     if(OPERATOR_TO_CRITERIA_METHOD_MAP.containsKey(operator)) {
                         String methodToCall = OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
-                        if("like".equals(methodToCall) && rightExpression instanceof BitwiseNegationExpression) {
-                            methodToCall = "rlike";
-                            BitwiseNegationExpression bne = (BitwiseNegationExpression) rightExpression;
-                            rightExpression = bne.getExpression();
+                        if(rightExpression instanceof VariableExpression) {
+                            String rightPropertyName = rightExpression.getText();
+                            if(propertyNames.contains(rightPropertyName)) {
+                                methodToCall = PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
+                                rightExpression = new ConstantExpression(rightPropertyName);
+                            }
+                        }
+                        else {
+                            if("like".equals(methodToCall) && rightExpression instanceof BitwiseNegationExpression) {
+                                methodToCall = "rlike";
+                                BitwiseNegationExpression bne = (BitwiseNegationExpression) rightExpression;
+                                rightExpression = bne.getExpression();
+                            }
                         }
                         ArgumentListExpression arguments = new ArgumentListExpression();
                         arguments.addExpression(new ConstantExpression(propertyName))
