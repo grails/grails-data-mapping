@@ -38,7 +38,7 @@ import org.grails.datastore.gorm.query.criteria.DetachedAssociationCriteria
  * @author Graeme Rocher
  * @since 1.0
  */
-class DetachedCriteria<T> implements Criteria, Cloneable {
+class DetachedCriteria<T> implements Criteria, Cloneable, Iterable<T> {
     
     private List<Criterion> criteria = []
     private List<Order> orders = []
@@ -628,6 +628,11 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
         else {
             throw new MissingMethodException(methodName, DetachedCriteria, args)
         }
+    }
+
+    @Override
+    Iterator<T> iterator() {
+        return list().iterator()
     }
 
     @Override

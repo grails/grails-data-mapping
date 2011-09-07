@@ -11,14 +11,26 @@ import grails.gorm.DetachedCriteria
  */
 class DetachedCriteriaSpec extends GormDatastoreSpec{
 
+    void "Test iterate of detached criteria"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when:"A detached criteria is created that matches the last name and then iterated over"
+            def criteria = new DetachedCriteria(Person)
+            criteria.build {
+                eq 'lastName', 'Simpson'
+            }
+            int total = 0
+            criteria.each {
+                total++
+            }
+
+        then:"The number of iterations is correct"
+            total == 4
+    }
     void "Test dynamic finder on detached criteria"() {
         given:"A bunch of people"
-            new Person(firstName:"Homer", lastName: "Simpson").save()
-            new Person(firstName:"Marge", lastName: "Simpson").save()
-            new Person(firstName:"Bart", lastName: "Simpson").save()
-            new Person(firstName:"Lisa", lastName: "Simpson").save()
-            new Person(firstName:"Barney", lastName: "Rubble").save()
-            new Person(firstName:"Fred", lastName: "Flinstone").save()
+            createPeople()
 
 
         when:"A detached criteria instance is created matching the last name"
@@ -36,13 +48,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
 
     void "Test get method on detached criteria and additional criteria"() {
         given:"A bunch of people"
-            new Person(firstName:"Homer", lastName: "Simpson").save()
-            new Person(firstName:"Marge", lastName: "Simpson").save()
-            new Person(firstName:"Bart", lastName: "Simpson").save()
-            new Person(firstName:"Lisa", lastName: "Simpson").save()
-            new Person(firstName:"Barney", lastName: "Rubble").save()
-            new Person(firstName:"Fred", lastName: "Flinstone").save()
-
+            createPeople()
 
         when:"A detached criteria instance is created matching the last name"
             def criteria = new DetachedCriteria(Person)
@@ -60,12 +66,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
 
     void "Test list method on detached criteria and additional criteria"() {
         given:"A bunch of people"
-            new Person(firstName:"Homer", lastName: "Simpson").save()
-            new Person(firstName:"Marge", lastName: "Simpson").save()
-            new Person(firstName:"Bart", lastName: "Simpson").save()
-            new Person(firstName:"Lisa", lastName: "Simpson").save()
-            new Person(firstName:"Barney", lastName: "Rubble").save()
-            new Person(firstName:"Fred", lastName: "Flinstone").save()
+            createPeople()
 
 
         when:"A detached criteria instance is created matching the last name"
@@ -91,12 +92,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
 
     void "Test count method on detached criteria and additional criteria"() {
         given:"A bunch of people"
-            new Person(firstName:"Homer", lastName: "Simpson").save()
-            new Person(firstName:"Marge", lastName: "Simpson").save()
-            new Person(firstName:"Bart", lastName: "Simpson").save()
-            new Person(firstName:"Lisa", lastName: "Simpson").save()
-            new Person(firstName:"Barney", lastName: "Rubble").save()
-            new Person(firstName:"Fred", lastName: "Flinstone").save()
+            createPeople()
 
 
         when:"A detached criteria instance is created matching the last name and count is called with additional criteria"
@@ -115,12 +111,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
 
     void "Test count method on detached criteria"() {
         given:"A bunch of people"
-            new Person(firstName:"Homer", lastName: "Simpson").save()
-            new Person(firstName:"Marge", lastName: "Simpson").save()
-            new Person(firstName:"Bart", lastName: "Simpson").save()
-            new Person(firstName:"Lisa", lastName: "Simpson").save()
-            new Person(firstName:"Barney", lastName: "Rubble").save()
-            new Person(firstName:"Fred", lastName: "Flinstone").save()
+            createPeople()
 
 
         when:"A detached criteria instance is created matching the last name"
@@ -136,12 +127,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
     }
     void "Test list method on detached criteria"() {
         given:"A bunch of people"
-            new Person(firstName:"Homer", lastName: "Simpson").save()
-            new Person(firstName:"Marge", lastName: "Simpson").save()
-            new Person(firstName:"Bart", lastName: "Simpson").save()
-            new Person(firstName:"Lisa", lastName: "Simpson").save()
-            new Person(firstName:"Barney", lastName: "Rubble").save()
-            new Person(firstName:"Fred", lastName: "Flinstone").save()
+            createPeople()
 
 
         when:"A detached criteria instance is created matching the last name"
@@ -158,13 +144,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
 
     void "Test list method on detached criteria with pagination"() {
         given:"A bunch of people"
-            new Person(firstName:"Homer", lastName: "Simpson").save()
-            new Person(firstName:"Marge", lastName: "Simpson").save()
-            new Person(firstName:"Bart", lastName: "Simpson").save()
-            new Person(firstName:"Lisa", lastName: "Simpson").save()
-            new Person(firstName:"Barney", lastName: "Rubble").save()
-            new Person(firstName:"Fred", lastName: "Flinstone").save()
-
+            createPeople()
 
         when:"A detached criteria instance is created matching the last name"
             def criteria = new DetachedCriteria(Person)
@@ -177,4 +157,15 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
             results.size() == 2
             results.every { it.lastName == 'Simpson'}
     }
+
+
+    protected def createPeople() {
+        new Person(firstName: "Homer", lastName: "Simpson").save()
+        new Person(firstName: "Marge", lastName: "Simpson").save()
+        new Person(firstName: "Bart", lastName: "Simpson").save()
+        new Person(firstName: "Lisa", lastName: "Simpson").save()
+        new Person(firstName: "Barney", lastName: "Rubble").save()
+        new Person(firstName: "Fred", lastName: "Flinstone").save()
+    }
+
 }
