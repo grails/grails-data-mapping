@@ -151,12 +151,18 @@ public class DetachedCriteriaTransform implements ASTTransformation{
                 String propertyName = leftVariable.getText();
                 if(propertyNames.contains(propertyName)) {
 
-                    ArgumentListExpression arguments = new ArgumentListExpression();
-                    arguments.addExpression(new ConstantExpression(propertyName))
-                             .addExpression(rightExpression);
 
                     if(OPERATOR_TO_CRITERIA_METHOD_MAP.containsKey(operator)) {
-                        newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator), arguments)));
+                        String methodToCall = OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
+                        if("like".equals(methodToCall) && rightExpression instanceof BitwiseNegationExpression) {
+                            methodToCall = "rlike";
+                            BitwiseNegationExpression bne = (BitwiseNegationExpression) rightExpression;
+                            rightExpression = bne.getExpression();
+                        }
+                        ArgumentListExpression arguments = new ArgumentListExpression();
+                        arguments.addExpression(new ConstantExpression(propertyName))
+                                .addExpression(rightExpression);
+                        newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, methodToCall, arguments)));
                     }
                 }
             }

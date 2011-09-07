@@ -12,7 +12,166 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @ApplyDetachedCriteriaTransform
 class WhereMethodSpec extends GormDatastoreSpec {
 
-    def "Test nested and/or query"() {
+   def "Test rlike query"() {
+       given:"A bunch of people"
+            createPeople()
+
+       when:"We query for people whose first names start with the letter B"
+         def query = Person.where {
+              firstName ==~ ~/B.+/
+         }
+         def results = query.list(sort:'firstName')
+
+       then:"The correct results are returned"
+           results.size() == 2
+           results[0].firstName == "Barney"
+           results[1].firstName == "Bart"
+   }
+
+   def "Test like query"() {
+       given:"A bunch of people"
+            createPeople()
+
+       when:"We query for people whose first names start with the letter B"
+         def query = Person.where {
+              firstName ==~ "B%"
+         }
+         def results = query.list(sort:'firstName')
+
+       then:"The correct results are returned"
+           results.size() == 2
+           results[0].firstName == "Barney"
+           results[1].firstName == "Bart"
+   }
+
+   def "Test in list query"() {
+       given:"A bunch of people"
+            createPeople()
+
+       when:"We query for people in a list"
+         def query = Person.where {
+              firstName in ["Bart", "Homer"]
+         }
+         def results = query.list(sort:'firstName')
+
+       then:"The correct results are returned"
+           results.size() == 2
+           results[0].firstName == "Bart"
+           results[1].firstName == "Homer"
+   }
+
+   def "Test less than or equal to query"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when:"We query for people older than 30"
+            def query = Person.where {
+                age <= 35
+            }
+            def results = query.list(sort:'firstName')
+
+        then:"The correct results are returned"
+            results.size() == 3
+            results[0].firstName == "Barney"
+            results[1].firstName == "Bart"
+            results[2].firstName == "Lisa"
+
+        when:"A greater than query is combined with an equals query"
+            query = Person.where {
+                age <= 35 && lastName == 'Simpson'
+            }
+            results = query.list(sort:'firstName')
+
+        then:"The correct results are returned"
+
+            results.size() == 2
+            results[0].firstName == "Bart"
+            results[1].firstName == "Lisa"
+    }
+    def "Test greater than or equal to query"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when:"We query for people older than 30"
+            def query = Person.where {
+                age >= 35
+            }
+            def results = query.list(sort:'firstName')
+
+        then:"The correct results are returned"
+            results.size() == 4
+            results[0].firstName == "Barney"
+            results[1].firstName == "Fred"
+            results[2].firstName == "Homer"
+            results[3].firstName == "Marge"
+
+        when:"A greater than query is combined with an equals query"
+            query = Person.where {
+                age >= 35 && lastName == 'Simpson'
+            }
+            results = query.list(sort:'firstName')
+
+        then:"The correct results are returned"
+
+            results.size() == 2
+            results[0].firstName == "Homer"
+            results[1].firstName == "Marge"
+    }
+    def "Test less than query"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when:"We query for people younger than 30"
+            def query = Person.where {
+                age < 30
+            }
+            def results = query.list(sort:'firstName')
+
+        then:"The correct results are returned"
+            results.size() == 2
+            results[0].firstName == "Bart"
+            results[1].firstName == "Lisa"
+
+        when:"A greater than query is combined with an equals query"
+            query = Person.where {
+                age < 30 && firstName == 'Bart'
+            }
+            results = query.list(sort:'firstName')
+
+        then:"The correct results are returned"
+
+            results.size() == 1
+            results[0].firstName == "Bart"
+    }
+    def "Test greater than query"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when:"We query for people older than 30"
+            def query = Person.where {
+                age > 35
+            }
+            def results = query.list(sort:'firstName')
+
+        then:"The correct results are returned"
+            results.size() == 3
+            results[0].firstName == "Fred"
+            results[1].firstName == "Homer"
+            results[2].firstName == "Marge"
+
+        when:"A greater than query is combined with an equals query"
+            query = Person.where {
+                age > 35 && lastName == 'Simpson'
+            }
+            results = query.list(sort:'firstName')
+
+        then:"The correct results are returned"
+
+            results.size() == 2
+            results[0].firstName == "Homer"
+            results[1].firstName == "Marge"
+    }
+    def "Test nested and or query"() {
         given:"A bunch of people"
             createPeople()
 
@@ -77,12 +236,12 @@ class WhereMethodSpec extends GormDatastoreSpec {
     }
 
     protected def createPeople() {
-        new Person(firstName: "Homer", lastName: "Simpson").save()
-        new Person(firstName: "Marge", lastName: "Simpson").save()
-        new Person(firstName: "Bart", lastName: "Simpson").save()
-        new Person(firstName: "Lisa", lastName: "Simpson").save()
-        new Person(firstName: "Barney", lastName: "Rubble").save()
-        new Person(firstName: "Fred", lastName: "Flinstone").save()
+        new Person(firstName: "Homer", lastName: "Simpson", age:45).save()
+        new Person(firstName: "Marge", lastName: "Simpson", age:40).save()
+        new Person(firstName: "Bart", lastName: "Simpson", age:9).save()
+        new Person(firstName: "Lisa", lastName: "Simpson", age:7).save()
+        new Person(firstName: "Barney", lastName: "Rubble", age:35).save()
+        new Person(firstName: "Fred", lastName: "Flinstone", age:41).save()
     }
 
 
@@ -95,9 +254,9 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
 @ApplyDetachedCriteriaTransform
 class CallMe {
-    def complexQuery() {
+    def rlikeQuery() {
         Person.where {
-            (lastName != "Simpson" && firstName != "Fred") || firstName == "Bart"
+            firstName ==~ ~/B.+/
         }
     }
 
