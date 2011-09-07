@@ -119,6 +119,30 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     /**
+     * Uses detached criteria to build a query and then execute it returning a list
+     *
+     * @param callable The callable
+     * @return A List of entities
+     */
+    List<D> findAll(Closure callable) {
+        def criteria = new DetachedCriteria(persistentClass)
+        criteria.build callable
+        return criteria.list()
+    }
+
+    /**
+     * Uses detached criteria to build a query and then execute it returning a list
+     *
+     * @param callable The callable
+     * @return A single entity
+     */
+    D find(Closure callable) {
+        def criteria = new DetachedCriteria(persistentClass)
+        criteria.build callable
+        return criteria.find()
+    }
+
+    /**
      * Saves a list of objects in one go
      * @param objectsToSave The objects to save
      * @return A list of object identifiers

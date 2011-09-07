@@ -25,10 +25,7 @@ import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.syntax.Token;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -43,7 +40,12 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     private static final VariableExpression THIS_EXPRESSION = new VariableExpression("this");
 
     private SourceUnit sourceUnit;
-    private final Map<String, String> OPERATOR_TO_CRITERIA_METHOD_MAP = new HashMap<String, String>() {{
+    private static final Set<String> CANDIDATE_METHODS = new HashSet<String>() {{
+        add("where");
+        add("findAll");
+        add("find");
+    }};
+    private static final Map<String, String> OPERATOR_TO_CRITERIA_METHOD_MAP = new HashMap<String, String>() {{
         put("==", "eq");
         put("!=", "ne");
         put(">", "gt");
@@ -54,7 +56,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         put("in", "inList");
 
     }};
-    private final Map<String, String> PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP = new HashMap<String, String>() {{
+    private static final Map<String, String> PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP = new HashMap<String, String>() {{
         put("==", "eqProperty");
         put("!=", "neProperty");
         put(">", "gtProperty");
@@ -115,22 +117,46 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         Expression objectExpression = call.getObjectExpression();
         Expression method = call.getMethod();
         Expression arguments = call.getArguments();
-        if ((objectExpression instanceof ClassExpression) && ((method instanceof ConstantExpression) && ((ConstantExpression) method).getValue().equals("where")) && (arguments instanceof ArgumentListExpression)) {
+        if ((objectExpression instanceof ClassExpression) && isCandidateWhereMethod(method, arguments)) {
             ClassExpression ce = (ClassExpression) objectExpression;
             ClassNode classNode = ce.getType();
-            if (isDomainClass(classNode)) {
-                ArgumentListExpression argList = (ArgumentListExpression) arguments;
-                if (argList.getExpressions().size() == 1) {
-                    Expression expression = argList.getExpression(0);
-                    if (expression instanceof ClosureExpression) {
-                        ClosureExpression closureExpression = (ClosureExpression) expression;
-                        transformClosureExpression(classNode, closureExpression);
+            visitMethodCall(classNode, (ArgumentListExpression) arguments);
+        }
+        super.visitMethodCallExpression(call);
+    }
 
-                    }
+    private void visitMethodCall(ClassNode classNode, ArgumentListExpression arguments) {
+        if (isDomainClass(classNode)) {
+            ArgumentListExpression argList = (ArgumentListExpression) arguments;
+            if (argList.getExpressions().size() == 1) {
+                Expression expression = argList.getExpression(0);
+                if (expression instanceof ClosureExpression) {
+                    ClosureExpression closureExpression = (ClosureExpression) expression;
+                    transformClosureExpression(classNode, closureExpression);
+
                 }
             }
         }
-        super.visitMethodCallExpression(call);
+    }
+
+    private boolean isCandidateWhereMethod(Expression method, Expression arguments) {
+        String methodName = method.getText();
+        return ((method instanceof ConstantExpression) && isCandidateWhereMethod(methodName, arguments));
+    }
+
+    private boolean isCandidateWhereMethod(String methodName, Expression arguments) {
+        return (CANDIDATE_METHODS.contains(methodName)) && (arguments instanceof ArgumentListExpression);
+    }
+
+    @Override
+    public void visitStaticMethodCallExpression(StaticMethodCallExpression call) {
+        String method = call.getMethod();
+        Expression arguments = call.getArguments();
+        if(isCandidateWhereMethod(method,arguments)) {
+            ClassNode classNode = call.getOwnerType();
+            visitMethodCall(classNode, (ArgumentListExpression) arguments);
+        }
+        super.visitStaticMethodCallExpression(call);
     }
 
     protected void transformClosureExpression(ClassNode classNode, ClosureExpression closureExpression) {

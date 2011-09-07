@@ -2,12 +2,38 @@ package grails.gorm.tests
 
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 import grails.gorm.DetachedCriteria
+import org.grails.datastore.gorm.GormEnhancer
+import spock.lang.Ignore
 
 /**
  * Tests for the new where method used to define detached criteria using the new DSL
  */
 @ApplyDetachedCriteriaTransform
 class WhereMethodSpec extends GormDatastoreSpec {
+
+   def "Test findAll method for inline query"() {
+       given:"A bunch of people"
+            createPeople()
+
+       when:"We find a person where first name is Bart"
+            List people = Person.findAll { lastName == "Simpson" }
+
+       then:"The expected result is returned"
+            people.size() == 4
+   }
+
+   def "Test find method for inline query"() {
+       given:"A bunch of people"
+            createPeople()
+
+       when:"We find a person where first name is Bart"
+            Person p = Person.find { firstName == "Bart" }
+
+       then:"The expected result is returned"
+            p != null
+            p.firstName == "Bart"
+   }
+
    def "Test use property declared as detached criteria"() {
        given:"A bunch of people"
             createPeople()
@@ -170,6 +196,8 @@ class WhereMethodSpec extends GormDatastoreSpec {
             result.firstName == "Frank"
 
    }
+
+   @Ignore // rlike not suppported by all datastores yet
    def "Test rlike query"() {
        given:"A bunch of people"
             createPeople()
@@ -424,10 +452,13 @@ class WhereMethodSpec extends GormDatastoreSpec {
         gcl.parseClass('''
 import grails.gorm.tests.*
 import grails.gorm.*
+import grails.persistence.*
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
 @ApplyDetachedCriteriaTransform
+@Entity
 class CallMe {
+    String name
     def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
     def declaredQuery() {
             Person.where(myDetachedCriteria)
@@ -437,6 +468,11 @@ class CallMe {
         Person.where {
             firstName == "Bart" && lastName == "Simpson"
         }
+    }
+
+    static List whereMe() {
+        def q = where { name == "blah" }
+        q.list()
     }
 }
 ''', "Test").newInstance()

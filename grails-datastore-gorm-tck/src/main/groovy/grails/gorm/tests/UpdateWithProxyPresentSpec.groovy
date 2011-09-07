@@ -3,10 +3,12 @@ package grails.gorm.tests
 import grails.persistence.Entity
 
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
 /**
  * @author graemerocher
  */
+@ApplyDetachedCriteriaTransform
 class UpdateWithProxyPresentSpec extends GormDatastoreSpec {
 
     void "Test update entity with association proxies"() {
@@ -52,6 +54,7 @@ class Pet implements Serializable {
 }
 
 @Entity
+@ApplyDetachedCriteriaTransform
 class Person implements Serializable {
     Long id
     Long version

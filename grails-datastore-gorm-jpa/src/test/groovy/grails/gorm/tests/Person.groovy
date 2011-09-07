@@ -6,6 +6,7 @@ import grails.gorm.JpaEntity
 class Person implements Serializable {
     String firstName
     String lastName
+    Integer age = 0
     static hasMany = [pets:Pet]
 
     static mapping = {
