@@ -1,12 +1,41 @@
 package grails.gorm.tests
 
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+import grails.gorm.DetachedCriteria
 
 /**
  * Tests for the new where method used to define detached criteria using the new DSL
  */
 @ApplyDetachedCriteriaTransform
 class WhereMethodSpec extends GormDatastoreSpec {
+   def "Test use property declared as detached criteria"() {
+       given:"A bunch of people"
+            createPeople()
+
+       when:"A closure is declared as detached criteria and then passed to where"
+
+            def query = getClassThatCallsWhere().declaredQuery()
+            Person p = query.find()
+
+       then:"The right result is returned"
+            p != null
+            p.firstName == "Bart"
+   }
+
+   def "Test declare closure as detached criteria"() {
+       given:"A bunch of people"
+            createPeople()
+
+       when:"A closure is declared as detached criteria and then passed to where"
+            def callable = { firstName == "Bart" } as DetachedCriteria<Person>
+            def query = Person.where(callable)
+            Person p = query.find()
+
+       then:"The right result is returned"
+            p != null
+            p.firstName == "Bart"
+
+   }
 
    def "Test query using captured variables"() {
        given:"A bunch of people"
@@ -24,7 +53,6 @@ class WhereMethodSpec extends GormDatastoreSpec {
             count == 1
             p != null
             p.firstName == "Bart"
-
    }
    def "Test negation query"() {
        given:"A bunch of people"
@@ -395,14 +423,14 @@ class WhereMethodSpec extends GormDatastoreSpec {
         def gcl = new GroovyClassLoader(getClass().classLoader)
         gcl.parseClass('''
 import grails.gorm.tests.*
+import grails.gorm.*
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
 @ApplyDetachedCriteriaTransform
 class CallMe {
-    def negationQuery() {
-        Person.where {
-             !(firstName == "Homer") && lastName == 'Simpson'
-        }
+    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
+    def declaredQuery() {
+            Person.where(myDetachedCriteria)
     }
 
     def firstNameBartAndLastNameSimpson() {

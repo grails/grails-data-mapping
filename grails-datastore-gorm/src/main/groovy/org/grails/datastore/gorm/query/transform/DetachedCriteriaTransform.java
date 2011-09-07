@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm.query.transform;
 
+import grails.gorm.DetachedCriteria;
 import grails.persistence.Entity;
 import grails.util.GrailsNameUtils;
 import org.codehaus.groovy.ast.*;
@@ -92,7 +93,47 @@ public class DetachedCriteriaTransform implements ASTTransformation{
             this.sourceUnit = sourceUnit;
         }
 
+        @Override
+        public void visitField(FieldNode node) {
+            Expression initialExpression = node.getInitialExpression();
+            ClosureExpression newClosureExpression = handleDetachedCriteriaCast(initialExpression);
 
+            if(newClosureExpression != null) {
+                node.setInitialValueExpression(newClosureExpression);
+            }
+
+            super.visitField(node);
+        }
+
+       @Override
+        public void visitDeclarationExpression(DeclarationExpression expression) {
+            Expression initializationExpression = expression.getRightExpression();
+            ClosureExpression newClosureExpression = handleDetachedCriteriaCast(initializationExpression);
+
+            if(newClosureExpression != null) {
+                expression.setRightExpression(newClosureExpression);
+            }
+            super.visitDeclarationExpression(expression);
+        }
+
+        private ClosureExpression handleDetachedCriteriaCast(Expression initializationExpression) {
+            ClosureExpression newClosureExpression = null;
+            if((initializationExpression instanceof CastExpression) && ((CastExpression)initializationExpression).getExpression() instanceof ClosureExpression) {
+                CastExpression ce = (CastExpression) initializationExpression;
+                Expression castTarget = ce.getExpression();
+                ClosureExpression cle = (ClosureExpression) castTarget;
+                ClassNode targetCastType = ce.getType();
+                if(targetCastType.getName().equals(DetachedCriteria.class.getName())) {
+                    GenericsType[] genericsTypes = targetCastType.getGenericsTypes();
+                    if(genericsTypes.length>0) {
+                        ClassNode genericType = genericsTypes[0].getType();
+                        transformClosureExpression(genericType, cle);
+                        newClosureExpression = cle;
+                    }
+                }
+            }
+            return newClosureExpression;
+        }
 
         @Override
         public void visitMethodCallExpression(MethodCallExpression call) {
