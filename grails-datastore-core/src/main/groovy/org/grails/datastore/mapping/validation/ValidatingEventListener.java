@@ -14,7 +14,6 @@
  */
 package org.grails.datastore.mapping.validation;
 
-import org.springframework.context.ApplicationEvent;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
@@ -22,6 +21,7 @@ import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListene
 import org.grails.datastore.mapping.engine.event.PreInsertEvent;
 import org.grails.datastore.mapping.engine.event.PreUpdateEvent;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

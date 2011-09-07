@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.mapping.engine.event;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,15 +30,29 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 public abstract class AbstractPersistenceEvent extends ApplicationEvent {
 
     private final PersistentEntity entity;
+    private final Object entityObject;
     private final EntityAccess entityAccess;
     private boolean cancelled;
     private List<String> excludedListenerNames = new ArrayList<String>();
+    private Serializable nativeEvent;
 
     protected AbstractPersistenceEvent(final Datastore source, final PersistentEntity entity,
             final EntityAccess entityAccess) {
         super(source);
         this.entity = entity;
         this.entityAccess = entityAccess;
+        this.entityObject = null;
+    }
+
+    protected AbstractPersistenceEvent(final Datastore source, final Object entity) {
+        super(source);
+        entityObject = entity;
+        this.entity = null;
+        this.entityAccess = null;
+    }
+
+    public Object getEntityObject() {
+        return entityObject;
     }
 
     public PersistentEntity getEntity() {
@@ -62,5 +77,13 @@ public abstract class AbstractPersistenceEvent extends ApplicationEvent {
 
     public boolean isListenerExcluded(final String name) {
         return excludedListenerNames.contains(name);
+    }
+
+    public void setNativeEvent(final Serializable nativeEvent) {
+        this.nativeEvent = nativeEvent;
+    }
+
+    public Serializable getNativeEvent() {
+        return nativeEvent;
     }
 }

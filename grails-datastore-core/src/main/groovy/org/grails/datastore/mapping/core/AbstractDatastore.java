@@ -63,9 +63,13 @@ public abstract class AbstractDatastore implements Datastore {
 
     public void setApplicationContext(ConfigurableApplicationContext ctx) {
         applicationContext = ctx;
-        if (ctx != null) {
+        if (ctx != null && registerValidationListener()) {
             ctx.addApplicationListener(new ValidatingEventListener(this));
         }
+    }
+
+    protected boolean registerValidationListener() {
+        return true;
     }
 
     public void setConnectionDetails(Map<String, String> connectionDetails) {
