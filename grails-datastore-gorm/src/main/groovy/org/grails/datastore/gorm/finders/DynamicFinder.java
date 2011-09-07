@@ -379,6 +379,10 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                                      .createQuery(associationCriteria.getAssociation().getName());
                     applyDetachedCriteria(subQuery, associationCriteria);
                 }
+                else if(criterion instanceof Query.Junction) {
+                    Query.Junction junction = (Query.Junction) criterion;
+                    applyDetachedJunction(q, junction);
+                }
                 else {
                     q.add(criterion);
                 }
@@ -390,6 +394,39 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             List<Query.Order> orders = detachedCriteria.getOrders();
             for (Query.Order order : orders) {
                 q.order(order);
+            }
+        }
+    }
+
+    private static void applyDetachedJunction(Query q, Query.Junction junction) {
+        List<Query.Criterion> criteria = junction.getCriteria();
+
+        boolean isConjunction = junction instanceof Query.Conjunction;
+        Query.Junction newJunction = null;
+        if(junction instanceof Query.Disjunction) {
+            newJunction = q.disjunction();
+        }
+        else if(!isConjunction) {
+            newJunction = q.negation();
+        }
+        addCriteriaToJunction(q, criteria, newJunction);
+    }
+
+    private static void addCriteriaToJunction(Query q, List<Query.Criterion> criteria, Query.Junction newJunction) {
+        for (Query.Criterion criterion : criteria) {
+            if(criterion instanceof DetachedAssociationCriteria) {
+                DetachedAssociationCriteria associationCriteria = (DetachedAssociationCriteria) criterion;
+                Query subQuery = q
+                                 .createQuery(associationCriteria.getAssociation().getName());
+                addCriteriaToJunction(subQuery, associationCriteria.getCriteria(), null);
+            }
+            else {
+                if(newJunction == null) {
+                    q.add(criterion);
+                }
+                else {
+                    newJunction.add(criterion);
+                }
             }
         }
     }

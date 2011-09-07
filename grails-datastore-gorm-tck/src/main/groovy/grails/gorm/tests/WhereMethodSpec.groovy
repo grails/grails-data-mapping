@@ -8,24 +8,28 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @ApplyDetachedCriteriaTransform
 class WhereMethodSpec extends GormDatastoreSpec {
 
+   def "Test query association with logical or"() {
+       given:"People with a few pets"
+            createPeopleWithPets()
+
+       when:"We use a logical or to query people by pets"
+           def query = Person.where {
+               pets.name == "Jack" || pets.name == "Joe"
+            }
+           def count = query.count()
+           def results = query.list(sort:"firstName")
+
+       then:"The expected results are returned"
+            count == 2
+            results[0].firstName == "Fred"
+            results[1].firstName == "Joe"
+   }
+
    def "Test query association"() {
-       given:"A person with a few pets"
-            new Person(firstName:"Joe", lastName:"Bloggs")
-                    .addToPets(name:"Jack")
-                    .addToPets(name:"Butch")
-                    .save()
+       given:"People with a few pets"
+            createPeopleWithPets()
 
-            new Person(firstName:"Ed", lastName:"Floggs")
-                    .addToPets(name:"Mini")
-                    .addToPets(name:"Barbie")
-                    .save()
-
-            new Person(firstName:"Fred", lastName:"Cloggs")
-                        .addToPets(name:"Jim")
-                        .addToPets(name:"Joe")
-                        .save()
-
-       when:"We query for people by Pet"
+       when:"We query for people by Pet using a simple equals query"
             def query = Person.where {
                 pets.name == "Butch"
             }
@@ -36,9 +40,24 @@ class WhereMethodSpec extends GormDatastoreSpec {
             count == 1
             result != null
             result.firstName == "Joe"
+
+       when:"We query for people by Pet with multiple results"
+            query = Person.where {
+                pets.name ==~ "B%"
+            }
+            count = query.count()
+            def results = query.list(sort:"firstName")
+
+       then:"The expected results are returned"
+            count == 2
+            results[0].firstName == "Ed"
+            results[1].firstName == "Joe"
+
+
    }
 
-   def "Test eqProperty query"() {
+
+    def "Test eqProperty query"() {
        given:"A bunch of people"
             createPeople()
             new Person(firstName: "Frank", lastName: "Frank").save()
@@ -286,6 +305,14 @@ class WhereMethodSpec extends GormDatastoreSpec {
         new Person(firstName: "Lisa", lastName: "Simpson", age:7).save()
         new Person(firstName: "Barney", lastName: "Rubble", age:35).save()
         new Person(firstName: "Fred", lastName: "Flinstone", age:41).save()
+    }
+
+    protected def createPeopleWithPets() {
+        new Person(firstName: "Joe", lastName: "Bloggs").addToPets(name: "Jack").addToPets(name: "Butch").save()
+
+        new Person(firstName: "Ed", lastName: "Floggs").addToPets(name: "Mini").addToPets(name: "Barbie").save()
+
+        new Person(firstName: "Fred", lastName: "Cloggs").addToPets(name: "Jim").addToPets(name: "Joe").save()
     }
 
 
