@@ -8,6 +8,20 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @ApplyDetachedCriteriaTransform
 class WhereMethodSpec extends GormDatastoreSpec {
 
+   def "Test negation"() {
+       given:"A bunch of people"
+            createPeople()
+
+       when:"A single criterion is negated"
+//            def query = Person.where {
+//                !(lastName == "Simpson")
+//            }
+            def query = getClassThatCallsWhere().negationQuery()
+            def results = query.list(sort:"firstName")
+
+       then:"The right results are returned"
+            results.size() == 2
+   }
    def "Test query association with logical or"() {
        given:"People with a few pets"
             createPeopleWithPets()
@@ -325,10 +339,10 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
 @ApplyDetachedCriteriaTransform
 class CallMe {
-    def associationQuery() {
-            Person.where {
-                pets.name == "Butch"
-            }
+    def negationQuery() {
+        Person.where {
+             !(lastName == "Simpson")
+        }
     }
 
     def firstNameBartAndLastNameSimpson() {

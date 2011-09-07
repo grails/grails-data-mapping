@@ -141,6 +141,9 @@ public class DetachedCriteriaTransform implements ASTTransformation{
                             BinaryExpression be = (BinaryExpression) expression;
                             addBinaryExpressionToNewBody(propertyNames, newCode, be, false);
                         }
+                        else if(expression instanceof NotExpression) {
+
+                        }
                     }
                 }
             }
