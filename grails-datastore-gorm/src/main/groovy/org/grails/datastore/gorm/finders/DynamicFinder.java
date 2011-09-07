@@ -43,6 +43,7 @@ import org.grails.datastore.gorm.finders.MethodExpression.LessThanEquals;
 import org.grails.datastore.gorm.finders.MethodExpression.Like;
 import org.grails.datastore.gorm.finders.MethodExpression.NotEqual;
 import org.grails.datastore.gorm.finders.MethodExpression.Rlike;
+import org.grails.datastore.gorm.query.criteria.DetachedAssociationCriteria;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.query.Query;
 import org.springframework.core.convert.ConversionService;
@@ -372,7 +373,15 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         if(detachedCriteria != null) {
             List<Query.Criterion> criteria = detachedCriteria.getCriteria();
             for (Query.Criterion criterion : criteria) {
-                q.add(criterion);
+                if(criterion instanceof DetachedAssociationCriteria) {
+                    DetachedAssociationCriteria associationCriteria = (DetachedAssociationCriteria) criterion;
+                    Query subQuery = q
+                                     .createQuery(associationCriteria.getAssociation().getName());
+                    applyDetachedCriteria(subQuery, associationCriteria);
+                }
+                else {
+                    q.add(criterion);
+                }
             }
             List<Query.Projection> projections = detachedCriteria.getProjections();
             for (Query.Projection projection : projections) {

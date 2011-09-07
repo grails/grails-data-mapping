@@ -28,6 +28,9 @@ import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.query.Query.Junction
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.gorm.query.criteria.DetachedAssociationCriteria
 
 /**
  * Represents criteria that is not bound to the current connection and can be built up and re-used at a later date
@@ -42,6 +45,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
     private List<Projection> projections = []
     private Class targetClass
     private List<DynamicFinder> dynamicFinders = []
+    private PersistentEntity persistentEntity
     private List<Junction> junctions = []
 
     ProjectionList projectionList = new DetachedProjections(projections)
@@ -53,7 +57,8 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
     DetachedCriteria(Class<T> targetClass) {
         this.targetClass = targetClass
         try {
-            this.dynamicFinders = targetClass.dynamicFinders
+            this.dynamicFinders = targetClass.gormDynamicFinders
+            this.persistentEntity = targetClass.gormPersistentEntity
         } catch (MissingPropertyException mpe) {
             throw new IllegalArgumentException("Class [$targetClass.name] is not a domain class")
         }
@@ -501,6 +506,19 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
 
     }
 
+    /**
+     * Synonym for #get
+     */
+    T find( Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
+        get(args, additionalCriteria)
+    }
+
+   /**
+     * Synonym for #get
+     */
+    T find( Closure additionalCriteria) {
+        get(Collections.emptyMap(), additionalCriteria)
+    }
 
     /**
      * Lists all records matching the criterion contained within this DetachedCriteria instance
@@ -589,9 +607,23 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      * @return The result of the method call
      */
     def methodMissing(String methodName, args) {
+
         def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
         if(method != null) {
             return method.invoke(targetClass, methodName,this, args)
+        }
+        else if(args && args.size() == 1 && (args[-1] instanceof Closure)) {
+            final prop = persistentEntity.getPropertyByName(methodName)
+            if(prop instanceof Association) {
+                def associationCriteria = new DetachedAssociationCriteria(prop.associatedEntity.javaClass, prop)
+                add associationCriteria
+                final callable = args[-1]
+                callable.delegate = associationCriteria
+                callable.call()
+            }
+            else {
+                throw new MissingMethodException(methodName, DetachedCriteria, args)
+            }
         }
         else {
             throw new MissingMethodException(methodName, DetachedCriteria, args)

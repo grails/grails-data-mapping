@@ -121,7 +121,7 @@ public class DetachedCriteriaTransform implements ASTTransformation{
             List<MethodNode> methods = classNode.getMethods();
             List<String> propertyNames = new ArrayList<String>();
             for (MethodNode method : methods) {
-                if(isGetter(method.getName(), method)) {
+                if(!method.isAbstract() && !method.isStatic() && isGetter(method.getName(), method)) {
                     propertyNames.add(GrailsClassUtils.getPropertyForGetter(method.getName()));
                 }
             }
@@ -139,7 +139,7 @@ public class DetachedCriteriaTransform implements ASTTransformation{
                         Expression expression = es.getExpression();
                         if(expression instanceof BinaryExpression) {
                             BinaryExpression be = (BinaryExpression) expression;
-                            addBinaryExpressionToNewBody(propertyNames, newCode, be);
+                            addBinaryExpressionToNewBody(propertyNames, newCode, be, false);
                         }
                     }
                 }
@@ -148,7 +148,7 @@ public class DetachedCriteriaTransform implements ASTTransformation{
             closureExpression.setCode(newCode);
         }
 
-        private void addBinaryExpressionToNewBody(List<String> propertyNames, BlockStatement newCode, BinaryExpression be) {
+        private void addBinaryExpressionToNewBody(List<String> propertyNames, BlockStatement newCode, BinaryExpression be, boolean addAll) {
             Token operation = be.getOperation();
 
             String operator = operation.getRootText();
@@ -158,35 +158,17 @@ public class DetachedCriteriaTransform implements ASTTransformation{
             if(leftExpression instanceof VariableExpression) {
                 VariableExpression leftVariable  = (VariableExpression) leftExpression;
                 String propertyName = leftVariable.getText();
-                if(propertyNames.contains(propertyName)) {
+                if(propertyNames.contains(propertyName) || addAll) {
                     if(OPERATOR_TO_CRITERIA_METHOD_MAP.containsKey(operator)) {
-                        String methodToCall = OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
-                        if(rightExpression instanceof VariableExpression) {
-                            String rightPropertyName = rightExpression.getText();
-                            if(propertyNames.contains(rightPropertyName)) {
-                                methodToCall = PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
-                                rightExpression = new ConstantExpression(rightPropertyName);
-                            }
-                        }
-                        else {
-                            if("like".equals(methodToCall) && rightExpression instanceof BitwiseNegationExpression) {
-                                methodToCall = "rlike";
-                                BitwiseNegationExpression bne = (BitwiseNegationExpression) rightExpression;
-                                rightExpression = bne.getExpression();
-                            }
-                        }
-                        ArgumentListExpression arguments = new ArgumentListExpression();
-                        arguments.addExpression(new ConstantExpression(propertyName))
-                                .addExpression(rightExpression);
-                        newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, methodToCall, arguments)));
+                        addCriteriaCallMethodExpression(newCode, operator, rightExpression, propertyName, propertyNames, addAll);
                     }
                 }
             }
             else if( (leftExpression instanceof BinaryExpression) && (rightExpression instanceof BinaryExpression)) {
                 ArgumentListExpression arguments = new ArgumentListExpression();
                 BlockStatement currentBody = new BlockStatement();
-                addBinaryExpressionToNewBody(propertyNames,currentBody, (BinaryExpression) leftExpression);
-                addBinaryExpressionToNewBody(propertyNames,currentBody, (BinaryExpression) rightExpression);
+                addBinaryExpressionToNewBody(propertyNames,currentBody, (BinaryExpression) leftExpression, false);
+                addBinaryExpressionToNewBody(propertyNames,currentBody, (BinaryExpression) rightExpression, false);
                 ClosureExpression newClosureExpression = new ClosureExpression(new Parameter[0], currentBody);
                 newClosureExpression.setVariableScope(new VariableScope());
                 arguments.addExpression(newClosureExpression);
@@ -197,6 +179,49 @@ public class DetachedCriteriaTransform implements ASTTransformation{
                     newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "or", arguments)));
                 }
             }
+            else if(leftExpression instanceof PropertyExpression) {
+                PropertyExpression pe = (PropertyExpression) leftExpression;
+                Expression objectExpression = pe.getObjectExpression();
+                if(objectExpression instanceof VariableExpression) {
+                    String propertyName = objectExpression.getText();
+                    if(propertyNames.contains(propertyName)) {
+                        String associationProperty = pe.getPropertyAsString();
+
+                        BlockStatement currentBody = new BlockStatement();
+                        ClosureExpression newClosureExpression = new ClosureExpression(new Parameter[0], currentBody);
+                        newClosureExpression.setVariableScope(new VariableScope());
+                        newClosureExpression.setCode(currentBody);
+                        ArgumentListExpression arguments = new ArgumentListExpression();
+                        arguments.addExpression(newClosureExpression);
+                        addCriteriaCallMethodExpression(currentBody, operator, rightExpression, associationProperty, propertyNames, true);
+
+                        newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, propertyName, arguments)));
+                    }
+                }
+
+            }
+        }
+
+        private void addCriteriaCallMethodExpression(BlockStatement newCode, String operator, Expression rightExpression, String propertyName, List<String> propertyNames, boolean addAll) {
+            String methodToCall = OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
+            if(rightExpression instanceof VariableExpression) {
+                String rightPropertyName = rightExpression.getText();
+                if((propertyNames.contains(rightPropertyName)||addAll) && PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP.containsKey(operator)) {
+                    methodToCall = PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
+                    rightExpression = new ConstantExpression(rightPropertyName);
+                }
+            }
+            else {
+                if("like".equals(methodToCall) && rightExpression instanceof BitwiseNegationExpression) {
+                    methodToCall = "rlike";
+                    BitwiseNegationExpression bne = (BitwiseNegationExpression) rightExpression;
+                    rightExpression = bne.getExpression();
+                }
+            }
+            ArgumentListExpression arguments = new ArgumentListExpression();
+            arguments.addExpression(new ConstantExpression(propertyName))
+                    .addExpression(rightExpression);
+            newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, methodToCall, arguments)));
         }
 
         protected boolean isDomainClass(ClassNode classNode) {

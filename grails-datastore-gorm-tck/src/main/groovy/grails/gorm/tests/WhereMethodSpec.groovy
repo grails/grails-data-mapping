@@ -3,14 +3,40 @@ package grails.gorm.tests
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
 /**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 9/6/11
- * Time: 3:41 PM
- * To change this template use File | Settings | File Templates.
+ * Tests for the new where method used to define detached criteria using the new DSL
  */
 @ApplyDetachedCriteriaTransform
 class WhereMethodSpec extends GormDatastoreSpec {
+
+   def "Test query association"() {
+       given:"A person with a few pets"
+            new Person(firstName:"Joe", lastName:"Bloggs")
+                    .addToPets(name:"Jack")
+                    .addToPets(name:"Butch")
+                    .save()
+
+            new Person(firstName:"Ed", lastName:"Floggs")
+                    .addToPets(name:"Mini")
+                    .addToPets(name:"Barbie")
+                    .save()
+
+            new Person(firstName:"Fred", lastName:"Cloggs")
+                        .addToPets(name:"Jim")
+                        .addToPets(name:"Joe")
+                        .save()
+
+       when:"We query for people by Pet"
+            def query = Person.where {
+                pets.name == "Butch"
+            }
+            def count = query.count()
+            def result = query.find()
+
+       then:"The expected result is returned"
+            count == 1
+            result != null
+            result.firstName == "Joe"
+   }
 
    def "Test eqProperty query"() {
        given:"A bunch of people"
@@ -272,10 +298,10 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
 @ApplyDetachedCriteriaTransform
 class CallMe {
-    def rlikeQuery() {
-        Person.where {
-            firstName ==~ ~/B.+/
-        }
+    def associationQuery() {
+            Person.where {
+                pets.name == "Butch"
+            }
     }
 
     def firstNameBartAndLastNameSimpson() {
