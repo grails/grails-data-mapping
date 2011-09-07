@@ -142,13 +142,29 @@ public class DetachedCriteriaTransform implements ASTTransformation{
                             addBinaryExpressionToNewBody(propertyNames, newCode, be, false);
                         }
                         else if(expression instanceof NotExpression) {
+                            NotExpression not = (NotExpression) expression;
 
+                            handleNegation(propertyNames, newCode, not);
                         }
                     }
                 }
             }
 
             closureExpression.setCode(newCode);
+        }
+
+        private void handleNegation(List<String> propertyNames, BlockStatement newCode, NotExpression not) {
+            Expression subExpression = not.getExpression();
+            if(subExpression instanceof BinaryExpression) {
+                ArgumentListExpression arguments = new ArgumentListExpression();
+                BlockStatement currentBody = new BlockStatement();
+                ClosureExpression newClosureExpression = new ClosureExpression(new Parameter[0], currentBody);
+                newClosureExpression.setVariableScope(new VariableScope());
+                arguments.addExpression(newClosureExpression);
+                addBinaryExpressionToNewBody(propertyNames, currentBody, (BinaryExpression) subExpression, false);
+
+                newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "not", arguments)));
+            }
         }
 
         private void addBinaryExpressionToNewBody(List<String> propertyNames, BlockStatement newCode, BinaryExpression be, boolean addAll) {
@@ -167,19 +183,33 @@ public class DetachedCriteriaTransform implements ASTTransformation{
                     }
                 }
             }
-            else if( (leftExpression instanceof BinaryExpression) && (rightExpression instanceof BinaryExpression)) {
+            else if( ((leftExpression instanceof BinaryExpression)||(leftExpression instanceof NotExpression)) && ((rightExpression instanceof BinaryExpression)||(rightExpression instanceof NotExpression))) {
+                String methodNameToCall = null;
+                if(operator.contains("&")) {
+                    methodNameToCall = "and";
+                }
+                else if(operator.contains("|")) {
+                    methodNameToCall = "or";
+                }
                 ArgumentListExpression arguments = new ArgumentListExpression();
                 BlockStatement currentBody = new BlockStatement();
-                addBinaryExpressionToNewBody(propertyNames,currentBody, (BinaryExpression) leftExpression, false);
-                addBinaryExpressionToNewBody(propertyNames,currentBody, (BinaryExpression) rightExpression, false);
+                if(leftExpression instanceof BinaryExpression) {
+                    addBinaryExpressionToNewBody(propertyNames,currentBody, (BinaryExpression) leftExpression, false);
+                }
+                else {
+                    handleNegation(propertyNames,currentBody, (NotExpression) leftExpression);
+                }
+                if(rightExpression instanceof BinaryExpression) {
+                    addBinaryExpressionToNewBody(propertyNames,currentBody, (BinaryExpression) rightExpression, false);
+                }
+                else {
+                    handleNegation(propertyNames,currentBody, (NotExpression) rightExpression);
+                }
                 ClosureExpression newClosureExpression = new ClosureExpression(new Parameter[0], currentBody);
                 newClosureExpression.setVariableScope(new VariableScope());
                 arguments.addExpression(newClosureExpression);
-                if(operator.contains("&")) {
-                    newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "and", arguments)));
-                }
-                else if(operator.contains("|")) {
-                    newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "or", arguments)));
+                if(methodNameToCall != null) {
+                    newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, methodNameToCall, arguments)));
                 }
             }
             else if(leftExpression instanceof PropertyExpression) {
@@ -238,15 +268,6 @@ public class DetachedCriteriaTransform implements ASTTransformation{
                 }
             }
             return false;
-        }
-
-        @Override
-        public void visitStaticMethodCallExpression(StaticMethodCallExpression call) {
-            //call.getOwnerType()
-            System.out.println("call.getMethod() = " + call.getMethod());
-            ArgumentListExpression arguments = (ArgumentListExpression) call.getArguments();
-            arguments.getExpressions().clear();
-            super.visitStaticMethodCallExpression(call);
         }
 
         @Override

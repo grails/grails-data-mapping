@@ -102,17 +102,6 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
         return this
     }
 
-    protected void handleJunction(Closure callable) {
-        try {
-            callable.delegate = this
-            callable.call()
-
-        }
-        finally {
-            def lastJunction = junctions.remove(junctions.size() - 1)
-            add lastJunction
-        }
-    }
 
     /**
      * Handles a disjunction
@@ -121,6 +110,17 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      */
     Criteria or(Closure callable) {
         junctions << new Query.Disjunction()
+        handleJunction(callable)
+        return this
+    }
+
+    /**
+     * Handles a disjunction
+     * @param callable Callable closure
+     * @return This criterion
+     */
+    Criteria not(Closure callable) {
+        junctions << new Query.Negation()
         handleJunction(callable)
         return this
     }
@@ -637,6 +637,18 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
         criteria.projections = this.projections
         criteria.orders = this.orders
         return this
+    }
+
+    protected void handleJunction(Closure callable) {
+        try {
+            callable.delegate = this
+            callable.call()
+
+        }
+        finally {
+            def lastJunction = junctions.remove(junctions.size() - 1)
+            add lastJunction
+        }
     }
 
     private withPopulatedQuery(Map args, Closure additionalCriteria, Closure callable)  {

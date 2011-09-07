@@ -8,19 +8,72 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @ApplyDetachedCriteriaTransform
 class WhereMethodSpec extends GormDatastoreSpec {
 
-   def "Test negation"() {
+   def "Test query using captured variables"() {
+       given:"A bunch of people"
+            createPeople()
+
+       when:"We query with variable captured from outside the closures scope"
+            def params = [firstName:"Bart"]
+            def query = Person.where {
+                firstName == params.firstName
+            }
+            def count = query.count()
+            Person p = query.find()
+
+       then:"The correct results are returned"
+            count == 1
+            p != null
+            p.firstName == "Bart"
+
+   }
+   def "Test negation query"() {
        given:"A bunch of people"
             createPeople()
 
        when:"A single criterion is negated"
-//            def query = Person.where {
-//                !(lastName == "Simpson")
-//            }
-            def query = getClassThatCallsWhere().negationQuery()
+            def query = Person.where {
+                !(lastName == "Simpson")
+            }
             def results = query.list(sort:"firstName")
 
        then:"The right results are returned"
             results.size() == 2
+
+       when:"Multiple criterion are negated"
+
+            query = Person.where {
+                !(firstName == "Fred" || firstName == "Barney")
+            }
+            results = query.list(sort:"firstName")
+
+       then:"The right results are returned"
+            results.every { it.lastName == "Simpson" }
+
+       when:"Negation is combined with non-negation"
+
+            query = Person.where {
+                firstName == "Fred" && !(lastName == 'Simpson')
+            }
+            Person result = query.find()
+
+       then:"The correct results are returned"
+            result != null
+            result.firstName == "Fred"
+
+       when:"Negation is combined with non-negation"
+
+            query = Person.where {
+                !(firstName == "Homer") && lastName == 'Simpson'
+            }
+            results = query.list(sort:"firstName")
+
+       then:"The correct results are returned"
+            results.size() == 3
+            results[0].firstName == "Bart"
+            results[1].firstName == "Lisa"
+            results[2].firstName == "Marge"
+
+
    }
    def "Test query association with logical or"() {
        given:"People with a few pets"
@@ -165,6 +218,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
             results[0].firstName == "Bart"
             results[1].firstName == "Lisa"
     }
+
     def "Test greater than or equal to query"() {
         given:"A bunch of people"
             createPeople()
@@ -194,6 +248,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
             results[0].firstName == "Homer"
             results[1].firstName == "Marge"
     }
+
     def "Test less than query"() {
         given:"A bunch of people"
             createPeople()
@@ -220,6 +275,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
             results.size() == 1
             results[0].firstName == "Bart"
     }
+
     def "Test greater than query"() {
         given:"A bunch of people"
             createPeople()
@@ -248,6 +304,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
             results[0].firstName == "Homer"
             results[1].firstName == "Marge"
     }
+
     def "Test nested and or query"() {
         given:"A bunch of people"
             createPeople()
@@ -263,6 +320,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
             results[0].firstName == "Barney"
             results[1].firstName == "Bart"
     }
+
     def "Test not equal query"() {
         given:"A bunch of people"
             createPeople()
@@ -278,6 +336,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
             results[0].firstName == "Barney"
             results[1].firstName == "Fred"
     }
+
     def "Test basic binary criterion where call"() {
         given:"A bunch of people"
             createPeople()
@@ -294,6 +353,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
             result.firstName == "Bart"
 
     }
+
 
     def "Test basic single criterion where call"() {
         given:"A bunch of people"
@@ -341,7 +401,7 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 class CallMe {
     def negationQuery() {
         Person.where {
-             !(lastName == "Simpson")
+             !(firstName == "Homer") && lastName == 'Simpson'
         }
     }
 
