@@ -161,6 +161,12 @@ class SimpleMapQuery extends Query {
                 it[like.property] ==~ regexFormat
             }
         },
+        (Query.RLike): { allEntities, Association association, Query.RLike like ->
+            queryAssociation(allEntities, association) {
+                def regexFormat = like.pattern
+                it[like.property] ==~ regexFormat
+            }
+        },
         (Query.ILike): { allEntities, Association association, Query.Like like ->
             queryAssociation(allEntities, association) {
                 def regexFormat = like.pattern.replaceAll('%', '.*?')
@@ -320,21 +326,12 @@ class SimpleMapQuery extends Query {
             return result.toList()
         },
         (Query.ILike): { Query.ILike like, PersistentProperty property ->
-            def indexer = entityPersister.getPropertyIndexer(property)
-
-            def root = indexer.indexRoot
             def regexFormat = like.pattern.replaceAll('%', '.*?')
-            def pattern = Pattern.compile("${root}:${regexFormat}", Pattern.CASE_INSENSITIVE)
-            def matchingIndices = entityPersister.indices.findAll { key, value ->
-                pattern.matcher(key).matches()
-            }
-
-            Set result = []
-            for (indexed in matchingIndices) {
-                result.addAll(indexed.value)
-            }
-
-            return result.toList()
+            return executeLikeWithRegex(entityPersister, property, regexFormat)
+        },
+        (Query.RLike): { Query.RLike like, PersistentProperty property ->
+            def regexFormat = like.pattern
+            return executeLikeWithRegex(entityPersister, property, regexFormat)
         },
         (Query.In): { Query.In inList, PersistentProperty property ->
             def disjunction = new Query.Disjunction()
@@ -447,6 +444,23 @@ class SimpleMapQuery extends Query {
             allEntities.findAll { it.value[name] <= value }.collect { it.key }
         }
     ]
+
+    protected List executeLikeWithRegex(SimpleMapEntityPersister entityPersister, PersistentProperty property, regexFormat) {
+        def indexer = entityPersister.getPropertyIndexer(property)
+
+        def root = indexer.indexRoot
+        def pattern = Pattern.compile("${root}:${regexFormat}", Pattern.CASE_INSENSITIVE)
+        def matchingIndices = entityPersister.indices.findAll { key, value ->
+            pattern.matcher(key).matches()
+        }
+
+        Set result = []
+        for (indexed in matchingIndices) {
+            result.addAll(indexed.value)
+        }
+
+        return result.toList()
+    }
 
     private ArrayList negateResults(List results) {
         def entityMap = datastore[family]

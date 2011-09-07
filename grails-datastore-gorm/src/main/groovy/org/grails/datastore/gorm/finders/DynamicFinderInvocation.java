@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm.finders;
 
+import grails.gorm.DetachedCriteria;
 import groovy.lang.Closure;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class DynamicFinderInvocation {
     private List<MethodExpression> expressions;
     private Closure criteria;
     private String operator;
+    private DetachedCriteria detachedCriteria;
 
     public DynamicFinderInvocation(Class javaClass, String methodName, Object[] arguments,
                                    List<MethodExpression> expressions, Closure criteria, String operator) {
@@ -66,5 +68,13 @@ public class DynamicFinderInvocation {
 
     public String getOperator() {
         return operator;
+    }
+
+    public DetachedCriteria getDetachedCriteria() {
+        return detachedCriteria;
+    }
+
+    public void setDetachedCriteria(DetachedCriteria detachedCriteria) {
+        this.detachedCriteria = detachedCriteria;
     }
 }

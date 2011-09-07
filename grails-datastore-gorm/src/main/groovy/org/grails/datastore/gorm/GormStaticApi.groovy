@@ -38,6 +38,7 @@ import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.util.Assert
 import org.springframework.validation.Errors
 import org.grails.datastore.mapping.query.api.Criteria
+import grails.gorm.DetachedCriteria
 
 /**
  * Static methods of the GORM API.
@@ -68,6 +69,20 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     /**
+     * @return The FinderMethods for this class
+     */
+    List<FinderMethod> getGormDynamicFinders() {
+        this.dynamicFinders
+    }
+
+    /**
+     * @return The PersistentEntity for this class
+     */
+    PersistentEntity getGormPersistentEntity() {
+        this.persistentEntity
+    }
+
+    /**
      * Method missing handler that deals with the invocation of dynamic finders
      *
      * @param methodName The method name
@@ -90,6 +105,17 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
             }
         }
         return method.invoke(cls, methodName, args)
+    }
+
+    /**
+     *
+     * @param callable Callable closure containing detached criteria definition
+     * @return The DetachedCriteria instance
+     */
+    DetachedCriteria<D> where(Closure callable) {
+        def criteria = new DetachedCriteria(persistentClass)
+        criteria.build callable
+        return criteria
     }
 
     /**
@@ -470,6 +496,20 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The result of the closure
      */
     def withSession(Closure callable) {
+        execute (new SessionCallback() {
+            def doInSession(Session session) {
+                callable.call session
+            }
+        })
+    }
+
+    /**
+     * Same as withSession, but present for the case where withSession is overridden to use the Hibernate session
+     *
+     * @param callable the closure
+     * @return The result of the closure
+     */
+    def withDatastoreSession(Closure callable) {
         execute (new SessionCallback() {
             def doInSession(Session session) {
                 callable.call session

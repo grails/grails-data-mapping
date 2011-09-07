@@ -23,7 +23,7 @@ import java.util.Collection;
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface Criteria extends Projections{
+public interface Criteria  {
 
     /**
      * Creates a criterion that restricts the id to the given value

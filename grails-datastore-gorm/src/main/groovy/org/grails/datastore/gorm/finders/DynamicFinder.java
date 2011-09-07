@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm.finders;
 
+import grails.gorm.DetachedCriteria;
 import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 
@@ -42,6 +43,7 @@ import org.grails.datastore.gorm.finders.MethodExpression.LessThanEquals;
 import org.grails.datastore.gorm.finders.MethodExpression.Like;
 import org.grails.datastore.gorm.finders.MethodExpression.NotEqual;
 import org.grails.datastore.gorm.finders.MethodExpression.Rlike;
+import org.grails.datastore.gorm.query.criteria.DetachedAssociationCriteria;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.query.Query;
 import org.springframework.core.convert.ConversionService;
@@ -142,6 +144,14 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
 
     public Object invoke(final Class clazz, String methodName, Closure additionalCriteria, Object[] arguments) {
         DynamicFinderInvocation invocation = createFinderInvocation(clazz, methodName, additionalCriteria, arguments);
+        return doInvokeInternal(invocation);
+    }
+
+    public Object invoke(final Class clazz, String methodName, DetachedCriteria detachedCriteria, Object[] arguments) {
+        DynamicFinderInvocation invocation = createFinderInvocation(clazz, methodName, null, arguments);
+        if(detachedCriteria != null ) {
+            invocation.setDetachedCriteria(detachedCriteria);
+        }
         return doInvokeInternal(invocation);
     }
 
@@ -310,7 +320,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
     protected abstract Object doInvokeInternal(DynamicFinderInvocation invocation);
 
     public Object invoke(final Class clazz, String methodName, Object[] arguments) {
-        return invoke(clazz, methodName, null, arguments);
+        return invoke(clazz, methodName, (Closure)null, arguments);
     }
 
     public static void populateArgumentsForCriteria(@SuppressWarnings("unused") Class<?> targetClass,
@@ -357,5 +367,67 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
 
         Map<?, ?> argMap = (Map<?, ?>)arguments[0];
         populateArgumentsForCriteria(clazz, query, argMap);
+    }
+
+    public static void applyDetachedCriteria(Query q, DetachedCriteria detachedCriteria) {
+        if(detachedCriteria != null) {
+            List<Query.Criterion> criteria = detachedCriteria.getCriteria();
+            for (Query.Criterion criterion : criteria) {
+                if(criterion instanceof DetachedAssociationCriteria) {
+                    DetachedAssociationCriteria associationCriteria = (DetachedAssociationCriteria) criterion;
+                    Query subQuery = q
+                                     .createQuery(associationCriteria.getAssociation().getName());
+                    applyDetachedCriteria(subQuery, associationCriteria);
+                }
+                else if(criterion instanceof Query.Junction) {
+                    Query.Junction junction = (Query.Junction) criterion;
+                    applyDetachedJunction(q, junction);
+                }
+                else {
+                    q.add(criterion);
+                }
+            }
+            List<Query.Projection> projections = detachedCriteria.getProjections();
+            for (Query.Projection projection : projections) {
+                q.projections().add(projection);
+            }
+            List<Query.Order> orders = detachedCriteria.getOrders();
+            for (Query.Order order : orders) {
+                q.order(order);
+            }
+        }
+    }
+
+    private static void applyDetachedJunction(Query q, Query.Junction junction) {
+        List<Query.Criterion> criteria = junction.getCriteria();
+
+        boolean isConjunction = junction instanceof Query.Conjunction;
+        Query.Junction newJunction = null;
+        if(junction instanceof Query.Disjunction) {
+            newJunction = q.disjunction();
+        }
+        else if(!isConjunction) {
+            newJunction = q.negation();
+        }
+        addCriteriaToJunction(q, criteria, newJunction);
+    }
+
+    private static void addCriteriaToJunction(Query q, List<Query.Criterion> criteria, Query.Junction newJunction) {
+        for (Query.Criterion criterion : criteria) {
+            if(criterion instanceof DetachedAssociationCriteria) {
+                DetachedAssociationCriteria associationCriteria = (DetachedAssociationCriteria) criterion;
+                Query subQuery = q
+                                 .createQuery(associationCriteria.getAssociation().getName());
+                addCriteriaToJunction(subQuery, associationCriteria.getCriteria(), null);
+            }
+            else {
+                if(newJunction == null) {
+                    q.add(criterion);
+                }
+                else {
+                    newJunction.add(criterion);
+                }
+            }
+        }
     }
 }
