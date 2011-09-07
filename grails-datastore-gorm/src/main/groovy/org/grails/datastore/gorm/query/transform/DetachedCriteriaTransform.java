@@ -29,10 +29,7 @@ import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
 
 import java.beans.Introspector;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Transforms regular Groovy-style finders into detached criteria
@@ -70,6 +67,17 @@ public class DetachedCriteriaTransform implements ASTTransformation{
 
 
         private SourceUnit sourceUnit;
+        private final Map<String, String> OPERATOR_TO_CRITERIA_METHOD_MAP = new HashMap<String, String>() {{
+            put("==", "eq");
+            put("!=", "ne");
+            put(">", "gt");
+            put("<", "lt");
+            put(">=", "ge");
+            put("<=", "le");
+            put("==~", "like");
+            put("in", "inList");
+
+        }};
 
         QueryTransformer(SourceUnit sourceUnit) {
             this.sourceUnit = sourceUnit;
@@ -137,6 +145,7 @@ public class DetachedCriteriaTransform implements ASTTransformation{
             String operator = operation.getRootText();
 
             Expression leftExpression = be.getLeftExpression();
+            Expression rightExpression = be.getRightExpression();
             if(leftExpression instanceof VariableExpression) {
                 VariableExpression leftVariable  = (VariableExpression) leftExpression;
                 String propertyName = leftVariable.getText();
@@ -144,23 +153,25 @@ public class DetachedCriteriaTransform implements ASTTransformation{
 
                     ArgumentListExpression arguments = new ArgumentListExpression();
                     arguments.addExpression(new ConstantExpression(propertyName))
-                             .addExpression(be.getRightExpression());
+                             .addExpression(rightExpression);
 
-                    newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "eq", arguments)));
+                    if(OPERATOR_TO_CRITERIA_METHOD_MAP.containsKey(operator)) {
+                        newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator), arguments)));
+                    }
                 }
             }
-            else if( (leftExpression instanceof BinaryExpression) && (be.getRightExpression() instanceof BinaryExpression)) {
+            else if( (leftExpression instanceof BinaryExpression) && (rightExpression instanceof BinaryExpression)) {
                 ArgumentListExpression arguments = new ArgumentListExpression();
                 BlockStatement currentBody = new BlockStatement();
                 addBinaryExpressionToNewBody(propertyNames,currentBody, (BinaryExpression) leftExpression);
-                addBinaryExpressionToNewBody(propertyNames,currentBody, (BinaryExpression) be.getRightExpression());
+                addBinaryExpressionToNewBody(propertyNames,currentBody, (BinaryExpression) rightExpression);
                 ClosureExpression newClosureExpression = new ClosureExpression(new Parameter[0], currentBody);
                 newClosureExpression.setVariableScope(new VariableScope());
                 arguments.addExpression(newClosureExpression);
-                if("&&".equals(operator)) {
+                if(operator.contains("&")) {
                     newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "and", arguments)));
                 }
-                else if("||".equals(operator)) {
+                else if(operator.contains("|")) {
                     newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "or", arguments)));
                 }
             }

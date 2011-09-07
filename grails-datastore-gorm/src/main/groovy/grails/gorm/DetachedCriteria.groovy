@@ -93,16 +93,33 @@ class DetachedCriteria<T> implements Criteria, Cloneable {
      */
     Criteria and(Closure callable) {
         junctions << new Query.Conjunction()
+        handleJunction(callable)
+        return this
+    }
+
+    protected void handleJunction(Closure callable) {
         try {
             callable.delegate = this
             callable.call()
-            criteria << junctions[-1]
-            return this
+
         }
         finally {
-            junctions.remove(junctions.size()-1)
+            def lastJunction = junctions.remove(junctions.size() - 1)
+            add lastJunction
         }
     }
+
+    /**
+     * Handles a disjunction
+     * @param callable Callable closure
+     * @return This criterion
+     */
+    Criteria or(Closure callable) {
+        junctions << new Query.Disjunction()
+        handleJunction(callable)
+        return this
+    }
+
     /**
      * @see Criteria
      */
