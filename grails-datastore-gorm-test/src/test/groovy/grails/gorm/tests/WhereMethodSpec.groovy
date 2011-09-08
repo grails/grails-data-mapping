@@ -11,6 +11,67 @@ import spock.lang.Ignore
 @ApplyDetachedCriteriaTransform
 class WhereMethodSpec extends GormDatastoreSpec {
 
+   def "Test query association"() {
+       given:"People with a few pets"
+            createPeopleWithPets()
+
+       when:"We query for people by Pet using a simple equals query"
+
+            def query = Person.where {
+                pets.name == "Butch"
+            }
+            def count = query.count()
+            def result = query.find()
+
+       then:"The expected result is returned"
+            count == 1
+            result != null
+            result.firstName == "Joe"
+
+       when:"We query for people by Pet with multiple results"
+            query = Person.where {
+                pets.name ==~ "B%"
+            }
+            count = query.count()
+            def results = query.list(sort:"firstName")
+
+       then:"The expected results are returned"
+            count == 2
+            results[0].firstName == "Ed"
+            results[1].firstName == "Joe"
+
+
+   }
+
+   def "Test query association with or"() {
+       given:"People with a few pets"
+            createPeopleWithPets()
+
+       when:"We use a logical or to query people by pets"
+           def query = Person.where {
+               pets { name == "Jack" || name == "Joe" }
+           }
+           def count = query.count()
+           def results = query.list(sort:"firstName")
+
+       then:"The expected results are returned"
+            count == 2
+            results[0].firstName == "Fred"
+            results[1].firstName == "Joe"
+
+       when:"We use a logical or to query pets combined with another top-level logical expression"
+           query = Person.where {
+               pets { name == "Jack" } || firstName == "Ed"
+           }
+           count = query.count()
+           results = query.list(sort:"firstName")
+
+        then:"The correct results are returned"
+            count == 2
+            results[0].firstName == "Ed"
+            results[1].firstName == "Joe"
+   }
+
    def "Test findAll method for inline query"() {
        given:"A bunch of people"
             createPeople()
@@ -129,6 +190,8 @@ class WhereMethodSpec extends GormDatastoreSpec {
 
 
    }
+
+
    def "Test query association with logical or"() {
        given:"People with a few pets"
             createPeopleWithPets()
@@ -137,6 +200,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
            def query = Person.where {
                pets.name == "Jack" || pets.name == "Joe"
             }
+
            def count = query.count()
            def results = query.list(sort:"firstName")
 
@@ -145,38 +209,6 @@ class WhereMethodSpec extends GormDatastoreSpec {
             results[0].firstName == "Fred"
             results[1].firstName == "Joe"
    }
-
-   def "Test query association"() {
-       given:"People with a few pets"
-            createPeopleWithPets()
-
-       when:"We query for people by Pet using a simple equals query"
-            def query = Person.where {
-                pets.name == "Butch"
-            }
-            def count = query.count()
-            def result = query.find()
-
-       then:"The expected result is returned"
-            count == 1
-            result != null
-            result.firstName == "Joe"
-
-       when:"We query for people by Pet with multiple results"
-            query = Person.where {
-                pets.name ==~ "B%"
-            }
-            count = query.count()
-            def results = query.list(sort:"firstName")
-
-       then:"The expected results are returned"
-            count == 2
-            results[0].firstName == "Ed"
-            results[1].firstName == "Joe"
-
-
-   }
-
 
     def "Test eqProperty query"() {
        given:"A bunch of people"
@@ -464,6 +496,11 @@ class CallMe {
             Person.where(myDetachedCriteria)
     }
 
+    def associationQuery() {
+        Person.where {
+            pets.name == "Butch"
+        }
+    }
     def firstNameBartAndLastNameSimpson() {
         Person.where {
             firstName == "Bart" && lastName == "Simpson"

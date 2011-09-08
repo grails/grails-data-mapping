@@ -38,6 +38,8 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private static final Class<?>[] EMPTY_JAVA_CLASS_ARRAY = {};
     private static final VariableExpression THIS_EXPRESSION = new VariableExpression("this");
+    public static final String AND_OPERATOR = "&";
+    public static final String OR_OPERATOR = "|";
 
     private SourceUnit sourceUnit;
     private static final Set<String> CANDIDATE_METHODS = new HashSet<String>() {{
@@ -169,29 +171,67 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         }
         Statement code = closureExpression.getCode();
         BlockStatement newCode = new BlockStatement();
+        boolean addAll = false;
 
         if (code instanceof BlockStatement) {
             BlockStatement bs = (BlockStatement) code;
 
-            List<Statement> statements = bs.getStatements();
-            for (Statement statement : statements) {
-                if (statement instanceof ExpressionStatement) {
-                    ExpressionStatement es = (ExpressionStatement) statement;
-
-                    Expression expression = es.getExpression();
-                    if (expression instanceof BinaryExpression) {
-                        BinaryExpression be = (BinaryExpression) expression;
-                        addBinaryExpressionToNewBody(propertyNames, newCode, be, false);
-                    } else if (expression instanceof NotExpression) {
-                        NotExpression not = (NotExpression) expression;
-
-                        handleNegation(propertyNames, newCode, not);
-                    }
-                }
-            }
+            addBlockStatementToNewQuery(bs, newCode, addAll, propertyNames);
         }
 
         closureExpression.setCode(newCode);
+    }
+
+    private void addBlockStatementToNewQuery(BlockStatement blockStatement, BlockStatement newCode, boolean addAll, List<String> propertyNames) {
+        List<Statement> statements = blockStatement.getStatements();
+        for (Statement statement : statements) {
+            if (statement instanceof ExpressionStatement) {
+                ExpressionStatement es = (ExpressionStatement) statement;
+
+                Expression expression = es.getExpression();
+                if (expression instanceof BinaryExpression) {
+                    BinaryExpression be = (BinaryExpression) expression;
+                    addBinaryExpressionToNewBody(propertyNames, newCode, be, addAll);
+                } else if (expression instanceof NotExpression) {
+                    NotExpression not = (NotExpression) expression;
+
+                    handleNegation(propertyNames, newCode, not);
+                } else if(expression instanceof MethodCallExpression) {
+                    MethodCallExpression methodCall = (MethodCallExpression) expression;
+
+                    handleAssociationMethodCallExpression(newCode, methodCall, propertyNames);
+                }
+                else {
+                    // TODO: compilation error
+                }
+
+            }
+        }
+    }
+
+    private void handleAssociationMethodCallExpression(BlockStatement newCode, MethodCallExpression methodCall, List<String> propertyNames) {
+        Expression method = methodCall.getMethod();
+        String methodName = method.getText();
+        ArgumentListExpression arguments = methodCall.getArguments() instanceof ArgumentListExpression ? (ArgumentListExpression) methodCall.getArguments() : null;
+
+        if(isAssociationMethodCall(propertyNames, methodName, arguments)) {
+            ClosureAndArguments closureAndArguments = new ClosureAndArguments();
+            ClosureExpression associationQuery = (ClosureExpression) arguments.getExpression(0);
+            BlockStatement currentBody = closureAndArguments.getCurrentBody();
+            ArgumentListExpression argList = closureAndArguments.getArguments();
+            newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, methodName, argList)));
+            Statement associationCode = associationQuery.getCode();
+            if(associationCode instanceof BlockStatement) {
+                 addBlockStatementToNewQuery((BlockStatement) associationCode,currentBody, true, propertyNames);
+            }
+        }
+        else {
+            // TODO: compilation error
+        }
+    }
+
+    private boolean isAssociationMethodCall(List<String> propertyNames, String methodName, ArgumentListExpression arguments) {
+        return propertyNames.contains(methodName) && arguments != null && arguments.getExpressions().size()  == 1 && (arguments.getExpression(0) instanceof ClosureExpression);
     }
 
     private void handleNegation(List<String> propertyNames, BlockStatement newCode, NotExpression not) {
@@ -205,6 +245,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             addBinaryExpressionToNewBody(propertyNames, currentBody, (BinaryExpression) subExpression, false);
 
             newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "not", arguments)));
+        }
+        else {
+            // TODO: compilation error
         }
     }
 
@@ -223,51 +266,63 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     addCriteriaCallMethodExpression(newCode, operator, rightExpression, propertyName, propertyNames, addAll);
                 }
             }
-        } else if (((leftExpression instanceof BinaryExpression) || (leftExpression instanceof NotExpression)) && ((rightExpression instanceof BinaryExpression) || (rightExpression instanceof NotExpression))) {
+        }   else  {
             String methodNameToCall = null;
-            if (operator.contains("&")) {
+            if (operator.contains(AND_OPERATOR)) {
                 methodNameToCall = "and";
-            } else if (operator.contains("|")) {
+            } else if (operator.contains(OR_OPERATOR)) {
                 methodNameToCall = "or";
             }
             ArgumentListExpression arguments = new ArgumentListExpression();
             BlockStatement currentBody = new BlockStatement();
-            if (leftExpression instanceof BinaryExpression) {
-                addBinaryExpressionToNewBody(propertyNames, currentBody, (BinaryExpression) leftExpression, false);
-            } else {
-                handleNegation(propertyNames, currentBody, (NotExpression) leftExpression);
-            }
-            if (rightExpression instanceof BinaryExpression) {
-                addBinaryExpressionToNewBody(propertyNames, currentBody, (BinaryExpression) rightExpression, false);
-            } else {
-                handleNegation(propertyNames, currentBody, (NotExpression) rightExpression);
-            }
+            handleBinaryExpressionSide(leftExpression,rightExpression, operator, currentBody, addAll, propertyNames);
+            handleBinaryExpressionSide(rightExpression, rightExpression, operator,currentBody, addAll, propertyNames);
+
             ClosureExpression newClosureExpression = new ClosureExpression(new Parameter[0], currentBody);
             newClosureExpression.setVariableScope(new VariableScope());
             arguments.addExpression(newClosureExpression);
             if (methodNameToCall != null) {
                 newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, methodNameToCall, arguments)));
             }
-        } else if (leftExpression instanceof PropertyExpression) {
-            PropertyExpression pe = (PropertyExpression) leftExpression;
+            else {
+                List<Statement> statements = currentBody.getStatements();
+                for (Statement statement : statements) {
+                    newCode.addStatement(statement);
+                }
+            }
+
+        }
+    }
+
+    private void handleBinaryExpressionSide(Expression expressionSide, Expression oppositeSide, String operator, BlockStatement newCode, boolean addAll, List<String> propertyNames) {
+        if (expressionSide instanceof BinaryExpression) {
+            addBinaryExpressionToNewBody(propertyNames, newCode, (BinaryExpression) expressionSide, addAll);
+        } else if(expressionSide instanceof NotExpression) {
+            handleNegation(propertyNames, newCode, (NotExpression) expressionSide);
+        }
+        else if(expressionSide instanceof MethodCallExpression) {
+                MethodCallExpression methodCallExpression = (MethodCallExpression) expressionSide;
+                handleAssociationMethodCallExpression(newCode, methodCallExpression, propertyNames);
+        }
+        else if (expressionSide instanceof PropertyExpression) {
+            PropertyExpression pe = (PropertyExpression) expressionSide;
             Expression objectExpression = pe.getObjectExpression();
             if (objectExpression instanceof VariableExpression) {
                 String propertyName = objectExpression.getText();
                 if (propertyNames.contains(propertyName)) {
                     String associationProperty = pe.getPropertyAsString();
 
-                    BlockStatement currentBody = new BlockStatement();
-                    ClosureExpression newClosureExpression = new ClosureExpression(new Parameter[0], currentBody);
-                    newClosureExpression.setVariableScope(new VariableScope());
-                    newClosureExpression.setCode(currentBody);
-                    ArgumentListExpression arguments = new ArgumentListExpression();
-                    arguments.addExpression(newClosureExpression);
-                    addCriteriaCallMethodExpression(currentBody, operator, rightExpression, associationProperty, propertyNames, true);
+                    ClosureAndArguments closureAndArguments = new ClosureAndArguments();
+                    BlockStatement currentBody = closureAndArguments.getCurrentBody();
+                    ArgumentListExpression arguments = closureAndArguments.getArguments();
 
+                    addCriteriaCallMethodExpression(currentBody, operator, oppositeSide, associationProperty, propertyNames, true);
                     newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, propertyName, arguments)));
                 }
             }
-
+        }
+        else {
+            // TODO: compilation error
         }
     }
 
@@ -314,4 +369,31 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         return declaredMethod.getParameters().length == 0 && GrailsClassUtils.isGetter(methodName, EMPTY_JAVA_CLASS_ARRAY);
     }
 
+    private class ClosureAndArguments {
+        private BlockStatement currentBody;
+        private ArgumentListExpression arguments;
+
+        private ClosureAndArguments() {
+            build();
+        }
+
+        public BlockStatement getCurrentBody() {
+            return currentBody;
+        }
+
+        public ArgumentListExpression getArguments() {
+            return arguments;
+        }
+
+        private ClosureAndArguments build() {
+            currentBody = new BlockStatement();
+            ClosureExpression newClosureExpression = new ClosureExpression(new Parameter[0], currentBody);
+            newClosureExpression.setVariableScope(new VariableScope());
+            newClosureExpression.setCode(currentBody);
+
+            arguments = new ArgumentListExpression();
+            arguments.addExpression(newClosureExpression);
+            return this;
+        }
+    }
 }
