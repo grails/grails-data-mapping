@@ -33,6 +33,7 @@ import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
 import org.grails.datastore.mapping.query.api.Criteria;
@@ -327,13 +328,19 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
                 Query previousQuery = query;
                 PersistentEntity previousEntity = persistentEntity;
 
+                Query associationQuery = null;
                 try {
-                    query = query.createQuery(property.getName());
+                    associationQuery = query.createQuery(property.getName());
+                    if(associationQuery instanceof AssociationQuery) {
+                        previousQuery.add((Query.Criterion) associationQuery);
+                    }
+                    query = associationQuery;
                     persistentEntity = association.getAssociatedEntity();
                     invokeClosureNode(args[0]);
                     return query;
                 }
                 finally {
+
                     persistentEntity = previousEntity;
                     query = previousQuery;
                 }

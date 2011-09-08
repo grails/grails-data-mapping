@@ -299,7 +299,7 @@ public abstract class Query {
      * @param associationName The assocation name
      * @return The Query instance
      */
-    public Query createQuery(String associationName) {
+    public AssociationQuery createQuery(String associationName) {
         final PersistentProperty property = entity.getPropertyByName(associationName);
         if (property == null || !(property instanceof Association)) {
             throw new InvalidDataAccessResourceUsageException("Cannot query association [" +
@@ -311,9 +311,7 @@ public abstract class Query {
 
         final PersistentEntity associatedEntity = association.getAssociatedEntity();
 
-        final AssociationQuery associationQuery = new AssociationQuery(session, associatedEntity, association);
-        add(associationQuery);
-        return associationQuery;
+        return new AssociationQuery(session, associatedEntity, association);
     }
 
     /**

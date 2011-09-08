@@ -378,6 +378,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                     Query subQuery = q
                                      .createQuery(associationCriteria.getAssociation().getName());
                     applyDetachedCriteria(subQuery, associationCriteria);
+                    q.add((Query.Criterion) subQuery);
                 }
                 else if(criterion instanceof Query.Junction) {
                     Query.Junction junction = (Query.Junction) criterion;
@@ -417,8 +418,14 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             if(criterion instanceof DetachedAssociationCriteria) {
                 DetachedAssociationCriteria associationCriteria = (DetachedAssociationCriteria) criterion;
                 Query subQuery = q
-                                 .createQuery(associationCriteria.getAssociation().getName());
+                                    .createQuery(associationCriteria.getAssociation().getName());
                 addCriteriaToJunction(subQuery, associationCriteria.getCriteria(), null);
+                if(newJunction == null) {
+                    q.add((Query.Criterion) subQuery);
+                }
+                else {
+                    newJunction.add((Query.Criterion) subQuery);
+                }
             }
             else {
                 if(newJunction == null) {
