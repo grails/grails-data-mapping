@@ -4,12 +4,50 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 import grails.gorm.DetachedCriteria
 import org.grails.datastore.gorm.GormEnhancer
 import spock.lang.Ignore
+import org.codehaus.groovy.control.MultipleCompilationErrorsException
 
 /**
  * Tests for the new where method used to define detached criteria using the new DSL
  */
 @ApplyDetachedCriteriaTransform
 class WhereMethodSpec extends GormDatastoreSpec {
+
+   def "Test error when using negating a non-binary expression"() {
+       when:"A an unknown domain class property is referenced"
+          queryUsingInvalidNegation()
+       then:
+            MultipleCompilationErrorsException e = thrown()
+            e.message.contains 'You can only negate a binary expressions in queries.'
+   }
+
+   def "Test error when using unsupported operator"() {
+       when:"A an unknown domain class property is referenced"
+          queryUsingUnsupportedOperator()
+       then:
+            MultipleCompilationErrorsException e = thrown()
+            e.message.contains 'Unsupported operator [<<] used in query'
+   }
+
+   def "Test error when using unknown domain property"() {
+       when:"A an unknown domain class property is referenced"
+          queryReferencingNonExistentProperty()
+       then:
+            MultipleCompilationErrorsException e = thrown()
+            e.message.contains 'Cannot query on invalid property [doesntExist]'
+   }
+
+   String nameBart() { "Bart" }
+   def "Test where method with value obtained via method call"() {
+       given:"A bunch of people"
+            createPeople()
+
+       when:"We find a person where first name is obtained via method call"
+            Person p = Person.find { firstName == nameBart() }
+
+       then:"The expected result is returned"
+            p != null
+            p.firstName == "Bart"
+   }
 
    def "Test second where declaration on detached criteria instance"() {
        given:"A bunch of people"
@@ -28,6 +66,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
             q1.count() == 4
             q2.count() == 1
    }
+
    def "Test query association"() {
        given:"People with a few pets"
             createPeopleWithPets()
@@ -494,7 +533,64 @@ class WhereMethodSpec extends GormDatastoreSpec {
         new Person(firstName: "Fred", lastName: "Cloggs").addToPets(name: "Jim").addToPets(name: "Joe").save()
     }
 
+    def queryUsingUnsupportedOperator() {
+        def gcl = new GroovyClassLoader(getClass().classLoader)
+        gcl.parseClass('''
+import grails.gorm.tests.*
+import grails.gorm.*
+import grails.persistence.*
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
+@ApplyDetachedCriteriaTransform
+@Entity
+class CallMe {
+    def badQuery() {
+        Person.where {
+            firstName << "Blah"
+        }
+    }
+}
+''')
+    }
+
+    def queryUsingInvalidNegation() {
+        def gcl = new GroovyClassLoader(getClass().classLoader)
+        gcl.parseClass('''
+import grails.gorm.tests.*
+import grails.gorm.*
+import grails.persistence.*
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+
+@ApplyDetachedCriteriaTransform
+@Entity
+class CallMe {
+    def badQuery() {
+        Person.where {
+            !(firstName)
+        }
+    }
+}
+''')
+    }
+    def queryReferencingNonExistentProperty() {
+        def gcl = new GroovyClassLoader(getClass().classLoader)
+        gcl.parseClass('''
+import grails.gorm.tests.*
+import grails.gorm.*
+import grails.persistence.*
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+
+@ApplyDetachedCriteriaTransform
+@Entity
+class CallMe {
+    def badQuery() {
+        Person.where {
+            doesntExist == "Blah"
+        }
+    }
+}
+''')
+    }
 
     def getClassThatCallsWhere() {
         def gcl = new GroovyClassLoader(getClass().classLoader)

@@ -22,6 +22,8 @@ import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.SourceUnit;
+import org.codehaus.groovy.control.messages.LocatedMessage;
+import org.codehaus.groovy.control.messages.Message;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.syntax.Token;
 
@@ -263,7 +265,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     handleAssociationMethodCallExpression(newCode, methodCall, propertyNames);
                 }
                 else {
-                    // TODO: compilation error
+                    sourceUnit.getErrorCollector().addError(new LocatedMessage("Only binary expressions are allowed in queries.", Token.newString(expression.getText(),expression.getLineNumber(), expression.getColumnNumber()), sourceUnit));
                 }
 
             }
@@ -287,7 +289,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             }
         }
         else {
-            // TODO: compilation error
+            sourceUnit.getErrorCollector().addError(new LocatedMessage("Method call ["+methodName+"] is invalid. Only binary expressions are allowed in queries.", Token.newString(methodName,methodCall.getLineNumber(), methodCall.getColumnNumber()), sourceUnit));
         }
     }
 
@@ -308,7 +310,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "not", arguments)));
         }
         else {
-            // TODO: compilation error
+            sourceUnit.getErrorCollector().addError(new LocatedMessage("You can only negate a binary expressions in queries.", Token.newString(not.getText(),not.getLineNumber(), not.getColumnNumber()), sourceUnit));
         }
     }
 
@@ -326,6 +328,12 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 if (OPERATOR_TO_CRITERIA_METHOD_MAP.containsKey(operator)) {
                     addCriteriaCallMethodExpression(newCode, operator, rightExpression, propertyName, propertyNames, addAll);
                 }
+                else {
+                    sourceUnit.getErrorCollector().addError(new LocatedMessage("Unsupported operator ["+operator+"] used in query", operation, sourceUnit));
+                }
+            }
+            else {
+                sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query on invalid property ["+propertyName+"] ", Token.newString(propertyName,leftExpression.getLineNumber(), leftExpression.getColumnNumber()), sourceUnit));
             }
         }   else  {
             String methodNameToCall = null;
@@ -362,8 +370,8 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             handleNegation(propertyNames, newCode, (NotExpression) expressionSide);
         }
         else if(expressionSide instanceof MethodCallExpression) {
-                MethodCallExpression methodCallExpression = (MethodCallExpression) expressionSide;
-                handleAssociationMethodCallExpression(newCode, methodCallExpression, propertyNames);
+            MethodCallExpression methodCallExpression = (MethodCallExpression) expressionSide;
+            handleAssociationMethodCallExpression(newCode, methodCallExpression, propertyNames);
         }
         else if (expressionSide instanceof PropertyExpression) {
             PropertyExpression pe = (PropertyExpression) expressionSide;
