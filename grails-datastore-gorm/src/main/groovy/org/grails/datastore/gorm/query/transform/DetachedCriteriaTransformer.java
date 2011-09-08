@@ -312,9 +312,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                  addBlockStatementToNewQuery((BlockStatement) associationCode,currentBody, true, propertyNames);
             }
         }
-        else {
-            sourceUnit.getErrorCollector().addError(new LocatedMessage("Method call ["+methodName+"] is invalid. Only binary expressions are allowed in queries.", Token.newString(methodName,methodCall.getLineNumber(), methodCall.getColumnNumber()), sourceUnit));
-        }
+//        else {
+//            sourceUnit.getErrorCollector().addError(new LocatedMessage("Method call ["+methodName+"] is invalid. Only binary expressions are allowed in queries.", Token.newString(methodName,methodCall.getLineNumber(), methodCall.getColumnNumber()), sourceUnit));
+//        }
     }
 
     private boolean isAssociationMethodCall(List<String> propertyNames, String methodName, ArgumentListExpression arguments) {
