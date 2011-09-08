@@ -40,6 +40,10 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     private static final VariableExpression THIS_EXPRESSION = new VariableExpression("this");
     public static final String AND_OPERATOR = "&";
     public static final String OR_OPERATOR = "|";
+    public static final ClassNode DETACHED_CRITERIA_CLASS_NODE = new ClassNode(DetachedCriteria.class);
+    public static final HashSet<String> CANDIDATE_METHODS_WHERE_ONLY = new HashSet<String>() {{
+        add("where");
+    }};
 
     private SourceUnit sourceUnit;
     private static final Set<String> CANDIDATE_METHODS = new HashSet<String>() {{
@@ -68,8 +72,29 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     }};
 
+    private Map<String, ClassNode> detachedCriteriaVariables = new HashMap<String, ClassNode>();
+
     DetachedCriteriaTransformer(SourceUnit sourceUnit) {
         this.sourceUnit = sourceUnit;
+    }
+
+
+    @Override
+    public void visitClass(ClassNode node) {
+        try {
+            super.visitClass(node);
+        } finally {
+            detachedCriteriaVariables.clear();
+        }
+    }
+
+    @Override
+    public void visitMethod(MethodNode node) {
+        try {
+            super.visitMethod(node);
+        } finally {
+            detachedCriteriaVariables.clear();
+        }
     }
 
     @Override
@@ -87,10 +112,30 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     @Override
     public void visitDeclarationExpression(DeclarationExpression expression) {
         Expression initializationExpression = expression.getRightExpression();
-        ClosureExpression newClosureExpression = handleDetachedCriteriaCast(initializationExpression);
+        if(initializationExpression instanceof MethodCallExpression) {
+            MethodCallExpression call = (MethodCallExpression) initializationExpression;
+            Expression objectExpression = call.getObjectExpression();
+            Expression method = call.getMethod();
+            Expression arguments = call.getArguments();
+            if(isCandidateMethod(method.getText(), arguments, CANDIDATE_METHODS_WHERE_ONLY)) {
+                ClassNode classNode = new ClassNode(DetachedCriteria.class);
+                ClassNode targetType = objectExpression.getType();
+                if(isDomainClass(targetType)) {
+                    classNode.setGenericsTypes(new GenericsType[]{new GenericsType(targetType)});
 
-        if (newClosureExpression != null) {
-            expression.setRightExpression(newClosureExpression);
+                    expression.getVariableExpression().setType(classNode);
+                    String variableName = expression.getVariableExpression().getName();
+                    expression.setLeftExpression(new VariableExpression(variableName, classNode));
+                    detachedCriteriaVariables.put(variableName, targetType);
+                }
+            }
+
+        }
+        else {
+            ClosureExpression newClosureExpression = handleDetachedCriteriaCast(initializationExpression);
+            if (newClosureExpression != null) {
+                expression.setRightExpression(newClosureExpression);
+            }
         }
         super.visitDeclarationExpression(expression);
     }
@@ -119,12 +164,24 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         Expression objectExpression = call.getObjectExpression();
         Expression method = call.getMethod();
         Expression arguments = call.getArguments();
-        if ((objectExpression instanceof ClassExpression) && isCandidateWhereMethod(method, arguments)) {
+        if (isCandidateMethodCallForTransform(objectExpression, method, arguments)) {
             ClassExpression ce = (ClassExpression) objectExpression;
             ClassNode classNode = ce.getType();
             visitMethodCall(classNode, (ArgumentListExpression) arguments);
         }
+        else if(objectExpression instanceof VariableExpression) {
+            VariableExpression var = (VariableExpression) objectExpression;
+            String varName = var.getName();
+            ClassNode varType = detachedCriteriaVariables.get(varName);
+            if(varType != null && isCandidateWhereMethod(method, arguments)) {
+                visitMethodCall(varType, (ArgumentListExpression) arguments);
+            }
+        }
         super.visitMethodCallExpression(call);
+    }
+
+    private boolean isCandidateMethodCallForTransform(Expression objectExpression, Expression method, Expression arguments) {
+        return (objectExpression instanceof ClassExpression) && isCandidateWhereMethod(method, arguments);
     }
 
     private void visitMethodCall(ClassNode classNode, ArgumentListExpression arguments) {
@@ -147,7 +204,11 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     private boolean isCandidateWhereMethod(String methodName, Expression arguments) {
-        return (CANDIDATE_METHODS.contains(methodName)) && (arguments instanceof ArgumentListExpression);
+        return isCandidateMethod(methodName, arguments, CANDIDATE_METHODS);
+    }
+
+    private boolean isCandidateMethod(String methodName, Expression arguments, Set<String> candidateMethods) {
+        return (candidateMethods.contains(methodName)) && (arguments instanceof ArgumentListExpression);
     }
 
     @Override

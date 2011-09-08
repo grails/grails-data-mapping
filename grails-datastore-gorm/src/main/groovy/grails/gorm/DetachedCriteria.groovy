@@ -31,6 +31,7 @@ import org.grails.datastore.mapping.query.Query.Junction
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.gorm.query.criteria.DetachedAssociationCriteria
+import org.grails.datastore.mapping.query.Query.Order.Direction
 
 /**
  * Represents criteria that is not bound to the current connection and can be built up and re-used at a later date
@@ -143,6 +144,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable, Iterable<T> {
      * @see Criteria
      */
     Criteria order(String propertyName) {
+        orders << new Order(propertyName)
         return this
     }
 
@@ -150,6 +152,7 @@ class DetachedCriteria<T> implements Criteria, Cloneable, Iterable<T> {
      * @see Criteria
      */
     Criteria order(String propertyName, String direction) {
+        orders << new Order(propertyName, Direction.valueOf(direction.toUpperCase()))
         return this
     }
 
@@ -507,6 +510,18 @@ class DetachedCriteria<T> implements Criteria, Cloneable, Iterable<T> {
     }
 
     /**
+     * Where method derives a new query from this query. This method will not mutate the original query, but instead return a new one.
+     *
+     * @param additionalQuery The additional query
+     * @return A new query
+     */
+    DetachedCriteria<T> where(Closure additionalQuery) {
+        DetachedCriteria<T> newQuery = clone()
+
+        newQuery.build additionalQuery
+        return newQuery
+    }
+    /**
      * Synonym for #get
      */
     T find( Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
@@ -638,10 +653,10 @@ class DetachedCriteria<T> implements Criteria, Cloneable, Iterable<T> {
     @Override
     protected DetachedCriteria<T> clone() {
         def criteria = new DetachedCriteria(targetClass)
-        criteria.criteria = this.criteria
-        criteria.projections = this.projections
-        criteria.orders = this.orders
-        return this
+        criteria.criteria = new ArrayList(this.criteria)
+        criteria.projections = new ArrayList(this.projections)
+        criteria.orders = new ArrayList(this.orders)
+        return criteria
     }
 
     protected void handleJunction(Closure callable) {

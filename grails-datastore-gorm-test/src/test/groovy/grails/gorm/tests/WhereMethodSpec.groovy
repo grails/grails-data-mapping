@@ -11,6 +11,23 @@ import spock.lang.Ignore
 @ApplyDetachedCriteriaTransform
 class WhereMethodSpec extends GormDatastoreSpec {
 
+   def "Test second where declaration on detached criteria instance"() {
+       given:"A bunch of people"
+            createPeople()
+
+       when:"We create a 2 where queries, one derived from the other"
+            def q1 = Person.where {
+                lastName == "Simpson"
+            }
+
+            def q2 = q1.where {
+                firstName == "Bart"
+            }
+
+       then:"The first query is not modified, and the second works as expected"
+            q1.count() == 4
+            q2.count() == 1
+   }
    def "Test query association"() {
        given:"People with a few pets"
             createPeopleWithPets()
@@ -504,6 +521,16 @@ class CallMe {
     def firstNameBartAndLastNameSimpson() {
         Person.where {
             firstName == "Bart" && lastName == "Simpson"
+        }
+    }
+
+    def derivedQuery() {
+        def q1 = Person.where {
+            lastName == "Simpson"
+        }
+
+        q1.where {
+            firstName == "Bart"
         }
     }
 
