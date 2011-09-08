@@ -33,7 +33,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
           queryReferencingNonExistentProperty()
        then:
             MultipleCompilationErrorsException e = thrown()
-            e.message.contains 'Cannot query on invalid property [doesntExist]'
+            e.message.contains 'Cannot query on property "doesntExist" - no such property on class CallMe exists.'
    }
 
    String nameBart() { "Bart" }

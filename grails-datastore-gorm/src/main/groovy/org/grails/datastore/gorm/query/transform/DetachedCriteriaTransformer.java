@@ -80,6 +80,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }};
 
     private Map<String, ClassNode> detachedCriteriaVariables = new HashMap<String, ClassNode>();
+    private ClassNode currentClassNode;
 
     DetachedCriteriaTransformer(SourceUnit sourceUnit) {
         this.sourceUnit = sourceUnit;
@@ -89,12 +90,14 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     @Override
     public void visitClass(ClassNode node) {
         try {
+            this.currentClassNode = node;
             super.visitClass(node);
         } catch(Exception e){
             StringWriter stringWriter = new StringWriter();
             e.printStackTrace(new PrintWriter(stringWriter));
             sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred apply query transformations: " + e.getMessage(), Token.newString(node.getName(),node.getLineNumber(), node.getColumnNumber()), sourceUnit));
         } finally {
+            currentClassNode = null;
             detachedCriteriaVariables.clear();
         }
     }
@@ -289,10 +292,6 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                     handleAssociationMethodCallExpression(newCode, methodCall, propertyNames);
                 }
-                else {
-                    sourceUnit.getErrorCollector().addError(new LocatedMessage("Only binary expressions are allowed in queries.", Token.newString(expression.getText(),expression.getLineNumber(), expression.getColumnNumber()), sourceUnit));
-                }
-
             }
         }
     }
@@ -358,7 +357,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 }
             }
             else {
-                sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query on invalid property ["+propertyName+"] ", Token.newString(propertyName,leftExpression.getLineNumber(), leftExpression.getColumnNumber()), sourceUnit));
+                sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query on property \""+propertyName+"\" - no such property on class "+currentClassNode.getName()+" exists.", Token.newString(propertyName,leftExpression.getLineNumber(), leftExpression.getColumnNumber()), sourceUnit));
             }
         }   else  {
             String methodNameToCall = null;
