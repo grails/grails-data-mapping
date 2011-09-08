@@ -25,8 +25,13 @@ import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.messages.LocatedMessage;
 import org.codehaus.groovy.control.messages.Message;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
+import org.codehaus.groovy.grails.commons.GrailsResourceUtils;
 import org.codehaus.groovy.syntax.Token;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.util.*;
 
 
@@ -85,6 +90,10 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     public void visitClass(ClassNode node) {
         try {
             super.visitClass(node);
+        } catch(Exception e){
+            StringWriter stringWriter = new StringWriter();
+            e.printStackTrace(new PrintWriter(stringWriter));
+            sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred apply query transformations: " + e.getMessage(), Token.newString(node.getName(),node.getLineNumber(), node.getColumnNumber()), sourceUnit));
         } finally {
             detachedCriteriaVariables.clear();
         }
@@ -101,11 +110,15 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     @Override
     public void visitField(FieldNode node) {
-        Expression initialExpression = node.getInitialExpression();
-        ClosureExpression newClosureExpression = handleDetachedCriteriaCast(initialExpression);
+        try {
+            Expression initialExpression = node.getInitialExpression();
+            ClosureExpression newClosureExpression = handleDetachedCriteriaCast(initialExpression);
 
-        if (newClosureExpression != null) {
-            node.setInitialValueExpression(newClosureExpression);
+            if (newClosureExpression != null) {
+                node.setInitialValueExpression(newClosureExpression);
+            }
+        } catch (Exception e) {
+            sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred apply query transformations: " + e.getMessage(), Token.newString(node.getName(), node.getLineNumber(), node.getColumnNumber()), sourceUnit));
         }
 
         super.visitField(node);
@@ -134,9 +147,13 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
         }
         else {
-            ClosureExpression newClosureExpression = handleDetachedCriteriaCast(initializationExpression);
-            if (newClosureExpression != null) {
-                expression.setRightExpression(newClosureExpression);
+            try {
+                ClosureExpression newClosureExpression = handleDetachedCriteriaCast(initializationExpression);
+                if (newClosureExpression != null) {
+                    expression.setRightExpression(newClosureExpression);
+                }
+            } catch (Exception e) {
+                sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred apply query transformations: " + e.getMessage(), Token.newString(initializationExpression.getText(), initializationExpression.getLineNumber(), initializationExpression.getColumnNumber()), sourceUnit));
             }
         }
         super.visitDeclarationExpression(expression);
@@ -166,18 +183,22 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         Expression objectExpression = call.getObjectExpression();
         Expression method = call.getMethod();
         Expression arguments = call.getArguments();
-        if (isCandidateMethodCallForTransform(objectExpression, method, arguments)) {
-            ClassExpression ce = (ClassExpression) objectExpression;
-            ClassNode classNode = ce.getType();
-            visitMethodCall(classNode, (ArgumentListExpression) arguments);
-        }
-        else if(objectExpression instanceof VariableExpression) {
-            VariableExpression var = (VariableExpression) objectExpression;
-            String varName = var.getName();
-            ClassNode varType = detachedCriteriaVariables.get(varName);
-            if(varType != null && isCandidateWhereMethod(method, arguments)) {
-                visitMethodCall(varType, (ArgumentListExpression) arguments);
+        try {
+            if (isCandidateMethodCallForTransform(objectExpression, method, arguments)) {
+                ClassExpression ce = (ClassExpression) objectExpression;
+                ClassNode classNode = ce.getType();
+                visitMethodCall(classNode, (ArgumentListExpression) arguments);
             }
+            else if(objectExpression instanceof VariableExpression) {
+                VariableExpression var = (VariableExpression) objectExpression;
+                String varName = var.getName();
+                ClassNode varType = detachedCriteriaVariables.get(varName);
+                if(varType != null && isCandidateWhereMethod(method, arguments)) {
+                    visitMethodCall(varType, (ArgumentListExpression) arguments);
+                }
+            }
+        } catch (Exception e) {
+            sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred apply query transformations: " + e.getMessage(), Token.newString(call.getMethodAsString(), call.getLineNumber(), call.getColumnNumber()), sourceUnit));
         }
         super.visitMethodCallExpression(call);
     }
@@ -231,6 +252,10 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             if (!method.isAbstract() && !method.isStatic() && isGetter(method.getName(), method)) {
                 propertyNames.add(GrailsClassUtils.getPropertyForGetter(method.getName()));
             }
+        }
+        List<PropertyNode> properties = classNode.getProperties();
+        for (PropertyNode property : properties) {
+            propertyNames.add(property.getName());
         }
         Statement code = closureExpression.getCode();
         BlockStatement newCode = new BlockStatement();
@@ -417,6 +442,16 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     protected boolean isDomainClass(ClassNode classNode) {
+        String filePath = classNode.getModule() != null ? classNode.getModule().getDescription() : null;
+        if(filePath != null) {
+            try {
+                if(GrailsResourceUtils.isDomainClass(new File(filePath).toURI().toURL())) {
+                    return true;
+                }
+            } catch (MalformedURLException e) {
+                // ignore
+            }
+        }
         List<AnnotationNode> annotations = classNode.getAnnotations();
         if (annotations != null && !annotations.isEmpty()) {
             for (AnnotationNode annotation : annotations) {

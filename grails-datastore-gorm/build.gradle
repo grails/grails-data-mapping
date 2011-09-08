@@ -11,3 +11,17 @@ dependencies {
     compile "org.slf4j:jul-to-slf4j:$slf4jVersion"
     compile "org.slf4j:slf4j-simple:$slf4jVersion"
 }
+
+def astTransformPath
+jar.doFirst {
+    def metaInfPath = "${compileGroovy.destinationDir}/META-INF/services"
+
+    ant.mkdir(dir:metaInfPath)
+    astTransformPath = new File(metaInfPath, "org.codehaus.groovy.transform.ASTTransformation")
+    astTransformPath.text = "org.grails.datastore.gorm.query.transform.GlobalDetachedCriteriaASTTransformation"
+}
+jar.doLast {
+    if(astTransformPath) {
+        ant.delete file:astTransformPath
+    }
+}
