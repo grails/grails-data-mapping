@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.persistence.FlushModeType;
 
+import org.grails.datastore.mapping.core.ConnectionNotFoundException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
@@ -934,14 +935,18 @@ public abstract class Query {
 
                     if (value != null) {
 
-                        Session session = AbstractDatastore.retrieveSession();
-                        final PersistentEntity persistentEntity = session.getMappingContext().getPersistentEntity(value.getClass().getName());
-                        if (persistentEntity != null) {
-                            EntityPersister ep = (EntityPersister) session.getPersister(value);
+                        try {
+                            Session session = AbstractDatastore.retrieveSession();
+                            final PersistentEntity persistentEntity = session.getMappingContext().getPersistentEntity(value.getClass().getName());
+                            if (persistentEntity != null) {
+                                EntityPersister ep = (EntityPersister) session.getPersister(value);
 
-                            if (ep != null) {
-                                c = new Equals(eq.getProperty(), ep.getObjectIdentifier(value));
+                                if (ep != null) {
+                                    c = new Equals(eq.getProperty(), ep.getObjectIdentifier(value));
+                                }
                             }
+                        } catch (ConnectionNotFoundException e) {
+                            // continue, use original value
                         }
                     }
                 }
