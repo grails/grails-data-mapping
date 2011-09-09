@@ -28,6 +28,7 @@ import org.grails.datastore.mapping.model.MappingFactory
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy
 import org.grails.datastore.gorm.neo4j.converters.IntArrayToIntegerArrayConverter
+import org.grails.datastore.gorm.neo4j.converters.LongArrayToLongArrayConverter
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -49,6 +50,7 @@ class Neo4jMappingContext extends AbstractMappingContext {
         addTypeConverter(new StringToTimeZoneConverter())
         addTypeConverter(new StringToURLConverter())
         addTypeConverter(new IntArrayToIntegerArrayConverter())
+        addTypeConverter(new LongArrayToLongArrayConverter())
     }
 
     @Override
