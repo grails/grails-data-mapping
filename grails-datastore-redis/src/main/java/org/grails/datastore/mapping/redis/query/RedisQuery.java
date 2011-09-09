@@ -505,7 +505,7 @@ public class RedisQuery extends Query {
         final double from = ((Number) fromObject).doubleValue();
         final double to = ((Number) toObject).doubleValue();
 
-        final String key = sortKey + "~between-" + from + "-" + from;
+        final String key = sortKey + "~between-" + from + "-" + to;
         if (!template.exists(key)) {
             final Set<String> results = template.zrangebyscore(sortKey, from, to);
             if (results != null && !results.isEmpty()) {
