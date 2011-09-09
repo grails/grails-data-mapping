@@ -5,6 +5,71 @@ package grails.gorm.tests
  */
 class FindByMethodSpec extends GormDatastoreSpec {
 
+	void 'Test Using AND Multiple Times In A Dynamic Finder'() {
+		given:
+		    new Person(firstName: 'Jake', lastName: 'Brown', age: 11).save()
+		    new Person(firstName: 'Zack', lastName: 'Brown', age: 14).save()
+		    new Person(firstName: 'Jeff', lastName: 'Brown', age: 41).save()
+		    new Person(firstName: 'Zack', lastName: 'Galifianakis', age: 41).save()
+			
+		when:
+		    def people = Person.findAllByFirstNameAndLastNameAndAge('Jeff', 'Brown', 1)
+			
+		then:
+		    0 == people?.size()
+			
+		when:
+		    people = Person.findAllByFirstNameAndLastNameAndAgeGreaterThan('Zack', 'Brown', 20)
+			
+		then:
+		    0 == people?.size()
+			
+		when:
+		    people = Person.findAllByFirstNameAndLastNameAndAgeGreaterThan('Zack', 'Brown', 8)
+			
+		then:
+		    1 == people?.size()
+			14 == people[0].age
+			
+		when:
+		    def cnt = Person.countByFirstNameAndLastNameAndAge('Jake', 'Brown', 11)
+			
+	    then:
+		    1 == cnt
+			
+		when:
+		    cnt = Person.countByFirstNameAndLastNameAndAgeInList('Zack', 'Brown', [12, 13, 14, 15])
+			
+		then:
+		    1 == cnt
+	}
+	
+	void 'Test Using OR Multiple Times In A Dynamic Finder'() {
+		given:
+		    new Person(firstName: 'Jake', lastName: 'Brown', age: 11).save()
+		    new Person(firstName: 'Zack', lastName: 'Brown', age: 14).save()
+		    new Person(firstName: 'Jeff', lastName: 'Brown', age: 41).save()
+		    new Person(firstName: 'Zack', lastName: 'Galifianakis', age: 41).save()
+			
+		when:
+		    def people = Person.findAllByFirstNameOrLastNameOrAge('Zack', 'Tyler', 125)
+			
+		then:
+		    2 == people?.size()
+			
+		when:
+		    people = Person.findAllByFirstNameOrLastNameOrAge('Zack', 'Brown', 125)
+			
+	    then:
+		    4 == people?.size()
+			
+		when:
+		    def cnt = Person.countByFirstNameOrLastNameOrAgeInList('Jeff', 'Wilson', [11, 41])
+			
+		then:
+		    3 == cnt
+	}
+	
     void testBooleanPropertyQuery() {
         given:
             new Highway(bypassed: true, name: 'Bypassed Highway').save()
