@@ -373,20 +373,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         if(detachedCriteria != null) {
             List<Query.Criterion> criteria = detachedCriteria.getCriteria();
             for (Query.Criterion criterion : criteria) {
-                if(criterion instanceof DetachedAssociationCriteria) {
-                    DetachedAssociationCriteria associationCriteria = (DetachedAssociationCriteria) criterion;
-                    Query subQuery = q
-                                     .createQuery(associationCriteria.getAssociation().getName());
-                    applyDetachedCriteria(subQuery, associationCriteria);
-                    q.add((Query.Criterion) subQuery);
-                }
-                else if(criterion instanceof Query.Junction) {
-                    Query.Junction junction = (Query.Junction) criterion;
-                    applyDetachedJunction(q, junction);
-                }
-                else {
-                    q.add(criterion);
-                }
+                q.add(criterion);
             }
             List<Query.Projection> projections = detachedCriteria.getProjections();
             for (Query.Projection projection : projections) {
@@ -399,42 +386,4 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         }
     }
 
-    private static void applyDetachedJunction(Query q, Query.Junction junction) {
-        List<Query.Criterion> criteria = junction.getCriteria();
-
-        boolean isConjunction = junction instanceof Query.Conjunction;
-        Query.Junction newJunction = null;
-        if(junction instanceof Query.Disjunction) {
-            newJunction = q.disjunction();
-        }
-        else if(!isConjunction) {
-            newJunction = q.negation();
-        }
-        addCriteriaToJunction(q, criteria, newJunction);
-    }
-
-    private static void addCriteriaToJunction(Query q, List<Query.Criterion> criteria, Query.Junction newJunction) {
-        for (Query.Criterion criterion : criteria) {
-            if(criterion instanceof DetachedAssociationCriteria) {
-                DetachedAssociationCriteria associationCriteria = (DetachedAssociationCriteria) criterion;
-                Query subQuery = q
-                                    .createQuery(associationCriteria.getAssociation().getName());
-                addCriteriaToJunction(subQuery, associationCriteria.getCriteria(), null);
-                if(newJunction == null) {
-                    q.add((Query.Criterion) subQuery);
-                }
-                else {
-                    newJunction.add((Query.Criterion) subQuery);
-                }
-            }
-            else {
-                if(newJunction == null) {
-                    q.add(criterion);
-                }
-                else {
-                    newJunction.add(criterion);
-                }
-            }
-        }
-    }
 }
