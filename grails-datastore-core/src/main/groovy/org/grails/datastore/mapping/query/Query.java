@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.persistence.FlushModeType;
 
 import org.grails.datastore.mapping.core.ConnectionNotFoundException;
+import org.grails.datastore.mapping.query.api.AssociationCriteria;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
@@ -114,12 +115,41 @@ public abstract class Query {
      * @param criterion The criterion instance
      */
     public void add(Criterion criterion) {
+        Junction currentJunction = criteria;
+        addToJunction(currentJunction, criterion);
+    }
+
+    private void addToJunction(Junction currentJunction, Criterion criterion) {
         if (criterion instanceof Equals) {
             final Equals eq = (Equals) criterion;
             Object value = resolveIdIfEntity(eq.getValue());
         }
-
-        criteria.add(criterion);
+        if(criterion instanceof AssociationCriteria) {
+            AssociationCriteria ac = (AssociationCriteria) criterion;
+            AssociationQuery associationQuery = createQuery(ac.getAssociation().getName());
+            for (Criterion associationCriterion : ac.getCriteria()) {
+                associationQuery.add(associationCriterion);
+            }
+            currentJunction.add(associationQuery);
+        }
+        else if(criterion instanceof Junction) {
+            Junction j = (Junction) criterion;
+            Junction newj;
+            if(j instanceof Disjunction) {
+                newj= disjunction(currentJunction);
+            } else if(j instanceof Negation) {
+                newj= negation(currentJunction);
+            }
+            else {
+                newj= conjunction(currentJunction);
+            }
+            for (Criterion c : j.getCriteria()) {
+                addToJunction(newj, c);
+            }
+        }
+        else {
+            currentJunction.add(criterion);
+        }
     }
 
     /**
@@ -141,12 +171,28 @@ public abstract class Query {
      * @return The Junction instance
      */
     public Junction disjunction() {
+        Junction currentJunction = criteria;
+        return disjunction(currentJunction);
+    }
+
+    private Junction disjunction(Junction currentJunction) {
         Disjunction dis = new Disjunction();
-        if (criteria.isEmpty()) {
-            criteria = dis;
-            return criteria;
-        }
-        criteria.add(dis);
+        currentJunction.add(dis);
+        return dis;
+    }
+
+    /**
+     * Creates a disjunction (OR) query
+     * @return The Junction instance
+     */
+    public Junction conjunction() {
+        Junction currentJunction = criteria;
+        return conjunction(currentJunction);
+    }
+
+    private Junction conjunction(Junction currentJunction) {
+        Conjunction dis = new Conjunction();
+        currentJunction.add(dis);
         return dis;
     }
 
@@ -155,12 +201,13 @@ public abstract class Query {
      * @return The negation
      */
     public Junction negation() {
+        Junction currentJunction = criteria;
+        return negation(currentJunction);
+    }
+
+    private Junction negation(Junction currentJunction) {
         Negation dis = new Negation();
-        if (criteria.isEmpty()) {
-            criteria = dis;
-            return criteria;
-        }
-        criteria.add(dis);
+        currentJunction.add(dis);
         return dis;
     }
 

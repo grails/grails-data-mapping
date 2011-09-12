@@ -12,26 +12,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.grails.datastore.mapping.query.api;
 
-package org.grails.datastore.gorm.query.criteria
+import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.query.Query;
 
-import grails.gorm.DetachedCriteria
-import org.grails.datastore.mapping.query.Query.Criterion
-import org.grails.datastore.mapping.model.types.Association
-import org.grails.datastore.mapping.query.api.AssociationCriteria
+import java.util.List;
 
 /**
- * Criterion related to an association
+ * Interface for criteria related to an association
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-class DetachedAssociationCriteria<T> extends DetachedCriteria<T> implements Criterion, AssociationCriteria{
+public interface AssociationCriteria {
 
-    Association association;
+    Association getAssociation();
 
-    DetachedAssociationCriteria(Class<T> targetClass, Association association) {
-        super(targetClass)
-        this.association = association
-    }
+    List<Query.Criterion> getCriteria();
 }
