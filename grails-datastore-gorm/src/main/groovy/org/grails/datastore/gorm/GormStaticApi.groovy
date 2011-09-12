@@ -412,7 +412,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A list of results
      */
     List<D> findAllWhere(Map queryMap, Map args) {
-        execute ({
+        execute ({ Session session ->
             Query q = session.createQuery(persistentClass)
             q.allEq(queryMap)
             DynamicFinder.populateArgumentsForCriteria persistentClass, q, args
