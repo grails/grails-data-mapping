@@ -516,7 +516,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The result of the closure
      */
     def withSession(Closure callable) {
-        execute ({
+        execute ({ Session session ->
             callable.call session
         } as SessionCallback)
     }
