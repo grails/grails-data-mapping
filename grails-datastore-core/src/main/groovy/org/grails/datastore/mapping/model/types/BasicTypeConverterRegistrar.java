@@ -62,9 +62,8 @@ public class BasicTypeConverterRegistrar {
                     final Long time = Long.valueOf(s.toString());
                     return new Date(time);
                 } catch (NumberFormatException e) {
-                    // ignore
+                    throw new IllegalArgumentException(e);
                 }
-                return null;
             }
         });
 
@@ -73,7 +72,7 @@ public class BasicTypeConverterRegistrar {
                 try {
                     return Double.valueOf(s.toString());
                 } catch (NumberFormatException e) {
-                    return (double) 0;
+                    throw new IllegalArgumentException(e);
                 }
             }
         });
@@ -83,9 +82,8 @@ public class BasicTypeConverterRegistrar {
                 try {
                     return Integer.valueOf(s.toString());
                 } catch (NumberFormatException e) {
-                    // ignore
+                    throw new IllegalArgumentException(e);
                 }
-                return 0;
             }
         });
 
@@ -94,9 +92,8 @@ public class BasicTypeConverterRegistrar {
                 try {
                     return Long.valueOf(s.toString());
                 } catch (NumberFormatException e) {
-                    // ignore
+                    throw new IllegalArgumentException(e);
                 }
-                return 0L;
             }
         });
 
@@ -120,7 +117,7 @@ public class BasicTypeConverterRegistrar {
                     c.setTime(date);
                     return c;
                 } catch (NumberFormatException e) {
-                    return null;
+                    throw new IllegalArgumentException(e);
                 }
             }
         });
