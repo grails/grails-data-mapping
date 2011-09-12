@@ -222,7 +222,7 @@ class Neo4jQuery extends Query {
     }
 }
 
-public static class IdEqualsWithName extends PropertyCriterion {
+public class IdEqualsWithName extends PropertyCriterion {
     def IdEqualsWithName(property, value) {
         super(property,value)
     }
