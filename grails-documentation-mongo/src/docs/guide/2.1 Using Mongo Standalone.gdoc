@@ -4,6 +4,12 @@ If you plan to use Mongo as your primary datastore then you need to uninstall th
 grails uninstall-plugin hibernate
 {code}
 
+and in the grails-app/conf/BuildConfig.groovy file comment out the hibernate line in the plugins block 
+
+{code}
+compile ":hibernate:$grailsVersion"
+{code}
+
 With this done all domain classes in grails-app/domain will be persisted via Mongo and not Hibernate. You can create a domain class by running the regular @create-domain-class@ command:
 
 {code}
