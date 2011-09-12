@@ -465,7 +465,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A single result
      */
     D findWhere(Map queryMap, Map args) {
-        execute({
+        execute({ Session session ->
             Query q = session.createQuery(persistentClass)
             if (queryMap) {
                 q.allEq(queryMap)
