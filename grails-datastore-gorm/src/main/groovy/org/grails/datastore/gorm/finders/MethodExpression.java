@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.gorm.finders;
 
+import groovy.lang.Range;
+
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -179,6 +181,33 @@ public abstract class MethodExpression {
         }
     }
 
+    public static class InRange extends MethodExpression {
+        public InRange(Class<?> targetClass, String propertyName) {
+            super(targetClass, propertyName);
+        }
+        
+        @Override
+        public Query.Criterion createCriterion() {
+            Range<?> range = (Range<?>) arguments[0];
+            System.out.println("REVERSE? " + range.isReverse() + " From: " + range.getFrom() + ", To: " + range.getTo());
+            return Restrictions.between(propertyName, range.getFrom(), range.getTo());
+        }
+        
+        @Override
+        public int getArgumentsRequired() {
+            return 1;
+        }
+        
+        @Override
+        public void setArguments(Object[] arguments) {
+            Assert.isTrue(arguments.length == 1, "An 'inRange' query requires exactly 1 argument");
+            Assert.isTrue(arguments[0] instanceof Range,
+                    "An 'inRange' query requires a Range argument");
+            
+            super.setArguments(arguments);
+        }
+    }
+    
     public static class IsNull extends MethodExpression {
         public IsNull(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);

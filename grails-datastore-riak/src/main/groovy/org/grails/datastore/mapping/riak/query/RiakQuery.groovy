@@ -117,7 +117,7 @@ class RiakQuery extends Query {
             },
             (Query.In): { Query.In qin, PersistentEntity entity, buff ->
                 def inClause = qin.values.collect {
-                    "(entry.${qin.name} === " + (it.isInteger() ? it : "\"$it\"") + ")"
+                    "(entry.${qin.name} === \"$it\")"
                 }.join("||")
                 buff << "($inClause)"
             }

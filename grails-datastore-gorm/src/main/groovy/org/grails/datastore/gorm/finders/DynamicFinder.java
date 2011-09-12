@@ -34,6 +34,7 @@ import org.grails.datastore.gorm.finders.MethodExpression.GreaterThan;
 import org.grails.datastore.gorm.finders.MethodExpression.GreaterThanEquals;
 import org.grails.datastore.gorm.finders.MethodExpression.Ilike;
 import org.grails.datastore.gorm.finders.MethodExpression.InList;
+import org.grails.datastore.gorm.finders.MethodExpression.InRange;
 import org.grails.datastore.gorm.finders.MethodExpression.IsEmpty;
 import org.grails.datastore.gorm.finders.MethodExpression.IsNotEmpty;
 import org.grails.datastore.gorm.finders.MethodExpression.IsNotNull;
@@ -80,7 +81,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         // populate the default method expressions
         try {
             Class[] classes = {
-                      Equal.class, NotEqual.class, InList.class, Between.class, Like.class, Ilike.class, Rlike.class,
+                      Equal.class, NotEqual.class, InList.class, InRange.class, Between.class, Like.class, Ilike.class, Rlike.class,
                       GreaterThanEquals.class, LessThanEquals.class, GreaterThan.class,
                       LessThan.class, IsNull.class, IsNotNull.class, IsEmpty.class,
                       IsEmpty.class, IsNotEmpty.class };
@@ -200,10 +201,8 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                     containsOperator = true;
                     operatorInUse = operators[i];
 
-                    queryParameters = new String[2];
-                    queryParameters[0] = currentMatcher.group(1);
-                    queryParameters[1] = currentMatcher.group(3) + currentMatcher.group(4);
-
+                    queryParameters = querySequence.split(operatorInUse);
+                    
                     // loop through query parameters and create expressions
                     // calculating the number of arguments required for the expression
                     int argumentCursor = 0;

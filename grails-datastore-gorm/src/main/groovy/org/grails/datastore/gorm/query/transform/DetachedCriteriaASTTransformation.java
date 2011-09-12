@@ -37,7 +37,6 @@ public class DetachedCriteriaASTTransformation implements ASTTransformation{
      * @param source The source unit being compiled. The source unit may contain several classes. For global transformations,
      *               information about the AST can be retrieved from this object.
      */
-    @Override
     public void visit(ASTNode[] nodes, SourceUnit source) {
         DetachedCriteriaTransformer transformer = new DetachedCriteriaTransformer(source);
 

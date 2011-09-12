@@ -81,4 +81,42 @@ class RangeQuerySpec extends GormDatastoreSpec {
             results.find { it.age == 36 } != null
             results.find { it.age == 35 } != null
     }
+
+    void 'Test InRange Dynamic Finder'() {
+        given:
+            new Person(firstName: 'Jake', lastName: 'Brown', age: 11).save()
+            new Person(firstName: 'Zack', lastName: 'Brown', age: 14).save()
+            new Person(firstName: 'Jeff', lastName: 'Brown', age: 41).save()
+            new Person(firstName: 'Zack', lastName: 'Galifianakis', age: 41).save()
+            
+        when:
+            def cnt = Person.countByAgeInRange(14..41)
+            
+        then:
+            3 == cnt
+            
+        when:
+            cnt = Person.countByAgeInRange(41..14)
+            
+        then:
+            3 == cnt
+
+        when:
+            cnt = Person.countByAgeInRange(14..<30)
+            
+        then:
+            1 == cnt
+
+        when:
+            cnt = Person.countByAgeInRange(14..<42)
+            
+        then:
+            3 == cnt
+
+        when:
+            cnt = Person.countByAgeInRange(15..40)
+            
+        then:
+            0 == cnt
+    }
 }

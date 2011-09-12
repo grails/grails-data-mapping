@@ -412,14 +412,12 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A list of results
      */
     List<D> findAllWhere(Map queryMap, Map args) {
-        execute (new SessionCallback<List>() {
-            List doInSession(Session session) {
-                Query q = session.createQuery(persistentClass)
-                q.allEq(queryMap)
-                DynamicFinder.populateArgumentsForCriteria persistentClass, q, args
-                q.list()
-            }
-        })
+        execute ({
+            Query q = session.createQuery(persistentClass)
+            q.allEq(queryMap)
+            DynamicFinder.populateArgumentsForCriteria persistentClass, q, args
+            q.list()
+        } as SessionCallback<List>)
     }
 
     /**
@@ -467,16 +465,14 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A single result
      */
     D findWhere(Map queryMap, Map args) {
-        execute(new SessionCallback() {
-            def doInSession(Session session) {
-                Query q = session.createQuery(persistentClass)
-                if (queryMap) {
-                    q.allEq(queryMap)
-                }
-                DynamicFinder.populateArgumentsForCriteria persistentClass, q, args
-                q.singleResult()
+        execute({
+            Query q = session.createQuery(persistentClass)
+            if (queryMap) {
+                q.allEq(queryMap)
             }
-        })
+            DynamicFinder.populateArgumentsForCriteria persistentClass, q, args
+            q.singleResult()
+        } as SessionCallback)
     }
 
    /**
@@ -520,11 +516,9 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The result of the closure
      */
     def withSession(Closure callable) {
-        execute (new SessionCallback() {
-            def doInSession(Session session) {
-                callable.call session
-            }
-        })
+        execute ({
+            callable.call session
+        } as SessionCallback)
     }
 
     /**
@@ -534,11 +528,9 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The result of the closure
      */
     def withDatastoreSession(Closure callable) {
-        execute (new SessionCallback() {
-            def doInSession(Session session) {
-                callable.call session
-            }
-        })
+        execute ({
+            callable.call session
+        } as SessionCallback)
     }
 
     /**
