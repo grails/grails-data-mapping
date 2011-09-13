@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.mapping.query.api;
 
+import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.query.Query;
 
 import java.util.List;
@@ -25,9 +26,15 @@ import java.util.List;
 public interface QueryableCriteria<T> extends Criteria{
 
     /**
+     * @return The target entity
+     */
+    PersistentEntity getPersistentEntity();
+    /**
      * @return A list of all criteria
      */
     List<Query.Criterion> getCriteria();
+
+    List<Query.Projection> getProjections();
 
     /**
      * @return Find a single result

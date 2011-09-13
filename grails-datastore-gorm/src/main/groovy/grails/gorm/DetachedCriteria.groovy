@@ -47,9 +47,9 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     private List<Projection> projections = []
     private Class targetClass
     private List<DynamicFinder> dynamicFinders = []
-    private PersistentEntity persistentEntity
-    private List<Junction> junctions = []
 
+    private List<Junction> junctions = []
+    private PersistentEntity persistentEntity
     ProjectionList projectionList = new DetachedProjections(projections)
 
     /**
