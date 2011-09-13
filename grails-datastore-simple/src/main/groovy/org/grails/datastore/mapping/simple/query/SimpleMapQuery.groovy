@@ -524,7 +524,7 @@ class SimpleMapQuery extends Query {
     ]
 
     protected def subqueryIfNecessary(Query.PropertyCriterion pc, boolean uniqueResult = true) {
-        final value = pc.value
+        def value = pc.value
         if(value instanceof QueryableCriteria) {
             QueryableCriteria criteria = value
             if(uniqueResult) {
@@ -534,6 +534,7 @@ class SimpleMapQuery extends Query {
                 value = criteria.list()
             }
         }
+
         return value
     }
 

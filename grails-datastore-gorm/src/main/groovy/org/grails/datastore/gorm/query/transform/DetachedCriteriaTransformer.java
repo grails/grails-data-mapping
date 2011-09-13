@@ -78,6 +78,14 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         put("<=", "leProperty");
 
     }};
+    private static final Map<String, String> AGGREGATE_FUNCTIONS = new HashMap<String, String>() {{
+        put("avg", "avg");
+        put("max", "max");
+        put("min", "min");
+        put("sum", "sum");
+        put("count", "countDistinct");
+    }};
+
 
     private Map<String, ClassNode> detachedCriteriaVariables = new HashMap<String, ClassNode>();
     private ClassNode currentClassNode;
@@ -415,7 +423,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             }
         }
         else {
-            // TODO: compilation error
+            // TODO: compilation error?
         }
     }
 
@@ -426,6 +434,46 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             if ((propertyNames.contains(rightPropertyName) || addAll) && PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP.containsKey(operator)) {
                 methodToCall = PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
                 rightExpression = new ConstantExpression(rightPropertyName);
+            }
+            else {
+                // TODO: compilation error?
+            }
+        } else if(rightExpression instanceof MethodCallExpression) {
+            // potential aggregation
+            MethodCallExpression aggregateMethodCall = (MethodCallExpression) rightExpression;
+            String methodName = aggregateMethodCall.getMethodAsString();
+            String functionName = AGGREGATE_FUNCTIONS.get(methodName);
+            if(functionName != null) {
+                Expression arguments = aggregateMethodCall.getArguments();
+                if(arguments instanceof ArgumentListExpression) {
+                    ArgumentListExpression argList = (ArgumentListExpression) arguments;
+                    List<Expression> expressions = argList.getExpressions();
+                    if(expressions.size() == 1) {
+                        Expression expression = expressions.get(0);
+                        String aggregatePropertyName = null;
+                        if(expression instanceof VariableExpression || expression instanceof ConstantExpression) {
+                            aggregatePropertyName = expression.getText();
+                        }
+
+                        boolean validProperty = propertyNames.contains(aggregatePropertyName);
+                        if(aggregatePropertyName != null && validProperty) {
+                            ClosureAndArguments closureAndArguments = new ClosureAndArguments();
+                            BlockStatement currentBody = closureAndArguments.getCurrentBody();
+
+                            ClosureAndArguments projectionsBody = new ClosureAndArguments();
+                            ArgumentListExpression aggregateArgs = new ArgumentListExpression();
+                            aggregateArgs.addExpression(new ConstantExpression(aggregatePropertyName));
+                            projectionsBody.getCurrentBody().addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, functionName, aggregateArgs)));
+                            currentBody.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "projections", projectionsBody.getArguments())));
+
+                            rightExpression = closureAndArguments.getClosureExpression();
+
+                        }
+                        else if(!validProperty) {
+                            // TODO: compilation error
+                        }
+                    }
+                }
             }
         } else {
             if ("like".equals(methodToCall) && rightExpression instanceof BitwiseNegationExpression) {
@@ -475,6 +523,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     private class ClosureAndArguments {
         private BlockStatement currentBody;
         private ArgumentListExpression arguments;
+        private ClosureExpression closureExpression;
 
         private ClosureAndArguments() {
             build();
@@ -490,13 +539,17 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
         private ClosureAndArguments build() {
             currentBody = new BlockStatement();
-            ClosureExpression newClosureExpression = new ClosureExpression(new Parameter[0], currentBody);
-            newClosureExpression.setVariableScope(new VariableScope());
-            newClosureExpression.setCode(currentBody);
+            closureExpression = new ClosureExpression(new Parameter[0], currentBody);
+            closureExpression.setVariableScope(new VariableScope());
+            closureExpression.setCode(currentBody);
 
             arguments = new ArgumentListExpression();
-            arguments.addExpression(newClosureExpression);
+            arguments.addExpression(closureExpression);
             return this;
+        }
+
+        public ClosureExpression getClosureExpression() {
+            return closureExpression;
         }
     }
 }

@@ -33,6 +33,7 @@ import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.gorm.query.criteria.DetachedAssociationCriteria
 import org.grails.datastore.mapping.query.Query.Order.Direction
 import org.grails.datastore.mapping.query.api.QueryableCriteria
+import org.grails.datastore.mapping.query.Query.PropertyCriterion
 
 /**
  * Represents criteria that is not bound to the current connection and can be built up and re-used at a later date
@@ -67,6 +68,11 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     public void add(Criterion criterion) {
+        if(criterion instanceof PropertyCriterion) {
+            if(criterion.value instanceof Closure) {
+                criterion.value = buildQueryableCriteria(criterion.value)
+            }
+        }
         if(junctions)  {
             junctions[-1].add criterion
         }
@@ -412,6 +418,30 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         return this
     }
 
+    Criteria eqAll(String propertyName, Closure propertyValue) {
+        eqAll(propertyName, buildQueryableCriteria(propertyValue))
+    }
+
+    private QueryableCriteria buildQueryableCriteria(Closure queryClosure) {
+        return (QueryableCriteria) new DetachedCriteria(targetClass).build(queryClosure);
+    }
+
+    Criteria gtAll(String propertyName, Closure propertyValue) {
+        gtAll(propertyName, buildQueryableCriteria(propertyValue))
+    }
+
+    Criteria ltAll(String propertyName, Closure propertyValue) {
+        ltAll(propertyName, buildQueryableCriteria(propertyValue))
+    }
+
+    Criteria geAll(String propertyName, Closure propertyValue) {
+        geAll(propertyName, buildQueryableCriteria(propertyValue))
+    }
+
+    Criteria leAll(String propertyName, Closure propertyValue) {
+        leAll(propertyName, buildQueryableCriteria(propertyValue))
+    }
+
     @Override
     Criteria eqAll(String propertyName, QueryableCriteria propertyValue) {
         add new Query.EqualsAll(propertyName, propertyValue)
@@ -442,7 +472,6 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     Criteria leAll(String propertyName, QueryableCriteria propertyValue) {
         add new Query.LessThanEqualsAll(propertyName, propertyValue)
         return this
-
     }
 
     class DetachedProjections implements ProjectionList {

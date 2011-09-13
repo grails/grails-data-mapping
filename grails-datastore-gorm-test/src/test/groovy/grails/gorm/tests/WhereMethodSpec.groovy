@@ -13,6 +13,42 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
+   def "Test subquery usage combined with logical query"() {
+       given:"a bunch of people"
+         createPeople()
+
+       when:"We query for people greater than an average age"
+           final query = Person.where {
+               age > avg(age) && firstName != "Marge"
+           }
+           def results = query.list(sort:"firstName")
+
+       then:"The correct results are returned"
+            results.size() == 3
+            results[0].firstName == "Barney"
+            results[1].firstName == "Fred"
+            results[2].firstName == "Homer"
+   }
+
+   def "Test subquery usage"() {
+       given:"a bunch of people"
+         createPeople()
+
+       when:"We query for people greater than an average age"
+           final query = Person.where {
+               age > avg(age)
+           }
+           def results = query.list(sort:"firstName")
+
+       then:"The correct results are returned"
+            results.size() == 4
+            results[0].firstName == "Barney"
+            results[1].firstName == "Fred"
+            results[2].firstName == "Homer"
+            results[3].firstName == "Marge"
+   }
+
+
    def "Test error when using negating a non-binary expression"() {
        when:"A an unknown domain class property is referenced"
           queryUsingInvalidNegation()
@@ -604,37 +640,43 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @ApplyDetachedCriteriaTransform
 @Entity
 class CallMe {
-    String name
-    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
-    def declaredQuery() {
-            Person.where(myDetachedCriteria)
-    }
+//    String name
+//    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
+//    def declaredQuery() {
+//            Person.where(myDetachedCriteria)
+//    }
+//
+//    def associationQuery() {
+//        Person.where {
+//            pets.name == "Butch"
+//        }
+//    }
+//    def firstNameBartAndLastNameSimpson() {
+//        Person.where {
+//            firstName == "Bart" && lastName == "Simpson"
+//        }
+//    }
+//
+//    def derivedQuery() {
+//        def q1 = Person.where {
+//            lastName == "Simpson"
+//        }
+//
+//        q1.where {
+//            firstName == "Bart"
+//        }
+//    }
 
-    def associationQuery() {
-        Person.where {
-            pets.name == "Butch"
-        }
+    def subquery() {
+           Person.where {
+               age > avg(age)
+           }
     }
-    def firstNameBartAndLastNameSimpson() {
-        Person.where {
-            firstName == "Bart" && lastName == "Simpson"
-        }
-    }
-
-    def derivedQuery() {
-        def q1 = Person.where {
-            lastName == "Simpson"
-        }
-
-        q1.where {
-            firstName == "Bart"
-        }
-    }
-
-    static List whereMe() {
-        def q = where { name == "blah" }
-        q.list()
-    }
+//
+//    static List whereMe() {
+//        def q = where { name == "blah" }
+//        q.list()
+//    }
 }
 ''', "Test").newInstance()
     }

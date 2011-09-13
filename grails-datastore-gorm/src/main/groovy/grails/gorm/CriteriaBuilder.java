@@ -433,7 +433,11 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
      * @return A Criterion instance
      */
     public Criteria eqAll(String propertyName, Closure propertyValue) {
-        return eqAll(propertyName, (QueryableCriteria) new DetachedCriteria(targetClass).build(propertyValue));
+        return eqAll(propertyName, buildQueryableCriteria(propertyValue));
+    }
+
+    private QueryableCriteria buildQueryableCriteria(Closure queryClosure) {
+        return (QueryableCriteria) new DetachedCriteria(targetClass).build(queryClosure);
     }
 
     /**
@@ -445,7 +449,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
      * @return A Criterion instance
      */
     public Criteria gtAll(String propertyName, Closure propertyValue) {
-        return gtAll(propertyName, (QueryableCriteria) new DetachedCriteria(targetClass).build(propertyValue));
+        return gtAll(propertyName, buildQueryableCriteria(propertyValue));
     }
 
 
@@ -458,7 +462,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
      * @return A Criterion instance
      */
     public Criteria ltAll(String propertyName, Closure propertyValue) {
-        return ltAll(propertyName, (QueryableCriteria) new DetachedCriteria(targetClass).build(propertyValue));
+        return ltAll(propertyName, buildQueryableCriteria(propertyValue));
     }
 
     /**
@@ -470,7 +474,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
      * @return A Criterion instance
      */
     public Criteria geAll(String propertyName, Closure propertyValue) {
-        return geAll(propertyName, (QueryableCriteria) new DetachedCriteria(targetClass).build(propertyValue));
+        return geAll(propertyName, buildQueryableCriteria(propertyValue));
     }
 
 
@@ -483,7 +487,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
      * @return A Criterion instance
      */
     public Criteria leAll(String propertyName, Closure propertyValue) {
-        return leAll(propertyName, (QueryableCriteria) new DetachedCriteria(targetClass).build(propertyValue));
+        return leAll(propertyName, buildQueryableCriteria(propertyValue));
     }
 
 
@@ -995,6 +999,14 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     * LogicalExpression.
     */
     protected Query.Criterion addToCriteria(Query.Criterion c) {
+        if(c instanceof Query.PropertyCriterion) {
+            Query.PropertyCriterion pc = (Query.PropertyCriterion) c;
+
+            Object value = pc.getValue();
+            if(value instanceof Closure) {
+                pc.setValue(buildQueryableCriteria((Closure) value));
+            }
+        }
         if (!logicalExpressionStack.isEmpty()) {
             logicalExpressionStack.get(logicalExpressionStack.size() - 1).add(c);
         }
