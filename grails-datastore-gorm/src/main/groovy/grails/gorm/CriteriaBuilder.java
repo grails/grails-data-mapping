@@ -377,13 +377,6 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         return this;
     }
 
-    /**
-     * @return A list of all criteria
-     */
-    @Override
-    public List<Query.Criterion> getCriteria() {
-        return query.getCriteria().getCriteria();
-    }
 
     public Criteria idEquals(Object value) {
         addToCriteria(Restrictions.idEq(value));
