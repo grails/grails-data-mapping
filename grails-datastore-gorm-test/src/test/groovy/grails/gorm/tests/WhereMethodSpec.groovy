@@ -110,11 +110,19 @@ class WhereMethodSpec extends GormDatastoreSpec {
    }
 
    def "Test error when using unsupported operator"() {
-       when:"A an unknown domain class property is referenced"
+       when:"A an unsupported query operator is used"
           queryUsingUnsupportedOperator()
        then:
             MultipleCompilationErrorsException e = thrown()
             e.message.contains 'Unsupported operator [<<] used in query'
+   }
+
+   def "Test error when using unknown domain property of an association"() {
+       when:"A an unknown domain class property of an association is referenced"
+          queryReferencingNonExistentPropertyOfAssociation()
+       then:
+            MultipleCompilationErrorsException e = thrown()
+            e.message.contains 'Cannot query on property "doesntExist" - no such property on class CallMe exists.'
    }
 
    def "Test error when using unknown domain property"() {
@@ -718,6 +726,35 @@ class CallMe {
             doesntExist == "Blah"
         }
     }
+}
+''')
+    }
+
+    def queryReferencingNonExistentPropertyOfAssociation() {
+        def gcl = new GroovyClassLoader(getClass().classLoader)
+        gcl.parseClass('''
+import grails.gorm.tests.*
+import grails.gorm.*
+import grails.persistence.*
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+
+@ApplyDetachedCriteriaTransform
+@Entity
+class CallMe {
+
+    Set<Pet> pets
+    static hasMany = [pets:Pet]
+    def badQuery() {
+        Person.where {
+            pets { doesntExist == "Blah" }
+        }
+    }
+}
+
+@ApplyDetachedCriteriaTransform
+@Entity
+class Pet {
+    String name
 }
 ''')
     }
