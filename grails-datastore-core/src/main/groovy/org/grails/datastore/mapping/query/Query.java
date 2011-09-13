@@ -1019,6 +1019,13 @@ public abstract class Query {
     public static abstract class Junction implements Criterion {
         private List<Criterion> criteria = new ArrayList<Criterion>();
 
+        protected Junction() {
+        }
+
+        public Junction(List<Criterion> criteria) {
+            this.criteria = criteria;
+        }
+
         public Junction add(Criterion c) {
             if (c != null) {
                 if (c instanceof Equals) {
@@ -1059,7 +1066,14 @@ public abstract class Query {
     /**
      * A Criterion used to combine to criterion in a logical AND
      */
-    public static class Conjunction extends Junction {}
+    public static class Conjunction extends Junction {
+        public Conjunction() {
+        }
+
+        public Conjunction(List<Criterion> criteria) {
+            super(criteria);
+        }
+    }
 
     /**
      * A Criterion used to combine to criterion in a logical OR
