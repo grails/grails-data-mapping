@@ -32,6 +32,7 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.datastore.gorm.query.criteria.DetachedAssociationCriteria
 import org.grails.datastore.mapping.query.Query.Order.Direction
+import org.grails.datastore.mapping.query.api.QueryableCriteria
 
 /**
  * Represents criteria that is not bound to the current connection and can be built up and re-used at a later date
@@ -39,7 +40,7 @@ import org.grails.datastore.mapping.query.Query.Order.Direction
  * @author Graeme Rocher
  * @since 1.0
  */
-class DetachedCriteria<T> implements Criteria, Cloneable, Iterable<T> {
+class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T> {
     
     private List<Criterion> criteria = []
     private List<Order> orders = []

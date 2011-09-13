@@ -29,6 +29,7 @@ import org.grails.datastore.mapping.model.types.Custom
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
 import java.util.regex.Pattern
 import org.grails.datastore.mapping.query.api.Criteria
+import org.grails.datastore.mapping.query.api.QueryableCriteria
 
 /**
  * Simple query implementation that queries a map of objects
@@ -457,12 +458,13 @@ class SimpleMapQuery extends Query {
 
     protected def subqueryIfNecessary(Query.PropertyCriterion pc, boolean uniqueResult = true) {
         final value = pc.value
-        if(value instanceof Criteria) {
+        if(value instanceof QueryableCriteria) {
+            QueryableCriteria criteria = value
             if(uniqueResult) {
-                value = value.find()
+                value = criteria.find()
             }
             else {
-                value = value.list()
+                value = criteria.list()
             }
         }
         return value
