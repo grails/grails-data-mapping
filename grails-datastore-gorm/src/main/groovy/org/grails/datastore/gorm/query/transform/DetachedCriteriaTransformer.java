@@ -78,6 +78,15 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         put("<=", "leProperty");
 
     }};
+    private static final Map<String, String> SIZE_OPERATOR_TO_CRITERIA_METHOD_MAP = new HashMap<String, String>() {{
+        put("==", "sizeEq");
+        put("!=", "sizeNe");
+        put(">", "sizeGt");
+        put("<", "sizeLt");
+        put(">=", "sizeGe");
+        put("<=", "sizeLe");
+
+    }};
     private static final Map<String, String> AGGREGATE_FUNCTIONS = new HashMap<String, String>() {{
         put("avg", "avg");
         put("max", "max");
@@ -368,6 +377,28 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query on property \""+propertyName+"\" - no such property on class "+currentClassNode.getName()+" exists.", Token.newString(propertyName,leftExpression.getLineNumber(), leftExpression.getColumnNumber()), sourceUnit));
             }
         }   else  {
+
+            if(leftExpression instanceof MethodCallExpression) {
+                MethodCallExpression mce = (MethodCallExpression) leftExpression;
+                String methodAsString = mce.getMethodAsString();
+                if("size".equals(methodAsString) && (mce.getObjectExpression() instanceof VariableExpression)) {
+                    String propertyName = mce.getObjectExpression().getText();
+                    if(propertyNames.contains(propertyName)) {
+                        String sizeOperator = SIZE_OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
+                        if(sizeOperator != null) {
+                              addCriteriaCall(newCode,operator,rightExpression, propertyName, propertyNames, addAll, sizeOperator);
+                        }
+                        else {
+                            sourceUnit.getErrorCollector().addError(new LocatedMessage("Unsupported operator ["+operator+"] used in size() query", operation, sourceUnit));
+                        }
+                    }
+                    else {
+                        sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query size of property \""+propertyName+"\" - no such property on class "+currentClassNode.getName()+" exists.", Token.newString(propertyName,leftExpression.getLineNumber(), leftExpression.getColumnNumber()), sourceUnit));
+                    }
+
+                    return;
+                }
+            }
             String methodNameToCall = null;
             if (operator.contains(AND_OPERATOR)) {
                 methodNameToCall = "and";
@@ -429,14 +460,15 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private void addCriteriaCallMethodExpression(BlockStatement newCode, String operator, Expression rightExpression, String propertyName, List<String> propertyNames, boolean addAll) {
         String methodToCall = OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
+        addCriteriaCall(newCode, operator, rightExpression, propertyName, propertyNames, addAll, methodToCall);
+    }
+
+    private void addCriteriaCall(BlockStatement newCode, String operator, Expression rightExpression, String propertyName, List<String> propertyNames, boolean addAll, String methodToCall) {
         if (rightExpression instanceof VariableExpression) {
             String rightPropertyName = rightExpression.getText();
             if ((propertyNames.contains(rightPropertyName) || addAll) && PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP.containsKey(operator)) {
                 methodToCall = PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
                 rightExpression = new ConstantExpression(rightPropertyName);
-            }
-            else {
-                // TODO: compilation error?
             }
         } else if(rightExpression instanceof MethodCallExpression) {
             // potential aggregation
@@ -470,7 +502,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                         }
                         else if(!validProperty) {
-                            // TODO: compilation error
+                            // TODO: compilation error?
                         }
                     }
                 }

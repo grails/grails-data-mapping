@@ -13,6 +13,42 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
+   def "Test collection operations"() {
+       given:"People with pets"
+            createPeopleWithPets()
+
+       when:"We query for people with 2 pets"
+            def query = Person.where {
+                pets.size() == 2
+            }
+            def results = query.list(sort:"firstName")
+
+       then:"The correct results are returned"
+            results.size() == 2
+            results[0].firstName == "Fred"
+            results[1].firstName == "Joe"
+
+       when:"We query for people with greater than 2 pets"
+            query = Person.where {
+                pets.size() > 2
+            }
+            results = query.list(sort:"firstName")
+       then:"The correct results are returned"
+            results.size() == 1
+            results[0].firstName == "Ed"
+
+     when:"We query for people with greater than 2 pets"
+            query = Person.where {
+                pets.size() > 1 && firstName != "Joe"
+            }
+            query = getClassThatCallsWhere().collectionQuery()
+            results = query.list(sort:"firstName")
+       then:"The correct results are returned"
+            results.size() == 2
+            results[0].firstName == "Ed"
+            results[1].firstName == "Fred"
+   }
+
    def "Test subquery usage combined with logical query"() {
        given:"a bunch of people"
          createPeople()
@@ -55,6 +91,22 @@ class WhereMethodSpec extends GormDatastoreSpec {
        then:
             MultipleCompilationErrorsException e = thrown()
             e.message.contains 'You can only negate a binary expressions in queries.'
+   }
+
+   def "Test error when using unsupported operator in size() query"() {
+       when:"A an unknown domain class property is referenced"
+          queryUsingUnsupportedOperatorInSize()
+       then:
+            MultipleCompilationErrorsException e = thrown()
+            e.message.contains 'Unsupported operator [<<] used in size() query'
+   }
+
+   def "Test error when using unknown property in size() query"() {
+       when:"A an unknown domain class property is referenced"
+          queryUsingUnknownPropertyWithSize()
+       then:
+            MultipleCompilationErrorsException e = thrown()
+            e.message.contains 'Cannot query size of property "blah" - no such property on class CallMe exists'
    }
 
    def "Test error when using unsupported operator"() {
@@ -565,11 +617,30 @@ class WhereMethodSpec extends GormDatastoreSpec {
     protected def createPeopleWithPets() {
         new Person(firstName: "Joe", lastName: "Bloggs").addToPets(name: "Jack").addToPets(name: "Butch").save()
 
-        new Person(firstName: "Ed", lastName: "Floggs").addToPets(name: "Mini").addToPets(name: "Barbie").save()
+        new Person(firstName: "Ed", lastName: "Floggs").addToPets(name: "Mini").addToPets(name: "Barbie").addToPets(name:"Ken").save()
 
         new Person(firstName: "Fred", lastName: "Cloggs").addToPets(name: "Jim").addToPets(name: "Joe").save()
     }
 
+    def queryUsingUnsupportedOperatorInSize() {
+        def gcl = new GroovyClassLoader(getClass().classLoader)
+        gcl.parseClass('''
+import grails.gorm.tests.*
+import grails.gorm.*
+import grails.persistence.*
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+
+@ApplyDetachedCriteriaTransform
+@Entity
+class CallMe {
+    def badQuery() {
+        Person.where {
+            pets.size() << 1
+        }
+    }
+}
+''')
+    }
     def queryUsingUnsupportedOperator() {
         def gcl = new GroovyClassLoader(getClass().classLoader)
         gcl.parseClass('''
@@ -609,6 +680,28 @@ class CallMe {
 }
 ''')
     }
+
+    def queryUsingUnknownPropertyWithSize() {
+        def gcl = new GroovyClassLoader(getClass().classLoader)
+        gcl.parseClass('''
+import grails.gorm.tests.*
+import grails.gorm.*
+import grails.persistence.*
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+
+@ApplyDetachedCriteriaTransform
+@Entity
+class CallMe {
+    def badQuery() {
+        Person.where {
+            blah.size() == 10
+        }
+    }
+}
+''')
+    }
+
+
     def queryReferencingNonExistentProperty() {
         def gcl = new GroovyClassLoader(getClass().classLoader)
         gcl.parseClass('''
@@ -640,43 +733,43 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @ApplyDetachedCriteriaTransform
 @Entity
 class CallMe {
-//    String name
-//    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
-//    def declaredQuery() {
-//            Person.where(myDetachedCriteria)
-//    }
-//
-//    def associationQuery() {
-//        Person.where {
-//            pets.name == "Butch"
-//        }
-//    }
-//    def firstNameBartAndLastNameSimpson() {
-//        Person.where {
-//            firstName == "Bart" && lastName == "Simpson"
-//        }
-//    }
-//
-//    def derivedQuery() {
-//        def q1 = Person.where {
-//            lastName == "Simpson"
-//        }
-//
-//        q1.where {
-//            firstName == "Bart"
-//        }
-//    }
+    String name
+    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
+    def declaredQuery() {
+            Person.where(myDetachedCriteria)
+    }
 
-    def subquery() {
+    def associationQuery() {
+        Person.where {
+            pets.name == "Butch"
+        }
+    }
+    def firstNameBartAndLastNameSimpson() {
+        Person.where {
+            firstName == "Bart" && lastName == "Simpson"
+        }
+    }
+
+    def derivedQuery() {
+        def q1 = Person.where {
+            lastName == "Simpson"
+        }
+
+        q1.where {
+            firstName == "Bart"
+        }
+    }
+
+    def collectionQuery() {
            Person.where {
-               age > avg(age)
+               pets.size() > 1 && firstName != "Joe"
            }
     }
-//
-//    static List whereMe() {
-//        def q = where { name == "blah" }
-//        q.list()
-//    }
+
+    static List whereMe() {
+        def q = where { name == "blah" }
+        q.list()
+    }
 }
 ''', "Test").newInstance()
     }
