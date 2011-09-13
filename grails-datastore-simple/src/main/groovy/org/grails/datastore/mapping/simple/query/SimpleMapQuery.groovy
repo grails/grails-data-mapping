@@ -28,6 +28,7 @@ import org.grails.datastore.mapping.simple.engine.SimpleMapEntityPersister
 import org.grails.datastore.mapping.model.types.Custom
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
 import java.util.regex.Pattern
+import org.grails.datastore.mapping.query.api.Criteria
 
 /**
  * Simple query implementation that queries a map of objects
@@ -286,7 +287,9 @@ class SimpleMapQuery extends Query {
         },
         (Query.Equals): { Query.Equals equals, PersistentProperty property ->
             def indexer = entityPersister.getPropertyIndexer(property)
-            return indexer.query(equals.value)
+            final value = subqueryIfNecessary(equals)
+
+            return indexer.query(value)
         },
         (Query.IsNull): { Query.IsNull equals, PersistentProperty property ->
             def indexer = entityPersister.getPropertyIndexer(property)
@@ -298,7 +301,8 @@ class SimpleMapQuery extends Query {
         },
         (Query.NotEquals): { Query.NotEquals equals, PersistentProperty property ->
             def indexer = entityPersister.getPropertyIndexer(property)
-            def indexed = indexer.query(equals.value)
+            final value = subqueryIfNecessary(equals)
+            def indexed = indexer.query(value)
             ArrayList allIds = negateResults(indexed)
             return allIds
         },
@@ -351,7 +355,7 @@ class SimpleMapQuery extends Query {
         },
         (Query.GreaterThan): { Query.GreaterThan gt, PersistentProperty property ->
             def name = gt.property
-            def value = gt.value
+            final value = subqueryIfNecessary(gt)
             def allEntities = datastore[family]
 
             allEntities.findAll { it.value[name] > value }.collect { it.key }
@@ -400,50 +404,69 @@ class SimpleMapQuery extends Query {
         },
         (Query.SizeEquals): { Query.SizeEquals se, PersistentProperty property ->
             def allEntities = datastore[family]
-            queryAssociationList(allEntities, property) { it.size() == se.value }
+            final value = subqueryIfNecessary(se)
+            queryAssociationList(allEntities, property) { it.size() == value }
         },
        (Query.SizeNotEquals): { Query.SizeNotEquals se, PersistentProperty property ->
             def allEntities = datastore[family]
-            queryAssociationList(allEntities, property) { it.size() != se.value }
+            final value = subqueryIfNecessary(se)
+            queryAssociationList(allEntities, property) { it.size() != value }
         },
         (Query.SizeGreaterThan): { Query.SizeGreaterThan se, PersistentProperty property ->
             def allEntities = datastore[family]
-            queryAssociationList(allEntities, property) { it.size() > se.value }
+            final value = subqueryIfNecessary(se)
+            queryAssociationList(allEntities, property) { it.size() > value }
         },
         (Query.SizeGreaterThanEquals): { Query.SizeGreaterThanEquals se, PersistentProperty property ->
             def allEntities = datastore[family]
-            queryAssociationList(allEntities, property) { it.size() >= se.value }
+            final value = subqueryIfNecessary(se)
+            queryAssociationList(allEntities, property) { it.size() >= value }
         },
         (Query.SizeLessThan): { Query.SizeLessThan se, PersistentProperty property ->
             def allEntities = datastore[family]
-            queryAssociationList(allEntities, property) { it.size() < se.value }
+            final value = subqueryIfNecessary(se)
+            queryAssociationList(allEntities, property) { it.size() < value }
         },
         (Query.SizeLessThanEquals): { Query.SizeLessThanEquals se, PersistentProperty property ->
             def allEntities = datastore[family]
-            queryAssociationList(allEntities, property) { it.size() <= se.value }
+            final value = subqueryIfNecessary(se)
+            queryAssociationList(allEntities, property) { it.size() <= value }
         },
         (Query.GreaterThanEquals): { Query.GreaterThanEquals gt, PersistentProperty property ->
             def name = gt.property
-            def value = gt.value
+            final value = subqueryIfNecessary(gt)
             def allEntities = datastore[family]
 
             allEntities.findAll { it.value[name] >= value }.collect { it.key }
         },
         (Query.LessThan): { Query.LessThan lt, PersistentProperty property ->
             def name = lt.property
-            def value = lt.value
+            final value = subqueryIfNecessary(lt)
             def allEntities = datastore[family]
 
             allEntities.findAll { it.value[name] < value }.collect { it.key }
         },
         (Query.LessThanEquals): { Query.LessThanEquals lte, PersistentProperty property ->
             def name = lte.property
-            def value = lte.value
+            final value = subqueryIfNecessary(lte)
             def allEntities = datastore[family]
 
             allEntities.findAll { it.value[name] <= value }.collect { it.key }
         }
     ]
+
+    protected def subqueryIfNecessary(Query.PropertyCriterion pc, boolean uniqueResult = true) {
+        final value = pc.value
+        if(value instanceof Criteria) {
+            if(uniqueResult) {
+                value = value.find()
+            }
+            else {
+                value = value.list()
+            }
+        }
+        return value
+    }
 
     protected List executeLikeWithRegex(SimpleMapEntityPersister entityPersister, PersistentProperty property, regexFormat) {
         def indexer = entityPersister.getPropertyIndexer(property)
@@ -494,6 +517,7 @@ class SimpleMapQuery extends Query {
                 }
                 else {
                     def handler = handlers[criterion.getClass()]
+
                     def results = handler?.call(criterion, property) ?: []
                     resultList.results << results
                 }

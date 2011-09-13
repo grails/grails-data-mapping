@@ -377,6 +377,14 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         return this;
     }
 
+    /**
+     * @return A list of all criteria
+     */
+    @Override
+    public List<Query.Criterion> getCriteria() {
+        return query.getCriteria().getCriteria();
+    }
+
     public Criteria idEquals(Object value) {
         addToCriteria(Restrictions.idEq(value));
         return this;
@@ -416,6 +424,20 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
      * @return A Criterion instance
      */
     public Criteria eq(String propertyName, Object propertyValue) {
+        validatePropertyName(propertyName, "eq");
+        addToCriteria(Restrictions.eq(propertyName, propertyValue));
+        return this;
+    }
+
+    /**
+     * Creates an "equals" Criterion based on the specified property name and value.
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    public Criteria eq(String propertyName, DetachedCriteria propertyValue) {
         validatePropertyName(propertyName, "eq");
         addToCriteria(Restrictions.eq(propertyName, propertyValue));
         return this;

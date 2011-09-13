@@ -15,7 +15,10 @@
 package org.grails.datastore.mapping.query.api;
 
 
+import org.grails.datastore.mapping.query.Query;
+
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Interface for the implementations that construct of criteria queries
@@ -24,6 +27,11 @@ import java.util.Collection;
  * @since 1.0
  */
 public interface Criteria  {
+
+    /**
+     * @return A list of all criteria
+     */
+    List<Query.Criterion> getCriteria();
 
     /**
      * Creates a criterion that restricts the id to the given value
