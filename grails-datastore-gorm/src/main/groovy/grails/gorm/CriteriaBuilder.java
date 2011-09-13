@@ -38,6 +38,7 @@ import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
 import org.grails.datastore.mapping.query.api.Criteria;
 import org.grails.datastore.mapping.query.api.ProjectionList;
+import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.springframework.util.Assert;
 
 /**
@@ -422,17 +423,139 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         return this;
     }
 
+
     /**
-     * Creates an "equals" Criterion based on the specified property name and value.
+     * Creates a subquery criterion that ensures the given property is equal to all the given returned values
      *
      * @param propertyName The property name
      * @param propertyValue The property value
      *
      * @return A Criterion instance
      */
-    public Criteria eq(String propertyName, DetachedCriteria propertyValue) {
-        validatePropertyName(propertyName, "eq");
-        addToCriteria(Restrictions.eq(propertyName, propertyValue));
+    public Criteria eqAll(String propertyName, Closure propertyValue) {
+        return eqAll(propertyName, (QueryableCriteria) new DetachedCriteria(targetClass).build(propertyValue));
+    }
+
+    /**
+     * Creates a subquery criterion that ensures the given property is greater than all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    public Criteria gtAll(String propertyName, Closure propertyValue) {
+        return gtAll(propertyName, (QueryableCriteria) new DetachedCriteria(targetClass).build(propertyValue));
+    }
+
+
+    /**
+     * Creates a subquery criterion that ensures the given property is less than all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    public Criteria ltAll(String propertyName, Closure propertyValue) {
+        return ltAll(propertyName, (QueryableCriteria) new DetachedCriteria(targetClass).build(propertyValue));
+    }
+
+    /**
+     * Creates a subquery criterion that ensures the given property is greater than all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    public Criteria geAll(String propertyName, Closure propertyValue) {
+        return geAll(propertyName, (QueryableCriteria) new DetachedCriteria(targetClass).build(propertyValue));
+    }
+
+
+    /**
+     * Creates a subquery criterion that ensures the given property is less than all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    public Criteria leAll(String propertyName, Closure propertyValue) {
+        return leAll(propertyName, (QueryableCriteria) new DetachedCriteria(targetClass).build(propertyValue));
+    }
+
+
+    /**
+     * Creates a subquery criterion that ensures the given property is equal to all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    public Criteria eqAll(String propertyName, QueryableCriteria propertyValue) {
+        validatePropertyName(propertyName, "eqAll");
+        addToCriteria(new Query.EqualsAll(propertyName, propertyValue));
+        return this;
+    }
+
+    /**
+     * Creates a subquery criterion that ensures the given property is greater than all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    public Criteria gtAll(String propertyName, QueryableCriteria propertyValue) {
+        validatePropertyName(propertyName, "gtAll");
+        addToCriteria(new Query.GreaterThanAll(propertyName, propertyValue));
+        return this;
+    }
+
+
+    /**
+     * Creates a subquery criterion that ensures the given property is less than all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    public Criteria ltAll(String propertyName, QueryableCriteria propertyValue) {
+        validatePropertyName(propertyName, "ltAll");
+        addToCriteria(new Query.LessThanAll(propertyName, propertyValue));
+        return this;
+    }
+
+    /**
+     * Creates a subquery criterion that ensures the given property is greater than all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    public Criteria geAll(String propertyName, QueryableCriteria propertyValue) {
+        validatePropertyName(propertyName, "geAll");
+        addToCriteria(new Query.GreaterThanEqualsAll(propertyName, propertyValue));
+        return this;
+    }
+
+
+    /**
+     * Creates a subquery criterion that ensures the given property is less than all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    public Criteria leAll(String propertyName, QueryableCriteria propertyValue) {
+        validatePropertyName(propertyName, "leAll");
+        addToCriteria(new Query.LessThanEqualsAll(propertyName, propertyValue));
         return this;
     }
 

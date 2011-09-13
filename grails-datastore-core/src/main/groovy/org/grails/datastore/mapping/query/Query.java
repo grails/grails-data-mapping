@@ -26,6 +26,7 @@ import javax.persistence.FlushModeType;
 
 import org.grails.datastore.mapping.core.ConnectionNotFoundException;
 import org.grails.datastore.mapping.query.api.AssociationCriteria;
+import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
@@ -757,6 +758,52 @@ public abstract class Query {
             this.value = v;
         }
     }
+
+    /**
+     * Used to differentiate criterion that require a subquery
+     */
+    public static class SubqueryCriterion extends PropertyCriterion {
+        public SubqueryCriterion(String name, QueryableCriteria value) {
+            super(name, value);
+        }
+    }
+
+    public static class EqualsAll extends SubqueryCriterion{
+        public EqualsAll(String name, QueryableCriteria value) {
+            super(name, value);
+        }
+    }
+
+    public static class NotEqualsAll extends SubqueryCriterion{
+        public NotEqualsAll(String name, QueryableCriteria value) {
+            super(name, value);
+        }
+    }
+
+    public static class GreaterThanAll extends SubqueryCriterion{
+        public GreaterThanAll(String name, QueryableCriteria value) {
+            super(name, value);
+        }
+    }
+
+    public static class LessThanAll extends SubqueryCriterion{
+        public LessThanAll(String name, QueryableCriteria value) {
+            super(name, value);
+        }
+    }
+
+    public static class GreaterThanEqualsAll extends SubqueryCriterion{
+        public GreaterThanEqualsAll(String name, QueryableCriteria value) {
+            super(name, value);
+        }
+    }
+
+    public static class LessThanEqualsAll extends SubqueryCriterion{
+        public LessThanEqualsAll(String name, QueryableCriteria value) {
+            super(name, value);
+        }
+    }
+
     /**
      * A criterion that restricts the results based on equality
      */

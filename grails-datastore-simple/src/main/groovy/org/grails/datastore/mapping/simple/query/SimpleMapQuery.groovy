@@ -30,6 +30,7 @@ import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
 import java.util.regex.Pattern
 import org.grails.datastore.mapping.query.api.Criteria
 import org.grails.datastore.mapping.query.api.QueryableCriteria
+import org.springframework.util.Assert
 
 /**
  * Simple query implementation that queries a map of objects
@@ -178,7 +179,8 @@ class SimpleMapQuery extends Query {
         },
         (Query.Equals): { allEntities, Association association, Query.Equals eq ->
             queryAssociation(allEntities, association) {
-                it[eq.property] == eq.value
+                final value = subqueryIfNecessary(eq)
+                it[eq.property] == value
             }
         },
         (Query.IsNull): { allEntities, Association association, Query.IsNull eq ->
@@ -188,7 +190,8 @@ class SimpleMapQuery extends Query {
         },
         (Query.NotEquals): { allEntities, Association association, Query.NotEquals eq ->
             queryAssociation(allEntities, association) {
-                it[eq.property] != eq.value
+                final value = subqueryIfNecessary(eq)
+                it[eq.property] != value
             }
         },
         (Query.IsNotNull): { allEntities, Association association, Query.IsNotNull eq ->
@@ -210,22 +213,26 @@ class SimpleMapQuery extends Query {
         },
         (Query.GreaterThan):{ allEntities, Association association, Query.GreaterThan gt ->
             queryAssociation(allEntities, association) {
-                it[gt.property] > gt.value
+                final value = subqueryIfNecessary(gt)
+                it[gt.property] > value
             }
         },
         (Query.LessThan):{ allEntities, Association association, Query.LessThan lt ->
             queryAssociation(allEntities, association) {
-                it[lt.property] < lt.value
+                final value = subqueryIfNecessary(lt)
+                it[lt.property] < value
             }
         },
         (Query.GreaterThanEquals):{ allEntities, Association association, Query.GreaterThanEquals gt ->
             queryAssociation(allEntities, association) {
-                it[gt.property] >= gt.value
+                final value = subqueryIfNecessary(gt)
+                it[gt.property] >= value
             }
         },
         (Query.LessThanEquals):{ allEntities, Association association, Query.LessThanEquals lt ->
             queryAssociation(allEntities, association) {
-                it[lt.property] <= lt.value
+                final value = subqueryIfNecessary(lt)
+                it[lt.property] <= value
             }
         },
         (Query.In):{ allEntities, Association association, Query.In inList ->
@@ -285,6 +292,66 @@ class SimpleMapQuery extends Query {
         (AssociationQuery): { AssociationQuery aq, PersistentProperty property ->
             Query.Junction queryCriteria = aq.criteria
             return executeAssociationSubQuery(queryCriteria, property)
+        },
+        (Query.EqualsAll):{ Query.EqualsAll equalsAll, PersistentProperty property ->
+            def name = equalsAll.property
+            final values = subqueryIfNecessary(equalsAll, false)
+            Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
+            def allEntities = datastore[family]
+            allEntities.findAll { entry ->
+                values.every { entry.value[name] == it  }
+            }
+            .collect { it.key }
+        },
+        (Query.NotEqualsAll):{ Query.NotEqualsAll notEqualsAll, PersistentProperty property ->
+            def name = notEqualsAll.property
+            final values = subqueryIfNecessary(notEqualsAll, false)
+            Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
+            def allEntities = datastore[family]
+            allEntities.findAll { entry ->
+                values.every { entry.value[name] != it  }
+            }
+            .collect { it.key }
+        },
+        (Query.GreaterThanAll):{ Query.GreaterThanAll greaterThanAll, PersistentProperty property ->
+            def name = greaterThanAll.property
+            final values = subqueryIfNecessary(greaterThanAll, false)
+            Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
+            def allEntities = datastore[family]
+            allEntities.findAll { entry ->
+                values.every { entry.value[name] > it  }
+            }
+            .collect { it.key }
+        },
+        (Query.LessThanAll):{ Query.LessThanAll lessThanAll, PersistentProperty property ->
+            def name = lessThanAll.property
+            final values = subqueryIfNecessary(lessThanAll, false)
+            Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
+            def allEntities = datastore[family]
+            allEntities.findAll { entry ->
+                values.every { entry.value[name] < it  }
+            }
+            .collect { it.key }
+        },
+        (Query.LessThanEqualsAll):{ Query.LessThanEqualsAll lessThanEqualsAll, PersistentProperty property ->
+            def name = lessThanEqualsAll.property
+            final values = subqueryIfNecessary(lessThanEqualsAll, false)
+            Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
+            def allEntities = datastore[family]
+            allEntities.findAll { entry ->
+                values.every { entry.value[name] <= it  }
+            }
+            .collect { it.key }
+        },
+        (Query.GreaterThanEqualsAll):{ Query.GreaterThanEqualsAll greaterThanAll, PersistentProperty property ->
+            def name = greaterThanAll.property
+            final values = subqueryIfNecessary(greaterThanAll, false)
+            Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
+            def allEntities = datastore[family]
+            allEntities.findAll { entry ->
+                values.every { entry.value[name] >= it  }
+            }
+            .collect { it.key }
         },
         (Query.Equals): { Query.Equals equals, PersistentProperty property ->
             def indexer = entityPersister.getPropertyIndexer(property)
