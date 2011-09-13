@@ -412,6 +412,39 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         return this
     }
 
+    @Override
+    Criteria eqAll(String propertyName, QueryableCriteria propertyValue) {
+        add new Query.EqualsAll(propertyName, propertyValue)
+        return this
+    }
+
+    @Override
+    Criteria gtAll(String propertyName, QueryableCriteria propertyValue) {
+        add new Query.GreaterThanAll(propertyName, propertyValue)
+        return this
+    }
+
+    @Override
+    Criteria ltAll(String propertyName, QueryableCriteria propertyValue) {
+        add new Query.LessThanAll(propertyName, propertyValue)
+        return this
+
+    }
+
+    @Override
+    Criteria geAll(String propertyName, QueryableCriteria propertyValue) {
+        add new Query.GreaterThanEqualsAll(propertyName, propertyValue)
+        return this
+
+    }
+
+    @Override
+    Criteria leAll(String propertyName, QueryableCriteria propertyValue) {
+        add new Query.LessThanEqualsAll(propertyName, propertyValue)
+        return this
+
+    }
+
     class DetachedProjections implements ProjectionList {
 
         List<Projection> projections

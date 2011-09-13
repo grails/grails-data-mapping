@@ -495,6 +495,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
      *
      * @return A Criterion instance
      */
+    @Override
     public Criteria eqAll(String propertyName, QueryableCriteria propertyValue) {
         validatePropertyName(propertyName, "eqAll");
         addToCriteria(new Query.EqualsAll(propertyName, propertyValue));
@@ -509,6 +510,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
      *
      * @return A Criterion instance
      */
+    @Override
     public Criteria gtAll(String propertyName, QueryableCriteria propertyValue) {
         validatePropertyName(propertyName, "gtAll");
         addToCriteria(new Query.GreaterThanAll(propertyName, propertyValue));
@@ -524,6 +526,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
      *
      * @return A Criterion instance
      */
+    @Override
     public Criteria ltAll(String propertyName, QueryableCriteria propertyValue) {
         validatePropertyName(propertyName, "ltAll");
         addToCriteria(new Query.LessThanAll(propertyName, propertyValue));
@@ -538,6 +541,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
      *
      * @return A Criterion instance
      */
+    @Override
     public Criteria geAll(String propertyName, QueryableCriteria propertyValue) {
         validatePropertyName(propertyName, "geAll");
         addToCriteria(new Query.GreaterThanEqualsAll(propertyName, propertyValue));
@@ -553,6 +557,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
      *
      * @return A Criterion instance
      */
+    @Override
     public Criteria leAll(String propertyName, QueryableCriteria propertyValue) {
         validatePropertyName(propertyName, "leAll");
         addToCriteria(new Query.LessThanEqualsAll(propertyName, propertyValue));

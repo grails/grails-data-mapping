@@ -353,4 +353,53 @@ public interface Criteria  {
      */
     Criteria leProperty(java.lang.String propertyName, java.lang.String otherPropertyName);
 
+    /**
+     * Creates a subquery criterion that ensures the given property is equal to all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    Criteria eqAll(String propertyName, QueryableCriteria propertyValue);
+
+    /**
+     * Creates a subquery criterion that ensures the given property is greater than all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    Criteria gtAll(String propertyName, QueryableCriteria propertyValue);
+
+    /**
+     * Creates a subquery criterion that ensures the given property is less than all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    Criteria ltAll(String propertyName, QueryableCriteria propertyValue);
+
+    /**
+     * Creates a subquery criterion that ensures the given property is greater than all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    Criteria geAll(String propertyName, QueryableCriteria propertyValue);
+
+    /**
+     * Creates a subquery criterion that ensures the given property is less than all the given returned values
+     *
+     * @param propertyName The property name
+     * @param propertyValue The property value
+     *
+     * @return A Criterion instance
+     */
+    Criteria leAll(String propertyName, QueryableCriteria propertyValue);
 }
