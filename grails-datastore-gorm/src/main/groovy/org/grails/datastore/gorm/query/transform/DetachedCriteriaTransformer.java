@@ -16,6 +16,7 @@ package org.grails.datastore.gorm.query.transform;
 
 import grails.gorm.DetachedCriteria;
 import grails.persistence.Entity;
+import grails.util.GrailsNameUtils;
 import org.codehaus.groovy.ast.*;
 import org.codehaus.groovy.ast.expr.*;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
@@ -266,17 +267,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     protected void transformClosureExpression(ClassNode classNode, ClosureExpression closureExpression) {
-        List<MethodNode> methods = classNode.getMethods();
-        List<String> propertyNames = new ArrayList<String>();
-        for (MethodNode method : methods) {
-            if (!method.isAbstract() && !method.isStatic() && isGetter(method.getName(), method)) {
-                propertyNames.add(GrailsClassUtils.getPropertyForGetter(method.getName()));
-            }
-        }
-        List<PropertyNode> properties = classNode.getProperties();
-        for (PropertyNode property : properties) {
-            propertyNames.add(property.getName());
-        }
+        List<String> propertyNames = getPropertyNames(classNode);
         Statement code = closureExpression.getCode();
         BlockStatement newCode = new BlockStatement();
         boolean addAll = false;
@@ -288,6 +279,21 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         }
 
         closureExpression.setCode(newCode);
+    }
+
+    private List<String> getPropertyNames(ClassNode classNode) {
+        List<MethodNode> methods = classNode.getMethods();
+        List<String> propertyNames = new ArrayList<String>();
+        for (MethodNode method : methods) {
+            if (!method.isAbstract() && !method.isStatic() && isGetter(method.getName(), method)) {
+                propertyNames.add(GrailsClassUtils.getPropertyForGetter(method.getName()));
+            }
+        }
+        List<PropertyNode> properties = classNode.getProperties();
+        for (PropertyNode property : properties) {
+            propertyNames.add(property.getName());
+        }
+        return propertyNames;
     }
 
     private void addBlockStatementToNewQuery(BlockStatement blockStatement, BlockStatement newCode, boolean addAll, List<String> propertyNames) {
@@ -326,7 +332,30 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, methodName, argList)));
             Statement associationCode = associationQuery.getCode();
             if(associationCode instanceof BlockStatement) {
-                 addBlockStatementToNewQuery((BlockStatement) associationCode,currentBody, true, propertyNames);
+                PropertyNode property = this.currentClassNode.getProperty(methodName);
+
+                ClassNode type = null;
+                if(property != null) {
+                    type = property.getType();
+                }
+                else {
+                    MethodNode methodNode = currentClassNode.getMethod(GrailsNameUtils.getGetterName(methodName), new Parameter[0]);
+                    if(methodNode != null) {
+                        type = methodNode.getReturnType();
+                    }
+                }
+
+                List<String> associationPropertyNames = null;
+                if(type != null) {
+                    GenericsType[] genericsTypes = type.getGenericsTypes();
+                    if(genericsTypes != null && genericsTypes.length == 1) {
+                        GenericsType genericType = genericsTypes[0];
+                        ClassNode associationType = genericType.getType();
+                        associationPropertyNames = getPropertyNames(associationType);
+                    }
+                }
+
+                addBlockStatementToNewQuery((BlockStatement) associationCode, currentBody, associationPropertyNames == null, associationPropertyNames != null ? associationPropertyNames : Collections.<String>emptyList());
             }
         }
 //        else {
