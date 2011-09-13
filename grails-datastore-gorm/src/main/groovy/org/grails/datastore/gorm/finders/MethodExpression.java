@@ -189,7 +189,6 @@ public abstract class MethodExpression {
         @Override
         public Query.Criterion createCriterion() {
             Range<?> range = (Range<?>) arguments[0];
-            System.out.println("REVERSE? " + range.isReverse() + " From: " + range.getFrom() + ", To: " + range.getTo());
             return Restrictions.between(propertyName, range.getFrom(), range.getTo());
         }
         
