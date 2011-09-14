@@ -80,6 +80,23 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
             queryInfo.parameters == ["Bob"]
     }
 
+    void "Test build simple select hibernate compatible"() {
+        given:"Some criteria"
+            DetachedCriteria criteria = new DetachedCriteria(Person).build {
+                eq 'firstName', 'Bob'
+            }
+
+        when:"A jpa query is built"
+            def builder = new JpaQueryBuilder(session.mappingContext.getPersistentEntity(Person.name),criteria.criteria)
+            builder.hibernateCompatible = true
+            def query = builder.buildSelect().query
+
+
+        then:"The query is valid"
+            query != null
+            query == 'SELECT DISTINCT person FROM grails.gorm.tests.Person AS person WHERE (person.firstName=?)'
+    }
+
     void "Test build simple select"() {
         given:"Some criteria"
             DetachedCriteria criteria = new DetachedCriteria(Person).build {
