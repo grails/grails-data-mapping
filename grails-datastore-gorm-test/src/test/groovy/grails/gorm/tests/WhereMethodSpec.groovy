@@ -12,6 +12,35 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 @ApplyDetachedCriteriaTransform
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
+
+  def "Test criteria on single ended association"() {
+      given:"people and pets"
+        createPeopleWithPets()
+
+      when:"A query that queries the pets"
+        def query = Pet.where {
+            owner.firstName == "Joe" || owner.firstName == "Fred"
+        }
+
+      then:"the correct results are returned"
+        query.count() == 4
+  }
+  def "Test ilike operator"() {
+      given:"A bunch of people"
+           createPeople()
+
+      when:"We query for people whose first names start with the letter B"
+        def query = Person.where {
+             firstName =~ "b%"
+        }
+        def results = query.list(sort:'firstName')
+
+      then:"The correct results are returned"
+          results.size() == 2
+          results[0].firstName == "Barney"
+          results[1].firstName == "Bart"
+
+  }
   def "Test switch statement"() {
       given: "A bunch of people"
         createPeople()

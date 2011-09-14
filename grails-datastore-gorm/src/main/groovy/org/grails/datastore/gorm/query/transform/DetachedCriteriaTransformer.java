@@ -65,6 +65,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         put(">=", "ge");
         put("<=", "le");
         put("==~", "like");
+        put("=~", "ilike");
         put("in", "inList");
 
     }};
@@ -421,11 +422,16 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                 List<String> associationPropertyNames = null;
                 if(type != null) {
-                    GenericsType[] genericsTypes = type.getGenericsTypes();
-                    if(genericsTypes != null && genericsTypes.length == 1) {
-                        GenericsType genericType = genericsTypes[0];
-                        ClassNode associationType = genericType.getType();
-                        associationPropertyNames = getPropertyNames(associationType);
+                    if(isDomainClass(type)) {
+                        associationPropertyNames = getPropertyNames(type);
+                    }
+                    else {
+                        GenericsType[] genericsTypes = type.getGenericsTypes();
+                        if(genericsTypes != null && genericsTypes.length == 1) {
+                            GenericsType genericType = genericsTypes[0];
+                            ClassNode associationType = genericType.getType();
+                            associationPropertyNames = getPropertyNames(associationType);
+                        }
                     }
                 }
 
