@@ -113,9 +113,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The DetachedCriteria instance
      */
     DetachedCriteria<D> where(Closure callable) {
-        def criteria = new DetachedCriteria(persistentClass)
-        criteria.build callable
-        return criteria
+        new DetachedCriteria(persistentClass).build(callable)
     }
 
     /**
@@ -125,8 +123,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A List of entities
      */
     List<D> findAll(Closure callable) {
-        def criteria = new DetachedCriteria(persistentClass)
-        criteria.build callable
+        def criteria = new DetachedCriteria(persistentClass).build(callable)
         return criteria.list()
     }
 
@@ -137,8 +134,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A single entity
      */
     D find(Closure callable) {
-        def criteria = new DetachedCriteria(persistentClass)
-        criteria.build callable
+        def criteria = new DetachedCriteria(persistentClass).build(callable)
         return criteria.find()
     }
 
