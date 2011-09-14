@@ -48,10 +48,11 @@ public class JpaQueryBuilder {
     private static final char DOT = '.';
     public static final String NOT_CLAUSE = " NOT";
     public static final String LOGICAL_AND = " AND ";
+    public static final String UPDATE_CLAUSE = "UPDATE ";
     public static final String DELETE_CLAUSE = "DELETE ";
+
+
     public static final String LOGICAL_OR = " OR ";
-
-
     private static final Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
     private PersistentEntity entity;
     private Query.Junction criteria;
@@ -92,9 +93,30 @@ public class JpaQueryBuilder {
         this.conversionService = conversionService;
     }
 
-    public JpaQueryInfo buildUpdate(Map propertiesToUpdate) {
+    public JpaQueryInfo buildUpdate(LinkedHashMap<String, Object> propertiesToUpdate) {
+        if(propertiesToUpdate.isEmpty()) {
+            throw new InvalidDataAccessResourceUsageException("No properties specified to update");
+        }
+        StringBuilder queryString = new StringBuilder(UPDATE_CLAUSE).append(entity.getName()).append(SPACE).append(logicalName);
 
-        return null;
+        List parameters = new ArrayList();
+        buildUpdateStatement(queryString, propertiesToUpdate, parameters);
+        StringBuilder whereClause = new StringBuilder();
+        buildWhereClause(entity, criteria, queryString, whereClause, logicalName, false, parameters);
+        return new JpaQueryInfo(queryString.toString(), parameters);
+
+    }
+
+    private void buildUpdateStatement(StringBuilder queryString, LinkedHashMap<String, Object> propertiesToUpdate, List parameters) {
+       queryString.append(SPACE).append("SET");
+
+        for (String propertyName : propertiesToUpdate.keySet()) {
+            PersistentProperty prop = entity.getPropertyByName(propertyName);
+            if(prop == null) throw new InvalidDataAccessResourceUsageException("Property '"+propertyName+"' of class '"+entity.getName()+"' specified in update does not exist");
+
+            parameters.add(propertiesToUpdate.get(propertyName));
+            queryString.append(SPACE).append(logicalName).append(DOT).append(propertyName).append('=').append(QUESTIONMARK).append(parameters.size());
+        }
     }
 
     public JpaQueryInfo buildDelete() {
@@ -594,7 +616,8 @@ public class JpaQueryBuilder {
         if (association != null) {
             final String associationName = association.getName();
             // TODO: Allow customization of join strategy!
-            query.append(" INNER JOIN ")
+            String joinType = " INNER JOIN ";
+            query.append(joinType)
              .append(logicalName)
              .append(DOT)
              .append(associationName)
@@ -633,14 +656,18 @@ public class JpaQueryBuilder {
     }
 
     private List buildWhereClause(PersistentEntity entity, Query.Junction criteria, StringBuilder q, StringBuilder whereClause, String logicalName, boolean allowJoins) {
+        List parameters = new ArrayList();
+        return buildWhereClause(entity, criteria, q, whereClause, logicalName, allowJoins, parameters);
+    }
+
+    private List buildWhereClause(PersistentEntity entity, Query.Junction criteria, StringBuilder q, StringBuilder whereClause, String logicalName, boolean allowJoins, List parameters) {
+        int position = parameters.size();
         final List<Query.Criterion> criterionList = criteria.getCriteria();
         whereClause.append(WHERE_CLAUSE);
         if (criteria instanceof Query.Negation) {
             whereClause.append(NOT_CLAUSE);
         }
         whereClause.append(OPEN_BRACKET);
-        int position = 0;
-        List parameters = new ArrayList();
         position = buildWhereClauseForCriterion(entity, criteria, q, whereClause, logicalName,
                 criterionList, position, parameters,
                 conversionService, allowJoins);

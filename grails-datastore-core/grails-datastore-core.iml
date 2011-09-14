@@ -307,7 +307,9 @@
           <root url="jar://$GRADLE_REPOSITORY$/org.apache.ant/ant/jars/ant-1.7.1.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.apache.ant/ant/sources/ant-1.7.1-sources.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">

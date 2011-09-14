@@ -6,11 +6,7 @@ import org.grails.datastore.mapping.query.Query.Conjunction
 import org.springframework.dao.InvalidDataAccessResourceUsageException
 
 /**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 9/13/11
- * Time: 5:01 PM
- * To change this template use File | Settings | File Templates.
+ * Test for JPA builder
  */
 class JpaQueryBuilderSpec extends GormDatastoreSpec{
 
@@ -32,6 +28,24 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
             e.message == 'Joins cannot be used in a DELETE or UPDATE operation'
 
     }
+
+    void "Test build update"() {
+        given:"Some criteria"
+            DetachedCriteria criteria = new DetachedCriteria(Person).build {
+                eq 'firstName', 'Bob'
+            }
+
+        when:"A jpa query is built"
+            def builder = new JpaQueryBuilder(session.mappingContext.getPersistentEntity(Person.name),criteria.criteria)
+            def queryInfo = builder.buildUpdate(age:30)
+
+
+        then:"The query is valid"
+            queryInfo.query != null
+            queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.age=?1 WHERE (person.firstName=?2)'
+            queryInfo.parameters == [30, "Bob"]
+    }
+
     void "Test build delete"() {
         given:"Some criteria"
             DetachedCriteria criteria = new DetachedCriteria(Person).build {
