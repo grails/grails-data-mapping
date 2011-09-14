@@ -13,6 +13,40 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
+  def "Test local declaration inside where method"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when: "A where query is used with if statement"
+
+            def query = Person.where {
+               def useBart = true
+               firstName == (useBart ? "Bart" : "Homer")
+            }
+            def result = query.find()
+
+        then:"The correct result is returned"
+
+            result != null
+            result.firstName == "Bart"
+  }
+
+  def "Test where method with ternary operator"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when: "A where query is used with if statement"
+            def useBart = true
+            def query = Person.where {
+               firstName == (useBart ? "Bart" : "Homer")
+            }
+            def result = query.find()
+
+        then:"The correct result is returned"
+
+            result != null
+            result.firstName == "Bart"
+  }
   def "Test where method with if else block"() {
         given:"A bunch of people"
             createPeople()
@@ -826,57 +860,44 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @ApplyDetachedCriteriaTransform
 @Entity
 class CallMe {
-//    String name
-//    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
-//    def declaredQuery() {
-//            Person.where(myDetachedCriteria)
-//    }
-//
-//    def associationQuery() {
-//        Person.where {
-//            pets.name == "Butch"
-//        }
-//    }
-//    def firstNameBartAndLastNameSimpson() {
-//        Person.where {
-//            firstName == "Bart" && lastName == "Simpson"
-//        }
-//    }
-//
-//    def derivedQuery() {
-//        def q1 = Person.where {
-//            lastName == "Simpson"
-//        }
-//
-//        q1.where {
-//            firstName == "Bart"
-//        }
-//    }
-
-    def ifElseQuery() {
-            def useBart = false
-            int count = 1
-             Person.where {
-               if(useBart)
-                  firstName == "Bart"
-               else if(count == 1) {
-                  firstName == "Lisa"
-               }
-               else
-                  firstName == "Marge"
-            }
-
+    String name
+    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
+    def declaredQuery() {
+            Person.where(myDetachedCriteria)
     }
-//    def collectionQuery() {
-//           Person.where {
-//               pets.size() > 1 && firstName != "Joe"
-//           }
-//    }
-//
-//    static List whereMe() {
-//        def q = where { name == "blah" }
-//        q.list()
-//    }
+
+    def associationQuery() {
+        Person.where {
+            pets.name == "Butch"
+        }
+    }
+    def firstNameBartAndLastNameSimpson() {
+        Person.where {
+            firstName == "Bart" && lastName == "Simpson"
+        }
+    }
+
+    def derivedQuery() {
+        def q1 = Person.where {
+            lastName == "Simpson"
+        }
+
+        q1.where {
+            firstName == "Bart"
+        }
+    }
+
+
+    def collectionQuery() {
+           Person.where {
+               pets.size() > 1 && firstName != "Joe"
+           }
+    }
+
+    static List whereMe() {
+        def q = where { name == "blah" }
+        q.list()
+    }
 }
 ''', "Test").newInstance()
     }

@@ -309,7 +309,10 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             ExpressionStatement es = (ExpressionStatement) statement;
 
             Expression expression = es.getExpression();
-            if (expression instanceof BinaryExpression) {
+            if(expression instanceof DeclarationExpression) {
+                newCode.addStatement(es);
+            }
+            else if (expression instanceof BinaryExpression) {
                 BinaryExpression be = (BinaryExpression) expression;
                 addBinaryExpressionToNewBody(propertyNames, newCode, be, addAll);
             } else if (expression instanceof NotExpression) {
