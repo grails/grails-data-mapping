@@ -165,6 +165,25 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             }
 
         }
+        else if(initializationExpression instanceof ConstructorCallExpression) {
+            String variableName = expression.getVariableExpression().getName();
+            ConstructorCallExpression cce = (ConstructorCallExpression) initializationExpression;
+
+            ClassNode type = cce.getType();
+            if(DETACHED_CRITERIA_CLASS_NODE.getName().equals(type.getName())) {
+                Expression arguments = cce.getArguments();
+                if(arguments instanceof ArgumentListExpression) {
+                    ArgumentListExpression ale = (ArgumentListExpression) arguments;
+                    if(ale.getExpressions().size() == 1) {
+                        Expression exp = ale.getExpression(0);
+                        if(exp instanceof ClassExpression) {
+                            ClassExpression clse = (ClassExpression) exp;
+                            detachedCriteriaVariables.put(variableName, clse.getType());
+                        }
+                    }
+                }
+            }
+        }
         else {
             try {
                 ClosureExpression newClosureExpression = handleDetachedCriteriaCast(initializationExpression);
@@ -211,6 +230,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             else if(objectExpression instanceof VariableExpression) {
                 VariableExpression var = (VariableExpression) objectExpression;
                 String varName = var.getName();
+
                 ClassNode varType = detachedCriteriaVariables.get(varName);
                 if(varType != null && isCandidateWhereMethod(method, arguments)) {
                     visitMethodCall(varType, (ArgumentListExpression) arguments);
@@ -228,14 +248,17 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private void visitMethodCall(ClassNode classNode, ArgumentListExpression arguments) {
         if (isDomainClass(classNode)) {
-            ArgumentListExpression argList = (ArgumentListExpression) arguments;
-            if (argList.getExpressions().size() == 1) {
-                Expression expression = argList.getExpression(0);
-                if (expression instanceof ClosureExpression) {
-                    ClosureExpression closureExpression = (ClosureExpression) expression;
-                    transformClosureExpression(classNode, closureExpression);
+            visitMethodCallOnDetachedCriteria(classNode, arguments);
+        }
+    }
 
-                }
+    private void visitMethodCallOnDetachedCriteria(ClassNode classNode, ArgumentListExpression arguments) {
+        if (arguments.getExpressions().size() == 1) {
+            Expression expression = arguments.getExpression(0);
+            if (expression instanceof ClosureExpression) {
+                ClosureExpression closureExpression = (ClosureExpression) expression;
+                transformClosureExpression(classNode, closureExpression);
+
             }
         }
     }

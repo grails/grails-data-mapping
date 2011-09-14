@@ -13,6 +13,21 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
+  def "Test where blocks on detached criteria"() {
+      given:"A bunch of people"
+          createPeople()
+
+      when:"A where block is used on a detached criteria instance"
+          DetachedCriteria dc = new DetachedCriteria(Person)
+          dc = dc.where {
+               firstName == "Bart"
+          }
+          def result = dc.find()
+
+      then:"The correct results are returned"
+          result != null
+          result.firstName == "Bart"
+  }
   def "Test local declaration inside where method"() {
         given:"A bunch of people"
             createPeople()
@@ -888,6 +903,12 @@ class CallMe {
     }
 
 
+    def detachedQuery() {
+        DetachedCriteria dc = new DetachedCriteria(Person)
+        dc.where {
+               firstName == "Bart"
+        }
+    }
     def collectionQuery() {
            Person.where {
                pets.size() > 1 && firstName != "Joe"
