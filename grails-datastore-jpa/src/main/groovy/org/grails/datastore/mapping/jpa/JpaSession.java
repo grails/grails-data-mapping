@@ -211,10 +211,8 @@ public class JpaSession extends AbstractAttributeStoringSession {
      * @param criteria The criteria
      * @return The total number of records deleted
      */
-    @Override
     public int deleteAll(final QueryableCriteria criteria) {
         return jpaTemplate.execute(new JpaCallback<Integer>() {
-            @Override
             public Integer doInJpa(EntityManager em) throws PersistenceException {
                 JpaQueryBuilder builder = new JpaQueryBuilder(criteria);
                 JpaQueryInfo jpaQueryInfo = builder.buildDelete();
@@ -237,10 +235,8 @@ public class JpaSession extends AbstractAttributeStoringSession {
      * @param properties The properties
      * @return The total number of records updated
      */
-    @Override
     public int updateAll(final QueryableCriteria criteria, final Map<String, Object> properties) {
         return jpaTemplate.execute(new JpaCallback<Integer>() {
-            @Override
             public Integer doInJpa(EntityManager em) throws PersistenceException {
                 JpaQueryBuilder builder = new JpaQueryBuilder(criteria);
                 JpaQueryInfo jpaQueryInfo = builder.buildUpdate(properties);

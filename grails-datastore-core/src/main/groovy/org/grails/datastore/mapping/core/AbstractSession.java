@@ -541,7 +541,6 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
      *
      * @param criteria The criteria
      */
-    @Override
     public int deleteAll(QueryableCriteria criteria) {
         List list = criteria.list();
         delete(list);
@@ -556,7 +555,6 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
      * @param criteria The criteria
      * @param properties The properties
      */
-    @Override
     public int updateAll(QueryableCriteria criteria, Map<String, Object> properties) {
         List list = criteria.list();
         for (Object o : list) {
