@@ -12,6 +12,135 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 @ApplyDetachedCriteriaTransform
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
+  def "Test switch statement"() {
+      given: "A bunch of people"
+        createPeople()
+
+      when: "A where query is used with a switch statement"
+          int count = 2
+          def query = Person.where {
+              switch (count) {
+                  case 1:
+                    firstName == "Bart"
+                  break
+                  case 2:
+                    firstName == "Lisa"
+                  break
+                  case 3:
+                    firstName == "Marge"
+
+              }
+          }
+          def result = query.find()
+
+      then: "The correct result is returned"
+          result != null
+          result.firstName == "Lisa"
+  }
+  def "Test where blocks on detached criteria"() {
+      given:"A bunch of people"
+          createPeople()
+
+      when:"A where block is used on a detached criteria instance"
+          DetachedCriteria dc = new DetachedCriteria(Person)
+          dc = dc.where {
+               firstName == "Bart"
+          }
+          def result = dc.find()
+
+      then:"The correct results are returned"
+          result != null
+          result.firstName == "Bart"
+  }
+  def "Test local declaration inside where method"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when: "A where query is used with if statement"
+
+            def query = Person.where {
+               def useBart = true
+               firstName == (useBart ? "Bart" : "Homer")
+            }
+            def result = query.find()
+
+        then:"The correct result is returned"
+
+            result != null
+            result.firstName == "Bart"
+  }
+
+  def "Test where method with ternary operator"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when: "A where query is used with if statement"
+            def useBart = true
+            def query = Person.where {
+               firstName == (useBart ? "Bart" : "Homer")
+            }
+            def result = query.find()
+
+        then:"The correct result is returned"
+
+            result != null
+            result.firstName == "Bart"
+  }
+  def "Test where method with if else block"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when: "A where query is used with if statement"
+            def useBart = true
+            def query = Person.where {
+               if(useBart)
+                    firstName == "Bart"
+               else
+                    firstName == "Homer"
+            }
+            def result = query.find()
+
+        then:"The correct result is returned"
+
+            result != null
+            result.firstName == "Bart"
+
+
+        when: "A where query is used with else statement"
+             useBart = false
+             query = Person.where {
+               if(useBart)
+                    firstName == "Bart"
+               else
+                    firstName == "Marge"
+            }
+            result = query.find()
+
+        then:"The correct result is returned"
+
+            result != null
+            result.firstName == "Marge"
+
+
+        when: "A where query is used with else statement"
+             useBart = false
+             int count = 1
+             query = Person.where {
+               if(useBart)
+                  firstName == "Bart"
+               else if(count == 1) {
+                  firstName == "Lisa"
+               }
+               else
+                  firstName == "Marge"
+            }
+            result = query.find()
+
+        then:"The correct result is returned"
+
+            result != null
+            result.firstName == "Lisa"
+    }
 
    def "Test collection operations"() {
        given:"People with pets"
@@ -41,7 +170,6 @@ class WhereMethodSpec extends GormDatastoreSpec {
             query = Person.where {
                 pets.size() > 1 && firstName != "Joe"
             }
-            query = getClassThatCallsWhere().collectionQuery()
             results = query.list(sort:"firstName")
        then:"The correct results are returned"
             results.size() == 2
@@ -774,33 +902,6 @@ class CallMe {
     def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
     def declaredQuery() {
             Person.where(myDetachedCriteria)
-    }
-
-    def associationQuery() {
-        Person.where {
-            pets.name == "Butch"
-        }
-    }
-    def firstNameBartAndLastNameSimpson() {
-        Person.where {
-            firstName == "Bart" && lastName == "Simpson"
-        }
-    }
-
-    def derivedQuery() {
-        def q1 = Person.where {
-            lastName == "Simpson"
-        }
-
-        q1.where {
-            firstName == "Bart"
-        }
-    }
-
-    def collectionQuery() {
-           Person.where {
-               pets.size() > 1 && firstName != "Joe"
-           }
     }
 
     static List whereMe() {
