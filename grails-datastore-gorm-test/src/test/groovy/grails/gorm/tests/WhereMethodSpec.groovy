@@ -13,6 +13,62 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
+  def "Test where method with if else block"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when: "A where query is used with if statement"
+            def useBart = true
+            def query = Person.where {
+               if(useBart)
+                    firstName == "Bart"
+               else
+                    firstName == "Homer"
+            }
+            def result = query.find()
+
+        then:"The correct result is returned"
+
+            result != null
+            result.firstName == "Bart"
+
+
+        when: "A where query is used with else statement"
+             useBart = false
+             query = Person.where {
+               if(useBart)
+                    firstName == "Bart"
+               else
+                    firstName == "Marge"
+            }
+            result = query.find()
+
+        then:"The correct result is returned"
+
+            result != null
+            result.firstName == "Marge"
+
+
+        when: "A where query is used with else statement"
+             useBart = false
+             int count = 1
+             query = Person.where {
+               if(useBart)
+                  firstName == "Bart"
+               else if(count == 1) {
+                  firstName == "Lisa"
+               }
+               else
+                  firstName == "Marge"
+            }
+            result = query.find()
+
+        then:"The correct result is returned"
+
+            result != null
+            result.firstName == "Lisa"
+    }
+
    def "Test collection operations"() {
        given:"People with pets"
             createPeopleWithPets()
@@ -770,43 +826,57 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @ApplyDetachedCriteriaTransform
 @Entity
 class CallMe {
-    String name
-    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
-    def declaredQuery() {
-            Person.where(myDetachedCriteria)
-    }
+//    String name
+//    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
+//    def declaredQuery() {
+//            Person.where(myDetachedCriteria)
+//    }
+//
+//    def associationQuery() {
+//        Person.where {
+//            pets.name == "Butch"
+//        }
+//    }
+//    def firstNameBartAndLastNameSimpson() {
+//        Person.where {
+//            firstName == "Bart" && lastName == "Simpson"
+//        }
+//    }
+//
+//    def derivedQuery() {
+//        def q1 = Person.where {
+//            lastName == "Simpson"
+//        }
+//
+//        q1.where {
+//            firstName == "Bart"
+//        }
+//    }
 
-    def associationQuery() {
-        Person.where {
-            pets.name == "Butch"
-        }
-    }
-    def firstNameBartAndLastNameSimpson() {
-        Person.where {
-            firstName == "Bart" && lastName == "Simpson"
-        }
-    }
+    def ifElseQuery() {
+            def useBart = false
+            int count = 1
+             Person.where {
+               if(useBart)
+                  firstName == "Bart"
+               else if(count == 1) {
+                  firstName == "Lisa"
+               }
+               else
+                  firstName == "Marge"
+            }
 
-    def derivedQuery() {
-        def q1 = Person.where {
-            lastName == "Simpson"
-        }
-
-        q1.where {
-            firstName == "Bart"
-        }
     }
-
-    def collectionQuery() {
-           Person.where {
-               pets.size() > 1 && firstName != "Joe"
-           }
-    }
-
-    static List whereMe() {
-        def q = where { name == "blah" }
-        q.list()
-    }
+//    def collectionQuery() {
+//           Person.where {
+//               pets.size() > 1 && firstName != "Joe"
+//           }
+//    }
+//
+//    static List whereMe() {
+//        def q = where { name == "blah" }
+//        q.list()
+//    }
 }
 ''', "Test").newInstance()
     }

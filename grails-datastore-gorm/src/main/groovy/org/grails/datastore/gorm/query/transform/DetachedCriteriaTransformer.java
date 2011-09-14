@@ -19,9 +19,7 @@ import grails.persistence.Entity;
 import grails.util.GrailsNameUtils;
 import org.codehaus.groovy.ast.*;
 import org.codehaus.groovy.ast.expr.*;
-import org.codehaus.groovy.ast.stmt.BlockStatement;
-import org.codehaus.groovy.ast.stmt.ExpressionStatement;
-import org.codehaus.groovy.ast.stmt.Statement;
+import org.codehaus.groovy.ast.stmt.*;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.messages.LocatedMessage;
 import org.codehaus.groovy.control.messages.Message;
@@ -299,22 +297,62 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     private void addBlockStatementToNewQuery(BlockStatement blockStatement, BlockStatement newCode, boolean addAll, List<String> propertyNames) {
         List<Statement> statements = blockStatement.getStatements();
         for (Statement statement : statements) {
-            if (statement instanceof ExpressionStatement) {
-                ExpressionStatement es = (ExpressionStatement) statement;
+            addStatementToNewQuery(statement, newCode, addAll, propertyNames);
+        }
+    }
 
-                Expression expression = es.getExpression();
-                if (expression instanceof BinaryExpression) {
-                    BinaryExpression be = (BinaryExpression) expression;
-                    addBinaryExpressionToNewBody(propertyNames, newCode, be, addAll);
-                } else if (expression instanceof NotExpression) {
-                    NotExpression not = (NotExpression) expression;
+    private void addStatementToNewQuery(Statement statement, BlockStatement newCode, boolean addAll, List<String> propertyNames) {
+        if(statement instanceof BlockStatement) {
+             addBlockStatementToNewQuery((BlockStatement)statement, newCode, addAll, propertyNames);
+        }
+        else if (statement instanceof ExpressionStatement) {
+            ExpressionStatement es = (ExpressionStatement) statement;
 
-                    handleNegation(propertyNames, newCode, not);
-                } else if(expression instanceof MethodCallExpression) {
-                    MethodCallExpression methodCall = (MethodCallExpression) expression;
+            Expression expression = es.getExpression();
+            if (expression instanceof BinaryExpression) {
+                BinaryExpression be = (BinaryExpression) expression;
+                addBinaryExpressionToNewBody(propertyNames, newCode, be, addAll);
+            } else if (expression instanceof NotExpression) {
+                NotExpression not = (NotExpression) expression;
 
-                    handleAssociationMethodCallExpression(newCode, methodCall, propertyNames);
+                handleNegation(propertyNames, newCode, not);
+            } else if(expression instanceof MethodCallExpression) {
+                MethodCallExpression methodCall = (MethodCallExpression) expression;
+
+                handleAssociationMethodCallExpression(newCode, methodCall, propertyNames);
+            }
+        }
+        else {
+            if(statement instanceof IfStatement) {
+                IfStatement ifs = (IfStatement) statement;
+                Statement ifb = ifs.getIfBlock();
+                BlockStatement newIfBlock = new BlockStatement();
+                addStatementToNewQuery(ifb, newIfBlock, addAll, propertyNames);
+                if(newIfBlock.getStatements().size() == 1) {
+                    ifs.setIfBlock(newIfBlock.getStatements().get(0));
                 }
+                else {
+                    ifs.setIfBlock(newIfBlock);
+                }
+
+                Statement elseBlock = ifs.getElseBlock();
+                if(elseBlock != null) {
+
+                    BlockStatement newElseBlock = new BlockStatement();
+                    addStatementToNewQuery(elseBlock, newElseBlock, addAll, propertyNames);
+                    if(newElseBlock.getStatements().size() == 1) {
+                        ifs.setElseBlock(newElseBlock.getStatements().get(0));
+                    }
+                    else {
+                        ifs.setElseBlock(newIfBlock);
+                    }
+                    ifs.setElseBlock(newElseBlock);
+                }
+                newCode.addStatement(ifs);
+            }
+            else if(statement instanceof SwitchStatement) {
+                SwitchStatement sw = (SwitchStatement) statement;
+
             }
         }
     }
