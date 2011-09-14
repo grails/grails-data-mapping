@@ -666,6 +666,28 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     /**
+     * Deletes all entities matching this criteria
+     *
+     * @return The total number deleted
+     */
+    Number deleteAll() {
+        targetClass.withDatastoreSession { Session session ->
+            session.deleteAll(this)
+        }
+    }
+
+    /**
+     * Updates all entities matching this criteria
+     *
+     * @return The total number deleted
+     */
+    Number updateAll(Map properties) {
+        targetClass.withDatastoreSession { Session session ->
+            session.updateAll(this, properties)
+        }
+    }
+
+    /**
      * Enable the builder syntax for contructing Criteria
      *
      * @param callable The callable closure
@@ -673,8 +695,9 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      */
 
     Criteria build(Closure callable) {
-        this.with callable
-        return this
+        DetachedCriteria newCriteria = this.clone()
+        newCriteria.with callable
+        return newCriteria
     }
 
     /**
@@ -740,8 +763,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
             DynamicFinder.applyDetachedCriteria(query, this)
 
             if(additionalCriteria != null) {
-                def additionalDetached = new DetachedCriteria(targetClass)
-                additionalDetached.build additionalCriteria
+                def additionalDetached = new DetachedCriteria(targetClass).build( additionalCriteria )
                 DynamicFinder.applyDetachedCriteria(query, additionalDetached)
             }
 

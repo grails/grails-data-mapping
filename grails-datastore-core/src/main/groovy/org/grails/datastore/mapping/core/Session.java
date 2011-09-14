@@ -16,12 +16,14 @@ package org.grails.datastore.mapping.core;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.FlushModeType;
 
 import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.transactions.Transaction;
 
 /**
@@ -194,6 +196,22 @@ public interface Session {
      * @param obj The object to delete
      */
     void delete(Object obj);
+
+    /**
+     * Deletes all objects matching the given criteria
+     *
+     * @param criteria The criteria
+     * @return The total number of records deleted
+     */
+    int deleteAll(QueryableCriteria criteria);
+
+    /**
+     * Updates all objects matching the given criteria and property values
+     * @param criteria The criteria
+     * @param properties The properties
+     * @return The total number of records updated
+     */
+    int updateAll(QueryableCriteria criteria, Map<String, Object> properties);
 
     /**
      * Retrieves several objects for the specified keys

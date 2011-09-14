@@ -11,13 +11,46 @@ import grails.gorm.DetachedCriteria
  */
 class DetachedCriteriaSpec extends GormDatastoreSpec{
 
+    void "Test updateAll method"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when:"A detached criteria is created that deletes all matching records"
+            def criteria = new DetachedCriteria(Person).build {
+                eq 'lastName', 'Simpson'
+            }
+            int total = criteria.updateAll(lastName:"Bloggs")
+
+
+        then:"The number of deletions is correct"
+            total == 4
+            Person.count() == 6
+            criteria.count() == 0
+            Person.countByLastName("Bloggs") == 4
+    }
+
+    void "Test deleteAll method"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when:"A detached criteria is created that deletes all matching records"
+            def criteria = new DetachedCriteria(Person).build {
+                eq 'lastName', 'Simpson'
+            }
+            int total = criteria.deleteAll()
+
+
+        then:"The number of deletions is correct"
+            total == 4
+            Person.count() == 2
+    }
+
     void "Test iterate of detached criteria"() {
         given:"A bunch of people"
             createPeople()
 
         when:"A detached criteria is created that matches the last name and then iterated over"
-            def criteria = new DetachedCriteria(Person)
-            criteria.build {
+            def criteria = new DetachedCriteria(Person).build {
                 eq 'lastName', 'Simpson'
             }
             int total = 0

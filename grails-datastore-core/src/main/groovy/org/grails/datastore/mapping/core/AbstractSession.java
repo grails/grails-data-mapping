@@ -26,6 +26,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.persistence.FlushModeType;
 
+import org.grails.datastore.mapping.query.api.QueryableCriteria;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -529,6 +532,41 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         if (o != null) {
             lockedObjects.remove(o);
         }
+    }
+
+    /**
+     * This default implementation of the deleteAll method is unlikely to be optimal as it iterates and deletes each object.
+     *
+     * Subclasses should override to optimize for the batch operation capability of the underlying datastore
+     *
+     * @param criteria The criteria
+     */
+    @Override
+    public int deleteAll(QueryableCriteria criteria) {
+        List list = criteria.list();
+        delete(list);
+        return list.size();
+    }
+
+    /**
+     * This default implementation of updateAll is unlikely to be optimal as it iterates and updates each object one by one.
+     *
+     * Subclasses should override to optimize for the batch operation capability of the underlying datastore
+     *
+     * @param criteria The criteria
+     * @param properties The properties
+     */
+    @Override
+    public int updateAll(QueryableCriteria criteria, Map<String, Object> properties) {
+        List list = criteria.list();
+        for (Object o : list) {
+            BeanWrapper bean = new BeanWrapperImpl(o);
+            for (String property : properties.keySet()) {
+                bean.setPropertyValue(property, properties.get(property));
+            }
+        }
+        persist(list);
+        return list.size();
     }
 
     public void delete(final Object obj) {
