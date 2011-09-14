@@ -92,7 +92,7 @@ public abstract class AbstractDatastore implements Datastore {
      */
     protected abstract Session createSession(@SuppressWarnings("hiding") Map<String, String> connectionDetails);
 
-    public final Session getCurrentSession() throws ConnectionNotFoundException {
+    public Session getCurrentSession() throws ConnectionNotFoundException {
         return DatastoreUtils.doGetSession(this, false);
     }
 
