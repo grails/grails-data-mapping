@@ -12,7 +12,31 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 @ApplyDetachedCriteriaTransform
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
+  def "Test switch statement"() {
+      given: "A bunch of people"
+        createPeople()
 
+      when: "A where query is used with a switch statement"
+          int count = 2
+          def query = Person.where {
+              switch (count) {
+                  case 1:
+                    firstName == "Bart"
+                  break
+                  case 2:
+                    firstName == "Lisa"
+                  break
+                  case 3:
+                    firstName == "Marge"
+
+              }
+          }
+          def result = query.find()
+
+      then: "The correct result is returned"
+          result != null
+          result.firstName == "Lisa"
+  }
   def "Test where blocks on detached criteria"() {
       given:"A bunch of people"
           createPeople()
@@ -146,7 +170,6 @@ class WhereMethodSpec extends GormDatastoreSpec {
             query = Person.where {
                 pets.size() > 1 && firstName != "Joe"
             }
-            query = getClassThatCallsWhere().collectionQuery()
             results = query.list(sort:"firstName")
        then:"The correct results are returned"
             results.size() == 2
@@ -879,40 +902,6 @@ class CallMe {
     def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
     def declaredQuery() {
             Person.where(myDetachedCriteria)
-    }
-
-    def associationQuery() {
-        Person.where {
-            pets.name == "Butch"
-        }
-    }
-    def firstNameBartAndLastNameSimpson() {
-        Person.where {
-            firstName == "Bart" && lastName == "Simpson"
-        }
-    }
-
-    def derivedQuery() {
-        def q1 = Person.where {
-            lastName == "Simpson"
-        }
-
-        q1.where {
-            firstName == "Bart"
-        }
-    }
-
-
-    def detachedQuery() {
-        DetachedCriteria dc = new DetachedCriteria(Person)
-        dc.where {
-               firstName == "Bart"
-        }
-    }
-    def collectionQuery() {
-           Person.where {
-               pets.size() > 1 && firstName != "Joe"
-           }
     }
 
     static List whereMe() {

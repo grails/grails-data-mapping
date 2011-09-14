@@ -354,32 +354,42 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 Statement ifb = ifs.getIfBlock();
                 BlockStatement newIfBlock = new BlockStatement();
                 addStatementToNewQuery(ifb, newIfBlock, addAll, propertyNames);
-                if(newIfBlock.getStatements().size() == 1) {
-                    ifs.setIfBlock(newIfBlock.getStatements().get(0));
-                }
-                else {
-                    ifs.setIfBlock(newIfBlock);
-                }
+                ifs.setIfBlock(flattenStatementIfNecessary(newIfBlock));
 
                 Statement elseBlock = ifs.getElseBlock();
                 if(elseBlock != null) {
-
                     BlockStatement newElseBlock = new BlockStatement();
                     addStatementToNewQuery(elseBlock, newElseBlock, addAll, propertyNames);
-                    if(newElseBlock.getStatements().size() == 1) {
-                        ifs.setElseBlock(newElseBlock.getStatements().get(0));
-                    }
-                    else {
-                        ifs.setElseBlock(newIfBlock);
-                    }
-                    ifs.setElseBlock(newElseBlock);
+                    ifs.setElseBlock(flattenStatementIfNecessary(newElseBlock));
                 }
                 newCode.addStatement(ifs);
             }
             else if(statement instanceof SwitchStatement) {
                 SwitchStatement sw = (SwitchStatement) statement;
 
+
+                List<CaseStatement> caseStatements = sw.getCaseStatements();
+                for (CaseStatement caseStatement : caseStatements) {
+                    Statement existingCode = caseStatement.getCode();
+                    BlockStatement newCaseCode = new BlockStatement();
+                    addStatementToNewQuery(existingCode, newCaseCode, addAll, propertyNames);
+                    caseStatement.setCode(flattenStatementIfNecessary(newCaseCode));
+                }
+
+                newCode.addStatement(sw);
             }
+            else {
+                newCode.addStatement(statement);
+            }
+        }
+
+    }
+
+    private Statement flattenStatementIfNecessary(BlockStatement blockStatement) {
+        if (blockStatement.getStatements().size() == 1) {
+            return blockStatement.getStatements().get(0);
+        } else {
+            return blockStatement;
         }
     }
 
