@@ -21,6 +21,7 @@ import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.AssociationCriteria;
+import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -60,6 +61,10 @@ public class JpaQueryBuilder {
     private List<Query.Order> orders= Collections.emptyList();
     private String logicalName;
     private ConversionService conversionService = new GenericConversionService();
+
+    public JpaQueryBuilder(QueryableCriteria criteria) {
+        this(criteria.getPersistentEntity(), criteria.getCriteria());
+    }
 
     public JpaQueryBuilder(PersistentEntity entity, List<Query.Criterion> criteria) {
         this(entity, new Query.Conjunction(criteria));

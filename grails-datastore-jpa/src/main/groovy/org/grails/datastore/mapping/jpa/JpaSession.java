@@ -15,16 +15,16 @@
 package org.grails.datastore.mapping.jpa;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceException;
 
+import org.grails.datastore.mapping.query.api.QueryableCriteria;
+import org.grails.datastore.mapping.query.jpa.JpaQueryBuilder;
+import org.grails.datastore.mapping.query.jpa.JpaQueryInfo;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.grails.datastore.mapping.core.AbstractAttributeStoringSession;
@@ -203,6 +203,57 @@ public class JpaSession extends AbstractAttributeStoringSession {
 
     public void delete(Object obj) {
         jpaTemplate.remove(obj);
+    }
+
+    /**
+     * Deletes all objects matching the given criteria
+     *
+     * @param criteria The criteria
+     * @return The total number of records deleted
+     */
+    @Override
+    public int deleteAll(final QueryableCriteria criteria) {
+        return jpaTemplate.execute(new JpaCallback<Integer>() {
+            @Override
+            public Integer doInJpa(EntityManager em) throws PersistenceException {
+                JpaQueryBuilder builder = new JpaQueryBuilder(criteria);
+                JpaQueryInfo jpaQueryInfo = builder.buildDelete();
+                javax.persistence.Query query = em.createQuery(jpaQueryInfo.getQuery());
+                List parameters = jpaQueryInfo.getParameters();
+                if (parameters != null) {
+                        for (int i = 0, count = parameters.size(); i < count; i++) {
+                            query.setParameter(i + 1, parameters.get(i));
+                        }
+                }
+                return query.executeUpdate();
+            }
+        });
+    }
+
+    /**
+     * Updates all objects matching the given criteria and property values
+     *
+     * @param criteria   The criteria
+     * @param properties The properties
+     * @return The total number of records updated
+     */
+    @Override
+    public int updateAll(final QueryableCriteria criteria, final Map<String, Object> properties) {
+        return jpaTemplate.execute(new JpaCallback<Integer>() {
+            @Override
+            public Integer doInJpa(EntityManager em) throws PersistenceException {
+                JpaQueryBuilder builder = new JpaQueryBuilder(criteria);
+                JpaQueryInfo jpaQueryInfo = builder.buildUpdate(properties);
+                javax.persistence.Query query = em.createQuery(jpaQueryInfo.getQuery());
+                List parameters = jpaQueryInfo.getParameters();
+                if (parameters != null) {
+                        for (int i = 0, count = parameters.size(); i < count; i++) {
+                            query.setParameter(i + 1, parameters.get(i));
+                        }
+                }
+                return query.executeUpdate();
+            }
+        });
     }
 
     public List retrieveAll(Class type, Iterable keys) {
