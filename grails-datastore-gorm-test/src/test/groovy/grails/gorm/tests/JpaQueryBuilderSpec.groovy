@@ -29,6 +29,24 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
 
     }
 
+    void "Test build update property natural ordering and hibernate compatible"() {
+        given:"Some criteria"
+            DetachedCriteria criteria = new DetachedCriteria(Person).build {
+                eq 'firstName', 'Bob'
+            }
+
+        when:"A jpa query is built"
+            def builder = new JpaQueryBuilder(session.mappingContext.getPersistentEntity(Person.name),criteria.criteria)
+            builder.hibernateCompatible = true
+            def queryInfo = builder.buildUpdate(firstName:'Bob updated', age:30)
+
+
+        then:"The query is valid"
+            queryInfo.query != null
+            queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.age=?, person.firstName=? WHERE (person.firstName=?)'
+            queryInfo.parameters == [30,"Bob updated", "Bob"]
+    }
+
     void "Test build update property natural ordering"() {
         given:"Some criteria"
             DetachedCriteria criteria = new DetachedCriteria(Person).build {

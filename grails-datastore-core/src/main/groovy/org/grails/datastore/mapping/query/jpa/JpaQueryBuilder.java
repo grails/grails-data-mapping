@@ -116,7 +116,7 @@ public class JpaQueryBuilder {
         StringBuilder queryString = new StringBuilder(UPDATE_CLAUSE).append(entity.getName()).append(SPACE).append(logicalName);
 
         List parameters = new ArrayList();
-        buildUpdateStatement(queryString, propertiesToUpdate, parameters);
+        buildUpdateStatement(queryString, propertiesToUpdate, parameters, hibernateCompatible);
         StringBuilder whereClause = new StringBuilder();
         buildWhereClause(entity, criteria, queryString, whereClause, logicalName, false, parameters);
         return new JpaQueryInfo(queryString.toString(), parameters);
@@ -645,7 +645,7 @@ public class JpaQueryBuilder {
         return position;
     }
 
-    private void buildUpdateStatement(StringBuilder queryString, Map<String, Object> propertiesToUpdate, List parameters) {
+    private void buildUpdateStatement(StringBuilder queryString, Map<String, Object> propertiesToUpdate, List parameters, boolean hibernateCompatible) {
         queryString.append(SPACE).append("SET");
 
         // keys need to be sorted before query is built
@@ -658,7 +658,9 @@ public class JpaQueryBuilder {
             if(prop == null) throw new InvalidDataAccessResourceUsageException("Property '"+propertyName+"' of class '"+entity.getName()+"' specified in update does not exist");
 
             parameters.add(propertiesToUpdate.get(propertyName));
-            queryString.append(SPACE).append(logicalName).append(DOT).append(propertyName).append('=').append(QUESTIONMARK).append(parameters.size());
+            queryString.append(SPACE).append(logicalName).append(DOT).append(propertyName).append('=').append(QUESTIONMARK);
+            if(!hibernateCompatible)
+                queryString.append(parameters.size());
             if(iterator.hasNext()) {
                 queryString.append(COMMA);
             }
