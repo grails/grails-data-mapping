@@ -61,6 +61,7 @@ import org.grails.datastore.mapping.collection.AbstractPersistentCollection
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.neo4j.graphdb.RelationshipType
 import org.grails.datastore.mapping.model.types.Basic
+import org.grails.datastore.mapping.query.api.QueryableCriteria
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -600,4 +601,13 @@ class Neo4jSession extends AbstractAttributeStoringSession {
         retrieve(null, id)
     }
 
+    @Override
+    int deleteAll(QueryableCriteria criteria) {
+        throw new UnsupportedOperationException("Batch deletes not yet implemented for Neo4j")
+    }
+
+    @Override
+    int updateAll(QueryableCriteria criteria, Map<String, Object> properties) {
+        throw new UnsupportedOperationException("Batch updates not yet implemented for Neo4j")
+    }
 }
