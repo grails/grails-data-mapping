@@ -226,6 +226,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             if (isCandidateMethodCallForTransform(objectExpression, method, arguments)) {
                 ClassExpression ce = (ClassExpression) objectExpression;
                 ClassNode classNode = ce.getType();
+                this.currentClassNode = classNode;
                 visitMethodCall(classNode, (ArgumentListExpression) arguments);
             }
             else if(objectExpression instanceof VariableExpression) {
@@ -234,6 +235,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                 ClassNode varType = detachedCriteriaVariables.get(varName);
                 if(varType != null && isCandidateWhereMethod(method, arguments)) {
+                    this.currentClassNode = varType;
                     visitMethodCall(varType, (ArgumentListExpression) arguments);
                 }
             }
@@ -407,33 +409,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, methodName, argList)));
             Statement associationCode = associationQuery.getCode();
             if(associationCode instanceof BlockStatement) {
-                PropertyNode property = this.currentClassNode.getProperty(methodName);
 
-                ClassNode type = null;
-                if(property != null) {
-                    type = property.getType();
-                }
-                else {
-                    MethodNode methodNode = currentClassNode.getMethod(GrailsNameUtils.getGetterName(methodName), new Parameter[0]);
-                    if(methodNode != null) {
-                        type = methodNode.getReturnType();
-                    }
-                }
-
-                List<String> associationPropertyNames = null;
-                if(type != null) {
-                    if(isDomainClass(type)) {
-                        associationPropertyNames = getPropertyNames(type);
-                    }
-                    else {
-                        GenericsType[] genericsTypes = type.getGenericsTypes();
-                        if(genericsTypes != null && genericsTypes.length == 1) {
-                            GenericsType genericType = genericsTypes[0];
-                            ClassNode associationType = genericType.getType();
-                            associationPropertyNames = getPropertyNames(associationType);
-                        }
-                    }
-                }
+                ClassNode type = getPropertyType(methodName);
+                List<String> associationPropertyNames = getPropertyNamesForAssociation(type);
 
                 addBlockStatementToNewQuery((BlockStatement) associationCode, currentBody, associationPropertyNames == null, associationPropertyNames != null ? associationPropertyNames : Collections.<String>emptyList());
             }
@@ -441,6 +419,43 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 //        else {
 //            sourceUnit.getErrorCollector().addError(new LocatedMessage("Method call ["+methodName+"] is invalid. Only binary expressions are allowed in queries.", Token.newString(methodName,methodCall.getLineNumber(), methodCall.getColumnNumber()), sourceUnit));
 //        }
+    }
+
+    private List<String> getPropertyNamesForAssociation(ClassNode type) {
+        List<String> associationPropertyNames = null;
+        if(type != null) {
+            if(isDomainClass(type)) {
+                associationPropertyNames = getPropertyNames(type);
+            }
+            else {
+                GenericsType[] genericsTypes = type.getGenericsTypes();
+                if(genericsTypes != null && genericsTypes.length == 1) {
+                    GenericsType genericType = genericsTypes[0];
+                    ClassNode associationType = genericType.getType();
+                    associationPropertyNames = getPropertyNames(associationType);
+                }
+            }
+        }
+        return associationPropertyNames;
+    }
+
+    private ClassNode getPropertyType(String prop) {
+        ClassNode classNode = this.currentClassNode;
+        return getPropertyType(classNode, prop);
+    }
+
+    private ClassNode getPropertyType(ClassNode classNode, String prop) {
+        ClassNode type = null;
+        PropertyNode property = classNode.getProperty(prop);
+        if(property != null) {
+            type = property.getType();
+        } else {
+            MethodNode methodNode = currentClassNode.getMethod(GrailsNameUtils.getGetterName(prop), new Parameter[0]);
+            if (methodNode != null) {
+                type = methodNode.getReturnType();
+            }
+        }
+        return type;
     }
 
     private boolean isAssociationMethodCall(List<String> propertyNames, String methodName, ArgumentListExpression arguments) {
@@ -553,11 +568,22 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 if (propertyNames.contains(propertyName)) {
                     String associationProperty = pe.getPropertyAsString();
 
+                    ClassNode type = getPropertyType(propertyName);
+                    List<String> associationPropertyNames = getPropertyNamesForAssociation(type);
+                    if(associationPropertyNames == null) {
+                        associationPropertyNames = new ArrayList();
+                    }
+
+
                     ClosureAndArguments closureAndArguments = new ClosureAndArguments();
                     BlockStatement currentBody = closureAndArguments.getCurrentBody();
                     ArgumentListExpression arguments = closureAndArguments.getArguments();
 
-                    addCriteriaCallMethodExpression(currentBody, operator, oppositeSide, associationProperty, propertyNames, true);
+                    boolean hasNoProperties = associationPropertyNames.isEmpty();
+                    if(!hasNoProperties && !associationPropertyNames.contains(associationProperty)) {
+                         sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query property \""+associationProperty+"\" - no such property on class "+type.getName()+" exists.", Token.newString(propertyName,pe.getLineNumber(), pe.getColumnNumber()), sourceUnit));
+                    }
+                    addCriteriaCallMethodExpression(currentBody, operator, oppositeSide, associationProperty, associationPropertyNames, hasNoProperties);
                     newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, propertyName, arguments)));
                 }
             }

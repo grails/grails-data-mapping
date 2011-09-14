@@ -933,6 +933,12 @@ class CallMe {
             Person.where(myDetachedCriteria)
     }
 
+    def oneQuery() {
+        Pet.where {
+            owner.firstNam == "Joe" || owner.firstName == "Fred"
+        }
+    }
+
     static List whereMe() {
         def q = where { name == "blah" }
         q.list()
