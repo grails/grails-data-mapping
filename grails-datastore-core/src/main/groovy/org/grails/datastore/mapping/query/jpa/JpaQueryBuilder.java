@@ -93,7 +93,13 @@ public class JpaQueryBuilder {
         this.conversionService = conversionService;
     }
 
-    public JpaQueryInfo buildUpdate(LinkedHashMap<String, Object> propertiesToUpdate) {
+    /**
+     * Builds an UPDATE statement.
+     *
+     * @param propertiesToUpdate THe properties to update
+     * @return The JpaQueryInfo object
+     */
+    public JpaQueryInfo buildUpdate(Map<String, Object> propertiesToUpdate) {
         if(propertiesToUpdate.isEmpty()) {
             throw new InvalidDataAccessResourceUsageException("No properties specified to update");
         }
@@ -107,18 +113,11 @@ public class JpaQueryBuilder {
 
     }
 
-    private void buildUpdateStatement(StringBuilder queryString, LinkedHashMap<String, Object> propertiesToUpdate, List parameters) {
-       queryString.append(SPACE).append("SET");
-
-        for (String propertyName : propertiesToUpdate.keySet()) {
-            PersistentProperty prop = entity.getPropertyByName(propertyName);
-            if(prop == null) throw new InvalidDataAccessResourceUsageException("Property '"+propertyName+"' of class '"+entity.getName()+"' specified in update does not exist");
-
-            parameters.add(propertiesToUpdate.get(propertyName));
-            queryString.append(SPACE).append(logicalName).append(DOT).append(propertyName).append('=').append(QUESTIONMARK).append(parameters.size());
-        }
-    }
-
+    /**
+     * Builds a DELETE statement
+     *
+     * @return The JpaQueryInfo
+     */
     public JpaQueryInfo buildDelete() {
         StringBuilder queryString = new StringBuilder(DELETE_CLAUSE).append(entity.getName()).append(SPACE).append(logicalName);
         StringBuilder whereClause = new StringBuilder();
@@ -126,6 +125,11 @@ public class JpaQueryBuilder {
         return new JpaQueryInfo(queryString.toString(), parameters);
     }
 
+    /**
+     * Builds  SELECT statement
+     *
+     * @return The JpaQueryInfo
+     */
     public JpaQueryInfo buildSelect() {
         StringBuilder queryString = new StringBuilder(SELECT_CLAUSE);
 
@@ -628,6 +632,27 @@ public class JpaQueryBuilder {
         }
 
         return position;
+    }
+
+    private void buildUpdateStatement(StringBuilder queryString, Map<String, Object> propertiesToUpdate, List parameters) {
+        queryString.append(SPACE).append("SET");
+
+        // keys need to be sorted before query is built
+        Set<String> keys = new TreeSet<String>(propertiesToUpdate.keySet());
+
+        Iterator<String> iterator = keys.iterator();
+        while (iterator.hasNext()) {
+            String propertyName = iterator.next();
+            PersistentProperty prop = entity.getPropertyByName(propertyName);
+            if(prop == null) throw new InvalidDataAccessResourceUsageException("Property '"+propertyName+"' of class '"+entity.getName()+"' specified in update does not exist");
+
+            parameters.add(propertiesToUpdate.get(propertyName));
+            queryString.append(SPACE).append(logicalName).append(DOT).append(propertyName).append('=').append(QUESTIONMARK).append(parameters.size());
+            if(iterator.hasNext()) {
+                queryString.append(COMMA);
+            }
+
+        }
     }
 
     private static void appendPropertyComparison(StringBuilder q, String logicalName, String propertyName, String otherProperty, String operator) {
