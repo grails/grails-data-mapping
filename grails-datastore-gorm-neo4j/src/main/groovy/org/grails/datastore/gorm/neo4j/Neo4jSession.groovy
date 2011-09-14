@@ -603,11 +603,16 @@ class Neo4jSession extends AbstractAttributeStoringSession {
 
     @Override
     int deleteAll(QueryableCriteria criteria) {
-        throw new UnsupportedOperationException("Batch deletes not yet implemented for Neo4j")
+        // TODO: suboptimal.. improve batch deletes
+        delete(criteria.list())
     }
 
     @Override
     int updateAll(QueryableCriteria criteria, Map<String, Object> properties) {
-        throw new UnsupportedOperationException("Batch updates not yet implemented for Neo4j")
+        // TODO: suboptimal.. improve batch updates
+        final results = criteria.list()
+        for(o in results) {
+            o.properties = properties
+        }
     }
 }
