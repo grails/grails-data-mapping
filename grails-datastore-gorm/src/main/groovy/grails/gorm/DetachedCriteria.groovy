@@ -48,6 +48,8 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     private List<Projection> projections = []
     private Class targetClass
     private List<DynamicFinder> dynamicFinders = []
+    private Integer defaultOffset = null
+    private Integer defaultMax = null
 
     private List<Junction> junctions = []
     PersistentEntity persistentEntity
@@ -581,8 +583,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     DetachedCriteria<T> where(Closure additionalQuery) {
         DetachedCriteria<T> newQuery = clone()
 
-        newQuery.build additionalQuery
-        return newQuery
+        return newQuery.build( additionalQuery )
     }
     /**
      * Synonym for #get
@@ -694,9 +695,46 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @return This criteria instance
      */
 
-    Criteria build(Closure callable) {
+    DetachedCriteria<T> build(Closure callable) {
         DetachedCriteria newCriteria = this.clone()
         newCriteria.with callable
+        return newCriteria
+    }
+
+    /**
+     * Sets the default max to use and returns a new criteria instance. This method does not mutate the original criteria!
+     *
+     * @param max The max to use
+     * @return A new DetachedCriteria instance derived from this
+     */
+    DetachedCriteria<T> max(int max) {
+        DetachedCriteria newCriteria = this.clone()
+        newCriteria.defaultMax = max
+        return newCriteria
+    }
+
+    /**
+     * Sets the default offset to use and returns a new criteria instance. This method does not mutate the original criteria!
+     *
+     * @param offset The offset to use
+     * @return A new DetachedCriteria instance derived from this
+     */
+    DetachedCriteria<T> offset(int offset) {
+        DetachedCriteria newCriteria = this.clone()
+        newCriteria.defaultOffset = offset
+        return newCriteria
+    }
+
+
+    DetachedCriteria<T> sort(String property) {
+        DetachedCriteria newCriteria = this.clone()
+        newCriteria.orders.add(new Order(property))
+        return newCriteria
+    }
+
+    DetachedCriteria<T> sort(String property, String direction) {
+        DetachedCriteria newCriteria = this.clone()
+        newCriteria.orders.add(new Order(property, "desc".equalsIgnoreCase(direction) ? Direction.DESC : Direction.ASC))
         return newCriteria
     }
 
@@ -740,8 +778,12 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     protected DetachedCriteria<T> clone() {
         def criteria = new DetachedCriteria(targetClass)
         criteria.criteria = new ArrayList(this.criteria)
-        criteria.projections = new ArrayList(this.projections)
+        final projections = new ArrayList(this.projections)
+        criteria.projections = projections
+        criteria.projectionList = new DetachedProjections(projections)
         criteria.orders = new ArrayList(this.orders)
+        criteria.defaultMax = defaultMax
+        criteria.defaultOffset = defaultOffset
         return criteria
     }
 
@@ -760,6 +802,12 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     private withPopulatedQuery(Map args, Closure additionalCriteria, Closure callable)  {
         targetClass.withDatastoreSession { Session session ->
             Query query = session.createQuery(targetClass)
+            if(defaultMax != null) {
+                query.max(defaultMax)
+            }
+            if(defaultOffset != null) {
+                query.offset(defaultOffset)
+            }
             DynamicFinder.applyDetachedCriteria(query, this)
 
             if(additionalCriteria != null) {

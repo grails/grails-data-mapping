@@ -437,7 +437,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     }
 
     private QueryableCriteria buildQueryableCriteria(Closure queryClosure) {
-        return (QueryableCriteria) new DetachedCriteria(targetClass).build(queryClosure);
+        return new DetachedCriteria(targetClass).build(queryClosure);
     }
 
     /**
