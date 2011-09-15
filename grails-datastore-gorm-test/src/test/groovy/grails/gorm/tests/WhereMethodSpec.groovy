@@ -10,9 +10,42 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
  * Tests for the new where method used to define detached criteria using the new DSL
  */
 @ApplyDetachedCriteriaTransform
-@Ignore
+//@Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
+  def "Test in range query"() {
+      given:"A bunch of people"
+           createPeople()
+
+      when:"a query is composed"
+        def query = Person.where {
+          age in 1..15
+        }
+
+        def results = query.list(sort:"firstName")
+
+     then:"The expected result is returned"
+        results.size() == 2
+        results[0].firstName == "Bart"
+        results[1].firstName == "Lisa"
+  }
+  def "Test compose query"() {
+      given:"A bunch of people"
+           createPeople()
+
+      when:"a query is composed"
+          def query = Person.where {
+              lastName == "Simpson"
+          }
+          def bartQuery = query.where {
+              firstName == "Bart"
+          }
+        Person p = bartQuery.find()
+
+     then:"The expected result is returned"
+        p != null
+        p.firstName == "Bart"
+  }
   def "Test static scoped where calls"() {
       given:"A bunch of people"
            createPeople()
@@ -301,6 +334,20 @@ class WhereMethodSpec extends GormDatastoreSpec {
             results.size() == 2
             results[0].firstName == "Ed"
             results[1].firstName == "Fred"
+   }
+
+   def "Test subquery usage combined with property"() {
+       given:"a bunch of people"
+         createPeople()
+
+       when:"We query for people greater that all defined ages"
+           final query = Person.where {
+               age > property(age)
+           }
+           def results = query.list(sort:"firstName")
+
+       then:"The correct results are returned"
+            results.size() == 0
    }
 
    def "Test subquery usage combined with logical query"() {

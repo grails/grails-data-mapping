@@ -92,6 +92,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         put("max", "max");
         put("min", "min");
         put("sum", "sum");
+        put("property", "property");
         put("count", "countDistinct");
     }};
 
@@ -718,6 +719,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                             rightExpression = closureAndArguments.getClosureExpression();
 
+                            if("property".equals(functionName)) {
+                                methodToCall = methodToCall + "All";
+                            }
                         }
                         else if(!validProperty) {
                             // TODO: compilation error?
@@ -731,10 +735,26 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 BitwiseNegationExpression bne = (BitwiseNegationExpression) rightExpression;
                 rightExpression = bne.getExpression();
             }
+            else if("inList".equals(methodToCall) && rightExpression instanceof RangeExpression) {
+                methodToCall = "between";
+                RangeExpression re = (RangeExpression) rightExpression;
+                ArgumentListExpression betweenArgs = new ArgumentListExpression();
+                betweenArgs.addExpression(new ConstantExpression(propertyName))
+                            .addExpression(re.getFrom())
+                            .addExpression(re.getTo());
+                rightExpression = betweenArgs;
+            }
         }
-        ArgumentListExpression arguments = new ArgumentListExpression();
-        arguments.addExpression(new ConstantExpression(propertyName))
-                .addExpression(rightExpression);
+        ArgumentListExpression arguments;
+
+        if(rightExpression instanceof ArgumentListExpression) {
+            arguments = (ArgumentListExpression) rightExpression;
+        }
+        else {
+            arguments = new ArgumentListExpression();
+            arguments.addExpression(new ConstantExpression(propertyName))
+                    .addExpression(rightExpression);
+        }
         newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, methodToCall, arguments)));
     }
 
