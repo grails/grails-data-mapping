@@ -10,7 +10,7 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
  * Tests for the new where method used to define detached criteria using the new DSL
  */
 @ApplyDetachedCriteriaTransform
-//@Ignore
+@Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
   def "Test in range query"() {
