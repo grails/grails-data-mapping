@@ -62,8 +62,8 @@ public abstract class MethodExpression {
             Class<?> type = prop.getType();
             for (int i = 0; i < argumentsRequired; i++) {
                 Object arg = arguments[i];
-                if(arg != null && !type.isAssignableFrom(arg.getClass())) {
-                    arguments[i] = conversionService.convert(arg, type);
+                if(arg != null && !type.isAssignableFrom(arg.getClass()) && !(Enum.class.isAssignableFrom(type))) {
+                        arguments[i] = conversionService.convert(arg, type);
                 }
             }
         }
