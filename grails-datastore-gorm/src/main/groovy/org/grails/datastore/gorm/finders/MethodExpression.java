@@ -19,9 +19,12 @@ import groovy.lang.Range;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Query.Criterion;
 import org.grails.datastore.mapping.query.Restrictions;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.util.Assert;
 
 /**
@@ -45,6 +48,27 @@ public abstract class MethodExpression {
         return argumentsRequired;
     }
 
+    public void convertArguments(PersistentEntity persistentEntity) {
+        ConversionService conversionService = persistentEntity
+                .getMappingContext().getConversionService();
+        PersistentProperty<?> prop = persistentEntity
+                .getPropertyByName(propertyName);
+        if (prop == null) {
+            if (propertyName.equals(persistentEntity.getIdentity().getName())) {
+                prop = persistentEntity.getIdentity();
+            }
+        }
+        if (prop != null && arguments != null && argumentsRequired > 0) {
+            Class<?> type = prop.getType();
+            for (int i = 0; i < argumentsRequired; i++) {
+                Object arg = arguments[i];
+                if(arg != null && !type.isAssignableFrom(arg.getClass())) {
+                    arguments[i] = conversionService.convert(arg, type);
+                }
+            }
+        }
+    }
+    
     public void setArguments(Object[] arguments) {
         this.arguments = arguments;
         if (arguments != null) {
@@ -154,21 +178,23 @@ public abstract class MethodExpression {
 
             super.setArguments(arguments);
         }
+        
+        @Override
+        public void convertArguments(PersistentEntity persistentEntity) {
+            // setArguments already made sure arguments[0] is a Collection
+        }
+
     }
 
     public static class Between extends MethodExpression {
         public Between(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
+            argumentsRequired = 2;
         }
 
         @Override
         public Query.Criterion createCriterion() {
             return Restrictions.between(propertyName, arguments[0], arguments[1]);
-        }
-
-        @Override
-        public int getArgumentsRequired() {
-            return 2;
         }
 
         @Override
@@ -184,6 +210,7 @@ public abstract class MethodExpression {
     public static class InRange extends MethodExpression {
         public InRange(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
+            argumentsRequired = 1;
         }
         
         @Override
@@ -193,10 +220,10 @@ public abstract class MethodExpression {
         }
         
         @Override
-        public int getArgumentsRequired() {
-            return 1;
+        public void convertArguments(PersistentEntity persistentEntity) {
+            // setArguments already made sure arguments[0] is a Range...
         }
-        
+
         @Override
         public void setArguments(Object[] arguments) {
             Assert.isTrue(arguments.length == 1, "An 'inRange' query requires exactly 1 argument");
@@ -210,11 +237,7 @@ public abstract class MethodExpression {
     public static class IsNull extends MethodExpression {
         public IsNull(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
-        }
-
-        @Override
-        public int getArgumentsRequired() {
-            return 0;
+            argumentsRequired = 0;
         }
 
         @Override
@@ -227,11 +250,7 @@ public abstract class MethodExpression {
 
         public IsNotNull(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
-        }
-
-        @Override
-        public int getArgumentsRequired() {
-            return 0;
+            argumentsRequired = 0;
         }
 
         @Override
@@ -243,11 +262,7 @@ public abstract class MethodExpression {
     public static class IsEmpty extends MethodExpression {
         public IsEmpty(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
-        }
-
-        @Override
-        public int getArgumentsRequired() {
-            return 0;
+            argumentsRequired = 0;
         }
 
         @Override
@@ -260,11 +275,7 @@ public abstract class MethodExpression {
 
         public IsNotEmpty(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
-        }
-
-        @Override
-        public int getArgumentsRequired() {
-            return 0;
+            argumentsRequired = 0;
         }
 
         @Override

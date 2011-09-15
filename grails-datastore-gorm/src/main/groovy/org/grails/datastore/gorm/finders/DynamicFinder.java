@@ -44,9 +44,10 @@ import org.grails.datastore.gorm.finders.MethodExpression.LessThanEquals;
 import org.grails.datastore.gorm.finders.MethodExpression.Like;
 import org.grails.datastore.gorm.finders.MethodExpression.NotEqual;
 import org.grails.datastore.gorm.finders.MethodExpression.Rlike;
-import org.grails.datastore.gorm.query.criteria.DetachedAssociationCriteria;
 import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.query.Query;
+import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.util.StringUtils;
 
@@ -219,6 +220,14 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                             currentArguments[k] = arguments[argumentCursor];
                         }
                         currentExpression = getInitializedExpression(currentExpression, currentArguments);
+                        PersistentEntity persistentEntity = datastore.getMappingContext().getPersistentEntity(clazz.getName());
+                        
+                        try {
+                            currentExpression.convertArguments(persistentEntity);
+                        } catch (ConversionException e) {
+                            throw new MissingMethodException(methodName, clazz, arguments);
+                        }
+
                         // add to list of expressions
                         totalRequiredArguments += currentExpression.argumentsRequired;
                         expressions.add(currentExpression);
@@ -240,6 +249,12 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         	Object[] soloArgs = new Object[requiredArguments];
         	System.arraycopy(arguments, 0, soloArgs, 0, requiredArguments);
         	solo = getInitializedExpression(solo, arguments);
+            PersistentEntity persistentEntity = datastore.getMappingContext().getPersistentEntity(clazz.getName());
+            try {
+                solo.convertArguments(persistentEntity);
+            } catch (ConversionException e) {
+                throw new MissingMethodException(methodName, clazz, arguments);
+            }
             expressions.add(solo);
         }
 
@@ -275,23 +290,29 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
 			expression = new IsNull(expression.targetClass, expression.propertyName);
 		} else {
 			expression.setArguments(arguments);
+			
 		}
 		return expression;
 	}
 
     protected MethodExpression findMethodExpression(Class clazz, String expression) {
+        MethodExpression me = null;
         final Matcher matcher = methodExpressinPattern.matcher(expression);
 
         if (matcher.find()) {
             Constructor constructor = methodExpressions.get(matcher.group(1));
             try {
-                return (MethodExpression) constructor.newInstance(clazz,
+                me = (MethodExpression) constructor.newInstance(clazz,
                         calcPropertyName(expression, constructor.getDeclaringClass().getSimpleName()));
             } catch (Exception e) {
                 // ignore
             }
         }
-        return new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()));
+        if(me == null) {
+            me = new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()));
+        }
+        
+        return me;
     }
 
     private static String calcPropertyName(String queryParameter, String clause) {
