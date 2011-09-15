@@ -622,6 +622,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
             total++
             def bean = new BeanWrapperImpl(o)
             bean.setPropertyValues(properties)
+            persist(o)
         }
         return total
     }
