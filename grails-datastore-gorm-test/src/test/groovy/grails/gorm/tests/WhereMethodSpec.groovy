@@ -13,6 +13,70 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
+  def "Test try catch finally"() {
+      given:"A bunch of people"
+           createPeople()
+
+      when:"We query for people whose first names start with the letter B"
+        def query = Person.where {
+            def personAge = "nine"
+            try {
+               age ==  personAge.toInteger()
+            }
+            catch(e) {
+               age == 7
+            }
+            finally {
+                lastName == "Simpson"
+            }
+        }
+        Person result = query.find()
+
+      then:"The correct results are returned"
+         result != null
+         result.firstName == "Lisa"
+  }
+  def "Test while loop"() {
+      given:"A bunch of people"
+           createPeople()
+
+      when:"We query for people whose first names start with the letter B"
+        def query = Person.where {
+             def list = ["Bart", "Simpson"]
+             int total = 0
+             while(total < list.size()) {
+                 def name = list[total++]
+                 if(name == "Bart")
+                    firstName == name
+                 else
+                    lastName == "Simpson"
+             }
+        }
+        Person result = query.find()
+
+      then:"The correct results are returned"
+         result != null
+         result.firstName == "Bart"
+  }
+  def "Test for loop"() {
+      given:"A bunch of people"
+           createPeople()
+
+      when:"We query for people whose first names start with the letter B"
+        def query = Person.where {
+             for(name in ["Bart", "Simpson"]) {
+                 if(name == "Bart")
+                    firstName == name
+                 else
+                    lastName == "Simpson"
+             }
+        }
+        Person result = query.find()
+
+      then:"The correct results are returned"
+         result != null
+         result.firstName == "Bart"
+  }
   def "Test criteria on single ended association"() {
       given:"people and pets"
         createPeopleWithPets()

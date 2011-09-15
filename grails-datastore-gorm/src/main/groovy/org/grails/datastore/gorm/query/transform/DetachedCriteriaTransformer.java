@@ -381,6 +381,47 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                 newCode.addStatement(sw);
             }
+            else if(statement instanceof ForStatement) {
+                ForStatement fs = (ForStatement) statement;
+                Statement loopBlock = fs.getLoopBlock();
+                BlockStatement newLoopBlock = new BlockStatement();
+                addStatementToNewQuery(loopBlock, newLoopBlock, addAll, propertyNames);
+                fs.setLoopBlock(flattenStatementIfNecessary(newLoopBlock));
+                newCode.addStatement(fs);
+            }
+            else if(statement instanceof WhileStatement) {
+                WhileStatement ws = (WhileStatement) statement;
+                Statement loopBlock = ws.getLoopBlock();
+                BlockStatement newLoopBlock = new BlockStatement();
+                addStatementToNewQuery(loopBlock, newLoopBlock, addAll, propertyNames);
+                ws.setLoopBlock(flattenStatementIfNecessary(newLoopBlock));
+                newCode.addStatement(ws);
+            }
+            else if(statement instanceof TryCatchStatement) {
+                TryCatchStatement tcs = (TryCatchStatement) statement;
+                Statement tryStatement = tcs.getTryStatement();
+
+                BlockStatement newTryStatement = new BlockStatement();
+                addStatementToNewQuery(tryStatement, newTryStatement, addAll, propertyNames);
+                tcs.setTryStatement(flattenStatementIfNecessary(newTryStatement));
+
+                List<CatchStatement> catchStatements = tcs.getCatchStatements();
+
+                for (CatchStatement catchStatement : catchStatements) {
+                    BlockStatement newCatchStatement = new BlockStatement();
+                    Statement code = catchStatement.getCode();
+                    addStatementToNewQuery(code, newCatchStatement, addAll, propertyNames);
+                    catchStatement.setCode(flattenStatementIfNecessary(newCatchStatement));
+                }
+
+                Statement finallyStatement = tcs.getFinallyStatement();
+                if(finallyStatement != null) {
+                    BlockStatement newFinallyStatement = new BlockStatement();
+                    addStatementToNewQuery(finallyStatement, newFinallyStatement, addAll, propertyNames);
+                    tcs.setFinallyStatement(flattenStatementIfNecessary(newFinallyStatement));
+                }
+                newCode.addStatement(tcs);
+            }
             else {
                 newCode.addStatement(statement);
             }
