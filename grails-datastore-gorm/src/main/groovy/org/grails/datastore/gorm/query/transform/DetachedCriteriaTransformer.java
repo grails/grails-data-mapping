@@ -97,6 +97,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
 
     private Map<String, ClassNode> detachedCriteriaVariables = new HashMap<String, ClassNode>();
+    private Map<String, ClassNode> staticDetachedCriteriaVariables = new HashMap<String, ClassNode>();
     private ClassNode currentClassNode;
 
     DetachedCriteriaTransformer(SourceUnit sourceUnit) {
@@ -130,19 +131,49 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     @Override
     public void visitField(FieldNode node) {
-        try {
+        ClassNode classNode = node.getOwner();
+        if(node.isStatic() && isDomainClass(classNode)) {
             Expression initialExpression = node.getInitialExpression();
-            ClosureExpression newClosureExpression = handleDetachedCriteriaCast(initialExpression);
+            if(initialExpression instanceof MethodCallExpression) {
+                MethodCallExpression mce = (MethodCallExpression) initialExpression;
 
-            if (newClosureExpression != null) {
-                node.setInitialValueExpression(newClosureExpression);
+                if(isCandidateWhereMethod(mce.getMethod(), mce.getArguments())) {
+                    ArgumentListExpression args = (ArgumentListExpression) mce.getArguments();
+                    List<Expression> argsExpressions = args.getExpressions();
+                    int totalExpressions = argsExpressions.size();
+                    if(totalExpressions > 0) {
+                        Expression expression = argsExpressions.get(totalExpressions - 1);
+                        if(expression instanceof ClosureExpression) {
+                            ClosureExpression closureExpression = (ClosureExpression) expression;
+                            transformClosureExpression(classNode, closureExpression);
+
+
+                            MethodCallExpression newInitialExpression = new MethodCallExpression(new ConstructorCallExpression(DETACHED_CRITERIA_CLASS_NODE, new ArgumentListExpression(new ClassExpression(classNode))), "build", new ArgumentListExpression(closureExpression));
+                            node.setInitialValueExpression(newInitialExpression);
+                            node.setType(DETACHED_CRITERIA_CLASS_NODE);
+                            staticDetachedCriteriaVariables.put(node.getName(), classNode);
+                        }
+                    }
+                }
             }
-        } catch (Exception e) {
-            sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred apply query transformations: " + e.getMessage(), Token.newString(node.getName(), node.getLineNumber(), node.getColumnNumber()), sourceUnit));
+        }
+        else {
+            try {
+                Expression initialExpression = node.getInitialExpression();
+                ClosureExpression newClosureExpression = handleDetachedCriteriaCast(initialExpression);
+
+                if (newClosureExpression != null) {
+                    node.setInitialValueExpression(newClosureExpression);
+                }
+            } catch (Exception e) {
+                sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred apply query transformations: " + e.getMessage(), Token.newString(node.getName(), node.getLineNumber(), node.getColumnNumber()), sourceUnit));
+            }
         }
 
         super.visitField(node);
     }
+
+
 
     @Override
     public void visitDeclarationExpression(DeclarationExpression expression) {
@@ -237,6 +268,17 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 if(varType != null && isCandidateWhereMethod(method, arguments)) {
                     this.currentClassNode = varType;
                     visitMethodCall(varType, (ArgumentListExpression) arguments);
+                }
+            }
+            else if(objectExpression instanceof PropertyExpression) {
+                PropertyExpression pe = (PropertyExpression) objectExpression;
+                String propName = pe.getPropertyAsString();
+                ClassNode classNode = pe.getObjectExpression().getType();
+                if(isDomainClass(classNode)) {
+                    ClassNode propertyType = getPropertyType(classNode, propName);
+                    if(propertyType != null && DETACHED_CRITERIA_CLASS_NODE.equals(propertyType)) {
+                        visitMethodCall(classNode, (ArgumentListExpression) arguments);
+                    }
                 }
             }
         } catch (Exception e) {

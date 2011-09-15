@@ -13,6 +13,24 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
+  def "Test static scoped where calls"() {
+      given:"A bunch of people"
+           createPeople()
+
+      when:"We use the static simpsons property "
+           def simpsons = Person.simpsons
+
+      then:"We get the right results back"
+          simpsons.count() == 4
+
+      when:"We apply further where criteria to static scoped where call"
+          def query = getClassThatCallsWhere().doQuery()
+          Person p = query.find()
+
+      then:"The correct results are returned"
+          p != null
+          p.firstName == "Bart"
+  }
   def "Test findAll with pagination params"() {
       given:"A bunch of people"
            createPeople()
@@ -1012,15 +1030,10 @@ class CallMe {
             Person.where(myDetachedCriteria)
     }
 
-    def oneQuery() {
-        Pet.where {
-            owner.firstNam == "Joe" || owner.firstName == "Fred"
-        }
-    }
-
-    static List whereMe() {
-        def q = where { name == "blah" }
-        q.list()
+    def doQuery() {
+      Person.simpsons.where {
+          firstName == "Bart"
+      }
     }
 }
 ''', "Test").newInstance()

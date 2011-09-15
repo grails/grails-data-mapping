@@ -61,11 +61,16 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      */
     DetachedCriteria(Class<T> targetClass) {
         this.targetClass = targetClass
-        try {
-            this.dynamicFinders = targetClass.gormDynamicFinders
-            this.persistentEntity = targetClass.gormPersistentEntity
-        } catch (MissingPropertyException mpe) {
-            throw new IllegalArgumentException("Class [$targetClass.name] is not a domain class")
+    }
+
+    protected def initialiseIfNecessary(Class<T> targetClass) {
+        if(dynamicFinders == null) {
+            try {
+                dynamicFinders = targetClass.gormDynamicFinders
+                persistentEntity = targetClass.gormPersistentEntity
+            } catch (MissingPropertyException mpe) {
+                throw new IllegalArgumentException("Class [$targetClass.name] is not a domain class")
+            }
         }
     }
 
@@ -725,16 +730,40 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         return newCriteria
     }
 
-
+    /**
+     * Adds a sort order to this criteria instance
+     *
+     * @param property The property to sort by
+     * @return This criteria instance
+     */
     DetachedCriteria<T> sort(String property) {
         DetachedCriteria newCriteria = this.clone()
         newCriteria.orders.add(new Order(property))
         return newCriteria
     }
 
+    /**
+     * Adds a sort order to this criteria instance
+     *
+     * @param property The property to sort by
+     * @param direction The direction to sort by
+     * @return This criteria instance
+     */
     DetachedCriteria<T> sort(String property, String direction) {
         DetachedCriteria newCriteria = this.clone()
         newCriteria.orders.add(new Order(property, "desc".equalsIgnoreCase(direction) ? Direction.DESC : Direction.ASC))
+        return newCriteria
+    }
+
+    /**
+     * Adds a property projection
+     *
+     * @param property The property to sort by
+     * @return This criteria instance
+     */
+    DetachedCriteria<T> property(String property) {
+        DetachedCriteria newCriteria = this.clone()
+        newCriteria.projectionList.property(property)
         return newCriteria
     }
 
@@ -746,7 +775,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @return The result of the method call
      */
     def methodMissing(String methodName, args) {
-
+        initialiseIfNecessary(targetClass)
         def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
         if(method != null) {
             return method.invoke(targetClass, methodName,this, args)
