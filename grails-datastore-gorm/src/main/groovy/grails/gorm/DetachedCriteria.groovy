@@ -52,7 +52,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     private Integer defaultMax = null
 
     private List<Junction> junctions = []
-    PersistentEntity persistentEntity
+    private PersistentEntity persistentEntity
     ProjectionList projectionList = new DetachedProjections(projections)
 
     /**
@@ -61,6 +61,11 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      */
     DetachedCriteria(Class<T> targetClass) {
         this.targetClass = targetClass
+    }
+
+    PersistentEntity getPersistentEntity() {
+        if(persistentEntity == null) initialiseIfNecessary(targetClass)
+        return persistentEntity
     }
 
     protected def initialiseIfNecessary(Class<T> targetClass) {
