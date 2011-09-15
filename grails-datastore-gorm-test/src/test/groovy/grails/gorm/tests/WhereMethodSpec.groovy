@@ -13,11 +13,26 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
+  def "Test findAll with pagination params"() {
+      given:"A bunch of people"
+           createPeople()
+
+      when:"We use findAll with pagination params"
+           def results = Person.findAll(sort:"firstName") {
+               lastName == "Simpson"
+           }
+
+      then:"The correct results are returned"
+        results != null
+        results.size() == 4
+        results[0].firstName == "Bart"
+  }
+
   def "Test try catch finally"() {
       given:"A bunch of people"
            createPeople()
 
-      when:"We query for people whose first names start with the letter B"
+      when:"We use a try catch finally block in a where query"
         def query = Person.where {
             def personAge = "nine"
             try {
@@ -40,7 +55,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
       given:"A bunch of people"
            createPeople()
 
-      when:"We query for people whose first names start with the letter B"
+      when:"We use a while loop in a where query"
         def query = Person.where {
              def list = ["Bart", "Simpson"]
              int total = 0
@@ -62,7 +77,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
       given:"A bunch of people"
            createPeople()
 
-      when:"We query for people whose first names start with the letter B"
+      when:"We use a for loop in a query"
         def query = Person.where {
              for(name in ["Bart", "Simpson"]) {
                  if(name == "Bart")
@@ -81,7 +96,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
       given:"people and pets"
         createPeopleWithPets()
 
-      when:"A query that queries the pets"
+      when:"We query the single-ended association owner of pet"
         def query = Pet.where {
             owner.firstName == "Joe" || owner.firstName == "Fred"
         }
@@ -93,7 +108,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
       given:"A bunch of people"
            createPeople()
 
-      when:"We query for people whose first names start with the letter B"
+      when:"We query for people whose first names start with the letter B in lower case"
         def query = Person.where {
              firstName =~ "b%"
         }

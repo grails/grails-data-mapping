@@ -256,8 +256,8 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     private void visitMethodCallOnDetachedCriteria(ClassNode classNode, ArgumentListExpression arguments) {
-        if (arguments.getExpressions().size() == 1) {
-            Expression expression = arguments.getExpression(0);
+        if (arguments.getExpressions().size() > 0) {
+            Expression expression = arguments.getExpression(arguments.getExpressions().size()-1);
             if (expression instanceof ClosureExpression) {
                 ClosureExpression closureExpression = (ClosureExpression) expression;
                 transformClosureExpression(classNode, closureExpression);
