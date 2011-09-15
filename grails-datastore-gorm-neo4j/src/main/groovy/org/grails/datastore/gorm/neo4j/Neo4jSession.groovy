@@ -62,6 +62,7 @@ import org.grails.datastore.mapping.model.types.ManyToMany
 import org.neo4j.graphdb.RelationshipType
 import org.grails.datastore.mapping.model.types.Basic
 import org.grails.datastore.mapping.query.api.QueryableCriteria
+import org.springframework.beans.BeanWrapperImpl
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -604,15 +605,24 @@ class Neo4jSession extends AbstractAttributeStoringSession {
     @Override
     int deleteAll(QueryableCriteria criteria) {
         // TODO: suboptimal.. improve batch deletes
-        delete(criteria.list())
+        int total =0
+        for(o in criteria.list()) {
+            delete(o)
+            total++
+        }
+        return total
     }
 
     @Override
     int updateAll(QueryableCriteria criteria, Map<String, Object> properties) {
         // TODO: suboptimal.. improve batch updates
         final results = criteria.list()
+        int total = 0
         for(o in results) {
-            o.properties = properties
+            total++
+            def bean = new BeanWrapperImpl(o)
+            bean.setPropertyValues(properties)
         }
+        return total
     }
 }
