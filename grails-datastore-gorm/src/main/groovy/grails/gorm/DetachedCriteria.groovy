@@ -47,7 +47,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     private List<Order> orders = []
     private List<Projection> projections = []
     private Class targetClass
-    private List<DynamicFinder> dynamicFinders = []
+    private List<DynamicFinder> dynamicFinders = null
     private Integer defaultOffset = null
     private Integer defaultMax = null
 
@@ -668,6 +668,19 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         (Number)withPopulatedQuery(Collections.emptyMap(), additionalCriteria) { Query query ->
             query.projections().count()
             query.singleResult()
+        }
+    }
+
+    /**
+     * Counts the number of records returned by the query
+     *
+     * @param args The arguments
+     * @return The count
+     */
+    boolean exists(Closure additionalCriteria ) {
+        (Boolean)withPopulatedQuery(Collections.emptyMap(), additionalCriteria) { Query query ->
+            query.projections().count()
+            query.singleResult() > 0
         }
     }
 

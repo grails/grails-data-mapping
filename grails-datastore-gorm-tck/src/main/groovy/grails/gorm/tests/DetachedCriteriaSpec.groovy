@@ -11,6 +11,20 @@ import grails.gorm.DetachedCriteria
  */
 class DetachedCriteriaSpec extends GormDatastoreSpec{
 
+    void "Test exists method"() {
+        given:"A bunch of people"
+            createPeople()
+
+
+        when:"A detached criteria instance is created matching the last name"
+            def criteria = new DetachedCriteria(Person)
+            criteria.with {
+                eq 'lastName', 'Simpson'
+            }
+
+        then:"The count method returns the right results"
+            criteria.exists() == true
+    }
     void "Test updateAll method"() {
         given:"A bunch of people"
             createPeople()
