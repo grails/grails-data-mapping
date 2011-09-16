@@ -70,10 +70,9 @@ class WhereMethodSpec extends GormDatastoreSpec {
         results[0].name == "Old Dog"
 
       when:"A function is used on an association"
-//        query = Person.where {
-//              year(pet.birthDate) == 2009
-//        }
-        query = getClassThatCallsWhere().functionQuery()
+        query = Person.where {
+              year(pets.birthDate) == 2009
+        }
         results = query.list()
 
       then:"The correct results are returned"

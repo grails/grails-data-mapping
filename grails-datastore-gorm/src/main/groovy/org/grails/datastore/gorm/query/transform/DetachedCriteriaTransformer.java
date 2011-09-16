@@ -766,18 +766,26 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 if(!hasNoProperties && !associationPropertyNames.contains(associationProperty)) {
                      sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query property \""+associationProperty+"\" - no such property on class "+type.getName()+" exists.", Token.newString(propertyName, pe.getLineNumber(), pe.getColumnNumber()), sourceUnit));
                 }
-                if(functionName != null) {
-                    handleFunctionCall(currentBody, operator, oppositeSide, functionName, new ConstantExpression(associationProperty));
-                }
-                else {
-                    addCriteriaCallMethodExpression(currentBody, operator, oppositeSide, associationProperty, associationPropertyNames, hasNoProperties);
+                ClassNode existing = this.currentClassNode;
+                try {
+
+                    this.currentClassNode = type;
+                    if(functionName != null) {
+                        handleFunctionCall(currentBody, operator, oppositeSide, functionName, new ConstantExpression(associationProperty));
+                    }
+                    else {
+                        addCriteriaCallMethodExpression(currentBody, operator, oppositeSide, associationProperty, associationPropertyNames, hasNoProperties);
+                    }
+                } finally {
+                    this.currentClassNode = existing;
                 }
                 newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, propertyName, arguments)));
             }
+            else {
+                sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query property \""+propertyName+"\" - no such property on class "+this.currentClassNode.getName()+" exists.", Token.newString(propertyName, pe.getLineNumber(), pe.getColumnNumber()), sourceUnit));
+            }
         }
-        else {
-            // TODO: compilation error?
-        }
+
     }
 
     private void addCriteriaCallMethodExpression(BlockStatement newCode, String operator, Expression rightExpression, String propertyName, List<String> propertyNames, boolean addAll) {

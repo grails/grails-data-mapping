@@ -159,86 +159,102 @@ class SimpleMapQuery extends Query {
     }
 
     def associationQueryHandlers = [
-        (Query.Like): { allEntities, Association association, Query.Like like ->
+        (FunctionCallingCriterion): { allEntities, Association association, FunctionCallingCriterion fcc -> 
+            def criterion = fcc.propertyCriterion
+            def handler = associationQueryHandlers[criterion.class]
+            def function = functionHandlers[fcc.functionName]
+            if(handler != null && function != null) {
+                try {
+                   return handler.call(allEntities, association,criterion, function)
+                }
+                catch(MissingMethodException e) {
+                    throw new InvalidDataAccessResourceUsageException("Unsupported function '$function' used in query")                    
+                }
+            }
+            else {
+                throw new InvalidDataAccessResourceUsageException("Unsupported function '$function' used in query")
+            }
+        },    
+        (Query.Like): { allEntities, Association association, Query.Like like, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 def regexFormat = like.pattern.replaceAll('%', '.*?')
-                it[like.property] ==~ regexFormat
+                function(it[like.property]) ==~ regexFormat
             }
         },
-        (Query.RLike): { allEntities, Association association, Query.RLike like ->
+        (Query.RLike): { allEntities, Association association, Query.RLike like, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 def regexFormat = like.pattern
-                it[like.property] ==~ regexFormat
+                function(it[like.property]) ==~ regexFormat
             }
         },
-        (Query.ILike): { allEntities, Association association, Query.Like like ->
+        (Query.ILike): { allEntities, Association association, Query.Like like, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 def regexFormat = like.pattern.replaceAll('%', '.*?')
                 def pattern = Pattern.compile(regexFormat, Pattern.CASE_INSENSITIVE)
-                pattern.matcher(it[like.property]).find()
+                pattern.matcher(function(it[like.property])).find()
             }
         },
-        (Query.Equals): { allEntities, Association association, Query.Equals eq ->
+        (Query.Equals): { allEntities, Association association, Query.Equals eq, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 final value = subqueryIfNecessary(eq)
-                it[eq.property] == value
+                function(it[eq.property]) == value
             }
         },
-        (Query.IsNull): { allEntities, Association association, Query.IsNull eq ->
+        (Query.IsNull): { allEntities, Association association, Query.IsNull eq, Closure function = {it} ->
             queryAssociation(allEntities, association) {
-                it[eq.property] == null
+                function(it[eq.property]) == null
             }
         },
-        (Query.NotEquals): { allEntities, Association association, Query.NotEquals eq ->
+        (Query.NotEquals): { allEntities, Association association, Query.NotEquals eq , Closure function = {it}->
             queryAssociation(allEntities, association) {
                 final value = subqueryIfNecessary(eq)
-                it[eq.property] != value
+                function(it[eq.property]) != value
             }
         },
-        (Query.IsNotNull): { allEntities, Association association, Query.IsNotNull eq ->
+        (Query.IsNotNull): { allEntities, Association association, Query.IsNotNull eq , Closure function = {it}->
             queryAssociation(allEntities, association) {
-                it[eq.property] != null
+                function(it[eq.property]) != null
             }
         },
-        (Query.IdEquals): { allEntities, Association association, Query.IdEquals eq ->
+        (Query.IdEquals): { allEntities, Association association, Query.IdEquals eq , Closure function = {it}->
             queryAssociation(allEntities, association) {
-                it[eq.property] == eq.value
+                function(it[eq.property]) == eq.value
             }
         },
-        (Query.Between): { allEntities, Association association, Query.Between between ->
+        (Query.Between): { allEntities, Association association, Query.Between between, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 def from = between.from
                 def to = between.to
-                it[between.property]>= from && it[between.property] <= to
+                function(it[between.property])>= from && function(it[between.property]) <= to
             }
         },
-        (Query.GreaterThan):{ allEntities, Association association, Query.GreaterThan gt ->
+        (Query.GreaterThan):{ allEntities, Association association, Query.GreaterThan gt, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 final value = subqueryIfNecessary(gt)
-                it[gt.property] > value
+                function(it[gt.property]) > value
             }
         },
-        (Query.LessThan):{ allEntities, Association association, Query.LessThan lt ->
+        (Query.LessThan):{ allEntities, Association association, Query.LessThan lt, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 final value = subqueryIfNecessary(lt)
-                it[lt.property] < value
+                function(it[lt.property]) < value
             }
         },
-        (Query.GreaterThanEquals):{ allEntities, Association association, Query.GreaterThanEquals gt ->
+        (Query.GreaterThanEquals):{ allEntities, Association association, Query.GreaterThanEquals gt, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 final value = subqueryIfNecessary(gt)
-                it[gt.property] >= value
+                function(it[gt.property]) >= value
             }
         },
-        (Query.LessThanEquals):{ allEntities, Association association, Query.LessThanEquals lt ->
+        (Query.LessThanEquals):{ allEntities, Association association, Query.LessThanEquals lt, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 final value = subqueryIfNecessary(lt)
-                it[lt.property] <= value
+                function(it[lt.property]) <= value
             }
         },
-        (Query.In):{ allEntities, Association association, Query.In inList ->
+        (Query.In):{ allEntities, Association association, Query.In inList, Closure function = null ->
             queryAssociation(allEntities, association) {
-                inList.values?.contains it[inList.property]
+                inList.values?.contains function(it[inList.property])
             }
         }
     ]
