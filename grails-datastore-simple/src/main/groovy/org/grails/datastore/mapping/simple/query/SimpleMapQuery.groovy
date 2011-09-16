@@ -252,7 +252,7 @@ class SimpleMapQuery extends Query {
                 function(it[lt.property]) <= value
             }
         },
-        (Query.In):{ allEntities, Association association, Query.In inList, Closure function = null ->
+        (Query.In):{ allEntities, Association association, Query.In inList, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 inList.values?.contains function(it[inList.property])
             }

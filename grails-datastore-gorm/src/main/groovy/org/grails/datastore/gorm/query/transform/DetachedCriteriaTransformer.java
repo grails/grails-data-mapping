@@ -751,11 +751,20 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             if (propertyNames.contains(propertyName)) {
                 String associationProperty = pe.getPropertyAsString();
 
+                List<String> associationPropertyNames = null;
                 ClassNode type = getPropertyType(propertyName);
-                List<String> associationPropertyNames = getPropertyNamesForAssociation(type);
+                if(!isDomainClass(type)) {
+                    ClassNode associationTypeFromGenerics = getAssociationTypeFromGenerics(type);
+                    if(associationTypeFromGenerics != null) {
+                        type = associationTypeFromGenerics;
+                        associationPropertyNames = getPropertyNamesForAssociation(associationTypeFromGenerics);
+                    }
+                }
                 if(associationPropertyNames == null) {
                     associationPropertyNames = new ArrayList();
                 }
+
+
 
 
                 ClosureAndArguments closureAndArguments = new ClosureAndArguments();
