@@ -31,6 +31,7 @@ import java.util.regex.Pattern
 import org.grails.datastore.mapping.query.api.Criteria
 import org.grails.datastore.mapping.query.api.QueryableCriteria
 import org.springframework.util.Assert
+import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion
 
 /**
  * Simple query implementation that queries a map of objects
@@ -288,97 +289,126 @@ class SimpleMapQuery extends Query {
         return applyJunctionToResults(queryCriteria, resultList)
     }
 
+    def functionHandlers = [
+            second: { it[Calendar.SECOND] },
+            minute: { it[Calendar.MINUTE] },
+            hour: { it[Calendar.HOUR_OF_DAY] },
+            year: { it[Calendar.YEAR] },
+            month: { it[Calendar.MONTH] },
+            day: { it[Calendar.DAY_OF_MONTH] },
+            lower: { it.toString().toLowerCase() },
+            upper: { it.toString().toUpperCase() },
+            trim: { it.toString().trim() },
+            length: { it.toString().size() }
+    ]
     def handlers = [
+        (FunctionCallingCriterion): { FunctionCallingCriterion fcc, PersistentProperty property ->
+            def criterion = fcc.propertyCriterion
+            def handler = handlers[criterion.class]
+            def function = functionHandlers[fcc.functionName]
+            if(handler != null && function != null) {
+                try {
+                    handler.call(criterion, property, function, fcc.onValue)
+                }
+                catch(MissingMethodException e) {
+                    throw new InvalidDataAccessResourceUsageException("Unsupported function '$function' used in query")                    
+                }
+            }
+            else {
+                throw new InvalidDataAccessResourceUsageException("Unsupported function '$function' used in query")
+            }
+        },
         (AssociationQuery): { AssociationQuery aq, PersistentProperty property ->
             Query.Junction queryCriteria = aq.criteria
             return executeAssociationSubQuery(queryCriteria, property)
         },
-        (Query.EqualsAll):{ Query.EqualsAll equalsAll, PersistentProperty property ->
+        (Query.EqualsAll):{ Query.EqualsAll equalsAll, PersistentProperty property, Closure function=null, boolean onValue = false ->
             def name = equalsAll.property
             final values = subqueryIfNecessary(equalsAll, false)
             Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
             def allEntities = datastore[family]
             allEntities.findAll { entry ->
-                values.every { entry.value[name] == it  }
+                values.every { (function != null ? function(entry.value[name]) : function(entry.value[name])) == it  }
             }
             .collect { it.key }
         },
-        (Query.NotEqualsAll):{ Query.NotEqualsAll notEqualsAll, PersistentProperty property ->
+        (Query.NotEqualsAll):{ Query.NotEqualsAll notEqualsAll, PersistentProperty property, Closure function=null, boolean onValue = false ->
             def name = notEqualsAll.property
             final values = subqueryIfNecessary(notEqualsAll, false)
             Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
             def allEntities = datastore[family]
             allEntities.findAll { entry ->
-                values.every { entry.value[name] != it  }
+                values.every { (function != null ? function(entry.value[name]) : function(entry.value[name])) != it  }
             }
             .collect { it.key }
         },
-        (Query.GreaterThanAll):{ Query.GreaterThanAll greaterThanAll, PersistentProperty property ->
+        (Query.GreaterThanAll):{ Query.GreaterThanAll greaterThanAll, PersistentProperty property, Closure function=null, boolean onValue = false ->
             def name = greaterThanAll.property
             final values = subqueryIfNecessary(greaterThanAll, false)
             Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
             def allEntities = datastore[family]
             allEntities.findAll { entry ->
-                values.every { entry.value[name] > it  }
+                values.every { (function != null ? function(entry.value[name]) : entry.value[name]) > it  }
             }
             .collect { it.key }
         },
-        (Query.LessThanAll):{ Query.LessThanAll lessThanAll, PersistentProperty property ->
+        (Query.LessThanAll):{ Query.LessThanAll lessThanAll, PersistentProperty property, Closure function=null, boolean onValue = false ->
             def name = lessThanAll.property
             final values = subqueryIfNecessary(lessThanAll, false)
             Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
             def allEntities = datastore[family]
             allEntities.findAll { entry ->
-                values.every { entry.value[name] < it  }
+                values.every { (function != null ? function(entry.value[name]) : entry.value[name]) < it  }
             }
             .collect { it.key }
         },
-        (Query.LessThanEqualsAll):{ Query.LessThanEqualsAll lessThanEqualsAll, PersistentProperty property ->
+        (Query.LessThanEqualsAll):{ Query.LessThanEqualsAll lessThanEqualsAll, PersistentProperty property, Closure function=null, boolean onValue = false ->
             def name = lessThanEqualsAll.property
             final values = subqueryIfNecessary(lessThanEqualsAll, false)
             Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
             def allEntities = datastore[family]
             allEntities.findAll { entry ->
-                values.every { entry.value[name] <= it  }
+                values.every { (function != null ? function(entry.value[name]) : entry.value[name]) <= it  }
             }
             .collect { it.key }
         },
-        (Query.GreaterThanEqualsAll):{ Query.GreaterThanEqualsAll greaterThanAll, PersistentProperty property ->
+        (Query.GreaterThanEqualsAll):{ Query.GreaterThanEqualsAll greaterThanAll, PersistentProperty property, Closure function=null, boolean onValue = false ->
             def name = greaterThanAll.property
             final values = subqueryIfNecessary(greaterThanAll, false)
             Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
             def allEntities = datastore[family]
             allEntities.findAll { entry ->
-                values.every { entry.value[name] >= it  }
+                values.every { (function != null ? function(entry.value[name]) : entry.value[name]) >= it  }
             }
             .collect { it.key }
         },
-        (Query.Equals): { Query.Equals equals, PersistentProperty property ->
+        (Query.Equals): { Query.Equals equals, PersistentProperty property, Closure function = null, boolean onValue = false ->
             def indexer = entityPersister.getPropertyIndexer(property)
             final value = subqueryIfNecessary(equals)
 
-            return indexer.query(value)
+            if(function != null) {
+                def allEntities = datastore[family]
+                allEntities.findAll { function(it.value[property.name]) == value }.collect { it.key }
+            }
+            else {
+                return indexer.query(value)
+            }
         },
-        (Query.IsNull): { Query.IsNull equals, PersistentProperty property ->
-            def indexer = entityPersister.getPropertyIndexer(property)
-            return indexer.query(null)
+        (Query.IsNull): { Query.IsNull equals, PersistentProperty property, Closure function = null , boolean onValue = false->
+
+            handlers[Query.Equals].call(new Query.Equals(equals.property, null), property, function)
         },
         (Query.IdEquals): { Query.IdEquals equals, PersistentProperty property ->
             def indexer = entityPersister.getPropertyIndexer(property)
             return indexer.query(equals.value)
         },
-        (Query.NotEquals): { Query.NotEquals equals, PersistentProperty property ->
-            def indexer = entityPersister.getPropertyIndexer(property)
-            final value = subqueryIfNecessary(equals)
-            def indexed = indexer.query(value)
-            ArrayList allIds = negateResults(indexed)
-            return allIds
+        (Query.NotEquals): { Query.NotEquals equals, PersistentProperty property, Closure function = null, boolean onValue = false ->
+            def indexed = handlers[Query.Equals].call(new Query.Equals(equals.property, equals.value), property, function)
+            return negateResults(indexed)
         },
-        (Query.IsNotNull): { Query.IsNotNull equals, PersistentProperty property ->
-            def indexer = entityPersister.getPropertyIndexer(property)
-            def indexed = indexer.query(null)
-            ArrayList allIds = negateResults(indexed)
-            return allIds
+        (Query.IsNotNull): { Query.IsNotNull equals, PersistentProperty property, Closure function = null, boolean onValue = false ->
+            def indexed = handlers[Query.Equals].call(new Query.Equals(equals.property, null), property, function)
+            return negateResults(indexed)
         },
         (Query.Like): { Query.Like like, PersistentProperty property ->
             def indexer = entityPersister.getPropertyIndexer(property)
@@ -413,29 +443,32 @@ class SimpleMapQuery extends Query {
 
             executeSubQueryInternal(disjunction, disjunction.criteria)
         },
-        (Query.Between): { Query.Between between, PersistentProperty property ->
+        (Query.Between): { Query.Between between, PersistentProperty property, Closure function = null, boolean onValue = false ->
             def from = between.from
             def to = between.to
             def name = between.property
             def allEntities = datastore[family]
 
-            allEntities.findAll { it.value[name] >= from && it.value[name] <= to }.collect { it.key }
+            if(function != null)
+                allEntities.findAll { function(it.value[name]) >= from && function(it.value[name]) <= to }.collect { it.key }
+            else
+                allEntities.findAll { it.value[name] >= from && it.value[name] <= to }.collect { it.key }
         },
-        (Query.GreaterThan): { Query.GreaterThan gt, PersistentProperty property ->
+        (Query.GreaterThan): { Query.GreaterThan gt, PersistentProperty property, Closure function = null, boolean onValue = false ->
             def name = gt.property
             final value = subqueryIfNecessary(gt)
             def allEntities = datastore[family]
 
-            allEntities.findAll { it.value[name] > value }.collect { it.key }
+            allEntities.findAll { (function != null ? function(it.value[name]) : it.value[name]) > value }.collect { it.key }
         },
-        (Query.GreaterThanProperty): { Query.GreaterThanProperty gt, PersistentProperty property ->
+        (Query.GreaterThanProperty): { Query.GreaterThanProperty gt, PersistentProperty property, Closure function = null, boolean onValue = false ->
             def name = gt.property
             def other = gt.otherProperty
             def allEntities = datastore[family]
 
-            allEntities.findAll { it.value[name] > it.value[other] }.collect { it.key }
+            allEntities.findAll { (function != null ? function(it.value[name]) : it.value[name]) > it.value[other] }.collect { it.key }
         },
-        (Query.GreaterThanEqualsProperty): { Query.GreaterThanEqualsProperty gt, PersistentProperty property ->
+        (Query.GreaterThanEqualsProperty): { Query.GreaterThanEqualsProperty gt, PersistentProperty property, Closure function = null, boolean onValue = false ->
             def name = gt.property
             def other = gt.otherProperty
             def allEntities = datastore[family]

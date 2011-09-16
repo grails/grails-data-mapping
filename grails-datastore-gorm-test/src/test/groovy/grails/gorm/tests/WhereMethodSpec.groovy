@@ -13,6 +13,62 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
+  def "Test is null query"() {
+      given:"A bunch of people"
+            createPeople()
+
+      when:"We query for a property to be null"
+        def query = Person.where {
+            firstName == null
+        }
+
+      then:"the  right results are returned"
+         query.count() == 0
+  }
+
+  def "Test subquery defined as closure"() {
+     given:"A bunch of people"
+           createPeople()
+
+      when:"use a subquery with additional criterion "
+        def query = Person.where {
+          age > avg(age).of { lastName == "Simpson" } && firstName == "Homer"
+        }
+
+        def results = query.list(sort:"firstName")
+
+     then:"The expected result is returned"
+        results.size() == 1
+        results[0].firstName == "Homer"
+
+  }
+
+  def "Test function execution"() {
+      given:"A bunch of people with pets"
+            createPeopleWithPets()
+            new Pet(owner:Person.get(1), birthDate: new Date() - 750, name:"Old Dog").save()
+
+
+      when:"A function is used on the property"
+        def query = Pet.where {
+              year(birthDate) == 2011
+        }
+        def results = query.list()
+
+      then:"check that the results are correct"
+        results.size() == 7
+
+      when:"A function is used on the property"
+        query = Pet.where {
+              year(birthDate) == 2009
+        }
+        results = query.list()
+
+      then:"check that the results are correct"
+        results.size() == 1
+        results[0].name == "Old Dog"
+  }
+
   def "Test in range query"() {
       given:"A bunch of people"
            createPeople()
@@ -407,7 +463,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
           queryUsingUnknownPropertyWithSize()
        then:
             MultipleCompilationErrorsException e = thrown()
-            e.message.contains 'Cannot query size of property "blah" - no such property on class CallMe exists'
+            e.message.contains 'Cannot query size of property "blah" - no such property on class grails.gorm.tests.Person exists'
    }
 
    def "Test error when using unsupported operator"() {
@@ -423,7 +479,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
           queryReferencingNonExistentPropertyOfAssociation()
        then:
             MultipleCompilationErrorsException e = thrown()
-            e.message.contains 'Cannot query on property "doesntExist" - no such property on class CallMe exists.'
+            e.message.contains 'Cannot query on property "doesntExist" - no such property on class grails.gorm.tests.Pet exists.'
    }
 
    def "Test error when using unknown domain property"() {
@@ -431,7 +487,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
           queryReferencingNonExistentProperty()
        then:
             MultipleCompilationErrorsException e = thrown()
-            e.message.contains 'Cannot query on property "doesntExist" - no such property on class CallMe exists.'
+            e.message.contains 'Cannot query on property "doesntExist" - no such property on class grails.gorm.tests.Person exists.'
    }
 
    String nameBart() { "Bart" }
@@ -1081,6 +1137,7 @@ class CallMe {
       Person.simpsons.where {
           firstName == "Bart"
       }
+
     }
 }
 ''', "Test").newInstance()
