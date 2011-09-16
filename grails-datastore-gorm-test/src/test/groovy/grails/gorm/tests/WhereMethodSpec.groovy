@@ -46,7 +46,8 @@ class WhereMethodSpec extends GormDatastoreSpec {
   def "Test function execution"() {
       given:"A bunch of people with pets"
             createPeopleWithPets()
-            new Pet(owner:Person.get(1), birthDate: new Date() - 750, name:"Old Dog").save()
+            def p = new Person(firstName: "Old", lastName: "Person").save()
+            new Pet(owner:p, birthDate: new Date() - 750, name:"Old Dog").save()
 
 
       when:"A function is used on the property"
@@ -67,6 +68,17 @@ class WhereMethodSpec extends GormDatastoreSpec {
       then:"check that the results are correct"
         results.size() == 1
         results[0].name == "Old Dog"
+
+      when:"A function is used on an association"
+//        query = Person.where {
+//              year(pet.birthDate) == 2009
+//        }
+        query = getClassThatCallsWhere().functionQuery()
+        results = query.list()
+
+      then:"The correct results are returned"
+         results.size() == 1
+         results[0].firstName == "Old"
   }
 
   def "Test in range query"() {
@@ -1138,6 +1150,12 @@ class CallMe {
           firstName == "Bart"
       }
 
+    }
+
+    def functionQuery() {
+        Person.where {
+              year(pets.birthDate) == 2009
+        }
     }
 }
 ''', "Test").newInstance()

@@ -52,6 +52,8 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         add("where");
     }};
     public static final ClassNode FUNCTION_CALL_CRITERION = new ClassNode(FunctionCallingCriterion.class);
+    public static final String EQUALS_OPERATOR = "==";
+    public static final String IS_NULL_CRITERION = "isNull";
 
     private SourceUnit sourceUnit;
     private static final Set<String> CANDIDATE_METHODS = new HashSet<String>() {{
@@ -658,28 +660,18 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     Expression arguments = mce.getArguments();
                     boolean hasOneArg = arguments instanceof ArgumentListExpression ? ((ArgumentListExpression)arguments).getExpressions().size() == 1 : false;
                     if(isThis && hasOneArg && SUPPORTED_FUNCTIONS.contains(methodAsString)) {
+
+                        String functionName = methodAsString;
                         ArgumentListExpression existingArgs = (ArgumentListExpression) arguments;
-                        ArgumentListExpression newArgs = new ArgumentListExpression();
-                        ArgumentListExpression constructorArgs = new ArgumentListExpression();
-                        constructorArgs.addExpression(new ConstantExpression(methodAsString));
-                        ClassNode criterionClassNode = OPERATOR_TO_CRITERION_METHOD_MAP.get(operator);
-                        if(criterionClassNode != null) {
-                            ArgumentListExpression criterionConstructorArguments = new ArgumentListExpression();
-                            Expression propertyNameExpression = existingArgs.getExpression(0);
-                            if(!(propertyNameExpression instanceof ConstantExpression)) {
-                                propertyNameExpression = new ConstantExpression(propertyNameExpression.getText());
-                            }
-                            criterionConstructorArguments.addExpression(propertyNameExpression);
-                            criterionConstructorArguments.addExpression(rightExpression);
-                            constructorArgs.addExpression(new ConstructorCallExpression(criterionClassNode, criterionConstructorArguments));
-                            ConstructorCallExpression constructorCallExpression = new ConstructorCallExpression(FUNCTION_CALL_CRITERION, constructorArgs);
-                            newArgs.addExpression(constructorCallExpression );
-                            newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "add", newArgs)));
-                            return;
+                        Expression propertyNameExpression = existingArgs.getExpression(0);
+                        if(propertyNameExpression instanceof PropertyExpression) {
+                           handleAssociationQueryViaPropertyExpression((PropertyExpression) propertyNameExpression, rightExpression,operator,newCode,propertyNames,functionName);
                         }
                         else {
-                            sourceUnit.getErrorCollector().addError(new LocatedMessage("Unsupported operator ["+operator+"] used with function call ["+methodAsString+"] in query", operation, sourceUnit));
+
+                            handleFunctionCall(newCode, operator, rightExpression, functionName, propertyNameExpression);
                         }
+                        return;
                     }
                 }
 
@@ -711,6 +703,28 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         }
     }
 
+    private void handleFunctionCall(BlockStatement newCode,String operator, Expression rightExpression, String functionName, Expression propertyNameExpression) {
+        ArgumentListExpression newArgs = new ArgumentListExpression();
+        ArgumentListExpression constructorArgs = new ArgumentListExpression();
+        constructorArgs.addExpression(new ConstantExpression(functionName));
+        ClassNode criterionClassNode = OPERATOR_TO_CRITERION_METHOD_MAP.get(operator);
+        if(criterionClassNode != null) {
+            ArgumentListExpression criterionConstructorArguments = new ArgumentListExpression();
+            if(!(propertyNameExpression instanceof ConstantExpression)) {
+                propertyNameExpression = new ConstantExpression(propertyNameExpression.getText());
+            }
+            criterionConstructorArguments.addExpression(propertyNameExpression);
+            criterionConstructorArguments.addExpression(rightExpression);
+            constructorArgs.addExpression(new ConstructorCallExpression(criterionClassNode, criterionConstructorArguments));
+            ConstructorCallExpression constructorCallExpression = new ConstructorCallExpression(FUNCTION_CALL_CRITERION, constructorArgs);
+            newArgs.addExpression(constructorCallExpression );
+            newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "add", newArgs)));
+        }
+        else {
+            sourceUnit.getErrorCollector().addError(new LocatedMessage("Unsupported operator ["+operator+"] used with function call ["+functionName+"] in query", Token.newString(functionName,rightExpression.getLineNumber(), rightExpression.getColumnNumber()), sourceUnit));
+        }
+    }
+
     private void handleBinaryExpressionSide(Expression expressionSide, Expression oppositeSide, String operator, BlockStatement newCode, boolean addAll, List<String> propertyNames) {
         if (expressionSide instanceof BinaryExpression) {
             addBinaryExpressionToNewBody(propertyNames, newCode, (BinaryExpression) expressionSide, addAll);
@@ -723,30 +737,42 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         }
         else if (expressionSide instanceof PropertyExpression) {
             PropertyExpression pe = (PropertyExpression) expressionSide;
-            Expression objectExpression = pe.getObjectExpression();
-            if (objectExpression instanceof VariableExpression) {
-                String propertyName = objectExpression.getText();
-                if (propertyNames.contains(propertyName)) {
-                    String associationProperty = pe.getPropertyAsString();
+            handleAssociationQueryViaPropertyExpression(pe, oppositeSide, operator, newCode, propertyNames, null);
+        }
+        else {
+            // TODO: compilation error?
+        }
+    }
 
-                    ClassNode type = getPropertyType(propertyName);
-                    List<String> associationPropertyNames = getPropertyNamesForAssociation(type);
-                    if(associationPropertyNames == null) {
-                        associationPropertyNames = new ArrayList();
-                    }
+    private void handleAssociationQueryViaPropertyExpression(PropertyExpression pe, Expression oppositeSide, String operator, BlockStatement newCode, List<String> propertyNames, String functionName) {
+        Expression objectExpression = pe.getObjectExpression();
+        if (objectExpression instanceof VariableExpression) {
+            String propertyName = objectExpression.getText();
+            if (propertyNames.contains(propertyName)) {
+                String associationProperty = pe.getPropertyAsString();
 
-
-                    ClosureAndArguments closureAndArguments = new ClosureAndArguments();
-                    BlockStatement currentBody = closureAndArguments.getCurrentBody();
-                    ArgumentListExpression arguments = closureAndArguments.getArguments();
-
-                    boolean hasNoProperties = associationPropertyNames.isEmpty();
-                    if(!hasNoProperties && !associationPropertyNames.contains(associationProperty)) {
-                         sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query property \""+associationProperty+"\" - no such property on class "+type.getName()+" exists.", Token.newString(propertyName,pe.getLineNumber(), pe.getColumnNumber()), sourceUnit));
-                    }
-                    addCriteriaCallMethodExpression(currentBody, operator, oppositeSide, associationProperty, associationPropertyNames, hasNoProperties);
-                    newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, propertyName, arguments)));
+                ClassNode type = getPropertyType(propertyName);
+                List<String> associationPropertyNames = getPropertyNamesForAssociation(type);
+                if(associationPropertyNames == null) {
+                    associationPropertyNames = new ArrayList();
                 }
+
+
+                ClosureAndArguments closureAndArguments = new ClosureAndArguments();
+                BlockStatement currentBody = closureAndArguments.getCurrentBody();
+                ArgumentListExpression arguments = closureAndArguments.getArguments();
+
+                boolean hasNoProperties = associationPropertyNames.isEmpty();
+                if(!hasNoProperties && !associationPropertyNames.contains(associationProperty)) {
+                     sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query property \""+associationProperty+"\" - no such property on class "+type.getName()+" exists.", Token.newString(propertyName, pe.getLineNumber(), pe.getColumnNumber()), sourceUnit));
+                }
+                if(functionName != null) {
+                    handleFunctionCall(currentBody, operator, oppositeSide, functionName, new ConstantExpression(associationProperty));
+                }
+                else {
+                    addCriteriaCallMethodExpression(currentBody, operator, oppositeSide, associationProperty, associationPropertyNames, hasNoProperties);
+                }
+                newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, propertyName, arguments)));
             }
         }
         else {
@@ -855,9 +881,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             ConstantExpression constant = (ConstantExpression) rightExpression;
             if(constant.getValue() == null) {
                 boolean singleArg = false;
-                if(operator.equals("==")) {
+                if(operator.equals(EQUALS_OPERATOR)) {
                     singleArg = true;
-                    methodToCall = "isNull";
+                    methodToCall = IS_NULL_CRITERION;
                 }
                 else if(operator.equals("!=")) {
                     singleArg = true;
