@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.grails.datastore.mapping.core.Datastore;
+import org.springframework.core.convert.ConversionException;
 
 /**
  * Finder used to return a single result
@@ -48,7 +49,13 @@ public class FindOrCreateByFinder extends AbstractFindByFinder {
     		throw new MissingMethodException(invocation.getMethodName(), invocation.getJavaClass(), invocation.getArguments());
         }
 
-        Object result = super.doInvokeInternal(invocation);
+        
+        Object result = null;
+        try {
+            result = super.doInvokeInternal(invocation);
+        } catch (ConversionException e) { // TODO this is not the right place to deal with this...
+            throw new MissingMethodException(invocation.getMethodName(), invocation.getJavaClass(), invocation.getArguments());
+        }
         if (result == null) {
             Map m = new HashMap();
             List<MethodExpression> expressions = invocation.getExpressions();
