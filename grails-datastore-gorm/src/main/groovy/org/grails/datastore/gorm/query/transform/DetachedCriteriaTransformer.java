@@ -526,8 +526,18 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             Statement associationCode = associationQuery.getCode();
             if(associationCode instanceof BlockStatement) {
 
+                List<String> associationPropertyNames = null;
                 ClassNode type = getPropertyType(methodName);
-                List<String> associationPropertyNames = getPropertyNamesForAssociation(type);
+                if(!isDomainClass(type)) {
+                    ClassNode associationTypeFromGenerics = getAssociationTypeFromGenerics(type);
+                    if(associationTypeFromGenerics != null) {
+                        type = associationTypeFromGenerics;
+                        associationPropertyNames = getPropertyNamesForAssociation(associationTypeFromGenerics);
+                    }
+                }
+                if(associationPropertyNames == null) {
+                    associationPropertyNames = new ArrayList<String>();
+                }
 
                 ClassNode existing = currentClassNode;
                 try {
@@ -535,7 +545,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                         type = getAssociationTypeFromGenerics(type);
 
                     currentClassNode = type;
-                    addBlockStatementToNewQuery((BlockStatement) associationCode, currentBody, associationPropertyNames == null, associationPropertyNames != null ? associationPropertyNames : Collections.<String>emptyList());
+                    addBlockStatementToNewQuery((BlockStatement) associationCode, currentBody, associationPropertyNames.isEmpty(), associationPropertyNames);
                 } finally {
                     currentClassNode = existing;
                 }
