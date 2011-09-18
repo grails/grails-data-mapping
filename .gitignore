@@ -13,6 +13,7 @@ eclipse-workspace/
 Servers/
 out
 stacktrace.log
+*.iws
 
 /grails-datastore-gorm-gemfire/.settings/
 /grails-datastore-gorm-jpa/.settings/
