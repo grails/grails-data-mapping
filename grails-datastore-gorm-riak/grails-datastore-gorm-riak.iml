@@ -178,33 +178,33 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.5.8.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/jars/slf4j-api-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/sources/jcl-over-slf4j-1.5.8-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/sources/slf4j-api-1.6.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/jars/slf4j-api-1.5.8.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/sources/slf4j-api-1.5.8-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/sources/jcl-over-slf4j-1.6.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-simple/jars/slf4j-simple-1.5.8.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-log4j12/jars/slf4j-log4j12-1.5.8.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-simple/sources/slf4j-simple-1.5.8-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-log4j12/sources/slf4j-log4j12-1.5.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -244,33 +244,6 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/javax.jms/jms/jars/jms-1.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/com.sun.jdmk/jmxtools/jars/jmxtools-1.2.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/com.sun.jmx/jmxri/jars/jmxri-1.2.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
           <root url="jar://$GRADLE_REPOSITORY$/commons-cli/commons-cli/jars/commons-cli-1.2.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -279,9 +252,9 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="grails-datastore-riak" exported="" />
-    <orderEntry type="module" module-name="grails-datastore-core" exported="" />
     <orderEntry type="module" module-name="grails-datastore-gorm" exported="" />
+    <orderEntry type="module" module-name="grails-datastore-core" exported="" />
+    <orderEntry type="module" module-name="grails-datastore-riak" exported="" />
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
