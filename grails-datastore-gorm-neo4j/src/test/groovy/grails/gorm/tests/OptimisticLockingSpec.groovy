@@ -1,9 +1,9 @@
 package grails.gorm.tests
 
 import org.grails.datastore.mapping.core.OptimisticLockingException
-import org.grails.datastore.mapping.core.Session
 
 import spock.lang.Ignore
+import grails.persistence.Entity
 
 /**
  * @author Burt Beckwith
@@ -115,6 +115,7 @@ class OptimisticLockingSpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class OptLockVersioned implements Serializable {
     Long id
     Long version
@@ -122,6 +123,7 @@ class OptLockVersioned implements Serializable {
     String name
 }
 
+@Entity
 class OptLockNotVersioned implements Serializable {
     Long id
 

@@ -1,5 +1,7 @@
 package grails.gorm.tests
 
+import grails.persistence.Entity
+
 class ManyToManySpec extends GormDatastoreSpec {
 
     /*def setupSpec() {
@@ -114,6 +116,7 @@ class ManyToManySpec extends GormDatastoreSpec {
 
 }
 
+@Entity
 class User {
     Long id
     Long version
@@ -140,6 +143,7 @@ class User {
     }
 }
 
+@Entity
 class Role {
     Long id
     Long version
