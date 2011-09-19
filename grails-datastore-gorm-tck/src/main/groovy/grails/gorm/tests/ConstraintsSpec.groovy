@@ -1,5 +1,7 @@
 package grails.gorm.tests
 
+import grails.persistence.Entity
+
 class ConstraintsSpec extends GormDatastoreSpec {
 
     static {
@@ -18,6 +20,7 @@ class ConstraintsSpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class ConstrainedEntity implements Serializable {
 
     static final MAX_VALUE = 1000

@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import spock.lang.Ignore
+import grails.persistence.Entity
 
 /**
  * @author graemerocher
@@ -991,6 +992,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class PlantCategory implements Serializable {
     Long id
     Long version
@@ -1017,6 +1019,7 @@ class PlantCategory implements Serializable {
     }
 }
 
+@Entity
 class Plant implements Serializable {
     Long id
     Long version
@@ -1029,6 +1032,7 @@ class Plant implements Serializable {
     }
 }
 
+@Entity
 class Publication implements Serializable {
     Long id
     Long version

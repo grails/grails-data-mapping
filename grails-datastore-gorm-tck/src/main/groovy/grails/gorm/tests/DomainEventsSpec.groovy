@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import org.grails.datastore.mapping.core.Session
+import grails.persistence.Entity
 
 /**
  * @author graemerocher
@@ -174,6 +175,7 @@ class DomainEventsSpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class PersonEvent implements Serializable {
     Long id
     Long version
@@ -228,6 +230,7 @@ class PersonEvent implements Serializable {
     }
 }
 
+@Entity
 class ModifyPerson implements Serializable {
     Long id
     Long version
