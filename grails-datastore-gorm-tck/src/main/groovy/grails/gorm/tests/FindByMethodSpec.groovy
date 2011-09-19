@@ -1,7 +1,5 @@
 package grails.gorm.tests
 
-import grails.persistence.Entity
-
 /**
  * @author graemerocher
  */
@@ -434,7 +432,6 @@ class FindByMethodSpec extends GormDatastoreSpec {
 
 }
 
-@Entity
 class Highway implements Serializable {
     Long id
     Long version
@@ -447,7 +444,6 @@ class Highway implements Serializable {
     }
 }
 
-@Entity
 class Book implements Serializable {
     Long id
     Long version

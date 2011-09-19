@@ -1,8 +1,5 @@
 package grails.gorm.tests
 
-import grails.persistence.Entity
-
-@Entity
 class ClassWithOverloadedBeforeValidate implements Serializable {
     Long id
     Long version
