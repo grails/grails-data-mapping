@@ -109,6 +109,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
     protected inserts = new ConcurrentLinkedQueue()
     protected Map<Class, Persister> persisters = new ConcurrentHashMap<Class, Persister>();
     protected dirtyObjects = Collections.synchronizedSet(new HashSet())
+    protected nonMonitorableObjects = Collections.synchronizedSet(new HashSet())
 
     @Override
     Transaction beginTransaction() {
@@ -188,6 +189,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
     void flush() {
         // do not iterate directly since we might add some entities to objects collection during iteration
         def objects = [] as ConcurrentLinkedQueue
+        objects.addAll(nonMonitorableObjects)
         objects.addAll(dirtyObjects)
         objects.addAll(inserts)
 
@@ -475,11 +477,19 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
     }
 
     private void monitorSettersForObject(object) {
-        object.addPropertyChangeListener(this)
+        try {
+            object.addPropertyChangeListener(this)
+        } catch (MissingMethodException e) {
+            nonMonitorableObjects << object
+        }
     }
 
     private void unmonitorSettersForObject(object) {
-        object.removePropertyChangeListener(this)
+        try {
+            object.removePropertyChangeListener(this)
+        } catch (MissingMethodException e) {
+            nonMonitorableObjects.remove(object)
+        }
     }
 
     private def readToManyProperty(Association association, Node node, EntityAccess entityAccess) {
