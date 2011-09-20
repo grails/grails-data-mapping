@@ -1048,7 +1048,11 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     @Override
     protected List<Serializable> persistEntities(PersistentEntity persistentEntity, Iterable objs) {
         List<Serializable> keys = new ArrayList<Serializable>();
-        for (Object obj : objs) {
+        Iterable newIter = objs;
+        if(objs instanceof Collection) {
+            newIter = new ArrayList((Collection) objs);
+        }
+        for (Object obj : newIter) {
             keys.add(persist(obj));
         }
         return keys;
