@@ -16,6 +16,7 @@ class Person implements Serializable {
 
     String firstName
     String lastName
+    Integer age = 0
     Set pets = [] as Set
     static hasMany = [pets: Pet]
 
