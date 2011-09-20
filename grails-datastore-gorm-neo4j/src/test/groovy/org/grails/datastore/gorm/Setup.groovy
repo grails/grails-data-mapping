@@ -19,7 +19,6 @@ import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
-import org.grails.datastore.gorm.neo4j.Neo4jSession
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
 import grails.gorm.tests.Tournament
@@ -48,7 +47,10 @@ class Setup {
         assert storeDir.delete()
         assert storeDir.mkdir()
         storeDir = storeDir.path
-        datastore = new Neo4jDatastore(storeDir: storeDir)
+        def ctx = new GenericApplicationContext()
+        ctx.refresh()
+        datastore = new Neo4jDatastore(storeDir: storeDir, applicationContext: ctx)
+        datastore.afterPropertiesSet()
 
         /*Neo4jSession.metaClass.invokeMethod = { String name, args ->
             def metaMethod = Neo4jSession.metaClass.getMetaMethod(name, args)
@@ -67,13 +69,13 @@ class Setup {
         classes << User << Role << Tournament << Team << Club
         ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint)
 
-        def grailsApplication = new DefaultGrailsApplication(classes as Class[], Setup.getClassLoader())
+        /*def grailsApplication = new DefaultGrailsApplication(classes as Class[], Setup.getClassLoader())
         grailsApplication.mainContext = new GenericApplicationContext()
         grailsApplication.initialise()
 
 
         grailsApplication.mainContext.refresh()
-        datastore.applicationContext = grailsApplication.mainContext // grailsApplication.mainContext
+        datastore.applicationContext = grailsApplication.mainContext // grailsApplication.mainContext*/
 
 
         for (cls in classes) {
@@ -90,11 +92,17 @@ class Setup {
                 }
             }
         ] as Validator)
+
         entity = datastore.mappingContext.persistentEntities.find { PersistentEntity e -> e.name.contains("Role")}
 
-        def validator = new GrailsDomainClassValidator()
-        validator.grailsApplication = grailsApplication
-        validator.domainClass = grailsApplication.getDomainClass(entity.name)
+        def grailsApplication = new DefaultGrailsApplication([Role] as Class[], Setup.getClassLoader())
+        grailsApplication.mainContext = ctx
+        grailsApplication.initialise()
+
+        def validator = new GrailsDomainClassValidator(
+            grailsApplication: grailsApplication,
+            domainClass: grailsApplication.getDomainClass(entity.name)
+        )
 
         datastore.mappingContext.addEntityValidator(entity, validator)
 

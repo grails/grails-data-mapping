@@ -21,10 +21,10 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="grails-datastore-web" exported="" />
+    <orderEntry type="module" module-name="grails-datastore-gorm" exported="" />
     <orderEntry type="module" module-name="grails-datastore-core" exported="" />
     <orderEntry type="module" module-name="grails-datastore-jpa" exported="" />
-    <orderEntry type="module" module-name="grails-datastore-gorm" exported="" />
+    <orderEntry type="module" module-name="grails-datastore-web" exported="" />
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
@@ -92,6 +92,17 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/jars/slf4j-api-1.6.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/sources/slf4j-api-1.6.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
           <root url="jar://$GRADLE_REPOSITORY$/javassist/javassist/jars/javassist-3.11.0.GA.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -108,17 +119,6 @@
         <JAVADOC />
         <SOURCES>
           <root url="jar://$GRADLE_REPOSITORY$/javax.transaction/jta/sources/jta-1.1-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/jars/slf4j-api-1.5.8.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/sources/slf4j-api-1.5.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

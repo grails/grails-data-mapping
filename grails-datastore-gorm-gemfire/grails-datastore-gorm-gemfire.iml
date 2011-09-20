@@ -21,9 +21,9 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="grails-datastore-core" exported="" />
     <orderEntry type="module" module-name="grails-datastore-gemfire" exported="" />
     <orderEntry type="module" module-name="grails-datastore-gorm" exported="" />
+    <orderEntry type="module" module-name="grails-datastore-core" exported="" />
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>

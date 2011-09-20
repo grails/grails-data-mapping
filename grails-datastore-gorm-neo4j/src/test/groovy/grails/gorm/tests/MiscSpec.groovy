@@ -1,5 +1,7 @@
 package grails.gorm.tests
 
+import grails.persistence.Entity
+
 /**
  * some more unrelated testcases, in more belong together logically, consider refactoring them into a seperate spec
  */
@@ -121,7 +123,7 @@ class MiscSpec extends GormDatastoreSpec {
         session.clear()
 
         when:
-        tournament = tournament.get(tournament.id)
+        tournament = Tournament.get(tournament.id)
 
         then:
         tournament.teams.size() == 1
@@ -131,6 +133,7 @@ class MiscSpec extends GormDatastoreSpec {
 
 }
 
+@Entity
 class Tournament {
     Long id
     Long version
@@ -139,6 +142,7 @@ class Tournament {
     static hasMany = [teams: Team ]
 }
 
+@Entity
 class Team {
     Long id
     Long version
@@ -146,6 +150,7 @@ class Team {
     Club club
 }
 
+@Entity
 class Club {
     Long id
     Long version

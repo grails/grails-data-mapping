@@ -61,18 +61,20 @@ import org.grails.datastore.mapping.collection.AbstractPersistentCollection
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.neo4j.graphdb.RelationshipType
 import org.grails.datastore.mapping.model.types.Basic
+import java.beans.PropertyChangeListener
+import java.beans.PropertyChangeEvent
 import org.grails.datastore.mapping.query.api.QueryableCriteria
 import org.springframework.beans.BeanWrapperImpl
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
-class Neo4jSession extends AbstractAttributeStoringSession {
+class Neo4jSession extends AbstractAttributeStoringSession implements PropertyChangeListener {
 
     public static final TYPE_PROPERTY_NAME = "__type__"
     public static final String SUBREFERENCE_PROPERTY_NAME = "__subreference__"
     protected final Logger log = LoggerFactory.getLogger(getClass())
-    
+
     static final ALLOWED_CLASSES_NEO4J_PROPERTIES = [
             null,
             NullObject,
@@ -105,7 +107,9 @@ class Neo4jSession extends AbstractAttributeStoringSession {
 
     protected Map<Serializable, Object> objectToKey = new ConcurrentHashMap<Serializable, Object>();
     protected inserts = new ConcurrentLinkedQueue()
-    protected Map<Class, Persister> persisters = new ConcurrentHashMap<Class,Persister>();
+    protected Map<Class, Persister> persisters = new ConcurrentHashMap<Class, Persister>();
+    protected dirtyObjects = Collections.synchronizedSet(new HashSet())
+    protected nonMonitorableObjects = Collections.synchronizedSet(new HashSet())
 
     @Override
     Transaction beginTransaction() {
@@ -138,7 +142,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
                             persist(value)
                         }
 
-                        if ((value!=null) && association.bidirectional) {
+                        if ((value != null) && association.bidirectional) {
                             EntityAccess reverseEntityAccess = new EntityAccess(association.associatedEntity, value)
                             addObjectToReverseSide(reverseEntityAccess, association, o)
                         }
@@ -159,9 +163,9 @@ class Neo4jSession extends AbstractAttributeStoringSession {
                         throw new NotImplementedException()
                 }
             }
-
         }
         objectToKey[o.id] = o
+        monitorSettersForObject(o)
         o.id
     }
 
@@ -174,18 +178,20 @@ class Neo4jSession extends AbstractAttributeStoringSession {
     void attach(Object o) {
         Assert.notNull o.id
         objectToKey[o.id] = o
+        monitorSettersForObject(o)
     }
 
     private boolean isProxy(object) {
-        object.metaClass.methods.any { it.name=='isProxy'}
+        object.metaClass.methods.any { it.name == 'isProxy'}
     }
 
     @Override
     void flush() {
-
         // do not iterate directly since we might add some entities to objects collection during iteration
         def objects = [] as ConcurrentLinkedQueue
-        objects.addAll(objectToKey.values())
+        objects.addAll(nonMonitorableObjects)
+        objects.addAll(dirtyObjects)
+        objects.addAll(inserts)
 
         def alreadyPersisted = [] as Set // required to prevent doubled (and cyclic) saves
 
@@ -195,7 +201,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
             if ((obj in alreadyPersisted) || isProxy(obj)) {
                 continue
             }
-            log.debug "flush obj $obj $id"
+            log.debug "flush obj ${obj.getClass().name} $id"
             alreadyPersisted << obj
             PersistentEntity pe = mappingContext.getPersistentEntity(obj.getClass().name)
 
@@ -209,18 +215,18 @@ class Neo4jSession extends AbstractAttributeStoringSession {
 
             for (PersistentProperty prop in pe.persistentProperties) {
                 def value = entityAccess.getProperty(prop.name)
-                Node thisNode = obj.node
+                Node thisNode = nativeInterface.getNodeById(obj.id)
                 switch (prop) {
                     case Simple:
-                        if ((prop.name=='version') && (!inserts.contains(obj))) {
-                            value = value==null ? 0 : value+1
+                        if ((prop.name == 'version') && (!inserts.contains(obj))) {
+                            value = value == null ? 0 : value + 1
                             entityAccess.setProperty(prop.name, value)
                         }
                         if (!ALLOWED_CLASSES_NEO4J_PROPERTIES.contains(prop.type)) {
                             value = mappingContext.conversionService.convert(value, String)
                         }
-                        if (thisNode.getProperty(prop.name, null)!=value) {
-                            value==null ? thisNode.removeProperty(prop.name) : thisNode.setProperty(prop.name, value)
+                        if (thisNode.getProperty(prop.name, null) != value) {
+                            value == null ? thisNode.removeProperty(prop.name) : thisNode.setProperty(prop.name, value)
                         }
                         log.debug "storing simple for $prop = $value ${thisNode.getProperty(prop.name, null)?.getClass()}"
                         break
@@ -261,6 +267,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
             applicationEventPublisher.publishEvent(event)
         }
         inserts.clear()
+        dirtyObjects.clear()
     }
 
     private def writeToManyProperty(value, PersistentProperty prop, Node thisNode) {
@@ -310,7 +317,7 @@ class Neo4jSession extends AbstractAttributeStoringSession {
 
     private def writeToOneProperty(Association association, Node thisNode, value, obj) {
         def returnValue = null
-        if (value!=null) {
+        if (value != null) {
             persist(value)
             returnValue = value
         }
@@ -353,14 +360,18 @@ class Neo4jSession extends AbstractAttributeStoringSession {
 
     @Override
     void clear() {
+        objectToKey.values().each { unmonitorSettersForObject(it)}
         objectToKey.clear()
+        dirtyObjects.clear()
         inserts.clear()
     }
 
     @Override
     void clear(Object o) {
+        unmonitorSettersForObject(o)
         objectToKey.remove(o.id)
         inserts.remove(o)
+        dirtyObjects.remove(o)
     }
 
     @Override
@@ -406,15 +417,15 @@ class Neo4jSession extends AbstractAttributeStoringSession {
     def <T> T retrieve(Class<T> type, Serializable key) {
         log.debug "retrieving $type for id $key"
         def id = key as long
-        if (id==null) {
+        if (id == null) {
             return null
         }
         def result = objectToKey[id]
-        if ((result==null) || isProxy(result) ) {
+        if ((result == null) || isProxy(result)) {
             try {
                 Node node = nativeInterface.getNodeById(id)
                 PersistentEntity pe = getTypeForNode(node)
-                if ((pe==null) || (type && !type.isAssignableFrom(pe.javaClass))) {
+                if ((pe == null) || (type && !type.isAssignableFrom(pe.javaClass))) {
                     return null
                 }
                 result = pe.javaClass.newInstance()
@@ -449,13 +460,13 @@ class Neo4jSession extends AbstractAttributeStoringSession {
                                 readToOneProperty(prop, node, entityAccess)
                             }
 
-
                         default:
                             throw new NotImplementedException("don't know how to read $prop ${prop.getClass().superclass}")
                     }
                 }
                 applicationEventPublisher.publishEvent(new PostLoadEvent(datastore, pe, entityAccess))
                 objectToKey[id] = result
+                monitorSettersForObject(result)
             } catch (NotFoundException e) {
                 log.warn "no node for $id found: $e.message"
                 return null
@@ -465,12 +476,29 @@ class Neo4jSession extends AbstractAttributeStoringSession {
         result
     }
 
+    private void monitorSettersForObject(object) {
+        try {
+            object.addPropertyChangeListener(this)
+        } catch (MissingMethodException e) {
+            nonMonitorableObjects << object
+        }
+    }
+
+    private void unmonitorSettersForObject(object) {
+        try {
+            object.removePropertyChangeListener(this)
+        } catch (MissingMethodException e) {
+            nonMonitorableObjects.remove(object)
+        }
+    }
+
     private def readToManyProperty(Association association, Node node, EntityAccess entityAccess) {
         def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(association)
         def keys = node.getRelationships(relationshipType, direction).collect { it.getOtherNode(node).id }
+
         def collection = List.class.isAssignableFrom(association.type) ?
-            new PersistentList(keys, association.associatedEntity.javaClass, this) :
-            new PersistentSet(keys, association.associatedEntity.javaClass, this)
+            new ObservableListWrapper(entityAccess.entity, keys, association.associatedEntity.javaClass, this) :
+            new ObservableSetWrapper(entityAccess.entity, keys, association.associatedEntity.javaClass, this)
         entityAccess.setPropertyNoConversion(association.name, collection)
     }
 
@@ -521,6 +549,8 @@ class Neo4jSession extends AbstractAttributeStoringSession {
         node.delete()
         inserts.remove(obj)
         objectToKey.remove(obj.id)
+        dirtyObjects.remove(obj)
+        unmonitorSettersForObject(obj)
 
         event = new PostDeleteEvent(datastore, pe, entityAccess)
         applicationEventPublisher.publishEvent(event)
@@ -539,7 +569,6 @@ class Neo4jSession extends AbstractAttributeStoringSession {
 
     @Override
     Query createQuery(Class type) {
-        //flush()
         new Neo4jQuery(this, mappingContext.getPersistentEntity(type.name))
     }
 
@@ -556,7 +585,6 @@ class Neo4jSession extends AbstractAttributeStoringSession {
         Persister p = persisters.get(cls);
         if (p == null) {
             p = createPersister(cls, getMappingContext());
-            //firstLevelCache.put(cls, new ConcurrentHashMap<Serializable, Object>());
             if (p) {
                 persisters[cls] = p
             }
@@ -605,8 +633,8 @@ class Neo4jSession extends AbstractAttributeStoringSession {
     @Override
     int deleteAll(QueryableCriteria criteria) {
         // TODO: suboptimal.. improve batch deletes
-        int total =0
-        for(o in criteria.list()) {
+        int total = 0
+        for (o in criteria.list()) {
             delete(o)
             total++
         }
@@ -618,12 +646,17 @@ class Neo4jSession extends AbstractAttributeStoringSession {
         // TODO: suboptimal.. improve batch updates
         final results = criteria.list()
         int total = 0
-        for(o in results) {
+        for (o in results) {
             total++
             def bean = new BeanWrapperImpl(o)
             bean.setPropertyValues(properties)
             persist(o)
         }
         return total
+    }
+
+    @Override
+    void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        dirtyObjects << propertyChangeEvent.source
     }
 }
