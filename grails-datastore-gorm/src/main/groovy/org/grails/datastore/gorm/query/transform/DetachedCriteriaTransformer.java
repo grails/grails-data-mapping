@@ -23,6 +23,7 @@ import org.codehaus.groovy.ast.stmt.*;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.messages.LocatedMessage;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.commons.GrailsResourceUtils;
 import org.codehaus.groovy.syntax.Token;
 import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion;
@@ -131,6 +132,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private Map<String, ClassNode> detachedCriteriaVariables = new HashMap<String, ClassNode>();
     private Map<String, ClassNode> staticDetachedCriteriaVariables = new HashMap<String, ClassNode>();
+    private Map<String, Map<String,ClassNode>> cachedClassProperties = new HashMap<String, Map<String,ClassNode>>();
     private ClassNode currentClassNode;
 
     DetachedCriteriaTransformer(SourceUnit sourceUnit) {
@@ -381,18 +383,42 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     private List<String> getPropertyNames(ClassNode classNode) {
-        List<MethodNode> methods = classNode.getMethods();
-        List<String> propertyNames = new ArrayList<String>();
-        for (MethodNode method : methods) {
-            if (!method.isAbstract() && !method.isStatic() && isGetter(method.getName(), method)) {
-                propertyNames.add(GrailsClassUtils.getPropertyForGetter(method.getName()));
+        String className = classNode.getName();
+        Map<String, ClassNode> cachedProperties = cachedClassProperties.get(className);
+        if(cachedProperties == null) {
+            cachedProperties = new HashMap<String, ClassNode>();
+            cachedClassProperties.put(className, cachedProperties);
+            List<MethodNode> methods = classNode.getMethods();
+            for (MethodNode method : methods) {
+                if (!method.isAbstract() && !method.isStatic() && isGetter(method.getName(), method)) {
+                    String propertyName = GrailsClassUtils.getPropertyForGetter(method.getName());
+                    cachedProperties.put(propertyName, method.getReturnType());
+                }
+            }
+            List<PropertyNode> properties = classNode.getProperties();
+            for (PropertyNode property : properties) {
+
+                String propertyName = property.getName();
+                if(GrailsDomainClassProperty.HAS_MANY.equals(propertyName) || GrailsDomainClassProperty.BELONGS_TO.equals(propertyName)) {
+                    Expression initialExpression = property.getInitialExpression();
+                    if(initialExpression instanceof MapExpression) {
+                        MapExpression me = (MapExpression) initialExpression;
+                        List<MapEntryExpression> mapEntryExpressions = me.getMapEntryExpressions();
+                        for (MapEntryExpression mapEntryExpression : mapEntryExpressions) {
+                            Expression keyExpression = mapEntryExpression.getKeyExpression();
+                            Expression valueExpression = mapEntryExpression.getValueExpression();
+                            if(valueExpression instanceof ClassExpression) {
+                                cachedProperties.put(keyExpression.getText(), valueExpression.getType());
+                            }
+                        }
+                    }
+                }
+                else {
+                    cachedProperties.put(propertyName, property.getType());
+                }
             }
         }
-        List<PropertyNode> properties = classNode.getProperties();
-        for (PropertyNode property : properties) {
-            propertyNames.add(property.getName());
-        }
-        return propertyNames;
+        return new ArrayList<String>(cachedProperties.keySet());
     }
 
     private void addBlockStatementToNewQuery(BlockStatement blockStatement, BlockStatement newCode, boolean addAll, List<String> propertyNames) {
@@ -587,6 +613,10 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     private ClassNode getPropertyType(ClassNode classNode, String prop) {
+        Map<String, ClassNode> cachedProperties = cachedClassProperties.get(classNode.getName());
+        if(cachedProperties != null) {
+            return cachedProperties.get(prop);
+        }
         ClassNode type = null;
         PropertyNode property = classNode.getProperty(prop);
         if(property != null) {
@@ -947,6 +977,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     protected boolean isDomainClass(ClassNode classNode) {
+        if(classNode == null) return false;
         String filePath = classNode.getModule() != null ? classNode.getModule().getDescription() : null;
         if(filePath != null) {
             try {
