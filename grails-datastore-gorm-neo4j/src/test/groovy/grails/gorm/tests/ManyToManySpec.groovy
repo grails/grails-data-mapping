@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import grails.persistence.Entity
+import spock.lang.IgnoreRest
 
 class ManyToManySpec extends GormDatastoreSpec {
 
@@ -62,6 +63,35 @@ class ManyToManySpec extends GormDatastoreSpec {
             2 == User.findByUsername('user2').roles.size()
             2 == Role.findByRole('ROLE_USER').people.size()
             2 == Role.findByRole('ROLE_ADMIN').people.size()
+    }
+
+    def "test if setter on m2m property also updates reverse collection"() {
+        setup:
+            def roleAdmin = new Role(role:'ROLE_ADMIN').save()
+            def roleUser = new Role(role:'ROLE_USER').save()
+            def roleSpecial = new Role(role:'ROLE_SPECIAL').save()
+            def user = new User(username: 'user', roles: [roleUser]).save()
+            session.flush()
+            session.clear()
+
+        when:
+            user = User.get(user.id)
+            roleAdmin = Role.get(roleAdmin.id)
+            roleUser = Role.get(roleUser.id)
+            roleSpecial = Role.get(roleSpecial.id)
+        then:
+            user.roles.size()==1
+
+        when: "using setter for a bidi collection"
+            user.roles = [ roleAdmin, roleUser, roleSpecial ]
+            session.flush()
+            session.clear()
+            user = User.get(user.id)
+
+        then:
+            user.roles.size() == 3
+            user.roles.every { it.people.size()==1 }
+
     }
 
     // TODO: this testcase belongs semantically into OneToManySpec
@@ -127,6 +157,9 @@ class User {
     Set foes = []
 
     boolean equals(other) {
+        if (!(other instanceof User)) {
+            return false
+        }
         other?.username == username
     }
 

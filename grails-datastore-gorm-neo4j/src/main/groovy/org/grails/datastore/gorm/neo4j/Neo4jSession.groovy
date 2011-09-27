@@ -240,12 +240,12 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
                     case ManyToMany:
                     case OneToMany:
-                        objects.addAll(writeToManyProperty(value, prop, thisNode))
+                        objects.addAll(writeToManyProperty(value, prop, thisNode, obj))
                         break
 
                     case Basic:
                         if (prop.type instanceof Collection) {
-                            objects.addAll(writeToManyProperty(value, prop, thisNode))
+                            objects.addAll(writeToManyProperty(value, prop, thisNode, obj))
                         }
                         else {
                             def toAdd = writeToOneProperty(prop, thisNode, value, obj)
@@ -270,7 +270,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         dirtyObjects.clear()
     }
 
-    private def writeToManyProperty(value, PersistentProperty prop, Node thisNode) {
+    private def writeToManyProperty(value, Association association, Node thisNode, obj) {
         def returnValue = []
         boolean doPersist = true
         if (value == null) {
@@ -285,11 +285,16 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         if (doPersist) {
             def nodesIds = value?.collect {
                 persist(it)
+
+                if (association.bidirectional) {
+                    EntityAccess reverseEntityAccess = new EntityAccess(association.associatedEntity, it)
+                    addObjectToReverseSide(reverseEntityAccess, association, obj)
+                }
                 returnValue << it
                 it.node.id
             } ?: []
 
-            def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(prop)
+            def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(association)
 
             def existingNodesIds = []
             thisNode.getRelationships(relationshipType, direction).each {
@@ -659,4 +664,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
     void propertyChange(PropertyChangeEvent propertyChangeEvent) {
         dirtyObjects << propertyChangeEvent.source
     }
+
+//    getTypeForNode(propertyChangeEvent.source.node).getPropertyByName(propertyChangeEvent.propertyName)
+
 }
