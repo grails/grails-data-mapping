@@ -193,7 +193,11 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         objects.addAll(dirtyObjects)
         objects.addAll(inserts)
 
+        log.info "pre flush counting: nonMonitorable: ${nonMonitorableObjects.size()}, dirty: ${dirtyObjects.size()}, inserts: ${inserts.size()}, total: ${objects.size()}"
+
         def alreadyPersisted = [] as Set // required to prevent doubled (and cyclic) saves
+
+        def persistedCounter = 0
 
         while (!objects.empty) {
             def obj = objects.poll()
@@ -265,9 +269,11 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
             event = inserts.contains(obj) ?
                 new PostInsertEvent(datastore, pe, entityAccess) : new PostUpdateEvent(datastore, pe, entityAccess)
             applicationEventPublisher.publishEvent(event)
+            persistedCounter++
         }
         inserts.clear()
         dirtyObjects.clear()
+        log.info "post flush counting: persisted: $persistedCounter"
     }
 
     private def writeToManyProperty(value, Association association, Node thisNode, obj) {
@@ -284,13 +290,16 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
         if (doPersist) {
             def nodesIds = value?.collect {
-                persist(it)
+
+                if (!it.id) { // if referenced obj is not yet persisted, add it and append it to flush chain
+                    persist(it)
+                    returnValue << it
+                }
 
                 if (association.bidirectional) {
                     EntityAccess reverseEntityAccess = new EntityAccess(association.associatedEntity, it)
                     addObjectToReverseSide(reverseEntityAccess, association, obj)
                 }
-                returnValue << it
                 it.node.id
             } ?: []
 
@@ -322,7 +331,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
     private def writeToOneProperty(Association association, Node thisNode, value, obj) {
         def returnValue = null
-        if (value != null) {
+        if ((value != null) && (!value.id)) {
             persist(value)
             returnValue = value
         }
@@ -664,7 +673,5 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
     void propertyChange(PropertyChangeEvent propertyChangeEvent) {
         dirtyObjects << propertyChangeEvent.source
     }
-
-//    getTypeForNode(propertyChangeEvent.source.node).getPropertyByName(propertyChangeEvent.propertyName)
 
 }
