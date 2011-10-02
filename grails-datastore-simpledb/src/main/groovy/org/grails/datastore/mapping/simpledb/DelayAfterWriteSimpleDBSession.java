@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.mapping.simpledb;
 
+import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -24,8 +25,8 @@ public class DelayAfterWriteSimpleDBSession extends SimpleDBSession {
 
     private long delayMillis;
 
-    public DelayAfterWriteSimpleDBSession(SimpleDBDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, long delayMillis) {
-        super(datastore, mappingContext, publisher);
+    public DelayAfterWriteSimpleDBSession(SimpleDBDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, long delayMillis, TPCacheAdapterRepository cacheAdapterRepository) {
+        super(datastore, mappingContext, publisher, cacheAdapterRepository);
         this.delayMillis = delayMillis;
     }
 

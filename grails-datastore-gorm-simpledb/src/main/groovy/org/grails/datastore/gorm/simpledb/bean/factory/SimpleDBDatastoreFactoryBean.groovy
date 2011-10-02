@@ -22,6 +22,8 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.simpledb.SimpleDBDatastore
+import org.grails.datastore.mapping.cache.TPCacheAdapterRepository
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBNativeItem
 
 /**
  * Factory bean for constructing a {@link org.grails.datastore.mapping.simpledb.SimpleDBDatastore} instance.
@@ -35,10 +37,11 @@ class SimpleDBDatastoreFactoryBean implements FactoryBean<SimpleDBDatastore>, Ap
     MappingContext mappingContext
     Map<String,String> config = [:]
     ApplicationContext applicationContext
+    TPCacheAdapterRepository<SimpleDBNativeItem> cacheAdapterRepository
 
     SimpleDBDatastore getObject() {
 
-        SimpleDBDatastore datastore = new SimpleDBDatastore(mappingContext, config, applicationContext)
+        SimpleDBDatastore datastore = new SimpleDBDatastore(mappingContext, config, applicationContext, cacheAdapterRepository)
 
         applicationContext.addApplicationListener new DomainEventListener(datastore)
         applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)

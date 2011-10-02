@@ -29,6 +29,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 import javax.persistence.FlushModeType;
 
+import org.grails.datastore.mapping.cache.TPCacheAdapter;
+import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.types.*;
@@ -67,11 +69,19 @@ import org.grails.datastore.mapping.proxy.ProxyFactory;
 @SuppressWarnings({"unused", "rawtypes", "unchecked"})
 public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPersister {
     protected ClassMapping classMapping;
+    protected TPCacheAdapterRepository<T> cacheAdapterRepository;
 
     public NativeEntryEntityPersister(MappingContext mappingContext, PersistentEntity entity,
               Session session, ApplicationEventPublisher publisher) {
         super(mappingContext, entity, session, publisher);
         classMapping = entity.getMapping();
+    }
+
+    public NativeEntryEntityPersister(MappingContext mappingContext, PersistentEntity entity,
+              Session session, ApplicationEventPublisher publisher, TPCacheAdapterRepository<T> cacheAdapterRepository) {
+        super(mappingContext, entity, session, publisher);
+        classMapping = entity.getMapping();
+        this.cacheAdapterRepository = cacheAdapterRepository;
     }
 
     public abstract String getEntityFamily();
@@ -314,9 +324,12 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     protected final Object retrieveEntity(PersistentEntity persistentEntity, Serializable nativeKey) {
 
         final Serializable key = convertToNativeKey(nativeKey);
-        T nativeEntry = retrieveEntry(persistentEntity, getEntityFamily(), key);
+        T nativeEntry = getFromTPCache(persistentEntity, nativeKey);
         if (nativeEntry == null) {
-            return null;
+            nativeEntry = retrieveEntry(persistentEntity, getEntityFamily(), key);
+            if (nativeEntry == null) {
+                return null;
+            }
         }
 
         return createObjectFromNativeEntry(persistentEntity, key, nativeEntry);
@@ -626,16 +639,22 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         else {
             tmp = (T) si.getCachedEntry(persistentEntity, (Serializable) k);
             if (tmp == null) {
-                tmp = retrieveEntry(persistentEntity, family, (Serializable) k);
+                tmp = getFromTPCache(persistentEntity, (Serializable) k);
+                if (tmp == null) {
+                    tmp = retrieveEntry(persistentEntity, family, (Serializable) k);
+                }
             }
             if (tmp == null) {
                 tmp = createNewEntry(family);
             }
 
-            pendingOperation = new PendingUpdateAdapter<T, K>(persistentEntity, k, tmp, entityAccess) {
+            final T finalTmp = tmp;
+            final K finalK = k;
+            pendingOperation = new PendingUpdateAdapter<T, K>(persistentEntity, finalK, finalTmp, entityAccess) {
                 public void run() {
                     if (cancelUpdate(persistentEntity, entityAccess)) return;
                     updateEntry(persistentEntity, entityAccess, getNativeKey(), getNativeEntry());
+                    updateTPCache(persistentEntity, finalTmp, (Serializable) finalK);
                     firePostUpdateEvent(persistentEntity, entityAccess);
                 }
             };
@@ -1185,8 +1204,33 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         if (cancelInsert(persistentEntity, entityAccess)) return null;
         final K newId = storeEntry(persistentEntity, entityAccess, id, e);
         entityAccess.setIdentifier(newId);
+        updateTPCache(persistentEntity, e, (Serializable) newId);
+
         firePostInsertEvent(persistentEntity, entityAccess);
         return newId;
+    }
+
+    protected void updateTPCache(PersistentEntity persistentEntity, T e, Serializable id) {
+        if (cacheAdapterRepository == null) {
+            return;
+        }
+
+        TPCacheAdapter<T> cacheAdapter = cacheAdapterRepository.getTPCacheAdapter(persistentEntity);
+        if (cacheAdapter != null) {
+            cacheAdapter.cacheEntry(id, e);
+        }
+    }
+
+    protected T getFromTPCache(PersistentEntity persistentEntity, Serializable id) {
+        if (cacheAdapterRepository == null) {
+            return null;
+        }
+
+        TPCacheAdapter<T> cacheAdapter = cacheAdapterRepository.getTPCacheAdapter(persistentEntity);
+        if (cacheAdapter != null) {
+            return cacheAdapter.getCachedEntry(id);
+        }
+        return null;
     }
 
     protected class NativeEntryModifyingEntityAccess extends EntityAccess {

@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.mapping.simpledb;
 
+import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.engine.Persister;
@@ -36,8 +37,8 @@ public class SimpleDBSession extends AbstractSession {
 
     SimpleDBDatastore simpleDBDatastore;
 
-    public SimpleDBSession(SimpleDBDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
-        super(datastore, mappingContext, publisher);
+    public SimpleDBSession(SimpleDBDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, TPCacheAdapterRepository cacheAdapterRepository) {
+        super(datastore, mappingContext, publisher, cacheAdapterRepository);
         this.simpleDBDatastore = datastore;
     }
 
@@ -66,7 +67,7 @@ public class SimpleDBSession extends AbstractSession {
     @Override
     protected Persister createPersister(@SuppressWarnings("rawtypes") Class cls, MappingContext mappingContext) {
         final PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
-        return entity == null ? null : new SimpleDBEntityPersister(mappingContext, entity, this, publisher);
+        return entity == null ? null : new SimpleDBEntityPersister(mappingContext, entity, this, publisher, cacheAdapterRepository);
     }
 
     @Override

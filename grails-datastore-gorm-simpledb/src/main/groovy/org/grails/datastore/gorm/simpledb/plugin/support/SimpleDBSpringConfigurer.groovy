@@ -19,6 +19,7 @@ import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.datastore.gorm.simpledb.bean.factory.SimpleDBDatastoreFactoryBean
 import org.grails.datastore.gorm.simpledb.bean.factory.SimpleDBMappingContextFactoryBean
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
+import org.grails.datastore.mapping.cache.impl.TPCacheAdapterRepositoryImpl
 
 /**
  * SimpleDB specific configuration logic for Spring
@@ -36,6 +37,13 @@ class SimpleDBSpringConfigurer extends SpringConfigurer {
     Closure getSpringCustomizer() {
         return {
             def simpleDBConfig = application.config?.grails?.simpledb
+            def cacheAdapters = application.config?.grails?.cacheAdapters
+
+            def theCacheAdapterRepository = new TPCacheAdapterRepositoryImpl()
+            cacheAdapters?.each { clazz, adapter ->
+                theCacheAdapterRepository.setTPCacheAdapter(clazz, adapter)
+            }
+
 
             simpledbTransactionManager(DatastoreTransactionManager) {
                 datastore = ref("simpledbDatastore")
@@ -49,6 +57,7 @@ class SimpleDBSpringConfigurer extends SpringConfigurer {
             simpledbDatastore(SimpleDBDatastoreFactoryBean) {
                 mappingContext = ref("simpledbMappingContext")
                 config = simpleDBConfig.toProperties()
+                cacheAdapterRepository = theCacheAdapterRepository
             }
         }
     }

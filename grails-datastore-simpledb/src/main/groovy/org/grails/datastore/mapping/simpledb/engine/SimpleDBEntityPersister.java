@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.NativeEntryEntityPersister;
@@ -60,8 +61,8 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<SimpleDB
     protected boolean hasStringIdentifier = false;
 
     public SimpleDBEntityPersister(MappingContext mappingContext, PersistentEntity entity,
-             SimpleDBSession simpleDBSession, ApplicationEventPublisher publisher) {
-        super(mappingContext, entity, simpleDBSession, publisher);
+             SimpleDBSession simpleDBSession, ApplicationEventPublisher publisher, TPCacheAdapterRepository<SimpleDBNativeItem> cacheAdapterRepository) {
+        super(mappingContext, entity, simpleDBSession, publisher, cacheAdapterRepository);
         SimpleDBDatastore datastore = (SimpleDBDatastore) simpleDBSession.getDatastore();
         simpleDBTemplate = datastore.getSimpleDBTemplate(entity);
 

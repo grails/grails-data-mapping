@@ -17,6 +17,7 @@ package org.grails.datastore.mapping.core;
 import java.util.Collections;
 import java.util.Map;
 
+import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -47,6 +48,7 @@ public abstract class AbstractDatastore implements Datastore {
 
     protected MappingContext mappingContext;
     protected Map<String, String> connectionDetails = Collections.emptyMap();
+    protected TPCacheAdapterRepository cacheAdapterRepository;
 
     public AbstractDatastore() {}
 
@@ -56,9 +58,15 @@ public abstract class AbstractDatastore implements Datastore {
 
     public AbstractDatastore(MappingContext mappingContext, Map<String, String> connectionDetails,
               ConfigurableApplicationContext ctx) {
+        this(mappingContext, connectionDetails,  ctx, null);
+    }
+
+    public AbstractDatastore(MappingContext mappingContext, Map<String, String> connectionDetails,
+              ConfigurableApplicationContext ctx, TPCacheAdapterRepository cacheAdapterRepository) {
         this.mappingContext = mappingContext;
         this.connectionDetails = connectionDetails != null ? connectionDetails : Collections.<String, String>emptyMap();
         setApplicationContext(ctx);
+        this.cacheAdapterRepository = cacheAdapterRepository;
     }
 
     public void setApplicationContext(ConfigurableApplicationContext ctx) {

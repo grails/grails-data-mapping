@@ -20,12 +20,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.OneToMany;
-import org.grails.datastore.mapping.simpledb.engine.AssociationKey;
-import org.grails.datastore.mapping.simpledb.engine.SimpleDBAssociationInfo;
-import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver;
-import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolverFactory;
+import org.grails.datastore.mapping.simpledb.engine.*;
 import org.grails.datastore.mapping.simpledb.util.SimpleDBUtil;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -61,18 +59,18 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
     private String domainNamePrefix;
 
     public SimpleDBDatastore() {
-        this(new SimpleDBMappingContext(), Collections.<String, String>emptyMap(), null);
+        this(new SimpleDBMappingContext(), Collections.<String, String>emptyMap(), null, null);
     }
 
     /**
      * Constructs a SimpleDBDatastore using the given MappingContext and connection details map.
      *
-     * @param mappingContext The MongoMappingContext
+     * @param mappingContext The SimpleDBMappingContext
      * @param connectionDetails The connection details containing the {@link #ACCESS_KEY} and {@link #SECRET_KEY} settings
      */
     public SimpleDBDatastore(MappingContext mappingContext,
-            Map<String, String> connectionDetails, ConfigurableApplicationContext ctx) {
-        super(mappingContext, connectionDetails, ctx);
+            Map<String, String> connectionDetails, ConfigurableApplicationContext ctx, TPCacheAdapterRepository<SimpleDBNativeItem> adapterRepository) {
+        super(mappingContext, connectionDetails, ctx, adapterRepository);
 
         if (mappingContext != null) {
             mappingContext.addMappingContextListener(this);
@@ -84,11 +82,11 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
     }
 
     public SimpleDBDatastore(MappingContext mappingContext, Map<String, String> connectionDetails) {
-        this(mappingContext, connectionDetails, null);
+        this(mappingContext, connectionDetails, null, null);
     }
 
     public SimpleDBDatastore(MappingContext mappingContext) {
-        this(mappingContext, Collections.<String, String>emptyMap(), null);
+        this(mappingContext, Collections.<String, String>emptyMap(), null, null);
     }
 
     public SimpleDBTemplate getSimpleDBTemplate(@SuppressWarnings("unused") PersistentEntity entity) {
@@ -105,9 +103,9 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         String delayAfterWrite = read(String.class, DELAY_AFTER_WRITES_MS, connectionDetails, null);
 
         if (delayAfterWrite != null && !"".equals(delayAfterWrite)) {
-            return new DelayAfterWriteSimpleDBSession(this, getMappingContext(), getApplicationEventPublisher(), Integer.parseInt(delayAfterWrite));
+            return new DelayAfterWriteSimpleDBSession(this, getMappingContext(), getApplicationEventPublisher(), Integer.parseInt(delayAfterWrite), cacheAdapterRepository);
         }
-        return new SimpleDBSession(this, getMappingContext(), getApplicationEventPublisher());
+        return new SimpleDBSession(this, getMappingContext(), getApplicationEventPublisher(), cacheAdapterRepository);
     }
 
     public void afterPropertiesSet() throws Exception {

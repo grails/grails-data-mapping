@@ -26,6 +26,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.persistence.FlushModeType;
 
+import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -88,6 +89,8 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     protected Map<Class, Map<Serializable, Object>> firstLevelEntryCacheDirtyCheck = new ConcurrentHashMap<Class, Map<Serializable, Object>>();
     protected Map<CollectionKey, Collection> firstLevelCollectionCache = new ConcurrentHashMap<CollectionKey, Collection>();
 
+    protected TPCacheAdapterRepository cacheAdapterRepository;
+
     protected Map<Object, Serializable> objectToKey = new ConcurrentHashMap<Object, Serializable>();
 
     private Map<PersistentEntity, Collection<PendingInsert>> pendingInserts =
@@ -110,6 +113,14 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         this.mappingContext = mappingContext;
         this.datastore = datastore;
         this.publisher = publisher;
+    }
+
+    public AbstractSession(Datastore datastore, MappingContext mappingContext,
+               ApplicationEventPublisher publisher, TPCacheAdapterRepository cacheAdapterRepository) {
+        this.mappingContext = mappingContext;
+        this.datastore = datastore;
+        this.publisher = publisher;
+        this.cacheAdapterRepository = cacheAdapterRepository;
     }
 
     public void addPostFlushOperation(Runnable runnable) {
