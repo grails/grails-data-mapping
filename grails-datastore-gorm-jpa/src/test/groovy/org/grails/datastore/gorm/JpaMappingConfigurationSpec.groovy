@@ -24,7 +24,9 @@ class JpaMappingConfigurationSpec extends Specification {
     void "Test persistent properties are valid"() {
         when:
             def configStrategy = new JpaMappingConfigurationStrategy(new JpaMappingFactory())
-            def properties = configStrategy.getPersistentProperties(JpaDomain, new JpaMappingContext()).sort { it.name }
+            final context = new JpaMappingContext()
+            context.addPersistentEntity(JpaDomain)
+            def properties = configStrategy.getPersistentProperties(JpaDomain, context).sort { it.name }
 
         then:
             properties.size() == 3
