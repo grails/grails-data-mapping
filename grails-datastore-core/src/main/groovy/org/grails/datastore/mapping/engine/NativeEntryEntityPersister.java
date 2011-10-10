@@ -612,6 +612,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     protected final Serializable persistEntity(final PersistentEntity persistentEntity, Object obj) {
         T tmp = null;
         final NativeEntryModifyingEntityAccess entityAccess = (NativeEntryModifyingEntityAccess) createEntityAccess(persistentEntity, obj, tmp);
+
         K k = readObjectIdentifier(entityAccess, persistentEntity.getMapping());
         boolean isUpdate = k != null;
         if (isUpdate && !getSession().isDirty(obj)) {
@@ -669,6 +670,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         final Map<OneToMany, Serializable> inverseCollectionUpdates = new HashMap<OneToMany, Serializable>();
         final Map<PersistentProperty, Object> toIndex = new HashMap<PersistentProperty, Object>();
         final Map<PersistentProperty, Object> toUnindex = new HashMap<PersistentProperty, Object>();
+        entityAccess.setToIndex(toIndex);
         for (PersistentProperty prop : props) {
             PropertyMapping<Property> pm = prop.getMapping();
             final Property mappedProperty = pm.getMappedForm();
@@ -819,6 +821,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             PendingOperation postOperation = new PendingOperationAdapter<T, K>(persistentEntity, k, e) {
                 public void run() {
                     updateToManyIndices(e, updateId, toManyKeys);
+
                     if (doesRequirePropertyIndexing()) {
                         toIndex.put(persistentEntity.getIdentity(), updateId);
                         updatePropertyIndices(updateId, toIndex, toUnindex);
@@ -1237,6 +1240,8 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     protected class NativeEntryModifyingEntityAccess extends EntityAccess {
 
         T nativeEntry;
+        private Map<PersistentProperty, Object> toIndex;
+
         public NativeEntryModifyingEntityAccess(PersistentEntity persistentEntity, Object entity) {
             super(persistentEntity, entity);
         }
@@ -1249,11 +1254,21 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 if (property != null && (property instanceof Simple)) {
                     setEntryValue(nativeEntry, name, value);
                 }
+
+                if(toIndex != null && property != null) {
+                    PropertyMapping<Property> pm = property.getMapping();
+                    if(pm != null && isPropertyIndexed(pm.getMappedForm()))
+                        toIndex.put(property, value);
+                }
             }
         }
 
         public void setNativeEntry(T nativeEntry) {
             this.nativeEntry = nativeEntry;
+        }
+
+        public void setToIndex(Map<PersistentProperty, Object> toIndex) {
+            this.toIndex = toIndex;
         }
     }
 

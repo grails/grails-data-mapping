@@ -17,10 +17,16 @@ class DomainEventsSpec extends GormDatastoreSpec {
             def p = new ModifyPerson(name:"Bob").save(flush:true)
             session.clear()
 
-        when:
+        when:"An object is queried by id"
             p = ModifyPerson.get(p.id)
 
-        then:
+        then: "the correct object is returned"
+            p.name == "Fred"
+
+        when:"An object is queried by the updated value"
+            p = ModifyPerson.findByName("Fred")
+
+        then:"The correct person is returned"
             p.name == "Fred"
     }
 
