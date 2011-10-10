@@ -50,6 +50,13 @@ public class BasicTypeConverterRegistrar {
             }
         });
 
+        registry.addConverter(new Converter<Long, Integer>() {
+             public Integer convert(Long longValue) {
+                 return longValue.intValue();
+             }
+         });
+
+
         registry.addConverter(new Converter<Integer, Double>() {
             public Double convert(Integer integer) {
                 return integer.doubleValue();

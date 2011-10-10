@@ -43,7 +43,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
 
     Map<String, Map> datastore
     Map indices
-    Long lastKey = 0
+    def lastKey
     String family
 
     SimpleMapEntityPersister(MappingContext context, PersistentEntity entity, Session session,
@@ -52,6 +52,14 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
         this.datastore = datastore.backingMap
         this.indices = datastore.indices
         family = getFamily(entity, entity.getMapping())
+        final identity = entity.getIdentity()
+        def idType = identity?.type
+        if(idType == Integer) {
+            lastKey = 0
+        }
+        else {
+            lastKey = 0L
+        }
         if (this.datastore[family] == null) this.datastore[family] = [:]
     }
 

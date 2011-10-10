@@ -13,7 +13,7 @@ import grails.persistence.Entity
 class CustomStringIdentifierSpec extends GormDatastoreSpec {
 
     static {
-        TEST_CLASSES << Product
+        TEST_CLASSES << Product << Description
     }
     void "test basic crud operations with string id"() {
         when: "A product is saved with an assigned id"
@@ -41,12 +41,34 @@ class CustomStringIdentifierSpec extends GormDatastoreSpec {
 
     }
 
+    void "Test integer based id"() {
+       when:"An object has an id that is an integer"
+            def d = new Description(name:"Blah").save(flush:true)
+
+        then:"The object is successfully saved"
+            d != null
+
+        when:"The object is queried"
+            session.clear()
+            d = Description.get(1)
+
+        then:"The object is returned"
+            d != null
+
+    }
+
     protected def createProducts() {
         new Product(name: "MacBook").save()
         new Product(name: "iPhone").save()
         new Product(name: "iMac").save(flush: true)
 
     }
+}
+
+@Entity
+class Description {
+    Integer id
+    String name
 }
 
 @Entity
