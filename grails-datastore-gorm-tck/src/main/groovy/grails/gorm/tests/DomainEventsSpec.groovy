@@ -240,6 +240,10 @@ class ModifyPerson implements Serializable {
 
     String name
 
+    static mapping = {
+        name index:true
+    }
+
     def beforeInsert() {
         name = "Fred"
     }
