@@ -18,6 +18,7 @@ package org.grails.datastore.mapping.mongo;
 import static org.grails.datastore.mapping.config.utils.ConfigUtils.read;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -276,8 +277,9 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                         dbObject.put(fieldName,1);
                         DBObject options = new BasicDBObject();
                         if (mongoAttributeMapping != null) {
-                            final Map attributes = mongoAttributeMapping.getIndexAttributes();
-                            if (attributes != null) {
+                            Map attributes = mongoAttributeMapping.getIndexAttributes();
+                            if (attributes != null){
+                                attributes = new HashMap(attributes);
                                 if (attributes.containsKey(MongoAttribute.INDEX_TYPE)) {
                                     dbObject.put(fieldName, attributes.remove(MongoAttribute.INDEX_TYPE));
                                 }
