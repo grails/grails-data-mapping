@@ -716,21 +716,18 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return null;
     }
 
+    /**
+     * Obtains the identity mapping for the specified class mapping
+     *
+     * @param classMapping The class mapping
+     * @return The identity mapping
+     */
+    @Override
+    public IdentityMapping getIdentityMapping(ClassMapping classMapping) {
+        return propertyFactory.createIdentityMapping(classMapping);
+    }
+
     public IdentityMapping getDefaultIdentityMapping(final ClassMapping classMapping) {
-        return new IdentityMapping() {
-
-            public String[] getIdentifierName() {
-                return new String[] { IDENTITY_PROPERTY };
-            }
-
-            public ClassMapping getClassMapping() {
-                return classMapping;
-            }
-
-            public Object getMappedForm() {
-                // no custom mapping
-                return null;
-            }
-        };
+        return propertyFactory.createDefaultIdentityMapping(classMapping);
     }
 }

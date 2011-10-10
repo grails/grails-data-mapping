@@ -53,6 +53,7 @@ import org.grails.datastore.mapping.model.types.*;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class MappingFactory<R,T> {
 
+    public static final String IDENTITY_PROPERTY = "id";
     public static final Set<String> SIMPLE_TYPES;
 
     static {
@@ -142,8 +143,9 @@ public abstract class MappingFactory<R,T> {
      */
     public Identity<T> createIdentity(PersistentEntity owner, MappingContext context, PropertyDescriptor pd) {
         return new Identity<T>(owner, context, pd) {
+            PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
             public PropertyMapping<T> getMapping() {
-                return createPropertyMapping(this, owner);
+                return propertyMapping;
             }
         };
     }
@@ -162,8 +164,9 @@ public abstract class MappingFactory<R,T> {
             throw new IllegalStateException("Cannot create a custom type without a type converter for type " + pd.getPropertyType());
         }
         return new Custom<T>(owner, context, pd, customTypeMarshaller) {
+            PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
             public PropertyMapping<T> getMapping() {
-                return createPropertyMapping(this, owner);
+                return propertyMapping;
             }
         };
     }
@@ -178,8 +181,9 @@ public abstract class MappingFactory<R,T> {
      */
     public Simple<T> createSimple(PersistentEntity owner, MappingContext context, PropertyDescriptor pd) {
         return new Simple<T>(owner, context, pd) {
+            PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
             public PropertyMapping<T> getMapping() {
-                return createPropertyMapping(this, owner);
+                return propertyMapping;
             }
         };
     }
@@ -187,11 +191,12 @@ public abstract class MappingFactory<R,T> {
 
     protected PropertyMapping<T> createPropertyMapping(final PersistentProperty<T> property, final PersistentEntity owner) {
         return new PropertyMapping<T>() {
+            private T mappedForm = createMappedForm(property);
             public ClassMapping getClassMapping() {
                 return owner.getMapping();
             }
             public T getMappedForm() {
-                return createMappedForm(property);
+                return mappedForm;
             }
         };
     }
@@ -206,8 +211,9 @@ public abstract class MappingFactory<R,T> {
      */
     public ToOne createOneToOne(PersistentEntity entity, MappingContext context, PropertyDescriptor property) {
         return new OneToOne<T>(entity, context, property) {
+            PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
             public PropertyMapping getMapping() {
-                return createPropertyMapping(this, owner);
+                return propertyMapping;
             }
         };
     }
@@ -222,8 +228,9 @@ public abstract class MappingFactory<R,T> {
      */
     public ToOne createManyToOne(PersistentEntity entity, MappingContext context, PropertyDescriptor property) {
         return new ManyToOne<T>(entity, context, property) {
+            PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
             public PropertyMapping getMapping() {
-                return createPropertyMapping(this, owner);
+                return propertyMapping;
             }
         };
 
@@ -239,8 +246,9 @@ public abstract class MappingFactory<R,T> {
      */
     public OneToMany createOneToMany(PersistentEntity entity, MappingContext context, PropertyDescriptor property) {
         return new OneToMany<T>(entity, context, property) {
+            PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
             public PropertyMapping getMapping() {
-                return createPropertyMapping(this, owner);
+                return propertyMapping;
             }
         };
 
@@ -256,8 +264,9 @@ public abstract class MappingFactory<R,T> {
      */
     public ManyToMany createManyToMany(PersistentEntity entity, MappingContext context, PropertyDescriptor property) {
         return new ManyToMany<T>(entity, context, property) {
+            PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
             public PropertyMapping getMapping() {
-                return createPropertyMapping(this, owner);
+                return propertyMapping;
             }
         };
     }
@@ -273,8 +282,9 @@ public abstract class MappingFactory<R,T> {
     public Embedded createEmbedded(PersistentEntity entity,
             MappingContext context, PropertyDescriptor property) {
         return new Embedded<T>(entity, context, property) {
+            PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
             public PropertyMapping getMapping() {
-                return createPropertyMapping(this, owner);
+                return propertyMapping;
             }
         };
     }
@@ -290,8 +300,9 @@ public abstract class MappingFactory<R,T> {
     public EmbeddedCollection createEmbeddedCollection(PersistentEntity entity,
             MappingContext context, PropertyDescriptor property) {
         return new EmbeddedCollection<T>(entity, context, property) {
+            PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
             public PropertyMapping getMapping() {
-                return createPropertyMapping(this, owner);
+                return propertyMapping;
             }
         };
     }
@@ -307,13 +318,36 @@ public abstract class MappingFactory<R,T> {
     public Basic createBasicCollection(PersistentEntity entity,
             MappingContext context, PropertyDescriptor property) {
         return new Basic(entity, context, property) {
+            PropertyMapping<T> propertyMapping = createPropertyMapping(this, owner);
             public PropertyMapping getMapping() {
-                return createPropertyMapping(this, owner);
+                return propertyMapping;
             }
         };
     }
 
     public static boolean isCustomType(Class<?> propertyType) {
         return typeConverterMap.containsKey(propertyType);
+    }
+
+    public IdentityMapping createIdentityMapping(final ClassMapping classMapping) {
+        return createDefaultIdentityMapping(classMapping);
+    }
+
+    public IdentityMapping createDefaultIdentityMapping(final ClassMapping classMapping) {
+        return new IdentityMapping() {
+
+            public String[] getIdentifierName() {
+                return new String[] { IDENTITY_PROPERTY };
+            }
+
+            public ClassMapping getClassMapping() {
+                return classMapping;
+            }
+
+            public Object getMappedForm() {
+                // no custom mapping
+                return null;
+            }
+        };
     }
 }

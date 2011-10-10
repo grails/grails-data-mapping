@@ -113,6 +113,17 @@ public class DefaultMappingConfigurationStrategy implements MappingConfiguration
         throw new IllegalMappingException("No identifier specified for persistent class: " + javaClass.getName());
     }
 
+    /**
+     * Obtains the identity mapping for the specified class mapping
+     *
+     * @param classMapping The class mapping
+     * @return The identity mapping
+     */
+    @Override
+    public IdentityMapping getIdentityMapping(ClassMapping classMapping) {
+        return getDefaultIdentityMapping(classMapping);
+    }
+
     public IdentityMapping getDefaultIdentityMapping(final ClassMapping classMapping) {
 
         final PersistentEntity e = classMapping.getEntity();

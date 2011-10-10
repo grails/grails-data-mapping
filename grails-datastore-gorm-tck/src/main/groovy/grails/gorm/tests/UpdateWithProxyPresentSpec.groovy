@@ -4,6 +4,7 @@ import grails.persistence.Entity
 
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+import grails.gorm.DetachedCriteria
 
 /**
  * @author graemerocher
@@ -56,12 +57,16 @@ class Pet implements Serializable {
 @Entity
 @ApplyDetachedCriteriaTransform
 class Person implements Serializable {
+    static simpsons = where {
+         lastName == "Simpson"
+    }
+
     Long id
     Long version
     String firstName
     String lastName
     Integer age = 0
-    Set pets = [] as Set
+    Set<Pet> pets = [] as Set
     static hasMany = [pets:Pet]
 
     static mapping = {

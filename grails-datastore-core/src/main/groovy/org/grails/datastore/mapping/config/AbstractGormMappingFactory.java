@@ -20,11 +20,9 @@ import groovy.lang.Closure;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.grails.datastore.mapping.model.*;
 import org.springframework.beans.BeanUtils;
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
-import org.grails.datastore.mapping.model.MappingFactory;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 
@@ -59,6 +57,23 @@ public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R,
     protected abstract Class<T> getPropertyMappedFormType();
 
     protected abstract Class<R> getEntityMappedFormType();
+
+    @Override
+    public IdentityMapping createIdentityMapping(ClassMapping classMapping) {
+        Map<String, T> props = entityToPropertyMap.get(classMapping.getEntity());
+        if(props != null) {
+            T property  = props.get(IDENTITY_PROPERTY);
+            IdentityMapping customIdentityMapping = getIdentityMappedForm(classMapping,property);
+            if(customIdentityMapping != null) {
+                return customIdentityMapping;
+            }
+        }
+        return super.createIdentityMapping(classMapping);
+    }
+
+    protected IdentityMapping getIdentityMappedForm(ClassMapping classMapping, T property) {
+        return null;
+    }
 
     @Override
     public T createMappedForm(@SuppressWarnings("rawtypes") PersistentProperty mpp) {

@@ -25,23 +25,29 @@ import org.grails.datastore.mapping.model.PersistentEntity;
  * @since 1.0
  */
 public class KeyValuePersistentEntity extends AbstractPersistentEntity<Family>{
+    private Object mappedForm;
+    private KeyValueClassMapping classMapping;
+
     public KeyValuePersistentEntity(@SuppressWarnings("rawtypes") Class javaClass, MappingContext context) {
         super(javaClass, context);
+        this.mappedForm = context.getMappingFactory().createMappedForm(KeyValuePersistentEntity.this);
+        this.classMapping = new KeyValueClassMapping(this, context);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public ClassMapping<Family> getMapping() {
-        return new KeyValueClassMapping(this, context);
+        return classMapping;
     }
 
     public class KeyValueClassMapping extends AbstractClassMapping<Family> {
         public KeyValueClassMapping(PersistentEntity entity, MappingContext context) {
             super(entity, context);
+
         }
         @Override
         public Family getMappedForm() {
-            return (Family) context.getMappingFactory().createMappedForm(KeyValuePersistentEntity.this);
+            return (Family) mappedForm;
         }
     }
 }

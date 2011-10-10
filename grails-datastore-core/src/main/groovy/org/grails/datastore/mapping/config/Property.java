@@ -23,6 +23,7 @@ public class Property {
     private FetchType fetchStrategy = FetchType.LAZY;
     private String targetName;
     private String generator;
+    private String propertyName;
 
     /**
      * The target to map to, could be a database column, document attribute, or hash key
@@ -35,6 +36,17 @@ public class Property {
 
     public void setTargetName(String targetName) {
         this.targetName = targetName;
+    }
+
+    /*
+     * @return The name of the property this property mapping relates to
+     */
+    public String getName() {
+        return propertyName;
+    }
+
+    public void setName(String propertyName) {
+        this.propertyName = propertyName;
     }
 
     /**

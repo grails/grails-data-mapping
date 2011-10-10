@@ -24,10 +24,13 @@ package org.grails.datastore.mapping.model;
 public abstract class AbstractClassMapping<T> implements ClassMapping {
     protected PersistentEntity entity;
     protected MappingContext context;
+    private IdentityMapping identifierMapping;
 
     public AbstractClassMapping(PersistentEntity entity, MappingContext context) {
         this.entity = entity;
         this.context = context;
+        MappingConfigurationStrategy syntaxStrategy = context.getMappingSyntaxStrategy();
+        this.identifierMapping = syntaxStrategy.getIdentityMapping(this);
     }
 
     public PersistentEntity getEntity() {
@@ -37,6 +40,6 @@ public abstract class AbstractClassMapping<T> implements ClassMapping {
     public abstract T getMappedForm();
 
     public IdentityMapping getIdentifier() {
-        return context.getMappingSyntaxStrategy().getDefaultIdentityMapping(this);
+        return identifierMapping;
     }
 }

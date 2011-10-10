@@ -101,7 +101,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         // register the method invocation for next time
         synchronized(this) {
             mc.static."$methodName" = { Object[] varArgs ->
-                 method.invoke(cls, methodName, varArgs ? varArgs[0] : varArgs)
+                 method.invoke(cls, methodName, *varArgs)
             }
         }
         return method.invoke(cls, methodName, args)

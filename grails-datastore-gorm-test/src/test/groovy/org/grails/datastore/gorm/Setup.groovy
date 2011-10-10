@@ -23,6 +23,9 @@ import org.grails.datastore.mapping.simple.query.SimpleMapResultList
  */
 class Setup {
 
+    static destroy() {
+        // noop
+    }
     static Session setup(classes) {
         def ctx = new GenericApplicationContext()
         ctx.refresh()

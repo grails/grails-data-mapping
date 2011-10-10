@@ -162,6 +162,11 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
 
         List expressions = new ArrayList();
         if (arguments == null) arguments = EMPTY_OBJECT_ARRAY;
+        else {
+            Object[] tmp = new Object[arguments.length];
+            System.arraycopy(arguments,0,tmp, 0, arguments.length);
+            arguments = tmp;
+        }
         Matcher match = pattern.matcher(methodName);
         // find match
         match.find();

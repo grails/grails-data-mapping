@@ -76,9 +76,9 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
     }
 
     public void initialize() {
-        identity = context.getMappingSyntaxStrategy().getIdentity(javaClass, context);
         owners = context.getMappingSyntaxStrategy().getOwningEntities(javaClass, context);
         persistentProperties = context.getMappingSyntaxStrategy().getPersistentProperties(javaClass, context);
+        identity = context.getMappingSyntaxStrategy().getIdentity(javaClass, context);
         persistentPropertyNames = new ArrayList<String>();
         associations = new ArrayList();
 

@@ -68,4 +68,12 @@ public interface MappingConfigurationStrategy {
      * @return A Set of owning classes
      */
     Set getOwningEntities(Class javaClass, MappingContext context);
+
+    /**
+     * Obtains the identity mapping for the specified class mapping
+     *
+     * @param classMapping The class mapping
+     * @return The identity mapping
+     */
+    IdentityMapping getIdentityMapping(ClassMapping classMapping);
 }

@@ -624,6 +624,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         SessionImplementor<Object> si = (SessionImplementor<Object>) session;
         if (!isUpdate) {
             tmp = createNewEntry(family);
+
             k = generateIdentifier(persistentEntity, tmp);
 
             cacheNativeEntry(persistentEntity, (Serializable) k, tmp);
@@ -1257,8 +1258,11 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     }
 
     public boolean isDirty(Object instance, Object entry) {
-        if ((instance == null) || (entry==null)) {
+        if ((instance == null)) {
             return false;
+        }
+        else if(entry == null) {
+            return true;
         }
 
         T nativeEntry;

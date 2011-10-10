@@ -195,6 +195,17 @@ public class JpaMappingConfigurationStrategy implements MappingConfigurationStra
         return identities.get(javaClass);
     }
 
+    /**
+     * Obtains the identity mapping for the specified class mapping
+     *
+     * @param classMapping The class mapping
+     * @return The identity mapping
+     */
+    @Override
+    public IdentityMapping getIdentityMapping(ClassMapping classMapping) {
+        return getDefaultIdentityMapping(classMapping);
+    }
+
     public IdentityMapping getDefaultIdentityMapping(ClassMapping classMapping) {
         return null;
     }
