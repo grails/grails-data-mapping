@@ -15,15 +15,7 @@
 package org.grails.datastore.mapping.engine;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
@@ -387,8 +379,20 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
         for (final PersistentProperty prop : props) {
             String propKey = getNativePropertyKey(prop);
-            if ((prop instanceof Simple) || (prop instanceof Basic)) {
+            if (prop instanceof Simple) {
                 ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propKey));
+            }
+            else if(prop instanceof Basic) {
+                Object entryValue = getEntryValue(nativeEntry, propKey);
+                if(entryValue instanceof Map) {
+                    entryValue = new LinkedHashMap((Map) entryValue);
+                }
+                else if(entryValue instanceof Collection) {
+                    Collection collection = MappingUtils.createConcreteCollection(prop.getType());
+                    collection.addAll((Collection) entryValue);
+                    entryValue = collection;
+                }
+                ea.setProperty(prop.getName(), entryValue);
             }
             else if (prop instanceof Custom) {
                 handleCustom(prop, ea, nativeEntry);
