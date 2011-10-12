@@ -671,7 +671,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
     @Override
     void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        dirtyObjects << propertyChangeEvent.source
+        if (propertyChangeEvent.propertyName!='version') {
+            dirtyObjects << propertyChangeEvent.source
+        }
     }
 
 }

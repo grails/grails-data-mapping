@@ -1,7 +1,6 @@
 package grails.gorm.tests
 
 import grails.persistence.Entity
-import spock.lang.IgnoreRest
 
 class ManyToManySpec extends GormDatastoreSpec {
 
@@ -141,6 +140,20 @@ class ManyToManySpec extends GormDatastoreSpec {
         user.friends.every { it.username =~ /friend\d/ }
         user.foes.size() == 1
         user.foes.every { it.username =~ /foe\d/ }
+
+    }
+
+    def "test if addToXXX modifies the nodespace even if it's the only operation in a session"() {
+        when:
+        def friend = new User(username: 'friend').save()
+        def user = new User(username: 'user').save(flush:true)
+        user.addToFriends(friend)
+        session.flush()
+        session.clear()
+        user = User.get(user.id)
+
+        then:
+        user.friends.size()==1
 
     }
 
