@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Roman Stepanenko
  */
 public class TPCacheAdapterRepositoryImpl<T> implements TPCacheAdapterRepository<T> {
-    @Override
     public TPCacheAdapter<T> getTPCacheAdapter(PersistentEntity entity) {
         if (entity == null) {
             return null;
@@ -21,17 +20,14 @@ public class TPCacheAdapterRepositoryImpl<T> implements TPCacheAdapterRepository
         return adapters.get(entity.getJavaClass().getName());
     }
 
-    @Override
     public void setTPCacheAdapter(PersistentEntity entity, TPCacheAdapter<T> cacheAdapter) {
         setTPCacheAdapter(entity.getJavaClass(), cacheAdapter);
     }
 
-    @Override
     public void setTPCacheAdapter(Class entityJavaClass, TPCacheAdapter<T> cacheAdapter) {
         setTPCacheAdapter(entityJavaClass.getName(), cacheAdapter);
     }
 
-    @Override
     public void setTPCacheAdapter(String entityJavaClassFQN, TPCacheAdapter<T> cacheAdapter) {
         adapters.put(entityJavaClassFQN, cacheAdapter);
     }

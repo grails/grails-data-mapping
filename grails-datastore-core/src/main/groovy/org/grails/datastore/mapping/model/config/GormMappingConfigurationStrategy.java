@@ -722,7 +722,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
      * @param classMapping The class mapping
      * @return The identity mapping
      */
-    @Override
     public IdentityMapping getIdentityMapping(ClassMapping classMapping) {
         return propertyFactory.createIdentityMapping(classMapping);
     }
