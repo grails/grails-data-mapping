@@ -26,7 +26,7 @@ class RedisGormGrailsPlugin {
     def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPREDIS" ]
     def scm = [ url: "https://github.com/SpringSource/grails-data-mapping" ]
 
-    def version = "1.0.0.M7"
+    def version = "1.0.0.RC1"
     def grailsVersion = "1.3.4 > *"
     def dependsOn = [redis:"1.0.0.M7 > *"]
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry', 'redis']
@@ -42,7 +42,7 @@ class RedisGormGrailsPlugin {
         "grails-app/controllers/*.groovy"
     ]
 
-    def documentation = "http://grails.org/plugin/redis"
+    def documentation = "http://grails.org/plugin/redis-gorm"
 
     def doWithSpring = new RedisSpringConfigurer().getConfiguration()
     

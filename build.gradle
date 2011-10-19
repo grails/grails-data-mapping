@@ -1,6 +1,6 @@
 springVersion = "3.0.5.RELEASE"
 grailsVersion = "1.3.7"
-slf4jVersion = "1.6.1"
+slf4jVersion = "1.6.2"
 groovyVersion = System.getProperty('groovyVersion') ?: '1.7.8'
 
 def groovyMajorVersion = groovyVersion[0..2]
@@ -24,8 +24,8 @@ apply plugin: 'idea'
 
 
 subprojects {
-    releaseType = "BUILD-SNAPSHOT"
-//    releaseType = "M10"
+/*    releaseType = "BUILD-SNAPSHOT"*/
+    releaseType = "RC1"
     version = "1.0.0.${releaseType}"
     group = "org.grails"
 
@@ -44,7 +44,7 @@ subprojects {
 
                 // Gradle's cache layout is internal and may change in future versions, this is written for gradle 1.0-milestone-3
                 def artifactInCache = file("${gradleArtifactCache}/${project.group}/${project.name}/jars/${project.name}-${version}.jar")
-                if (artifactInCache.exists()) {
+                if (artifactInCache.parentFile.mkdirs()) {
                     artifactInCache.withOutputStream { destination ->  artifact.file.withInputStream { destination << it } }
                 }
             }

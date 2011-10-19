@@ -17,7 +17,7 @@ grails.project.dependency.resolution = {
 
     dependencies {
 
-		  String datastoreVersion = "1.0.0.M8"
+		  String datastoreVersion = "1.0.0.RC1"
 
         compile("org.grails:grails-datastore-gorm-redis:$datastoreVersion",
                 "org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",        
