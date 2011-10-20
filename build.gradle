@@ -184,6 +184,11 @@ subprojects {
                     case ~/M[0-9]+/:
                         description += milestoneRepositoryUrl
                         // fall through and pick up config below
+                        
+                    case ~/RC[0-9]+/:
+                        description += milestoneRepositoryUrl
+                        // fall through and pick up config below
+                        
 
                     case 'BUILD-SNAPSHOT':
                         description += snapshotRepositoryUrl
