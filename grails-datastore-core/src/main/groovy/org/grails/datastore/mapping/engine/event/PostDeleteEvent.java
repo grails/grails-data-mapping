@@ -33,4 +33,9 @@ public class PostDeleteEvent extends AbstractPersistenceEvent {
     public PostDeleteEvent(final Datastore source, final Object entity) {
         super(source, entity);
     }
+
+    @Override
+    public EventType getEventType() {
+        return EventType.PostDelete;
+    }
 }

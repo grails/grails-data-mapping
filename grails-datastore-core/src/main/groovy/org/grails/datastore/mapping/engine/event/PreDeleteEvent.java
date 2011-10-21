@@ -33,4 +33,9 @@ public class PreDeleteEvent extends AbstractPersistenceEvent {
     public PreDeleteEvent(final Datastore source, final Object entity) {
         super(source, entity);
     }
+
+    @Override
+    public EventType getEventType() {
+        return EventType.PreDelete;
+    }
 }

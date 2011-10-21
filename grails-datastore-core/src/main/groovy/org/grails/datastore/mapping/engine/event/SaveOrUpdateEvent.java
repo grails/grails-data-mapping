@@ -19,4 +19,10 @@ public class SaveOrUpdateEvent extends AbstractPersistenceEvent {
     public SaveOrUpdateEvent(final Datastore source, final Object entity) {
         super(source, entity);
     }
+
+
+    @Override
+    public EventType getEventType() {
+        return EventType.SaveOrUpdate;
+    }
 }
