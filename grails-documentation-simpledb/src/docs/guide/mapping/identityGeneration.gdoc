@@ -11,4 +11,19 @@ class Person {
 }
 {code}
 
-Generated ids are generated with @java.lang.UUID@. In the next version it might be changed for a faster UUID implementation.
+By default, generated ids are generated with @java.lang.UUID@. It is also possible to use hilo numeric value generator
+(please note that the id field must still be declared as String):
+{code}
+class Person {
+    String id
+    String firstName
+    String lastName
+
+    static mapWith = "simpledb"
+
+    static mapping = {
+        id_generator type: 'hilo', maxLo: 500
+    }
+}
+{code}
+

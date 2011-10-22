@@ -1,5 +1,8 @@
 Below are the details of the changes across releases:
 
+h4. Version 0.2 (currently not yet released)
+* Implemented hilo numeric id generator to use as alternative to default UUID
+
 h4. Version 0.1
 
 Initial implementation of the SimpleDB support with
