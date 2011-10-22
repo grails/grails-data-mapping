@@ -8,8 +8,14 @@ grails.project.dependency.resolution = {
 
     log "warn"
 
-    String datastoreVersion = "1.0.0.M9"
-//    String datastoreVersion = "1.0.0.BUILD-SNAPSHOT" //for local development of the plugin
+    String datastoreVersion = "1.0.0.RC1"
+    //for local development and testing of the plugin:
+    // 1) change version in grails-data-mapping/build.gradle to an appropriate snapshot
+    // 2) grails-data-mapping/gradle install
+    // 3) specify the same snapshot version here in the line below after the comments
+    // 4) in your grails app BuildConfig: grails.plugin.location.'simpledb' = "C:/Source/grails-data-mapping/grails-plugins/simpledb"
+    // 5) in your grails app BuildConfig: enable mavenLocal() in repositories AND put it first in the list of repos
+//    String datastoreVersion = "1.0.0.BUILD-SNAPSHOT"
 
     repositories {
         grailsPlugins()

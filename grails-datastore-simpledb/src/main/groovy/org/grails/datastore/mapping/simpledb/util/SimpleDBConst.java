@@ -26,6 +26,14 @@ public class SimpleDBConst {
         // don't instantiate
     }
 
+    public static final String PROP_ID_GENERATOR_TYPE = "type";
+    public static final String PROP_ID_GENERATOR_TYPE_HILO = "hilo";
+    public static final String PROP_ID_GENERATOR_TYPE_UUID = "uuid"; //used by default
+    public static final String PROP_ID_GENERATOR_MAX_LO = "maxLo";
+    public static final int PROP_ID_GENERATOR_MAX_LO_DEFAULT_VALUE = 1000;
+    public static final String ID_GENERATOR_HI_LO_DOMAIN_NAME = "HiLo"; //in which domain will HiLo store the counters, this domain name might be prefixed, as for all other domains
+    public static final String ID_GENERATOR_HI_LO_ATTRIBUTE_NAME = "nextHi";
+
     public static final String PROP_SHARDING_ENABLED = "enabled";
 
     /**

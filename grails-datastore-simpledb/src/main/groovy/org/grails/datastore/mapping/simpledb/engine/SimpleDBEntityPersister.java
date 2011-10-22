@@ -57,6 +57,7 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<SimpleDB
     protected SimpleDBTemplate simpleDBTemplate;
     protected String entityFamily;
     protected SimpleDBDomainResolver domainResolver;
+    protected SimpleDBIdGenerator idGenerator;
     protected boolean hasNumericalIdentifier = false;
     protected boolean hasStringIdentifier = false;
 
@@ -69,62 +70,8 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<SimpleDB
         hasNumericalIdentifier = Long.class.isAssignableFrom(entity.getIdentity().getType());
         hasStringIdentifier = String.class.isAssignableFrom(entity.getIdentity().getType());
         domainResolver = datastore.getEntityDomainResolver(entity);
+        idGenerator = datastore.getEntityIdGenerator(entity);
     }
-
-//    @Override
-//    protected DBObject getEmbedded(DBObject nativeEntry, String key) {
-//        final Object embeddedDocument = nativeEntry.get(key);
-//        if (embeddedDocument instanceof DBObject) {
-//            return (DBObject) embeddedDocument;
-//        }
-//        return null;
-//    }
-
-//    @Override
-//    protected void setEmbedded(DBObject nativeEntry, String key, DBObject embeddedEntry) {
-//        nativeEntry.put(key, embeddedEntry);
-//    }
-
-//    @Override
-//    protected void setEmbeddedCollection(DBObject nativeEntry, String key, Collection<?> instances,
-//            List<DBObject> embeddedEntries) {
-//        if (instances == null || instances.isEmpty()) {
-//            return;
-//        }
-//
-//        nativeEntry.put(key, embeddedEntries.toArray());
-//    }
-
-//    @Override
-//    protected void loadEmbeddedCollection(@SuppressWarnings("rawtypes") EmbeddedCollection embeddedCollection,
-//            EntityAccess ea, Object embeddedInstances, String propertyKey) {
-//
-//        Collection<Object> instances;
-//        if (List.class.isAssignableFrom(embeddedCollection.getType())) {
-//            instances = new ArrayList<Object>();
-//        }
-//        else {
-//            instances = new HashSet<Object>();
-//        }
-//
-//        if (embeddedInstances instanceof BasicDBList) {
-//            BasicDBList list = (BasicDBList)embeddedInstances;
-//            for (Object dbo : list) {
-//                if (dbo instanceof BasicDBObject) {
-//                    BasicDBObject nativeEntry = (BasicDBObject)dbo;
-//                    String embeddedClassName = (String)nativeEntry.remove("$$embeddedClassName$$");
-//                    PersistentEntity embeddedPersistentEntity =
-//                        getMappingContext().getPersistentEntity(embeddedClassName);
-//
-//                    Object instance = newEntityInstance(embeddedPersistentEntity);
-//                    refreshObjectStateFromNativeEntry(embeddedPersistentEntity, instance, null, nativeEntry);
-//                    instances.add(instance);
-//                }
-//            }
-//        }
-//
-//        ea.setProperty(propertyKey, instances);
-//    }
 
     public Query createQuery() {
         return new SimpleDBQuery(getSession(), getPersistentEntity(), domainResolver, this, simpleDBTemplate);
@@ -199,7 +146,7 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<SimpleDB
     @Override
     protected Object generateIdentifier(final PersistentEntity persistentEntity,
             final SimpleDBNativeItem nativeEntry) {
-        return UUID.randomUUID().toString(); //todo - allow user to specify id generator using normal gorm way
+        return idGenerator.generateIdentifier(persistentEntity, nativeEntry);
     }
 
     @SuppressWarnings("rawtypes")
