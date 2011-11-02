@@ -78,7 +78,7 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
     public void initialize() {
         owners = context.getMappingSyntaxStrategy().getOwningEntities(javaClass, context);
         persistentProperties = context.getMappingSyntaxStrategy().getPersistentProperties(javaClass, context);
-        identity = context.getMappingSyntaxStrategy().getIdentity(javaClass, context);
+        identity = resolveIdentifier();
         persistentPropertyNames = new ArrayList<String>();
         associations = new ArrayList();
 
@@ -108,6 +108,10 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
         if (mappingProperties.isVersioned()) {
             version = propertiesByName.get("version");
         }
+    }
+
+    protected PersistentProperty resolveIdentifier() {
+        return context.getMappingSyntaxStrategy().getIdentity(javaClass, context);
     }
 
     public boolean hasProperty(String name, Class type) {

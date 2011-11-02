@@ -161,6 +161,8 @@ public interface MappingContext {
      */
     void addMappingContextListener(Listener listener);
 
+    PersistentEntity createEmbeddedEntity(Class type);
+
     /**
      * Implementors can register for events when the mapping context changes
      */

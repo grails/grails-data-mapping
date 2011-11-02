@@ -206,7 +206,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                     }
                     else {
                         ToOne association = propertyFactory.createEmbedded(entity, context, descriptor);
-                        PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity, context, association.getType());
+                        PersistentEntity associatedEntity = getOrCreateEmbeddedEntity(entity, context, association.getType());
                         association.setAssociatedEntity(associatedEntity);
                         persistentProperties.add(association);
                     }
@@ -237,6 +237,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         }
         return persistentProperties;
     }
+
 
     private void configureOwningSide(Association association) {
         if (association.isBidirectional()) {
@@ -600,6 +601,24 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         }
         return associatedEntity;
     }
+
+    private PersistentEntity getOrCreateEmbeddedEntity(PersistentEntity entity, MappingContext context, Class type) {
+        PersistentEntity associatedEntity = context.getPersistentEntity(type.getName());
+        if(associatedEntity == null) {
+            try {
+                if (entity.isExternal()) {
+                    associatedEntity = context.addExternalPersistentEntity(type);
+                }
+                else {
+                    associatedEntity = context.addPersistentEntity(type);
+                }
+            } catch (IllegalMappingException e) {
+                return context.createEmbeddedEntity(type);
+            }
+        }
+        return associatedEntity;
+    }
+
 
     private boolean isNotMappedToDifferentProperty(PropertyDescriptor property,
             String relatedClassPropertyName, Map mappedBy) {

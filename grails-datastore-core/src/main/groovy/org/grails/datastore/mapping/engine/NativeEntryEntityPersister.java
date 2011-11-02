@@ -25,6 +25,7 @@ import org.grails.datastore.mapping.cache.TPCacheAdapter;
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
+import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.query.Query;
 import org.springframework.context.ApplicationEventPublisher;
@@ -44,11 +45,6 @@ import org.grails.datastore.mapping.core.impl.PendingOperationExecution;
 import org.grails.datastore.mapping.core.impl.PendingUpdate;
 import org.grails.datastore.mapping.core.impl.PendingUpdateAdapter;
 import org.grails.datastore.mapping.engine.event.PreDeleteEvent;
-import org.grails.datastore.mapping.model.ClassMapping;
-import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.model.PropertyMapping;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
 
 /**
@@ -373,8 +369,11 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             Serializable nativeKey, T nativeEntry) {
         EntityAccess ea = createEntityAccess(persistentEntity, obj, nativeEntry);
         ea.setConversionService(getMappingContext().getConversionService());
-        String idName = ea.getIdentifierName();
-        ea.setProperty(idName, nativeKey);
+        if(!(persistentEntity instanceof EmbeddedPersistentEntity)) {
+
+            String idName = ea.getIdentifierName();
+            ea.setProperty(idName, nativeKey);
+        }
 
         final List<PersistentProperty> props = persistentEntity.getPersistentProperties();
         for (final PersistentProperty prop : props) {
