@@ -387,6 +387,8 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         Map<String, ClassNode> cachedProperties = cachedClassProperties.get(className);
         if(cachedProperties == null) {
             cachedProperties = new HashMap<String, ClassNode>();
+            cachedProperties.put(GrailsDomainClassProperty.IDENTITY, new ClassNode(Long.class));
+            cachedProperties.put(GrailsDomainClassProperty.VERSION, new ClassNode(Long.class));
             cachedClassProperties.put(className, cachedProperties);
             List<MethodNode> methods = classNode.getMethods();
             for (MethodNode method : methods) {
