@@ -34,6 +34,15 @@ public interface SimpleDBTemplate {
 
     Item get(String domainName, String id) throws DataAccessException;
 
+    /**
+     * Same as get but with consistent read flag.
+     * @param domainName
+     * @param id
+     * @return
+     * @throws DataAccessException
+     */
+    Item getConsistent(String domainName, String id) throws DataAccessException;
+
     void putAttributes(String domainName, String id, List<ReplaceableAttribute> attributes) throws DataAccessException;
 
     /**

@@ -83,6 +83,29 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         }
     }
 
+    public Item getConsistent(String domainName, String id) {
+//        String selectExpression = "select * from `" + domainName + "` where id = '"+id+"'"; //todo
+
+        //todo - handle exceptions and retries
+
+        GetAttributesRequest request = new GetAttributesRequest(domainName, id);
+        request.setConsistentRead(true);
+        try {
+            List<Attribute> attributes = sdb.getAttributes(request).getAttributes();
+            if (attributes.isEmpty()) {
+                return null;
+            }
+
+            return new Item(id, attributes);
+        } catch (AmazonServiceException e) {
+            if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
+                throw new IllegalArgumentException("no such domain: "+domainName, e);
+            } else {
+                throw e;
+            }
+        }
+    }
+
     public void putAttributes(String domainName, String id, List<ReplaceableAttribute> attributes) throws DataAccessException {
         try {
             PutAttributesRequest request = new PutAttributesRequest(domainName, id, attributes);

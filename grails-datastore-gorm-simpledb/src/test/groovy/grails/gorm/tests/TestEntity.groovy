@@ -34,5 +34,6 @@ class TestEntity implements Serializable {
 
     static mapping = {
         domain 'TestEntity'
+        child nullable:true
     }
 }

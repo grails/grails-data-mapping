@@ -13,6 +13,8 @@ The following key features are supported by the current version simpledb plugin:
 * Customizable AWS SimpleDB domain name per domain object
 * Customizable AWS SimpleDB attribute name per attribute in domain object
 * Customizable (optional) prefix for all AWS SimpleDB domain - useful when same AWS account is used for more than one environment (DEV and QA)
+* hilo numeric id generator to use as alternative to default UUID
+* Enum fields are supported
 * Sorting and lexicographical comparison -friendly persistence of the following data types (including negative values for numeric types):
 ** byte
 ** short

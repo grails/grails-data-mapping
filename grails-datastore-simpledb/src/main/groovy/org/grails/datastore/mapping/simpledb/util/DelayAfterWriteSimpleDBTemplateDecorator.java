@@ -72,6 +72,10 @@ public class DelayAfterWriteSimpleDBTemplateDecorator implements SimpleDBTemplat
         return template.get(domainName, id);
     }
 
+    public Item getConsistent(String domainName, String id) throws DataAccessException {
+        return template.getConsistent(domainName, id);
+    }
+
     public List<String> listDomains() throws DataAccessException {
         return template.listDomains();
     }

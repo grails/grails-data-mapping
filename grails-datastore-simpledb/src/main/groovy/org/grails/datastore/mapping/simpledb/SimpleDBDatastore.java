@@ -55,6 +55,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
     private SimpleDBTemplate simpleDBTemplate;  //currently there is no need to create template per entity, we can share same instance
     protected Map<AssociationKey, SimpleDBAssociationInfo> associationInfoMap = new HashMap<AssociationKey, SimpleDBAssociationInfo>(); //contains entries only for those associations that need a dedicated domain
     protected Map<PersistentEntity, SimpleDBDomainResolver> entityDomainResolverMap = new HashMap<PersistentEntity, SimpleDBDomainResolver>();
+    protected Map<PersistentEntity, SimpleDBIdGenerator> entityIdGeneratorMap = new HashMap<PersistentEntity, SimpleDBIdGenerator>();
 
     private String domainNamePrefix;
 
@@ -144,6 +145,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         createSimpleDBTemplate(entity);
         analyzeAssociations(entity);
         createEntityDomainResolver(entity);
+        createEntityIdGenerator(entity);
     }
 
     /**
@@ -163,11 +165,27 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         return entityDomainResolverMap.get(entity);
     }
 
+    /**
+     * Returns id generator for the specified entity.
+     * @param entity
+     * @return
+     */
+    public SimpleDBIdGenerator getEntityIdGenerator(PersistentEntity entity) {
+        return entityIdGeneratorMap.get(entity);
+    }
+
     protected void createEntityDomainResolver(PersistentEntity entity) {
         SimpleDBDomainResolverFactory resolverFactory = new SimpleDBDomainResolverFactory();
         SimpleDBDomainResolver domainResolver = resolverFactory.buildResolver(entity, this);
 
         entityDomainResolverMap.put(entity, domainResolver);
+    }
+
+    protected void createEntityIdGenerator(PersistentEntity entity) {
+        SimpleDBIdGeneratorFactory factory = new SimpleDBIdGeneratorFactory();
+        SimpleDBIdGenerator generator = factory.buildIdGenerator(entity, this);
+
+        entityIdGeneratorMap.put(entity, generator);
     }
 
     @Override

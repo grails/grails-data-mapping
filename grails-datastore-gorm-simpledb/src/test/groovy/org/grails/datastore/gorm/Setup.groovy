@@ -19,6 +19,7 @@ import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolverFactory
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBAssociationInfo
+import grails.gorm.tests.PlantNumericIdValue
 
 /**
  * In order to run AWS SimpleDB tests you have to define two system variables: AWS_ACCESS_KEY and AWS_SECRET_KEY with
@@ -41,6 +42,8 @@ class Setup {
     }
 
     static Session setup(classes) {
+        classes.add(PlantNumericIdValue.class)
+
         def env = System.getenv()
         final userHome = System.getProperty("user.home")
         def settingsFile = new File(userHome, "aws.properties")

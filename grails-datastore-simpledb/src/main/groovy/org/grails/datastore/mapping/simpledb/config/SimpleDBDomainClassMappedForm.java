@@ -29,6 +29,7 @@ import org.grails.datastore.mapping.simpledb.util.SimpleDBConst;
  *      static mapping = {
  *          domain 'Person'
  *          sharding enabled:false, shards:3 //optional, needed only if sharding is used for this domain class
+ *          id_generator type:'hilo', maxLo:100  //optional, if not specified UUID is used
  *      }
  * </pre>
  * @author Roman Stepanenko
@@ -38,6 +39,7 @@ public class SimpleDBDomainClassMappedForm extends Family {
 
     protected String domain;
     protected Map<String, Object> sharding; //sharding configuration
+    protected Map<String, Object> id_generator; //id generation configuration
     protected boolean shardingEnabled;
 
     public SimpleDBDomainClassMappedForm() {
@@ -72,6 +74,14 @@ public class SimpleDBDomainClassMappedForm extends Family {
     public void setFamily(String family) {
         super.setFamily(family);
         domain = family;
+    }
+
+    public Map<String, Object> getId_generator() {
+        return id_generator;
+    }
+
+    public void setId_generator(Map<String, Object> id_generator) {
+        this.id_generator = id_generator;
     }
 
     public Map<String, Object> getSharding() {
