@@ -786,6 +786,18 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     /**
+     * Adds a distinct property projection
+     *
+     * @param property The property to obtain the distinct value for
+     * @return This criteria instance
+     */
+    DetachedCriteria<T> distinct(String property) {
+        DetachedCriteria newCriteria = this.clone()
+        newCriteria.projectionList.distinct(property)
+        return newCriteria
+    }
+
+    /**
      * Method missing handler that deals with the invocation of dynamic finders
      *
      * @param methodName The method name
