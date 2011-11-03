@@ -113,6 +113,11 @@ class SimpleMapQuery extends Query {
                     else {
 
                         PersistentProperty prop = entity.getPropertyByName(p.propertyName)
+                        boolean distinct = p instanceof Query.DistinctPropertyProjection
+                        if(distinct) {
+                            propertyValues = propertyValues.unique()
+                        }
+
                         if (prop) {
                             if (prop instanceof ToOne) {
                                 propertyValues = propertyValues.collect {
