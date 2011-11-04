@@ -354,6 +354,21 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         if (shouldConvertToString(value.getClass())) {
             value = value.toString();
         }
+		else if (value instanceof Collection) {
+			// Test whether this collection is a collection can be BSON encoded, if not convert to String
+			boolean convertToString = false;
+			for (Object item : (Collection)value) {
+				convertToString = shouldConvertToString(item.getClass());
+				break;
+			}
+			if (convertToString) {
+				Object[] objs = ((Collection)value).toArray();
+				((Collection)value).clear();
+				for(Object item : objs) {
+					((Collection)value).add(item.toString());
+				}
+			}
+		}
         else if (value instanceof Calendar) {
             value = ((Calendar)value).getTime();
         }
