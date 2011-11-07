@@ -616,8 +616,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         T tmp = null;
         final NativeEntryModifyingEntityAccess entityAccess = (NativeEntryModifyingEntityAccess) createEntityAccess(persistentEntity, obj, tmp);
 
+		String generatorType = ((Property)getMappingContext().getMappingFactory().createMappedForm(persistentEntity.getIdentity())).getGenerator();
+		
         K k = readObjectIdentifier(entityAccess, persistentEntity.getMapping());
-        boolean isUpdate = k != null;
+		boolean isUpdate = k != null;
         if (isUpdate && !getSession().isDirty(obj)) {
             return (Serializable) k;
         }
@@ -626,11 +628,29 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
         String family = getEntityFamily();
         SessionImplementor<Object> si = (SessionImplementor<Object>) session;
+		
+		if (isUpdate) {
+			tmp = (T) si.getCachedEntry(persistentEntity, (Serializable) k);
+            if (tmp == null) {
+                tmp = getFromTPCache(persistentEntity, (Serializable) k);
+                if (tmp == null) {
+                    tmp = retrieveEntry(persistentEntity, family, (Serializable) k);
+                }
+            }
+            if (tmp == null) {
+				if (generatorType=="assigned") {
+					isUpdate = false;
+                }
+				tmp = createNewEntry(family);
+			}
+		} else {
+			tmp = createNewEntry(family);
+		}
+		
         if (!isUpdate) {
-            tmp = createNewEntry(family);
-
-            k = generateIdentifier(persistentEntity, tmp);
-
+			if (generatorType!="assigned")
+				k = generateIdentifier(persistentEntity, tmp);
+			
             cacheNativeEntry(persistentEntity, (Serializable) k, tmp);
 
             pendingOperation = new PendingInsertAdapter<T, K>(persistentEntity, k, tmp, entityAccess) {
@@ -642,17 +662,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             entityAccess.setProperty(entityAccess.getIdentifierName(), k);
         }
         else {
-            tmp = (T) si.getCachedEntry(persistentEntity, (Serializable) k);
-            if (tmp == null) {
-                tmp = getFromTPCache(persistentEntity, (Serializable) k);
-                if (tmp == null) {
-                    tmp = retrieveEntry(persistentEntity, family, (Serializable) k);
-                }
-            }
-            if (tmp == null) {
-                tmp = createNewEntry(family);
-            }
-
             final T finalTmp = tmp;
             final K finalK = k;
             pendingOperation = new PendingUpdateAdapter<T, K>(persistentEntity, finalK, finalTmp, entityAccess) {
