@@ -25,7 +25,7 @@ class EnumCollectionSpec extends GormDatastoreSpec {
             i.subject == Subject.MATH
     }
 
-    void "Test persistence of embedded enum collections"() {
+    void "Test persistence of enum collections"() {
         given:
             def i = new Teacher2(name:"Melvin", subject: Subject.MATH)
             i.otherSubjects = [Subject.HISTORY, Subject.HOME_EC]
