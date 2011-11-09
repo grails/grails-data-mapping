@@ -53,6 +53,33 @@ class EnumSpec extends GormDatastoreSpec {
             instance3 == null
     }
 
+    void "Test findBy() with clearing the session"() {
+        given:
+
+            new EnumThing(name: 'e1', en: TestEnum.V1).save(failOnError: true, flush: true)
+            new EnumThing(name: 'e2', en: TestEnum.V1).save(failOnError: true, flush: true)
+            new EnumThing(name: 'e3', en: TestEnum.V2).save(failOnError: true, flush: true)
+            session.clear()
+
+            EnumThing instance1
+            EnumThing instance2
+            EnumThing instance3
+
+        when:
+            instance1 = EnumThing.findByEn(TestEnum.V1)
+            instance2 = EnumThing.findByEn(TestEnum.V2)
+            instance3 = EnumThing.findByEn(TestEnum.V3)
+
+        then:
+            instance1 != null
+            instance1.en == TestEnum.V1
+
+            instance2 != null
+            instance2.en == TestEnum.V2
+
+            instance3 == null
+    }
+
     void "Test findAllBy()"() {
         given:
 

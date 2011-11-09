@@ -181,7 +181,7 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
     }
 
     public boolean deleteAllItems(String domainName) throws DataAccessException {
-        SelectRequest selectRequest = new SelectRequest("select itemName() from `"+domainName+"`");
+        SelectRequest selectRequest = new SelectRequest("select itemName() from `"+domainName+"` limit 2500");
         List<Item> items = sdb.select(selectRequest).getItems();
 
         boolean hadItems = !items.isEmpty();
