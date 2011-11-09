@@ -390,37 +390,45 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             cachedProperties.put(GrailsDomainClassProperty.IDENTITY, new ClassNode(Long.class));
             cachedProperties.put(GrailsDomainClassProperty.VERSION, new ClassNode(Long.class));
             cachedClassProperties.put(className, cachedProperties);
-            List<MethodNode> methods = classNode.getMethods();
-            for (MethodNode method : methods) {
-                if (!method.isAbstract() && !method.isStatic() && isGetter(method.getName(), method)) {
-                    String propertyName = GrailsClassUtils.getPropertyForGetter(method.getName());
-                    cachedProperties.put(propertyName, method.getReturnType());
-                }
-            }
-            List<PropertyNode> properties = classNode.getProperties();
-            for (PropertyNode property : properties) {
-
-                String propertyName = property.getName();
-                if(GrailsDomainClassProperty.HAS_MANY.equals(propertyName) || GrailsDomainClassProperty.BELONGS_TO.equals(propertyName)) {
-                    Expression initialExpression = property.getInitialExpression();
-                    if(initialExpression instanceof MapExpression) {
-                        MapExpression me = (MapExpression) initialExpression;
-                        List<MapEntryExpression> mapEntryExpressions = me.getMapEntryExpressions();
-                        for (MapEntryExpression mapEntryExpression : mapEntryExpressions) {
-                            Expression keyExpression = mapEntryExpression.getKeyExpression();
-                            Expression valueExpression = mapEntryExpression.getValueExpression();
-                            if(valueExpression instanceof ClassExpression) {
-                                cachedProperties.put(keyExpression.getText(), valueExpression.getType());
-                            }
-                        }
-                    }
-                }
-                else {
-                    cachedProperties.put(propertyName, property.getType());
-                }
+            ClassNode currentNode = classNode;
+            while(currentNode != null && !currentNode.equals(ClassHelper.OBJECT_TYPE)) {
+                populatePropertiesForClassNode(currentNode, cachedProperties);
+                currentNode = currentNode.getSuperClass();
             }
         }
         return new ArrayList<String>(cachedProperties.keySet());
+    }
+
+    private void populatePropertiesForClassNode(ClassNode classNode, Map<String, ClassNode> cachedProperties) {
+        List<MethodNode> methods = classNode.getMethods();
+        for (MethodNode method : methods) {
+            if (!method.isAbstract() && !method.isStatic() && isGetter(method.getName(), method)) {
+                String propertyName = GrailsClassUtils.getPropertyForGetter(method.getName());
+                cachedProperties.put(propertyName, method.getReturnType());
+            }
+        }
+        List<PropertyNode> properties = classNode.getProperties();
+        for (PropertyNode property : properties) {
+
+            String propertyName = property.getName();
+            if(GrailsDomainClassProperty.HAS_MANY.equals(propertyName) || GrailsDomainClassProperty.BELONGS_TO.equals(propertyName)) {
+                Expression initialExpression = property.getInitialExpression();
+                if(initialExpression instanceof MapExpression) {
+                    MapExpression me = (MapExpression) initialExpression;
+                    List<MapEntryExpression> mapEntryExpressions = me.getMapEntryExpressions();
+                    for (MapEntryExpression mapEntryExpression : mapEntryExpressions) {
+                        Expression keyExpression = mapEntryExpression.getKeyExpression();
+                        Expression valueExpression = mapEntryExpression.getValueExpression();
+                        if(valueExpression instanceof ClassExpression) {
+                            cachedProperties.put(keyExpression.getText(), valueExpression.getType());
+                        }
+                    }
+                }
+            }
+            else {
+                cachedProperties.put(propertyName, property.getType());
+            }
+        }
     }
 
     private void addBlockStatementToNewQuery(BlockStatement blockStatement, BlockStatement newCode, boolean addAll, List<String> propertyNames) {
