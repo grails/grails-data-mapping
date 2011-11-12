@@ -35,6 +35,7 @@ import java.util.List;
 public class SimpleDBUtil {
     public static final String AWS_ERR_CODE_CONDITIONAL_CHECK_FAILED = "ConditionalCheckFailed";
     public static final String AWS_ERR_CODE_NO_SUCH_DOMAIN = "NoSuchDomain";
+    public static final String AWS_ERR_CODE_SERVICE_UNAVAILABLE = "ServiceUnavailable";
 
     /**
      * Quotes and escapes an attribute name or domain name by wrapping it with backticks and escaping any backticks inside the name.
@@ -118,5 +119,28 @@ public class SimpleDBUtil {
             ids.add(item.getName());
         }
         return ids;
+    }
+
+    /**
+     * Used in case we need to re-submit request to AWS when it throws 'AWS Error Code: ServiceUnavailable, AWS Error Message: Service AmazonSimpleDB is currently unavailable. Please try again '
+     * @param attemptNumber
+     */
+    public static void sleepBeforeRetry(int attemptNumber){
+        long sleepMS;
+        if (attemptNumber < 5) {
+            sleepMS = 100;
+        } else if (attemptNumber < 10) {
+            sleepMS = 1000;
+        } else if (attemptNumber < 15) {
+            sleepMS = 5000;
+        } else if (attemptNumber < 20) {
+            sleepMS = 30000;
+        } else {
+            sleepMS = 60000;
+        }
+        try {
+            Thread.sleep(sleepMS);
+        } catch (InterruptedException e) {
+        }
     }
 }

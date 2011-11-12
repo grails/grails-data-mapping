@@ -62,10 +62,9 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
     }
 
     public Item get(String domainName, String id) {
-//        String selectExpression = "select * from `" + domainName + "` where id = '"+id+"'"; //todo
-
-        //todo - handle exceptions and retries
-
+        return getInternal(domainName, id, 1);
+    }
+    private Item getInternal(String domainName, String id, int attempt) {
         GetAttributesRequest request = new GetAttributesRequest(domainName, id);
         try {
             List<Attribute> attributes = sdb.getAttributes(request).getAttributes();
@@ -77,6 +76,11 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         } catch (AmazonServiceException e) {
             if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
                 throw new IllegalArgumentException("no such domain: "+domainName, e);
+            } else if (SimpleDBUtil.AWS_ERR_CODE_SERVICE_UNAVAILABLE.equals(e.getErrorCode())) {
+                //retry after a small pause
+                SimpleDBUtil.sleepBeforeRetry(attempt);
+                attempt++;
+                return getInternal(domainName, id, attempt);
             } else {
                 throw e;
             }
@@ -84,6 +88,9 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
     }
 
     public Item getConsistent(String domainName, String id) {
+        return getConsistentInternal(domainName, id, 1);
+    }
+    private Item getConsistentInternal(String domainName, String id, int attempt) {
 //        String selectExpression = "select * from `" + domainName + "` where id = '"+id+"'"; //todo
 
         //todo - handle exceptions and retries
@@ -100,6 +107,11 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         } catch (AmazonServiceException e) {
             if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
                 throw new IllegalArgumentException("no such domain: "+domainName, e);
+            } else if (SimpleDBUtil.AWS_ERR_CODE_SERVICE_UNAVAILABLE.equals(e.getErrorCode())) {
+                //retry after a small pause
+                SimpleDBUtil.sleepBeforeRetry(attempt);
+                attempt++;
+                return getConsistentInternal(domainName, id, attempt);
             } else {
                 throw e;
             }
@@ -107,12 +119,20 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
     }
 
     public void putAttributes(String domainName, String id, List<ReplaceableAttribute> attributes) throws DataAccessException {
+        putAttributesInternal(domainName, id, attributes, 1);
+    }
+    private void putAttributesInternal(String domainName, String id, List<ReplaceableAttribute> attributes, int attempt) throws DataAccessException {
         try {
             PutAttributesRequest request = new PutAttributesRequest(domainName, id, attributes);
             sdb.putAttributes(request);
         } catch (AmazonServiceException e) {
             if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
                 throw new IllegalArgumentException("no such domain: "+domainName, e);
+            } else if (SimpleDBUtil.AWS_ERR_CODE_SERVICE_UNAVAILABLE.equals(e.getErrorCode())) {
+                //retry after a small pause
+                SimpleDBUtil.sleepBeforeRetry(attempt);
+                attempt++;
+                putAttributesInternal(domainName, id, attributes, attempt);
             } else {
                 throw e;
             }
@@ -120,6 +140,9 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
     }
 
     public void putAttributesVersioned(String domainName, String id, List<ReplaceableAttribute> attributes, String expectedVersion, PersistentEntity persistentEntity) throws DataAccessException {
+        putAttributesVersionedInternal(domainName, id, attributes, expectedVersion, persistentEntity, 1);
+    }
+    private void putAttributesVersionedInternal(String domainName, String id, List<ReplaceableAttribute> attributes, String expectedVersion, PersistentEntity persistentEntity, int attempt) throws DataAccessException {
         PutAttributesRequest request = new PutAttributesRequest(domainName, id, attributes,
                 getOptimisticVersionCondition(expectedVersion));
         try {
@@ -129,12 +152,21 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
                 throw new OptimisticLockingException(persistentEntity, id);
             } else if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
                 throw new IllegalArgumentException("no such domain: " + domainName, e);
+            } else if (SimpleDBUtil.AWS_ERR_CODE_SERVICE_UNAVAILABLE.equals(e.getErrorCode())) {
+                //retry after a small pause
+                SimpleDBUtil.sleepBeforeRetry(attempt);
+                attempt++;
+                putAttributesVersionedInternal(domainName, id, attributes, expectedVersion, persistentEntity, attempt);
+            } else {
+                throw e;
             }
-            throw e;
         }
     }
 
     public void deleteAttributes(String domainName, String id, List<Attribute> attributes) throws DataAccessException {
+        deleteAttributesInternal(domainName, id, attributes, 1);
+    }
+    private void deleteAttributesInternal(String domainName, String id, List<Attribute> attributes, int attempt) throws DataAccessException {
         if (!attributes.isEmpty()) {
             DeleteAttributesRequest request = new DeleteAttributesRequest(domainName, id, attributes);
             try {
@@ -142,6 +174,11 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
             } catch (AmazonServiceException e) {
                 if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
                     throw new IllegalArgumentException("no such domain: "+domainName, e);
+                } else if (SimpleDBUtil.AWS_ERR_CODE_SERVICE_UNAVAILABLE.equals(e.getErrorCode())) {
+                    //retry after a small pause
+                    SimpleDBUtil.sleepBeforeRetry(attempt);
+                    attempt++;
+                    deleteAttributesInternal(domainName, id, attributes, attempt);
                 } else {
                     throw e;
                 }
@@ -150,6 +187,9 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
     }
 
     public void deleteAttributesVersioned(String domainName, String id, List<Attribute> attributes, String expectedVersion, PersistentEntity persistentEntity) throws DataAccessException {
+        deleteAttributesVersionedInternal(domainName, id, attributes, expectedVersion, persistentEntity, 1);
+    }
+    private void deleteAttributesVersionedInternal(String domainName, String id, List<Attribute> attributes, String expectedVersion, PersistentEntity persistentEntity, int attempt) throws DataAccessException {
         // If attribute list is empty AWS api will erase the whole item.
         // Do not do that, otherwise all the callers will have to check for empty list before calling
         if (!attributes.isEmpty()) {
@@ -161,19 +201,33 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
                     throw new OptimisticLockingException(persistentEntity, id);
                 } else if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
                     throw new IllegalArgumentException("no such domain: " + domainName, e);
+                } else if (SimpleDBUtil.AWS_ERR_CODE_SERVICE_UNAVAILABLE.equals(e.getErrorCode())) {
+                    //retry after a small pause
+                    SimpleDBUtil.sleepBeforeRetry(attempt);
+                    attempt++;
+                    deleteAttributesVersionedInternal(domainName, id, attributes, expectedVersion, persistentEntity, attempt);
+                } else {
+                    throw e;
                 }
-                throw e;
             }
         }
     }
 
     public void deleteItem(String domainName, String id) {
+        deleteItemInternal(domainName, id, 1);
+    }
+    private void deleteItemInternal(String domainName, String id, int attempt) {
         DeleteAttributesRequest request = new DeleteAttributesRequest(domainName, id);
         try {
             sdb.deleteAttributes(request);
         } catch (AmazonServiceException e) {
             if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
                 throw new IllegalArgumentException("no such domain: " + domainName, e);
+            } else if (SimpleDBUtil.AWS_ERR_CODE_SERVICE_UNAVAILABLE.equals(e.getErrorCode())) {
+                //retry after a small pause
+                SimpleDBUtil.sleepBeforeRetry(attempt);
+                attempt++;
+                deleteItemInternal(domainName, id, attempt);
             } else {
                 throw e;
             }
@@ -181,19 +235,43 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
     }
 
     public boolean deleteAllItems(String domainName) throws DataAccessException {
-        SelectRequest selectRequest = new SelectRequest("select itemName() from `"+domainName+"` limit 2500");
-        List<Item> items = sdb.select(selectRequest).getItems();
+        //determine the count currently - if it is small delete items individually, otherwise just drop/create domain
+        SelectRequest countRequest = new SelectRequest("select count(*) from `"+domainName+"`");
+        List<Item> items = sdb.select(countRequest).getItems();
+        int count = Integer.parseInt(items.get(0).getAttributes().get(0).getValue());
+        if (count >= 2500) {
+            deleteDomain(domainName);
+            createDomain(domainName);
+        } else {
+            SelectRequest selectRequest = new SelectRequest("select itemName() from `"+domainName+"` limit 2500");
+            items = sdb.select(selectRequest).getItems();
 
-        boolean hadItems = !items.isEmpty();
-        for (Item item : items) {
-            deleteItem(domainName, item.getName());
+            for (Item item : items) {
+                deleteItem(domainName, item.getName());
+            }
         }
-        return hadItems;
+        return count > 0;
     }
 
     public List<Item> query(String query) {
-        SelectRequest selectRequest = new SelectRequest(query);
-        return sdb.select(selectRequest).getItems();
+        return queryInternal(query, 1);
+    }
+    private List<Item> queryInternal(String query, int attempt) {
+        try {
+            SelectRequest selectRequest = new SelectRequest(query);
+            return sdb.select(selectRequest).getItems();
+        } catch (AmazonServiceException e) {
+            if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
+                throw new IllegalArgumentException("no such domain: " + query, e);
+            } else if (SimpleDBUtil.AWS_ERR_CODE_SERVICE_UNAVAILABLE.equals(e.getErrorCode())) {
+                //retry after a small pause
+                SimpleDBUtil.sleepBeforeRetry(attempt);
+                attempt++;
+                return queryInternal(query, attempt);
+            } else {
+                throw e;
+            }
+        }
     }
 
     public void createDomain(String domainName) throws DataAccessException {
