@@ -31,6 +31,7 @@ import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.grails.datastore.mapping.simple.query.SimpleMapQuery
 import org.grails.datastore.mapping.config.Property
 import org.grails.datastore.mapping.core.IdentityGenerationException
+import org.grails.datastore.mapping.model.types.ManyToMany
 
 /**
  * A simple implementation of the {@link org.grails.datastore.mapping.engine.EntityPersister} abstract class that backs onto an in-memory map.
@@ -179,6 +180,20 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
             }
         }
     }
+
+    @Override
+    protected void setManyToMany(PersistentEntity persistentEntity, Object obj, Map nativeEntry, ManyToMany manyToMany, Collection associatedObjects, Map<Association, List<Serializable>> toManyKeys) {
+        final identifiers = session.persist(associatedObjects)
+        toManyKeys.put(manyToMany, identifiers)
+    }
+
+    @Override
+    protected Collection getManyToManyKeys(PersistentEntity persistentEntity, Object obj, Serializable nativeKey, Map nativeEntry, ManyToMany manyToMany) {
+        final indexer = getAssociationIndexer(nativeEntry, manyToMany)
+        final primaryKey = getObjectIdentifier(obj)
+        indexer.query(primaryKey)
+    }
+
 
     protected Map createNewEntry(String family) {
         return [:]
