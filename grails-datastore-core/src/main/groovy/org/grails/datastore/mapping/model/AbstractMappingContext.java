@@ -178,7 +178,6 @@ public abstract class AbstractMappingContext implements MappingContext {
 
     protected abstract PersistentEntity createPersistentEntity(Class javaClass);
 
-    @Override
     public PersistentEntity createEmbeddedEntity(Class type) {
         EmbeddedPersistentEntity embedded = new EmbeddedPersistentEntity(type, this);
         embedded.initialize();

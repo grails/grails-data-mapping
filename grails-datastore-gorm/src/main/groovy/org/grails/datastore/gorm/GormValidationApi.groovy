@@ -79,10 +79,10 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
             for (localError in localErrors.allErrors) {
                 if (localError instanceof FieldError) {
                     def fieldName = localError.getField()
-                    def fieldError = objectErrors.getFieldError(fieldName)
+                    def fieldErrors = objectErrors.getFieldErrors(fieldName)
+                    def fieldError = fieldErrors.find { it == localError }
 
-                    // if we didn't find an error OR if it is a bindingFailure...
-                    if (!fieldError || fieldError.bindingFailure) {
+                    if (!fieldError) {
                         objectErrors.addError(localError)
                     }
                 }
