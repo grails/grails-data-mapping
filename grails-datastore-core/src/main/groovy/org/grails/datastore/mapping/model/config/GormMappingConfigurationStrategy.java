@@ -41,14 +41,7 @@ import java.util.Set;
 
 import javax.persistence.Entity;
 
-import org.grails.datastore.mapping.model.ClassMapping;
-import org.grails.datastore.mapping.model.IdentityMapping;
-import org.grails.datastore.mapping.model.IllegalMappingException;
-import org.grails.datastore.mapping.model.MappingConfigurationStrategy;
-import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.datastore.mapping.model.MappingFactory;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.ReflectionUtils;
@@ -140,99 +133,116 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
     public List<PersistentProperty> getPersistentProperties(Class javaClass, MappingContext context, ClassMapping classMapping) {
         PersistentEntity entity = getPersistentEntity(javaClass, context, classMapping);
 
-        final List<PersistentProperty> persistentProperties = new ArrayList<PersistentProperty>();
-
         if (entity != null) {
-            ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
+            return getPersistentProperties(entity, context, classMapping);
+        }
+        return Collections.emptyList();
+    }
 
-            // owners are the classes that own this class
-            Collection embedded = cpf.getStaticPropertyValue(EMBEDDED, Collection.class);
-            if (embedded == null) embedded = Collections.emptyList();
+    public List<PersistentProperty> getPersistentProperties(PersistentEntity entity, MappingContext context, ClassMapping classMapping) {
+        final List<PersistentProperty> persistentProperties = new ArrayList<PersistentProperty>();
+        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
 
-            Collection transients = cpf.getStaticPropertyValue(TRANSIENT, Collection.class);
-            if (transients == null) transients = Collections.emptyList();
+        // owners are the classes that own this class
+        Collection embedded = cpf.getStaticPropertyValue(EMBEDDED, Collection.class);
+        if (embedded == null) embedded = Collections.emptyList();
 
-            // hasMany associations for defining one-to-many and many-to-many
-            Map hasManyMap = getAssociationMap(cpf);
-            // mappedBy for defining by which property an association is mapped
-            Map mappedByMap = cpf.getStaticPropertyValue(MAPPED_BY, Map.class);
-            if (mappedByMap == null) mappedByMap = Collections.emptyMap();
-            // hasOne for declaring a one-to-one association with the foreign key in the child
-            Map hasOneMap = cpf.getStaticPropertyValue(HAS_ONE, Map.class);
-            if (hasOneMap == null) hasOneMap = Collections.emptyMap();
+        Collection transients = cpf.getStaticPropertyValue(TRANSIENT, Collection.class);
+        if (transients == null) transients = Collections.emptyList();
 
-            for (PropertyDescriptor descriptor : cpf.getPropertyDescriptors()) {
-                if (descriptor.getPropertyType() == null) {
-                    // indexed property
-                    continue;
-                }
-                if (descriptor.getReadMethod() == null || descriptor.getWriteMethod() == null) {
-                    // non-persistent getter or setter
-                    continue;
-                }
+        // hasMany associations for defining one-to-many and many-to-many
+        Map hasManyMap = getAssociationMap(cpf);
+        // mappedBy for defining by which property an association is mapped
+        Map mappedByMap = cpf.getStaticPropertyValue(MAPPED_BY, Map.class);
+        if (mappedByMap == null) mappedByMap = Collections.emptyMap();
+        // hasOne for declaring a one-to-one association with the foreign key in the child
+        Map hasOneMap = cpf.getStaticPropertyValue(HAS_ONE, Map.class);
+        if (hasOneMap == null) hasOneMap = Collections.emptyMap();
 
-                final String propertyName = descriptor.getName();
-                if (isExcludedProperty(propertyName, classMapping, transients)) continue;
-                Class<?> propertyType = descriptor.getPropertyType();
-                Class currentPropType = propertyType;
-                // establish if the property is a one-to-many
-                // if it is a Set and there are relationships defined
-                // and it is defined as persistent
-                if (embedded.contains(propertyName)) {
-                    if (isCollectionType(currentPropType)) {
-                        EmbeddedCollection association = propertyFactory.createEmbeddedCollection(
-                                entity, context, descriptor);
-                        persistentProperties.add(association);
-                        Class relatedClassType = (Class) hasManyMap.get(association.getName());
-                        if(relatedClassType == null) {
-                            try {
-                                Field declaredField = entity.getJavaClass().getDeclaredField(association.getName());
-                                Type genericType = declaredField.getGenericType();
-                                if(genericType instanceof ParameterizedType) {
-                                    Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
-                                    if(typeArguments.length>0) {
-                                        relatedClassType = (Class) typeArguments[0];
-                                    }
+        for (PropertyDescriptor descriptor : cpf.getPropertyDescriptors()) {
+            if (descriptor.getPropertyType() == null) {
+                // indexed property
+                continue;
+            }
+            if (descriptor.getReadMethod() == null || descriptor.getWriteMethod() == null) {
+                // non-persistent getter or setter
+                continue;
+            }
+
+            final String propertyName = descriptor.getName();
+            if (isExcludedProperty(propertyName, classMapping, transients)) continue;
+            Class<?> propertyType = descriptor.getPropertyType();
+            Class currentPropType = propertyType;
+            // establish if the property is a one-to-many
+            // if it is a Set and there are relationships defined
+            // and it is defined as persistent
+            if (embedded.contains(propertyName)) {
+                if (isCollectionType(currentPropType)) {
+                    Class relatedClassType = (Class) hasManyMap.get(propertyName);
+                    if(relatedClassType == null) {
+                        try {
+                            Field declaredField = entity.getJavaClass().getDeclaredField(propertyName);
+                            Type genericType = declaredField.getGenericType();
+                            if(genericType instanceof ParameterizedType) {
+                                Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
+                                if(typeArguments.length>0) {
+                                    relatedClassType = (Class) typeArguments[0];
                                 }
-                            } catch (NoSuchFieldException e) {
-                                // ignore
                             }
+                        } catch (NoSuchFieldException e) {
+                            // ignore
                         }
-                        if(relatedClassType != null) {
+                    }
+                    if(relatedClassType != null) {
+                        if(propertyFactory.isSimpleType(relatedClassType)) {
+                            Basic basicCollection = propertyFactory.createBasicCollection(entity, context, descriptor);
+                            persistentProperties.add(basicCollection);
+                        }
+                        else {
+                            EmbeddedCollection association = propertyFactory.createEmbeddedCollection(
+                                    entity, context, descriptor);
 
-                            PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity, context, relatedClassType);
-                            association.setAssociatedEntity(associatedEntity);
+                            persistentProperties.add(association);
+                            if(isPersistentEntity(relatedClassType)) {
+                                association.setAssociatedEntity( getOrCreateAssociatedEntity(entity, context, relatedClassType) );
+                            }
+                            else {
+                                EmbeddedPersistentEntity embeddedEntity = new EmbeddedPersistentEntity(relatedClassType, context);
+                                embeddedEntity.initialize();
+                                association.setAssociatedEntity(embeddedEntity);
+                            }
+
                         }
                     }
-                    else {
-                        ToOne association = propertyFactory.createEmbedded(entity, context, descriptor);
-                        PersistentEntity associatedEntity = getOrCreateEmbeddedEntity(entity, context, association.getType());
-                        association.setAssociatedEntity(associatedEntity);
-                        persistentProperties.add(association);
-                    }
                 }
-                else if (isCollectionType(currentPropType)) {
-                    final Association association = establishRelationshipForCollection(descriptor, entity, context, hasManyMap, mappedByMap);
-                    if (association != null) {
-                        configureOwningSide(association);
-                        persistentProperties.add(association);
-                    }
+                else {
+                    ToOne association = propertyFactory.createEmbedded(entity, context, descriptor);
+                    PersistentEntity associatedEntity = getOrCreateEmbeddedEntity(entity, context, association.getType());
+                    association.setAssociatedEntity(associatedEntity);
+                    persistentProperties.add(association);
                 }
-                // otherwise if the type is a domain class establish relationship
-                else if (isPersistentEntity(currentPropType)) {
-                    final ToOne association = establishDomainClassRelationship(entity, descriptor, context, hasOneMap);
-                    if (association != null) {
-                        configureOwningSide(association);
-                        persistentProperties.add(association);
-                    }
+            }
+            else if (isCollectionType(currentPropType)) {
+                final Association association = establishRelationshipForCollection(descriptor, entity, context, hasManyMap, mappedByMap);
+                if (association != null) {
+                    configureOwningSide(association);
+                    persistentProperties.add(association);
                 }
-                else if (Enum.class.isAssignableFrom(currentPropType) ||
-                       propertyFactory.isSimpleType(propertyType)) {
-                    persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
+            }
+            // otherwise if the type is a domain class establish relationship
+            else if (isPersistentEntity(currentPropType)) {
+                final ToOne association = establishDomainClassRelationship(entity, descriptor, context, hasOneMap);
+                if (association != null) {
+                    configureOwningSide(association);
+                    persistentProperties.add(association);
                 }
-                else if (MappingFactory.isCustomType(propertyType)) {
-                    persistentProperties.add(propertyFactory.createCustom(entity, context, descriptor));
-                }
+            }
+            else if (Enum.class.isAssignableFrom(currentPropType) ||
+                   propertyFactory.isSimpleType(propertyType)) {
+                persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
+            }
+            else if (MappingFactory.isCustomType(propertyType)) {
+                persistentProperties.add(propertyFactory.createCustom(entity, context, descriptor));
             }
         }
         return persistentProperties;

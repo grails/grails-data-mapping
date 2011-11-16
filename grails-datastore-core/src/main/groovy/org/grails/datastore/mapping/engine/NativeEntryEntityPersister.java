@@ -906,7 +906,15 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
     protected T handleEmbeddedInstance(Association association, Object embeddedInstance) {
         NativeEntryEntityPersister<T,K> embeddedPersister = (NativeEntryEntityPersister<T,K>) session.getPersister(embeddedInstance);
-        T embeddedEntry = embeddedPersister.createNewEntry(embeddedPersister.getEntityFamily());
+
+        // embeddedPersister would be null if the associated entity is a EmbeddedPersistentEntity
+        T embeddedEntry;
+        if(embeddedPersister == null) {
+            embeddedEntry = createNewEntry(association.getName());
+        }
+        else {
+            embeddedEntry = embeddedPersister.createNewEntry(embeddedPersister.getEntityFamily());
+        }
 
         final PersistentEntity associatedEntity = association.getAssociatedEntity();
         if (associatedEntity != null) {
@@ -922,6 +930,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 else if (persistentProperty instanceof Association) {
                     if (persistentProperty instanceof ToOne) {
                         handleEmbeddedToOne((Association) persistentProperty, persistentProperty.getName(), embeddedEntityAccess, embeddedEntry);
+                    }
+                    else if(persistentProperty instanceof Basic) {
+                        setEntryValue(embeddedEntry, persistentProperty.getName(), embeddedEntityAccess.getProperty(persistentProperty.getName()));
                     }
                     else {
                         handleEmbeddedToMany(embeddedEntityAccess, embeddedEntry, persistentProperty, persistentProperty.getName());
