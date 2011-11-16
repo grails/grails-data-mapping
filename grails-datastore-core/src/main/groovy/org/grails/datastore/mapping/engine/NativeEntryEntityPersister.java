@@ -1316,7 +1316,20 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
             }
             else if (prop instanceof EmbeddedCollection) {
-                // TODO
+                if(currentValue != null && oldValue == null) return true;
+                if((currentValue instanceof Collection) && (oldValue instanceof Collection)) {
+                    Collection currentCollection = (Collection) currentValue;
+                    Collection oldCollection = (Collection) oldValue;
+                    if(currentCollection.size() != oldCollection.size()) {
+                        return true;
+                    }
+                    else {
+                        if(!areCollectionsEqual(oldValue, currentValue)) {
+                            return true;
+                        }
+                    }
+                }
+
             }
             else {
                 throw new UnsupportedOperationException("dirty not detected for property " + prop.toString() + " " + prop.getClass().getSuperclass().toString());
@@ -1326,7 +1339,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         return false;
     }
 
-    private boolean areCollectionsEqual(Object oldValue, Object currentValue) {
+    protected boolean areCollectionsEqual(Object oldValue, Object currentValue) {
         if (oldValue == currentValue) {
             // same or both null
             return true;
@@ -1335,6 +1348,8 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         if (currentValue instanceof PersistentCollection) {
             return !((PersistentCollection)currentValue).isDirty();
         }
+
+
 
         return replaceNullOrUninitialized(oldValue, currentValue).equals(
                 replaceNullOrUninitialized(currentValue, oldValue));
@@ -1358,7 +1373,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         return c;
     }
 
-    private boolean areEqual(Object oldValue, Object currentValue, String propName) {
+    protected boolean areEqual(Object oldValue, Object currentValue, String propName) {
         if (oldValue == currentValue) {
             return true;
         }
