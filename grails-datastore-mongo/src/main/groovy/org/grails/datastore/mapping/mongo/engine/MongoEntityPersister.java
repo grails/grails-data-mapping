@@ -333,8 +333,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         Locale.class,
         TimeZone.class,
         Currency.class,
-        URL.class,
-        Enum.class);
+        URL.class);
 
     @Override
     protected Object formulateDatabaseReference(PersistentEntity persistentEntity,
@@ -354,6 +353,29 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         if (shouldConvertToString(value.getClass())) {
             value = value.toString();
         }
+		else if (Enum.class.isAssignableFrom(value.getClass())) {
+			value = ((Enum)value).name();
+		}
+		else if (value instanceof Collection) {
+			// Test whether this collection is a collection can be BSON encoded, if not convert to String
+			boolean collConvertToString = false;
+			boolean collConvertFromEnum = false;
+			for (Object item : (Collection)value) {
+				collConvertToString = shouldConvertToString(item.getClass());
+				collConvertFromEnum = Enum.class.isAssignableFrom(item.getClass());
+				break;
+			}
+			if (collConvertToString || collConvertFromEnum) {
+				Object[] objs = ((Collection)value).toArray();
+				((Collection)value).clear();
+				for(Object item : objs) {
+					if (collConvertToString)
+						((Collection)value).add(item.toString());
+					else
+						((Collection)value).add(((Enum)item).name());
+				}
+			}
+		}
         else if (value instanceof Calendar) {
             value = ((Calendar)value).getTime();
         }
