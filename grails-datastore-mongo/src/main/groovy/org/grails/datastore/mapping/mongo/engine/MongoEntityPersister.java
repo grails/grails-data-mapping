@@ -118,6 +118,17 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @Override
+    protected DBObject handleEmbeddedInstance(Association association, Object embeddedInstance) {
+        DBObject entry = super.handleEmbeddedInstance(association, embeddedInstance);
+        PersistentEntity associatedEntity = association.getAssociatedEntity();
+        MappingContext mappingContext = associatedEntity.getMappingContext();
+        if(mappingContext.isInInheritanceHierarchy(associatedEntity)) {
+            setEntryValue(entry, "_embeddedClassName", embeddedInstance.getClass().getName());
+        }
+        return entry;
+    }
+
+    @Override
     protected void loadEmbeddedCollection(@SuppressWarnings("rawtypes") EmbeddedCollection embeddedCollection,
             EntityAccess ea, Object embeddedInstances, String propertyKey) {
 
@@ -133,10 +144,18 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             BasicDBList list = (BasicDBList)embeddedInstances;
             for (Object dbo : list) {
                 if (dbo instanceof BasicDBObject) {
+                    PersistentEntity embeddedPersistentEntity;
                     BasicDBObject nativeEntry = (BasicDBObject)dbo;
-                    String embeddedClassName = (String)nativeEntry.remove("_embeddedClassName");
-                    PersistentEntity embeddedPersistentEntity =
-                        getMappingContext().getPersistentEntity(embeddedClassName);
+                    PersistentEntity associatedEntity = embeddedCollection.getAssociatedEntity();
+                    MappingContext mappingContext = associatedEntity.getMappingContext();
+                    String embeddedClassName = mappingContext.isInInheritanceHierarchy(associatedEntity) ? (String)nativeEntry.get("_embeddedClassName") : null;
+                    if(embeddedClassName != null) {
+                        embeddedPersistentEntity =
+                            getMappingContext().getPersistentEntity(embeddedClassName);
+                    }
+                    else {
+                        embeddedPersistentEntity = associatedEntity;
+                    }
 
                     Object instance = newEntityInstance(embeddedPersistentEntity);
                     refreshObjectStateFromNativeEntry(embeddedPersistentEntity, instance, null, nativeEntry);
@@ -145,7 +164,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             }
         }
 
-        ea.setProperty(propertyKey, instances);
+        ea.setProperty(embeddedCollection.getName(), instances);
     }
 
     @Override

@@ -146,6 +146,28 @@ public abstract class AbstractMappingContext implements MappingContext {
         return entity;
     }
 
+
+    /**
+     * Returns true if the given entity is in an inheritance hierarchy
+     *
+     * @param entity The entity
+     * @return True if it is
+     */
+    @Override
+    public boolean isInInheritanceHierarchy(PersistentEntity entity) {
+        if(entity != null) {
+            if(!entity.isRoot()) return true;
+            else {
+                PersistentEntity rootEntity = entity.getRootEntity();
+                final Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(rootEntity);
+                if(children != null && !children.isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public PersistentEntity getChildEntityByDiscriminator(PersistentEntity root, String discriminator) {
         final Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(root);
         if (children != null) {

@@ -889,7 +889,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         for (Object instance : instances) {
             T entry = handleEmbeddedInstance((Association) prop, instance);
             embeddedEntries.add(entry);
-            setEntryValue(entry, "_embeddedClassName", instance.getClass().getName());
         }
 
         setEmbeddedCollection(e, key, instances, embeddedEntries);
