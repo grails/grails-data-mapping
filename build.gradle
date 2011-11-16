@@ -21,7 +21,7 @@ configurations {
 }
 
 apply plugin: 'idea'
-
+apply plugin: 'project-report'
 
 subprojects {
     releaseType = "BUILD-SNAPSHOT"

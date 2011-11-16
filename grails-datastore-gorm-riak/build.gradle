@@ -4,7 +4,9 @@ configurations {
 
 dependencies {
 
-    grails("org.grails:grails-core:$grailsVersion")
+    grails("org.grails:grails-core:$grailsVersion") {
+        transitive = false
+    }
     grails("org.grails:grails-bootstrap:$grailsVersion") {
         transitive = false
     }
@@ -13,7 +15,7 @@ dependencies {
             project(":grails-datastore-riak"),
             project(":grails-datastore-core")
 
-    compile 'org.springframework.data:spring-data-riak:1.0.0.M2-SNAPSHOT'
+    compile 'org.springframework.data:spring-data-riak:1.0.0.M3'
 
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")
