@@ -201,19 +201,14 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 ToOne association = (ToOne) prop;
                 if (!(prop instanceof Embedded) && !(prop instanceof EmbeddedCollection) &&
                         association.doesCascade(CascadeType.REMOVE)) {
-
-                    Object associatedObject = entityAccess.getProperty(prop.getName());
-//                                    if (!session.contains(associatedObject)) {
-//                        Serializable tempId = associationPersister.getObjectIdentifier(associatedObject);
-//                        if (association.isBidirectional()) {
-//                            Association inverse = association.getInverseSide();
-//                            if (inverse instanceof OneToMany) {
-//                                inverseCollectionUpdates.put((OneToMany) inverse, associationId);
-//                            }
-//                            else if (inverse instanceof ToOne) {
-//                                // TODO: Implement handling of bidirectional one-to-ones with foreign key in parent
-//                            }
-//                        }
+                    if(association.isOwningSide()) {
+                        Object value = entityAccess.getProperty(association.getName());
+                        if(value != null) {
+                            Persister persister = session.getPersister(value);
+                            if(persister != null)
+                                persister.delete(value);
+                        }
+                    }
                 }
             }
         }
