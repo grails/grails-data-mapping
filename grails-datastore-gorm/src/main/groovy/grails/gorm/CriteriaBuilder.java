@@ -940,6 +940,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     }
 
     protected void validatePropertyName(String propertyName, String methodName) {
+        if(persistentEntity == null) return;
         if (propertyName == null) {
             throw new IllegalArgumentException("Cannot use [" + methodName +
                     "] restriction with null property name");
