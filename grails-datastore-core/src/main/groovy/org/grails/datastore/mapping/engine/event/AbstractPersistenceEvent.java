@@ -86,4 +86,6 @@ public abstract class AbstractPersistenceEvent extends ApplicationEvent {
     public Serializable getNativeEvent() {
         return nativeEvent;
     }
+
+    public abstract EventType getEventType();
 }

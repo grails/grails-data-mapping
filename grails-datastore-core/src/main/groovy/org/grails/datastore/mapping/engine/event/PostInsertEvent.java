@@ -33,4 +33,9 @@ public class PostInsertEvent extends AbstractPersistenceEvent {
     public PostInsertEvent(final Datastore source, final Object entity) {
         super(source, entity);
     }
+
+    @Override
+    public EventType getEventType() {
+        return EventType.PostInsert;
+    }
 }
