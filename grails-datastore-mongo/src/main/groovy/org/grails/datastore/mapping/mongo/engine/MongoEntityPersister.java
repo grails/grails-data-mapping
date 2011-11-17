@@ -38,13 +38,11 @@ import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.NativeEntryEntityPersister;
 import org.grails.datastore.mapping.engine.PropertyValueIndexer;
+import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.model.types.Association;
-import org.grails.datastore.mapping.model.types.EmbeddedCollection;
-import org.grails.datastore.mapping.model.types.ManyToMany;
-import org.grails.datastore.mapping.model.types.ToOne;
+import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.mongo.MongoDatastore;
 import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
@@ -89,8 +87,11 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         mongoTemplate = datastore.getMongoTemplate(entity);
         collectionName = datastore.getCollectionName(entity);
 
-        hasNumericalIdentifier = Long.class.isAssignableFrom(entity.getIdentity().getType());
-        hasStringIdentifier = String.class.isAssignableFrom(entity.getIdentity().getType());
+        if(!(entity instanceof EmbeddedPersistentEntity)) {
+
+            hasNumericalIdentifier = Long.class.isAssignableFrom(entity.getIdentity().getType());
+            hasStringIdentifier = String.class.isAssignableFrom(entity.getIdentity().getType());
+        }
     }
 
     @Override
@@ -120,10 +121,12 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     @Override
     protected DBObject handleEmbeddedInstance(Association association, Object embeddedInstance) {
         DBObject entry = super.handleEmbeddedInstance(association, embeddedInstance);
-        PersistentEntity associatedEntity = association.getAssociatedEntity();
-        MappingContext mappingContext = associatedEntity.getMappingContext();
-        if(mappingContext.isInInheritanceHierarchy(associatedEntity)) {
-            setEntryValue(entry, "_embeddedClassName", embeddedInstance.getClass().getName());
+        if(!(association instanceof Basic)) {
+            PersistentEntity associatedEntity = association.getAssociatedEntity();
+            MappingContext mappingContext = associatedEntity.getMappingContext();
+            if(mappingContext.isInInheritanceHierarchy(associatedEntity)) {
+                setEntryValue(entry, "_embeddedClassName", embeddedInstance.getClass().getName());
+            }
         }
         return entry;
     }

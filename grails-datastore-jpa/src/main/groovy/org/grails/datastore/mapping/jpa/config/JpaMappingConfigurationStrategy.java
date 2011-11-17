@@ -90,6 +90,13 @@ public class JpaMappingConfigurationStrategy implements MappingConfigurationStra
         return properties.get(javaClass);
     }
 
+    /**
+     * @see #getPersistentProperties(Class, org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.model.ClassMapping)
+     */
+    public List<PersistentProperty> getPersistentProperties(PersistentEntity entity, MappingContext context, ClassMapping classMapping) {
+        return getPersistentProperties(entity.getJavaClass(), context, classMapping);
+    }
+
     public void initializeClassMapping(Class javaClass, MappingContext context,
             ClassMapping mapping) {
         if (properties.containsKey(javaClass)) {
