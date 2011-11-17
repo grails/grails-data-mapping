@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
+import org.springframework.core.convert.support.ConversionServiceFactory;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.grails.datastore.mapping.proxy.JavassistProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
@@ -42,7 +43,7 @@ public abstract class AbstractMappingContext implements MappingContext {
     protected Map<PersistentEntity,Map<String,PersistentEntity>>  persistentEntitiesByDiscriminator = new ConcurrentHashMap<PersistentEntity,Map<String,PersistentEntity>>();
     protected Map<PersistentEntity,Validator>  entityValidators = new ConcurrentHashMap<PersistentEntity, Validator>();
     protected Collection<Listener> eventListeners = new ConcurrentLinkedQueue<Listener>();
-    protected GenericConversionService conversionService = new GenericConversionService();
+    protected GenericConversionService conversionService = ConversionServiceFactory.createDefaultConversionService();
     protected ProxyFactory proxyFactory;
 
     public ConversionService getConversionService() {
