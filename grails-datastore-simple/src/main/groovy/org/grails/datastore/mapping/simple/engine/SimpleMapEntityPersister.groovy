@@ -120,12 +120,19 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
             }
 
             List query(value, int offset, int max) {
-                def index = getIndexName(value)
-                def indexed = indices[index]
-                if (!indexed) {
-                    return Collections.emptyList()
+                if(property == property.owner.identity) {
+                   retrieveEntity(getPersistentEntity(), value) != null ? [value] : []
                 }
-                return indexed[offset..max]
+                else {
+
+                    def index = getIndexName(value)
+
+                    def indexed = indices[index]
+                    if (!indexed) {
+                        return Collections.emptyList()
+                    }
+                    return indexed[offset..max]
+                }
             }
 
             String getIndexName(value) {
@@ -284,8 +291,13 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
                 def oldVersion = existing.version
                 def currentVersion = entityAccess.getProperty('version')
                 if (Number.isAssignableFrom(entityAccess.getPropertyType('version'))) {
-                    oldVersion = existing.version.toLong()
-                    currentVersion = entityAccess.getProperty('version').toLong()
+                    oldVersion = existing.version?.toLong()
+                    currentVersion = entityAccess.getProperty('version')?.toLong()
+                    if(currentVersion == null && oldVersion == null) {
+                        currentVersion = 0L
+                        entityAccess.setProperty("version", currentVersion)
+                        entry["version"] = currentVersion
+                    }
                 }
                 if (oldVersion != null && currentVersion != null && !oldVersion.equals(currentVersion)) {
                     throw new OptimisticLockingException(persistentEntity, key)

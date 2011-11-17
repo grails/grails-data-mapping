@@ -64,7 +64,7 @@ public abstract class Association<T> extends AbstractPersistentProperty {
     }
 
     public boolean isBidirectional() {
-        return getInverseSide() != null;
+        return associatedEntity != null && referencedPropertyName != null;
     }
 
     public Association getInverseSide() {

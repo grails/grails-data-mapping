@@ -271,7 +271,11 @@ public abstract class EntityPersister implements Persister {
 
     protected void incrementVersion(final EntityAccess ea) {
         if (Number.class.isAssignableFrom(ea.getPropertyType("version"))) {
-            ea.setProperty("version", ((Number)ea.getProperty("version")).longValue() + 1);
+            Number currentVersion = (Number) ea.getProperty("version");
+            if(currentVersion == null) {
+                currentVersion = 0L;
+            }
+            ea.setProperty("version", currentVersion.longValue() + 1);
         }
         else {
             setDateVersion(ea);
