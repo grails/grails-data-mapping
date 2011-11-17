@@ -15,11 +15,7 @@
 package org.grails.datastore.mapping.mongo.query;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import org.grails.datastore.mapping.core.SessionImplementor;
@@ -36,6 +32,7 @@ import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
+import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
 import org.grails.datastore.mapping.query.projections.ManualProjections;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -57,7 +54,7 @@ import com.mongodb.MongoException;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public class MongoQuery extends Query {
+public class MongoQuery extends Query implements QueryArgumentsAware {
 
     private static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
     private static Map<Class, QueryHandler> negatedHandlers = new HashMap<Class, QueryHandler>();
@@ -74,6 +71,8 @@ public class MongoQuery extends Query {
     public static final String MONGO_WHERE_OPERATOR = "$where";
 
     private static final String MONGO_THIS_PREFIX = "this.";
+    public static final String HINT_ARGUMENT = "hint";
+    private Map queryArguments = Collections.emptyMap();
 
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
@@ -572,6 +571,19 @@ public class MongoQuery extends Query {
                     populateMongoQuery(entity, query, criteria);
                     cursor = executeQueryAndApplyPagination(collection, query);
                 }
+
+                if(queryArguments != null) {
+                    if(queryArguments.containsKey(HINT_ARGUMENT)) {
+                        Object hint = queryArguments.get(HINT_ARGUMENT);
+                        if(hint instanceof Map) {
+                            cursor.hint(new BasicDBObject((Map)hint));
+                        }
+                        else if (hint != null){
+                            cursor.hint(hint.toString());
+                        }
+
+                    }
+                }
                 return cursor;
             }
 
@@ -713,6 +725,14 @@ public class MongoQuery extends Query {
     public Query withinCircle(String property, List value) {
         add(new WithinBox(property, value));
         return this;
+    }
+
+    /**
+     * @param arguments The query arguments
+     */
+    @Override
+    public void setArguments(Map arguments) {
+        this.queryArguments = arguments;
     }
 
     /**
