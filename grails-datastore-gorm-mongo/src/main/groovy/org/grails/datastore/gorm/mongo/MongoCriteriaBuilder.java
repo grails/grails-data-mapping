@@ -18,6 +18,7 @@ package org.grails.datastore.gorm.mongo;
 import grails.gorm.CriteriaBuilder;
 
 import java.util.List;
+import java.util.Map;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.mongo.query.MongoQuery.Near;
@@ -25,6 +26,7 @@ import org.grails.datastore.mapping.mongo.query.MongoQuery.WithinBox;
 import org.grails.datastore.mapping.mongo.query.MongoQuery.WithinCircle;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.Criteria;
+import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
 
 /**
  * Extends the default CriteriaBuilder implementation with Geolocation methods
@@ -82,6 +84,11 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
     public Criteria withinCircle(String property, List<?> value) {
         validatePropertyName(property, "withinBox");
         addToCriteria(new WithinCircle(property, value));
+        return this;
+    }
+
+    public Criteria arguments(Map arguments) {
+        ((QueryArgumentsAware)this.query).setArguments(arguments);
         return this;
     }
 }

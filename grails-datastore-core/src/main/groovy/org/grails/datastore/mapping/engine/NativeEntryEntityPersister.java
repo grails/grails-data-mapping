@@ -889,7 +889,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         for (Object instance : instances) {
             T entry = handleEmbeddedInstance((Association) prop, instance);
             embeddedEntries.add(entry);
-            setEntryValue(entry, "_embeddedClassName", instance.getClass().getName());
         }
 
         setEmbeddedCollection(e, key, instances, embeddedEntries);
@@ -907,7 +906,15 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
     protected T handleEmbeddedInstance(Association association, Object embeddedInstance) {
         NativeEntryEntityPersister<T,K> embeddedPersister = (NativeEntryEntityPersister<T,K>) session.getPersister(embeddedInstance);
-        T embeddedEntry = embeddedPersister.createNewEntry(embeddedPersister.getEntityFamily());
+
+        // embeddedPersister would be null if the associated entity is a EmbeddedPersistentEntity
+        T embeddedEntry;
+        if(embeddedPersister == null) {
+            embeddedEntry = createNewEntry(association.getName());
+        }
+        else {
+            embeddedEntry = embeddedPersister.createNewEntry(embeddedPersister.getEntityFamily());
+        }
 
         final PersistentEntity associatedEntity = association.getAssociatedEntity();
         if (associatedEntity != null) {
@@ -923,6 +930,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 else if (persistentProperty instanceof Association) {
                     if (persistentProperty instanceof ToOne) {
                         handleEmbeddedToOne((Association) persistentProperty, persistentProperty.getName(), embeddedEntityAccess, embeddedEntry);
+                    }
+                    else if(persistentProperty instanceof Basic) {
+                        setEntryValue(embeddedEntry, persistentProperty.getName(), embeddedEntityAccess.getProperty(persistentProperty.getName()));
                     }
                     else {
                         handleEmbeddedToMany(embeddedEntityAccess, embeddedEntry, persistentProperty, persistentProperty.getName());
@@ -1316,7 +1326,20 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
             }
             else if (prop instanceof EmbeddedCollection) {
-                // TODO
+                if(currentValue != null && oldValue == null) return true;
+                if((currentValue instanceof Collection) && (oldValue instanceof Collection)) {
+                    Collection currentCollection = (Collection) currentValue;
+                    Collection oldCollection = (Collection) oldValue;
+                    if(currentCollection.size() != oldCollection.size()) {
+                        return true;
+                    }
+                    else {
+                        if(!areCollectionsEqual(oldValue, currentValue)) {
+                            return true;
+                        }
+                    }
+                }
+
             }
             else {
                 throw new UnsupportedOperationException("dirty not detected for property " + prop.toString() + " " + prop.getClass().getSuperclass().toString());
@@ -1326,7 +1349,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         return false;
     }
 
-    private boolean areCollectionsEqual(Object oldValue, Object currentValue) {
+    protected boolean areCollectionsEqual(Object oldValue, Object currentValue) {
         if (oldValue == currentValue) {
             // same or both null
             return true;
@@ -1335,6 +1358,8 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         if (currentValue instanceof PersistentCollection) {
             return !((PersistentCollection)currentValue).isDirty();
         }
+
+
 
         return replaceNullOrUninitialized(oldValue, currentValue).equals(
                 replaceNullOrUninitialized(currentValue, oldValue));
@@ -1358,7 +1383,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         return c;
     }
 
-    private boolean areEqual(Object oldValue, Object currentValue, String propName) {
+    protected boolean areEqual(Object oldValue, Object currentValue, String propName) {
         if (oldValue == currentValue) {
             return true;
         }

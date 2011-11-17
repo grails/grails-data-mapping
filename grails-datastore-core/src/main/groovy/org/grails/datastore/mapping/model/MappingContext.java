@@ -57,6 +57,12 @@ public interface MappingContext {
     PersistentEntity getPersistentEntity(String name);
 
     /**
+     * Returns true if the given entity is in an inheritance hierarchy
+     * @param entity The entity
+     * @return True if it is
+     */
+    boolean isInInheritanceHierarchy(PersistentEntity entity);
+    /**
      * Obtains a child of the given root entity using the given discriminator
      * @param root The root entity
      * @param discriminator The discriminator

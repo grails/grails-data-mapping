@@ -19,10 +19,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.grails.datastore.mapping.model.types.conversion.DefaultConversionService;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
-import org.springframework.core.convert.support.ConversionServiceFactory;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.grails.datastore.mapping.proxy.JavassistProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
@@ -43,7 +43,7 @@ public abstract class AbstractMappingContext implements MappingContext {
     protected Map<PersistentEntity,Map<String,PersistentEntity>>  persistentEntitiesByDiscriminator = new ConcurrentHashMap<PersistentEntity,Map<String,PersistentEntity>>();
     protected Map<PersistentEntity,Validator>  entityValidators = new ConcurrentHashMap<PersistentEntity, Validator>();
     protected Collection<Listener> eventListeners = new ConcurrentLinkedQueue<Listener>();
-    protected GenericConversionService conversionService = ConversionServiceFactory.createDefaultConversionService();
+    protected GenericConversionService conversionService = new DefaultConversionService();
     protected ProxyFactory proxyFactory;
 
     public ConversionService getConversionService() {
@@ -146,6 +146,27 @@ public abstract class AbstractMappingContext implements MappingContext {
         return entity;
     }
 
+
+    /**
+     * Returns true if the given entity is in an inheritance hierarchy
+     *
+     * @param entity The entity
+     * @return True if it is
+     */
+    public boolean isInInheritanceHierarchy(PersistentEntity entity) {
+        if(entity != null) {
+            if(!entity.isRoot()) return true;
+            else {
+                PersistentEntity rootEntity = entity.getRootEntity();
+                final Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(rootEntity);
+                if(children != null && !children.isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public PersistentEntity getChildEntityByDiscriminator(PersistentEntity root, String discriminator) {
         final Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(root);
         if (children != null) {
@@ -156,7 +177,6 @@ public abstract class AbstractMappingContext implements MappingContext {
 
     protected abstract PersistentEntity createPersistentEntity(Class javaClass);
 
-    @Override
     public PersistentEntity createEmbeddedEntity(Class type) {
         EmbeddedPersistentEntity embedded = new EmbeddedPersistentEntity(type, this);
         embedded.initialize();

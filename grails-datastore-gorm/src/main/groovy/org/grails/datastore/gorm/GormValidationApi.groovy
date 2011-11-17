@@ -68,27 +68,21 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
         def localErrors = new BeanPropertyBindingResult(instance, instance.getClass().name)
 
         Errors errors = instance.errors
-        validator.validate instance, localErrors
 
+        validator.validate instance, localErrors
+        
         if (fields) {
             localErrors = filterErrors(localErrors, fields as Set, instance)
         }
 
-        if (localErrors.hasErrors()) {
-            Errors objectErrors = errors
-            for (localError in localErrors.allErrors) {
-                if (localError instanceof FieldError) {
-                    def fieldName = localError.getField()
-                    def fieldError = objectErrors.getFieldError(fieldName)
-
-                    // if we didn't find an error OR if it is a bindingFailure...
-                    if (!fieldError || fieldError.bindingFailure) {
-                        objectErrors.addError(localError)
-                    }
-                }
+        for(error in errors.allErrors) {
+            if(error.bindingFailure) {
+                localErrors.addError error
             }
-            instance.errors = objectErrors
         }
+
+        instance.errors = localErrors
+        
         return !instance.errors.hasErrors()
     }
 

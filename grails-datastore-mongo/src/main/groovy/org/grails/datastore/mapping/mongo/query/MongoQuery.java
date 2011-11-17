@@ -15,26 +15,24 @@
 package org.grails.datastore.mapping.mongo.query;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import org.grails.datastore.mapping.core.SessionImplementor;
+import org.grails.datastore.mapping.document.config.Attribute;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
+import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.model.types.Association;
-import org.grails.datastore.mapping.model.types.Custom;
-import org.grails.datastore.mapping.model.types.ToOne;
+import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
+import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
+import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
 import org.grails.datastore.mapping.query.projections.ManualProjections;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -56,7 +54,7 @@ import com.mongodb.MongoException;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public class MongoQuery extends Query {
+public class MongoQuery extends Query implements QueryArgumentsAware {
 
     private static Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
     private static Map<Class, QueryHandler> negatedHandlers = new HashMap<Class, QueryHandler>();
@@ -73,11 +71,40 @@ public class MongoQuery extends Query {
     public static final String MONGO_WHERE_OPERATOR = "$where";
 
     private static final String MONGO_THIS_PREFIX = "this.";
+    public static final String HINT_ARGUMENT = "hint";
+    private Map queryArguments = Collections.emptyMap();
 
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
             public void handle(PersistentEntity entity, IdEquals criterion, DBObject query) {
                 query.put(MongoEntityPersister.MONGO_ID_FIELD, criterion.getValue());
+            }
+        });
+
+        queryHandlers.put(AssociationQuery.class, new QueryHandler<AssociationQuery>() {
+            @Override
+            public void handle(PersistentEntity entity, AssociationQuery criterion, DBObject query) {
+                Association<?> association = criterion.getAssociation();
+                PersistentEntity associatedEntity = association.getAssociatedEntity();
+                if(association instanceof EmbeddedCollection) {
+                    BasicDBObject associationCollectionQuery = new BasicDBObject();
+                    populateMongoQuery(associatedEntity, associationCollectionQuery, criterion.getCriteria());
+                    BasicDBObject collectionQuery = new BasicDBObject("$elemMatch", associationCollectionQuery);
+                    String propertyKey = getPropertyKey(association);
+                    query.put(propertyKey, collectionQuery);
+                }
+                else if(associatedEntity instanceof EmbeddedPersistentEntity || association instanceof Embedded ) {
+                    BasicDBObject associatedEntityQuery = new BasicDBObject();
+                    populateMongoQuery(associatedEntity, associatedEntityQuery, criterion.getCriteria());
+                    for (String property : associatedEntityQuery.keySet()) {
+                        String propertyKey = getPropertyKey(association);
+                        query.put(propertyKey + '.' + property, associatedEntityQuery.get(property));
+                    }
+
+                }
+                else {
+                    throw new UnsupportedOperationException("Join queries are not supported by MongoDB");
+                }
             }
         });
 
@@ -371,6 +398,15 @@ public class MongoQuery extends Query {
         });
     }
 
+    public static String getPropertyKey(PersistentProperty association) {
+        Attribute mappedForm = (Attribute) association.getMapping().getMappedForm();
+        String name = association.getName();
+        if(mappedForm != null && mappedForm.getTargetName() != null) {
+            name = mappedForm.getTargetName();
+        }
+        return name;
+    }
+
     private static void addWherePropertyComparison(DBObject query, String propertyName, String otherPropertyName, String operator) {
         query.put(MONGO_WHERE_OPERATOR, new StringBuilder(MONGO_THIS_PREFIX).append(propertyName).append(operator).append(MONGO_THIS_PREFIX).append(otherPropertyName).toString());
     }
@@ -535,6 +571,19 @@ public class MongoQuery extends Query {
                     populateMongoQuery(entity, query, criteria);
                     cursor = executeQueryAndApplyPagination(collection, query);
                 }
+
+                if(queryArguments != null) {
+                    if(queryArguments.containsKey(HINT_ARGUMENT)) {
+                        Object hint = queryArguments.get(HINT_ARGUMENT);
+                        if(hint instanceof Map) {
+                            cursor.hint(new BasicDBObject((Map)hint));
+                        }
+                        else if (hint != null){
+                            cursor.hint(hint.toString());
+                        }
+
+                    }
+                }
                 return cursor;
             }
 
@@ -676,6 +725,14 @@ public class MongoQuery extends Query {
     public Query withinCircle(String property, List value) {
         add(new WithinBox(property, value));
         return this;
+    }
+
+    /**
+     * @param arguments The query arguments
+     */
+    @Override
+    public void setArguments(Map arguments) {
+        this.queryArguments = arguments;
     }
 
     /**

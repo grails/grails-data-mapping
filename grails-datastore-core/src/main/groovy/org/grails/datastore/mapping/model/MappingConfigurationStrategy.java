@@ -30,6 +30,11 @@ public interface MappingConfigurationStrategy {
     List<PersistentProperty> getPersistentProperties(Class javaClass, MappingContext context);
 
     /**
+     * @see #getPersistentProperties(Class, MappingContext, ClassMapping)
+     */
+    List<PersistentProperty> getPersistentProperties(PersistentEntity entity, MappingContext context, ClassMapping classMapping);
+
+    /**
      * Obtains a List of PersistentProperty instances for the given Mapped class
      *
      * @param javaClass The Java class

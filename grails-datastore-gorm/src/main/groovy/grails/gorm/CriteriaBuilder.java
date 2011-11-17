@@ -57,16 +57,16 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     private static final String ROOT_CALL = "call";
     private static final String SCROLL_CALL = "scroll";
 
-    private Class targetClass;
-    private Session session;
-    private Query query;
+    protected Class targetClass;
+    protected Session session;
+    protected Query query;
     private boolean uniqueResult = false;
     private boolean paginationEnabledList;
-    private List<Query.Order> orderEntries = new ArrayList<Query.Order>();
+    protected  List<Query.Order> orderEntries = new ArrayList<Query.Order>();
     private List<Query.Junction> logicalExpressionStack = new ArrayList<Query.Junction>();
-    private MetaObjectProtocol queryMetaClass;
-    private Query.ProjectionList projectionList;
-    private PersistentEntity persistentEntity;
+    protected  MetaObjectProtocol queryMetaClass;
+    protected  Query.ProjectionList projectionList;
+    protected PersistentEntity persistentEntity;
 
     public CriteriaBuilder(final Class targetClass, final Session session) {
         Assert.notNull(targetClass, "Argument [targetClass] cannot be null");
@@ -940,6 +940,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     }
 
     protected void validatePropertyName(String propertyName, String methodName) {
+        if(persistentEntity == null) return;
         if (propertyName == null) {
             throw new IllegalArgumentException("Cannot use [" + methodName +
                     "] restriction with null property name");

@@ -38,13 +38,11 @@ import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.NativeEntryEntityPersister;
 import org.grails.datastore.mapping.engine.PropertyValueIndexer;
+import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.model.types.Association;
-import org.grails.datastore.mapping.model.types.EmbeddedCollection;
-import org.grails.datastore.mapping.model.types.ManyToMany;
-import org.grails.datastore.mapping.model.types.ToOne;
+import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.mongo.MongoDatastore;
 import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
@@ -89,8 +87,11 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         mongoTemplate = datastore.getMongoTemplate(entity);
         collectionName = datastore.getCollectionName(entity);
 
-        hasNumericalIdentifier = Long.class.isAssignableFrom(entity.getIdentity().getType());
-        hasStringIdentifier = String.class.isAssignableFrom(entity.getIdentity().getType());
+        if(!(entity instanceof EmbeddedPersistentEntity)) {
+
+            hasNumericalIdentifier = Long.class.isAssignableFrom(entity.getIdentity().getType());
+            hasStringIdentifier = String.class.isAssignableFrom(entity.getIdentity().getType());
+        }
     }
 
     @Override
@@ -118,6 +119,19 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @Override
+    protected DBObject handleEmbeddedInstance(Association association, Object embeddedInstance) {
+        DBObject entry = super.handleEmbeddedInstance(association, embeddedInstance);
+        if(!(association instanceof Basic)) {
+            PersistentEntity associatedEntity = association.getAssociatedEntity();
+            MappingContext mappingContext = associatedEntity.getMappingContext();
+            if(mappingContext.isInInheritanceHierarchy(associatedEntity)) {
+                setEntryValue(entry, "_embeddedClassName", embeddedInstance.getClass().getName());
+            }
+        }
+        return entry;
+    }
+
+    @Override
     protected void loadEmbeddedCollection(@SuppressWarnings("rawtypes") EmbeddedCollection embeddedCollection,
             EntityAccess ea, Object embeddedInstances, String propertyKey) {
 
@@ -133,10 +147,18 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             BasicDBList list = (BasicDBList)embeddedInstances;
             for (Object dbo : list) {
                 if (dbo instanceof BasicDBObject) {
+                    PersistentEntity embeddedPersistentEntity;
                     BasicDBObject nativeEntry = (BasicDBObject)dbo;
-                    String embeddedClassName = (String)nativeEntry.remove("_embeddedClassName");
-                    PersistentEntity embeddedPersistentEntity =
-                        getMappingContext().getPersistentEntity(embeddedClassName);
+                    PersistentEntity associatedEntity = embeddedCollection.getAssociatedEntity();
+                    MappingContext mappingContext = associatedEntity.getMappingContext();
+                    String embeddedClassName = mappingContext.isInInheritanceHierarchy(associatedEntity) ? (String)nativeEntry.get("_embeddedClassName") : null;
+                    if(embeddedClassName != null) {
+                        embeddedPersistentEntity =
+                            getMappingContext().getPersistentEntity(embeddedClassName);
+                    }
+                    else {
+                        embeddedPersistentEntity = associatedEntity;
+                    }
 
                     Object instance = newEntityInstance(embeddedPersistentEntity);
                     refreshObjectStateFromNativeEntry(embeddedPersistentEntity, instance, null, nativeEntry);
@@ -145,7 +167,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             }
         }
 
-        ea.setProperty(propertyKey, instances);
+        ea.setProperty(embeddedCollection.getName(), instances);
     }
 
     @Override
@@ -333,8 +355,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         Locale.class,
         TimeZone.class,
         Currency.class,
-        URL.class,
-        Enum.class);
+        URL.class);
 
     @Override
     protected Object formulateDatabaseReference(PersistentEntity persistentEntity,
@@ -354,6 +375,29 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         if (shouldConvertToString(value.getClass())) {
             value = value.toString();
         }
+		else if (Enum.class.isAssignableFrom(value.getClass())) {
+			value = ((Enum)value).name();
+		}
+		else if (value instanceof Collection) {
+			// Test whether this collection is a collection can be BSON encoded, if not convert to String
+			boolean collConvertToString = false;
+			boolean collConvertFromEnum = false;
+			for (Object item : (Collection)value) {
+				collConvertToString = shouldConvertToString(item.getClass());
+				collConvertFromEnum = Enum.class.isAssignableFrom(item.getClass());
+				break;
+			}
+			if (collConvertToString || collConvertFromEnum) {
+				Object[] objs = ((Collection)value).toArray();
+				((Collection)value).clear();
+				for(Object item : objs) {
+					if (collConvertToString)
+						((Collection)value).add(item.toString());
+					else
+						((Collection)value).add(((Enum)item).name());
+				}
+			}
+		}
         else if (value instanceof Calendar) {
             value = ((Calendar)value).getTime();
         }

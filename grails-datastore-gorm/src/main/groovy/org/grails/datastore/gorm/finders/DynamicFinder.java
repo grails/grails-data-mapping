@@ -46,7 +46,9 @@ import org.grails.datastore.gorm.finders.MethodExpression.NotEqual;
 import org.grails.datastore.gorm.finders.MethodExpression.Rlike;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.types.Basic;
 import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.util.StringUtils;
@@ -258,7 +260,9 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             try {
                 solo.convertArguments(persistentEntity);
             } catch (ConversionException e) {
-                throw new MissingMethodException(methodName, clazz, arguments);
+                if(!(persistentEntity.getPropertyByName(solo.propertyName) instanceof Basic)) {
+                    throw new MissingMethodException(methodName, clazz, arguments);
+                }
             }
             expressions.add(solo);
         }
@@ -382,6 +386,9 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             else {
                 q.order(Query.Order.asc(sort));
             }
+        }
+        if(q instanceof QueryArgumentsAware) {
+            ((QueryArgumentsAware)q).setArguments(argMap);
         }
     }
 

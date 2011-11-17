@@ -65,6 +65,28 @@ public class DefaultMappingConfigurationStrategy implements MappingConfiguration
         return getPersistentProperties(javaClass, context, null);
     }
 
+    /**
+     * @see #getPersistentProperties(Class, org.grails.datastore.mapping.model.MappingContext, org.grails.datastore.mapping.model.ClassMapping)
+     */
+    public List<PersistentProperty> getPersistentProperties(PersistentEntity entity, MappingContext context, ClassMapping classMapping) {
+        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
+        PropertyDescriptor[] descriptors = cpf.getPropertyDescriptors();
+        final ArrayList<PersistentProperty> persistentProperties = new ArrayList<PersistentProperty>();
+
+        for (PropertyDescriptor descriptor : descriptors) {
+            final String propertyName = descriptor.getName();
+            if (isExcludedProperty(propertyName, classMapping, Collections.emptyList())) continue;
+            Class<?> propertyType = descriptor.getPropertyType();
+            if (propertyFactory.isSimpleType(propertyType)) {
+                persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
+            }
+            else if (MappingFactory.isCustomType(propertyType)) {
+                persistentProperties.add(propertyFactory.createCustom(entity, context, descriptor));
+            }
+        }
+        return persistentProperties;
+    }
+
     private PersistentEntity getPersistentEntity(Class javaClass, MappingContext context, ClassMapping classMapping) {
         PersistentEntity entity;
         if (classMapping != null)
@@ -76,27 +98,11 @@ public class DefaultMappingConfigurationStrategy implements MappingConfiguration
 
     public List<PersistentProperty> getPersistentProperties(Class javaClass, MappingContext context, ClassMapping mapping) {
         PersistentEntity entity = getPersistentEntity(javaClass, context, mapping);
-
-        final ArrayList<PersistentProperty> persistentProperties = new ArrayList<PersistentProperty>();
-
         if (entity != null) {
-            ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
-            PropertyDescriptor[] descriptors = cpf.getPropertyDescriptors();
-
-            for (PropertyDescriptor descriptor : descriptors) {
-                final String propertyName = descriptor.getName();
-                if (isExcludedProperty(propertyName, mapping, Collections.emptyList())) continue;
-                Class<?> propertyType = descriptor.getPropertyType();
-                if (propertyFactory.isSimpleType(propertyType)) {
-                    persistentProperties.add(propertyFactory.createSimple(entity, context, descriptor));
-                }
-                else if (MappingFactory.isCustomType(propertyType)) {
-                    persistentProperties.add(propertyFactory.createCustom(entity, context, descriptor));
-                }
-            }
+            return getPersistentProperties(entity, context, mapping);
         }
 
-        return persistentProperties;
+        return Collections.emptyList();
     }
 
     public PersistentProperty getIdentity(Class javaClass, MappingContext context) {

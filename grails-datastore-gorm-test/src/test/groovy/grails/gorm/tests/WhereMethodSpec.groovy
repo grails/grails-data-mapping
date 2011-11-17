@@ -5,6 +5,7 @@ import grails.gorm.DetachedCriteria
 import org.grails.datastore.gorm.GormEnhancer
 import spock.lang.Ignore
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
+import grails.persistence.Entity
 
 /**
  * Tests for the new where method used to define detached criteria using the new DSL
@@ -12,6 +13,10 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 @ApplyDetachedCriteriaTransform
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
+
+   static {
+       TEST_CLASSES << Continent
+   }
 
   def "Test is null query"() {
       given:"A bunch of people"
@@ -981,6 +986,25 @@ class WhereMethodSpec extends GormDatastoreSpec {
 
     }
 
+    def "Test query association on inherited property"() {
+        given:"People in countries"
+            createContinentWithCountries()
+
+        when:"A where query is used"
+            def query = Continent.where {
+                countries { name == 'SA'}
+            }
+
+        then:"The correct resulted are returned"
+            query.count() == 1
+
+    }
+
+    protected createContinentWithCountries() {
+        final continent = new Continent(name: "Africa")
+        continent.countries << new Country(name:"SA", population:304830) << new Country(name:"Zim", population:304830)
+        assert continent.save(flush:true) != null
+    }
     protected def createPeople() {
         new Person(firstName: "Homer", lastName: "Simpson", age:45).save()
         new Person(firstName: "Marge", lastName: "Simpson", age:40).save()
@@ -1156,7 +1180,23 @@ class CallMe {
               year(pets.birthDate) == 2009
         }
     }
+
+    def inheritanceQuery() {
+            def query = Person.where {
+                livedIn { name == 'SA'}
+            }
+    }
 }
 ''', "Test").newInstance()
     }
+}
+
+@Entity
+class Continent {
+   Long id
+   Long version
+
+   String name
+   Set<Country> countries = []
+   static hasMany = [countries:Country]
 }

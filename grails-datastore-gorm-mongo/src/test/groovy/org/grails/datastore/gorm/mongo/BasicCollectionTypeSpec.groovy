@@ -4,24 +4,59 @@ import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
 class BasicCollectionTypeSpec extends GormDatastoreSpec {
-
-    static {
-        GormDatastoreSpec.TEST_CLASSES << MyCollections
+    @Override
+    List getDomainClasses() {
+        [MyCollections]
     }
 
+
     def "Test persist basic collection types"() {
-        given:
+        given:"An entity persisted with basic collection types"
             def mc = new MyCollections(names:['Bob', 'Charlie'], pets:[chuck:"Dog", eddie:'Parrot'])
             mc.save(flush:true)
 
             session.clear()
 
-        when:
+        when:"When the object is read"
             mc = MyCollections.get(mc.id)
 
-        then:
+        then:"The basic collection types are populated correctly"
             mc.names != null
+            mc.names == ['Bob', 'Charlie']
             mc.names.size() > 0
+            mc.pets != null
+            mc.pets.size() == 2
+            mc.pets.chuck == "Dog"
+
+        when:"The object is updated"
+            mc.names << "Fred"
+            mc.pets.joe = "Turtle"
+            mc.save(flush:true)
+            session.clear()
+            mc = MyCollections.get(mc.id)
+
+        then:"The basic collection types are correctly updated"
+            mc.names != null
+            mc.names == ['Bob', 'Charlie', 'Fred']
+            mc.names.size() > 0
+            mc.pets != null
+            mc.pets.size() == 3
+            mc.pets.chuck == "Dog"
+
+        when:"An entity is quered by a basic collection type"
+            session.clear()
+            mc = MyCollections.findByNames("Bob")
+
+        then:"The correct result is returned"
+
+            mc.names != null
+            mc.names == ['Bob', 'Charlie', 'Fred']
+            mc.names.size() > 0
+            mc.pets != null
+            mc.pets.size() == 3
+            mc.pets.chuck == "Dog"
+
+
     }
 }
 
