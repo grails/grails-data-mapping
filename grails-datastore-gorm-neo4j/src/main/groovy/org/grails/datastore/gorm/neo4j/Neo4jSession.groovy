@@ -51,12 +51,10 @@ import org.grails.datastore.mapping.engine.event.PostDeleteEvent
 import org.grails.datastore.mapping.engine.event.PreLoadEvent
 import org.grails.datastore.mapping.engine.event.PostLoadEvent
 import org.grails.datastore.mapping.model.types.OneToMany
-import org.grails.datastore.mapping.collection.PersistentList
 import org.grails.datastore.mapping.model.types.ToOne
 import org.springframework.util.Assert
 import org.grails.datastore.mapping.model.types.ManyToOne
 import org.grails.datastore.mapping.model.types.Association
-import org.grails.datastore.mapping.collection.PersistentSet
 import org.grails.datastore.mapping.collection.AbstractPersistentCollection
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.neo4j.graphdb.RelationshipType
