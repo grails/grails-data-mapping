@@ -18,13 +18,14 @@ class ValidationSpec extends GormDatastoreSpec {
 
         when:
             t = new TestEntity(name:"", child:new ChildEntity(name:"child"))
-            Errors errors = t.errors
+            def validationResult = t.validate()
+            def errors = t.errors
 
         then:
-            t.validate() == false
-            t.hasErrors() == true
+            !validationResult
+            t.hasErrors()
             errors != null
-            errors.hasErrors() == true
+            errors.hasErrors()
 
         when:
             t.save(validate:false, flush:true)
@@ -41,19 +42,20 @@ class ValidationSpec extends GormDatastoreSpec {
 
         when:
             t = new TestEntity(name:"")
-            Errors errors = t.errors
+            def validationResult = t.validate()
+            def errors = t.errors
 
         then:
-            t.validate() == false
-            t.hasErrors() == true
+            !validationResult
+            t.hasErrors()
             errors != null
-            errors.hasErrors() == true
+            errors.hasErrors()
 
         when:
             t.clearErrors()
 
         then:
-            t.hasErrors() == false
+            !t.hasErrors()
     }
 
     void "Test that validate is called on save()"() {
