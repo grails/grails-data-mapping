@@ -46,6 +46,7 @@ import org.grails.datastore.gorm.finders.MethodExpression.NotEqual;
 import org.grails.datastore.gorm.finders.MethodExpression.Rlike;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.types.Basic;
 import org.grails.datastore.mapping.query.Query;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
@@ -258,7 +259,9 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             try {
                 solo.convertArguments(persistentEntity);
             } catch (ConversionException e) {
-                throw new MissingMethodException(methodName, clazz, arguments);
+                if(!(persistentEntity.getPropertyByName(solo.propertyName) instanceof Basic)) {
+                    throw new MissingMethodException(methodName, clazz, arguments);
+                }
             }
             expressions.add(solo);
         }

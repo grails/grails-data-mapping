@@ -23,16 +23,17 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.grails.datastore.mapping.core.SessionImplementor;
+import org.grails.datastore.mapping.document.config.Attribute;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
+import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.model.types.Association;
-import org.grails.datastore.mapping.model.types.Custom;
-import org.grails.datastore.mapping.model.types.ToOne;
+import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
+import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Restrictions;
 import org.grails.datastore.mapping.query.projections.ManualProjections;
@@ -78,6 +79,33 @@ public class MongoQuery extends Query {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
             public void handle(PersistentEntity entity, IdEquals criterion, DBObject query) {
                 query.put(MongoEntityPersister.MONGO_ID_FIELD, criterion.getValue());
+            }
+        });
+
+        queryHandlers.put(AssociationQuery.class, new QueryHandler<AssociationQuery>() {
+            @Override
+            public void handle(PersistentEntity entity, AssociationQuery criterion, DBObject query) {
+                Association<?> association = criterion.getAssociation();
+                PersistentEntity associatedEntity = association.getAssociatedEntity();
+                if(association instanceof EmbeddedCollection) {
+                    BasicDBObject associationCollectionQuery = new BasicDBObject();
+                    populateMongoQuery(associatedEntity, associationCollectionQuery, criterion.getCriteria());
+                    BasicDBObject collectionQuery = new BasicDBObject("$elemMatch", associationCollectionQuery);
+                    String propertyKey = getPropertyKey(association);
+                    query.put(propertyKey, collectionQuery);
+                }
+                else if(associatedEntity instanceof EmbeddedPersistentEntity || association instanceof Embedded ) {
+                    BasicDBObject associatedEntityQuery = new BasicDBObject();
+                    populateMongoQuery(associatedEntity, associatedEntityQuery, criterion.getCriteria());
+                    for (String property : associatedEntityQuery.keySet()) {
+                        String propertyKey = getPropertyKey(association);
+                        query.put(propertyKey + '.' + property, associatedEntityQuery.get(property));
+                    }
+
+                }
+                else {
+                    throw new UnsupportedOperationException("Join queries are not supported by MongoDB");
+                }
             }
         });
 
@@ -369,6 +397,15 @@ public class MongoQuery extends Query {
                 queryHandlers.get(GreaterThanEquals.class).handle(entity, Restrictions.gte(criterion.getProperty(), criterion.getValue()), query);
             }
         });
+    }
+
+    public static String getPropertyKey(PersistentProperty association) {
+        Attribute mappedForm = (Attribute) association.getMapping().getMappedForm();
+        String name = association.getName();
+        if(mappedForm != null && mappedForm.getTargetName() != null) {
+            name = mappedForm.getTargetName();
+        }
+        return name;
     }
 
     private static void addWherePropertyComparison(DBObject query, String propertyName, String otherPropertyName, String operator) {
