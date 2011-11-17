@@ -153,7 +153,6 @@ public abstract class AbstractMappingContext implements MappingContext {
      * @param entity The entity
      * @return True if it is
      */
-    @Override
     public boolean isInInheritanceHierarchy(PersistentEntity entity) {
         if(entity != null) {
             if(!entity.isRoot()) return true;
