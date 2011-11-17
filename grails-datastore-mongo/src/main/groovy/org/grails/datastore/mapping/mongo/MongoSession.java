@@ -20,7 +20,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.document.mongodb.DbCallback;
@@ -52,6 +54,7 @@ import com.mongodb.WriteConcern;
  */
 public class MongoSession extends AbstractSession<DB> {
 
+    private static final Map<PersistentEntity, WriteConcern> declaredWriteConcerns = new ConcurrentHashMap<PersistentEntity, WriteConcern>();
     MongoDatastore mongoDatastore;
     private WriteConcern writeConcern = WriteConcern.NORMAL;
 
@@ -121,6 +124,10 @@ public class MongoSession extends AbstractSession<DB> {
             final String collectionNameToUse = getCollectionName(entity.isRoot() ? entity : entity.getRootEntity());
             template.execute(new DbCallback<Object>() {
                 public Object doInDB(DB db) throws MongoException, DataAccessException {
+                    WriteConcern writeConcernToUse = writeConcern;
+
+
+                    writeConcernToUse = getDeclaredWriteConcern(writeConcernToUse, entity);
                     final DBCollection collection = db.getCollection(collectionNameToUse);
 
                     final Collection<PendingInsert> pendingInserts = inserts.get(entity);
@@ -139,7 +146,7 @@ public class MongoSession extends AbstractSession<DB> {
                         pendingInsert.run();
                     }
 
-                    collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]), writeConcern);
+                    collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]), writeConcernToUse);
                     for (PendingOperation pendingOperation : postOperations) {
                         pendingOperation.run();
                     }
@@ -147,6 +154,23 @@ public class MongoSession extends AbstractSession<DB> {
                 }
             });
         }
+    }
+
+    private WriteConcern getDeclaredWriteConcern(WriteConcern defaultConcern, PersistentEntity entity) {
+        WriteConcern writeConcern = declaredWriteConcerns.get(entity);
+        if(writeConcern == null) {
+            Object mappedForm = entity.getMapping().getMappedForm();
+            if(mappedForm instanceof MongoCollection) {
+                MongoCollection mc = (MongoCollection) mappedForm;
+                writeConcern = mc.getWriteConcern();
+                if(writeConcern == null) {
+                    writeConcern = defaultConcern;
+                }
+            }
+
+            declaredWriteConcerns.put(entity, writeConcern);
+        }
+        return writeConcern;
     }
 
     public DB getNativeInterface() {

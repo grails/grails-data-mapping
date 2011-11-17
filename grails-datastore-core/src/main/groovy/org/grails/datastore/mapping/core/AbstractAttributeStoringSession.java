@@ -23,7 +23,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 public abstract class AbstractAttributeStoringSession implements Session {
 
-    protected Map<Object, Map<String, Object>> attributes = new ConcurrentHashMap<Object, Map<String, Object>>();
+    protected Map<Integer, Map<String, Object>> attributes = new ConcurrentHashMap<Integer, Map<String, Object>>();
     private boolean connected = true;
 
     public void setAttribute(Object entity, String attributeName, Object value) {
@@ -31,10 +31,11 @@ public abstract class AbstractAttributeStoringSession implements Session {
             return;
         }
 
-        Map<String, Object> attrs = attributes.get(entity);
+        int id = System.identityHashCode(entity);
+        Map<String, Object> attrs = attributes.get(id);
         if (attrs == null) {
             attrs = new ConcurrentHashMap<String, Object>();
-            attributes.put(entity, attrs);
+            attributes.put(id, attrs);
         }
 
         if (attributeName != null && value != null) {
@@ -47,7 +48,7 @@ public abstract class AbstractAttributeStoringSession implements Session {
             return null;
         }
 
-        final Map<String, Object> attrs = attributes.get(entity);
+        final Map<String, Object> attrs = attributes.get(System.identityHashCode(entity));
         if (attrs == null || attributeName == null) {
             return null;
         }
