@@ -374,19 +374,19 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                     final Object associatedObject = access.getProperty(association.getName());
 
                     if (associatedObject != null && !associatedObject.equals(obj)) {
-                        if (session.getAttribute(processKey, CASCADE_PROCESSED) == null) {
-                            session.setAttribute(processKey, CASCADE_PROCESSED, true);
+                        if (session.getAttribute(obj, processKey) == null) {
+                            session.setAttribute(obj, processKey, true);
                             this.session.persist(associatedObject);
                             autoAssociateInverseSide(obj, association, associatedObject);
                         }
                     }
                     else {
-                        session.setAttribute(processKey, CASCADE_PROCESSED, false);
+                        session.setAttribute(obj, processKey, false);
                     }
                 }
                 else if (association instanceof OneToMany) {
-                    if (session.getAttribute(processKey, CASCADE_PROCESSED) == Boolean.TRUE) {
-                        session.setAttribute(processKey, CASCADE_PROCESSED, Boolean.TRUE);
+                    if (session.getAttribute(obj, processKey) == Boolean.TRUE) {
+                        session.setAttribute(obj, processKey, Boolean.TRUE);
                         Object associatedObjects = access.getProperty(association.getName());
                         if (associatedObjects instanceof Iterable) {
                             final Iterable iterable = (Iterable) associatedObjects;
@@ -397,7 +397,7 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                         }
                     }
                     else {
-                        session.setAttribute(processKey, CASCADE_PROCESSED, false);
+                        session.setAttribute(obj, processKey, false);
                     }
                 }
             }
