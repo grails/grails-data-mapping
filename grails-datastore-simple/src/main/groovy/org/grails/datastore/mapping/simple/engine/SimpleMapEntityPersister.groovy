@@ -120,19 +120,13 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
             }
 
             List query(value, int offset, int max) {
-                if(property == property.owner.identity) {
-                   retrieveEntity(getPersistentEntity(), value) != null ? [value] : []
-                }
-                else {
+                def index = getIndexName(value)
 
-                    def index = getIndexName(value)
-
-                    def indexed = indices[index]
-                    if (!indexed) {
-                        return Collections.emptyList()
-                    }
-                    return indexed[offset..max]
+                def indexed = indices[index]
+                if (!indexed) {
+                    return Collections.emptyList()
                 }
+                return indexed[offset..max]
             }
 
             String getIndexName(value) {
@@ -260,8 +254,14 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
             nativeEntry.discriminator = persistentEntity.discriminator
         }
         datastore[family].put(storeId, nativeEntry)
+        indexIdentifier(persistentEntity, storeId)
         updateInheritanceHierarchy(persistentEntity, storeId, nativeEntry)
         return storeId
+    }
+
+    protected def indexIdentifier(PersistentEntity persistentEntity, storeId) {
+        final indexer = getPropertyIndexer(persistentEntity.identity)
+        indexer.index(storeId, storeId)
     }
 
     private updateInheritanceHierarchy(PersistentEntity persistentEntity, storeId, Map nativeEntry) {
@@ -306,6 +306,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
             }
         }
 
+        indexIdentifier(persistentEntity, key)
         if (existing == null) {
             datastore[family].put(key, entry)
         }

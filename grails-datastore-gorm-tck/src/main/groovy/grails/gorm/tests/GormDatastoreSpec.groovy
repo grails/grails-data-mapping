@@ -48,6 +48,7 @@ abstract class GormDatastoreSpec extends Specification {
 
     def cleanup() {
         session?.disconnect()
+        DatastoreUtils.unbindSession(session)
         try {
             setupClass.destroy()
         } catch(e) {
@@ -58,7 +59,7 @@ abstract class GormDatastoreSpec extends Specification {
     }
 
     private cleanRegistry() {
-        for (clazz in TEST_CLASSES) {
+        for (clazz in (TEST_CLASSES + getDomainClasses() )) {
             GroovySystem.metaClassRegistry.removeMetaClass(clazz)
         }
     }
