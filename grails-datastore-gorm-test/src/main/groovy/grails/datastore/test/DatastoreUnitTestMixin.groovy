@@ -32,6 +32,8 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.util.ClassUtils
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.springframework.transaction.support.TransactionSynchronizationManager
+import org.grails.datastore.mapping.transactions.SessionHolder
 
 /**
  * <p>A Groovy mixin used for testing datastore interactions. Test cases should include the mixin using
@@ -81,7 +83,11 @@ class DatastoreUnitTestMixin {
     def mockDomain(Class domainClass, List instances = []) {
         if (session == null) {
             datastore.clearData()
-            session = datastore.connect()
+            session = DatastoreUtils.getSession(datastore, true);
+            if (!hasSessionBound()) {
+                DatastoreUtils.bindSession(session);
+            }
+
         }
 
         if (!(PluginManagerHolder.pluginManager instanceof DefaultGrailsPluginManager)) {
@@ -101,11 +107,26 @@ class DatastoreUnitTestMixin {
         session.flush()
     }
 
+    protected boolean hasSessionBound() {
+        return TransactionSynchronizationManager.getResource(getDatastore()) != null;
+    }
+
+
     def disconnect() {
         session?.disconnect()
         if(PluginManagerHolder.pluginManager?.is(mockPluginManager)) {
             PluginManagerHolder.pluginManager = null
         }
+
         datastore.clearData()
+        if (!hasSessionBound()) {
+            return;
+        }
+
+        // single session mode
+        SessionHolder sessionHolder =
+                (SessionHolder) TransactionSynchronizationManager.unbindResource(getDatastore());
+        DatastoreUtils.closeSession(sessionHolder.getSession());
+
     }
 }
