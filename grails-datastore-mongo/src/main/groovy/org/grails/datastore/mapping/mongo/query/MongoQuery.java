@@ -504,7 +504,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         MinProjection mp = (MinProjection) projection;
 
                         MongoResultList results = new MongoResultList(cursor, mongoEntityPersister);
-                        projectedResults.add(manualProjections.min((Collection) results.clone(), mp.getPropertyName()));
+                        projectedResults.add(manualProjections.min((Collection) results.clone(), getPropertyName(entity, mp.getPropertyName())));
                     }
                     else if (projection instanceof MaxProjection) {
                         if(cursor == null)
@@ -512,7 +512,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         MaxProjection mp = (MaxProjection) projection;
 
                         MongoResultList results = new MongoResultList(cursor, mongoEntityPersister);
-                        projectedResults.add(manualProjections.max((Collection) results.clone(), mp.getPropertyName()));
+                        projectedResults.add(manualProjections.max((Collection) results.clone(), getPropertyName(entity, mp.getPropertyName())));
                     }
                     else if(projection instanceof CountDistinctProjection) {
                         if(cursor == null)
@@ -520,7 +520,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         CountDistinctProjection mp = (CountDistinctProjection) projection;
 
                         MongoResultList results = new MongoResultList(cursor, mongoEntityPersister);
-                        projectedResults.add(manualProjections.countDistinct((Collection) results.clone(), mp.getPropertyName()));
+                        projectedResults.add(manualProjections.countDistinct((Collection) results.clone(), getPropertyName(entity, mp.getPropertyName())));
 
                     }
                     else if ((projection instanceof PropertyProjection) || (projection instanceof IdProjection)) {
@@ -533,7 +533,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         else {
                             PropertyProjection pp = (PropertyProjection) projection;
                             persistentProperty = entity.getPropertyByName(pp.getPropertyName());
-                            propertyName = pp.getPropertyName();
+                            propertyName = getPropertyKey(persistentProperty);
                         }
                         if (persistentProperty != null) {
                             populateMongoQuery(entity, query, criteria);
@@ -601,7 +601,9 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 if (!orderBy.isEmpty()) {
                     DBObject orderObject = new BasicDBObject();
                     for (Order order : orderBy) {
-                        orderObject.put(order.getProperty(), order.getDirection() == Order.Direction.DESC ? -1 : 1);
+                        String property = order.getProperty();
+                        property = getPropertyName(entity, property);
+                        orderObject.put(property, order.getDirection() == Order.Direction.DESC ? -1 : 1);
                     }
                     cursor.sort(orderObject);
                 }

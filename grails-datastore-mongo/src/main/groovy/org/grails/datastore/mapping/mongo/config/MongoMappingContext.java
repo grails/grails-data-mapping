@@ -15,8 +15,10 @@
 package org.grails.datastore.mapping.mongo.config;
 
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory;
+import org.grails.datastore.mapping.document.config.Collection;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
-import org.grails.datastore.mapping.model.MappingFactory;
+import org.grails.datastore.mapping.document.config.DocumentPersistentEntity;
+import org.grails.datastore.mapping.model.*;
 
 /**
  * Models a {@link org.grails.datastore.mapping.model.MappingContext} for Mongo.
@@ -47,4 +49,36 @@ public class MongoMappingContext extends DocumentMappingContext {
     protected MappingFactory createDocumentMappingFactory() {
         return new MongoDocumentMappingFactory();
     }
+
+    @Override
+    public PersistentEntity createEmbeddedEntity(Class type) {
+        return new DocumentEmbeddedPersistentEntity(type, this);
+    }
+
+    class DocumentEmbeddedPersistentEntity extends EmbeddedPersistentEntity {
+
+        private DocumentCollectionMapping classMapping ;
+        public DocumentEmbeddedPersistentEntity(Class type, MappingContext ctx) {
+            super(type, ctx);
+            classMapping = new DocumentCollectionMapping(this, ctx);
+        }
+
+        @Override
+        public ClassMapping getMapping() {
+            return classMapping;
+        }
+        public class DocumentCollectionMapping extends AbstractClassMapping<Collection> {
+            private Collection mappedForm;
+
+            public DocumentCollectionMapping(PersistentEntity entity, MappingContext context) {
+                super(entity, context);
+                this.mappedForm = (Collection) context.getMappingFactory().createMappedForm(DocumentEmbeddedPersistentEntity.this);
+            }
+            @Override
+            public Collection getMappedForm() {
+                return mappedForm ;
+            }
+        }
+    }
+
 }
