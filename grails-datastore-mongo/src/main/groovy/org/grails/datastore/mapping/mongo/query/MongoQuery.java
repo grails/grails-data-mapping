@@ -74,6 +74,14 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     public static final String HINT_ARGUMENT = "hint";
     private Map queryArguments = Collections.emptyMap();
 
+    public static final String NEAR_OEPRATOR = "$near";
+
+    public static final String BOX_OPERATOR = "$box";
+
+    public static final String WITHIN_OPERATOR = "$within";
+
+    public static final String CENTER_OPERATOR = "$center";
+
     static {
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
             public void handle(PersistentEntity entity, IdEquals criterion, DBObject query) {
@@ -82,7 +90,6 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(AssociationQuery.class, new QueryHandler<AssociationQuery>() {
-            @Override
             public void handle(PersistentEntity entity, AssociationQuery criterion, DBObject query) {
                 Association<?> association = criterion.getAssociation();
                 PersistentEntity associatedEntity = association.getAssociatedEntity();
@@ -117,7 +124,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     query.put(propertyName + MONGO_ID_REFERENCE_SUFFIX, value);
                 }
                 else {
-                    query.put(propertyName, value);
+                    MongoEntityPersister.setDBObjectValue(query, propertyName, value, entity.getMappingContext());
                 }
             }
         });
@@ -169,7 +176,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         queryHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
             public void handle(PersistentEntity entity, NotEquals criterion, DBObject query) {
                 DBObject notEqualQuery = new BasicDBObject();
-                notEqualQuery.put(MONGO_NE_OPERATOR, criterion.getValue());
+                MongoEntityPersister.setDBObjectValue(notEqualQuery, MONGO_NE_OPERATOR, criterion.getValue(), entity.getMappingContext());
 
                 String propertyName = getPropertyName(entity, criterion);
                 query.put(propertyName, notEqualQuery);
@@ -223,7 +230,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         queryHandlers.put(Near.class, new QueryHandler<Near>() {
             public void handle(PersistentEntity entity, Near near, DBObject query) {
                 DBObject nearQuery = new BasicDBObject();
-                nearQuery.put("$near", near.getValues());
+                MongoEntityPersister.setDBObjectValue(nearQuery, NEAR_OEPRATOR, near.getValues(), entity.getMappingContext());
                 String propertyName = getPropertyName(entity, near);
                 query.put(propertyName, nearQuery);
             }
@@ -233,8 +240,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             public void handle(PersistentEntity entity, WithinBox withinBox, DBObject query) {
                 DBObject nearQuery = new BasicDBObject();
                 DBObject box = new BasicDBObject();
-                box.put("$box", withinBox.getValues());
-                nearQuery.put("$within", box);
+                MongoEntityPersister.setDBObjectValue(box, BOX_OPERATOR, withinBox.getValues(), entity.getMappingContext());
+                nearQuery.put(WITHIN_OPERATOR, box);
                 String propertyName = getPropertyName(entity, withinBox);
                 query.put(propertyName, nearQuery);
             }
@@ -244,8 +251,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             public void handle(PersistentEntity entity, WithinCircle withinCentre, DBObject query) {
                 DBObject nearQuery = new BasicDBObject();
                 DBObject center = new BasicDBObject();
-                center.put("$center", withinCentre.getValues());
-                nearQuery.put("$within", center);
+                MongoEntityPersister.setDBObjectValue(center, CENTER_OPERATOR, withinCentre.getValues(), entity.getMappingContext());
+                nearQuery.put(WITHIN_OPERATOR, center);
                 String propertyName = getPropertyName(entity, withinCentre);
                 query.put(propertyName, nearQuery);
             }
@@ -254,8 +261,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         queryHandlers.put(Between.class, new QueryHandler<Between>() {
             public void handle(PersistentEntity entity, Between between, DBObject query) {
                 DBObject betweenQuery = new BasicDBObject();
-                betweenQuery.put(MONGO_GTE_OPERATOR, between.getFrom());
-                betweenQuery.put(MONGO_LTE_OPERATOR, between.getTo());
+                MongoEntityPersister.setDBObjectValue(betweenQuery, MONGO_GTE_OPERATOR, between.getFrom(), entity.getMappingContext());
+                MongoEntityPersister.setDBObjectValue(betweenQuery, MONGO_LTE_OPERATOR, between.getTo(), entity.getMappingContext());
                 String propertyName = getPropertyName(entity, between);
                 query.put(propertyName, betweenQuery);
             }
@@ -264,7 +271,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         queryHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
             public void handle(PersistentEntity entity, GreaterThan criterion, DBObject query) {
                 DBObject greaterThanQuery = new BasicDBObject();
-                greaterThanQuery.put(MONGO_GT_OPERATOR, criterion.getValue());
+                MongoEntityPersister.setDBObjectValue(greaterThanQuery, MONGO_GT_OPERATOR, criterion.getValue(), entity.getMappingContext());
 
                 String propertyName = getPropertyName(entity, criterion);
                 query.put(propertyName, greaterThanQuery);
@@ -274,7 +281,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         queryHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
             public void handle(PersistentEntity entity, GreaterThanEquals criterion, DBObject query) {
                 DBObject greaterThanQuery = new BasicDBObject();
-                greaterThanQuery.put(MONGO_GTE_OPERATOR, criterion.getValue());
+                MongoEntityPersister.setDBObjectValue(greaterThanQuery, MONGO_GTE_OPERATOR, criterion.getValue(), entity.getMappingContext());
 
                 String propertyName = getPropertyName(entity, criterion);
                 query.put(propertyName, greaterThanQuery);
@@ -284,7 +291,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         queryHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
             public void handle(PersistentEntity entity, LessThan criterion, DBObject query) {
                 DBObject lessThanQuery = new BasicDBObject();
-                lessThanQuery.put(MONGO_LT_OPERATOR, criterion.getValue());
+                MongoEntityPersister.setDBObjectValue(lessThanQuery, MONGO_LT_OPERATOR, criterion.getValue(), entity.getMappingContext());
 
                 String propertyName = getPropertyName(entity, criterion);
                 query.put(propertyName, lessThanQuery);
@@ -294,7 +301,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         queryHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
             public void handle(PersistentEntity entity, LessThanEquals criterion, DBObject query) {
                 DBObject lessThanQuery = new BasicDBObject();
-                lessThanQuery.put(MONGO_LTE_OPERATOR, criterion.getValue());
+                MongoEntityPersister.setDBObjectValue(lessThanQuery, MONGO_LTE_OPERATOR, criterion.getValue(), entity.getMappingContext());
 
                 String propertyName = getPropertyName(entity, criterion);
                 query.put(propertyName, lessThanQuery);
@@ -732,7 +739,6 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     /**
      * @param arguments The query arguments
      */
-    @Override
     public void setArguments(Map arguments) {
         this.queryArguments = arguments;
     }
