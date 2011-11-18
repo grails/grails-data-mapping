@@ -11,10 +11,12 @@ import grails.persistence.Entity
  * To change this template use File | Settings | File Templates.
  */
 class CustomStringIdentifierSpec extends GormDatastoreSpec {
-
-    static {
-        TEST_CLASSES << Product << Description
+    @Override
+    List getDomainClasses() {
+        [Product, Description]
     }
+
+
     void "test basic crud operations with string id"() {
         when: "A product is saved with an assigned id"
             createProducts()

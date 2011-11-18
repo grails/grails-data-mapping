@@ -31,4 +31,9 @@ public class ValidationEvent extends AbstractPersistenceEvent {
     public void setValidatedFields(final List<?> fields) {
         validatedFields = fields;
     }
+
+    @Override
+    public EventType getEventType() {
+        return EventType.Validation;
+    }
 }

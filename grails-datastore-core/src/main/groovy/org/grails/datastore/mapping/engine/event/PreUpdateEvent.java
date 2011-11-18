@@ -33,4 +33,9 @@ public class PreUpdateEvent extends AbstractPersistenceEvent {
     public PreUpdateEvent(final Datastore source, final Object entity) {
         super(source, entity);
     }
+
+    @Override
+    public EventType getEventType() {
+        return EventType.PreUpdate;
+    }
 }

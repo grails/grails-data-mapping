@@ -207,7 +207,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                                 association.setAssociatedEntity( getOrCreateAssociatedEntity(entity, context, relatedClassType) );
                             }
                             else {
-                                EmbeddedPersistentEntity embeddedEntity = new EmbeddedPersistentEntity(relatedClassType, context);
+                                PersistentEntity embeddedEntity = context.createEmbeddedEntity(relatedClassType);
                                 embeddedEntity.initialize();
                                 association.setAssociatedEntity(embeddedEntity);
                             }
@@ -557,6 +557,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 // if there is only one then the association is established
                 if (descriptors.length == 1) {
                     relatedClassPropertyType = descriptors[0].getPropertyType();
+                    relatedClassPropertyName = descriptors[0].getName();
                 }
             }
         }

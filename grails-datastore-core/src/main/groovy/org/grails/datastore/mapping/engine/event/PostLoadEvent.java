@@ -33,4 +33,10 @@ public class PostLoadEvent extends AbstractPersistenceEvent {
     public PostLoadEvent(final Datastore source, final Object entity) {
         super(source, entity);
     }
+
+
+    @Override
+    public EventType getEventType() {
+        return EventType.PostLoad;
+    }
 }

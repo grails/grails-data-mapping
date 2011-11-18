@@ -33,4 +33,9 @@ public class PreLoadEvent extends AbstractPersistenceEvent {
     public PreLoadEvent(final Datastore source, final Object entity) {
         super(source, entity);
     }
+
+    @Override
+    public EventType getEventType() {
+        return EventType.PreLoad;
+    }
 }

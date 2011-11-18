@@ -9,6 +9,19 @@ class GeospacialQuerySpec extends GormDatastoreSpec {
         GormDatastoreSpec.TEST_CLASSES << Hotel
     }
 
+    void "Test geolocation with BigDecimal values"() {
+        given:"Some entities stored with BigDecimal locations"
+            new Hotel(name:"Hilton", location:[50.34d, 50.12d]).save()
+            new Hotel(name:"Raddison", location:[150.45d, 130.67d]).save(flush:true)
+            session.clear()
+
+        when:"We query by location"
+            def h = Hotel.findByLocation([50.34d, 50.12d])
+
+        then:"The location is found"
+            h != null
+
+    }
     void "Test that we can query within a circle"() {
         given:
             new Hotel(name:"Hilton", location:[50, 50]).save()

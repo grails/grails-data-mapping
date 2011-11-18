@@ -11,7 +11,8 @@ import org.junit.runner.RunWith
 @RunWith(Suite)
 @SuiteClasses([
 //  RangeQuerySpec,
-  NamedQuerySpec,
+//  NamedQuerySpec,
+OneToOneSpec,
 //  CriteriaBuilderSpec,
 //  OrderBySpec,
 //  CommonTypesPersistenceSpec,
@@ -34,7 +35,7 @@ import org.junit.runner.RunWith
 //  UpdateWithProxyPresentSpec,
 //  AttachMethodSpec,
 //  WithTransactionSpec,
-  CrudOperationsSpec
+//  CrudOperationsSpec
 ])
 class GemfireSuite {
 }

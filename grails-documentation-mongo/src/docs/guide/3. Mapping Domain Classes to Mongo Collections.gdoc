@@ -68,7 +68,7 @@ You can also control how an individual property maps onto a Mongo Document field
 class Person {
     ..
     static mapping = {
-        firstName field:"first_name"
+        firstName attr:"first_name"
     }
 }
 {code}

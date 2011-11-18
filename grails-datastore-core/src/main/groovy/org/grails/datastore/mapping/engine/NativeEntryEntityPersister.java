@@ -153,13 +153,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
         List<PersistentProperty> props = persistentEntity.getPersistentProperties();
         for (PersistentProperty prop : props) {
-            PropertyMapping<Property> pm = prop.getMapping();
-            Property mappedProperty = pm.getMappedForm();
-            String propertyKey = null;
-            if (mappedProperty != null) {
-                propertyKey = mappedProperty.getTargetName();
-            }
-            if (propertyKey == null) propertyKey = prop.getName();
+            String propertyKey = getPropertyKey(prop);
 
             if (prop instanceof OneToMany) {
                 OneToMany oneToMany = (OneToMany)prop;
@@ -190,13 +184,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
         List<PersistentProperty> props = persistentEntity.getPersistentProperties();
         for (PersistentProperty prop : props) {
-            PropertyMapping<Property> pm = prop.getMapping();
-            Property mappedProperty = pm.getMappedForm();
-            String propertyKey = null;
-            if (mappedProperty != null) {
-                propertyKey = mappedProperty.getTargetName();
-            }
-            if (propertyKey == null) propertyKey = prop.getName();
+            String propertyKey = getPropertyKey(prop);
             if (prop instanceof Basic) {
                 Object propValue = entityAccess.getProperty(prop.getName());
             }
@@ -213,19 +201,14 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 ToOne association = (ToOne) prop;
                 if (!(prop instanceof Embedded) && !(prop instanceof EmbeddedCollection) &&
                         association.doesCascade(CascadeType.REMOVE)) {
-
-                    Object associatedObject = entityAccess.getProperty(prop.getName());
-//                                    if (!session.contains(associatedObject)) {
-//                        Serializable tempId = associationPersister.getObjectIdentifier(associatedObject);
-//                        if (association.isBidirectional()) {
-//                            Association inverse = association.getInverseSide();
-//                            if (inverse instanceof OneToMany) {
-//                                inverseCollectionUpdates.put((OneToMany) inverse, associationId);
-//                            }
-//                            else if (inverse instanceof ToOne) {
-//                                // TODO: Implement handling of bidirectional one-to-ones with foreign key in parent
-//                            }
-//                        }
+                    if(association.isOwningSide()) {
+                        Object value = entityAccess.getProperty(association.getName());
+                        if(value != null) {
+                            Persister persister = session.getPersister(value);
+                            if(persister != null)
+                                persister.delete(value);
+                        }
+                    }
                 }
             }
         }
@@ -922,17 +905,17 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             final EntityAccess embeddedEntityAccess = createEntityAccess(associatedEntity, embeddedInstance);
             for (PersistentProperty persistentProperty : embeddedProperties) {
                 if (persistentProperty instanceof Simple) {
-                    setEntryValue(embeddedEntry, persistentProperty.getName(), embeddedEntityAccess.getProperty(persistentProperty.getName()));
+                    setEntryValue(embeddedEntry, getPropertyKey(persistentProperty), embeddedEntityAccess.getProperty(persistentProperty.getName()));
                 }
                 else if (persistentProperty instanceof Custom) {
                     handleCustom(association, embeddedEntityAccess, embeddedEntry);
                 }
                 else if (persistentProperty instanceof Association) {
                     if (persistentProperty instanceof ToOne) {
-                        handleEmbeddedToOne((Association) persistentProperty, persistentProperty.getName(), embeddedEntityAccess, embeddedEntry);
+                        handleEmbeddedToOne((Association) persistentProperty,getPropertyKey(persistentProperty) , embeddedEntityAccess, embeddedEntry);
                     }
                     else if(persistentProperty instanceof Basic) {
-                        setEntryValue(embeddedEntry, persistentProperty.getName(), embeddedEntityAccess.getProperty(persistentProperty.getName()));
+                        setEntryValue(embeddedEntry, getPropertyKey(persistentProperty), embeddedEntityAccess.getProperty(persistentProperty.getName()));
                     }
                     else {
                         handleEmbeddedToMany(embeddedEntityAccess, embeddedEntry, persistentProperty, persistentProperty.getName());
@@ -1305,13 +1288,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
         List<PersistentProperty> props = getPersistentEntity().getPersistentProperties();
         for (PersistentProperty prop : props) {
-            PropertyMapping<Property> pm = prop.getMapping();
-            Property mappedProperty = pm.getMappedForm();
-            String key = null;
-            if (mappedProperty != null) {
-                key = mappedProperty.getTargetName();
-            }
-            if (key == null) key = prop.getName();
+            String key = getPropertyKey(prop);
 
             Object currentValue = entityAccess.getProperty(prop.getName());
             Object oldValue = getEntryValue(nativeEntry, key);
@@ -1347,6 +1324,17 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         }
 
         return false;
+    }
+
+    private String getPropertyKey(PersistentProperty prop) {
+        PropertyMapping<Property> pm = prop.getMapping();
+        Property mappedProperty = pm.getMappedForm();
+        String key = null;
+        if (mappedProperty != null) {
+            key = mappedProperty.getTargetName();
+        }
+        if (key == null) key = prop.getName();
+        return key;
     }
 
     protected boolean areCollectionsEqual(Object oldValue, Object currentValue) {

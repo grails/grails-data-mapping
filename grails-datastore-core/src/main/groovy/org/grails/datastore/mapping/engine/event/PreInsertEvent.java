@@ -33,4 +33,9 @@ public class PreInsertEvent extends AbstractPersistenceEvent {
     public PreInsertEvent(final Datastore source, final Object entity) {
         super(source, entity);
     }
+
+    @Override
+    public EventType getEventType() {
+        return EventType.PreInsert;
+    }
 }

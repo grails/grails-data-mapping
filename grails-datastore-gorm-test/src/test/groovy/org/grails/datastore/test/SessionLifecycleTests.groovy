@@ -33,6 +33,7 @@ class SessionLifeCycleTests extends GroovyTestCase {
 @Entity
 class Sample {
     Long id
+    Long version
     String name
 
 }

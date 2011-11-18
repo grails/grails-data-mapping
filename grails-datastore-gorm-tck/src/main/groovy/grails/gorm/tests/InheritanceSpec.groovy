@@ -18,10 +18,12 @@ class InheritanceSpec extends GormDatastoreSpec {
             session.clear()
 
         when:
+            def locations = Location.findAllByCode("UK")
             def cities = City.findAllByCode("UK")
             def countries = Country.findAllByCode("UK")
 
         then:
+            2 == locations.size()
             1 == cities.size()
             1 == countries.size()
             "London" == cities[0].name

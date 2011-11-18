@@ -76,7 +76,9 @@ class DatastoreUnitTestMixin {
 
     Session connect() {
         session = datastore.connect()
-        DatastoreUtils.bindSession session
+        def resource = TransactionSynchronizationManager.getResource(datastore)
+        if(resource == null)
+            DatastoreUtils.bindSession session
         return session
     }
 
