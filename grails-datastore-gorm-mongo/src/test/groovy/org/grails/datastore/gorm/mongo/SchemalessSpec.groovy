@@ -31,5 +31,23 @@ class SchemalessSpec extends GormDatastoreSpec{
             p.dbo.color == 'Yellow'
             p['color'] == 'Yellow'
             p['hasLeaves'] == true
+
+        when:"All objects are listed"
+            session.clear()
+            def results = Plant.list()
+
+        then:"The right data is returned and the schemaless properties accessible"
+            results.size() == 1
+            results[0].name == 'Pineapple'
+            results[0]['color'] == 'Yellow'
+
+        when:"A groovy finderAll method is executed"
+            def newResults = results.findAll { it['color'] == 'Yellow' }
+
+        then:"The embedded data is stil there"
+            newResults.size() == 1
+            newResults[0].name == 'Pineapple'
+            newResults[0]['color'] == 'Yellow'
+
     }
 }
