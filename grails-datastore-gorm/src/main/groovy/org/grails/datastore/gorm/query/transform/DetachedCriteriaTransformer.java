@@ -376,7 +376,8 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         if (code instanceof BlockStatement) {
             BlockStatement bs = (BlockStatement) code;
 
-            addBlockStatementToNewQuery(bs, newCode, addAll, propertyNames);
+            addBlockStatementToNewQuery(bs, newCode, addAll, propertyNames, closureExpression.getVariableScope());
+            newCode.setVariableScope(bs.getVariableScope());
         }
 
         closureExpression.setCode(newCode);
@@ -431,16 +432,16 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         }
     }
 
-    private void addBlockStatementToNewQuery(BlockStatement blockStatement, BlockStatement newCode, boolean addAll, List<String> propertyNames) {
+    private void addBlockStatementToNewQuery(BlockStatement blockStatement, BlockStatement newCode, boolean addAll, List<String> propertyNames, VariableScope variableScope) {
         List<Statement> statements = blockStatement.getStatements();
         for (Statement statement : statements) {
-            addStatementToNewQuery(statement, newCode, addAll, propertyNames);
+            addStatementToNewQuery(statement, newCode, addAll, propertyNames, variableScope);
         }
     }
 
-    private void addStatementToNewQuery(Statement statement, BlockStatement newCode, boolean addAll, List<String> propertyNames) {
+    private void addStatementToNewQuery(Statement statement, BlockStatement newCode, boolean addAll, List<String> propertyNames, VariableScope variableScope) {
         if(statement instanceof BlockStatement) {
-             addBlockStatementToNewQuery((BlockStatement)statement, newCode, addAll, propertyNames);
+             addBlockStatementToNewQuery((BlockStatement)statement, newCode, addAll, propertyNames, variableScope);
         }
         else if (statement instanceof ExpressionStatement) {
             ExpressionStatement es = (ExpressionStatement) statement;
@@ -451,15 +452,15 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             }
             else if (expression instanceof BinaryExpression) {
                 BinaryExpression be = (BinaryExpression) expression;
-                addBinaryExpressionToNewBody(propertyNames, newCode, be, addAll);
+                addBinaryExpressionToNewBody(propertyNames, newCode, be, addAll, variableScope);
             } else if (expression instanceof NotExpression) {
                 NotExpression not = (NotExpression) expression;
 
-                handleNegation(propertyNames, newCode, not);
+                handleNegation(propertyNames, newCode, not, variableScope);
             } else if(expression instanceof MethodCallExpression) {
                 MethodCallExpression methodCall = (MethodCallExpression) expression;
 
-                handleAssociationMethodCallExpression(newCode, methodCall, propertyNames);
+                handleAssociationMethodCallExpression(newCode, methodCall, propertyNames, variableScope);
             }
         }
         else {
@@ -467,13 +468,13 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 IfStatement ifs = (IfStatement) statement;
                 Statement ifb = ifs.getIfBlock();
                 BlockStatement newIfBlock = new BlockStatement();
-                addStatementToNewQuery(ifb, newIfBlock, addAll, propertyNames);
+                addStatementToNewQuery(ifb, newIfBlock, addAll, propertyNames, variableScope);
                 ifs.setIfBlock(flattenStatementIfNecessary(newIfBlock));
 
                 Statement elseBlock = ifs.getElseBlock();
                 if(elseBlock != null) {
                     BlockStatement newElseBlock = new BlockStatement();
-                    addStatementToNewQuery(elseBlock, newElseBlock, addAll, propertyNames);
+                    addStatementToNewQuery(elseBlock, newElseBlock, addAll, propertyNames, variableScope);
                     ifs.setElseBlock(flattenStatementIfNecessary(newElseBlock));
                 }
                 newCode.addStatement(ifs);
@@ -486,7 +487,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 for (CaseStatement caseStatement : caseStatements) {
                     Statement existingCode = caseStatement.getCode();
                     BlockStatement newCaseCode = new BlockStatement();
-                    addStatementToNewQuery(existingCode, newCaseCode, addAll, propertyNames);
+                    addStatementToNewQuery(existingCode, newCaseCode, addAll, propertyNames, variableScope);
                     caseStatement.setCode(flattenStatementIfNecessary(newCaseCode));
                 }
 
@@ -496,7 +497,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 ForStatement fs = (ForStatement) statement;
                 Statement loopBlock = fs.getLoopBlock();
                 BlockStatement newLoopBlock = new BlockStatement();
-                addStatementToNewQuery(loopBlock, newLoopBlock, addAll, propertyNames);
+                addStatementToNewQuery(loopBlock, newLoopBlock, addAll, propertyNames, variableScope);
                 fs.setLoopBlock(flattenStatementIfNecessary(newLoopBlock));
                 newCode.addStatement(fs);
             }
@@ -504,7 +505,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 WhileStatement ws = (WhileStatement) statement;
                 Statement loopBlock = ws.getLoopBlock();
                 BlockStatement newLoopBlock = new BlockStatement();
-                addStatementToNewQuery(loopBlock, newLoopBlock, addAll, propertyNames);
+                addStatementToNewQuery(loopBlock, newLoopBlock, addAll, propertyNames, variableScope);
                 ws.setLoopBlock(flattenStatementIfNecessary(newLoopBlock));
                 newCode.addStatement(ws);
             }
@@ -513,7 +514,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 Statement tryStatement = tcs.getTryStatement();
 
                 BlockStatement newTryStatement = new BlockStatement();
-                addStatementToNewQuery(tryStatement, newTryStatement, addAll, propertyNames);
+                addStatementToNewQuery(tryStatement, newTryStatement, addAll, propertyNames, variableScope);
                 tcs.setTryStatement(flattenStatementIfNecessary(newTryStatement));
 
                 List<CatchStatement> catchStatements = tcs.getCatchStatements();
@@ -521,14 +522,14 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 for (CatchStatement catchStatement : catchStatements) {
                     BlockStatement newCatchStatement = new BlockStatement();
                     Statement code = catchStatement.getCode();
-                    addStatementToNewQuery(code, newCatchStatement, addAll, propertyNames);
+                    addStatementToNewQuery(code, newCatchStatement, addAll, propertyNames, variableScope);
                     catchStatement.setCode(flattenStatementIfNecessary(newCatchStatement));
                 }
 
                 Statement finallyStatement = tcs.getFinallyStatement();
                 if(finallyStatement != null) {
                     BlockStatement newFinallyStatement = new BlockStatement();
-                    addStatementToNewQuery(finallyStatement, newFinallyStatement, addAll, propertyNames);
+                    addStatementToNewQuery(finallyStatement, newFinallyStatement, addAll, propertyNames, variableScope);
                     tcs.setFinallyStatement(flattenStatementIfNecessary(newFinallyStatement));
                 }
                 newCode.addStatement(tcs);
@@ -548,7 +549,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         }
     }
 
-    private void handleAssociationMethodCallExpression(BlockStatement newCode, MethodCallExpression methodCall, List<String> propertyNames) {
+    private void handleAssociationMethodCallExpression(BlockStatement newCode, MethodCallExpression methodCall, List<String> propertyNames, VariableScope variableScope) {
         Expression method = methodCall.getMethod();
         String methodName = method.getText();
         ArgumentListExpression arguments = methodCall.getArguments() instanceof ArgumentListExpression ? (ArgumentListExpression) methodCall.getArguments() : null;
@@ -581,7 +582,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                         type = getAssociationTypeFromGenerics(type);
 
                     currentClassNode = type;
-                    addBlockStatementToNewQuery((BlockStatement) associationCode, currentBody, associationPropertyNames.isEmpty(), associationPropertyNames);
+                    addBlockStatementToNewQuery((BlockStatement) associationCode, currentBody, associationPropertyNames.isEmpty(), associationPropertyNames,variableScope);
                 } finally {
                     currentClassNode = existing;
                 }
@@ -644,7 +645,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         return propertyNames.contains(methodName) && arguments != null && arguments.getExpressions().size()  == 1 && (arguments.getExpression(0) instanceof ClosureExpression);
     }
 
-    private void handleNegation(List<String> propertyNames, BlockStatement newCode, NotExpression not) {
+    private void handleNegation(List<String> propertyNames, BlockStatement newCode, NotExpression not, VariableScope variableScope) {
         Expression subExpression = not.getExpression();
         if (subExpression instanceof BinaryExpression) {
             ArgumentListExpression arguments = new ArgumentListExpression();
@@ -652,7 +653,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             ClosureExpression newClosureExpression = new ClosureExpression(new Parameter[0], currentBody);
             newClosureExpression.setVariableScope(new VariableScope());
             arguments.addExpression(newClosureExpression);
-            addBinaryExpressionToNewBody(propertyNames, currentBody, (BinaryExpression) subExpression, false);
+            addBinaryExpressionToNewBody(propertyNames, currentBody, (BinaryExpression) subExpression, false, variableScope);
 
             newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "not", arguments)));
         }
@@ -661,7 +662,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         }
     }
 
-    private void addBinaryExpressionToNewBody(List<String> propertyNames, BlockStatement newCode, BinaryExpression be, boolean addAll) {
+    private void addBinaryExpressionToNewBody(List<String> propertyNames, BlockStatement newCode, BinaryExpression be, boolean addAll, VariableScope variableScope) {
         Token operation = be.getOperation();
 
         String operator = operation.getRootText();
@@ -734,11 +735,11 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             }
             ArgumentListExpression arguments = new ArgumentListExpression();
             BlockStatement currentBody = new BlockStatement();
-            handleBinaryExpressionSide(leftExpression,rightExpression, operator, currentBody, addAll, propertyNames);
-            handleBinaryExpressionSide(rightExpression, rightExpression, operator,currentBody, addAll, propertyNames);
+            handleBinaryExpressionSide(leftExpression,rightExpression, operator, currentBody, addAll, propertyNames, variableScope);
+            handleBinaryExpressionSide(rightExpression, rightExpression, operator,currentBody, addAll, propertyNames, variableScope);
 
             ClosureExpression newClosureExpression = new ClosureExpression(new Parameter[0], currentBody);
-            newClosureExpression.setVariableScope(new VariableScope());
+            newClosureExpression.setVariableScope(variableScope);
             arguments.addExpression(newClosureExpression);
             if (methodNameToCall != null) {
                 newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, methodNameToCall, arguments)));
@@ -775,15 +776,15 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         }
     }
 
-    private void handleBinaryExpressionSide(Expression expressionSide, Expression oppositeSide, String operator, BlockStatement newCode, boolean addAll, List<String> propertyNames) {
+    private void handleBinaryExpressionSide(Expression expressionSide, Expression oppositeSide, String operator, BlockStatement newCode, boolean addAll, List<String> propertyNames, VariableScope variableScope) {
         if (expressionSide instanceof BinaryExpression) {
-            addBinaryExpressionToNewBody(propertyNames, newCode, (BinaryExpression) expressionSide, addAll);
+            addBinaryExpressionToNewBody(propertyNames, newCode, (BinaryExpression) expressionSide, addAll, variableScope);
         } else if(expressionSide instanceof NotExpression) {
-            handleNegation(propertyNames, newCode, (NotExpression) expressionSide);
+            handleNegation(propertyNames, newCode, (NotExpression) expressionSide, variableScope);
         }
         else if(expressionSide instanceof MethodCallExpression) {
             MethodCallExpression methodCallExpression = (MethodCallExpression) expressionSide;
-            handleAssociationMethodCallExpression(newCode, methodCallExpression, propertyNames);
+            handleAssociationMethodCallExpression(newCode, methodCallExpression, propertyNames, variableScope);
         }
         else if (expressionSide instanceof PropertyExpression) {
             PropertyExpression pe = (PropertyExpression) expressionSide;

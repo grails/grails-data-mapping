@@ -14,11 +14,29 @@ import grails.persistence.Entity
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
-   static {
-       TEST_CLASSES << Continent
-   }
+    @Override
+    List getDomainClasses() {
+        [Continent]
+    }
 
-  def "Test is null query"() {
+
+    def "Test parameterized where query"() {
+        given:"A bunch of people"
+              createPeople()
+
+        when:"parameters are used instead of literals"
+            def fn = "Bart"
+            def ln = "Simpson"
+
+
+            def query = Person.where { firstName != fn && lastName == ln }.sort("firstName", "desc")
+            def people = query.list()
+
+        then:"The correct results are returned"
+            people.size() == 3
+    }
+
+    def "Test is null query"() {
       given:"A bunch of people"
             createPeople()
 
@@ -1162,29 +1180,36 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @ApplyDetachedCriteriaTransform
 @Entity
 class CallMe {
-    String name
-    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
-    def declaredQuery() {
-            Person.where(myDetachedCriteria)
-    }
+//    String name
+//    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
+//    def declaredQuery() {
+//            Person.where(myDetachedCriteria)
+//    }
+//
+//    def doQuery() {
+//      Person.simpsons.where {
+//          firstName == "Bart"
+//      }
+//
+//    }
+//
+//    def functionQuery() {
+//        Person.where {
+//              year(pets.birthDate) == 2009
+//        }
+//    }
+//
+//    def inheritanceQuery() {
+//            def query = Person.where {
+//                livedIn { name == 'SA'}
+//            }
+//    }
 
-    def doQuery() {
-      Person.simpsons.where {
-          firstName == "Bart"
-      }
+    def parameterizedQuery() {
+        def fn = "Bart"
+        def ln = "Simpson"
 
-    }
-
-    def functionQuery() {
-        Person.where {
-              year(pets.birthDate) == 2009
-        }
-    }
-
-    def inheritanceQuery() {
-            def query = Person.where {
-                livedIn { name == 'SA'}
-            }
+        Person.where { firstName != fn && lastName == ln }.sort("firstName", "desc")
     }
 }
 ''', "Test").newInstance()
