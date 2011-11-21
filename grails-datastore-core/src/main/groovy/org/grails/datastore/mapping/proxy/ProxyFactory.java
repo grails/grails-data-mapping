@@ -46,6 +46,19 @@ public interface ProxyFactory {
     boolean isProxy(Object object);
 
     /**
+     * Checks whether a given proxy is initialized
+     * @param object The object to check
+     * @return True if it is
+     */
+    boolean isInitialized(Object object);
+
+    /**
+     * Unwraps the given proxy if it is one
+     * @param object The object
+     * @return The unwrapped proxy
+     */
+    Object unwrap(Object object);
+    /**
      * Obtains the identifier of an object without initializing the proxy if it is one
      * @param obj The object
      * @return The identifier

@@ -58,6 +58,31 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
 
     }
 
+    /**
+     * Checks whether a given proxy is initialized
+     *
+     * @param object The object to check
+     * @return True if it is
+     */
+    @Override
+    public boolean isInitialized(Object object) {
+        return !isProxy(object) || ((EntityProxy) object).isInitialized();
+    }
+
+    /**
+     * Unwraps the given proxy if it is one
+     *
+     * @param object The object
+     * @return The unwrapped proxy
+     */
+    @Override
+    public Object unwrap(Object object) {
+        if(isProxy(object)) {
+            return ((EntityProxy)object).getTarget();
+        }
+        return object;
+    }
+
     public <T> T createProxy(Session session, Class<T> type, Serializable key) {
         return (T) getProxyInstance(session, type, key);
     }
@@ -80,7 +105,7 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
                     }
                     if (methodName.equals("getTarget")) {
                         initialize();
-                        return null;
+                        return target;
                     }
                 }
                 if (target == null) initialize();

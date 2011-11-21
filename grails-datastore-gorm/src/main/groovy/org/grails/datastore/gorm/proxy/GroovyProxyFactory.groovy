@@ -82,4 +82,20 @@ class GroovyProxyFactory implements ProxyFactory {
         }
         return proxy;
     }
+
+    @Override
+    boolean isInitialized(Object object) {
+        if(isProxy(object)) {
+            return object.initialized
+        }
+        return true;
+    }
+
+    @Override
+    Object unwrap(Object object) {
+        if(isProxy(object)) {
+            return object.target
+        }
+        return object
+    }
 }

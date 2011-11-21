@@ -714,7 +714,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                         @SuppressWarnings("hiding")
                         ProxyFactory proxyFactory = getProxyFactory();
                         // never cascade to proxies
-                        if (!proxyFactory.isProxy(associatedObject)) {
+                        if (proxyFactory.isInitialized(associatedObject)) {
                             Serializable associationId = null;
                             NativeEntryEntityPersister associationPersister = (NativeEntryEntityPersister) session.getPersister(associatedObject);
                             if (!session.contains(associatedObject)) {
@@ -743,6 +743,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                             setEntryValue(cachedAssociationEntry, key,  formulateDatabaseReference(association.getAssociatedEntity(), (ToOne) inverseSide, (Serializable) k));
                                         }
                                     }
+                                }
+
+                                if(association.doesCascade(CascadeType.PERSIST)) {
+                                    associationPersister.persist(associatedObject);
                                 }
                             }
                             // handle of standard many-to-one
