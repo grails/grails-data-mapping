@@ -47,7 +47,7 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
 
         def simpleDBConfig = application.config?.grails?.simpledb
         //determine dbCreate flag and create/delete AWS domains if needed
-        handleDBCreate(simpleDBConfig.dbCreate,
+        handleDBCreate(simpleDBConfig,
                 application,
                 simpleDBDomainClasses,
                 mappingContext,
@@ -70,7 +70,8 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
         }
     }
 
-    def handleDBCreate = { dbCreate, application, simpleDBDomainClasses, mappingContext, simpleDBDatastore ->
+    def handleDBCreate = { simpleDBConfig, application, simpleDBDomainClasses, mappingContext, simpleDBDatastore ->
+        boolean dbCreate = simpleDBConfig.dbCreate
         boolean drop = false
         boolean create = false
         if ("drop-create" == dbCreate) {
@@ -80,6 +81,12 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
             create = true
         } else if ("drop" == dbCreate) {
             drop = true
+        }
+
+        //protection against accidental drop
+        boolean disableDrop = simpleDBConfig.disableDrop
+        if (disableDrop && drop){
+            throw new IllegalArgumentException("Value of disableDrop is "+disableDrop+" while dbCreate is "+dbCreate+". Throwing an exception to prevent accidental drop of the data");
         }
 
         def numOfThreads = 30 //how many parallel threads are used to create dbCreate functionality in parallel

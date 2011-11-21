@@ -3,6 +3,11 @@ package grails.gorm.tests
 import grails.persistence.Entity
 
 class ManyToManySpec extends GormDatastoreSpec {
+    
+    @Override
+    List getDomainClasses() {
+        [Role, User]
+    }
 
     /*def setupSpec() {
         new BasicConfigurator().configure()

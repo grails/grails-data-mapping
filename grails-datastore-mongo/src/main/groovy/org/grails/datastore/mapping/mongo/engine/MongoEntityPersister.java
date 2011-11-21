@@ -367,7 +367,12 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     @Override
     protected void setEntryValue(DBObject nativeEntry, String key, Object value) {
 
-        if (value == null || getMappingContext().isPersistentEntity(value)) {
+        MappingContext mappingContext = getMappingContext();
+        setDBObjectValue(nativeEntry, key, value, mappingContext);
+    }
+
+    public static void setDBObjectValue(DBObject nativeEntry, String key, Object value, MappingContext mappingContext) {
+        if (value == null || mappingContext.isPersistentEntity(value)) {
             return;
         }
 
@@ -406,7 +411,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private boolean shouldConvertToString(Class theClass) {
+    public static boolean shouldConvertToString(Class theClass) {
         for (Class classToCheck : convertToString) {
             if (classToCheck.isAssignableFrom(theClass)) return true;
         }

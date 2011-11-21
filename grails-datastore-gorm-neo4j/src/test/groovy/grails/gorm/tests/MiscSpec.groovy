@@ -7,6 +7,11 @@ import grails.persistence.Entity
  */
 class MiscSpec extends GormDatastoreSpec {
 
+    @Override
+    List getDomainClasses() {
+        [ Club, Team, Tournament, User, Role ]
+    }
+
     def "test object identity, see if cache is being used"() {
         setup:
             new User(username: 'user1').save()

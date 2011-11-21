@@ -21,3 +21,18 @@ class Person {
     }
 }
 {code}
+
+You can use MongoDB [Query Hints|http://www.mongodb.org/display/DOCS/Optimization#Optimization-Hint] by passing the @hint@ argument to any dynamic finder:
+
+{code}
+def people = Person.findByName("Bob", [hint:[name:1]])
+{code}
+
+Or in a criteria query using the query "arguments" method
+
+{code}
+Person.withCriteria {
+	eq 'firstName', 'Bob'
+    arguments hint:["firstName":1]
+}
+{code}

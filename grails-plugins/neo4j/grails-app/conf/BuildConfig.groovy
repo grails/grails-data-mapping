@@ -38,6 +38,6 @@ grails.project.dependency.resolution = {
             transitive = false
         }
 
-        compile('org.neo4j:neo4j-community:1.4.2')
+        compile('org.neo4j:neo4j-community:1.5')
     }
 }
