@@ -45,6 +45,14 @@ class CustomCollectionAndAttributeMappingSpec extends GormDatastoreSpec{
             results[1].groupId == 10
             results[2].groupId == 15
 
+        when:"A dynamic finder is used in a query"
+            session.clear()
+            results = CCAAMPerson.findAllByGroupId(10)
+
+        then:"The results are correct"
+            results.size() == 1
+            results[0].groupId == 10
+
     }
 
 
