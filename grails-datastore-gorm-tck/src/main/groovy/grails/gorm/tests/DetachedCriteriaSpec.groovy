@@ -205,6 +205,35 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
             results.every { it.lastName == 'Simpson'}
     }
 
+    void "Test list method with property projection"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when:"A detached criteria instance is created that uses a property projection"
+            def criteria = new DetachedCriteria(Person)
+            criteria.build {
+                eq 'lastName', 'Simpson'
+            }
+            criteria = criteria.property("firstName")
+
+            def results = criteria.list(max: 2).sort()
+        then:"The list method returns the right results"
+            results.size() == 2
+            results == ["Homer", "Marge"]
+
+        when:"A detached criteria instance is created that uses a property projection using property missing"
+            criteria = new DetachedCriteria(Person)
+            criteria.build {
+                eq 'lastName', 'Simpson'
+            }
+            criteria = criteria.firstName
+
+            results = criteria.list(max: 2).sort()
+        then:"The list method returns the right results"
+            results.size() == 2
+            results == ["Homer", "Marge"]
+
+    }
 
     protected def createPeople() {
         new Person(firstName: "Homer", lastName: "Simpson").save()

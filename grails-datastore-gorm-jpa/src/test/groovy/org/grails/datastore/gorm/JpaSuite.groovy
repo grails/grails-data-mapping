@@ -25,9 +25,12 @@ import grails.gorm.tests.WithTransactionSpec
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 import org.junit.runners.Suite.SuiteClasses
+import grails.gorm.tests.DetachedCriteriaSpec
+//import grails.gorm.tests.WhereMethodSpec
 
 @RunWith(Suite)
 @SuiteClasses([
+    DetachedCriteriaSpec
 //  OneToManySpec,
 //  SaveAllSpec,
 //  GormEnhancerSpec,
@@ -49,7 +52,8 @@ import org.junit.runners.Suite.SuiteClasses
 //  UpdateWithProxyPresentSpec,
 //  AttachMethodSpec,
 //  WithTransactionSpec,
-  CrudOperationsSpec
+//  CrudOperationsSpec
+   // WhereMethodSpec
 ])
 class JpaSuite {
 

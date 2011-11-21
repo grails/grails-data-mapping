@@ -13,11 +13,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/com.gmongo/gmongo/jars/gmongo-0.8.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/com.gmongo/gmongo/jars/gmongo-0.9.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/com.gmongo/gmongo/sources/gmongo-0.8-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/com.gmongo/gmongo/sources/gmongo-0.9.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -77,33 +77,22 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.6.1.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.6.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/sources/jcl-over-slf4j-1.6.1-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/sources/jcl-over-slf4j-1.6.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/jars/slf4j-api-1.6.1.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/jars/slf4j-api-1.6.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/sources/slf4j-api-1.6.1-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jul-to-slf4j/jars/jul-to-slf4j-1.6.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jul-to-slf4j/sources/jul-to-slf4j-1.6.1-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/sources/slf4j-api-1.6.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -148,6 +137,17 @@
         <JAVADOC />
         <SOURCES>
           <root url="jar://$GRADLE_REPOSITORY$/commons-lang/commons-lang/sources/commons-lang-2.4-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jul-to-slf4j/jars/jul-to-slf4j-1.5.8.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jul-to-slf4j/sources/jul-to-slf4j-1.5.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

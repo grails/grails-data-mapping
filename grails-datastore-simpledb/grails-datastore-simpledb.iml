@@ -67,22 +67,22 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.jackson/jackson-core-asl/jars/jackson-core-asl-1.7.2.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.jackson/jackson-core-asl/jars/jackson-core-asl-1.9.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.jackson/jackson-core-asl/sources/jackson-core-asl-1.7.2-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.jackson/jackson-core-asl/sources/jackson-core-asl-1.9.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/javax.mail/mail/jars/mail-1.4.1.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/javax.mail/mail/jars/mail-1.4.5-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/javax.mail/mail/sources/mail-1.4.1-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/javax.mail/mail/sources/mail-1.4.5-SNAPSHOT-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
