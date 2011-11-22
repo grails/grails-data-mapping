@@ -44,7 +44,14 @@ public class SimpleDBMappingContext extends AbstractMappingContext {
 
     @Override
     protected PersistentEntity createPersistentEntity(@SuppressWarnings("rawtypes") Class javaClass) {
-        return new SimpleDBPersistentEntity(javaClass, this);
+        SimpleDBPersistentEntity simpleDBPersistentEntity = new SimpleDBPersistentEntity(javaClass, this);
+
+        //initialize mapping form for SimpleDBPersistentEntity here - otherwise there are some
+        //problems with the initialization sequence when some properties have OneToOne
+        //(FindOrCreateWhereSpec, FindOrSaveWhereSpec, FindOrSaveWhereSpec was failing)
+        mappingFactory.createMappedForm(simpleDBPersistentEntity);
+
+        return simpleDBPersistentEntity;
     }
 
     public MappingConfigurationStrategy getMappingSyntaxStrategy() {

@@ -69,6 +69,7 @@ class Person implements Serializable {
     Set<Pet> pets = [] as Set
     static hasMany = [pets:Pet]
 
+
     static mapping = {
         firstName index:true
         lastName index:true

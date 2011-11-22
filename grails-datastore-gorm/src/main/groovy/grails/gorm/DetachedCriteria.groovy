@@ -785,6 +785,17 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         return newCriteria
     }
 
+    def propertyMissing(String name) {
+        final entity = getPersistentEntity()
+        final p = entity.getPropertyByName(name)
+        if(p != null) {
+            return property(name)
+        }
+        else {
+            throw new MissingPropertyException(name, DetachedCriteria)
+        }
+    }
+
     /**
      * Adds a distinct property projection
      *

@@ -177,22 +177,22 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/jars/slf4j-api-1.6.1.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/jars/slf4j-api-1.6.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/sources/slf4j-api-1.6.1-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/sources/slf4j-api-1.6.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.6.1.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.6.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/sources/jcl-over-slf4j-1.6.1-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/sources/jcl-over-slf4j-1.6.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

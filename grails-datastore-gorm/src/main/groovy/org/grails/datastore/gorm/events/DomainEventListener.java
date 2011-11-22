@@ -22,20 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.grails.datastore.mapping.engine.event.*;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationEvent;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.engine.EntityAccess;
-import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
-import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener;
-import org.grails.datastore.mapping.engine.event.PostDeleteEvent;
-import org.grails.datastore.mapping.engine.event.PostInsertEvent;
-import org.grails.datastore.mapping.engine.event.PostLoadEvent;
-import org.grails.datastore.mapping.engine.event.PostUpdateEvent;
-import org.grails.datastore.mapping.engine.event.PreDeleteEvent;
-import org.grails.datastore.mapping.engine.event.PreInsertEvent;
-import org.grails.datastore.mapping.engine.event.PreLoadEvent;
-import org.grails.datastore.mapping.engine.event.PreUpdateEvent;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.util.ReflectionUtils;
@@ -77,29 +68,31 @@ public class DomainEventListener extends AbstractPersistenceEventListener
 
     @Override
     protected void onPersistenceEvent(final AbstractPersistenceEvent event) {
-        if (event instanceof PreInsertEvent) {
-            beforeInsert(event.getEntity(), event.getEntityAccess());
-        }
-        else if (event instanceof PostInsertEvent) {
-            afterInsert(event.getEntity(), event.getEntityAccess());
-        }
-        else if (event instanceof PreUpdateEvent) {
-            beforeUpdate(event.getEntity(), event.getEntityAccess());
-        }
-        else if (event instanceof PostUpdateEvent) {
-            afterUpdate(event.getEntity(), event.getEntityAccess());
-        }
-        else if (event instanceof PreDeleteEvent) {
-            beforeDelete(event.getEntity(), event.getEntityAccess());
-        }
-        else if (event instanceof PostDeleteEvent) {
-            afterDelete(event.getEntity(), event.getEntityAccess());
-        }
-        else if (event instanceof PreLoadEvent) {
-            beforeLoad(event.getEntity(), event.getEntityAccess());
-        }
-        else if (event instanceof PostLoadEvent) {
-            afterLoad(event.getEntity(), event.getEntityAccess());
+        switch(event.getEventType()) {
+            case PreInsert:
+                beforeInsert(event.getEntity(), event.getEntityAccess());
+            break;
+            case PostInsert:
+                afterInsert(event.getEntity(), event.getEntityAccess());
+            break;
+            case PreUpdate:
+                beforeUpdate(event.getEntity(), event.getEntityAccess());
+            break;
+            case PostUpdate:
+                afterUpdate(event.getEntity(), event.getEntityAccess());
+            break;
+            case PreDelete:
+                beforeDelete(event.getEntity(), event.getEntityAccess());
+            break;
+            case PostDelete:
+                afterDelete(event.getEntity(), event.getEntityAccess());
+            break;
+            case PreLoad:
+                beforeLoad(event.getEntity(), event.getEntityAccess());
+            break;
+            case PostLoad:
+                afterLoad(event.getEntity(), event.getEntityAccess());
+            break;
         }
     }
 

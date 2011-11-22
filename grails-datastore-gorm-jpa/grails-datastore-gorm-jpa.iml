@@ -92,22 +92,22 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/jars/slf4j-api-1.6.1.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/jars/slf4j-api-1.6.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/sources/slf4j-api-1.6.1-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/sources/slf4j-api-1.6.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/javassist/javassist/jars/javassist-3.11.0.GA.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/javassist/javassist/jars/javassist-3.12.0.GA.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/javassist/javassist/sources/javassist-3.11.0.GA-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/javassist/javassist/sources/javassist-3.12.0.GA-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
