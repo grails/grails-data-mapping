@@ -554,7 +554,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                             }
                             else {
 
-                                projectedResults = collection.distinct(propertyName, query);
+                                propertyResults = collection.distinct(propertyName, query);
                             }
 
 
