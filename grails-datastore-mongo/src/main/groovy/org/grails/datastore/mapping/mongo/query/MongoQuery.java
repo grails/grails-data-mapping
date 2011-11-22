@@ -544,7 +544,19 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         }
                         if (persistentProperty != null) {
                             populateMongoQuery(entity, query, criteria);
-                            List propertyResults = collection.distinct(propertyName, query);
+
+
+                            List propertyResults = null;
+                            if(max > -1) {
+                                // if there is a limit then we have to do a manual projection since the MongoDB driver doesn't support limits and distinct together
+                                cursor = executeQueryAndApplyPagination(collection, query);
+                                propertyResults = manualProjections.property(new MongoResultList(cursor, mongoEntityPersister), propertyName);
+                            }
+                            else {
+
+                                projectedResults = collection.distinct(propertyName, query);
+                            }
+
 
                             if (persistentProperty instanceof ToOne) {
                                 Association a = (Association) persistentProperty;
