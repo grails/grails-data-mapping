@@ -98,7 +98,7 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
     protected void findOrCreateSubReferenceNodes() {
         subReferenceNodes = [:]
         Node referenceNode = graphDatabaseService.referenceNode
-        for (Relationship rel in referenceNode.getRelationships(GrailsRelationshipTypes.SUBREFERENCE, Direction.OUTGOING)) {
+        for (Relationship rel in referenceNode.getRelationships(GrailsRelationshipTypes.SUBREFERENCE, Direction.OUTGOING).iterator()) {
             Node endNode = rel.endNode
             String clazzName = endNode.getProperty(Neo4jSession.SUBREFERENCE_PROPERTY_NAME)
             subReferenceNodes[clazzName] = endNode
