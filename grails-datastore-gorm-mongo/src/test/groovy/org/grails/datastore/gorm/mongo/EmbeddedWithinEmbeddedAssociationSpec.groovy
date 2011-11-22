@@ -4,10 +4,12 @@ import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
 class EmbeddedWithinEmbeddedAssociationSpec extends GormDatastoreSpec {
-
-    static {
-        TEST_CLASSES << Customer << Vehicle << Maker << Part << Component
+    @Override
+    List getDomainClasses() {
+        [Customer,Vehicle,Maker,Part,Component]
     }
+
+
 
     void "Test that nested embedded associations can be persisted"() {
         given:"a domain model with lots of nesting"

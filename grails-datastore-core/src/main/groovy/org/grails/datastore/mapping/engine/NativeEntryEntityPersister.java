@@ -326,7 +326,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         }
 
         final T entry = retrieveEntry(entity, getEntityFamily(), identifier);
-        refreshObjectStateFromNativeEntry(entity, o, identifier, entry);
+        refreshObjectStateFromNativeEntry(entity, o, identifier, entry, false);
         return identifier;
     }
 
@@ -336,7 +336,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         cacheNativeEntry(persistentEntity, nativeKey, nativeEntry);
 
         Object obj = newEntityInstance(persistentEntity);
-        refreshObjectStateFromNativeEntry(persistentEntity, obj, nativeKey, nativeEntry);
+        refreshObjectStateFromNativeEntry(persistentEntity, obj, nativeKey, nativeEntry, false);
         return obj;
     }
 
@@ -349,7 +349,11 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     }
 
     protected void refreshObjectStateFromNativeEntry(PersistentEntity persistentEntity, Object obj,
-            Serializable nativeKey, T nativeEntry) {
+                                                     Serializable nativeKey, T nativeEntry) {
+        refreshObjectStateFromNativeEntry(persistentEntity, obj, nativeKey, nativeEntry, false);
+    }
+    protected void refreshObjectStateFromNativeEntry(PersistentEntity persistentEntity, Object obj,
+                                                     Serializable nativeKey, T nativeEntry, boolean isEmbedded) {
         EntityAccess ea = createEntityAccess(persistentEntity, obj, nativeEntry);
         ea.setConversionService(getMappingContext().getConversionService());
         if(!(persistentEntity instanceof EmbeddedPersistentEntity)) {
@@ -388,7 +392,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                         Object embeddedInstance = newEntityInstance(embedded.getAssociatedEntity());
                         createEntityAccess(embedded.getAssociatedEntity(), embeddedInstance);
                         refreshObjectStateFromNativeEntry(embedded.getAssociatedEntity(),
-                              embeddedInstance, null, embeddedEntry);
+                              embeddedInstance, null, embeddedEntry, true);
                         ea.setProperty(propKey, embeddedInstance);
                     }
                 }
@@ -418,7 +422,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     if (isEmbeddedEntry(tmp)) {
                         PersistentEntity associatedEntity = ((ToOne) prop).getAssociatedEntity();
                         Object instance = newEntityInstance(associatedEntity);
-                        refreshObjectStateFromNativeEntry(associatedEntity,instance, null, (T) tmp);
+                        refreshObjectStateFromNativeEntry(associatedEntity,instance, null, (T) tmp, false);
                         ea.setProperty(prop.getName(), instance);
                     }
                     else if (tmp != null && !prop.getType().isInstance(tmp)) {
@@ -450,25 +454,39 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 Association association = (Association) prop;
                 PropertyMapping<Property> associationPropertyMapping = association.getMapping();
 
-                boolean isLazy = isLazyAssociation(associationPropertyMapping);
-                AssociationIndexer indexer = getAssociationIndexer(nativeEntry, association);
-                nativeKey = (Serializable) getMappingContext().getConversionService().convert(
-                        nativeKey, getPersistentEntity().getIdentity().getType());
-                if (isLazy) {
+
+                if(isEmbedded) {
+                    List keys = loadEmbeddedCollectionKeys((Association) prop, ea, nativeEntry);
                     if (List.class.isAssignableFrom(association.getType())) {
                         ea.setPropertyNoConversion(association.getName(),
-                                new PersistentList(nativeKey, session, indexer));
+                                new PersistentList(keys, association.getAssociatedEntity().getJavaClass(), session));
                     }
                     else if (Set.class.isAssignableFrom(association.getType())) {
                         ea.setPropertyNoConversion(association.getName(),
-                                new PersistentSet(nativeKey, session, indexer));
+                                new PersistentSet(keys, association.getAssociatedEntity().getJavaClass(), session));
                     }
                 }
                 else {
-                    if (indexer != null) {
-                        List keys = indexer.query(nativeKey);
-                        ea.setProperty(association.getName(),
-                                session.retrieveAll(association.getAssociatedEntity().getJavaClass(), keys));
+                    boolean isLazy = isLazyAssociation(associationPropertyMapping);
+                    AssociationIndexer indexer = getAssociationIndexer(nativeEntry, association);
+                    nativeKey = (Serializable) getMappingContext().getConversionService().convert(
+                            nativeKey, getPersistentEntity().getIdentity().getType());
+                    if (isLazy) {
+                        if (List.class.isAssignableFrom(association.getType())) {
+                            ea.setPropertyNoConversion(association.getName(),
+                                    new PersistentList(nativeKey, session, indexer));
+                        }
+                        else if (Set.class.isAssignableFrom(association.getType())) {
+                            ea.setPropertyNoConversion(association.getName(),
+                                    new PersistentSet(nativeKey, session, indexer));
+                        }
+                    }
+                    else {
+                        if (indexer != null) {
+                            List keys = indexer.query(nativeKey);
+                            ea.setProperty(association.getName(),
+                                    session.retrieveAll(association.getAssociatedEntity().getJavaClass(), keys));
+                        }
                     }
                 }
             }
@@ -528,8 +546,57 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         }
     }
 
-    protected boolean isEmbeddedEntry(Object tmp) {
+    /**
+     * Implementors who want to support one-to-many associations embedded should implement this method
+     *
+     * @param association The association
+     * @param ea
+     * @param nativeEntry
+     *
+     * @return A list of keys loaded from the embedded instance
+     */
+    protected List loadEmbeddedCollectionKeys(Association association, EntityAccess ea, T nativeEntry) {
+        // no out of the box support
+        return Collections.emptyList();
+    }
+
+    protected void setEmbeddedCollectionKeys(Association association, EntityAccess embeddedEntityAccess, T embeddedEntry, List<Serializable> keys) {
+        // do nothing
+    }
+
+
+    /**
+     * Tests whether a native entry is an embedded entry
+     *
+     * @param entry The native entry
+     * @return True if it is embedded
+     */
+    protected boolean isEmbeddedEntry(Object entry) {
         return false;
+    }
+
+    /**
+     * Implementors who want to the ability to read embedded collections should implement this method
+     *
+     * @param embeddedCollection The EmbeddedCollection instance
+     * @param ea  The EntityAccess instance
+     * @param embeddedInstances The embedded instances
+     * @param propertyKey The property key
+     */
+    protected void loadEmbeddedCollection(EmbeddedCollection embeddedCollection, EntityAccess ea,
+                                          Object embeddedInstances, String propertyKey) {
+        // no support by default for embedded collections
+    }
+
+    /**
+     * Implementors should override to provide support for embedded objects.
+     *
+     * @param nativeEntry The native entry to read the embedded instance from
+     * @param key The key
+     * @return The native entry of the embedded instance
+     */
+    protected T getEmbedded(T nativeEntry, String key) {
+        return null;
     }
 
     private void handleCustom(PersistentProperty prop, EntityAccess ea, T nativeEntry) {
@@ -544,22 +611,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
     protected Collection getManyToManyKeys(PersistentEntity persistentEntity, Object obj,
             Serializable nativeKey, T nativeEntry, ManyToMany manyToMany) {
-        return null;
-    }
-
-    protected void loadEmbeddedCollection(EmbeddedCollection embeddedCollection, EntityAccess ea,
-            Object embeddedInstances, String key) {
-        // no support by default for embedded collections
-    }
-
-    /**
-     * Implementors should override to provide support for embedded objects.
-     *
-     * @param nativeEntry The native entry to read the embedded instance from
-     * @param key The key
-     * @return The native entry of the embedded instance
-     */
-    protected T getEmbedded(T nativeEntry, String key) {
         return null;
     }
 
@@ -756,7 +807,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                         toIndex.put(prop, associationId);
                                         if (isUpdate) {
                                             final Object oldValue = getEntryValue(e, key);
-                                            if (oldValue != null && !oldValue.equals(associatedObject)) {
+                                            if (oldValue != null && !oldValue.equals(associationId)) {
                                                 toUnindex.put(prop, oldValue);
                                             }
                                         }
@@ -781,9 +832,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                             }
                                             else if (inverse instanceof ToOne) {
                                                 inverseAccess.setProperty(inverse.getName(), entityAccess.getEntity());
-                                            }
-                                            else {
-                                                throw new IllegalArgumentException("cannot handle");
                                             }
                                         }
                                     }
@@ -859,7 +907,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      * @param associationId The association id
      * @return A database reference
      */
-    protected Object formulateDatabaseReference(PersistentEntity persistentEntity, ToOne association, Serializable associationId) {
+    protected Object formulateDatabaseReference(PersistentEntity persistentEntity, Association association, Serializable associationId) {
         return associationId;
     }
 
@@ -915,20 +963,59 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     handleCustom(association, embeddedEntityAccess, embeddedEntry);
                 }
                 else if (persistentProperty instanceof Association) {
-                    if (persistentProperty instanceof ToOne) {
-                        handleEmbeddedToOne((Association) persistentProperty,getPropertyKey(persistentProperty) , embeddedEntityAccess, embeddedEntry);
+                    if(persistentProperty instanceof Embedded) {
+                        Association toOne = (Association) persistentProperty;
+
+                        handleEmbeddedToOne(toOne,getPropertyKey(persistentProperty) , embeddedEntityAccess, embeddedEntry);
+                    }
+                    else if (persistentProperty instanceof ToOne) {
+                        Association toOne = (Association) persistentProperty;
+
+                        Object obj = embeddedEntityAccess.getProperty(toOne.getName());
+                        Persister persister = getSession().getPersister(obj);
+                        if(persister != null) {
+                            Serializable id = persister.persist(obj);
+                            if(id != null) {
+                                setEntryValue(embeddedEntry, getPropertyKey(toOne), formulateDatabaseReference(embeddedPersister.getPersistentEntity(), association, id));
+                            }
+                        }
+
                     }
                     else if(persistentProperty instanceof Basic) {
                         setEntryValue(embeddedEntry, getPropertyKey(persistentProperty), embeddedEntityAccess.getProperty(persistentProperty.getName()));
                     }
-                    else {
+                    else if(persistentProperty instanceof EmbeddedCollection) {
                         handleEmbeddedToMany(embeddedEntityAccess, embeddedEntry, persistentProperty, persistentProperty.getName());
+                    }
+                    else {
+                        if (persistentProperty instanceof OneToMany) {
+                            final OneToMany oneToMany = (OneToMany) persistentProperty;
+
+                            final Object propValue = embeddedEntityAccess.getProperty(oneToMany.getName());
+                            if (propValue instanceof Collection) {
+                                Collection associatedObjects = (Collection) propValue;
+                                List<Serializable> keys = session.persist(associatedObjects);
+
+                                setEmbeddedCollectionKeys(oneToMany, embeddedEntityAccess, embeddedEntry, keys);
+                            }
+                        }
+                        else if (persistentProperty instanceof ManyToMany) {
+                            final ManyToMany manyToMany = (ManyToMany) persistentProperty;
+
+                            final Object propValue = embeddedEntityAccess.getProperty(manyToMany.getName());
+                            if (propValue instanceof Collection) {
+                                Collection associatedObjects = (Collection) propValue;
+                                List<Serializable> keys = session.persist(associatedObjects);
+                                setManyToMany(embeddedPersister.getPersistentEntity(), embeddedInstance, embeddedEntry, manyToMany, associatedObjects, Collections.<Association, List<Serializable>>emptyMap());
+                            }
+                        }
                     }
                 }
             }
         }
         return embeddedEntry;
     }
+
 
     private void handleIndexing(boolean update, T e, Map<PersistentProperty, Object> toIndex,
             Map<PersistentProperty, Object> toUnindex, PersistentProperty prop, String key,
@@ -1330,7 +1417,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         return false;
     }
 
-    private String getPropertyKey(PersistentProperty prop) {
+    protected String getPropertyKey(PersistentProperty prop) {
         PropertyMapping<Property> pm = prop.getMapping();
         Property mappedProperty = pm.getMappedForm();
         String key = null;

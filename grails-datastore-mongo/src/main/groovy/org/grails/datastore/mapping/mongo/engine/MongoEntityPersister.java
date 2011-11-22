@@ -131,6 +131,46 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         return entry;
     }
 
+    /**
+     * Implementors who want to support one-to-many associations embedded should implement this method
+     *
+     * @param association The association
+     * @param ea
+     * @param nativeEntry
+     * @return A list of keys loaded from the embedded instance
+     */
+    @Override
+    protected List loadEmbeddedCollectionKeys(Association association, EntityAccess ea, DBObject nativeEntry) {
+        if(nativeEntry != null) {
+
+            Object entry = nativeEntry.get(getPropertyKey(association));
+            List keys = new ArrayList();
+            if(entry instanceof List) {
+                List entries = (List) entry;
+                for (Object o : entries) {
+                    if(o instanceof DBRef) {
+                        DBRef dbref = (DBRef) o;
+                        keys.add(dbref.getId());
+                    }
+                    else {
+                        keys.add(null);
+                    }
+                }
+            }
+            return keys;
+        }
+        return super.loadEmbeddedCollectionKeys(association, ea, nativeEntry);
+    }
+
+    @Override
+    protected void setEmbeddedCollectionKeys(Association association, EntityAccess embeddedEntityAccess, DBObject embeddedEntry, List<Serializable> keys) {
+        List<DBRef> dbRefs = new ArrayList<DBRef>();
+        for (Object foreignKey : keys) {
+            dbRefs.add(new DBRef((DB) session.getNativeInterface(), getCollectionName(association.getAssociatedEntity()), foreignKey));
+        }
+        embeddedEntry.put(association.getName(), dbRefs);
+    }
+
     @Override
     protected void loadEmbeddedCollection(@SuppressWarnings("rawtypes") EmbeddedCollection embeddedCollection,
             EntityAccess ea, Object embeddedInstances, String propertyKey) {
@@ -171,8 +211,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @Override
-    protected boolean isEmbeddedEntry(Object tmp) {
-        return tmp instanceof DBObject;
+    protected boolean isEmbeddedEntry(Object entry) {
+        return entry instanceof DBObject;
     }
 
     public Query createQuery() {
@@ -359,7 +399,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     @Override
     protected Object formulateDatabaseReference(PersistentEntity persistentEntity,
-              @SuppressWarnings("rawtypes") ToOne association, Serializable associationId) {
+              @SuppressWarnings("rawtypes") Association association, Serializable associationId) {
         DB db = (DB) session.getNativeInterface();
         return new DBRef(db, getCollectionName(association.getAssociatedEntity()), associationId);
     }
@@ -615,13 +655,16 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                         }
                         nativeEntry.put(association.getName(), dbRefs);
 
-                        final DBCollection collection = db.getCollection(getCollectionName(association.getOwner()));
-                        DBObject query = new BasicDBObject(MONGO_ID_FIELD, primaryKey);
-                        collection.update(query, nativeEntry);
+                        if(primaryKey != null) {
+                            final DBCollection collection = db.getCollection(getCollectionName(association.getOwner()));
+                            DBObject query = new BasicDBObject(MONGO_ID_FIELD, primaryKey);
+                            collection.update(query, nativeEntry);
+                        }
                         return null;
                     }
                 });
             }
+
         }
 
         @SuppressWarnings("unchecked")
