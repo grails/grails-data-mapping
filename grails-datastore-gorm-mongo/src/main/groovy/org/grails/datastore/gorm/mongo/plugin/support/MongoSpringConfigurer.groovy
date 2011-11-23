@@ -37,7 +37,7 @@ class MongoSpringConfigurer extends SpringConfigurer {
     @Override
     Closure getSpringCustomizer() {
         return {
-            def mongoConfig = application.config?.grails?.mongo
+            def mongoConfig = application.config?.grails?.mongo.clone()
             def databaseName = mongoConfig?.remove("databaseName") ?: application.metadata.getApplicationName()
             "${databaseName}DB"(MethodInvokingFactoryBean) { bean ->
                 bean.scope = "request"
