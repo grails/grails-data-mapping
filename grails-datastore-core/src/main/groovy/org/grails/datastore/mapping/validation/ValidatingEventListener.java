@@ -15,6 +15,7 @@
 package org.grails.datastore.mapping.validation;
 
 import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener;
@@ -25,6 +26,8 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+
+import javax.persistence.FlushModeType;
 
 /**
  * An {@link org.grails.datastore.mapping.engine.EntityInterceptor} that uses
@@ -72,14 +75,22 @@ public class ValidatingEventListener extends AbstractPersistenceEventListener {
             return true;
         }
 
-        BeanPropertyBindingResult result = new BeanPropertyBindingResult(o, o.getClass().getName());
-        v.validate(o, result);
-        if (result.hasErrors()) {
-            onErrors(o, result);
-            return false;
-        }
+        Session currentSession = datastore.getCurrentSession();
+        FlushModeType flushMode = currentSession.getFlushMode();
+        try {
+            currentSession.setFlushMode(FlushModeType.COMMIT);
 
-        return true;
+            BeanPropertyBindingResult result = new BeanPropertyBindingResult(o, o.getClass().getName());
+            v.validate(o, result);
+            if (result.hasErrors()) {
+                onErrors(o, result);
+                return false;
+            }
+
+            return true;
+        } finally {
+            currentSession.setFlushMode(flushMode);
+        }
     }
 
     /**
