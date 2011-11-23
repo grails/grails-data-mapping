@@ -11,22 +11,13 @@ import grails.persistence.Entity
  * Tests for the new where method used to define detached criteria using the new DSL
  */
 @ApplyDetachedCriteriaTransform
-@Ignore
+//@Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
     @Override
     List getDomainClasses() {
         [Continent]
     }
-
-
-   def "Test error when using incorrect property of a to-one association"() {
-       when:"A an unknown domain class property is referenced"
-          queryUsingUnknownToOneAssociationProperty()
-       then:
-            MultipleCompilationErrorsException e = thrown()
-            e.message.contains 'Cannot query property "firstN" - no such property on class grails.gorm.tests.Person exists.'
-   }
 
     def "Test parameterized where query"() {
         given:"A bunch of people"
@@ -533,6 +524,24 @@ class WhereMethodSpec extends GormDatastoreSpec {
             MultipleCompilationErrorsException e = thrown()
             e.message.contains 'Cannot query on property "doesntExist" - no such property on class grails.gorm.tests.Person exists.'
    }
+
+   def "Test error when using incorrect property of a to-one association"() {
+       when:"A an unknown domain class property is referenced"
+          queryUsingUnknownToOneAssociationProperty()
+       then:
+            MultipleCompilationErrorsException e = thrown()
+            e.message.contains 'Cannot query property "firstN" - no such property on class grails.gorm.tests.Person exists.'
+   }
+
+
+    def "Test error when using function on property of a to-one association"() {
+        when:"A function is used on a property expression"
+           queryUsingFunctionOnToOneAssociationProperty()
+        then:
+             MultipleCompilationErrorsException e = thrown()
+             e.message.contains 'Cannot use aggregate function avg on expressions "owner.age"'
+    }
+
 
    String nameBart() { "Bart" }
    def "Test where method with value obtained via method call"() {
@@ -1048,6 +1057,26 @@ class WhereMethodSpec extends GormDatastoreSpec {
         new Person(firstName: "Ed", lastName: "Floggs").addToPets(name: "Mini").addToPets(name: "Barbie").addToPets(name:"Ken").save()
 
         new Person(firstName: "Fred", lastName: "Cloggs").addToPets(name: "Jim").addToPets(name: "Joe").save()
+    }
+
+    def queryUsingFunctionOnToOneAssociationProperty() {
+        def gcl = new GroovyClassLoader(getClass().classLoader)
+        gcl.parseClass('''
+import grails.gorm.tests.*
+import grails.gorm.*
+import grails.persistence.*
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+
+@ApplyDetachedCriteriaTransform
+@Entity
+class CallMe {
+    def badQuery() {
+        Pet.where {
+            owner.age > avg(owner.age)
+        }
+    }
+}
+''')
     }
 
     def queryUsingUnknownToOneAssociationProperty() {

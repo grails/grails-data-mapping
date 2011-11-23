@@ -904,6 +904,10 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                         if(expression instanceof VariableExpression || expression instanceof ConstantExpression) {
                             aggregatePropertyName = expression.getText();
                         }
+                        else {
+                            sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot use aggregate function "+functionName+" on expressions \""+expression.getText()+"\".", Token.newString(propertyName,aggregateMethodCall.getLineNumber(), aggregateMethodCall.getColumnNumber()), sourceUnit));
+                            return;
+                        }
 
                         boolean validProperty = aggregatePropertyName != null && propertyNames.contains(aggregatePropertyName);
                         if(validProperty) {
