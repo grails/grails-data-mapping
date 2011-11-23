@@ -19,6 +19,35 @@ class WhereMethodSpec extends GormDatastoreSpec {
         [Continent]
     }
 
+    def "Test where with multiple property projections using chaining"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when:"Multiple property projections are used"
+            def people = Person.where { lastName == "Simpson" }
+            def results = people.property("lastName").property('firstName').list()
+
+        then:"The correct results are returned"
+            results == [["Simpson", "Simpson", "Simpson", "Simpson"], ["Homer", "Marge", "Bart", "Lisa"]]
+    }
+
+    def "Test where with multiple property projections"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when:"Multiple property projections are used"
+            def people = Person.where { lastName == "Simpson" }
+            def results = people.projections {
+                property "lastName"
+                property "firstName"
+            }.list()
+
+        then:"The correct results are returned"
+            results == [["Simpson", "Simpson", "Simpson", "Simpson"], ["Homer", "Marge", "Bart", "Lisa"]]
+    }
+
+
+
     def "Test parameterized where query"() {
         given:"A bunch of people"
               createPeople()
@@ -1269,6 +1298,12 @@ class CallMe {
         def ln = "Simpson"
 
         Person.where { firstName != fn && lastName == ln }.sort("firstName", "desc")
+    }
+
+    def propertyProjection() {
+        def people = Person.where { lastName == "Simpson" }
+        people = people.property("id").property('firstName').list()
+        return people
     }
 }
 ''', "Test").newInstance()

@@ -105,10 +105,10 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @param callable The callable
      * @return  The projection list
      */
-    ProjectionList projections(Closure callable) {
+    Criteria projections(Closure callable) {
         callable.delegate = projectionList
         callable.call()
-        return projectionList
+        return this
     }
 
     /**
