@@ -304,13 +304,14 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
             def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(association)
 
             def existingNodesIds = []
-            thisNode.getRelationships(relationshipType, direction).each {
-                def target = it.getOtherNode(thisNode).id
+            
+            for (Relationship rel in thisNode.getRelationships(relationshipType, direction).iterator()) {
+                def target = rel.getOtherNode(thisNode).id
                 if (target in nodesIds) {
                     existingNodesIds << target
                 } else {
-                    it.delete()
-                    log.debug "delete relationship ${it.startNode.id} -> ${it.endNode.id} ($it.type.name()}"
+                    rel.delete()
+                    log.debug "delete relationship ${rel.startNode.id} -> ${rel.endNode.id} ($rel.type.name()}"
                 }
             }
 
@@ -418,7 +419,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
     }
 
     private Relationship findRelationshipWithMatchingType(Node node, RelationshipType relationshipType, Direction direction, Class type) {
-        node.getRelationships(relationshipType, direction).find {
+        node.getRelationships(relationshipType, direction).iterator().find {
             def otherNode = it.getOtherNode(node)
             PersistentEntity pe = getTypeForNode(otherNode)
             type.isAssignableFrom(pe.javaClass)
@@ -506,7 +507,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
     private def readToManyProperty(Association association, Node node, EntityAccess entityAccess) {
         def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(association)
-        def keys = node.getRelationships(relationshipType, direction).collect { it.getOtherNode(node).id }
+        def keys = node.getRelationships(relationshipType, direction).iterator().collect { it.getOtherNode(node).id }
 
         def collection = List.class.isAssignableFrom(association.type) ?
             new ObservableListWrapper(entityAccess.entity, keys, association.associatedEntity.javaClass, this) :
@@ -555,8 +556,8 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         }
 
         Node node = obj.node
-        node.getRelationships().each {
-            it.delete()
+        for (Relationship rel in node.getRelationships().iterator()) {
+            rel.delete()
         }
         node.delete()
         inserts.remove(obj)

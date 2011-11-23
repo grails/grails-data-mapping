@@ -46,7 +46,7 @@ class Neo4jQuery extends Query {
         List<Node> subReferenceNodes = getSubreferencesOfSelfAndDerived(entity)
         List<String> validClassNames = subReferenceNodes.collect { it.getProperty(Neo4jSession.SUBREFERENCE_PROPERTY_NAME)}
         for (Node subReferenceNode in subReferenceNodes) {
-            for (Relationship rel in subReferenceNode.getRelationships(GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING)) {
+            for (Relationship rel in subReferenceNode.getRelationships(GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING).iterator()) {
                 Node n = rel.endNode
                 Assert.isTrue n.getProperty(Neo4jSession.TYPE_PROPERTY_NAME, null) in validClassNames
 
