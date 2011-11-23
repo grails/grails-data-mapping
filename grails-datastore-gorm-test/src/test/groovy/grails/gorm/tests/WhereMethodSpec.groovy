@@ -20,6 +20,14 @@ class WhereMethodSpec extends GormDatastoreSpec {
     }
 
 
+   def "Test error when using incorrect property of a to-one association"() {
+       when:"A an unknown domain class property is referenced"
+          queryUsingUnknownToOneAssociationProperty()
+       then:
+            MultipleCompilationErrorsException e = thrown()
+            e.message.contains 'Cannot query property "firstN" - no such property on class grails.gorm.tests.Person exists.'
+   }
+
     def "Test parameterized where query"() {
         given:"A bunch of people"
               createPeople()
@@ -147,7 +155,9 @@ class WhereMethodSpec extends GormDatastoreSpec {
           simpsons.count() == 4
 
       when:"We apply further where criteria to static scoped where call"
-          def query = getClassThatCallsWhere().doQuery()
+          def query = Person.simpsons.where {
+              firstName == "Bart"
+          }
           Person p = query.find()
 
       then:"The correct results are returned"
@@ -1040,6 +1050,26 @@ class WhereMethodSpec extends GormDatastoreSpec {
         new Person(firstName: "Fred", lastName: "Cloggs").addToPets(name: "Jim").addToPets(name: "Joe").save()
     }
 
+    def queryUsingUnknownToOneAssociationProperty() {
+        def gcl = new GroovyClassLoader(getClass().classLoader)
+        gcl.parseClass('''
+import grails.gorm.tests.*
+import grails.gorm.*
+import grails.persistence.*
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+
+@ApplyDetachedCriteriaTransform
+@Entity
+class CallMe {
+    def badQuery() {
+        Pet.where {
+            owner.firstN == "Joe"
+        }
+    }
+}
+''')
+    }
+
     def queryUsingUnsupportedOperatorInSize() {
         def gcl = new GroovyClassLoader(getClass().classLoader)
         gcl.parseClass('''
@@ -1180,30 +1210,30 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @ApplyDetachedCriteriaTransform
 @Entity
 class CallMe {
-//    String name
-//    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
-//    def declaredQuery() {
-//            Person.where(myDetachedCriteria)
-//    }
-//
-//    def doQuery() {
-//      Person.simpsons.where {
-//          firstName == "Bart"
-//      }
-//
-//    }
-//
-//    def functionQuery() {
-//        Person.where {
-//              year(pets.birthDate) == 2009
-//        }
-//    }
-//
-//    def inheritanceQuery() {
-//            def query = Person.where {
-//                livedIn { name == 'SA'}
-//            }
-//    }
+    String name
+    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
+    def declaredQuery() {
+            Person.where(myDetachedCriteria)
+    }
+
+    def doQuery() {
+      Person.simpsons.where {
+          firstName == "Bart"
+      }
+
+    }
+
+    def functionQuery() {
+        Person.where {
+              year(pets.birthDate) == 2009
+        }
+    }
+
+    def inheritanceQuery() {
+            def query = Person.where {
+                livedIn { name == 'SA'}
+            }
+    }
 
     def parameterizedQuery() {
         def fn = "Bart"

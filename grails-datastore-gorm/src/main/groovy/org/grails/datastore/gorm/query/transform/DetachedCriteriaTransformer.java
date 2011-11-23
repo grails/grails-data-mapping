@@ -412,7 +412,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         for (PropertyNode property : properties) {
 
             String propertyName = property.getName();
-            if(GrailsDomainClassProperty.HAS_MANY.equals(propertyName) || GrailsDomainClassProperty.BELONGS_TO.equals(propertyName)) {
+            if(GrailsDomainClassProperty.HAS_MANY.equals(propertyName) || GrailsDomainClassProperty.BELONGS_TO.equals(propertyName) || GrailsDomainClassProperty.HAS_ONE.equals(propertyName)) {
                 Expression initialExpression = property.getInitialExpression();
                 if(initialExpression instanceof MapExpression) {
                     MapExpression me = (MapExpression) initialExpression;
@@ -812,7 +812,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     }
                 }
                 if(associationPropertyNames == null) {
-                    associationPropertyNames = new ArrayList();
+                    associationPropertyNames = getPropertyNamesForAssociation(type);
                 }
 
 
