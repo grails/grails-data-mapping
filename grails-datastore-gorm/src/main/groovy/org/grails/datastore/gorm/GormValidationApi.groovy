@@ -18,6 +18,7 @@ import org.grails.datastore.gorm.support.BeforeValidateHelper
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.MappingContext
 import org.springframework.validation.*
+import org.grails.datastore.mapping.validation.ValidationErrors
 
 /**
  * Methods used for validating GORM instances.
@@ -65,7 +66,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
             return true
         }
 
-        def localErrors = new BeanPropertyBindingResult(instance, instance.getClass().name)
+        def localErrors = new ValidationErrors(instance)
 
         Errors errors = instance.errors
 
@@ -89,8 +90,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
     private Errors filterErrors(Errors errors, Set validatedFields, Object target) {
         if (!validatedFields) return errors
 
-        BeanPropertyBindingResult result = new BeanPropertyBindingResult(
-            target, target.getClass().getName())
+        Errors result = new ValidationErrors(target)
 
         for (ObjectError error : errors.getAllErrors()) {
 
@@ -140,7 +140,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
     }
 
     private Errors resetErrors(D instance) {
-        def errors = new BeanPropertyBindingResult(instance, persistentClass.name)
+        def errors = new ValidationErrors(instance)
         instance.errors = errors
         return errors
     }

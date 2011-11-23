@@ -23,7 +23,6 @@ import org.grails.datastore.mapping.engine.event.PreInsertEvent;
 import org.grails.datastore.mapping.engine.event.PreUpdateEvent;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -80,7 +79,7 @@ public class ValidatingEventListener extends AbstractPersistenceEventListener {
         try {
             currentSession.setFlushMode(FlushModeType.COMMIT);
 
-            BeanPropertyBindingResult result = new BeanPropertyBindingResult(o, o.getClass().getName());
+            Errors result = new ValidationErrors(o);
             v.validate(o, result);
             if (result.hasErrors()) {
                 onErrors(o, result);
