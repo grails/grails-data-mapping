@@ -25,6 +25,7 @@ import org.codehaus.groovy.control.messages.LocatedMessage;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.commons.GrailsResourceUtils;
+import org.codehaus.groovy.grails.compiler.injection.GrailsASTUtils;
 import org.codehaus.groovy.syntax.Token;
 import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion;
 import org.grails.datastore.mapping.query.Query;
@@ -102,6 +103,14 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         put("=~", new ClassNode(Query.ILike.class));
         put("in", new ClassNode(Query.In.class));
 
+    }};
+    private static final Map<String, ClassNode> OPERATOR_TO_PROPERTY_CRITERION_METHOD_MAP = new HashMap<String, ClassNode>() {{
+        put("==", new ClassNode(Query.EqualsProperty.class));
+        put("!=", new ClassNode(Query.NotEqualsProperty.class));
+        put(">", new ClassNode(Query.GreaterThanProperty.class));
+        put("<", new ClassNode(Query.LessThanProperty.class));
+        put(">=", new ClassNode(Query.GreaterThanEqualsProperty.class));
+        put("<=", new ClassNode(Query.LessThanEqualsProperty.class));
     }};
     private static final Map<String, String> PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP = new HashMap<String, String>() {{
         put("==", "eqProperty");
@@ -693,9 +702,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
             if(leftExpression instanceof MethodCallExpression) {
                 MethodCallExpression mce = (MethodCallExpression) leftExpression;
-                String methodAsString = mce.getMethodAsString();
+                String methodName = mce.getMethodAsString();
                 Expression objectExpression = mce.getObjectExpression();
-                if("size".equals(methodAsString) && (objectExpression instanceof VariableExpression)) {
+                if("size".equals(methodName) && (objectExpression instanceof VariableExpression)) {
                     String propertyName = objectExpression.getText();
                     if(propertyNames.contains(propertyName)) {
                         String sizeOperator = SIZE_OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
@@ -713,20 +722,18 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     return;
                 }
                 else {
-                    boolean isThis = "this".equals(objectExpression.getText());
-                    Expression arguments = mce.getArguments();
-                    boolean hasOneArg = arguments instanceof ArgumentListExpression ? ((ArgumentListExpression)arguments).getExpressions().size() == 1 : false;
-                    if(isThis && hasOneArg && SUPPORTED_FUNCTIONS.contains(methodAsString)) {
+                    boolean isFunctionCall = isFunctionCall(mce, methodName, objectExpression);
+                    if(isFunctionCall) {
 
-                        String functionName = methodAsString;
-                        ArgumentListExpression existingArgs = (ArgumentListExpression) arguments;
+                        String functionName = methodName;
+                        ArgumentListExpression existingArgs = (ArgumentListExpression) mce.getArguments();
                         Expression propertyNameExpression = existingArgs.getExpression(0);
                         if(propertyNameExpression instanceof PropertyExpression) {
                            handleAssociationQueryViaPropertyExpression((PropertyExpression) propertyNameExpression, rightExpression,operator,newCode,propertyNames,functionName, variableScope);
                         }
                         else {
 
-                            handleFunctionCall(newCode, operator, rightExpression, functionName, propertyNameExpression);
+                           handleFunctionCall(newCode, operator, rightExpression, functionName, propertyNameExpression);
                         }
                         return;
                     }
@@ -758,6 +765,20 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             }
 
         }
+    }
+
+    private boolean isFunctionCall(MethodCallExpression mce) {
+        boolean isThis = "this".equals(mce.getObjectExpression().getText());
+        Expression arguments = mce.getArguments();
+        boolean hasOneArg = arguments instanceof ArgumentListExpression ? ((ArgumentListExpression)arguments).getExpressions().size() == 1 : false;
+        return isThis && hasOneArg && SUPPORTED_FUNCTIONS.contains(mce.getMethodAsString());
+    }
+
+    private boolean isFunctionCall(MethodCallExpression mce, String methodName, Expression objectExpression) {
+        boolean isThis = "this".equals(objectExpression.getText());
+        Expression arguments = mce.getArguments();
+        boolean hasOneArg = arguments instanceof ArgumentListExpression ? ((ArgumentListExpression)arguments).getExpressions().size() == 1 : false;
+        return isThis && hasOneArg && SUPPORTED_FUNCTIONS.contains(methodName);
     }
 
     private void handleFunctionCall(BlockStatement newCode,String operator, Expression rightExpression, String functionName, Expression propertyNameExpression) {
@@ -870,7 +891,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             // potential aggregation
             MethodCallExpression aggregateMethodCall = (MethodCallExpression) rightExpression;
             String methodName = aggregateMethodCall.getMethodAsString();
-            String functionName = AGGREGATE_FUNCTIONS.get(methodName);
+            String aggregateFunctionName = AGGREGATE_FUNCTIONS.get(methodName);
             if("of".equals(methodName) && aggregateMethodCall.getObjectExpression() instanceof MethodCallExpression) {
                 ArgumentListExpression arguments = (ArgumentListExpression)aggregateMethodCall.getArguments();
                 if(arguments.getExpressions().size() == 1 && arguments.getExpression(0) instanceof ClosureExpression) {
@@ -878,9 +899,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     transformClosureExpression(this.currentClassNode,ce);
                     aggregateMethodCall = (MethodCallExpression) aggregateMethodCall.getObjectExpression();
 
-                    functionName = AGGREGATE_FUNCTIONS.get(aggregateMethodCall.getMethodAsString());
+                    aggregateFunctionName = AGGREGATE_FUNCTIONS.get(aggregateMethodCall.getMethodAsString());
                     ArgumentListExpression aggregateMethodCallArguments = (ArgumentListExpression)aggregateMethodCall.getArguments();
-                    if(functionName != null && aggregateMethodCallArguments.getExpressions().size() == 1) {
+                    if(aggregateFunctionName != null && aggregateMethodCallArguments.getExpressions().size() == 1) {
                         Expression expression = aggregateMethodCallArguments.getExpression(0);
                         String aggregatePropertyName = null;
                         if(expression instanceof VariableExpression || expression instanceof ConstantExpression) {
@@ -890,7 +911,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                         boolean validProperty = aggregatePropertyName != null && propertyNames.contains(aggregatePropertyName);
                         if(validProperty) {
                             BlockStatement bs = (BlockStatement) ce.getCode();
-                            addProjectionToCurrentBody(bs, functionName, aggregatePropertyName, variableScope);
+                            addProjectionToCurrentBody(bs, aggregateFunctionName, aggregatePropertyName, variableScope);
                             rightExpression = new MethodCallExpression(new ConstructorCallExpression(DETACHED_CRITERIA_CLASS_NODE, new ArgumentListExpression(new ClassExpression(this.currentClassNode))), "build", new ArgumentListExpression(ce));
                         }
                     }
@@ -898,7 +919,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 }
 
             }
-            else if(functionName != null) {
+            else if(aggregateFunctionName != null) {
                 Expression arguments = aggregateMethodCall.getArguments();
                 if(arguments instanceof ArgumentListExpression) {
                     ArgumentListExpression argList = (ArgumentListExpression) arguments;
@@ -911,7 +932,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                             aggregatePropertyName = expression.getText();
                         }
                         else {
-                            sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot use aggregate function "+functionName+" on expressions \""+expression.getText()+"\".", Token.newString(propertyName,aggregateMethodCall.getLineNumber(), aggregateMethodCall.getColumnNumber()), sourceUnit));
+                            sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot use aggregate function "+aggregateFunctionName+" on expressions \""+expression.getText()+"\".", Token.newString(propertyName,aggregateMethodCall.getLineNumber(), aggregateMethodCall.getColumnNumber()), sourceUnit));
                             return;
                         }
 
@@ -920,19 +941,51 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                                 ClosureAndArguments closureAndArguments = new ClosureAndArguments(variableScope);
                                 BlockStatement currentBody = closureAndArguments.getCurrentBody();
 
-                                addProjectionToCurrentBody(currentBody, functionName, aggregatePropertyName, variableScope);
+                                addProjectionToCurrentBody(currentBody, aggregateFunctionName, aggregatePropertyName, variableScope);
 
                                 rightExpression = closureAndArguments.getClosureExpression();
 
-                                if("property".equals(functionName)) {
+                                if("property".equals(aggregateFunctionName)) {
                                     methodToCall = methodToCall + "All";
                                 }
                         }
                         else {
-                            sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot use aggregate function "+functionName+" on property \""+aggregatePropertyName+"\" - no such property on class "+this.currentClassNode.getName()+" exists.", Token.newString(propertyName,aggregateMethodCall.getLineNumber(), aggregateMethodCall.getColumnNumber()), sourceUnit));
+                            sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot use aggregate function "+aggregateFunctionName+" on property \""+aggregatePropertyName+"\" - no such property on class "+this.currentClassNode.getName()+" exists.", Token.newString(propertyName,aggregateMethodCall.getLineNumber(), aggregateMethodCall.getColumnNumber()), sourceUnit));
                         }
                     }
                 }
+            }
+            else if(isFunctionCall(aggregateMethodCall)) {
+                // TODO: Allow function calls on right hand arguments
+                ArgumentListExpression existingArgs = (ArgumentListExpression) aggregateMethodCall.getArguments();
+                Expression propertyNameExpression = existingArgs.getExpression(0);
+                sourceUnit.getErrorCollector().addError(new LocatedMessage("Function call "+aggregateFunctionName+" not allowed on property \""+propertyNameExpression.getText()+"\". Function calls can currently only be used on the left-hand side of expressions", Token.newString(propertyName,aggregateMethodCall.getLineNumber(), aggregateMethodCall.getColumnNumber()), sourceUnit));
+                return ;
+//
+//                ArgumentListExpression newArgs = new ArgumentListExpression();
+//                ArgumentListExpression constructorArgs = new ArgumentListExpression();
+//                constructorArgs.addExpression(new ConstantExpression(methodName));
+//                ClassNode criterionClassNode = OPERATOR_TO_PROPERTY_CRITERION_METHOD_MAP.get(operator);
+//                if(criterionClassNode != null) {
+//                    ArgumentListExpression criterionConstructorArguments = new ArgumentListExpression();
+//                    if(!(propertyNameExpression instanceof ConstantExpression)) {
+//                        propertyNameExpression = new ConstantExpression(propertyNameExpression.getText());
+//                    }
+//                    criterionConstructorArguments.addExpression(new ConstantExpression(propertyName));
+//                    criterionConstructorArguments.addExpression(propertyNameExpression);
+//
+//                    constructorArgs.addExpression(new ConstructorCallExpression(criterionClassNode, criterionConstructorArguments));
+//                    constructorArgs.addExpression(new ConstantExpression(true));
+//                    ConstructorCallExpression constructorCallExpression = new ConstructorCallExpression(FUNCTION_CALL_CRITERION, constructorArgs);
+//                    newArgs.addExpression(constructorCallExpression );
+//
+//                    newCode.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPRESSION, "add", newArgs)));
+//                }
+//                else {
+//                    sourceUnit.getErrorCollector().addError(new LocatedMessage("Function call "+aggregateFunctionName+" not allowed on property \""+propertyNameExpression.getText()+"\".", Token.newString(propertyName,aggregateMethodCall.getLineNumber(), aggregateMethodCall.getColumnNumber()), sourceUnit));
+//                }
+//                return;
+
             }
         } else {
             if ("like".equals(methodToCall) && rightExpression instanceof BitwiseNegationExpression) {

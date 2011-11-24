@@ -18,6 +18,19 @@ class WhereMethodSpec extends GormDatastoreSpec {
     List getDomainClasses() {
         [Continent]
     }
+//   TODO: Fix RHS function calls
+//    def "Test year function with to-one association"() {
+//        given:"people and pets"
+//            createPeopleWithPets()
+//
+//        when:"We use a function with an association query"
+//            def results = Pet.where {
+//                owner.age < year(birthDate)
+//            }.list()
+//
+//        then:"The correct results are returned"
+//            results.size() > 0
+//    }
 
     def "Test whereAny method"() {
         given:"some people"
@@ -1298,50 +1311,56 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @ApplyDetachedCriteriaTransform
 @Entity
 class CallMe {
-    String name
-    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
-    def declaredQuery() {
-            Person.where(myDetachedCriteria)
-    }
+//    String name
+//    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
+//    def declaredQuery() {
+//            Person.where(myDetachedCriteria)
+//    }
+//
+//    def doQuery() {
+//      Person.simpsons.where {
+//          firstName == "Bart"
+//      }
+//
+//    }
+//
+//    def functionQuery() {
+//        Person.where {
+//              year(pets.birthDate) == 2009
+//        }
+//    }
+//
+//    def inheritanceQuery() {
+//            def query = Person.where {
+//                livedIn { name == 'SA'}
+//            }
+//    }
+//
+//    def parameterizedQuery() {
+//        def fn = "Bart"
+//        def ln = "Simpson"
+//
+//        Person.where { firstName != fn && lastName == ln }.sort("firstName", "desc")
+//    }
+//
+//    def propertyProjection() {
+//        def people = Person.where { lastName == "Simpson" }
+//        people = people.property("id").property('firstName').list()
+//        return people
+//    }
+//
+//    def nestedAssociationQuery() {
+//        def fn = "Joe"
+//        Pet.where {
+//            owner { firstName == fn }
+//        }.list()
+//
+//    }
 
-    def doQuery() {
-      Person.simpsons.where {
-          firstName == "Bart"
-      }
-
-    }
-
-    def functionQuery() {
-        Person.where {
-              year(pets.birthDate) == 2009
-        }
-    }
-
-    def inheritanceQuery() {
-            def query = Person.where {
-                livedIn { name == 'SA'}
-            }
-    }
-
-    def parameterizedQuery() {
-        def fn = "Bart"
-        def ln = "Simpson"
-
-        Person.where { firstName != fn && lastName == ln }.sort("firstName", "desc")
-    }
-
-    def propertyProjection() {
-        def people = Person.where { lastName == "Simpson" }
-        people = people.property("id").property('firstName').list()
-        return people
-    }
-
-    def nestedAssociationQuery() {
-        def fn = "Joe"
+    def associationFunctionCall() {
         Pet.where {
-            owner { firstName == fn }
-        }.list()
-
+            owner.age < year(birthDate)
+        }
     }
 }
 ''', "Test").newInstance()
