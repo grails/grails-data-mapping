@@ -19,6 +19,21 @@ class WhereMethodSpec extends GormDatastoreSpec {
         [Continent]
     }
 
+    def "Test where query that uses a captured variable inside an association query"() {
+        given:"people and pets"
+            createPeopleWithPets()
+
+        when:"A where query that queries an association from a captured variable is used"
+            def fn = "Joe"
+            def pets = Pet.where {
+                owner { firstName == fn }
+            }.list()
+
+        then:"The correct result is returned"
+            pets.size() == 2
+
+    }
+
     def "Test where with multiple property projections using chaining"() {
         given:"A bunch of people"
             createPeople()
@@ -1304,6 +1319,14 @@ class CallMe {
         def people = Person.where { lastName == "Simpson" }
         people = people.property("id").property('firstName').list()
         return people
+    }
+
+    def nestedAssociationQuery() {
+        def fn = "Joe"
+        Pet.where {
+            owner { firstName == fn }
+        }.list()
+
     }
 }
 ''', "Test").newInstance()
