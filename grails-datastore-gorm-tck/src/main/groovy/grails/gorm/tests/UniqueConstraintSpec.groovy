@@ -80,7 +80,7 @@ class UniqueGroup implements Serializable{
     Long id
     String name
     static constraints = {
-        name unique:true
+        name unique:true, index:true
     }
 }
 
@@ -90,7 +90,8 @@ class GroupWithin implements Serializable{
     String name
     String org
     static constraints = {
-        name unique:"org"
+        name unique:"org", index:true
+        org index:true
     }
 }
 

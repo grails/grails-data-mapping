@@ -11,5 +11,6 @@ class UniqueGroup implements Serializable{
     }
     static mapping = {
         table 'groups_table'
+        name index:true
     }
 }

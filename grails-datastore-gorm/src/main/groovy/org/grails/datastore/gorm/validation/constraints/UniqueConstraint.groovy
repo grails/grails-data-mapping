@@ -20,6 +20,7 @@ import org.springframework.validation.Errors
 import org.grails.datastore.mapping.core.Session
 import grails.util.GrailsNameUtils
 import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.model.PersistentEntity
 
 /**
  * Implementation of the unique constraint for the datastore abstraction
@@ -94,6 +95,10 @@ class UniqueConstraint extends AbstractConstraint{
      * @return True if it is
      */
     public boolean isValid() {
+        final entity = datastore?.getMappingContext()?.getPersistentEntity(constraintOwningClass.name)
+        if(entity) {
+            return !entity.isExternal()
+        }
         return true;
     }
 
