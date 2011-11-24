@@ -91,10 +91,10 @@ class Neo4jQuery extends Query {
                     return new ManualProjections(entity).countDistinct(collection, projection.propertyName)
                     break
                 case Query.PropertyProjection:
-                    return collection.collect { it."$projection.propertyName" }
+                    return paginate( collection.collect { it."$projection.propertyName" } )
                     break
                 case Query.IdProjection:
-                    return collection.collect { it."${entity.identity.name}" }
+                    return paginate( collection.collect { it."${entity.identity.name}" } )
                     break
                 default:
                     throw new IllegalArgumentException("projections do not support ${projection.getClass().name}")
