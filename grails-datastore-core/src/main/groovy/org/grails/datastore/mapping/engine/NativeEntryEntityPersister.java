@@ -806,7 +806,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                     if (indexed && doesRequirePropertyIndexing()) {
                                         toIndex.put(prop, associationId);
                                         if (isUpdate) {
-                                            final Object oldValue = getEntryValue(e, key);
+                                            Object oldValue = getEntryValue(e, key);
+                                            oldValue = oldValue != null ? convertToNativeKey( (Serializable) oldValue) : oldValue;
+
                                             if (oldValue != null && !oldValue.equals(associationId)) {
                                                 toUnindex.put(prop, oldValue);
                                             }
