@@ -34,8 +34,10 @@ import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.model.types.OneToMany
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.transaction.PlatformTransactionManager
+import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.grails.datastore.gorm.validation.constraints.UniqueConstraintFactory
 
- /**
+/**
  * Enhances a class with GORM behavior
  *
  * @author Graeme Rocher
@@ -54,6 +56,11 @@ class GormEnhancer {
         this.datastore = datastore
         this.transactionManager = transactionManager
         initialiseFinders()
+        registerConstraints(datastore)
+    }
+
+    protected void registerConstraints(Datastore datastore) {
+        ConstrainedProperty.registerNewConstraint("unique", new UniqueConstraintFactory(datastore))
     }
 
     /**

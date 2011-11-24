@@ -62,8 +62,7 @@ class JpaInstanceApi<D> extends GormInstanceApi<D> {
         super(persistentClass, datastore)
     }
 
-    @Override
-    D merge(D instance, Map params) {
+    D merge(instance, Map params) {
         def merged
         doSave(instance, params) { session ->
             merged = session.merge(instance)
@@ -71,14 +70,13 @@ class JpaInstanceApi<D> extends GormInstanceApi<D> {
         merged
     }
 
-    @Override
-    D save(D instance, Map params) {
+    D save(instance, Map params) {
         doSave(instance, params) { session ->
             session.persist(instance)
         }
     }
 
-    private D doSave(D instance, Map params, Closure callable) {
+    private D doSave(instance, Map params, Closure callable) {
         execute (new SessionCallback() {
             def doInSession(Session session) {
                 boolean hasErrors = false

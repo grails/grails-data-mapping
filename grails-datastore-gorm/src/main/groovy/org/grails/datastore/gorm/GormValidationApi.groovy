@@ -63,7 +63,9 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
         beforeValidateHelper.invokeBeforeValidate instance, fields
 
         if (!validator) {
-            return true
+            validator = datastore.mappingContext.getEntityValidator(persistentEntity)
+            if(!validator)
+                return true
         }
 
         def localErrors = new ValidationErrors(instance)

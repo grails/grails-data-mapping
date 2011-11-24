@@ -16,8 +16,7 @@ package org.grails.datastore.mapping.jpa.config;
 
 import javax.persistence.Table;
 
-import org.grails.datastore.mapping.model.AbstractPersistentEntity;
-import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.*;
 
 /**
  * Models a JPA-mapped entity.
@@ -29,5 +28,25 @@ public class JpaPersistentEntity extends AbstractPersistentEntity<Table> {
 
     public JpaPersistentEntity(@SuppressWarnings("rawtypes") Class javaClass, MappingContext context) {
         super(javaClass, context);
+    }
+
+    @Override
+    public ClassMapping<Table> getMapping() {
+        return new ClassMapping<Table>() {
+            @Override
+            public PersistentEntity getEntity() {
+                return JpaPersistentEntity.this;
+            }
+
+            @Override
+            public Table getMappedForm() {
+                return (Table) getJavaClass().getAnnotation(Table.class);
+            }
+
+            @Override
+            public IdentityMapping getIdentifier() {
+                return null;
+            }
+        };
     }
 }
