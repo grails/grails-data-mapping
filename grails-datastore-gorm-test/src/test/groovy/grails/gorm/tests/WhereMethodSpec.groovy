@@ -19,6 +19,21 @@ class WhereMethodSpec extends GormDatastoreSpec {
         [Continent]
     }
 
+    def "Test whereAny method"() {
+        given:"some people"
+            createPeople()
+
+        when:"An or is used in a where query"
+            def people = Person.whereAny {
+                firstName == "Homer"
+                firstName == "Bart"
+            }.list(sort:"firstName")
+
+        then:"The right results are returned"
+            people.size() == 2
+            people[0].firstName == "Bart"
+            people[1].firstName == "Homer"
+    }
     def "Test where query that uses a captured variable inside an association query"() {
         given:"people and pets"
             createPeopleWithPets()

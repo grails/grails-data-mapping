@@ -117,6 +117,15 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     /**
+     *
+     * @param callable Callable closure containing detached criteria definition
+     * @return The DetachedCriteria instance
+     */
+    DetachedCriteria<D> whereAny(Closure callable) {
+        new DetachedCriteria(persistentClass).or(callable)
+    }
+
+    /**
      * Uses detached criteria to build a query and then execute it returning a list
      *
      * @param callable The callable

@@ -59,6 +59,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     private SourceUnit sourceUnit;
     private static final Set<String> CANDIDATE_METHODS = new HashSet<String>() {{
         add("where");
+        add("whereAny");
         add("findAll");
         add("find");
     }};
