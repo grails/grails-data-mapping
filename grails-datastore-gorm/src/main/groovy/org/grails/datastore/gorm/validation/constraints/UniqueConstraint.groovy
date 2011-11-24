@@ -99,7 +99,7 @@ class UniqueConstraint extends AbstractConstraint{
         if(entity) {
             return !entity.isExternal()
         }
-        return true;
+        return false;
     }
 
     @Override
