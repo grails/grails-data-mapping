@@ -1,12 +1,6 @@
 package grails.gorm.tests
 
 class FindOrSaveWhereSpec extends GormDatastoreSpec {
-    @Override
-    List getDomainClasses() {
-        [TestEntity]
-    }
-
-
 
     def "Test findOrSaveWhere returns a new instance if it doesn't exist in the database"() {
         when:

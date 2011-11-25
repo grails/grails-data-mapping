@@ -6,12 +6,6 @@ package grails.gorm.tests
  * @author Roman Stepanenko
  */
 class LexComparisonSpec extends GormDatastoreSpec {
-    @Override
-    List getDomainClasses() {
-        [CommonTypes]
-    }
-
-
     void "Test byte comparison"() {
         given:
             create("Alex"){ it.setB(Byte.MAX_VALUE) }.save()

@@ -4,14 +4,8 @@ import grails.gorm.tests.ChildEntity
 import grails.gorm.tests.GormDatastoreSpec
 import grails.gorm.tests.PlantCategory
 import grails.gorm.tests.TestEntity
-import grails.gorm.tests.Plant
 
 class QueryAssociationSpec extends GormDatastoreSpec {
-    @Override
-    List getDomainClasses() {
-        [TestEntity, ChildEntity, PlantCategory, Plant]
-    }
-
 
     void "Test query one-to-one association"() {
         given:

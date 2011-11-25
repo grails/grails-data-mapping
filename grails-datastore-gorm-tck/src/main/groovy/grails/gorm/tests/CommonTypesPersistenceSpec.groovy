@@ -4,11 +4,6 @@ package grails.gorm.tests
  * @author graemerocher
  */
 class CommonTypesPersistenceSpec extends GormDatastoreSpec {
-    @Override
-    List getDomainClasses() {
-        [CommonTypes]
-    }
-
 
     def testPersistBasicTypes() {
         given:

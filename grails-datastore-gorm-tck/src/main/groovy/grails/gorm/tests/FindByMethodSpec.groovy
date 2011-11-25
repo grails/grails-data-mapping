@@ -4,13 +4,8 @@ package grails.gorm.tests
  * @author graemerocher
  */
 class FindByMethodSpec extends GormDatastoreSpec {
-    @Override
-    List getDomainClasses() {
-        [Person, Pet, Book, Highway]
-    }
 
-
-    void 'Test Using AND Multiple Times In A Dynamic Finder'() {
+	void 'Test Using AND Multiple Times In A Dynamic Finder'() {
 		given:
 		    new Person(firstName: 'Jake', lastName: 'Brown', age: 11).save()
 		    new Person(firstName: 'Zack', lastName: 'Brown', age: 14).save()

@@ -7,11 +7,6 @@ import grails.gorm.DetachedCriteria
  *
  */
 class SubquerySpec extends GormDatastoreSpec {
-    @Override
-    List getDomainClasses() {
-        [Person, Pet]
-    }
-
 
     def "Test subquery with projection and criteria with closure"() {
         given:"A bunch of people"

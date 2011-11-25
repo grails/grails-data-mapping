@@ -5,11 +5,6 @@ package grails.gorm.tests
  */
 class ListOrderBySpec extends GormDatastoreSpec {
 
-    @Override
-    List getDomainClasses() {
-        [TestEntity, ChildEntity]
-    }
-
     void "Test listOrderBy property name method"() {
         given:
             def child = new ChildEntity(name: "Child")

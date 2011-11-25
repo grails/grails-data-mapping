@@ -8,11 +8,6 @@ import spock.lang.Ignore
  * The rest is identical to the main CriteriaBuilderSpec.
  */
 class InheritanceSpec extends GormDatastoreSpec {
-    @Override
-    List getDomainClasses() {
-        [Country, City, Location]
-    }
-
 
     void "Test inheritance with dynamic finder"() {
 

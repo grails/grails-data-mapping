@@ -11,13 +11,6 @@ class DomainEventsSpec extends GormDatastoreSpec {
         PersonEvent.resetStore()
     }
 
-    @Override
-    List getDomainClasses() {
-        [PersonEvent, ModifyPerson]
-    }
-
-
-
     void "Test modify property before save"() {
         given:
             session.datastore.mappingContext.addPersistentEntity(ModifyPerson)

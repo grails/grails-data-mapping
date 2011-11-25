@@ -6,11 +6,6 @@ import spock.lang.Ignore
  * @author graemerocher
  */
 class NamedQuerySpec extends GormDatastoreSpec {
-    @Override
-    List getDomainClasses() {
-        [Publication, Plant]
-    }
-
 
     void "Test named query with disjunction"() {
         given:

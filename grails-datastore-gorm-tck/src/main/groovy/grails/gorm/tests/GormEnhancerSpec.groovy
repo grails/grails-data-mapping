@@ -6,11 +6,6 @@ import spock.lang.Ignore
  * @author graemerocher
  */
 class GormEnhancerSpec extends GormDatastoreSpec {
-    @Override
-    List getDomainClasses() {
-        [TestEntity, ChildEntity]
-    }
-
 
     void "Test basic CRUD operations"() {
         given:

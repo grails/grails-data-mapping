@@ -14,11 +14,6 @@ import org.neo4j.graphdb.Traverser
  * check the traverser extension
  */
 class ApiExtensionsSpec extends GormDatastoreSpec {
-    @Override
-    List getDomainClasses() {
-        [Person, Pet]
-    }
-
 
     def "test static traversing"() {
         given:

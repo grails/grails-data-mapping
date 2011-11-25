@@ -11,11 +11,6 @@ import grails.gorm.DetachedCriteria
  */
 @ApplyDetachedCriteriaTransform
 class UpdateWithProxyPresentSpec extends GormDatastoreSpec {
-    @Override
-    List getDomainClasses() {
-        [Person, Pet, PetType]
-    }
-
 
     void "Test update entity with association proxies"() {
         given:

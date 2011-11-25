@@ -1,11 +1,6 @@
 package grails.gorm.tests
 
 class QueryAssociationSpec extends GormDatastoreSpec{
-    @Override
-    List getDomainClasses() {
-        [TestEntity, PlantCategory]
-    }
-
 
     void "Test query one-to-one association"() {
         given:

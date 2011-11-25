@@ -4,11 +4,6 @@ package grails.gorm.tests
  * @author graemerocher
  */
 class QueryAfterPropertyChangeSpec extends GormDatastoreSpec {
-    @Override
-    List getDomainClasses() {
-        [Person]
-    }
-
 
     void "Test that an entity is de-indexed after a change to an indexed property"() {
         given:

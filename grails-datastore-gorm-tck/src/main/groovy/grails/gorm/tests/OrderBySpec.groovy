@@ -5,12 +5,6 @@ package grails.gorm.tests
  */
 class OrderBySpec extends GormDatastoreSpec {
 
-    @Override
-    List getDomainClasses() {
-        [TestEntity, ChildEntity]
-    }
-
-
     void "Test order by with list() method"() {
         given:
             def age = 40

@@ -5,11 +5,6 @@ import grails.persistence.Entity
 import org.grails.datastore.mapping.core.Session
 
 class EnumSpec extends GormDatastoreSpec {
-    @Override
-    List getDomainClasses() {
-        [EnumThing]
-    }
-
 
     void "Test save()"() {
         given:

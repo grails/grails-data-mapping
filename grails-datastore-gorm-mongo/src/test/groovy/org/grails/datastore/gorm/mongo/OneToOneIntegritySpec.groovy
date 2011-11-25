@@ -17,12 +17,9 @@ import com.mongodb.DBRef
  */
 class OneToOneIntegritySpec extends GormDatastoreSpec {
 
-    @Override
-    List getDomainClasses() {
-        [Person, Pet, Face,Nose]
+    static {
+        TEST_CLASSES  << Face << Nose
     }
-
-
 
     def "Test persist and retrieve unidirectional many-to-one"() {
         given:"A domain model with a many-to-one"

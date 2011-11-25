@@ -6,11 +6,6 @@ import grails.persistence.Entity
  * @author graemerocher
  */
 class InheritanceSpec extends GormDatastoreSpec {
-    @Override
-    List getDomainClasses() {
-        [Location, City, Country]
-    }
-
 
     void "Test inheritance with dynamic finder"() {
 

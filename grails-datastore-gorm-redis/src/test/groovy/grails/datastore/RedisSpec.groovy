@@ -6,11 +6,6 @@ import grails.gorm.tests.*
  * @author graemerocher
  */
 class RedisSpec extends GormDatastoreSpec {
-    @Override
-    List getDomainClasses() {
-        [TestEntity]
-    }
-
 
     def "Test usage of subscript operator"() {
         given:
