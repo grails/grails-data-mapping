@@ -6,6 +6,11 @@ import grails.gorm.tests.*
  * @author graemerocher
  */
 class RedisSpecificMethodsSpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [TestEntity]
+    }
+
 
     def "Test expire an entity"() {
         given:

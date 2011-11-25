@@ -5,6 +5,11 @@ package grails.gorm.tests
  */
 class ProxyLoadingSpec extends GormDatastoreSpec {
 
+    @Override
+    List getDomainClasses() {
+        [TestEntity, ChildEntity]
+    }
+
     void "Test load proxied instance directly"() {
 
         given:

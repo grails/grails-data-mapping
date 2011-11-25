@@ -12,6 +12,11 @@ import grails.gorm.tests.Person
  * To change this template use File | Settings | File Templates.
  */
 class DistinctProjectionSpec extends GormDatastoreSpec{
+    @Override
+    List getDomainClasses() {
+        [Person]
+    }
+
 
     def "Test that using the distinct projection returns distinct results"()  {
         given:"Some people with the same last names"

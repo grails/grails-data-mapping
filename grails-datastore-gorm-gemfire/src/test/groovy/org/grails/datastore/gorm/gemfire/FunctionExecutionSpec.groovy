@@ -8,6 +8,11 @@ import spock.lang.Ignore
  * @author graemerocher
  */
 class FunctionExecutionSpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [Plant]
+    }
+
 
     @Ignore
     void "Test a function can be invoked"() {

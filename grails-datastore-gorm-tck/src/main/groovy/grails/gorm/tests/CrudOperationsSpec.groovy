@@ -6,6 +6,11 @@ import grails.validation.ValidationException
  * @author graemerocher
  */
 class CrudOperationsSpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [TestEntity]
+    }
+
 
     void "Test get using a string-based key"() {
         given:

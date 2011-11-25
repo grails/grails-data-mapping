@@ -6,6 +6,11 @@ import groovy.time.TimeCategory
  * Abstract base test for querying ranges. Subclasses should do the necessary setup to configure GORM
  */
 class RangeQuerySpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [Publication, TestEntity,ChildEntity, Person]
+    }
+
 
     void "Test between query with dates"() {
         given:

@@ -8,6 +8,11 @@ import spock.lang.Ignore
  * @author graemerocher
  */
 class ContinuousQuerySpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [Plant]
+    }
+
 
     @Ignore
     void "Test that we receive insert events from a continuous query"() {

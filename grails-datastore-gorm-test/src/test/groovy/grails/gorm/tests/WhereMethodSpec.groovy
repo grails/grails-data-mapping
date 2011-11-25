@@ -16,7 +16,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
 
     @Override
     List getDomainClasses() {
-        [Continent]
+        [Continent, Country, Person, Pet]
     }
 //   TODO: Fix RHS function calls
 //    def "Test year function with to-one association"() {

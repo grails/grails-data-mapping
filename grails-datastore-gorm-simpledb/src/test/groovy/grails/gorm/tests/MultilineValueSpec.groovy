@@ -4,6 +4,11 @@ package grails.gorm.tests
  * Tests whether values with line breaks are stored and retrieved correctly.
  */
 class MultilineValueSpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [Book]
+    }
+
     void "Test multivalue with slash n"() {
         given:
             def multiline = "Bob\nThe coder\nBuilt decoder"

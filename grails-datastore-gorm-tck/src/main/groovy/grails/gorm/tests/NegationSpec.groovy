@@ -4,6 +4,11 @@ package grails.gorm.tests
  * @author graemerocher
  */
 class NegationSpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [Book]
+    }
+
 
     void "Test negation in dynamic finder"() {
         given:

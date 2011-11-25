@@ -5,6 +5,11 @@ package grails.gorm.tests
  */
 class WithTransactionSpec extends GormDatastoreSpec {
 
+    @Override
+    List getDomainClasses() {
+        [TestEntity, ChildEntity]
+    }
+
     void "Test save() with transaction"() {
         given:
             TestEntity.withTransaction {

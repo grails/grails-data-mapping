@@ -6,6 +6,11 @@ import spock.lang.Ignore;
  * Abstract base test for criteria queries. Subclasses should do the necessary setup to configure GORM
  */
 class CriteriaBuilderSpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [TestEntity]
+    }
+
 
     void "Test count distinct projection"() {
         given:

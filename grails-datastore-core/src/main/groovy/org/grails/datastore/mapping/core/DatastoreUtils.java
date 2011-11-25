@@ -359,6 +359,10 @@ public abstract class DatastoreUtils {
      * @param session the session
      */
     public static void unbindSession(final Session session) {
+        if(session == null) {
+            logger.warn("Cannot unbind null session");
+            return;
+        }
         SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(session.getDatastore());
         if (sessionHolder == null) {
             logger.warn("Cannot unbind session, there's no SessionHolder registered");

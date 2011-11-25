@@ -6,6 +6,12 @@ import spock.lang.Ignore
  * Transaction tests.
  */
 class WithTransactionSpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [TestEntity]
+    }
+
+
 
     void "Test save() with transaction"() {
         given:

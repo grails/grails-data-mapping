@@ -7,6 +7,11 @@ import org.grails.datastore.mapping.core.Session
  * @author Burt Beckwith
  */
 class OptimisticLockingSpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [OptLockVersioned, OptLockNotVersioned]
+    }
+
 
     void "Test versioning"() {
 

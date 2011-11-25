@@ -9,6 +9,11 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException
  * Test for JPA builder
  */
 class JpaQueryBuilderSpec extends GormDatastoreSpec{
+    @Override
+    List getDomainClasses() {
+        [Person, Pet]
+    }
+
 
     void "Test exception is thrown in join with delete"() {
         given:"Some criteria"

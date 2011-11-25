@@ -9,7 +9,7 @@ class MiscSpec extends GormDatastoreSpec {
 
     @Override
     List getDomainClasses() {
-        [ Club, Team, Tournament, User, Role ]
+        [ Club, Team, Tournament, User, Role, Plant,PlantCategory ]
     }
 
     def "test object identity, see if cache is being used"() {

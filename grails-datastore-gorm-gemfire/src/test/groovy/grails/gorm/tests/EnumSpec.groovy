@@ -6,6 +6,11 @@ import org.grails.datastore.mapping.core.Session
 
 // TODO fix querying by enum for Gemfire
 class EnumSpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [EnumThing]
+    }
+
 
     void "Test save()"() {
         given:

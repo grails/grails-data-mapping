@@ -6,6 +6,11 @@ import org.grails.datastore.gorm.proxy.GroovyProxyFactory
  * @author graemerocher
  */
 class GroovyProxySpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [Location, City, Country]
+    }
+
 
     void "Test creation and behavior of Groovy proxies"() {
 

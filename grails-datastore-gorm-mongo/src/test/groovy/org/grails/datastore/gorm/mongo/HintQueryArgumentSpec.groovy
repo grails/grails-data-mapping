@@ -10,8 +10,13 @@ import org.springframework.data.document.mongodb.UncategorizedMongoDbException
  *
  */
 class HintQueryArgumentSpec extends GormDatastoreSpec{
+    @Override
+    List getDomainClasses() {
+        [Person]
+    }
 
-     void "Test that hints work on criteria queries"() {
+
+    void "Test that hints work on criteria queries"() {
          when:"A criteria query is created with a hint"
             CriteriaBuilder c = Person.createCriteria()
             c.list {

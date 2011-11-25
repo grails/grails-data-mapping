@@ -1,6 +1,11 @@
 package grails.gorm.tests
 
 class OneToManySpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [Person, Country]
+    }
+
 
     void "test save and return unidirectional one to many"() {
         given:

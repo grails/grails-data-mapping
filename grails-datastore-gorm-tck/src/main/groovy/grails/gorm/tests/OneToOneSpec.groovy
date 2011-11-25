@@ -3,10 +3,11 @@ package grails.gorm.tests
 import grails.persistence.Entity
 
 class OneToOneSpec extends GormDatastoreSpec {
-
-    static {
-        TEST_CLASSES  << Face << Nose
+    @Override
+    List getDomainClasses() {
+        [Person, Pet, Face, Nose]
     }
+
 
     def "Test persist and retrieve unidirectional many-to-one"() {
         given:"A domain model with a many-to-one"

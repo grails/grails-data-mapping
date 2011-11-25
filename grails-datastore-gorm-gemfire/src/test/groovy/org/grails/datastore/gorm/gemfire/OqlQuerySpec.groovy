@@ -7,6 +7,11 @@ import grails.gorm.tests.Plant
  * @author graemerocher
  */
 class OqlQuerySpec extends GormDatastoreSpec{
+    @Override
+    List getDomainClasses() {
+        [Plant]
+    }
+
 
     void "test executeQuery method"() {
         given:

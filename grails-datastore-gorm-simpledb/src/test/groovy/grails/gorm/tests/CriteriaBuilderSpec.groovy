@@ -11,6 +11,11 @@ import spock.lang.Ignore
  */
 
 class CriteriaBuilderSpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [TestEntity]
+    }
+
     void "Test idEq method"() {
         given:
             def entity = new TestEntity(name:"Bob", age: 44, child:new ChildEntity(name:"Child")).save(flush:true)

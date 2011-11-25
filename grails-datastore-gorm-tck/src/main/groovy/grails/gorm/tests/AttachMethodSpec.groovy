@@ -4,6 +4,12 @@ package grails.gorm.tests
  * @author graemerocher
  */
 class AttachMethodSpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [Person]
+    }
+
+
 
     void "Test attach method"() {
         given:

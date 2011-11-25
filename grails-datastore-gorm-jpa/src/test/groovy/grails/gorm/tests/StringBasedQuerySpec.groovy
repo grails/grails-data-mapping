@@ -1,6 +1,11 @@
 package grails.gorm.tests
 
 class StringBasedQuerySpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [TestEntity]
+    }
+
 
     void "Test findAll method that takes a JPQL string"() {
         given:

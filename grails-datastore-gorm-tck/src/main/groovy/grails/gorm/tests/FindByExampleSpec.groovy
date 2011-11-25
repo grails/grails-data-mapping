@@ -1,6 +1,11 @@
 package grails.gorm.tests
 
 class FindByExampleSpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [Plant, PlantCategory]
+    }
+
 
     def "Test findAll by example"() {
         given:

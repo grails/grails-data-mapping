@@ -7,6 +7,11 @@ import org.springframework.validation.Errors
  * Tests validation semantics.
  */
 class ValidationSpec extends GormDatastoreSpec {
+    @Override
+    List getDomainClasses() {
+        [ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate, ClassWithOverloadedBeforeValidate, TestEntity, ChildEntity]
+    }
+
 
     void "Test disable validation"() {
         session.datastore.applicationContext.addApplicationListener(

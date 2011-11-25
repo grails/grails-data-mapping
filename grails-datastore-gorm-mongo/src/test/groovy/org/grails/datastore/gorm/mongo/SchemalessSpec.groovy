@@ -4,6 +4,11 @@ import grails.gorm.tests.GormDatastoreSpec
 import grails.gorm.tests.Plant
 
 class SchemalessSpec extends GormDatastoreSpec{
+    @Override
+    List getDomainClasses() {
+        [Plant]
+    }
+
 
     def "Test attach additional data"() {
         given:

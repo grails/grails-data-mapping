@@ -5,6 +5,11 @@ package grails.gorm.tests
  */
 class QueryByAssociationSpec extends GormDatastoreSpec {
 
+    @Override
+    List getDomainClasses() {
+        [TestEntity, ChildEntity]
+    }
+
     void "Test query entity by single-ended association"() {
         given:
             def age = 40

@@ -11,6 +11,11 @@ import spock.lang.Ignore
  * To change this template use File | Settings | File Templates.
  */
 class DetachedCriteriaSpec extends GormDatastoreSpec{
+    @Override
+    List getDomainClasses() {
+        [Person, Pet]
+    }
+
 
     void "Test exists method"() {
         given:"A bunch of people"

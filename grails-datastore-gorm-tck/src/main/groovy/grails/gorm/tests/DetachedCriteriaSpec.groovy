@@ -10,6 +10,11 @@ import grails.gorm.DetachedCriteria
  * To change this template use File | Settings | File Templates.
  */
 class DetachedCriteriaSpec extends GormDatastoreSpec{
+    @Override
+    List getDomainClasses() {
+        [Person, Pet]
+    }
+
 
 
     void "Test list method with property projection"() {
