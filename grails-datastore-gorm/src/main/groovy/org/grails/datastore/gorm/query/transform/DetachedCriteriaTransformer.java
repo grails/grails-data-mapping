@@ -234,9 +234,17 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 if(isDomainClass(targetType)) {
                     classNode.setGenericsTypes(new GenericsType[]{new GenericsType(targetType)});
 
-                    expression.getVariableExpression().setType(classNode);
+                    VariableExpression variableExpression = expression.getVariableExpression();
+                    if(variableExpression.isClosureSharedVariable()) {
+                        Variable accessedVariable = variableExpression.getAccessedVariable();
+                        if(accessedVariable instanceof VariableExpression) {
+                            ((VariableExpression)accessedVariable).setType(classNode);
+                        }
+                    }
+                    else {
+                        variableExpression.setType(classNode);
+                    }
                     String variableName = expression.getVariableExpression().getName();
-                    expression.setLeftExpression(new VariableExpression(variableName, classNode));
                     detachedCriteriaVariables.put(variableName, targetType);
                 }
             }

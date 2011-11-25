@@ -32,6 +32,25 @@ class WhereMethodSpec extends GormDatastoreSpec {
 //            results.size() > 0
 //    }
 
+
+
+    def "Test captured detached criteria instance" () {
+        given:"people and pets"
+            createPeopleWithPets()
+
+        when:"Another detached criteria variable is captured"
+            def pets = Pet.where {
+                name ==~ "J%"
+            }
+
+            def owners = Person.where {
+                pets.size() == 2
+            }
+
+
+        then:"The results are valid"
+            owners.count() == 2
+    }
     def "Test whereAny method"() {
         given:"some people"
             createPeople()
@@ -1311,57 +1330,53 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @ApplyDetachedCriteriaTransform
 @Entity
 class CallMe {
-//    String name
-//    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
-//    def declaredQuery() {
-//            Person.where(myDetachedCriteria)
-//    }
-//
-//    def doQuery() {
-//      Person.simpsons.where {
-//          firstName == "Bart"
-//      }
-//
-//    }
-//
-//    def functionQuery() {
-//        Person.where {
-//              year(pets.birthDate) == 2009
-//        }
-//    }
-//
-//    def inheritanceQuery() {
-//            def query = Person.where {
-//                livedIn { name == 'SA'}
-//            }
-//    }
-//
-//    def parameterizedQuery() {
-//        def fn = "Bart"
-//        def ln = "Simpson"
-//
-//        Person.where { firstName != fn && lastName == ln }.sort("firstName", "desc")
-//    }
-//
-//    def propertyProjection() {
-//        def people = Person.where { lastName == "Simpson" }
-//        people = people.property("id").property('firstName').list()
-//        return people
-//    }
-//
-//    def nestedAssociationQuery() {
-//        def fn = "Joe"
-//        Pet.where {
-//            owner { firstName == fn }
-//        }.list()
-//
-//    }
+    String name
+    def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
+    def declaredQuery() {
+            Person.where(myDetachedCriteria)
+    }
 
-    def associationFunctionCall() {
-        Pet.where {
-            owner.age < year(birthDate)
+    def doQuery() {
+      Person.simpsons.where {
+          firstName == "Bart"
+      }
+
+    }
+
+    def functionQuery() {
+        Person.where {
+              year(pets.birthDate) == 2009
         }
     }
+
+    def inheritanceQuery() {
+            def query = Person.where {
+                livedIn { name == 'SA'}
+            }
+    }
+
+    def parameterizedQuery() {
+        def fn = "Bart"
+        def ln = "Simpson"
+
+        Person.where { firstName != fn && lastName == ln }.sort("firstName", "desc")
+    }
+
+    def propertyProjection() {
+        def people = Person.where { lastName == "Simpson" }
+        people = people.property("id").property('firstName').list()
+        return people
+    }
+
+    def nestedAssociationQuery() {
+        def fn = "Joe"
+        Pet.where {
+            owner { firstName == fn }
+        }.list()
+
+    }
+
+
 }
 ''', "Test").newInstance()
     }
