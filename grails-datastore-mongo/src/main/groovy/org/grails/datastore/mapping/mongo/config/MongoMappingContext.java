@@ -41,22 +41,26 @@ public class MongoMappingContext extends DocumentMappingContext {
 
         @Override
         protected IdentityMapping getIdentityMappedForm(final ClassMapping classMapping, final MongoAttribute property) {
-            return new IdentityMapping() {
-                @Override
-                public String[] getIdentifierName() {
-                    return new String[] { property.getName()};
-                }
+            if(property != null) {
 
-                @Override
-                public ClassMapping getClassMapping() {
-                    return classMapping;
-                }
+                return new IdentityMapping() {
+                    @Override
+                    public String[] getIdentifierName() {
+                        return new String[] { property.getName()};
+                    }
 
-                @Override
-                public Object getMappedForm() {
-                    return property;
-                }
-            };
+                    @Override
+                    public ClassMapping getClassMapping() {
+                        return classMapping;
+                    }
+
+                    @Override
+                    public Object getMappedForm() {
+                        return property;
+                    }
+                };
+            }
+            return super.getIdentityMappedForm(classMapping, property);
         }
     }
 
