@@ -652,18 +652,30 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
         K k = readObjectIdentifier(entityAccess, persistentEntity.getMapping());
         boolean isUpdate = k != null;
+        boolean assignedId = false;
         if (isUpdate && !getSession().isDirty(obj)) {
             return (Serializable) k;
         }
 
         PendingOperation<T, K> pendingOperation;
 
+        PropertyMapping mapping = persistentEntity.getIdentity().getMapping();
+        if(mapping != null) {
+            Property p = (Property) mapping.getMappedForm();
+            assignedId = p != null && "assigned".equals(p.getGenerator());
+            if(assignedId) {
+                if(isUpdate && !session.contains(obj)) {
+                    isUpdate = false;
+                }
+            }
+        }
         String family = getEntityFamily();
         SessionImplementor<Object> si = (SessionImplementor<Object>) session;
         if (!isUpdate) {
             tmp = createNewEntry(family);
 
-            k = generateIdentifier(persistentEntity, tmp);
+            if(!assignedId)
+                k = generateIdentifier(persistentEntity, tmp);
 
             cacheNativeEntry(persistentEntity, (Serializable) k, tmp);
 

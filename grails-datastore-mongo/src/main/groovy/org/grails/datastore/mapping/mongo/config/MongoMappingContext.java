@@ -38,6 +38,26 @@ public class MongoMappingContext extends DocumentMappingContext {
         protected Class<MongoCollection> getEntityMappedFormType() {
             return MongoCollection.class;
         }
+
+        @Override
+        protected IdentityMapping getIdentityMappedForm(final ClassMapping classMapping, final MongoAttribute property) {
+            return new IdentityMapping() {
+                @Override
+                public String[] getIdentifierName() {
+                    return new String[] { property.getName()};
+                }
+
+                @Override
+                public ClassMapping getClassMapping() {
+                    return classMapping;
+                }
+
+                @Override
+                public Object getMappedForm() {
+                    return property;
+                }
+            };
+        }
     }
 
     public MongoMappingContext(String defaultDatabaseName) {
@@ -54,6 +74,7 @@ public class MongoMappingContext extends DocumentMappingContext {
     public PersistentEntity createEmbeddedEntity(Class type) {
         return new DocumentEmbeddedPersistentEntity(type, this);
     }
+
 
     class DocumentEmbeddedPersistentEntity extends EmbeddedPersistentEntity {
 

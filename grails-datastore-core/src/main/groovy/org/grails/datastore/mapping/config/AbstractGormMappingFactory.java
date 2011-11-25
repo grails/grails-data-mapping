@@ -81,6 +81,12 @@ public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R,
         if (properties != null && properties.containsKey(mpp.getName())) {
             return properties.get(mpp.getName());
         }
+        else if(properties != null) {
+            Property property  = (Property) properties.get(IDENTITY_PROPERTY);
+            if(property != null && property.getName().equals(mpp.getName())) {
+                return (T) property;
+            }
+        }
         return BeanUtils.instantiate(getPropertyMappedFormType());
     }
 }
