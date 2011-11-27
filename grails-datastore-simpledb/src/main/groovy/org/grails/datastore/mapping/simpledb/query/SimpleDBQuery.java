@@ -225,8 +225,12 @@ public class SimpleDBQuery extends Query {
                         for (Item item : items) {
                             results.add(item.getName());
                         }
+                    } else if (PropertyProjection.class.equals(projection.getClass())) {
+                        for (Item item : items) {
+                            String key = extractPropertyKey(((PropertyProjection) projection).getPropertyName(), entity);
+                            results.addAll(SimpleDBUtil.collectAttributeValues(item, key));
+                        }
                     }
-                    //todo for property projection
                 }
             }
         }
