@@ -28,4 +28,9 @@ class Pet implements Serializable {
                 ", owner=" + owner +
                 '}';
     }
+
+
+    static constraints = {
+        owner nullable:true
+    }
 }

@@ -18,18 +18,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Currency;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 import org.bson.types.ObjectId;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
@@ -412,12 +401,15 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     public static void setDBObjectValue(DBObject nativeEntry, String key, Object value, MappingContext mappingContext) {
-        if (value == null || mappingContext.isPersistentEntity(value)) {
+        if (mappingContext.isPersistentEntity(value)) {
             return;
         }
 
+        if(value == null) {
+            nativeEntry.put(key, null);
+        }
         // test whether the value can be BSON encoded, if it can't convert to String
-        if (shouldConvertToString(value.getClass())) {
+        else if (shouldConvertToString(value.getClass())) {
             value = value.toString();
         }
 		else if (Enum.class.isAssignableFrom(value.getClass())) {
