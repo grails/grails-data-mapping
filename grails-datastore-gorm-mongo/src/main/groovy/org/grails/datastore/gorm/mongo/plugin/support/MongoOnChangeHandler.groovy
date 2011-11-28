@@ -15,11 +15,18 @@
 package org.grails.datastore.gorm.mongo.plugin.support
 
 import org.grails.datastore.gorm.plugin.support.OnChangeHandler
+import org.grails.datastore.mapping.core.Datastore
+import org.springframework.transaction.PlatformTransactionManager
 
 /**
  * On change handler for MongoDB
  */
 class MongoOnChangeHandler extends OnChangeHandler{
+
+    MongoOnChangeHandler(Datastore datastore, PlatformTransactionManager transactionManager) {
+        super(datastore, transactionManager)
+    }
+
     @Override
     String getDatastoreType() {
         return "Mongo"
