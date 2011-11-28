@@ -11,9 +11,9 @@ class MongodbGrailsPlugin {
     def issueManagement = [system: "JIRA", url: "http://jira.grails.org/browse/GPMONGODB"]
     def scm = [url: "https://github.com/SpringSource/grails-data-mapping"]
 
-    def version = "1.0.0.RC1"
+    def version = "1.0.0.RC2"
     def grailsVersion = "1.3.5 > *"
-    def observe = ['services']
+    def observe = ['services', 'domainClass']
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
     def author = "Graeme Rocher"
     def authorEmail = "graeme.rocher@springsource.com"
@@ -35,6 +35,8 @@ class MongodbGrailsPlugin {
     }
 
     def onChange = { event ->
-        new MongoOnChangeHandler().onChange(delegate, event)
+        if(event.ctx) {
+            new MongoOnChangeHandler(event.ctx.mongoDatastore, event.ctx.mongoTransactionManager).onChange(delegate, event)            
+        }
     }   
 }

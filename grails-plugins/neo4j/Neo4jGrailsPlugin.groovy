@@ -16,9 +16,11 @@ class Neo4jGrailsPlugin {
     //def observe = ['services']
     //def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
+    def observe = ['services', 'domainClass']
+        
     def author = "Stefan Armbruster"
     def authorEmail = "stefan@armbruster-it.de"
-    def title = "Neo4j GORM"
+    def title = "Neo4j GORM"    
     def description = 'A plugin that integrates the Neo4j graph database into Grails, providing a GORM API onto it'
 
     def documentation = "http://grails.org/plugin/neo4j"
@@ -49,8 +51,9 @@ class Neo4jGrailsPlugin {
     }
 
     def onChange = { event ->
-        def onChangeHandler = new Neo4jOnChangeHandler()
-        onChangeHandler.onChange(delegate, event)        
+        if(event.ctx) {
+            new Neo4jOnChangeHandler(event.ctx.neo4jDatastore, event.ctx.neo4jTransactionManager).onChange(delegate, event)            
+        }
     }
 
 }

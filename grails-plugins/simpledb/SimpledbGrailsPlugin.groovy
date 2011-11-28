@@ -19,7 +19,7 @@ class SimpledbGrailsPlugin {
         [ name: "Roman Stepanenko", email: "rs.opensource@gmail.com" ] ]
     def version = "0.1"
     def grailsVersion = "1.3.5 > *"
-    def observe = ['services']
+    def observe = ['services', 'domainClass']
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
     def dependsOn = [:]
     def pluginExcludes = [
@@ -54,8 +54,9 @@ class SimpledbGrailsPlugin {
 
 
     def onChange = { event ->
-        def onChangeHandler = new SimpleDBOnChangeHandler()
-        onChangeHandler.onChange(delegate, event)
+        if(event.ctx) {
+            new SimpleDBOnChangeHandler(event.ctx.simpledbDatastore, event.ctx.simpledbTransactionManager).onChange(delegate, event)            
+        }        
     }
 
 }

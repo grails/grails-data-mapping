@@ -30,7 +30,8 @@ class RedisGormGrailsPlugin {
     def grailsVersion = "1.3.4 > *"
     def dependsOn = [redis:"1.0.0.M7 > *"]
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry', 'redis']
-
+    def observe = ['services', 'domainClass']
+    
     def author = "Graeme Rocher"
     def authorEmail = "graeme.rocher@springsource.com"
     def title = "Redis GORM"
@@ -61,6 +62,8 @@ class RedisGormGrailsPlugin {
     }
     
     def onChange = {
-        new RedisOnChangeHandler().onChange(delegate, event)        
+        if(event.ctx) {
+            new RedisOnChangeHandler(event.ctx.redisDatastore, event.ctx.redisDatastoreTransactionManager).onChange(delegate, event)            
+        }
     }
 }
