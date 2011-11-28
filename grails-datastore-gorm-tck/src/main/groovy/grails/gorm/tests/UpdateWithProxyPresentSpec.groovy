@@ -52,6 +52,10 @@ class Pet implements Serializable {
     static mapping = {
         name index:true
     }
+
+    static constraints = {
+        owner nullable:true
+    }
 }
 
 @Entity

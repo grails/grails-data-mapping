@@ -39,6 +39,7 @@ import org.springframework.util.Assert
 import org.springframework.validation.Errors
 import org.grails.datastore.mapping.query.api.Criteria
 import grails.gorm.DetachedCriteria
+import grails.gorm.PagedResultList
 
 /**
  * Static methods of the GORM API.
@@ -344,7 +345,12 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         execute ({ Session session ->
             Query q = session.createQuery(persistentClass)
             DynamicFinder.populateArgumentsForCriteria(persistentClass, q, params)
-            q.list()
+            if(params?.max) {
+                return new PagedResultList(q)
+            }
+            else {
+                return q.list()
+            }
         } as SessionCallback)
     }
 
