@@ -109,6 +109,23 @@ public abstract class AbstractMappingContext implements MappingContext {
         return entity;
     }
 
+    /**
+     * Adds a PersistentEntity instance
+     *
+     * @param javaClass The Java class representing the entity
+     * @param override  Whether to override an existing entity
+     * @return The PersistentEntity instance
+     */
+    @Override
+    public PersistentEntity addPersistentEntity(Class javaClass, boolean override) {
+        Assert.notNull(javaClass, "PersistentEntity class cannot be null");
+        if(override)
+            return addPersistentEntityInternal(javaClass, false);
+        else {
+            return addPersistentEntity(javaClass);
+        }
+    }
+
     public final PersistentEntity addPersistentEntity(Class javaClass) {
         Assert.notNull(javaClass, "PersistentEntity class cannot be null");
 

@@ -79,6 +79,16 @@ public interface MappingContext {
     PersistentEntity addPersistentEntity(Class javaClass);
 
     /**
+     * Adds a PersistentEntity instance
+     *
+     * @param javaClass The Java class representing the entity
+     * @param override Whether to override an existing entity
+     *
+     * @return The PersistentEntity instance
+     */
+    PersistentEntity addPersistentEntity(Class javaClass, boolean override);
+
+    /**
      * Adds a persistent entity that is not mapped by this MappingContext instance.
      * Used for cross store persistence
      *

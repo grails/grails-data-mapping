@@ -23,6 +23,12 @@ import org.codehaus.groovy.grails.orm.support.GroovyAwareNamedTransactionAttribu
 import org.codehaus.groovy.grails.plugins.GrailsPlugin
 import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.transaction.annotation.Transactional
+import org.grails.datastore.mapping.core.Datastore
+import org.springframework.transaction.PlatformTransactionManager
+import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.springframework.context.ApplicationContext
+import org.springframework.validation.Validator
 
 /**
  * Common onChange handling logic.
@@ -30,39 +36,57 @@ import org.springframework.transaction.annotation.Transactional
  * @author Graeme Rocher
  * @since 1.0
  */
-abstract class OnChangeHandler {
+abstract class OnChangeHandler extends DynamicMethodsConfigurer{
+
+    OnChangeHandler(Datastore datastore, PlatformTransactionManager transactionManager) {
+        super(datastore, transactionManager)
+    }
 
     abstract String getDatastoreType()
 
-    void onChange(GrailsPlugin plugin, Map event) {
-        if (!event.source || !event.ctx) {
+    void onChange(plugin, Map event) {
+        Class source = event.source
+        if (!source || !event.ctx) {
             return
         }
 
         def application = event.application
-        def serviceClass = application.addArtefact(ServiceArtefactHandler.TYPE, event.source)
-        if (!shouldCreateTransactionalProxy(serviceClass)) {
-            return
-        }
-
-        def beans = plugin.beans {
-            def scope = serviceClass.getPropertyValue("scope")
-            def props = ["*": "PROPAGATION_REQUIRED"] as Properties
-            "${serviceClass.propertyName}"(TypeSpecifyableTransactionProxyFactoryBean, serviceClass.clazz) { bean ->
-                if (scope) bean.scope = scope
-                bean.lazyInit = true
-                target = { innerBean ->
-                    innerBean.factoryBean = "${serviceClass.fullName}ServiceClass"
-                    innerBean.factoryMethod = "newInstance"
-                    innerBean.autowire = "byName"
-                    if (scope) innerBean.scope = scope
-                }
-                proxyTargetClass = true
-                transactionAttributeSource = new GroovyAwareNamedTransactionAttributeSource(transactionalAttributes:props)
-                transactionManager = ref("${datastoreType.toLowerCase()}TransactionManager")
+        if(application.isArtefactOfType(DomainClassArtefactHandler.TYPE, source)) {
+            final mappingContext = datastore.mappingContext
+            final entity = mappingContext.addPersistentEntity(source, true)
+            final domainClass = application.addArtefact(DomainClassArtefactHandler.TYPE, source)
+            ApplicationContext ctx = event.ctx
+            if(ctx.containsBean("${domainClass}Validator")) {
+                mappingContext.addEntityValidator(entity, ctx.getBean("${domainClass}Validator", Validator))
             }
+            configure()
         }
-        beans.registerBeans(event.ctx)
+        else if(application.isArtefactOfType(ServiceArtefactHandler.TYPE, source)) {
+
+            def serviceClass = application.addArtefact(ServiceArtefactHandler.TYPE, source)
+            if (!shouldCreateTransactionalProxy(serviceClass)) {
+                return
+            }
+
+            def beans = plugin.beans {
+                def scope = serviceClass.getPropertyValue("scope")
+                def props = ["*": "PROPAGATION_REQUIRED"] as Properties
+                "${serviceClass.propertyName}"(TypeSpecifyableTransactionProxyFactoryBean, serviceClass.clazz) { bean ->
+                    if (scope) bean.scope = scope
+                    bean.lazyInit = true
+                    target = { innerBean ->
+                        innerBean.factoryBean = "${serviceClass.fullName}ServiceClass"
+                        innerBean.factoryMethod = "newInstance"
+                        innerBean.autowire = "byName"
+                        if (scope) innerBean.scope = scope
+                    }
+                    proxyTargetClass = true
+                    transactionAttributeSource = new GroovyAwareNamedTransactionAttributeSource(transactionalAttributes:props)
+                    transactionManager = ref("${datastoreType.toLowerCase()}TransactionManager")
+                }
+            }
+            beans.registerBeans(event.ctx)
+        }
     }
 
     boolean shouldCreateTransactionalProxy(GrailsServiceClass serviceClass) {
