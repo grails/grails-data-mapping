@@ -7,4 +7,6 @@ dependencies {
     compile("org.grails:grails-bootstrap:$grailsVersion") {
         transitive = false
     }
+
+    testCompile project(":grails-datastore-gorm-test")
 }

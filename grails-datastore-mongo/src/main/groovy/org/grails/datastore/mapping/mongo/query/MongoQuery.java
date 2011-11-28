@@ -106,7 +106,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     BasicDBObject associatedEntityQuery = new BasicDBObject();
                     populateMongoQuery(associatedEntity, associatedEntityQuery, criterion.getCriteria());
                     for (String property : associatedEntityQuery.keySet()) {
-                        String propertyKey = getPropertyName(entity, property);
+                        String propertyKey = getPropertyName(entity, association.getName());
                         query.put(propertyKey + '.' + property, associatedEntityQuery.get(property));
                     }
 
