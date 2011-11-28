@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.document.config.Attribute;
 import org.grails.datastore.mapping.engine.EntityAccess;
@@ -72,6 +73,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     private static final String MONGO_THIS_PREFIX = "this.";
     public static final String HINT_ARGUMENT = "hint";
+
     private Map queryArguments = Collections.emptyMap();
 
     public static final String NEAR_OEPRATOR = "$near";
@@ -97,14 +99,14 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     BasicDBObject associationCollectionQuery = new BasicDBObject();
                     populateMongoQuery(associatedEntity, associationCollectionQuery, criterion.getCriteria());
                     BasicDBObject collectionQuery = new BasicDBObject("$elemMatch", associationCollectionQuery);
-                    String propertyKey = getPropertyKey(association);
+                    String propertyKey = getPropertyName(entity, association.getName());
                     query.put(propertyKey, collectionQuery);
                 }
                 else if(associatedEntity instanceof EmbeddedPersistentEntity || association instanceof Embedded ) {
                     BasicDBObject associatedEntityQuery = new BasicDBObject();
                     populateMongoQuery(associatedEntity, associatedEntityQuery, criterion.getCriteria());
                     for (String property : associatedEntityQuery.keySet()) {
-                        String propertyKey = getPropertyKey(association);
+                        String propertyKey = getPropertyName(entity, property);
                         query.put(propertyKey + '.' + property, associatedEntityQuery.get(property));
                     }
 
@@ -363,7 +365,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             public void handle(PersistentEntity entity, In in, DBObject query) {
                 DBObject inQuery = new BasicDBObject();
                 inQuery.put(MONGO_NIN_OPERATOR, in.getValues());
-                query.put(in.getProperty(), inQuery);
+                String property = getPropertyName(entity, in);
+                query.put(property, inQuery);
             }
         });
 
@@ -372,7 +375,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 DBObject betweenQuery = new BasicDBObject();
                 betweenQuery.put(MONGO_LTE_OPERATOR, between.getFrom());
                 betweenQuery.put(MONGO_GTE_OPERATOR, between.getTo());
-                query.put(between.getProperty(), betweenQuery);
+                String property = getPropertyName(entity, between);
+                query.put(property, betweenQuery);
             }
         });
 
@@ -405,14 +409,6 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
     }
 
-    public static String getPropertyKey(PersistentProperty association) {
-        Attribute mappedForm = (Attribute) association.getMapping().getMappedForm();
-        String name = association.getName();
-        if(mappedForm != null && mappedForm.getTargetName() != null) {
-            name = mappedForm.getTargetName();
-        }
-        return name;
-    }
 
     private static void addWherePropertyComparison(DBObject query, String propertyName, String otherPropertyName, String operator) {
         query.put(MONGO_WHERE_OPERATOR, new StringBuilder(MONGO_THIS_PREFIX).append(propertyName).append(operator).append(MONGO_THIS_PREFIX).append(otherPropertyName).toString());
@@ -540,7 +536,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         else {
                             PropertyProjection pp = (PropertyProjection) projection;
                             persistentProperty = entity.getPropertyByName(pp.getPropertyName());
-                            propertyName = getPropertyKey(persistentProperty);
+                            propertyName = getPropertyName(entity, persistentProperty.getName());
                         }
                         if (persistentProperty != null) {
                             populateMongoQuery(entity, query, criteria);
