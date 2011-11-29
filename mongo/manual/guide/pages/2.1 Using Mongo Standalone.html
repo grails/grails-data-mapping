@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>2.1 Using Mongo Standalone 1.0.0.M7</title>
+    <title>2.1 Using Mongo Standalone 1.0.0.RC2</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -78,9 +78,9 @@ function addJsClass() {
                 <div class="project">
                     <h1>2.1 Using Mongo Standalone - Reference Documentation</h1>
 
-                    <p><strong>Authors:</strong> Graeme Rocher</p>
+                    <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
 
-                    <p><strong>Version:</strong> 1.0.0.M7</p>
+                    <p><strong>Version:</strong> 1.0.0.RC2</p>
                 </div>
 
                 
@@ -88,7 +88,8 @@ function addJsClass() {
                 
 
 <h2 id="2.1 Using Mongo Standalone">2.1 Using Mongo Standalone</h2>
-If you plan to use Mongo as your primary datastore then you need to uninstall the Hibernate plugin:<p class="paragraph"/><div class="code"><pre>grails uninstall&#45;plugin hibernate</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via Mongo and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Mongo.
+If you plan to use Mongo as your primary datastore then you need to uninstall the Hibernate plugin:<p class="paragraph"/><div class="code"><pre>grails uninstall&#45;plugin hibernate</pre></div><p class="paragraph"/>Or if it has been defined in the <code>grails-app/conf/BuildConfig.groovy</code> file comment out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile <span class="java&#45;quote<a href="hibernate:$grailsVersion"</span></pre></div>">></a><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via Mongo and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Mongo.
+
 
 
                 <div style="clear:both;margin-top:15px;"></div>
