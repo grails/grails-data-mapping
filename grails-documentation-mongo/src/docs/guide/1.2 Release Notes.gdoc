@@ -1,5 +1,11 @@
 Below are the details of the changes across releases:
 
+h4. 1.0 RC1 and RC2
+
+* Support for querying embedded associations
+* Support for hint query modifier
+* Support for assigned identifiers
+
 h4. 1.0 Milestone 7
 
 * Support for hasOne associations
