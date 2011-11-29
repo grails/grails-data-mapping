@@ -28,7 +28,7 @@ grails.project.dependency.resolution = {
         compile("org.springframework.data:spring-data-mongodb:1.0.0.M3", excludes)
         runtime("com.gmongo:gmongo:0.9.1", excludes)
 
-        String datastoreVersion = "1.0.0.RC1"
+        String datastoreVersion = "1.0.0.RC2"
 
         compile("org.grails:grails-datastore-gorm-mongo:$datastoreVersion",
                 "org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
@@ -38,6 +38,8 @@ grails.project.dependency.resolution = {
                 "org.grails:grails-datastore-web:$datastoreVersion") {
             transitive = false
         }
+        
+        runtime 'javassist:javassist:3.12.0.GA'
 
         test("org.grails:grails-datastore-gorm-test:$datastoreVersion",
              "org.grails:grails-datastore-simple:$datastoreVersion") {
