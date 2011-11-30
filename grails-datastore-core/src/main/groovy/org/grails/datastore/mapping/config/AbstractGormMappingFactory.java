@@ -83,7 +83,7 @@ public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R,
         }
         else if(properties != null) {
             Property property  = (Property) properties.get(IDENTITY_PROPERTY);
-            if(property != null && property.getName().equals(mpp.getName())) {
+            if(property != null && mpp.getName().equals(property.getName())) {
                 return (T) property;
             }
         }
