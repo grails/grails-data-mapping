@@ -25,7 +25,7 @@ apply plugin: 'project-report'
 
 subprojects {
 //    releaseType = "BUILD-SNAPSHOT"
-    releaseType = "RC2"
+    releaseType = "RC3"
     version = "1.0.0.${releaseType}"
     group = "org.grails"
 
