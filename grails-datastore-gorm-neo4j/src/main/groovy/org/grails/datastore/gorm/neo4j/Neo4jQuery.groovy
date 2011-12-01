@@ -26,6 +26,7 @@ import org.grails.datastore.mapping.query.Restrictions
 import org.grails.datastore.mapping.query.Query.PropertyCriterion
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.query.projections.ManualProjections
+import org.grails.datastore.mapping.model.types.Association
 
 /**
  * perform criteria queries on a Neo4j backend
@@ -218,6 +219,36 @@ class Neo4jQuery extends Query {
 
     boolean matchesCriterionLessThanProperty(Node node, Query.LessThanProperty criterion) {
         getNodeProperty(node, criterion.property) < getNodeProperty(node, criterion.otherProperty)
+    }
+    
+    boolean matchesCriterionSizeLessThanEquals(Node node, Query.SizeLessThanEquals criterion) {
+        countRelationshipsForProperty(node, criterion.property) <= criterion.value
+    }
+
+    boolean matchesCriterionSizeLessThan(Node node, Query.SizeLessThan criterion) {
+        countRelationshipsForProperty(node, criterion.property) < criterion.value
+    }
+
+    boolean matchesCriterionSizeGreaterThanEquals(Node node, Query.SizeGreaterThanEquals criterion) {
+        countRelationshipsForProperty(node, criterion.property) >= criterion.value
+    }
+
+    boolean matchesCriterionSizeGreaterThan(Node node, Query.SizeGreaterThan criterion) {
+        countRelationshipsForProperty(node, criterion.property) > criterion.value
+    }
+
+    boolean matchesCriterionSizeEquals(Node node, Query.SizeEquals criterion) {
+        countRelationshipsForProperty(node, criterion.property) == criterion.value
+    }
+
+    boolean matchesCriterionSizeNotEquals(Node node, Query.SizeNotEquals criterion) {
+        countRelationshipsForProperty(node, criterion.property) != criterion.value
+    }
+
+    protected int countRelationshipsForProperty(Node node, String propertyName) {
+        Association association = entity.getPropertyByName(propertyName)
+        def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(association)
+        node.getRelationships(relationshipType, direction).iterator().size()
     }
 
     protected getNodePropertyAsType(Node node, String propertyName, Class targetClass) {
