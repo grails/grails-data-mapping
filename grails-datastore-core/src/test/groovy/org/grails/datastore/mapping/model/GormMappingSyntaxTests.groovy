@@ -71,7 +71,7 @@ class GormMappingSyntaxTests {
         assert toOne.associatedEntity == context.getPersistentEntity(SecondEntity.name)
         assert toOne.referencedPropertyName == null
         assert toOne.bidirectional == false
-        assert toOne.owningSide == true
+        assert toOne.owningSide == false
     }
 
     @Test
