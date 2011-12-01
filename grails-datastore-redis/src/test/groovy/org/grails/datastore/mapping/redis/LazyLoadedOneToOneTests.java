@@ -20,6 +20,7 @@ public class LazyLoadedOneToOneTests extends AbstractRedisTest {
         a.setNumber("22");
         a.setPostCode("308420");
         p.setAddress(a);
+        session.persist(a);
         session.persist(p);
         session.flush();
 

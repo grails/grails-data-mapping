@@ -854,12 +854,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                         }
                     }
                     else {
-                        if (!association.isNullable() && !association.isCircular()) {
-                            throw new DataIntegrityViolationException("Cannot save object ["+entityAccess.getEntity()+"] of type ["+persistentEntity+"]. The association ["+association+"] is cannot be null.");
-                        }
-                        else {
-                            setEntryValue(e, getPropertyKey(prop), null);
-                        }
+                       setEntryValue(e, getPropertyKey(prop), null);
                     }
                 }
             }
