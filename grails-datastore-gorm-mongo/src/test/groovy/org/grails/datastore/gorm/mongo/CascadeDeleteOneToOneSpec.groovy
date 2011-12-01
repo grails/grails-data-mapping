@@ -33,9 +33,32 @@ class CascadeDeleteOneToOneSpec extends GormDatastoreSpec{
             assert found1b == null
     }
 
+
+    void "Test delete doesnt cascade if no belongsTo"() {
+        when:"A one-to-one with no belongsTo is persisted"
+            def c = new Company(name:"Apple", ceo:new Executive(name:"Tim Cook").save(), designer:new Employee(name:"Bob"))
+            c.save flush:true
+            session.clear()
+            c = Company.get(c.id)
+        then:"The relationship can be retrieved"
+            c != null
+            c.ceo != null
+            c.designer != null
+
+        when:"The the entity is deleted"
+            c.delete flush:true
+            session.clear()
+
+        then:"The associated entity is not deleted"
+            Company.count() == 0
+            Employee.count() == 0
+            Executive.count() == 1
+
+    }
+
     @Override
     List getDomainClasses() {
-        [SystemUser, UserSettings]
+        [SystemUser, UserSettings, Company, Executive,Employee]
     }
 
 }
@@ -60,4 +83,23 @@ class UserSettings {
    static mapping = {
       collection "user_settings"
    }
+}
+
+@Entity
+class Company {
+    String id
+    String name
+    Executive ceo
+    Employee designer
+}
+@Entity
+class Executive {
+    String id
+    String name
+}
+@Entity
+class Employee {
+    String id
+    String name
+    static belongsTo = Company
 }

@@ -13,7 +13,7 @@ class QueryNonIndexedPropertySpec extends GormDatastoreSpec {
     def "Test that we can query a property that has no indices specified"() {
 
         given:"A valid set of persisted domain instances"
-            def address = new CompanyAddress(postCode:"30483")
+            def address = new CompanyAddress(postCode:"30483").save()
             def person = new Company(name:"Bob", address: address)
             person.save(flush:true)
 
