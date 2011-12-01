@@ -196,6 +196,30 @@ class Neo4jQuery extends Query {
         result
     }
 
+    boolean matchesCriterionNotEqualsProperty(Node node, Query.NotEqualsProperty criterion) {
+        getNodeProperty(node, criterion.property) != getNodeProperty(node, criterion.otherProperty)
+    }
+
+    boolean matchesCriterionEqualsProperty(Node node, Query.EqualsProperty criterion) {
+        getNodeProperty(node, criterion.property) == getNodeProperty(node, criterion.otherProperty)
+    }
+
+    boolean matchesCriterionGreaterThanEqualsProperty(Node node, Query.GreaterThanEqualsProperty criterion) {
+        getNodeProperty(node, criterion.property) >= getNodeProperty(node, criterion.otherProperty)
+    }
+
+    boolean matchesCriterionGreaterThanProperty(Node node, Query.GreaterThanProperty criterion) {
+        getNodeProperty(node, criterion.property) > getNodeProperty(node, criterion.otherProperty)
+    }
+
+    boolean matchesCriterionLessThanEqualsProperty(Node node, Query.LessThanEqualsProperty criterion) {
+        getNodeProperty(node, criterion.property) <= getNodeProperty(node, criterion.otherProperty)
+    }
+
+    boolean matchesCriterionLessThanProperty(Node node, Query.LessThanProperty criterion) {
+        getNodeProperty(node, criterion.property) < getNodeProperty(node, criterion.otherProperty)
+    }
+
     protected getNodePropertyAsType(Node node, String propertyName, Class targetClass) {
         def val = getNodeProperty(node, propertyName)
         session.mappingContext.conversionService.convert(val, targetClass)
