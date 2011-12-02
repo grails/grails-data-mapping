@@ -18,9 +18,9 @@ import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.datastore.gorm.mongo.bean.factory.MongoDatastoreFactoryBean
 import com.mongodb.DBAddress
 import org.grails.datastore.gorm.mongo.bean.factory.GMongoFactoryBean
-import org.springframework.data.document.mongodb.MongoOptionsFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoMappingContextFactoryBean
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
+import org.springframework.data.mongodb.core.MongoOptionsFactoryBean
 
 /**
  * Mongo specific configuration logic for Spring

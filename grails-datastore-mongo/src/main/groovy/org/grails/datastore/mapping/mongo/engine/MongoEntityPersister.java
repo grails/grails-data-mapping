@@ -38,8 +38,6 @@ import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.document.mongodb.DbCallback;
-import org.springframework.data.document.mongodb.MongoTemplate;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -51,6 +49,8 @@ import com.mongodb.DBObject;
 import com.mongodb.DBRef;
 import com.mongodb.MongoException;
 import com.mongodb.WriteResult;
+import org.springframework.data.mongodb.core.DbCallback;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 /**
  * A {@link org.grails.datastore.mapping.engine.EntityPersister} implementation for the Mongo document store

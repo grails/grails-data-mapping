@@ -25,8 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
-import org.springframework.data.document.mongodb.DbCallback;
-import org.springframework.data.document.mongodb.MongoTemplate;
 import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.core.impl.PendingInsert;
 import org.grails.datastore.mapping.core.impl.PendingOperation;
@@ -45,6 +43,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoException;
 import com.mongodb.WriteConcern;
+import org.springframework.data.mongodb.core.DbCallback;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 /**
  * A {@link org.grails.datastore.mapping.core.Session} implementation for the Mongo document store.
