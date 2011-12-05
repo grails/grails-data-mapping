@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
-        <title>GORM for Mongo 1.0.0.M7</title>
+        <title>GORM for Mongo 1.0.0.RC2</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
         <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
@@ -61,8 +61,8 @@ function addJsClass(el) {
 
                         <div class="project">
                             <h1>GORM for Mongo - Reference Documentation</h1>
-                            <p><strong>Authors:</strong> Graeme Rocher</p>
-                            <p><strong>Version:</strong> 1.0.0.M7</p>
+                            <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
+                            <p><strong>Version:</strong> 1.0.0.RC2</p>
                         </div>
 
                         
@@ -141,7 +141,12 @@ This implementation tries to be as compatible as possible with GORM for Hibernat
 
 
 <h2 id="1.2 Release Notes">1.2 Release Notes</h2>
-Below are the details of the changes across releases:<p class="paragraph"/><h4>1.0 Milestone 7</h4>
+Below are the details of the changes across releases:<p class="paragraph"/><h4>1.0 RC1 and RC2</h4>
+<ul class="star">
+<li>Support for querying embedded associations</li>
+<li>Support for hint query modifier</li>
+<li>Support for assigned identifiers</li>
+</ul><p class="paragraph"/><h4>1.0 Milestone 7</h4>
 <ul class="star">
 <li>Support for hasOne associations</li>
 <li>Support for custom user types</li>
@@ -177,7 +182,9 @@ Below are the details of the changes across releases:<p class="paragraph"/><h4>1
 
 
 <h1 id="2. Getting Started">2 Getting Started</h1>
-To get started with GORM for Mongo you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin mongodb</pre></div><p class="paragraph"/>With that done you need to set up a running Mongodb server. Refer to the <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="blank">Mongodb Quick Start guide</a> for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above commands executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>Thu Nov 11 16:54:08 MongoDB starting : pid=4600 port=27017 dbpath=/data/db/ 64&#45;bit
+To get started with GORM for Mongo you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin mongodb</pre></div><p class="paragraph"/>Or configure it as a dependency in <code>BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
+	compile <span class="java&#45;quote<a href="mongodb:latest.version"</span>">></a>
+&#125;</pre></div><p class="paragraph"/>With that done you need to set up a running Mongodb server. Refer to the <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="blank">Mongodb Quick Start guide</a> for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above commands executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>Thu Nov 11 16:54:08 MongoDB starting : pid=4600 port=27017 dbpath=/data/db/ 64&#45;bit
 Thu Nov 11 16:54:08 db version v1.6.3, pdfile version 4.5
 Thu Nov 11 16:54:08 git version: 278bd2ac2f2efbee556f32c13c1b6803224d1c01
 Thu Nov 11 16:54:08 sys info: Darwin erh2.10gen.cc 9.6.0 Darwin Kernel Version 9.6.0: Mon Nov 24 17:37:00 PST 2008; root:xnu&#45;1228.9.59~1/RELEASE_I386 i386 BOOST_LIB_VERSION=1_40
@@ -195,7 +202,8 @@ Thu Nov 11 16:54:08 &#91;websvr&#93; web admin <span class="java&#45;keyword">in
 
 
 <h2 id="2.1 Using Mongo Standalone">2.1 Using Mongo Standalone</h2>
-If you plan to use Mongo as your primary datastore then you need to uninstall the Hibernate plugin:<p class="paragraph"/><div class="code"><pre>grails uninstall&#45;plugin hibernate</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via Mongo and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Mongo.
+If you plan to use Mongo as your primary datastore then you need to uninstall the Hibernate plugin:<p class="paragraph"/><div class="code"><pre>grails uninstall&#45;plugin hibernate</pre></div><p class="paragraph"/>Or if it has been defined in the <code>grails-app/conf/BuildConfig.groovy</code> file comment out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile <span class="java&#45;quote<a href="hibernate:$grailsVersion"</span></pre></div>">></a><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via Mongo and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Mongo.
+
 
 
 <h2 id="2.2 Combining Mongo and Hibernate">2.2 Combining Mongo and Hibernate</h2>
@@ -258,7 +266,7 @@ The way GORM for Mongo works is to map each domain class to a Mongo collection. 
 &#125;</pre></div><p class="paragraph"/>In this example we see that the <code>Person</code> entity has been mapped to a collection called "mycollection" in a database called "mydb".<p class="paragraph"/>You can also control how an individual property maps onto a Mongo Document field (the default is to use the property name itself):<p class="paragraph"/><div class="code"><pre>class Person &#123;
     ..
     <span class="java&#45;keyword">static</span> mapping = &#123;
-        firstName field:<span class="java&#45;quote">"first_name"</span>
+        firstName attr:<span class="java&#45;quote">"first_name"</span>
     &#125;
 &#125;</pre></div>
 
@@ -283,6 +291,9 @@ Mongo doesn't require that you specify indices to query, but like a relational d
     <span class="java&#45;keyword">static</span> mapping = &#123;
         name index:<span class="java&#45;keyword">true</span>, indexAttributes: &#91;unique:<span class="java&#45;keyword">true</span>, dropDups:<span class="java&#45;keyword">true</span>&#93;
     &#125;
+&#125;</pre></div><p class="paragraph"/>You can use MongoDB <a href="http://www.mongodb.org/display/DOCS/Optimization#Optimization-Hint" target="blank">Query Hints</a> by passing the <code>hint</code> argument to any dynamic finder:<p class="paragraph"/><div class="code"><pre>def people = Person.findByName(<span class="java&#45;quote">"Bob"</span>, &#91;hint:&#91;name:1&#93;&#93;)</pre></div><p class="paragraph"/>Or in a criteria query using the query "arguments" method<p class="paragraph"/><div class="code"><pre>Person.withCriteria &#123;
+	eq 'firstName', 'Bob'
+    arguments hint:&#91;<span class="java&#45;quote">"firstName"</span>:1&#93;
 &#125;</pre></div>
 
 
@@ -319,8 +330,10 @@ It is possible to use Mongo's <a href="http://www.mongodb.org/display/DOCS/Geosp
     List location<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
         location geoIndex:<span class="java&#45;keyword">true</span>, indexAttributes:&#91;min:&#45;500, max:500&#93;
     &#125;
-&#125;</pre></div><p class="paragraph"/>You can then save Geo locations using a two dimensional list:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">new</span> Hotel(name:<span class="java&#45;quote">"Hilton"</span>, location:&#91;50, 50&#93;).save()</pre></div><p class="paragraph"/>Alternatively you can use a map with keys representing latitude and longitude:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">new</span> Hotel(name:<span class="java&#45;quote">"Hilton"</span>, location:&#91;lat: 40.739037, <span class="java&#45;object">long</span>: 73.992964&#93;).save()</pre></div><p class="paragraph"/>Once you have your data indexed you can use Mongo specific dynamic finders to find hotels near a given a location:<p class="paragraph"/><div class="code"><pre>def h = Hotel.findByLocationNear(&#91;50, 60&#93;)
-assert h.name == 'Hilton'</pre></div><p class="paragraph"/>You can also find a location within a box (bound queries). Boxes are defined by specifying the lower-left and upper-right corners:<p class="paragraph"/><div class="code"><pre>def box = &#91;&#91;40.73083, &#45;73.99756&#93;, &#91;40.741404,  &#45;73.988135&#93;&#93;
+&#125;</pre></div><p class="paragraph"/>You can then save Geo locations using a two dimensional list:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">new</span> Hotel(name:<span class="java&#45;quote">"Hilton"</span>, location:&#91;50, 50&#93;).save()</pre></div><p class="paragraph"/>Alternatively you can use a map with keys representing latitude and longitude:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">new</span> Hotel(name:<span class="java&#45;quote">"Hilton"</span>, location:&#91;lat: 40.739037d, <span class="java&#45;object">long</span>: 73.992964d&#93;).save()</pre></div><p class="paragraph"/><blockquote class="note">
+You must specify whether the number of a floating point or double by adding a 'd' or 'f' at the end of the number eg. 40.739037d. Groovy's default type for decimal numbers is <code>BigDecimal</code> which is not supported by MongoDB.
+</blockquote><p class="paragraph"/>Once you have your data indexed you can use Mongo specific dynamic finders to find hotels near a given a location:<p class="paragraph"/><div class="code"><pre>def h = Hotel.findByLocationNear(&#91;50, 60&#93;)
+assert h.name == 'Hilton'</pre></div><p class="paragraph"/>You can also find a location within a box (bound queries). Boxes are defined by specifying the lower-left and upper-right corners:<p class="paragraph"/><div class="code"><pre>def box = &#91;&#91;40.73083d, &#45;73.99756d&#93;, &#91;40.741404d,  &#45;73.988135d&#93;&#93;
 def h = Hotel.findByLocationWithinBox(box)</pre></div><p class="paragraph"/>You can also find a location within a circle. Circles are specified using a center and radius:<p class="paragraph"/><div class="code"><pre>def center = &#91;50, 50&#93;
 def radius = 10
 def h = Hotel.findByLocationWithinCircle(&#91;center, radius&#93;)</pre></div><p class="paragraph"/>If you plan on querying a location and some other value it is recommended to use a compound index:<p class="paragraph"/><div class="code"><pre>class Hotel &#123;
