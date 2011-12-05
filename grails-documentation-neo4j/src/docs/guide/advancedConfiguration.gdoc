@@ -1,0 +1,84 @@
+As mentioned the GORM for Neo4j plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your @grails-app/conf/DataSource.groovy@ file:
+
+{code}
+grails {
+    neo4j {
+        type = "embedded"
+        location = "/var/neo4j"
+        params = []
+    }
+}
+{code}
+
+The @type@ provides currently the following choices:
+
+h4. type = "embedded"
+Runs the Neo4j in embedded mode, Neo4j and Tomcat use the same JVM. No seperate setup outside the Grails application is required. @location@ specifies the directory where Neo4j stores its data.
+
+Example:
+{code}
+grails {
+    neo4j {
+        type = "embedded"
+        location = "/var/neo4j"
+    }
+}
+{code}
+
+{note}
+If your configuration is empty, 'embedded' is used as default.
+{note}
+
+h4. type = "rest"
+Uses a @org.neo4j.rest.graphdb.RestGraphDatabase@ instance to connect to a Neo4j database. See http://docs.neo4j.org/chunked/stable/server.html for how to setup a Neo4j server.
+
+@location@ specifies the URL of he Neo4j REST server.
+
+Example:
+{code}
+grails {
+    neo4j {
+        type = "rest"
+        location = "http://localhost:7474/db/data/"
+    }
+}
+{code}
+
+Additionally you must add another dependency to your application's @grails-app/conf/BuildConfig.groovy@:
+
+{code}
+compile('org.neo4j:neo4j-enterprise:1.5')
+{code}
+
+{node}
+For Neo4j HA either a commercial license is required, or you could use AGPL, see http://neo4j.org/licensing-guide/
+{node}
+
+h4. type = "ha"
+Uses a Neo4j HA setup, for details see http://docs.neo4j.org/chunked/stable/ha.html. In this case params must at least contain
+
+Example:
+{code}
+grails {
+    neo4j {
+        type = "ha"
+        location = "/var/neo4j"
+        params = [ // see http://docs.neo4j.org/chunked/stable/ha-configuration.html
+                'ha.server_id': 1,
+                'ha.coordinators': 'localhost:2181,localhost:2182,localhost:2183'
+        ]
+    }
+}
+{code}
+
+h4. custom graph database
+If you use a custom implementation of GraphDatabaseService, you can use
+{code}
+grails {
+    neo4j {
+        type = "my.fancy.custom.GraphDatabaseServiceImplementation"
+        location = "/var/neo4j"
+        params = [ :]
+    }
+}
+{code}
