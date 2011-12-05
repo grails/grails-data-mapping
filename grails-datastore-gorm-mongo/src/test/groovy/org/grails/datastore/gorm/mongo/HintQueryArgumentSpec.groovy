@@ -4,7 +4,7 @@ import grails.gorm.tests.GormDatastoreSpec
 import grails.gorm.CriteriaBuilder
 import grails.gorm.tests.Person
 import com.mongodb.MongoException
-import org.springframework.data.document.mongodb.UncategorizedMongoDbException
+import org.springframework.data.mongodb.UncategorizedMongoDbException
 
 /**
  *

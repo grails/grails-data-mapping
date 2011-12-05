@@ -98,7 +98,7 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
             mongo = new GMongo(replicaPair.get(0), replicaPair.get(1), mongoOptions);
         }
         else if (replicaSetSeeds != null) {
-            initialiseReplicaSets(mongoOptions);
+            mongo = new GMongo(replicaSetSeeds, mongoOptions);
         }
         else {
             String mongoHost = host != null ? host : defaultOptions.getHost();
@@ -111,16 +111,4 @@ public class GMongoFactoryBean implements FactoryBean<GMongo>, InitializingBean/
         }
     }
 
-    public void initialiseReplicaSets(MongoOptions mo) {
-        // TODO: Awful hack since GMongo doesn't support replicaSets
-        Mongo mongoInstance = new Mongo(replicaSetSeeds, mo);
-        mongo = new GMongo(replicaSetSeeds.get(0), mo);
-        mongo.getMongo().close();
-        mongo.setMongo(mongoInstance);
-    }
-
-//    public DataAccessException translateExceptionIfPossible(RuntimeException ex) {
-//        logger.debug("Translating " + ex);
-//        return MongoDbUtils.translateMongoExceptionIfPossible(ex);
-//    }
 }

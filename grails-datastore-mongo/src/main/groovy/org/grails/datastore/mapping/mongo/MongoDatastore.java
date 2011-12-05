@@ -28,10 +28,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.authentication.UserCredentials;
-import org.springframework.data.document.mongodb.DbCallback;
-import org.springframework.data.document.mongodb.MongoFactoryBean;
-import org.springframework.data.document.mongodb.MongoTemplate;
-import org.springframework.data.document.mongodb.SimpleMongoDbFactory;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
@@ -53,6 +49,10 @@ import com.mongodb.MongoException;
 import com.mongodb.MongoOptions;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
+import org.springframework.data.mongodb.core.DbCallback;
+import org.springframework.data.mongodb.core.MongoFactoryBean;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 
 /**
  * A Datastore implementation for the Mongo document store.
@@ -179,7 +179,6 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
             if (mongoOptions != null) {
                 dbFactory.setMongoOptions(mongoOptions);
             }
-            dbFactory.afterPropertiesSet();
 
             mongo = dbFactory.getObject();
         }
