@@ -7,7 +7,10 @@ dependencies {
     //runtime "org.apache.lucene:lucene-core:3.1.0"  // looks like neo4j 1.4.1. has no real dependency on lucene-core
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")
+    testRuntime "javax.servlet:servlet-api:2.5"
     testRuntime "org.grails:grails-gorm:$grailsVersion"
+    testRuntime "org.grails:grails-web:$grailsVersion"
+
 }
 
 /*
