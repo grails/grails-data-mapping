@@ -4,7 +4,7 @@ import org.grails.datastore.gorm.neo4j.constraints.UniqueConstraint
 
 class Neo4jGrailsPlugin {
 
-    def license = "WTFPL"
+    def license = "Apache 2.0 License"
     def organization = [ name: "Stefan Armbruster", url: "http://blog.armbruster-it.de/" ]
     def developers = [
         [ name: "Stefan Armbruster", email: "stefan@armbruster-it.de" ] ]
@@ -44,7 +44,6 @@ class Neo4jGrailsPlugin {
         
         methodsConfigurer.configure()
     }
-
 
     def doWithApplicationContext = { applicationContext ->
         ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint.class );

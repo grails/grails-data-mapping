@@ -1,7 +1,7 @@
 <html>
     <head>
         <title>explore node space</title>
-		<meta name="layout" content="grails" />
+		<meta name="layout" content="main" />
 	</head>
 <body>
 
