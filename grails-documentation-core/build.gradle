@@ -1,0 +1,27 @@
+configurations {
+    documentation
+}
+dependencies {
+    documentation group: 'org.grails', name: 'grails-docs', version: '2.0.0.RC3'
+    project(":grails-datastore-core")
+    documentation "org.slf4j:jcl-over-slf4j:1.6.1"
+    documentation "org.slf4j:slf4j-api:1.6.1"
+    documentation "org.slf4j:slf4j-simple:1.6.1"
+}
+
+task clean << {
+    ant.delete(dir:buildDir)
+}
+
+task assemble << {
+    group = "docs"
+    ant.taskdef (name: 'docs', classname : 'grails.doc.ant.DocPublisherTask') {
+        classpath {
+            configurations.documentation.resolve().each { f ->
+                pathelement(location:f)
+            }
+        }
+
+    }
+    ant.docs(src:"src/docs", dest:"build/docs", properties:"src/docs/doc.properties")
+}

@@ -1,0 +1,41 @@
+h3. The Datastore Interface
+
+The @org.grails.datastore.mapping.core.Datastore@ interface is the equivalent of a SQL @DataSource@ where by it provides the necessary capability to create a connection. In most cases one can simply subclass the @AbstractDatastore@ super class and implement the @createSession@ method. The following implementation is from the @SimpleMapDatastore@ which implements GORM ontop of a @ConcurrentHashMap@:
+
+{code}
+@Override
+protected Session createSession(Map<String, String> connectionDetails) {
+    return new SimpleMapSession(this, getMappingContext(), getApplicationEventPublisher());
+}
+{code}
+
+The implementation depends a lot on the underlying datastore. For example for JPA the following implementation is used:
+
+{code}
+@Override
+protected Session createSession(Map<String, String> connDetails) {
+    return new JpaSession(this, new JpaTemplate(entityManagerFactory), transactionManager);
+}
+{code}
+
+
+h3. The Session Interface
+
+The @org.grails.datastore.mapping.core.Session@ interface represents an active connection. It can be either stateful or stateless, depending on the implementation. For example of embedded databases where there is no network connection, a stateful session is not particularly useful, but a datastore that creates network connections you may want to cache returned instances to reduce load.
+
+The @AbstractSession@ class provides some support for creating stateful sessions, if you prefer a stateless implementation then simply implement @Session@ or subclass @AbstractAttributeStoringSession@.
+
+In general if you subclass @AbstractSession@ the minimum you need to do is implement the @createPersister@ method:
+
+{code}
+protected Persister createPersister(Class cls, MappingContext mappingContext) {
+    PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
+    if (entity == null) {
+        return null;
+    }
+    return new SimpleMapEntityPersister(mappingContext, entity, this,
+        (SimpleMapDatastore) getDatastore(), publisher);
+}
+{code}
+
+The example above is from the @SimpleMapSession@ implementation, which creates a @SimpleMapEntityPersister@ instance and returns it. Returning null indicates that the class cannot be persisted and an exception will be thrown
