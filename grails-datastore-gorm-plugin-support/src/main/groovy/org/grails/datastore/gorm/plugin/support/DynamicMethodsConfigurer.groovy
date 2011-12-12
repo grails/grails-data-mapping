@@ -64,7 +64,6 @@ abstract class DynamicMethodsConfigurer {
                 else {
                     def staticApi = createGormStaticApi(cls, enhancer.finders)
                     def instanceApi = createGormInstanceApi(cls)
-                    instanceApi.failOnError = failOnError
                     cls.metaClass.static."get$type" = {-> staticApi }
                     cls.metaClass."get$type" = {-> new InstanceProxy(instance:delegate, target:instanceApi) }
                 }
@@ -82,10 +81,14 @@ abstract class DynamicMethodsConfigurer {
     }
 
     protected GormInstanceApi createGormInstanceApi(Class cls) {
-        return new GormInstanceApi(cls, datastore)
+        def instanceApi = new GormInstanceApi(cls, datastore)
+        instanceApi.failOnError = failOnError
+        return instanceApi
     }
 
     protected GormEnhancer createEnhancer() {
-        new GormEnhancer(datastore, transactionManager)
+        def enhancer = new GormEnhancer(datastore, transactionManager)
+        enhancer.failOnError = failOnError
+        return enhancer
     }
 }
