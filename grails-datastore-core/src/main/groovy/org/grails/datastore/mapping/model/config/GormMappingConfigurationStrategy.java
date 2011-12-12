@@ -660,7 +660,11 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
     private boolean isExcludedProperty(String propertyName, ClassMapping classMapping, Collection transients) {
         IdentityMapping id = classMapping != null ? classMapping.getIdentifier() : null;
-        return id != null && id.getIdentifierName()[0].equals(propertyName) || id == null && propertyName.equals(IDENTITY_PROPERTY) || EXCLUDED_PROPERTIES.contains(propertyName) || transients.contains(propertyName);
+        String[] identifierName = id != null ? id.getIdentifierName() : null;
+        return identifierName != null && propertyName.equals(identifierName[0]) ||
+                id == null && propertyName.equals(IDENTITY_PROPERTY) ||
+                EXCLUDED_PROPERTIES.contains(propertyName) ||
+                transients.contains(propertyName);
     }
 
     /**
