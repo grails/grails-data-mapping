@@ -24,8 +24,8 @@ apply plugin: 'idea'
 apply plugin: 'project-report'
 
 subprojects {
-//    releaseType = "BUILD-SNAPSHOT"
-    releaseType = "RC3"
+   releaseType = "BUILD-SNAPSHOT"
+/*    releaseType = "RC3"*/
     version = "1.0.0.${releaseType}"
     group = "org.grails"
 
