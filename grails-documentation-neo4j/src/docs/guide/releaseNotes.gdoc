@@ -1,5 +1,11 @@
 Below are the details of the changes across releases:
 
+h4. 1.0-SNAPSHOT
+
+* works with Neo4j HA
+* implementing new GORM property criteria filters
+* uses Neo4j 1.5s
+
 h4. 0.9-SNAPSHOT
 * first GORM compliant version of the plugin
 * works with embedded and REST Neo4j databases

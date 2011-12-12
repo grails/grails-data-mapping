@@ -3,7 +3,7 @@
   <head>
   	<title>Simple GSP page</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="grails" />
+        <meta name="layout" content="main" />
   </head>
   <body>
   <tmpl:nav/>

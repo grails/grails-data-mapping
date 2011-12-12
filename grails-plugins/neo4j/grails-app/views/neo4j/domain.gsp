@@ -1,7 +1,7 @@
 <html>
     <head>
         <title>domain structure</title>
-		<meta name="layout" content="grails" />
+		<meta name="layout" content="main" />
         <g:javascript library="prototype" />
       <g:javascript>
 function toogleCheckboxes(name, value) {

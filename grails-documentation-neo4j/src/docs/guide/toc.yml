@@ -1,0 +1,11 @@
+introduction:
+    title: Introduction
+    compatibility: Compatibility with GORM for Hibernate
+    releaseNotes: Release Notes
+gettingStarted:
+    title: Getting Started
+    usingNeo4jStandalone: Using Neo4j Standalone
+    combiningNeo4jAndHibernate: Combining Neo4j And Hibernate
+    advancedConfiguration: Advanced Configuration
+mapping: Mapping domain classes to Neo4j node space
+sampleApp: Sample Application

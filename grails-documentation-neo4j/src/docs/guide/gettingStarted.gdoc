@@ -1,0 +1,17 @@
+To get started with GORM for Neo4j you need to install the plugin into a Grails application:
+
+{code}
+grails install-plugin neo4j
+{code}
+
+Or configure it as a dependency in @BuildConfig.groovy@:
+
+{code}
+plugins {
+	compile "\:neo4j:latest.version"
+}
+{code}
+
+By default Neo4j will used as embedded database inside the JVM, the default directory for the Neo4j datastore is @data/neo4j@.
+
+
