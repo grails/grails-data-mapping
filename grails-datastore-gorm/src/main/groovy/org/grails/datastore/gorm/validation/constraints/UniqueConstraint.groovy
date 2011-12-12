@@ -39,14 +39,14 @@ class UniqueConstraint extends AbstractConstraint{
         withManualFlushMode { Session session ->
 
             EntityPersister persister = session.getPersister(target)
-            def id = persister.getObjectIdentifier(target)
+            def id = getIdentifier(target, persister)
             if(constraintParameter instanceof Boolean) {
                 if(constraintParameter) {
                     if(propertyValue != null) {
 
                         final existing = constraintOwningClass."findBy${GrailsNameUtils.getClassName(constraintPropertyName, '')}"(propertyValue)
                         if(existing != null) {
-                            def existingId = persister.getObjectIdentifier(existing)
+                            def existingId = getIdentifier(existing, persister)
                             if(id != existingId) {
                                 def args = [ constraintPropertyName, constraintOwningClass, propertyValue ] as Object[]
                                 rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"));
@@ -74,12 +74,26 @@ class UniqueConstraint extends AbstractConstraint{
                 }
 
                 if(existing) {
-                    def existingId = persister.getObjectIdentifier(existing)
+                    def existingId = getIdentifier(existing, persister)
                     if(id != existingId) {
                         def args = [ constraintPropertyName, constraintOwningClass, propertyValue ] as Object[]
                         rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"));
                     }
                 }
+            }
+        }
+    }
+
+    private Serializable getIdentifier(target, EntityPersister persister) {
+        if(target != null ) {
+            if(persister == null) {
+                def entity = datastore.mappingContext.getPersistentEntity(target.class.name)
+                if(entity != null) {
+                    return target[entity.identity.name]
+                }
+            }
+            else {
+               return persister.getObjectIdentifier(target)
             }
         }
     }
