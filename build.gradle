@@ -24,7 +24,8 @@ apply plugin: 'idea'
 apply plugin: 'project-report'
 
 subprojects {
-   releaseType = "BUILD-SNAPSHOT"
+    releaseType = "RELEASE"
+/*   releaseType = "BUILD-SNAPSHOT"*/
 /*    releaseType = "RC3"*/
     version = "1.0.0.${releaseType}"
     group = "org.grails"
@@ -176,9 +177,8 @@ subprojects {
             repositories.mavenDeployer {
                 switch (releaseType) {
                     case 'RELEASE':
-                    // TODO: Will need to update this when doing a non-snapshot/milestone release
-//                        repository(url: releaseRepositoryUrl)
-//                        description += releaseRepositoryUrl
+                        repository(url: milestoneRepositoryUrl)
+                        description += milestoneRepositoryUrl
                         break;
 
                     case ~/M[0-9]+/:
