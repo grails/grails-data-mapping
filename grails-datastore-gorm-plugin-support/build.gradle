@@ -8,5 +8,8 @@ dependencies {
         transitive = false
     }
 
+    testRuntime "org.grails:grails-web:$grailsVersion"
+    testRuntime "org.grails:grails-gorm:$grailsVersion"
+
     testCompile project(":grails-datastore-gorm-test")
 }
