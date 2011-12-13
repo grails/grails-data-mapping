@@ -18,6 +18,10 @@ import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.PropertyMapping;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.*;
 
 /**
@@ -64,5 +68,35 @@ public class MappingUtils {
             elements = new HashSet();
         }
         return elements;
+    }
+
+    public static Class getGenericTypeForProperty(Class javaClass, String propertyName) {
+        Class genericClass = null;
+
+        try {
+            Field declaredField = javaClass.getDeclaredField(propertyName);
+            Type genericType = declaredField.getGenericType();
+            if(genericType instanceof ParameterizedType) {
+                Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
+                if(typeArguments.length>0) {
+                    genericClass = (Class) typeArguments[0];
+                }
+            }
+        } catch (NoSuchFieldException e) {
+            // ignore
+        }
+        return genericClass;
+    }
+
+    public static Class getGenericType(Class propertyType) {
+        Class genericType = null;
+        TypeVariable[] typeParameters = propertyType.getTypeParameters();
+        if(typeParameters != null && typeParameters.length>0) {
+            Type[] bounds = typeParameters[0].getBounds();
+            if(bounds != null && bounds.length>0 && (bounds[0] instanceof Class)) {
+                genericType = (Class) bounds[0];
+            }
+        }
+        return genericType;
     }
 }

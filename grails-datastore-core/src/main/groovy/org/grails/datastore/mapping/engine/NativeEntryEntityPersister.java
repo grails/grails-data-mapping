@@ -30,7 +30,6 @@ import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.query.Query;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.CannotAcquireLockException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.grails.datastore.mapping.collection.PersistentCollection;
 import org.grails.datastore.mapping.collection.PersistentList;
 import org.grails.datastore.mapping.collection.PersistentSet;
@@ -375,7 +374,22 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
                 else if(entryValue instanceof Collection) {
                     Collection collection = MappingUtils.createConcreteCollection(prop.getType());
-                    collection.addAll((Collection) entryValue);
+
+                    Class propertyType = prop.getType();
+                    Class genericType = MappingUtils.getGenericTypeForProperty(persistentEntity.getJavaClass(), prop.getName());
+                    Collection collectionValue = (Collection) entryValue;
+                    if(genericType != null && genericType.isEnum()) {
+                        for (Object o : collectionValue) {
+                            if(!(o instanceof Enum)) {
+                                collection.add( Enum.valueOf(genericType, o.toString()) );
+                            }
+                        }
+                    }
+                    else {
+                        collection.addAll(collectionValue);
+                    }
+
+
                     entryValue = collection;
                 }
                 ea.setProperty(prop.getName(), entryValue);
