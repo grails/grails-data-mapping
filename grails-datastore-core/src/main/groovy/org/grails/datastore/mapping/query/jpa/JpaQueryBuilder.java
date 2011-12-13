@@ -536,14 +536,16 @@ public class JpaQueryBuilder {
                 whereClause.append(OPEN_BRACKET)
                            .append(qualifiedName)
                            .append(" >= ")
-                           .append(QUESTIONMARK)
-                           .append(++position)
-                           .append(" AND ")
+                           .append(QUESTIONMARK);
+               if(!hibernateCompatible)
+                    whereClause.append(++position);
+                whereClause.append(" AND ")
                            .append(qualifiedName)
                            .append(" <= ")
-                           .append(QUESTIONMARK)
-                           .append(++position)
-                           .append(CLOSE_BRACKET);
+                           .append(QUESTIONMARK);
+                if(!hibernateCompatible)
+                    whereClause.append(++position);
+                           whereClause.append(CLOSE_BRACKET);
 
                 parameters.add(conversionService.convert( from, propType ));
                 parameters.add(conversionService.convert( to, propType ));
@@ -587,9 +589,10 @@ public class JpaQueryBuilder {
                  .append(name)
                  .append(")")
                  .append(" like lower(")
-                 .append(QUESTIONMARK)
-                 .append(")")
-                 .append(++position);
+                 .append(QUESTIONMARK);
+                if(!hibernateCompatible)
+                 q.append(++position);
+                q.append(")");
                 parameters.add(conversionService.convert( eq.getValue(), propType ));
                 return position;
             }
@@ -607,8 +610,9 @@ public class JpaQueryBuilder {
                            .append(" IN (");
                 for (Iterator i = eq.getValues().iterator(); i.hasNext();) {
                     Object val = i.next();
-                    whereClause.append(QUESTIONMARK)
-                               .append(++position);
+                    whereClause.append(QUESTIONMARK);
+                    if(!hibernateCompatible)
+                        whereClause.append(++position);
                     if (i.hasNext()) {
                         whereClause.append(COMMA);
                     }
