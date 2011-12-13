@@ -1,0 +1,13 @@
+h1. Redis
+
+h2. Purpose
+
+An implementation that creates a GORM API on top of [Redis|http://redis.io]
+
+h2. Description
+
+Sub-projects:
+
+* @grails-datastore-redis@ 
+* @grails-datastore-gorm-redis@
+
