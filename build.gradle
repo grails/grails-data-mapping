@@ -179,8 +179,7 @@ subprojects {
                     case 'RELEASE':
                         repository(url: milestoneRepositoryUrl)
                         description += milestoneRepositoryUrl
-                        break;
-
+                        
                     case ~/M[0-9]+/:
                         description += milestoneRepositoryUrl
                         // fall through and pick up config below
