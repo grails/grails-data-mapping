@@ -93,7 +93,7 @@ protected storeEntry(PersistentEntity persistentEntity, EntityAccess entityAcces
 
 h4. Update
 
-The @updateEntry@ method is used to update a record:
+The @updateEntry@ method is used to update an entry:
 
 {code}
 public void updateEntry(final PersistentEntity persistentEntity, final EntityAccess ea,
@@ -117,3 +117,57 @@ public void updateEntry(final PersistentEntity persistentEntity, final EntityAcc
 {code}
 
 As you can see again the underlying database specific @update@ method is used, in this case the @DBCollection@'s @update@ method.
+
+h4. Delete
+
+The @deleteEntry@ method is used to delete an entry. For example in the @ConcurrentHashMap@ implementation it is simply removed from the map:
+
+{code}
+protected void deleteEntry(String family, key, entry) {
+    datastore[family].remove(key)
+}
+{code}
+
+Whilst in @MongoDB@ the @DBCollection@ object's @remove@ method is called:
+
+{code}
+@Override
+protected void deleteEntry(String family, final Object key, final Object entry) {
+    mongoTemplate.execute(new DbCallback<Object>() {
+        public Object doInDB(DB con) throws MongoException, DataAccessException {
+            DBCollection dbCollection = getCollection(con);
+
+            MongoSession mongoSession = (MongoSession) session;
+            dbCollection.remove(key, mongoSession.getWriteConcern());
+            return null;
+        }
+
+        protected DBCollection getCollection(DB con) {
+            return con.getCollection(getCollectionName(getPersistentEntity()));
+        }
+    });
+}
+{code}
+
+Note that if the underlying datastore supports batch delete operations you may want override and implement the @deleteEntries@ method which allows for deleting multiple entries in a single operation. The implementation for MongoDB looks like:
+
+{code}
+protected void deleteEntries(String family, final List<Object> keys) {
+    mongoTemplate.execute(new DbCallback<Object>() {
+        public Object doInDB(DB con) throws MongoException, DataAccessException {
+            String collectionName = getCollectionName(getPersistentEntity());
+            DBCollection dbCollection = con.getCollection(collectionName);
+
+            MongoSession mongoSession = (MongoSession) getSession();
+            MongoQuery query = mongoSession.createQuery(getPersistentEntity().getJavaClass());
+            query.in(getPersistentEntity().getIdentity().getName(), keys);
+
+            dbCollection.remove(query.getMongoQuery());
+
+            return null;
+        }
+    });
+}
+{code}
+
+You'll notice this implementation uses a @MongoQuery@ instance. Note that implementing an @EntityPersister@ you have enabled basic CRUD operations, but not querying, which is a topic of the following sections. First, however secondary indices need to covered since they are required for querying.

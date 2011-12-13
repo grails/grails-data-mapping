@@ -1,3 +1,50 @@
+h3. The MappingContext
+
+The @org.grails.datastore.mapping.model.MappingContext@ interface is used to obtain metadata about the classes that are configured for persistence. There are @org.grails.datastore.mapping.model.PersistentEntity@ and @org.grails.datastore.mapping.model.PersistentProperty@ interfaces that represent a class and its properties respectively. These can be obtained and introspected via the @MappingContext@.
+
+There are various concrete implementations of the @MappingContext@ interface such as:
+
+* @DocumentMappingContext@ - Used for document stores, subclassed by @MongoMappingContext@
+* @JpaMappingContext@ - Used for JPA
+* @KeyValueMappingContext@ - Used by key/value stores
+
+Creating a new @MappingContext@ may be useful because it allows users to configure how a class is mapped to the underlying datastore using GORM's @mapping@ block as well as allowing registration of custom type converters and so on. The implementation for Neo4j looks like this:
+
+{code}
+class Neo4jMappingContext extends AbstractMappingContext {
+
+    MappingFactory<Collection, Attribute> mappingFactory
+    MappingConfigurationStrategy syntaxStrategy
+
+    Neo4jMappingContext() {
+        mappingFactory = new GraphGormMappingFactory()
+        syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory)
+        //addTypeConverter(new StringToNumberConverterFactory().getConverter(BigDecimal))
+        addTypeConverter(new StringToShortConverter())
+        addTypeConverter(new StringToBigIntegerConverter())
+         ...
+    }
+
+    @Override
+    protected PersistentEntity createPersistentEntity(Class javaClass) {
+        GraphPersistentEntity persistentEntity = new GraphPersistentEntity(javaClass, this)
+        mappingFactory.createMappedForm(persistentEntity) // populates mappingFactory.entityToPropertyMap as a side effect
+        persistentEntity
+    }
+
+    MappingConfigurationStrategy getMappingSyntaxStrategy() {
+        syntaxStrategy
+    }
+
+    MappingFactory getMappingFactory() {
+        mappingFactory
+    }
+}
+{code}
+
+
+Notice how Neo4j provides a custom @GraphGormMappingFactory@ and @GraphPersistentEntity@ to allow the domain class configuration to be changed for a given Neo4j @Node@.
+
 h3. The Datastore Interface
 
 The @org.grails.datastore.mapping.core.Datastore@ interface is the equivalent of a SQL @DataSource@ where by it provides the necessary capability to create a connection. In most cases one can simply subclass the @AbstractDatastore@ super class and implement the @createSession@ method. The following implementation is from the @SimpleMapDatastore@ which implements GORM ontop of a @ConcurrentHashMap@:
@@ -17,6 +64,8 @@ protected Session createSession(Map<String, String> connDetails) {
     return new JpaSession(this, new JpaTemplate(entityManagerFactory), transactionManager);
 }
 {code}
+
+Notice that the @Datastore@ also has a reference to the @MappingContext@ discussed in the previous section.
 
 
 h3. The Session Interface
