@@ -53,6 +53,7 @@ subprojects {
     }
 
     def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") && !project.name.endsWith("tck") && !project.name.endsWith("plugin-support")
+    def isDocumentationProject = project.name.startsWith("grails-documentation")
 
     repositories {
         mavenRepo name:'mavenLocal',
@@ -77,6 +78,38 @@ subprojects {
         if (project.name == "grails-datastore-gorm-tck") {
             compile spockDependency
         }
+    }
+    
+    if(isDocumentationProject) {
+        configurations {
+            documentation
+        }
+        dependencies {
+            documentation group: 'org.grails', name: 'grails-docs', version: '2.0.0'
+            project(":grails-datastore-core")
+            documentation "org.slf4j:jcl-over-slf4j:$slf4jVersion"
+            documentation "org.slf4j:slf4j-api:$slf4jVersion"
+            documentation "org.slf4j:slf4j-simple:$slf4jVersion"
+        }        
+        task docs << {
+            ant.taskdef (name: 'docs', classname : 'grails.doc.ant.DocPublisherTask') {
+                classpath {
+                    configurations.documentation.resolve().each { f ->
+                        pathelement(location:f)
+                    }
+                }
+
+            }
+            ant.docs(src:"src/docs", dest:destinationDir, properties:"src/docs/doc.properties")    
+        }
+        docs.destinationDir = "${buildDir}/docs"
+
+
+        task clean << {
+            ant.delete(dir:buildDir)
+        }
+
+        
     }
 
     if (isGormDatasource) {
@@ -240,6 +273,25 @@ dependencies {
     build "org.apache.ant:ant-nodeps:1.8.1"
 }
 
+task allDocs(dependsOn: getTasksByName("docs", true)) << {
+    def docTasks = getTasksByName("docs", true)
+    allDocsDir = "$buildDir/docs"
+    mkdir allDocsDir
+    for(task in docTasks) {
+        def dir = task.destinationDir
+        def projectName = task.project.name
+        if(projectName.endsWith("core")) {
+            fileTree { from dir }.copy { into allDocsDir }
+        }
+        else {
+            def storeName = projectName["grails-documentation-".size()..-1]
+            def docsDir = "$allDocsDir/$storeName"
+            mkdir docsDir
+            fileTree { from dir }.copy { into docsDir }
+        }
+    }
+        
+}
 task test(dependsOn: getTasksByName("test", true)) << {
     def reportsDir = "${buildDir}/reports"
 
