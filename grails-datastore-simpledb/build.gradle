@@ -1,3 +1,5 @@
+version = "1.0.0.BUILD-SNAPSHOT"
+
 dependencies {
     compile project(":grails-datastore-core")
     compile('com.amazonaws:aws-java-sdk:1.2.0')
