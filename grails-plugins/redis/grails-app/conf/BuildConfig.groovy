@@ -17,13 +17,18 @@ grails.project.dependency.resolution = {
 
     dependencies {
 
-		  String datastoreVersion = "1.0.0.RC1"
+		def datastoreVersion = "1.0.0.RELEASE"
+	    def redisDatastoreVersion = "1.0.0.M8"
+	    
+	    compile("org.grails:grails-datastore-gorm-redis:$redisDatastoreVersion",
+	            "org.grails:grails-datastore-redis:$redisDatastoreVersion") {
+	        transitive = false
+	    }
 
-        compile("org.grails:grails-datastore-gorm-redis:$datastoreVersion",
+        compile(
                 "org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",        
                 "org.grails:grails-datastore-gorm:$datastoreVersion",
-                "org.grails:grails-datastore-core:$datastoreVersion",
-                "org.grails:grails-datastore-redis:$datastoreVersion",
+                "org.grails:grails-datastore-core:$datastoreVersion",                
                 "org.grails:grails-datastore-web:$datastoreVersion") {
             transitive = false
         }
@@ -35,10 +40,10 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        build(":release:1.0.0.RC3") {
+        build(":release:1.0.0") {
             export = false
         }
 
-        compile ":redis:1.0.0.M8"
+        compile ":redis:1.1"
     }
 }
