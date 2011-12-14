@@ -11,7 +11,7 @@ class MongodbGrailsPlugin {
     def issueManagement = [system: "JIRA", url: "http://jira.grails.org/browse/GPMONGODB"]
     def scm = [url: "https://github.com/SpringSource/grails-data-mapping"]
 
-    def version = "1.0.0.RC2"
+    def version = "1.0.0.RC3"
     def grailsVersion = "1.3.5 > *"
     def observe = ['services', 'domainClass']
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']

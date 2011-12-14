@@ -24,17 +24,20 @@ grails.project.dependency.resolution = {
             excludes "spring-core", "spring-beans", "spring-aop", "spring-asm","spring-webmvc","spring-tx", "spring-context", "spring-web", "log4j", "slf4j-log4j12"
         }
 
-        compile("org.mongodb:mongo-java-driver:2.6.5")
+        compile("org.mongodb:mongo-java-driver:2.7.0")
         compile("org.springframework.data:spring-data-mongodb:1.0.0.RC1", excludes)
         runtime("com.gmongo:gmongo:0.9.1", excludes)
 
-        String datastoreVersion = "1.0.0.RC2"
+        def datastoreVersion = "1.0.0.RELEASE"
+        def mongoDatastoreVersion = "1.0.0.RC3"
 
-        compile("org.grails:grails-datastore-gorm-mongo:$datastoreVersion",
-                "org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
+        compile ("org.grails:grails-datastore-mongo:$mongoDatastoreVersion",
+                 "org.grails:grails-datastore-gorm-mongo:$mongoDatastoreVersion") {
+             transitive = false
+        }
+        compile("org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
                 "org.grails:grails-datastore-gorm:$datastoreVersion",
-                "org.grails:grails-datastore-core:$datastoreVersion",
-                "org.grails:grails-datastore-mongo:$datastoreVersion",
+                "org.grails:grails-datastore-core:$datastoreVersion",                
                 "org.grails:grails-datastore-web:$datastoreVersion") {
             transitive = false
         }
@@ -48,7 +51,7 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        build( ":release:1.0.0.RC3" ) {
+        build( ":release:1.0.0" ) {
             export = false
         }
     }
