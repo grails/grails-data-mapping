@@ -1,4 +1,0 @@
-org.grails.datastore.mapping.mongo
-org.grails.datastore.mapping.mongo.config
-org.grails.datastore.mapping.mongo.engine
-org.grails.datastore.mapping.mongo.query

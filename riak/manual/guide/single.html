@@ -1,37 +1,111 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>Riak GORM 1.0.0.M1 - Reference Documentation</title>
-        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Style" charset="utf-8"/>
+        <title>Riak GORM 1.0.0.M5</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
         <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+    <script type="text/javascript">
+function addJsClass(el) {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
     </head>
-    <body class="body">
+
+    <body class="body" onload="addJsClass();">
+        <div id="navigation">
+            <ul>
+                <li>
+                    <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                        <a href="../guide/index.html" class="button">Table of contents</a>
+                        <div id="nav-summary-childs" style="display:none;">
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#1.%20Introduction"><strong>1</strong><span>Introduction</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#2.%20Getting%20Started"><strong>2</strong><span>Getting Started</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#3.%20Object%20Mapping"><strong>3</strong><span>Object Mapping</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#4.%20Querying"><strong>4</strong><span>Querying</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#5.%20Spring%20Data%20Support"><strong>5</strong><span>Spring Data Support</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#6.%20Map%20Reduce%20Support"><strong>6</strong><span>Map Reduce Support</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#7.%20Testing"><strong>7</strong><span>Testing</span></a></div>
+                            
+                        </div>
+                    </div>
+                </li>
+                <li class="separator selected">
+                    <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+                </li>
+            </ul>
+        </div>
         <div id="header">
-            <div class="images"><br/><br/>
-                <a href="http://grails.org" target="_blank"><img alt="The Grails Framework" src="../img/grails.png" border="0"/></a>
-                <span style="right:30px; top:20px; position:absolute;">
-                    <a href="../index.html" target="_top">Frames</a> | <a href="index.html" target="_top">No Frames</a><br/><br/>
-                    <a href="http://springsource.com" target="_blank"><img alt="SpringSource - A Division of VMware" src="../img/springsource-logo.png" border="0"/></a>
-                </span>
+            <div class="images clearfix">
+                
+                
             </div>
-            <div class="message"></div>
-            <h1>Riak GORM - Reference Documentation</h1>
-            <p><strong>Authors:</strong> Jon Brisbin</p>
-            <p><strong>Version:</strong> 1.0.0.M1</p>
-            <em></em>
+            <p></p>
         </div>
 
-        <div id="toc">
-            <h2>Table of Contents</h2>
-            <div class="tocItem" style="margin-left:0px"><a href="#1. Introduction">1. Introduction</a></div><div class="tocItem" style="margin-left:0px"><a href="#2. Getting Started">2. Getting Started</a></div><div class="tocItem" style="margin-left:0px"><a href="#3. Object Mapping">3. Object Mapping</a></div><div class="tocItem" style="margin-left:10px"><a href="#3.1 Dealing with Eventual Consistency">3.1 Dealing with Eventual Consistency</a></div><div class="tocItem" style="margin-left:0px"><a href="#4. Querying">4. Querying</a></div><div class="tocItem" style="margin-left:0px"><a href="#5. Spring Data Support">5. Spring Data Support</a></div><div class="tocItem" style="margin-left:10px"><a href="#5.1 RiakBuilder Support">5.1 RiakBuilder Support</a></div><div class="tocItem" style="margin-left:0px"><a href="#6. Map Reduce Support">6. Map Reduce Support</a></div><div class="tocItem" style="margin-left:0px"><a href="#7. Testing">7. Testing</a></div>
-        </div>
-        <div id="content">
-            <h1><a name="1. Introduction">1. Introduction</a></h1>Riak is an Internet-scale Key/Value datastore that stores arbitrary data based on Content-Type, has an <a href="../ref/Httpswikibashocomdisplay RIAKRESTAPI/efficient HTTP REST API.html" class="https://wiki.basho.com/display/RIAK/REST+API">efficient HTTP REST API</a>, and supports queries and data filtering via <a href="../ref/Httpswikibashocomdisplay RIAKM ap Reduce/Map/Reduce operations.html" class="https://wiki.basho.com/display/RIAK/MapReduce">Map/Reduce operations</a> written in either Javascript or Erlang.<p class="paragraph"/>This project aims to provide an object-mapping framework on top of Riak to ease common activities like:
+
+        <table id="colset" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td id="col1">
+                    <div id="main" class="corner-all">
+
+                        <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                        <div class="project">
+                            <h1>Riak GORM - Reference Documentation</h1>
+                            <p><strong>Authors:</strong> Jon Brisbin</p>
+                            <p><strong>Version:</strong> 1.0.0.M5</p>
+                            
+                        </div>
+
+                        
+                        <div id="table-of-content">
+                            <h2>Table of Contents</h2>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="#1.%20Introduction"><strong>1</strong><span>Introduction</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="#2.%20Getting%20Started"><strong>2</strong><span>Getting Started</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="#3.%20Object%20Mapping"><strong>3</strong><span>Object Mapping</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:10px"><a href="#3.1%20Dealing%20with%20Eventual%20Consistency"><strong>3.1</strong><span>Dealing with Eventual Consistency</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="#4.%20Querying"><strong>4</strong><span>Querying</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="#5.%20Spring%20Data%20Support"><strong>5</strong><span>Spring Data Support</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:10px"><a href="#5.1%20RiakBuilder%20Support"><strong>5.1</strong><span>RiakBuilder Support</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="#6.%20Map%20Reduce%20Support"><strong>6</strong><span>Map Reduce Support</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="#7.%20Testing"><strong>7</strong><span>Testing</span></a></div>
+                            
+                            <div style="clear:both" ></div>
+                        </div>
+                        
+                        
+
+<h1 id="1. Introduction">1 Introduction</h1>
+Riak is an Internet-scale Key/Value datastore that stores arbitrary data based on Content-Type, has an <a href="../ref/Httpswikibashocomdisplay RIAKRESTAPI/efficient HTTP REST API.html" class="https://wiki.basho.com/display/RIAK/REST+API">efficient HTTP REST API</a>, and supports queries and data filtering via <a href="../ref/Httpswikibashocomdisplay RIAKM ap Reduce/Map/Reduce operations.html" class="https://wiki.basho.com/display/RIAK/MapReduce">Map/Reduce operations</a> written in either Javascript or Erlang.<p class="paragraph"/>This project aims to provide an object-mapping framework on top of Riak to ease common activities like:
 <ul class="star">
 <li>Converting objects to/from JSON for storage in Riak</li>
 <li>Easy access to custom Map/Reduce queries</li>
 <li>Validating domain instances backed by the Riak datastore</li>
-</ul><p class="paragraph"/><h1><a name="2. Getting Started">2. Getting Started</a></h1>To get started with GORM for Riak, you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin riak</pre></div><p class="paragraph"/>Now you need to install and configure a Riak server for your architecture. To install Riak, you have several options:
+</ul><p class="paragraph"/>
+
+
+<h1 id="2. Getting Started">2 Getting Started</h1>
+To get started with GORM for Riak, you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin riak</pre></div><p class="paragraph"/>Now you need to install and configure a Riak server for your architecture. To install Riak, you have several options:
 <ul class="star">
 <li>Use a pre-compiled binary downloaded from the official download page: <a href="http://downloads.basho.com/riak/" target="blank">http://downloads.basho.com/riak/</a></li>
 <li>Install from a package manager like <code>apt</code> or <a href="http://mxcl.github.com/homebrew/" target="blank">Homebrew</a></li>
@@ -44,31 +118,46 @@ Erlang R14B (erts&#45;5.8.1) &#91;source&#93; &#91;64&#45;bit&#93; &#91;smp:2:2&
 =INFO REPORT==== 13&#45;Dec&#45;2010::16:30:51 ===
 Spidermonkey VM (thread stack: 32MB, max heap: 12MB) host starting (&#60;0.147.0&#62;)
 Eshell V5.8.1  (abort with ^G)
-(riak<code>127.0.0.1)1&#62;</pre></div><p class="paragraph"/>The default port for Riak's REST interface is 8098. So the default URI built into the Riak GORM support will work. The default is </code>http://localhost:8098/riak/{bucket}/{key}<code>.<p class="paragraph"/>If you need to configure the URLs for the </code>RiakTemplate<code>, do so by adding configuration elements to </code>grails-app/conf/Config.groovy@:<p class="paragraph"/><div class="code"><pre><div class="error">code: null</div>
-grails.riak.defaultUri = "http://localhost:8098/riak/{bucket}/{key}"
-grails.riak.mapReduceUri = "http://localhost:8098/mapred"
-<div class="code"><pre><div class="error">code: null</div>
-<h1><a name="3. Object Mapping">3. Object Mapping</a></h1>Object mapping works largely as described in the <a href="http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html" target="blank">documentation on GORM</a>. In general you can continue to model your associations using typical GORM notation such as <code>hasMany</code>, <code>belongsTo</code> and so on.<p class="paragraph"/>Here is an example of a domain class that can be persisted to Riak:<p class="paragraph"/><div class="code"><pre>class Person &#123;<p class="paragraph"/>    <span class="java&#45;object">String</span> firstName
+(riak&#64;127.0.0.1)1&#62;</pre></div><p class="paragraph"/>The default port for Riak's REST interface is 8098. So the default URI built into the Riak GORM support will work. The default is <code>http://localhost:8098/riak/{bucket}/{key}</code>.<p class="paragraph"/>If you need to configure the URLs for the <code>RiakTemplate</code>, do so by adding configuration elements to <code>grails-app/conf/Config.groovy</code>:<p class="paragraph"/><div class="code"><pre>grails.riak.defaultUri = <span class="java&#45;quote">"http://localhost:8098/riak/&#123;bucket&#125;/&#123;key&#125;"</span>
+grails.riak.mapReduceUri = <span class="java&#45;quote">"http://localhost:8098/mapred"</span></pre></div>
+
+
+
+<h1 id="3. Object Mapping">3 Object Mapping</h1>
+Object mapping works largely as described in the <a href="http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html" target="blank">documentation on GORM</a>. In general you can continue to model your associations using typical GORM notation such as <code>hasMany</code>, <code>belongsTo</code> and so on.<p class="paragraph"/>Here is an example of a domain class that can be persisted to Riak:<p class="paragraph"/><div class="code"><pre>class Person &#123;<p class="paragraph"/>    <span class="java&#45;object">String</span> firstName
     <span class="java&#45;object">String</span> lastName<p class="paragraph"/>    <span class="java&#45;keyword">static</span> constraints = &#123;
         firstName blank:<span class="java&#45;keyword">false</span>
         lastName blank:<span class="java&#45;keyword">false</span>
-    &#125;<p class="paragraph"/>&#125;</pre></div><p class="paragraph"/>Since Riak doesn't support the notion of saved indexes, there are no options to specify what columns to index for faster searches. The GORM support for Riak relies on Riak's Map/Reduce implementation for queries, criteria, dynamic finder methods, and so on. As such, searching for data in Riak using finder methods can be slower than on other NoSQL datastores given a very large dataset. Caveat emptor.<p class="paragraph"/>That said, finder methods are fully supported in Riak for GORM:<p class="paragraph"/><div class="code"><pre>Person.findByLastName(<span class="java&#45;quote">"Simpson"</span>)</pre></div>
-<h2><a name="3.1 Dealing with Eventual Consistency">3.1 Dealing with Eventual Consistency</a></h2>One of the important features of Riak is that, by default, Riak promises to be <a href="http://blog.basho.com/category/eventual-consistency/" target="blank">&#34;eventually consistent&#34; rather than synchronously up-to-date</a>. This means that when an update to data in Riak is issued, the update method might return before the data has been fully written to disk. This increases performance of writes but means operations that depend on just-inserted data being available (for queries, for example) need to be careful about when they are run.<p class="paragraph"/>If you want a <code>save()</code> call to be guaranteed to have persisted the object to disk before returning to your application, then you need to pass a QOS (Quality of Service) parameter to the entity's <code>save</code> method. You use the same names for the parameters as you would if you were specifying them on an HTTP URL: <code>w</code> for write, <code>dw</code> for durable write, and <code>r</code> for read.<p class="paragraph"/>For example, to ensure that an object has been completely flushed to disk before returning, use the "durable write" parameter:<p class="paragraph"/><div class="code"><pre>def p = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Bob"</span>)
-p.save(&#91;dw: <span class="java&#45;quote">"all"</span>&#93;)</pre></div><p class="paragraph"/><h1><a name="4. Querying">4. Querying</a></h1>The Riak GORM module provides several ways to query data that is stored in Riak:
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Since Riak doesn't support the notion of saved indexes, there are no options to specify what columns to index for faster searches. The GORM support for Riak relies on Riak's Map/Reduce implementation for queries, criteria, dynamic finder methods, and so on. As such, searching for data in Riak using finder methods can be slower than on other NoSQL datastores given a very large dataset. Caveat emptor.<p class="paragraph"/>That said, finder methods are fully supported in Riak for GORM:<p class="paragraph"/><div class="code"><pre>Person.findByLastName(<span class="java&#45;quote">"Simpson"</span>)</pre></div>
+
+
+
+<h2 id="3.1 Dealing with Eventual Consistency">3.1 Dealing with Eventual Consistency</h2>
+One of the important features of Riak is that, by default, Riak promises to be <a href="http://blog.basho.com/category/eventual-consistency/" target="blank">&#34;eventually consistent&#34; rather than synchronously up-to-date</a>. This means that when an update to data in Riak is issued, the update method might return before the data has been fully written to disk. This increases performance of writes but means operations that depend on just-inserted data being available (for queries, for example) need to be careful about when they are run.<p class="paragraph"/>If you want a <code>save()</code> call to be guaranteed to have persisted the object to disk before returning to your application, then you need to pass a QOS (Quality of Service) parameter to the entity's <code>save</code> method. You use the same names for the parameters as you would if you were specifying them on an HTTP URL: <code>w</code> for write, <code>dw</code> for durable write, and <code>r</code> for read.<p class="paragraph"/>For example, to ensure that an object has been completely flushed to disk before returning, use the "durable write" parameter:<p class="paragraph"/><div class="code"><pre>def p = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Bob"</span>)
+p.save(&#91;dw: <span class="java&#45;quote">"all"</span>&#93;)</pre></div><p class="paragraph"/>
+
+
+<h1 id="4. Querying">4 Querying</h1>
+The Riak GORM module provides several ways to query data that is stored in Riak:
 <ul class="star">
 <li><a href="http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html#5.4.1%20Dynamic%20Finders" target="blank">Dynamic Finders</a></li>
 <li><a href="http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html#5.4.2%20Criteria" target="blank">Criteria</a></li>
 <li><a href="http://grails.org/doc/latest/ref/Domain%20Classes/namedQueries.html" target="blank">Named Queries</a></li>
-</ul><p class="paragraph"/>These queries operate in largely the same way as they do with GORM for Hibernate.<h1><a name="5. Spring Data Support">5. Spring Data Support</a></h1>The Riak support for GORM is actually built on top of the Riak support for <a href="http://www.springsource.org/spring-data" target="blank">Spring Data</a>. As such, the Riak plugin provides full access to a <code>org.springframework.data.keyvalue.riak.core.RiakTemplate</code> or <code>org.springframework.data.keyvalue.riak.core.AsyncRiakTemplate</code> object you can inject into your own components. The former is for synchronous access to Riak, the latter is for asynchronous access.<p class="paragraph"/>For example, in a controller:<p class="paragraph"/><div class="code"><pre>class MyController &#123;
+</ul><p class="paragraph"/>These queries operate in largely the same way as they do with GORM for Hibernate.
+
+
+<h1 id="5. Spring Data Support">5 Spring Data Support</h1>
+The Riak support for GORM is actually built on top of the Riak support for <a href="http://www.springsource.org/spring-data" target="blank">Spring Data</a>. As such, the Riak plugin provides full access to a <code>org.springframework.data.keyvalue.riak.core.RiakTemplate</code> or <code>org.springframework.data.keyvalue.riak.core.AsyncRiakTemplate</code> object you can inject into your own components. The former is for synchronous access to Riak, the latter is for asynchronous access.<p class="paragraph"/>For example, in a controller:<p class="paragraph"/><div class="code"><pre>class MyController &#123;
     def riakTemplate<p class="paragraph"/>    def foo = &#123;
         def notifs = riak.get(<span class="java&#45;quote">"notifications"</span>, <span class="java&#45;quote">"myuser"</span>)
-        render <span class="java&#45;quote">"Notifications: $notifs"</span>
+        render <span class="java&#45;quote">"Notifications: &#36;notifs"</span>
     &#125;
 &#125;</pre></div><p class="paragraph"/>Or, for asynchronous access:<p class="paragraph"/><div class="code"><pre>class MyController &#123;
     def asyncRiakTemplate<p class="paragraph"/>    def foo = &#123;
         def callback = &#91;
             completed: &#123; metadata, val &#45;&#62;
-                // Since <span class="java&#45;keyword">this</span> is run asynchronously, 
+                // Since <span class="java&#45;keyword">this</span> is run asynchronously,
                 // put the data somewhere <span class="java&#45;keyword">else</span>&#8230;
             &#125;,
             failed: &#123; err &#45;&#62;
@@ -76,9 +165,14 @@ p.save(&#91;dw: <span class="java&#45;quote">"all"</span>&#93;)</pre></div><p cl
             &#125;
         &#93; as AsyncKeyValueStoreOperation
         riak.get(<span class="java&#45;quote">"notifications"</span>, <span class="java&#45;quote">"myuser"</span>, callback)<p class="paragraph"/>        // The previous call doesn't block, so we <span class="java&#45;keyword">continue</span> on&#8230;
-        render <span class="java&#45;quote">"Notifications: $notifs"</span>
+        render <span class="java&#45;quote">"Notifications: &#36;notifs"</span>
     &#125;
-&#125;</pre></div><p class="paragraph"/>See the Spring Data reference for more information on the methods available and on examples of using the <code>RiakTemplate</code> in your own code.<h2><a name="5.1 RiakBuilder Support">5.1 RiakBuilder Support</a></h2>Besides direct access to the Java-language template objects, the Riak plugin for Grails exposes a Groovy Builder object call RiakBuilder for use in your controllers and services. The builder uses a declarative, DSL-style syntax for working with Riak.<p class="paragraph"/>For example, to delete all entries in a bucket using the RiakBuilder DSL (which is a dynamic method the plugin adds to any controller or service class):<p class="paragraph"/><div class="code"><pre>riak &#123;
+&#125;</pre></div><p class="paragraph"/>See the Spring Data reference for more information on the methods available and on examples of using the <code>RiakTemplate</code> in your own code.
+
+
+
+<h2 id="5.1 RiakBuilder Support">5.1 RiakBuilder Support</h2>
+Besides direct access to the Java-language template objects, the Riak plugin for Grails exposes a Groovy Builder object call RiakBuilder for use in your controllers and services. The builder uses a declarative, DSL-style syntax for working with Riak.<p class="paragraph"/>For example, to delete all entries in a bucket using the RiakBuilder DSL (which is a dynamic method the plugin adds to any controller or service class):<p class="paragraph"/><div class="code"><pre>riak &#123;
   test &#123;
     foreach &#123;
       completed &#123; v, meta &#45;&#62; delete(key: meta.key) &#125;
@@ -91,14 +185,22 @@ p.save(&#91;dw: <span class="java&#45;quote">"all"</span>&#93;)</pre></div><p cl
 <li>The next level is optional. In this case, it sets the default bucket name to "test", so it's not necessary to specify it on operations contained within this block.</li>
 <li>When an operation is complete, if a "completed" closure is defined, the builder will call that closure, passing the results of the operation as the first parameter and optionally passing the metadata associated with that entry as the second (this might be null, depending on the context in which the completed closure is called). If no parameters are defined, the result of the operation is still available as the implicit variable "it".</li>
 <li>To handle errors, a "failed" closure should be defined, which should accept the exception just generated (the exception is also available as "it").</li>
-</ul><p class="paragraph"/>See the Spring Data reference for more information on the methods available and on examples of using the <code>RiakBuilder</code> in your own code.<h1><a name="6. Map Reduce Support">6. Map Reduce Support</a></h1>Since Map/Reduce is such an integral part of working with the Riak datastore, GORM for Riak provides access to this functionality both through the Map/Reduce operations exposed on the <code>RiakTemplate</code> and through a special static helper called "mapreduce".<p class="paragraph"/>To execute a Map/Reduce against all instances of a particular entity, you can do the following:<p class="paragraph"/><div class="code"><pre>def result = Person.mapreduce.execute(&#91;
+</ul><p class="paragraph"/>See the Spring Data reference for more information on the methods available and on examples of using the <code>RiakBuilder</code> in your own code.
+
+
+<h1 id="6. Map Reduce Support">6 Map Reduce Support</h1>
+Since Map/Reduce is such an integral part of working with the Riak datastore, GORM for Riak provides access to this functionality both through the Map/Reduce operations exposed on the <code>RiakTemplate</code> and through a special static helper called "mapreduce".<p class="paragraph"/>To execute a Map/Reduce against all instances of a particular entity, you can do the following:<p class="paragraph"/><div class="code"><pre>def result = Person.mapreduce.execute(&#91;
     map: &#91;
         source: <span class="java&#45;quote">"function(v)&#123; ...perform map operations&#8230; <span class="java&#45;keyword">return</span> &#91;result&#93;; &#125;"</span>
     &#93;,
     reduce: &#91;
         source: <span class="java&#45;quote">"function(v)&#123; ...perform reduce operations&#8230; <span class="java&#45;keyword">return</span> &#91;result&#93;; &#125;"</span>
     &#93;
-&#93;)</pre></div><p class="paragraph"/>This is an easy way to execute ad hoc queries in a way that is more optimized for your application than what the <code>Query</code> implementation will generate if you use criteria projections or a finder method.<h1><a name="7. Testing">7. Testing</a></h1>The Riak plugin provides a Groovy mixin called <a href="../ref/Testing/DatastoreUnitTestMixin.html" class="testing">DatastoreUnitTestMixin</a> for testing purposes. This mixin sets up a datastore implementation that operates against an in-memory <code>ConcurrentHashMap</code>. The datastore implementation that operates against an in-memory map is as complete as the one for Riak and provides support for:
+&#93;)</pre></div><p class="paragraph"/>This is an easy way to execute ad hoc queries in a way that is more optimized for your application than what the <code>Query</code> implementation will generate if you use criteria projections or a finder method.
+
+
+<h1 id="7. Testing">7 Testing</h1>
+The Riak plugin provides a Groovy mixin called <a href="../ref/Testing/DatastoreUnitTestMixin.html" class="testing">DatastoreUnitTestMixin</a> for testing purposes. This mixin sets up a datastore implementation that operates against an in-memory <code>ConcurrentHashMap</code>. The datastore implementation that operates against an in-memory map is as complete as the one for Riak and provides support for:
 <ul class="star">
 <li>Simple persistence methods</li>
 <li>Dynamic finders</li>
@@ -116,9 +218,64 @@ class PersonTests <span class="java&#45;keyword">extends</span> GroovyTestCase &
     &#125;
 &#125;</pre></div><p class="paragraph"/>You should call the <code>mockDomain()</code> method to mock a domain instance and then the remainder of the API is the same. Note that you should call <code>disconnect()</code> in <code>tearDown()</code> otherwise your tests will share data.
 
-        </div>
+
+                    </div>
+                </td>
+                <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                        
+                        <div class="menu-item"><a href="../ref/Beans/asyncRiakTemplate.html">asyncRiakTemplate</a>
+                        </div>
+                        
+                        <div class="menu-item"><a href="../ref/Beans/riak.html">riak</a>
+                        </div>
+                        
+                        <div class="menu-item"><a href="../ref/Beans/riakTemplate.html">riakTemplate</a>
+                        </div>
+                        
+                        </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
+                        
+                        
+                        <div class="menu-item"><a href="../ref/Domain%20Classes/mapreduce.html">mapreduce</a>
+                        </div>
+                        
+                        </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Testing</h1><div class="menu-sub">
+                        
+                        
+                        <div class="menu-item"><a href="../ref/Testing/DatastoreUnitTestMixin.html">DatastoreUnitTestMixin</a>
+                        </div>
+                        
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+            </tr>
+        </table>
+
         <div id="footer">
-             
+            
+            
         </div>
+
+
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
     </body>
 </html>

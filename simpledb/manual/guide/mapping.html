@@ -78,6 +78,8 @@ function addJsClass() {
                     <p><strong>Authors:</strong> Roman Stepanenko</p>
 
                     <p><strong>Version:</strong> 0.1</p>
+
+                    
                 </div>
 
                 
@@ -146,8 +148,15 @@ id field must be currently explicitly declared in the domain class:<p class="par
     <span class="java&#45;object">String</span> id
     <span class="java&#45;object">String</span> firstName
     <span class="java&#45;object">String</span> lastName<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"simpledb"</span>
-&#125;</pre></div><p class="paragraph"/>Generated ids are generated with <code>java.lang.UUID</code>. In the next version it might be changed for a faster UUID implementation.
-
+&#125;</pre></div><p class="paragraph"/>By default, generated ids are generated with <code>java.lang.UUID</code>. It is also possible to use hilo numeric value generator
+(please note that the id field must still be declared as String):
+<div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> id
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"simpledb"</span><p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
+        id_generator type: 'hilo', maxLo: 500
+    &#125;
+&#125;</pre></div><p class="paragraph"/>
 
 
 <h2 id="automaticIndexing">3.2 Automatic Indexing</h2>

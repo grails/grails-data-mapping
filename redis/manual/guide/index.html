@@ -1,34 +1,164 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
-        <title>Redis GORM 1.0.0.M1 - Reference Documentation</title>
-        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Style" charset="utf-8"/>
+        <title>Redis GORM 1.0.0.M5</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
         <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
+    <script type="text/javascript">
+function addJsClass(el) {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
     </head>
-    <body class="body">
+
+    <body class="body" onload="addJsClass();">
+        <div id="navigation">
+            <ul>
+                <li>
+                    <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                        <a href="../guide/index.html" class="button">Table of contents</a>
+                        <div id="nav-summary-childs" style="display:none;">
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="../guide/1.%20Introduction.html"><strong>1</strong><span>Introduction</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="../guide/3.%20Object%20Mapping.html"><strong>3</strong><span>Object Mapping</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="../guide/4.%20Querying.html"><strong>4</strong><span>Querying</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="../guide/5.%20Transactions.html"><strong>5</strong><span>Transactions</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="../guide/6.%20Redis%20Specific%20Extensions.html"><strong>6</strong><span>Redis Specific Extensions</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="../guide/7.%20The%20Low-level%20API.html"><strong>7</strong><span>The Low-level API</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="../guide/8.%20Testing.html"><strong>8</strong><span>Testing</span></a></div>
+                            
+                        </div>
+                    </div>
+                </li>
+                <li class="separator selected">
+                    <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+                </li>
+            </ul>
+        </div>
         <div id="header">
-            <div class="images"><br/><br/>
-                <a href="http://grails.org" target="_blank"><img alt="The Grails Framework" src="../img/grails.png" border="0"/></a>
-                <span style="right:30px; top:20px; position:absolute;">
-                    <a href="../index.html" target="_top">Frames</a> | <a href="index.html" target="_top">No Frames</a><br/><br/>
-                    <a href="http://springsource.com" target="_blank"><img alt="SpringSource - A Division of VMware" src="../img/springsource-logo.png" border="0"/></a>
-                </span>
+            <div class="images clearfix">
+                
+                
             </div>
-            <div class="message"></div>
-            <h1>Redis GORM - Reference Documentation</h1>
-            <p><strong>Authors:</strong> Graeme Rocher</p>
-            <p><strong>Version:</strong> 1.0.0.M1</p>
-            <em></em>
+            <p></p>
         </div>
 
-        <div id="toc">
-            <h2>Table of Contents</h2>
-            <div class="tocItem" style="margin-left:0px"><a href="1. Introduction.html">1. Introduction</a></div><div class="tocItem" style="margin-left:10px"><a href="1. Introduction.html#1.1 Compatibility with GORM for Hibernate">1.1 Compatibility with GORM for Hibernate</a></div><div class="tocItem" style="margin-left:0px"><a href="2. Getting Started.html">2. Getting Started</a></div><div class="tocItem" style="margin-left:10px"><a href="2. Getting Started.html#2.1 Using Redis Standalone">2.1 Using Redis Standalone</a></div><div class="tocItem" style="margin-left:10px"><a href="2. Getting Started.html#2.2 Combining Redis and Hibernate">2.2 Combining Redis and Hibernate</a></div><div class="tocItem" style="margin-left:0px"><a href="3. Object Mapping.html">3. Object Mapping</a></div><div class="tocItem" style="margin-left:0px"><a href="4. Querying.html">4. Querying</a></div><div class="tocItem" style="margin-left:10px"><a href="4. Querying.html#4.1 Query Limitations">4.1 Query Limitations</a></div><div class="tocItem" style="margin-left:0px"><a href="5. Transactions.html">5. Transactions</a></div><div class="tocItem" style="margin-left:0px"><a href="6. Redis Specific Extensions.html">6. Redis Specific Extensions</a></div><div class="tocItem" style="margin-left:0px"><a href="7. The Low-level API.html">7. The Low-level API</a></div><div class="tocItem" style="margin-left:0px"><a href="8. Testing.html">8. Testing</a></div>
-        </div>
-        <div id="content">
+
+        <table id="colset" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td id="col1">
+                    <div id="main" class="corner-all">
+
+                        <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                        <div class="project">
+                            <h1>Redis GORM - Reference Documentation</h1>
+                            <p><strong>Authors:</strong> Graeme Rocher</p>
+                            <p><strong>Version:</strong> 1.0.0.M5</p>
+                            
+                        </div>
+
+                        
+                        <div id="table-of-content">
+                            <h2>Table of Contents</h2>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="../guide/1.%20Introduction.html"><strong>1</strong><span>Introduction</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:10px"><a href="../guide/1.%20Introduction.html#1.1%20Compatibility%20with%20GORM%20for%20Hibernate"><strong>1.1</strong><span>Compatibility with GORM for Hibernate</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:10px"><a href="../guide/2.%20Getting%20Started.html#2.1%20Using%20Redis%20Standalone"><strong>2.1</strong><span>Using Redis Standalone</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:10px"><a href="../guide/2.%20Getting%20Started.html#2.2%20Combining%20Redis%20and%20Hibernate"><strong>2.2</strong><span>Combining Redis and Hibernate</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="../guide/3.%20Object%20Mapping.html"><strong>3</strong><span>Object Mapping</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="../guide/4.%20Querying.html"><strong>4</strong><span>Querying</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:10px"><a href="../guide/4.%20Querying.html#4.1%20Query%20Limitations"><strong>4.1</strong><span>Query Limitations</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="../guide/5.%20Transactions.html"><strong>5</strong><span>Transactions</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="../guide/6.%20Redis%20Specific%20Extensions.html"><strong>6</strong><span>Redis Specific Extensions</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="../guide/7.%20The%20Low-level%20API.html"><strong>7</strong><span>The Low-level API</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="../guide/8.%20Testing.html"><strong>8</strong><span>Testing</span></a></div>
+                            
+                            <div style="clear:both" ></div>
+                        </div>
+                        
+                        
+                    </div>
+                </td>
+                <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                        
+                        <div class="menu-item"><a href="../ref/Beans/redis.html">redis</a>
+                        </div>
+                        
+                        </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
+                        
+                        
+                        <div class="menu-item"><a href="../ref/Domain%20Classes/expire.html">expire</a>
+                        </div>
+                        
+                        <div class="menu-item"><a href="../ref/Domain%20Classes/pop.html">pop</a>
+                        </div>
+                        
+                        <div class="menu-item"><a href="../ref/Domain%20Classes/random.html">random</a>
+                        </div>
+                        
+                        </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Testing</h1><div class="menu-sub">
+                        
+                        
+                        <div class="menu-item"><a href="../ref/Testing/DatastoreUnitTestMixin.html">DatastoreUnitTestMixin</a>
+                        </div>
+                        
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+            </tr>
+        </table>
+
+        <div id="footer">
+            
             
         </div>
-        <div id="footer">
-             
-        </div>
+
+
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
     </body>
 </html>

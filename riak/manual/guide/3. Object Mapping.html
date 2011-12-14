@@ -1,16 +1,182 @@
-<html>
-    <head>
-        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
-        <title>3. Object Mapping</title>
-        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
-    </head>
-    <body class="body">
-    <h1><a name="3. Object Mapping">3. Object Mapping</a></h1>Object mapping works largely as described in the <a href="http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html" target="blank">documentation on GORM</a>. In general you can continue to model your associations using typical GORM notation such as <code>hasMany</code>, <code>belongsTo</code> and so on.<p class="paragraph"/>Here is an example of a domain class that can be persisted to Riak:<p class="paragraph"/><div class="code"><pre>class Person &#123;<p class="paragraph"/>    <span class="java&#45;object">String</span> firstName
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Object Mapping 1.0.0.M5</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/1.%20Introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/3.%20Object%20Mapping.html"><strong>3</strong><span>Object Mapping</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/4.%20Querying.html"><strong>4</strong><span>Querying</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/5.%20Spring%20Data%20Support.html"><strong>5</strong><span>Spring Data Support</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/6.%20Map%20Reduce%20Support.html"><strong>6</strong><span>Map Reduce Support</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/7.%20Testing.html"><strong>7</strong><span>Testing</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/2.%20Getting%20Started.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/4.%20Querying.html"><strong>4</strong><span>Querying</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>3 Object Mapping - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Jon Brisbin</p>
+
+                    <p><strong>Version:</strong> 1.0.0.M5</p>
+
+                    
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#3.1%20Dealing%20with%20Eventual%20Consistency"><strong>3.1</strong><span>Dealing with Eventual Consistency</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="3. Object Mapping">3 Object Mapping</h1>
+Object mapping works largely as described in the <a href="http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html" target="blank">documentation on GORM</a>. In general you can continue to model your associations using typical GORM notation such as <code>hasMany</code>, <code>belongsTo</code> and so on.<p class="paragraph"/>Here is an example of a domain class that can be persisted to Riak:<p class="paragraph"/><div class="code"><pre>class Person &#123;<p class="paragraph"/>    <span class="java&#45;object">String</span> firstName
     <span class="java&#45;object">String</span> lastName<p class="paragraph"/>    <span class="java&#45;keyword">static</span> constraints = &#123;
         firstName blank:<span class="java&#45;keyword">false</span>
         lastName blank:<span class="java&#45;keyword">false</span>
-    &#125;<p class="paragraph"/>&#125;</pre></div><p class="paragraph"/>Since Riak doesn't support the notion of saved indexes, there are no options to specify what columns to index for faster searches. The GORM support for Riak relies on Riak's Map/Reduce implementation for queries, criteria, dynamic finder methods, and so on. As such, searching for data in Riak using finder methods can be slower than on other NoSQL datastores given a very large dataset. Caveat emptor.<p class="paragraph"/>That said, finder methods are fully supported in Riak for GORM:<p class="paragraph"/><div class="code"><pre>Person.findByLastName(<span class="java&#45;quote">"Simpson"</span>)</pre></div>
-<h2><a name="3.1 Dealing with Eventual Consistency">3.1 Dealing with Eventual Consistency</a></h2>One of the important features of Riak is that, by default, Riak promises to be <a href="http://blog.basho.com/category/eventual-consistency/" target="blank">&#34;eventually consistent&#34; rather than synchronously up-to-date</a>. This means that when an update to data in Riak is issued, the update method might return before the data has been fully written to disk. This increases performance of writes but means operations that depend on just-inserted data being available (for queries, for example) need to be careful about when they are run.<p class="paragraph"/>If you want a <code>save()</code> call to be guaranteed to have persisted the object to disk before returning to your application, then you need to pass a QOS (Quality of Service) parameter to the entity's <code>save</code> method. You use the same names for the parameters as you would if you were specifying them on an HTTP URL: <code>w</code> for write, <code>dw</code> for durable write, and <code>r</code> for read.<p class="paragraph"/>For example, to ensure that an object has been completely flushed to disk before returning, use the "durable write" parameter:<p class="paragraph"/><div class="code"><pre>def p = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Bob"</span>)
+    &#125;
+&#125;</pre></div><p class="paragraph"/>Since Riak doesn't support the notion of saved indexes, there are no options to specify what columns to index for faster searches. The GORM support for Riak relies on Riak's Map/Reduce implementation for queries, criteria, dynamic finder methods, and so on. As such, searching for data in Riak using finder methods can be slower than on other NoSQL datastores given a very large dataset. Caveat emptor.<p class="paragraph"/>That said, finder methods are fully supported in Riak for GORM:<p class="paragraph"/><div class="code"><pre>Person.findByLastName(<span class="java&#45;quote">"Simpson"</span>)</pre></div>
+
+
+
+<h2 id="3.1 Dealing with Eventual Consistency">3.1 Dealing with Eventual Consistency</h2>
+One of the important features of Riak is that, by default, Riak promises to be <a href="http://blog.basho.com/category/eventual-consistency/" target="blank">&#34;eventually consistent&#34; rather than synchronously up-to-date</a>. This means that when an update to data in Riak is issued, the update method might return before the data has been fully written to disk. This increases performance of writes but means operations that depend on just-inserted data being available (for queries, for example) need to be careful about when they are run.<p class="paragraph"/>If you want a <code>save()</code> call to be guaranteed to have persisted the object to disk before returning to your application, then you need to pass a QOS (Quality of Service) parameter to the entity's <code>save</code> method. You use the same names for the parameters as you would if you were specifying them on an HTTP URL: <code>w</code> for write, <code>dw</code> for durable write, and <code>r</code> for read.<p class="paragraph"/>For example, to ensure that an object has been completely flushed to disk before returning, use the "durable write" parameter:<p class="paragraph"/><div class="code"><pre>def p = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Bob"</span>)
 p.save(&#91;dw: <span class="java&#45;quote">"all"</span>&#93;)</pre></div><p class="paragraph"/>
-    </body>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/2.%20Getting%20Started.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/4.%20Querying.html"><strong>4</strong><span>Querying</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Beans/asyncRiakTemplate.html">asyncRiakTemplate</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Beans/riak.html">riak</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Beans/riakTemplate.html">riakTemplate</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/mapreduce.html">mapreduce</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Testing</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Testing/DatastoreUnitTestMixin.html">DatastoreUnitTestMixin</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
 </html>

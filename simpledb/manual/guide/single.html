@@ -61,6 +61,7 @@ function addJsClass(el) {
                             <h1>GORM for AWS SimpleDB - Reference Documentation</h1>
                             <p><strong>Authors:</strong> Roman Stepanenko</p>
                             <p><strong>Version:</strong> 0.1</p>
+                            
                         </div>
 
                         
@@ -122,6 +123,8 @@ for usage information.<p class="paragraph"/>The following key features are suppo
 <li>Customizable AWS SimpleDB domain name per domain object</li>
 <li>Customizable AWS SimpleDB attribute name per attribute in domain object</li>
 <li>Customizable (optional) prefix for all AWS SimpleDB domain - useful when same AWS account is used for more than one environment (DEV and QA)</li>
+<li>hilo numeric id generator to use as alternative to default UUID</li>
+<li>Enum fields are supported</li>
 <li>Sorting and lexicographical comparison -friendly persistence of the following data types (including negative values for numeric types):</li>
 <ul class="star">
 <li>byte</li>
@@ -233,7 +236,7 @@ To get started with GORM for SimpleDB you need to install the plugin into a Grai
 
 <h2 id="configurationOptions">2.1 Configuration Options</h2>
 <h3>Configuration options for simpledb plugin.</h3><p class="paragraph"/>simpledb plugin supports the following configuration options:
-<table class="wiki-table" cellpadding="0" cellspacing="0" border="0"><tr><th><strong class="bold">Name</strong></th><th><strong class="bold">Required</strong></th><th><strong class="bold">Description</strong></th></tr><tr class="table-odd"><td>accessKey</td><td>Y</td><td>AWS access key value. IMPORTANT: <strong class="bold">You have to properly guard this value. Do not keep it in version control system if anyone except authorized persons has access to your VCS</strong></td></tr><tr class="table-even"><td>secretKey</td><td>Y</td><td>AWS secret key value. IMPORTANT: <strong class="bold">You have to properly guard this value. Do not keep it in version control system if anyone except authorized persons has access to your VCS</strong></td></tr><tr class="table-odd"><td>domainNamePrefix</td><td>N</td><td>if this property is specified, the value will be prefixed to all AWS domain names. It is handy when the same AWS account is shared between more than one environment.</td></tr><tr class="table-even"><td>dbCreate</td><td>N</td><td>similar to GORM for hibernate. Currently supports <strong class="bold">'drop'</strong> (will drop the domains for domain classes at startup), <strong class="bold">'create'</strong> (will create domains for domain classes at startup if they do not exist), <strong class="bold">'drop-create'</strong> (at startup will ensure that all domains are present and are <strong class="bold">empty</strong> - do not use in PROD environment!)</td></tr></table><p class="paragraph"/>To configure, provide the following in the Config.groovy or your custom MyApp.groovy config file:
+<table class="wiki-table" cellpadding="0" cellspacing="0" border="0"><tr><th><strong class="bold">Name</strong></th><th><strong class="bold">Required</strong></th><th><strong class="bold">Description</strong></th></tr><tr class="table-odd"><td>accessKey</td><td>Y</td><td>AWS access key value. IMPORTANT: <strong class="bold">You have to properly guard this value. Do not keep it in version control system if anyone except authorized persons has access to your VCS</strong></td></tr><tr class="table-even"><td>secretKey</td><td>Y</td><td>AWS secret key value. IMPORTANT: <strong class="bold">You have to properly guard this value. Do not keep it in version control system if anyone except authorized persons has access to your VCS</strong></td></tr><tr class="table-odd"><td>domainNamePrefix</td><td>N</td><td>if this property is specified, the value will be prefixed to all AWS domain names. It is handy when the same AWS account is shared between more than one environment.</td></tr><tr class="table-even"><td>dbCreate</td><td>N</td><td>similar to GORM for hibernate. Currently supports <strong class="bold">'drop'</strong> (will drop the domains for domain classes at startup), <strong class="bold">'create'</strong> (will create domains for domain classes at startup if they do not exist), <strong class="bold">'drop-create'</strong> (at startup will ensure that all domains are present and are <strong class="bold">empty</strong> - do not use in PROD environment!)</td></tr><tr class="table-odd"><td>disableDrop</td><td>N</td><td>boolean property used as an extra protection against accidentally dropping data by setting dbCreate flag to 'drop' or 'drop-create'. Typically, this property would be set to true in PROD configuration after initial release of the application. Since AWS SimpleDB does not provide backup, accidentally dropping PROD domains can have a devastating effect. If the value of this property is true, the plugin will throw an exception if dbCreate is 'drop' or 'create-drop'.</td></tr></table><p class="paragraph"/>To configure, provide the following in the Config.groovy or your custom MyApp.groovy config file:
 <div class="code"><pre>grails &#123;
     simpledb &#123;
         accessKey = '...'
@@ -251,6 +254,7 @@ To get started with GORM for SimpleDB you need to install the plugin into a Grai
     production &#123;
         grails &#123;
             simpledb &#123;
+                disableDrop = <span class="java&#45;keyword">true</span> //extra protection against accidental misconfiguration of the 'dbCreate' flag
                 domainNamePrefix = 'PROD_' //<span class="java&#45;keyword">this</span> setting is optional, used when the same AWS account is shared between more than one environment
                 dbCreate = 'create' // one of 'drop, 'create', 'drop&#45;create'
             &#125;
@@ -339,8 +343,15 @@ id field must be currently explicitly declared in the domain class:<p class="par
     <span class="java&#45;object">String</span> id
     <span class="java&#45;object">String</span> firstName
     <span class="java&#45;object">String</span> lastName<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"simpledb"</span>
-&#125;</pre></div><p class="paragraph"/>Generated ids are generated with <code>java.lang.UUID</code>. In the next version it might be changed for a faster UUID implementation.
-
+&#125;</pre></div><p class="paragraph"/>By default, generated ids are generated with <code>java.lang.UUID</code>. It is also possible to use hilo numeric value generator
+(please note that the id field must still be declared as String):
+<div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> id
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"simpledb"</span><p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
+        id_generator type: 'hilo', maxLo: 500
+    &#125;
+&#125;</pre></div><p class="paragraph"/>
 
 
 <h2 id="automaticIndexing">3.2 Automatic Indexing</h2>
@@ -368,7 +379,12 @@ executed, hence we allow for some transactional semantics.<p class="paragraph"/>
 
 
 <h1 id="releaseNotes">5 Release Notes</h1>
-Below are the details of the changes across releases:<p class="paragraph"/><h4>Version 0.1</h4><p class="paragraph"/>Initial implementation of the SimpleDB support with
+Below are the details of the changes across releases:<p class="paragraph"/><h4>Version 0.2 (currently not yet released)</h4>
+<ul class="star">
+<li>Implemented hilo numeric id generator to use as alternative to default UUID</li>
+<li>Enum fields are supported</li>
+<li>Implemented automatic retry of operations when AWS rejects request with 'ServiceUnavailable' error code</li>
+</ul><p class="paragraph"/><h4>Version 0.1</h4><p class="paragraph"/>Initial implementation of the SimpleDB support with
 <ul class="star">
 <li>Dynamic finders</li>
 <li>Criteria queries</li>

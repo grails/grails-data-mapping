@@ -1,11 +1,99 @@
-<html>
-    <head>
-        <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
-        <title>2. Getting Started</title>
-        <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen" title="Ref" charset="utf-8"/>
-    </head>
-    <body class="body">
-    <h1><a name="2. Getting Started">2. Getting Started</a></h1>To get started with GORM for Riak, you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin riak</pre></div><p class="paragraph"/>Now you need to install and configure a Riak server for your architecture. To install Riak, you have several options:
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>2 Getting Started 1.0.0.M5</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/1.%20Introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/2.%20Getting%20Started.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/3.%20Object%20Mapping.html"><strong>3</strong><span>Object Mapping</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/4.%20Querying.html"><strong>4</strong><span>Querying</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/5.%20Spring%20Data%20Support.html"><strong>5</strong><span>Spring Data Support</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/6.%20Map%20Reduce%20Support.html"><strong>6</strong><span>Map Reduce Support</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/7.%20Testing.html"><strong>7</strong><span>Testing</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/1.%20Introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/3.%20Object%20Mapping.html"><strong>3</strong><span>Object Mapping</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>2 Getting Started - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Jon Brisbin</p>
+
+                    <p><strong>Version:</strong> 1.0.0.M5</p>
+
+                    
+                </div>
+
+                
+
+                
+
+<h1 id="2. Getting Started">2 Getting Started</h1>
+To get started with GORM for Riak, you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin riak</pre></div><p class="paragraph"/>Now you need to install and configure a Riak server for your architecture. To install Riak, you have several options:
 <ul class="star">
 <li>Use a pre-compiled binary downloaded from the official download page: <a href="http://downloads.basho.com/riak/" target="blank">http://downloads.basho.com/riak/</a></li>
 <li>Install from a package manager like <code>apt</code> or <a href="http://mxcl.github.com/homebrew/" target="blank">Homebrew</a></li>
@@ -18,10 +106,73 @@ Erlang R14B (erts&#45;5.8.1) &#91;source&#93; &#91;64&#45;bit&#93; &#91;smp:2:2&
 =INFO REPORT==== 13&#45;Dec&#45;2010::16:30:51 ===
 Spidermonkey VM (thread stack: 32MB, max heap: 12MB) host starting (&#60;0.147.0&#62;)
 Eshell V5.8.1  (abort with ^G)
-(riak<code>127.0.0.1)1&#62;</pre></div><p class="paragraph"/>The default port for Riak's REST interface is 8098. So the default URI built into the Riak GORM support will work. The default is </code>http://localhost:8098/riak/{bucket}/{key}<code>.<p class="paragraph"/>If you need to configure the URLs for the </code>RiakTemplate<code>, do so by adding configuration elements to </code>grails-app/conf/Config.groovy@:<p class="paragraph"/><div class="code"><pre><div class="error">code: null</div>
-grails.riak.defaultUri = "http://localhost:8098/riak/{bucket}/{key}"
-grails.riak.mapReduceUri = "http://localhost:8098/mapred"
-<div class="code"><pre><div class="error">code: null</div>
+(riak&#64;127.0.0.1)1&#62;</pre></div><p class="paragraph"/>The default port for Riak's REST interface is 8098. So the default URI built into the Riak GORM support will work. The default is <code>http://localhost:8098/riak/{bucket}/{key}</code>.<p class="paragraph"/>If you need to configure the URLs for the <code>RiakTemplate</code>, do so by adding configuration elements to <code>grails-app/conf/Config.groovy</code>:<p class="paragraph"/><div class="code"><pre>grails.riak.defaultUri = <span class="java&#45;quote">"http://localhost:8098/riak/&#123;bucket&#125;/&#123;key&#125;"</span>
+grails.riak.mapReduceUri = <span class="java&#45;quote">"http://localhost:8098/mapred"</span></pre></div>
 
-    </body>
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/1.%20Introduction.html">&lt;&lt; <strong>1</strong><span>Introduction</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/3.%20Object%20Mapping.html"><strong>3</strong><span>Object Mapping</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Beans/asyncRiakTemplate.html">asyncRiakTemplate</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Beans/riak.html">riak</a>
+                            </div>
+                            
+                            <div class="menu-item"><a href="../ref/Beans/riakTemplate.html">riakTemplate</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Domain%20Classes/mapreduce.html">mapreduce</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Testing</h1><div class="menu-sub">
+                        
+                            
+                            <div class="menu-item"><a href="../ref/Testing/DatastoreUnitTestMixin.html">DatastoreUnitTestMixin</a>
+                            </div>
+                            
+                            </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
 </html>

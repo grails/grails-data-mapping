@@ -1,0 +1,6 @@
+org.grails.datastore.mapping.simpledb
+org.grails.datastore.mapping.simpledb.config
+org.grails.datastore.mapping.simpledb.engine
+org.grails.datastore.mapping.simpledb.model.types
+org.grails.datastore.mapping.simpledb.query
+org.grails.datastore.mapping.simpledb.util

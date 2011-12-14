@@ -4,8 +4,8 @@
 <head>
     <title>1.1 Current Feature Set 0.1</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
-    <link rel="stylesheet" href="../../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
     <script type="text/javascript">
 function addJsClass() {
     var classes = document.body.className.split(" ");
@@ -76,6 +76,8 @@ function addJsClass() {
                     <p><strong>Authors:</strong> Roman Stepanenko</p>
 
                     <p><strong>Version:</strong> 0.1</p>
+
+                    
                 </div>
 
                 
@@ -96,6 +98,8 @@ for usage information.<p class="paragraph"/>The following key features are suppo
 <li>Customizable AWS SimpleDB domain name per domain object</li>
 <li>Customizable AWS SimpleDB attribute name per attribute in domain object</li>
 <li>Customizable (optional) prefix for all AWS SimpleDB domain - useful when same AWS account is used for more than one environment (DEV and QA)</li>
+<li>hilo numeric id generator to use as alternative to default UUID</li>
+<li>Enum fields are supported</li>
 <li>Sorting and lexicographical comparison -friendly persistence of the following data types (including negative values for numeric types):</li>
 <ul class="star">
 <li>byte</li>
@@ -155,7 +159,7 @@ focus purely on the grails application without setting up and managing a dev/pro
     Official production and development support for plugin is available via OSMoss: <a href="http://www.osmoss.com/project/grails-gorm-simpledb">http://www.osmoss.com/project/grails-gorm-simpledb</a>
 </div>
 
-<script type="text/javascript" src="../../js/docs.js"></script>
+<script type="text/javascript" src="../js/docs.js"></script>
 
 </body>
 </html>

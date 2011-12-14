@@ -1,4 +1,5 @@
-org.springframework.datastore.mapping.riak
-org.springframework.datastore.mapping.riak.collection
-org.springframework.datastore.mapping.riak.engine
-org.springframework.datastore.mapping.riak.util
+org.grails.datastore.mapping.riak
+org.grails.datastore.mapping.riak.collection
+org.grails.datastore.mapping.riak.engine
+org.grails.datastore.mapping.riak.query
+org.grails.datastore.mapping.riak.util
