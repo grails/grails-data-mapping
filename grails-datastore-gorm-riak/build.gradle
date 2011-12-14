@@ -13,7 +13,9 @@ dependencies {
         transitive = false
     }
 
+
     compile project(":grails-datastore-gorm"),
+            project(":grails-datastore-gorm-plugin-support"),
             project(":grails-datastore-riak"),
             project(":grails-datastore-core")
 

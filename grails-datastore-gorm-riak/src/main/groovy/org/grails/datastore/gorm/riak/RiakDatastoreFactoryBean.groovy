@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.riak.RiakDatastore
+import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 
 /**
  * @author J. Brisbin <jon@jbrisbin.com>
@@ -35,13 +36,11 @@ class RiakDatastoreFactoryBean implements FactoryBean<RiakDatastore>, Applicatio
     Map<String, String> config
     MappingContext mappingContext
     ApplicationContext applicationContext
+    GrailsPluginManager pluginManager
 
     RiakDatastore getObject() {
         RiakDatastore datastore = new RiakDatastore(mappingContext, config, applicationContext)
-        applicationContext.addApplicationListener new DomainEventListener(datastore)
-        applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
         datastore.afterPropertiesSet()
-
         datastore
     }
 

@@ -9,30 +9,51 @@ grails.project.dependency.resolution = {
     log "warn"
 
     repositories {
-        grailsPlugins()
-        grailsHome()
+        mavenRepo "http://repo.grails.org/grails/core"
         grailsCentral()
-
-        mavenLocal()
-        mavenCentral()
-        mavenRepo 'http://repository.codehaus.org'
     }
 
     dependencies {
 
-        def excludes = {
-            excludes "slf4j-simple", "persistence-api", "commons-logging", "jcl-over-slf4j", "slf4j-api", "jta"
-            excludes "spring-core", "spring-beans", "spring-aop", "spring-asm", "spring-webmvc", "spring-tx", "spring-context", "spring-web", "log4j", "slf4j-log4j12"
+		def datastoreVersion = "1.0.0.RELEASE"
+	    def riakDatastoreVersion = "1.0.0.BUILD-SNAPSHOT"
+	    
+	    compile( 'org.springframework.data:spring-data-riak:1.0.0.M3' ) {
+	        transitive = false
+	    }
+	    compile( 'org.springframework.data:spring-data-keyvalue-core:1.0.0.M3' ) {
+	        transitive = false
+	    }
+	    
+	    runtime("org.codehaus.jackson:jackson-core-asl:1.7.4") {
+	        transitive = false
+	    }	    
+	    runtime("org.codehaus.jackson:jackson-mapper-asl:1.7.4"){
+	        transitive = false
+	    }	    	    
+	    
+	    compile("org.grails:grails-datastore-gorm-riak:$riakDatastoreVersion",
+	            "org.grails:grails-datastore-riak:$riakDatastoreVersion") {
+	        transitive = false
+	    }
+
+        compile(
+                "org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",        
+                "org.grails:grails-datastore-gorm:$datastoreVersion",
+                "org.grails:grails-datastore-core:$datastoreVersion",                
+                "org.grails:grails-datastore-web:$datastoreVersion") {
+            transitive = false
         }
 
-		  def version = "1.0.0.M7"
+        test("org.grails:grails-datastore-gorm-test:$datastoreVersion",
+             "org.grails:grails-datastore-simple:$datastoreVersion") {
+            transitive = false
+        }
+    }
 
-        runtime("org.springframework.data:spring-data-riak:1.0.0.M2", excludes)
-        runtime("org.grails:grails-datastore-gorm:$version", excludes)
-        runtime("org.grails:grails-datastore-gorm-riak:$version", excludes)
-        runtime("org.springframework:grails-datastore-web:$version", excludes)
-        runtime("org.springframework:grails-datastore-riak:$version", excludes)
-
-        test("org.grails:grails-datastore-gorm-test:$version", excludes)
+    plugins {
+        build(":release:1.0.0") {
+            export = false
+        }
     }
 }
