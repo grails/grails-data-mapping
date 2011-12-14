@@ -220,6 +220,15 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="grails-datastore-gorm-tck" scope="TEST" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.grails/grails-gorm/jars/grails-gorm-1.3.7.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
 

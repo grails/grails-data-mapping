@@ -5,6 +5,8 @@ import grails.gorm.tests.CrudOperationsSpec
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 import org.junit.runners.Suite.SuiteClasses
+import grails.gorm.tests.PagedResultSpec
+import grails.gorm.tests.EnumSpec
 
 /**
  * @author graemerocher
@@ -30,7 +32,9 @@ import org.junit.runners.Suite.SuiteClasses
 //  UpdateWithProxyPresentSpec,
 //  AttachMethodSpec,
 //  WithTransactionSpec,
-  CrudOperationsSpec
+//  CrudOperationsSpec
+//    PagedResultSpec
+    EnumSpec
 ])
 class MongoSuite {
 }
