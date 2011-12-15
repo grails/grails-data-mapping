@@ -25,7 +25,7 @@ grails.project.dependency.resolution = {
         }
         
 		def datastoreVersion = "1.0.0.RELEASE"
-	    def riakDatastoreVersion = "1.0.0.BUILD-SNAPSHOT"
+	    def riakDatastoreVersion = "1.0.0.RC3"
 	    
 	    compile( 'org.springframework.data:spring-data-riak:1.0.0.M3',excludes)
 	    compile( 'org.springframework.data:spring-data-keyvalue-core:1.0.0.M3',excludes )
