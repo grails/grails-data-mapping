@@ -25,11 +25,14 @@ grails.project.dependency.resolution = {
             excludes group:"org.grails", name:'grails-core'
             excludes group:"org.grails", name:'grails-gorm'
             excludes group:"org.grails", name:'grails-test'
+            excludes group:'xml-apis', name:'xml-apis'
+            excludes 'ehcache-core'
             transitive = false
         }
 
         compile("org.mongodb:mongo-java-driver:2.7.1",,excludes)
         compile("org.springframework.data:spring-data-mongodb:1.0.0.RC1", excludes)
+        compile("org.springframework.data:spring-data-commons-core:1.2.0.RC1", excludes)
         runtime("com.gmongo:gmongo:0.9.1", excludes)
 
         def datastoreVersion = "1.0.0.RELEASE"
