@@ -17,7 +17,7 @@ class SimpledbGrailsPlugin {
     def scm = [ url: "https://github.com/SpringSource/grails-data-mapping" ]
     def developers = [
         [ name: "Roman Stepanenko", email: "rs.opensource@gmail.com" ] ]
-    def version = "0.1"
+    def version = "0.2"
     def grailsVersion = "1.3.5 > *"
     def observe = ['services', 'domainClass']
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
@@ -37,7 +37,7 @@ class SimpledbGrailsPlugin {
     def doWithSpring = new SimpleDBSpringConfigurer().getConfiguration()
 
     def doWithDynamicMethods = { ctx ->
-
+        println 'simpledb plugin: '+version
         def datastore = ctx.simpledbDatastore
         def transactionManager = ctx.simpledbTransactionManager
         def methodsConfigurer = new SimpleDBMethodsConfigurer(datastore, transactionManager)

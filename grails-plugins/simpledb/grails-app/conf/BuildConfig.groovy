@@ -8,14 +8,16 @@ grails.project.dependency.resolution = {
 
     log "warn"
 
-    String datastoreVersion = "1.0.0.RC1"
+    String simpledbVersion = "0.2.RELEASE"
     //for local development and testing of the plugin:
     // 1) change version in grails-data-mapping/build.gradle to an appropriate snapshot
     // 2) grails-data-mapping/gradle install
     // 3) specify the same snapshot version here in the line below after the comments
     // 4) in your grails app BuildConfig: grails.plugin.location.'simpledb' = "C:/Source/grails-data-mapping/grails-plugins/simpledb"
     // 5) in your grails app BuildConfig: enable mavenLocal() in repositories AND put it first in the list of repos
-//    String datastoreVersion = "1.0.0.BUILD-SNAPSHOT"
+//    String simpledbVersion = "0.2.BUILD-SNAPSHOT"
+
+    String datastoreVersion = "1.0.0.RELEASE"
 
     repositories {
         grailsPlugins()
@@ -32,17 +34,17 @@ grails.project.dependency.resolution = {
         def excludes = {
             transitive = false
         }
-        compile("org.grails:grails-datastore-gorm-simpledb:$datastoreVersion",
+        compile("org.grails:grails-datastore-gorm-simpledb:$simpledbVersion",
                  "org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
                  "org.grails:grails-datastore-gorm:$datastoreVersion",
                  "org.grails:grails-datastore-core:$datastoreVersion",
-                 "org.grails:grails-datastore-simpledb:$datastoreVersion",
+                 "org.grails:grails-datastore-simpledb:$simpledbVersion",
                  "org.grails:grails-datastore-web:$datastoreVersion") {
              transitive = false
          }        
 
         runtime("stax:stax:1.2.0", excludes)
-        runtime('com.amazonaws:aws-java-sdk:1.2.0')
+        runtime('com.amazonaws:aws-java-sdk:1.2.15')
 
         test("org.grails:grails-datastore-gorm-test:$datastoreVersion",
              "org.grails:grails-datastore-simple:$datastoreVersion") {
@@ -51,7 +53,7 @@ grails.project.dependency.resolution = {
     }
     
     plugins {
-        build ":release:1.0.0.RC3", {
+        build ":release:$simpledbVersion", {
             exported = false
         }
     }
