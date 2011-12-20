@@ -1,4 +1,4 @@
-version = "0.2.RELEASE"
+version = "0.3.RELEASE"
 
 dependencies {
     compile project(":grails-datastore-core")
