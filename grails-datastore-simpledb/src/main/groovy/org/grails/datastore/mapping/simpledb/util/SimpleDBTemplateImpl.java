@@ -17,7 +17,6 @@ package org.grails.datastore.mapping.simpledb.util;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.simpledb.model.*;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
@@ -243,11 +242,11 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         return count > 0;
     }
 
-    public List<Item> query(String query) {
-        return queryInternal(query, 1);
+    public List<Item> query(String query, int max) {
+        return queryInternal(query, max, 1);
     }
-    private List<Item> queryInternal(String query, int attempt) {
-        List<Item> items = new LinkedList<Item>();
+    private List<Item> queryInternal(String query, int max, int attempt) {
+        LinkedList<Item> items = new LinkedList<Item>();
         try {
             SelectRequest selectRequest = new SelectRequest(query);
             SelectResult result = sdb.select(selectRequest);
@@ -261,7 +260,12 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
                     result = sdb.select(selectRequest);
                     items.addAll(result.getItems());
                 }
-            } while (nextToken != null);
+            } while (nextToken != null && items.size() < max);
+
+            //truncate if needed
+            while (items.size() > max){
+                items.removeLast();
+            }
 
             return items;
         } catch (AmazonServiceException e) {
@@ -271,7 +275,7 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
                 //retry after a small pause
                 SimpleDBUtil.sleepBeforeRetry(attempt);
                 attempt++;
-                return queryInternal(query, attempt);
+                return queryInternal(query, max, attempt);
             } else {
                 throw e;
             }
