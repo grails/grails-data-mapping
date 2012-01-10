@@ -1,0 +1,140 @@
+To get started with your a new GORM implementation the following steps are required:
+
+h3. Initial Directory Creation
+
+{code}
+$ git clone git@github.com:SpringSource/grails-data-mapping.git 
+$ cd grails-data-mapping
+$ mkdir grails-datastore-gorm-xyz
+
+{code}
+
+h3. Setup Gradle Build
+
+Create build.gradle:
+
+{code}
+$ vi grails-datastore-gorm-xyz/build.gradle
+{code}
+
+With contents:
+
+{code}
+dependencies {
+    compile project(':grails-datastore-gorm'),
+            project(':grails-datastore-web'),
+            project(':grails-datastore-gorm-plugin-support')
+            
+    testCompile project(':grails-datastore-gorm-test'),
+                project(':grails-datastore-gorm-tck')
+    testRuntime 'javax.servlet:servlet-api:2.5'
+    testRuntime 'org.grails:grails-gorm:$grailsVersion'
+    testRuntime 'org.grails:grails-web:$grailsVersion'
+
+}
+{code}
+
+Add new project to settings.gradle in root project:
+
+{code}
+$ vi settings.gradle
+{code}
+
+Changes shown below:
+
+{code}
+// GORM Implementations
+'grails-datastore-gorm-jpa',
+'grails-datastore-gorm-neo4j',
+'grails-datastore-gorm-xyz',
+....
+{code}
+
+h3. Create Project Source Directories
+
+{code}
+$ mkdir grails-datastore-gorm-xyz/src/main/groovy
+$ mkdir grails-datastore-gorm-xyz/src/test/groovy
+{code}
+
+h3. Generate IDE Project Files and Import into IDE
+
+{code}
+$ gradlew grails-datastore-gorm-xyz:idea
+{code}
+
+Or
+
+{code}
+$ gradlew grails-datastore-gorm-xyz:eclipse
+{code}
+
+h3. Implement Required Interfaces
+
+In @src/main/groovy@ create implementations:
+
+* @org.grails.datastore.xyz.XyzDatastore@ extends and implements @org.grails.datastore.mapping.core.AbstractDatastore@ 
+* @org.grails.datastore.xyz.XyzSession@ extends and implements @org.grails.datastore.mapping.core.AbstractSession@ 
+* @org.grails.datastore.xyz.engine.XyzEntityPersister@ extends and implements @org.grails.datastore.mapping.engine.NativeEntryEntityPersister@ 
+* @org.grails.datastore.xyz.query.XyzQuery@ extends and implements @org.grails.datastore.mapping.query.Query@
+
+h3. Create Test Suite 
+
+In @src/test/groovy@ create @org.grails.datastore.gorm.Setup@ class to configure TCK:
+
+{code}
+class Setup {
+
+    static xyz
+    static destroy() {
+        xyz.disconnect()
+    }
+    static Session setup(classes) {
+        def ctx = new GenericApplicationContext()
+        ctx.refresh()
+        xyz = new XyzDatastore(ctx)
+        for (cls in classes) {
+            xyz.mappingContext.addPersistentEntity(cls)
+        }
+
+
+        def enhancer = new GormEnhancer(xyz, new DatastoreTransactionManager(datastore: xyz))
+        enhancer.enhance()
+
+        xyz.mappingContext.addMappingContextListener({ e -> enhancer.enhance e } as MappingContext.Listener)
+        xyz.applicationContext.addApplicationListener new DomainEventListener(xyz)
+        xyz.applicationContext.addApplicationListener new AutoTimestampEventListener(xyz)
+
+        xyz.connect()
+    }
+}
+
+{code}
+
+Then in @src/test/groovy@ create test suite class to allow running tests in IDE (without this you won't be able to run TCK tests from the IDE). Example test suite:
+
+{code}
+package org.grails.datastore.gorm
+
+import org.junit.runners.Suite.SuiteClasses
+import org.junit.runners.Suite
+import org.junit.runner.RunWith
+import grails.gorm.tests.*
+
+/**
+ * @author graemerocher
+ */
+@RunWith(Suite)
+@SuiteClasses([
+  FindByMethodSpec,
+  ListOrderBySpec
+])
+class XyzTestSuite {
+}
+
+{code}
+
+h3. Implement the TCK!
+
+Keep iterating until you have implemented all the tests in the TCK.
+

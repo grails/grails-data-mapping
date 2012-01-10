@@ -1,3 +1,5 @@
+version = "1.0.0.M8"
+
 dependencies {
     compile project(":grails-datastore-core")
     compile("commons-pool:commons-pool:1.5.5")

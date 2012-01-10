@@ -1,3 +1,5 @@
+version = "1.0.0.M8"
+
 dependencies {
     compile project(":grails-datastore-gorm"),
             project(":grails-datastore-gorm-plugin-support"),

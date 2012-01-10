@@ -26,9 +26,6 @@ import groovy.lang.GroovyObject;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,6 +38,7 @@ import java.util.Set;
 
 import javax.persistence.Entity;
 
+import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
@@ -180,17 +178,12 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 if (isCollectionType(currentPropType)) {
                     Class relatedClassType = (Class) hasManyMap.get(propertyName);
                     if(relatedClassType == null) {
-                        try {
-                            Field declaredField = entity.getJavaClass().getDeclaredField(propertyName);
-                            Type genericType = declaredField.getGenericType();
-                            if(genericType instanceof ParameterizedType) {
-                                Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
-                                if(typeArguments.length>0) {
-                                    relatedClassType = (Class) typeArguments[0];
-                                }
-                            }
-                        } catch (NoSuchFieldException e) {
-                            // ignore
+                        Class javaClass = entity.getJavaClass();
+
+                        Class genericClass = MappingUtils.getGenericTypeForProperty(javaClass, propertyName);
+
+                        if(genericClass != null) {
+                            relatedClassType = genericClass;
                         }
                     }
                     if(relatedClassType != null) {
@@ -660,7 +653,11 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
     private boolean isExcludedProperty(String propertyName, ClassMapping classMapping, Collection transients) {
         IdentityMapping id = classMapping != null ? classMapping.getIdentifier() : null;
-        return id != null && id.getIdentifierName()[0].equals(propertyName) || id == null && propertyName.equals(IDENTITY_PROPERTY) || EXCLUDED_PROPERTIES.contains(propertyName) || transients.contains(propertyName);
+        String[] identifierName = id != null ? id.getIdentifierName() : null;
+        return identifierName != null && propertyName.equals(identifierName[0]) ||
+                id == null && propertyName.equals(IDENTITY_PROPERTY) ||
+                EXCLUDED_PROPERTIES.contains(propertyName) ||
+                transients.contains(propertyName);
     }
 
     /**

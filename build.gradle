@@ -24,9 +24,10 @@ apply plugin: 'idea'
 apply plugin: 'project-report'
 
 subprojects {
-//    releaseType = "BUILD-SNAPSHOT"
-    releaseType = "RC3"
-    version = "1.0.0.${releaseType}"
+//    releaseType = "RELEASE"
+   releaseType = "BUILD-SNAPSHOT"
+/*    releaseType = "RC3"*/
+    version = "1.0.1.${releaseType}"
     group = "org.grails"
 
     def isStandardGroovyMavenProject = isGroovyProject(project)
@@ -52,6 +53,7 @@ subprojects {
     }
 
     def isGormDatasource = project.name.startsWith("grails-datastore-gorm-") && !project.name.endsWith("tck") && !project.name.endsWith("plugin-support")
+    def isDocumentationProject = project.name.startsWith("grails-documentation")
 
     repositories {
         mavenRepo name:'mavenLocal',
@@ -76,6 +78,38 @@ subprojects {
         if (project.name == "grails-datastore-gorm-tck") {
             compile spockDependency
         }
+    }
+    
+    if(isDocumentationProject) {
+        configurations {
+            documentation
+        }
+        dependencies {
+            documentation group: 'org.grails', name: 'grails-docs', version: '2.0.0'
+            project(":grails-datastore-core")
+            documentation "org.slf4j:jcl-over-slf4j:$slf4jVersion"
+            documentation "org.slf4j:slf4j-api:$slf4jVersion"
+            documentation "org.slf4j:slf4j-simple:$slf4jVersion"
+        }        
+        task docs << {
+            ant.taskdef (name: 'docs', classname : 'grails.doc.ant.DocPublisherTask') {
+                classpath {
+                    configurations.documentation.resolve().each { f ->
+                        pathelement(location:f)
+                    }
+                }
+
+            }
+            ant.docs(src:"src/docs", dest:destinationDir, properties:"src/docs/doc.properties")    
+        }
+        docs.destinationDir = "${buildDir}/docs"
+
+
+        task clean << {
+            ant.delete(dir:buildDir)
+        }
+
+        
     }
 
     if (isGormDatasource) {
@@ -176,11 +210,9 @@ subprojects {
             repositories.mavenDeployer {
                 switch (releaseType) {
                     case 'RELEASE':
-                    // TODO: Will need to update this when doing a non-snapshot/milestone release
-//                        repository(url: releaseRepositoryUrl)
-//                        description += releaseRepositoryUrl
-                        break;
-
+                        repository(url: milestoneRepositoryUrl)
+                        description += milestoneRepositoryUrl
+                        
                     case ~/M[0-9]+/:
                         description += milestoneRepositoryUrl
                         // fall through and pick up config below
@@ -241,6 +273,63 @@ dependencies {
     build "org.apache.ant:ant-nodeps:1.8.1"
 }
 
+task allDocs(dependsOn: getTasksByName("docs", true)) << {
+    def docTasks = getTasksByName("docs", true)
+    def groovydocTasks = getTasksByName("groovydoc", true)
+    allDocsDir = "$buildDir/docs"
+    mkdir allDocsDir
+    def stores = []
+    for(task in docTasks) {
+        def dir = task.destinationDir
+        def projectName = task.project.name
+        if(projectName.endsWith("core")) {
+            mkdir "$allDocsDir/manual"
+            fileTree { from dir }.copy { into "$allDocsDir/manual" }
+            def groovydocTask = groovydocTasks.find { it.project.name.endsWith "core" }
+            if(groovydocTask != null) {
+                mkdir "$allDocsDir/api"
+                groovydocTask.actions.each { it.execute(groovydocTask) }
+
+                fileTree { from groovydocTask.destinationDir }.copy { into "$allDocsDir/api"}
+            }
+            
+        }
+        else {
+            def storeName = projectName["grails-documentation-".size()..-1]
+            stores << storeName
+            def docsDir = "$allDocsDir/$storeName"
+            mkdir docsDir
+            def groovydocTask = groovydocTasks.find { it.project.name == "grails-datastore-$storeName" }
+            if(groovydocTask == null) groovydocTask = groovydocTasks.find { it.project.name == "grails-datastore-gorm-$storeName" }
+            if(groovydocTask != null) {
+                mkdir "$docsDir/api"
+                groovydocTask.actions.each { it.execute(groovydocTask) }
+                fileTree { from groovydocTask.destinationDir }.copy { into "$docsDir/api"}
+            }
+            mkdir "$docsDir/manual"
+            fileTree { from dir }.copy { into "$docsDir/manual" }
+        }
+        
+        def engine = new groovy.text.SimpleTemplateEngine()
+        def binding = [
+            datastores:stores.collect { "<li><a href=\"$it/index.html\">GORM for ${it[0].toUpperCase()}${it[1..-1]}</a></li>" }.join(System.getProperty("line.separator"))
+        ]
+        def template = engine.createTemplate(new File("src/docs/resources/core.template")).make(binding)
+        new File("$allDocsDir/index.html").text = template.toString()
+
+        for(store in stores) {
+            def index = "$allDocsDir/$store/index.html"
+            def storeName = "${store[0].toUpperCase()}${store[1..-1]}".toString()
+            binding = [
+                datastore:storeName
+            ]
+            template = engine.createTemplate(new File("src/docs/resources/datastore.template")).make( binding )
+            new File(index).text = template.toString()
+            
+        }
+    }
+        
+}
 task test(dependsOn: getTasksByName("test", true)) << {
     def reportsDir = "${buildDir}/reports"
 

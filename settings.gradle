@@ -14,6 +14,7 @@ include "grails-datastore-core",
 */
 
         // Documentation
+        'grails-documentation-core',        
         'grails-documentation-mongo',
         'grails-documentation-redis',
         'grails-documentation-riak',

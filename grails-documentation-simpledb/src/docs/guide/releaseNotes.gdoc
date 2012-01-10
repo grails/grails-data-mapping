@@ -1,9 +1,10 @@
 Below are the details of the changes across releases:
 
-h4. Version 0.2 (currently not yet released)
+h4. Version 0.3
 * Implemented hilo numeric id generator to use as alternative to default UUID
 * Enum fields are supported
-* Implemented automatic retry of operations when AWS rejects request with 'ServiceUnavailable' error code
+* Implemented automatic retry of load/save operations when AWS rejects request with 'ServiceUnavailable' error code
+* Implemented behind-the-scenes working with nextToken when request takes more than 5 seconds or more than 2500 records returned
 
 h4. Version 0.1
 

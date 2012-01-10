@@ -90,8 +90,8 @@ public class DelayAfterWriteSimpleDBTemplateDecorator implements SimpleDBTemplat
 //        pause();      //for tests we use DelayAfterWriteSimpleDBSession which pauses after flush
     }
 
-    public List<Item> query(String query) throws DataAccessException {
-        return template.query(query);
+    public List<Item> query(String query, int max) throws DataAccessException {
+        return template.query(query, max);
     }
 
     private void pause(){

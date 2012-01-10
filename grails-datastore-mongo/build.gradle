@@ -1,5 +1,6 @@
+version = "1.0.0.RC3"
 dependencies {
     compile project(":grails-datastore-core")
 
-    compile("org.springframework.data:spring-data-mongodb:1.0.0.M5")
+    compile("org.springframework.data:spring-data-mongodb:1.0.0.RC1")
 }
