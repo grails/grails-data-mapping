@@ -14,38 +14,76 @@
  */
 package org.grails.datastore.gorm.jpa.support;
 
-import org.grails.datastore.gorm.support.DatastorePersistenceContextInterceptor;
-import org.grails.datastore.mapping.core.DatastoreUtils;
-import org.grails.datastore.mapping.core.Session;
+import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
 import org.grails.datastore.mapping.jpa.JpaDatastore;
-import org.grails.datastore.mapping.transactions.SessionHolder;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.grails.datastore.mapping.jpa.JpaSession;
+import org.springframework.orm.jpa.EntityManagerFactoryUtils;
+import org.springframework.orm.jpa.JpaCallback;
+import org.springframework.orm.jpa.JpaTemplate;
+
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+import javax.persistence.PersistenceException;
 
 /**
  * @author Graeme Rocher
  * @since 1.0
  */
-public class JpaPersistenceContextInterceptor extends DatastorePersistenceContextInterceptor {
+public class JpaPersistenceContextInterceptor implements PersistenceContextInterceptor {
 
     private JpaDatastore jpaDatastore;
+    private EntityManager entityManager;
 
     public JpaPersistenceContextInterceptor(JpaDatastore datastore) {
-        super(datastore);
-        this.jpaDatastore = datastore;
+        this.jpaDatastore= datastore;
     }
 
     @Override
-    protected Session getSession() {
-        SessionHolder sessionHolder = (SessionHolder)TransactionSynchronizationManager.getResource(jpaDatastore);
-        if (sessionHolder != null) {
-            return sessionHolder.getSession();
+    public void init() {
+        entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(jpaDatastore.getEntityManagerFactory());
+    }
+
+    @Override
+    public void destroy() {
+        entityManager = null;
+    }
+
+    @Override
+    public void disconnect() {
+        if(entityManager != null) {
+            EntityManagerFactoryUtils.closeEntityManager(entityManager);
         }
 
-        return DatastoreUtils.bindSession(jpaDatastore.connect());
+    }
+
+    @Override
+    public void reconnect() {
+        entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(jpaDatastore.getEntityManagerFactory());
     }
 
     @Override
     public void flush() {
-        // do nothing
+        if(JpaSession.hasTransaction())
+            entityManager.flush();
+    }
+
+    @Override
+    public void clear() {
+        entityManager.clear();
+    }
+
+    @Override
+    public void setReadOnly() {
+        entityManager.setFlushMode(FlushModeType.COMMIT);
+    }
+
+    @Override
+    public void setReadWrite() {
+        entityManager.setFlushMode(FlushModeType.AUTO);
+    }
+
+    @Override
+    public boolean isOpen() {
+        return entityManager != null && entityManager.isOpen();
     }
 }

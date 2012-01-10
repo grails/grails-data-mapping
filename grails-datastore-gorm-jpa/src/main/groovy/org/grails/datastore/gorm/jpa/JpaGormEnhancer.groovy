@@ -30,6 +30,8 @@ import org.springframework.orm.jpa.JpaCallback
 import org.springframework.orm.jpa.JpaTemplate
 import org.springframework.transaction.PlatformTransactionManager
 import static org.grails.datastore.mapping.validation.ValidatingEventListener.*
+import org.grails.datastore.mapping.jpa.JpaDatastore
+import org.grails.datastore.mapping.core.VoidSessionCallback
 
 /**
  * Extends the default {@link GormEnhancer} adding supporting for JPQL methods
@@ -57,10 +59,26 @@ class JpaGormEnhancer extends GormEnhancer {
 }
 
 class JpaInstanceApi<D> extends GormInstanceApi<D> {
+    
+    
 
     JpaInstanceApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
     }
+    
+
+    @Override
+    protected void execute(VoidSessionCallback callback) {
+        def session = datastore.connect()
+        callback.doInSession(session)
+    }
+
+    @Override
+    protected def <T> T execute(SessionCallback<T> callback) {
+        def session = datastore.connect()
+        callback.doInSession(session)
+    }
+
 
     D merge(instance, Map params) {
         def merged
@@ -127,6 +145,20 @@ class JpaStaticApi<D> extends GormStaticApi<D> {
             }
         })
     }
+
+    @Override
+    protected void execute(VoidSessionCallback callback) {
+        def session = datastore.connect()
+        callback.doInSession(session)
+    }
+
+    @Override
+    protected def <T> T execute(SessionCallback<T> callback) {
+        def session = datastore.connect()
+        callback.doInSession(session)
+    }
+
+
 
     @Override
     List<D> executeQuery(String query) {

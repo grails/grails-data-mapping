@@ -74,6 +74,8 @@ public class JpaQuery extends Query {
     @Override
     protected List executeQuery(final PersistentEntity entity, final Junction criteria) {
         final JpaTemplate jpaTemplate = getSession().getJpaTemplate();
+        if(!JpaSession.hasTransaction())
+            jpaTemplate.setFlushEager(false);
 
         return (List)jpaTemplate.execute(new JpaCallback<Object>() {
             public Object doInJpa(EntityManager em) throws PersistenceException {
@@ -85,6 +87,8 @@ public class JpaQuery extends Query {
     @Override
     public Object singleResult() {
         final JpaTemplate jpaTemplate = getSession().getJpaTemplate();
+        if(!JpaSession.hasTransaction())
+            jpaTemplate.setFlushEager(false);
         try {
             return jpaTemplate.execute(new JpaCallback<Object>() {
                 public Object doInJpa(EntityManager em) throws PersistenceException {

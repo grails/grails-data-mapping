@@ -35,6 +35,7 @@ public class JpaDatastore extends AbstractDatastore {
 
     private EntityManagerFactory entityManagerFactory;
     private JpaTransactionManager transactionManager;
+    private JpaTemplate jpaTemplate;
 
     public JpaDatastore(MappingContext mappingContext,
             EntityManagerFactory entityManagerFactory,
@@ -43,6 +44,7 @@ public class JpaDatastore extends AbstractDatastore {
         super(mappingContext, null, applicationContext);
         this.entityManagerFactory = entityManagerFactory;
         this.transactionManager = transactionManager;
+        this.jpaTemplate = new JpaTemplate(entityManagerFactory);
         initializeConverters(mappingContext);
     }
 
@@ -59,8 +61,13 @@ public class JpaDatastore extends AbstractDatastore {
         return transactionManager;
     }
 
+
+    public JpaTemplate getJpaTemplate() {
+        return jpaTemplate;
+    }
+
     @Override
     protected Session createSession(Map<String, String> connDetails) {
-        return new JpaSession(this, new JpaTemplate(entityManagerFactory), transactionManager);
+        return new JpaSession(this, jpaTemplate, transactionManager);
     }
 }

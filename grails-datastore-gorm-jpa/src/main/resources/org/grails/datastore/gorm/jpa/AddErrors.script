@@ -5,7 +5,10 @@ import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.AnnotatedNode;
 import org.codehaus.groovy.ast.AnnotationNode;
-
+import org.codehaus.groovy.ast.ASTNode;
+import org.codehaus.groovy.ast.expr.ConstantExpression;
+import java.lang.reflect.Modifier
+import org.springframework.validation.Errors
 
 def errorsHelper = new ASTValidationErrorsHelper() {
     protected void addErrorsField(ClassNode paramTypeClassNode) {
