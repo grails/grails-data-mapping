@@ -85,11 +85,12 @@ function addJsClass() {
                 
 
 <h1 id="releaseNotes">5 Release Notes</h1>
-Below are the details of the changes across releases:<p class="paragraph"/><h4>Version 0.2 (currently not yet released)</h4>
+Below are the details of the changes across releases:<p class="paragraph"/><h4>Version 0.3</h4>
 <ul class="star">
 <li>Implemented hilo numeric id generator to use as alternative to default UUID</li>
 <li>Enum fields are supported</li>
-<li>Implemented automatic retry of operations when AWS rejects request with 'ServiceUnavailable' error code</li>
+<li>Implemented automatic retry of load/save operations when AWS rejects request with 'ServiceUnavailable' error code</li>
+<li>Implemented behind-the-scenes working with nextToken when request takes more than 5 seconds or more than 2500 records returned</li>
 </ul><p class="paragraph"/><h4>Version 0.1</h4><p class="paragraph"/>Initial implementation of the SimpleDB support with
 <ul class="star">
 <li>Dynamic finders</li>
