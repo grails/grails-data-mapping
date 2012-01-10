@@ -71,7 +71,7 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
     }
 
     def handleDBCreate = { simpleDBConfig, application, simpleDBDomainClasses, mappingContext, simpleDBDatastore ->
-        boolean dbCreate = simpleDBConfig.dbCreate
+        String dbCreate = simpleDBConfig.dbCreate
         boolean drop = false
         boolean create = false
         if ("drop-create" == dbCreate) {

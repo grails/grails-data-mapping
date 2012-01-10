@@ -72,7 +72,7 @@ public class SimpleDBAssociationIndexer implements AssociationIndexer {
         if (!association.isBidirectional()) { //we use additional table only for unidirectional
             SimpleDBAssociationInfo associationInfo = getDatastore().getAssociationInfo(association);
             String query = "SELECT * FROM "+ SimpleDBUtil.quoteName(associationInfo.getDomainName())+" WHERE itemName() = " + SimpleDBUtil.quoteValue(primaryKey.toString())+" LIMIT 2500";
-            List<Item> items = session.getSimpleDBTemplate().query(query);
+            List<Item> items = session.getSimpleDBTemplate().query(query, Integer.MAX_VALUE);
             if (items.isEmpty()) {
                 return Collections.EMPTY_LIST;
             } else if (items.size() > 1) {
@@ -90,7 +90,7 @@ public class SimpleDBAssociationIndexer implements AssociationIndexer {
                 " WHERE " + SimpleDBUtil.quoteName(association.getInverseSide().getName()) +
                 " = " + SimpleDBUtil.quoteValue(primaryKey.toString()) + " LIMIT 2500";
 
-        List<Item> items = session.getSimpleDBTemplate().query(query);
+        List<Item> items = session.getSimpleDBTemplate().query(query, Integer.MAX_VALUE);
         if (items.isEmpty()) {
             return Collections.EMPTY_LIST;
         }

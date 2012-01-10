@@ -105,7 +105,17 @@ public interface SimpleDBTemplate {
      */
     boolean deleteAllItems(String domainName) throws DataAccessException;
 
-    List<Item> query(String query) throws DataAccessException;
+    /**
+     *
+     * @param query
+     * @param max maximum amount of items to return (inclusive). Note that
+     * this max parameter is very different from LIMIT parameter used in the
+     * actual query: LIMIT controls pretty much 'page size' while this parameter
+     * control total number of items returned.
+     * @return
+     * @throws DataAccessException
+     */
+    List<Item> query(String query, int max) throws DataAccessException;
 
     void deleteDomain(String domainName) throws DataAccessException;
 
