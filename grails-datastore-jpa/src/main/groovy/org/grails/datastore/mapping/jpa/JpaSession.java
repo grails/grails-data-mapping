@@ -40,6 +40,7 @@ import org.springframework.orm.jpa.JpaTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * Wraps a JPA EntityManager in the Datastore Session interface.
@@ -120,7 +121,13 @@ public class JpaSession extends AbstractAttributeStoringSession {
     }
 
     public void flush() {
-        jpaTemplate.flush();
+        if(hasTransaction()) {
+            jpaTemplate.flush();
+        }
+    }
+
+    public static boolean hasTransaction() {
+        return TransactionSynchronizationManager.isActualTransactionActive() && !TransactionSynchronizationManager.isCurrentTransactionReadOnly();
     }
 
     public void clear() {

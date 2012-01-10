@@ -16,6 +16,8 @@ package org.grails.datastore.gorm.jpa;
 
 import grails.gorm.JpaEntity;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,6 +51,10 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.AnnotatedNode;
 import org.codehaus.groovy.ast.AnnotationNode;
@@ -74,11 +80,14 @@ import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
+import org.codehaus.groovy.control.messages.SimpleMessage;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.compiler.injection.DefaultGrailsDomainClassInjector;
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
 import org.grails.datastore.mapping.model.MappingFactory;
+import org.springframework.util.ClassUtils;
 
 /**
  * A AST transformation that turns a GORM entity into a JPA entity.
@@ -89,6 +98,7 @@ import org.grails.datastore.mapping.model.MappingFactory;
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
 public class GormToJpaTransform implements ASTTransformation {
 
+    private static Log LOG = LogFactory.getLog(GormToJpaTransform.class);
     private static final AnnotationNode ANNOTATION_VERSION = new AnnotationNode(new ClassNode(Version.class));
     private static final AnnotationNode ANNOTATION_ID = new AnnotationNode(new ClassNode(Id.class));
     private static final AnnotationNode ANNOTATION_ENTITY = new AnnotationNode(new ClassNode(Entity.class));
@@ -113,6 +123,7 @@ public class GormToJpaTransform implements ASTTransformation {
         put("onSave", new AnnotationNode(new ClassNode(PrePersist.class)));
         put("afterLoad", new AnnotationNode(new ClassNode(PostLoad.class)));
     }};
+    public static final String ERRORS = "errors";
 
     public void visit(ASTNode[] astNodes, SourceUnit source) {
         if (!(astNodes[0] instanceof AnnotationNode) || !(astNodes[1] instanceof AnnotatedNode)) {
@@ -135,8 +146,9 @@ public class GormToJpaTransform implements ASTTransformation {
         try {
             transformEntity(source, cNode);
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("WARNING: Error occured transfoming GORM entity to JPA entity: " + e.getMessage());
+            String message = "Error occured transfoming GORM entity to JPA entity: " + e.getMessage();
+            LOG.error(message,e);
+            source.getErrorCollector().addFatalError(new SimpleMessage(message, source));
         }
     }
 
@@ -160,6 +172,13 @@ public class GormToJpaTransform implements ASTTransformation {
         // annotate the id property with @Id
         String idPropertyName = GrailsDomainClassProperty.IDENTITY;
         String generationType = GenerationType.AUTO.toString();
+
+        final PropertyNode errorsProperty = classNode.getProperty("errors");
+        if (errorsProperty == null) {
+            if(ClassUtils.isPresent("org.codehaus.groovy.grails.compiler.injection.ASTValidationErrorsHelper", Thread.currentThread().getContextClassLoader()))
+                addErrorsProperty(classNode);
+        }
+
 
         if (propertyMappings.containsKey(GrailsDomainClassProperty.IDENTITY)) {
             final Map<String, ?> idConfig = propertyMappings.get(GrailsDomainClassProperty.IDENTITY);
@@ -367,6 +386,26 @@ public class GormToJpaTransform implements ASTTransformation {
                     }
                 }
             }
+        }
+    }
+
+    private static String addErrorsScript = null;
+    private static void addErrorsProperty(ClassNode classNode) {
+        // Horrible to have to do this, but only way to support both Grails 1.3.7 and Grails 2.0
+        if(addErrorsScript == null) {
+            URL resource = GormToJpaTransform.class.getResource("/org/grails/datastore/gorm/jpa/AddErrors.script");
+            try {
+                if(resource != null)
+                    addErrorsScript = DefaultGroovyMethods.getText(resource);
+            } catch (IOException e) {
+                // ignore
+            }
+        }
+
+        if(addErrorsScript != null)   {
+            Binding b = new Binding();
+            b.setVariable("classNode", classNode);
+            new GroovyShell(b).evaluate(addErrorsScript);
         }
     }
 
@@ -603,6 +642,11 @@ public class GormToJpaTransform implements ASTTransformation {
         }
     }
 
+    protected static void annotateProperty(ClassNode classNode,
+                                           String propertyName, Class annotation) {
+        annotateProperty(classNode,propertyName,new AnnotationNode(new ClassNode(annotation)));
+    }
+    
     protected static void annotateProperty(ClassNode classNode,
             String propertyName, final AnnotationNode annotationNode) {
         final PropertyNode prop = classNode.getProperty(propertyName);
