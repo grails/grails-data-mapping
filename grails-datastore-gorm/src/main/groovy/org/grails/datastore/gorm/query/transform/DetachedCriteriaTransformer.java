@@ -143,6 +143,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     private Map<String, ClassNode> detachedCriteriaVariables = new HashMap<String, ClassNode>();
     private Map<String, ClassNode> staticDetachedCriteriaVariables = new HashMap<String, ClassNode>();
     private Map<String, Map<String,ClassNode>> cachedClassProperties = new HashMap<String, Map<String,ClassNode>>();
+    private Set<ClosureExpression> transformedExpressions = new HashSet<ClosureExpression>();
     private ClassNode currentClassNode;
 
     DetachedCriteriaTransformer(SourceUnit sourceUnit) {
@@ -162,6 +163,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         } finally {
             currentClassNode = null;
             detachedCriteriaVariables.clear();
+            transformedExpressions.clear();
         }
     }
 
@@ -303,7 +305,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     @Override
     public void visitMethodCallExpression(MethodCallExpression call) {
-        Expression objectExpression = call.getObjectExpression();
+            Expression objectExpression = call.getObjectExpression();
         Expression method = call.getMethod();
         Expression arguments = call.getArguments();
         try {
@@ -386,6 +388,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     protected void transformClosureExpression(ClassNode classNode, ClosureExpression closureExpression) {
+        if(transformedExpressions.contains(closureExpression)) return;
         List<String> propertyNames = getPropertyNames(classNode);
         Statement code = closureExpression.getCode();
         BlockStatement newCode = new BlockStatement();
@@ -397,8 +400,11 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             addBlockStatementToNewQuery(bs, newCode, addAll, propertyNames, closureExpression.getVariableScope());
             newCode.setVariableScope(bs.getVariableScope());
         }
-
-        closureExpression.setCode(newCode);
+        
+        if(!newCode.getStatements().isEmpty()) {
+            transformedExpressions.add(closureExpression);
+            closureExpression.setCode(newCode);
+        }
     }
 
     private List<String> getPropertyNames(ClassNode classNode) {

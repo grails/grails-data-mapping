@@ -11,7 +11,7 @@ import grails.persistence.Entity
  * Tests for the new where method used to define detached criteria using the new DSL
  */
 @ApplyDetachedCriteriaTransform
-@Ignore
+//@Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
     @Override
@@ -32,6 +32,22 @@ class WhereMethodSpec extends GormDatastoreSpec {
 //            results.size() > 0
 //    }
 
+
+    def closureProperty = {
+        Person.where { lastName == "Simpson" }.list()
+    }
+    def "Test where query inside closure property declaration"() {
+        given:"some people"
+            createPeople()
+
+        when:"A query is created in a closure property"
+            def results = closureProperty.call()
+
+
+        then:"The correct results are returned"
+            results.size() == 4
+            results.every { it.lastName == "Simpson" }
+    }
 
 
     def "Test captured detached criteria instance" () {
