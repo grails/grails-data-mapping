@@ -53,7 +53,7 @@ grails.project.dependency.resolution = {
     }
     
     plugins {
-        build ":release:$simpledbVersion", {
+        build( ":release:1.0.1" ) {
             exported = false
         }
     }
