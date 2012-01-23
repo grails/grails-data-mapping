@@ -11,7 +11,7 @@ import grails.persistence.Entity
  * Tests for the new where method used to define detached criteria using the new DSL
  */
 @ApplyDetachedCriteriaTransform
-//@Ignore
+@Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
     @Override
