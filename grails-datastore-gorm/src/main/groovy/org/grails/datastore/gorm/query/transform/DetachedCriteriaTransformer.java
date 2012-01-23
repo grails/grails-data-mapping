@@ -278,7 +278,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     expression.setRightExpression(newClosureExpression);
                 }
             } catch (Exception e) {
-                sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred apply query transformations: " + e.getMessage(), Token.newString(initializationExpression.getText(), initializationExpression.getLineNumber(), initializationExpression.getColumnNumber()), sourceUnit));
+                sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred apply query transformations [ " + e.getMessage() + "] to source ["+sourceUnit.getName()+"]. Please report an issue.", Token.newString(initializationExpression.getText(), initializationExpression.getLineNumber(), initializationExpression.getColumnNumber()), sourceUnit));
             }
         }
         super.visitDeclarationExpression(expression);
