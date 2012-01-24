@@ -69,7 +69,11 @@ class UniqueConstraint extends AbstractConstraint{
                 final existing = constraintOwningClass.createCriteria().get {
                     eq constraintPropertyName, propertyValue
                     for(prop in group) {
-                        eq prop, target[prop]
+                        if (target[prop] != null) {
+                          eq prop, target[prop]
+                        } else {
+                          isNull(prop)
+                        }
                     }
                 }
 
