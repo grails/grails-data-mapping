@@ -33,6 +33,36 @@ class NestedAssociationQuerySpec extends GormDatastoreSpec{
             femaleCnt == 1
     }
 
+    void "test join query for 3-level to-one association"() {
+        when:"A domain model 3 levels deep is created"
+            new Release(name:"Grails",milestoneCycle: new MilestoneCycle(name:"1.0",department:new Department(name:"dep A").save()).save()).save(flush:true)
+            session.clear()
+            Release r = Release.get(1)
+        
+        then:"The domain model is correctly populated"
+            Release.count() == 1
+            MilestoneCycle.count() == 1
+            Department.count() == 1
+            r != null
+            r.milestoneCycle != null
+            r.milestoneCycle.department != null
+
+        when:"The domain model is queried"
+
+            r = Release.createCriteria().get() {
+                milestoneCycle {
+                    department{
+                        eq('name', 'dep A')
+                    }
+                }
+            }
+        
+        then:"The right result is returned"
+            r != null
+            r.milestoneCycle != null
+            r.milestoneCycle.department != null
+    }
+
     private Question createQuestion(String qText) {
         new Question(text: qText).save(flush: true)
     }
@@ -50,7 +80,7 @@ class NestedAssociationQuerySpec extends GormDatastoreSpec{
 
     @Override
     List getDomainClasses() {
-        [UserOpinion, Answer, Question]
+        [UserOpinion, Answer, Question, Release, Department, MilestoneCycle]
     }
 }
 
@@ -85,5 +115,35 @@ class Question {
 
     static constraints = {
         text(blank: false)
+    }
+}
+
+@Entity
+class Release {
+    Long id
+    String name
+    MilestoneCycle milestoneCycle
+    static constraints = {
+    }
+}
+
+@Entity
+class MilestoneCycle {
+
+    Long id
+    String name
+    Department department
+
+    static constraints = {
+    }
+}
+
+@Entity
+class Department {
+
+    Long id
+    String name
+
+    static constraints = {
     }
 }
