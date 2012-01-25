@@ -65,16 +65,34 @@ class UniqueConstraint extends AbstractConstraint{
                 }
 
 
+                List nullConstraintParameters = group.findAll{target[it] == null}
+                def existing = false
 
-                final existing = constraintOwningClass.createCriteria().get {
-                    eq constraintPropertyName, propertyValue
-                    for(prop in group) {
-                        if (target[prop] != null) {
-                          eq prop, target[prop]
-                        } else {
-                          isNull(prop)
-                        }
-                    }
+                if (nullConstraintParameters) {
+                   existing = constraintOwningClass.createCriteria().list {
+		                    eq constraintPropertyName, propertyValue
+		                    for(prop in group) {
+		                        if (target[prop] != null) {
+		                          eq prop, target[prop]
+		                        }
+
+		                    }
+                   }
+
+	               // see if there is a result where all the nullConstraintParameters are null
+		           existing = existing?.find {
+	                   null == nullConstraintParameters.findResult {param -> it[param]}
+                   }
+
+                } else {
+                   existing = constraintOwningClass.createCriteria().get {
+		                    eq constraintPropertyName, propertyValue
+		                    for(prop in group) {
+		                        if (target[prop] != null) {
+		                          eq prop, target[prop]
+		                        }
+		                    }
+                   }
                 }
 
                 if(existing) {
