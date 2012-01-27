@@ -177,6 +177,10 @@ class NamedCriteriaProxy {
         throw new MissingPropertyException(propertyName, NamedCriteriaProxy)
     }
 
+    void propertyMissing(String propName, val) {
+        queryBuilder?."${propName}" = val
+    }
+
     def methodMissing(String methodName, args) {
 
         def javaClass = entity.javaClass

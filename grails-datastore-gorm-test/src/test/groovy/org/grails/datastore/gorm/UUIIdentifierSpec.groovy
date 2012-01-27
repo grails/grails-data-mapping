@@ -15,6 +15,13 @@ class UUIIdentifierSpec extends GormDatastoreSpec {
         then:"The UUID is correctly generated"
             dm != null
             dm.id != null
+            DocumentModel.count() == 1
+        
+        when:"Another entity is saved"
+            new DocumentModel(name: "Another").save()
+        then:"There are 2"
+        
+            DocumentModel.count() == 2
             
     }
 

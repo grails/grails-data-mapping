@@ -164,6 +164,11 @@ class SimpleMapQuery extends Query {
     }
 
     def associationQueryHandlers = [
+        (AssociationQuery): { allEntities, Association association, AssociationQuery aq->
+            Query.Junction queryCriteria = aq.criteria
+            return executeAssociationSubQuery(datastore[getFamily(association.associatedEntity)], association.associatedEntity,queryCriteria, aq.association)
+        },
+
         (FunctionCallingCriterion): { allEntities, Association association, FunctionCallingCriterion fcc -> 
             def criterion = fcc.propertyCriterion
             def handler = associationQueryHandlers[criterion.class]
@@ -295,16 +300,17 @@ class SimpleMapQuery extends Query {
         }.keySet().toList()
     }
 
-    def executeAssociationSubQuery(Query.Junction queryCriteria, PersistentProperty property) {
+    def executeAssociationSubQuery(allEntities, PersistentEntity associatedEntity, Query.Junction queryCriteria, PersistentProperty property) {
         List resultList = []
         for (Query.Criterion criterion in queryCriteria.getCriteria()) {
             def handler = associationQueryHandlers[criterion.getClass()]
+            
             if (handler) {
-                resultList << handler.call(datastore[family], property, criterion)
+                resultList << handler.call(allEntities, property, criterion)
             }
             else if (criterion instanceof Query.Junction) {
                 Query.Junction junction = criterion
-                resultList << executeAssociationSubQuery(junction, property)
+                resultList << executeAssociationSubQuery(allEntities,associatedEntity, junction, property)
             }
         }
         return applyJunctionToResults(queryCriteria, resultList)
@@ -341,7 +347,7 @@ class SimpleMapQuery extends Query {
         },
         (AssociationQuery): { AssociationQuery aq, PersistentProperty property ->
             Query.Junction queryCriteria = aq.criteria
-            return executeAssociationSubQuery(queryCriteria, property)
+            return executeAssociationSubQuery(datastore[family], aq.association.associatedEntity, queryCriteria, property)
         },
         (Query.EqualsAll):{ Query.EqualsAll equalsAll, PersistentProperty property, Closure function=null, boolean onValue = false ->
             def name = equalsAll.property

@@ -15,6 +15,12 @@ class Publication implements Serializable {
     }
 
     static namedQueries = {
+        lastPublishedBefore { date ->
+            uniqueResult = true
+            le 'datePublished', date
+            order 'datePublished', 'desc'
+        }
+
         recentPublications {
             def now = new Date()
             gt 'datePublished', now - 365

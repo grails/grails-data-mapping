@@ -328,6 +328,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
                 Association association = (Association) property;
                 Query previousQuery = query;
                 PersistentEntity previousEntity = persistentEntity;
+                List<Query.Junction> previousLogicalExpressionStack = logicalExpressionStack;
 
                 Query associationQuery = null;
                 try {
@@ -337,11 +338,13 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
                     }
                     query = associationQuery;
                     persistentEntity = association.getAssociatedEntity();
+                    logicalExpressionStack = new ArrayList<Query.Junction>();
                     invokeClosureNode(args[0]);
                     return query;
                 }
                 finally {
 
+                    logicalExpressionStack = previousLogicalExpressionStack;
                     persistentEntity = previousEntity;
                     query = previousQuery;
                 }
