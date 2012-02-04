@@ -61,7 +61,7 @@ class RedisGormGrailsPlugin {
         new ApplicationContextConfigurer("Redis").configure(ctx)
     }
     
-    def onChange = {
+    def onChange = { event ->
         if(event.ctx) {
             new RedisOnChangeHandler(event.ctx.redisDatastore, event.ctx.redisDatastoreTransactionManager).onChange(delegate, event)            
         }
