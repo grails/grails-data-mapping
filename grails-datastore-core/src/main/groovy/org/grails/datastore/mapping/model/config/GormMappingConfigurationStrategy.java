@@ -14,12 +14,6 @@
  */
 package org.grails.datastore.mapping.model.config;
 
-import static org.grails.datastore.mapping.model.config.GormProperties.BELONGS_TO;
-import static org.grails.datastore.mapping.model.config.GormProperties.EMBEDDED;
-import static org.grails.datastore.mapping.model.config.GormProperties.HAS_MANY;
-import static org.grails.datastore.mapping.model.config.GormProperties.HAS_ONE;
-import static org.grails.datastore.mapping.model.config.GormProperties.MAPPED_BY;
-import static org.grails.datastore.mapping.model.config.GormProperties.TRANSIENT;
 import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 
@@ -45,6 +39,8 @@ import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.ReflectionUtils;
 import org.springframework.util.StringUtils;
+
+import static org.grails.datastore.mapping.model.config.GormProperties.*;
 
 /**
  * <p>This implementation of the MappingConfigurationStrategy interface
@@ -156,7 +152,8 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         if (mappedByMap == null) mappedByMap = Collections.emptyMap();
         // hasOne for declaring a one-to-one association with the foreign key in the child
         Map hasOneMap = cpf.getStaticPropertyValue(HAS_ONE, Map.class);
-        if (hasOneMap == null) hasOneMap = Collections.emptyMap();
+        if (hasOneMap == null) hasOneMap = Collections.emptyMap();   
+        
 
         for (PropertyDescriptor descriptor : cpf.getPropertyDescriptors()) {
             if (descriptor.getPropertyType() == null || descriptor.getPropertyType() == Object.class) {
@@ -165,6 +162,9 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             }
             if (descriptor.getReadMethod() == null || descriptor.getWriteMethod() == null) {
                 // non-persistent getter or setter
+                continue;
+            }
+            if(descriptor.getName().equals(VERSION) && !entity.isVersioned()) {
                 continue;
             }
 
