@@ -82,7 +82,7 @@ abstract class OnChangeHandler extends DynamicMethodsConfigurer{
                     }
                     proxyTargetClass = true
                     transactionAttributeSource = new GroovyAwareNamedTransactionAttributeSource(transactionalAttributes:props)
-                    transactionManager = ref("${datastoreType.toLowerCase()}TransactionManager")
+                    delegate.transactionManager = ref("${datastoreType.toLowerCase()}TransactionManager")
                 }
             }
             beans.registerBeans(event.ctx)
