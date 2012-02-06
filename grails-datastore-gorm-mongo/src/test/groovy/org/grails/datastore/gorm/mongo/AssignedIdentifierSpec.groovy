@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.mongo
 
 import grails.persistence.Entity
 import grails.gorm.tests.GormDatastoreSpec
+import spock.lang.Issue
 
 /**
  * Tests for usage of assigned identifiers
@@ -39,9 +40,39 @@ class AssignedIdentifierSpec extends GormDatastoreSpec{
             River.get("Amazon") == null
     }
 
+    @Issue("GPMONGODB-170")
+    void "Test that assigned identifiers work with the constructor"() {
+        when:"An entity is saved with an assigned id"
+            def l = new Lake(id: "Lake Ontario", country: "Canada")
+            l.save flush: true
+            session.clear()
+            l = Lake.get("Lake Ontario")
+        
+        
+        then:"The object is correctly retrieved by assigned id"
+            l != null
+            l.id == "Lake Ontario"
+            l.country == "Canada"
+    }
+
+    @Issue("GPMONGODB-170")
+    void "Test that assigned identifiers work with property setting"() {
+        when:"An entity is saved with an assigned id"
+        def l = new Lake(country: "Canada")
+        l.id = "Lake Ontario"
+        l.save flush: true
+        session.clear()
+        l = Lake.get("Lake Ontario")
+
+
+        then:"The object is correctly retrieved by assigned id"
+        l != null
+        l.id == "Lake Ontario"
+        l.country == "Canada"
+    }    
     @Override
     List getDomainClasses() {
-        [River]
+        [River, Lake]
     }
 
 
@@ -52,5 +83,14 @@ class River {
     String country
     static mapping = {
         id name:'name', generator:'assigned'
+    }
+}
+
+@Entity
+class Lake {
+    String id
+    String country
+    static mapping = {
+        id generator:'assigned'
     }
 }
