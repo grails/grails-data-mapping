@@ -122,9 +122,10 @@ public abstract class Query {
     }
 
     private void addToJunction(Junction currentJunction, Criterion criterion) {
-        if (criterion instanceof Equals) {
-            final Equals eq = (Equals) criterion;
-            Object value = resolveIdIfEntity(eq.getValue());
+        if (criterion instanceof PropertyCriterion) {
+            final PropertyCriterion pc = (PropertyCriterion) criterion;
+            Object value = resolveIdIfEntity(pc.getValue());
+            pc.setValue(value);
         }
         if(criterion instanceof AssociationCriteria) {
             AssociationCriteria ac = (AssociationCriteria) criterion;
