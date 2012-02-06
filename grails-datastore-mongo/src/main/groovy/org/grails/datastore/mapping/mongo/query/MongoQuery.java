@@ -121,13 +121,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
                 String propertyName = getPropertyName(entity, criterion);
                 Object value = criterion.getValue();
-                PersistentProperty property = entity.getPropertyByName(criterion.getProperty());
-                if (property instanceof ToOne) {
-                    query.put(propertyName + MONGO_ID_REFERENCE_SUFFIX, value);
-                }
-                else {
-                    MongoEntityPersister.setDBObjectValue(query, propertyName, value, entity.getMappingContext());
-                }
+                MongoEntityPersister.setDBObjectValue(query, propertyName, value, entity.getMappingContext());
             }
         });
 
@@ -696,9 +690,13 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         else {
             PersistentProperty property = entity.getPropertyByName(propertyName);
             if (property != null) {
-                return MappingUtils.getTargetKey(property);
+                propertyName = MappingUtils.getTargetKey(property);
+                if(property instanceof ToOne && !(property instanceof Embedded)) {
+                    propertyName = propertyName + MONGO_ID_REFERENCE_SUFFIX;
+                }
             }
         }
+
         return propertyName;
     }
 
