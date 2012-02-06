@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.persistence.FlushModeType;
 
 import org.grails.datastore.mapping.core.ConnectionNotFoundException;
+import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.query.api.AssociationCriteria;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -377,7 +378,13 @@ public abstract class Query {
 
     protected Object resolveIdIfEntity(Object value) {
         // use the object id as the value if its a persistent entity
-        return session.getMappingContext().isPersistentEntity(value) ? findInstanceId(value) : value;
+        MappingContext mappingContext = session.getMappingContext();
+        if(mappingContext.getProxyFactory().isProxy(value)) {
+            return mappingContext.getProxyFactory().getIdentifier(value);
+        }
+        else {
+            return mappingContext.isPersistentEntity(value) ? findInstanceId(value) : value;
+        }
     }
 
     private Serializable findInstanceId(Object value) {
