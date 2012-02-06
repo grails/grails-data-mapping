@@ -7,7 +7,7 @@ grails uninstall-plugin hibernate
 Or if it has been defined in the @grails-app/conf/BuildConfig.groovy@ file comment out the hibernate line in the plugins block 
 
 {code}
-compile ":hibernate:$grailsVersion"
+compile ':hibernate:2.0.0'
 {code}
 
 With this done all domain classes in grails-app/domain will be persisted via Mongo and not Hibernate. You can create a domain class by running the regular @create-domain-class@ command:
