@@ -35,6 +35,6 @@ class NoVersion {
     String name
     
     static mapping = {
-        version true
+        version false
     }
 }

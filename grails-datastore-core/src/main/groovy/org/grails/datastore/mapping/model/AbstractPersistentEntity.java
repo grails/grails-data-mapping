@@ -55,6 +55,7 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
     private PersistentEntity parentEntity;
     private boolean external;
     private MappingProperties mappingProperties = new MappingProperties();
+    private boolean initialized = false;
 
     public AbstractPersistentEntity(Class javaClass, MappingContext context) {
         Assert.notNull(javaClass, "The argument [javaClass] cannot be null");
@@ -76,6 +77,7 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
     }
 
     public void initialize() {
+        initializeMappingProperties();
         owners = context.getMappingSyntaxStrategy().getOwningEntities(javaClass, context);
         persistentProperties = context.getMappingSyntaxStrategy().getPersistentProperties(this, context, getMapping());
         identity = resolveIdentifier();
@@ -104,10 +106,11 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
 
         getMapping().getMappedForm(); // initialize mapping
 
-        initializeMappingProperties();
+
         if (mappingProperties.isVersioned()) {
             version = propertiesByName.get("version");
         }
+        initialized = true;
     }
 
     protected PersistentProperty resolveIdentifier() {
@@ -191,7 +194,7 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
     }
 
     public boolean isVersioned() {
-        return version != null && mappingProperties.isVersioned();
+        return (!initialized || version != null) && mappingProperties.isVersioned();
     }
 
     public Class getJavaClass() {
@@ -231,7 +234,7 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
     }
 
     private static class MappingProperties {
-        private Boolean version;
+        private Boolean version = true;
 
         public void setVersion(final boolean version) {
             this.version = version;
