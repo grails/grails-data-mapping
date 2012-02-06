@@ -131,6 +131,16 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             }
         });
 
+        queryHandlers.put(IsNull.class, new QueryHandler<IsNull>() {
+            public void handle(PersistentEntity entity, IsNull criterion, DBObject query) {
+                queryHandlers.get(Equals.class).handle(entity, new Equals(criterion.getProperty(), null), query);
+            }
+        });
+        queryHandlers.put(IsNotNull.class, new QueryHandler<IsNotNull>() {
+            public void handle(PersistentEntity entity, IsNotNull criterion, DBObject query) {
+                queryHandlers.get(NotEquals.class).handle(entity, new NotEquals(criterion.getProperty(), null), query);
+            }
+        });
         queryHandlers.put(EqualsProperty.class, new QueryHandler<EqualsProperty>() {
             public void handle(PersistentEntity entity, EqualsProperty criterion, DBObject query) {
                 String propertyName = getPropertyName(entity, criterion);
