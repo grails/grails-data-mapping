@@ -26,6 +26,7 @@ import groovy.lang.GroovyObject;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -158,7 +159,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         if (hasOneMap == null) hasOneMap = Collections.emptyMap();
 
         for (PropertyDescriptor descriptor : cpf.getPropertyDescriptors()) {
-            if (descriptor.getPropertyType() == null) {
+            if (descriptor.getPropertyType() == null || descriptor.getPropertyType() == Object.class) {
                 // indexed property
                 continue;
             }
@@ -167,6 +168,10 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 continue;
             }
 
+            Field field = cpf.getDeclaredField(descriptor.getName());
+            if(field != null && java.lang.reflect.Modifier.isTransient(field.getModifiers())) {
+                continue;
+            }
             final String propertyName = descriptor.getName();
             if (isExcludedProperty(propertyName, classMapping, transients)) continue;
             Class<?> propertyType = descriptor.getPropertyType();
