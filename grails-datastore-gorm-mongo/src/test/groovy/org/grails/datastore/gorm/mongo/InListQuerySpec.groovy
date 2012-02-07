@@ -9,7 +9,27 @@ import grails.gorm.tests.PetType
 /**
  */
 class InListQuerySpec extends GormDatastoreSpec{
-    
+
+    @Issue("GPMONGODB-160")
+    void "Test that ne works for a single-ended association"() {
+        given:"Some test data"
+            createPets()
+            session.clear()
+
+        when:"Querying an association in a given list"
+            def saurapod = PetType.findByName('Saurapod')
+
+            def results = Pet.withCriteria {
+                ne 'type', saurapod
+                order "name"
+            }
+
+        then:"The correct results are returned"
+        results.size() == 2
+        results[0].name == "Flipper"
+        results[1].name == "T-rex"
+    }
+
     @Issue('GPMONGODB-161')
     void "Test that in queries work for single-ended associations"() {
         given:"Some test data"
