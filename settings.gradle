@@ -37,7 +37,7 @@ include "grails-datastore-core",
         'grails-datastore-gorm-jpa',
         'grails-datastore-gorm-neo4j',
         'grails-datastore-gorm-redis',
-        'grails-datastore-gorm-riak',
+/*        'grails-datastore-gorm-riak',*/
         'grails-datastore-gorm-mongo',
         'grails-datastore-gorm-gemfire',
         'grails-datastore-gorm-simpledb'
