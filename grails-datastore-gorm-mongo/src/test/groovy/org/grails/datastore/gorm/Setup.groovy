@@ -1,3 +1,4 @@
+
 package org.grails.datastore.gorm
 
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
@@ -22,17 +23,20 @@ import org.grails.datastore.mapping.query.Query.Equals
 import org.grails.datastore.mapping.query.Query.Between
 import com.mongodb.BasicDBObject
 import org.grails.datastore.mapping.mongo.query.MongoQuery
+import org.grails.datastore.mapping.mongo.MongoSession
 
 /**
  * @author graemerocher
  */
 class Setup {
 
-    static mongo
-    static session
+    static MongoDatastore mongo
+    static MongoSession session
 
     static destroy() {
         session.nativeInterface.dropDatabase()
+        session.disconnect()
+        mongo.destroy()
     }
 
     static Session setup(classes) {
