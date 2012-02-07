@@ -4,7 +4,7 @@ include "grails-datastore-core",
         "grails-datastore-mongo",
         "grails-datastore-jpa",
         "grails-datastore-redis",
-        "grails-datastore-riak",
+/*        "grails-datastore-riak",*/
         "grails-datastore-simple",
         "grails-datastore-web",
         "grails-datastore-simpledb",
@@ -17,7 +17,7 @@ include "grails-datastore-core",
         'grails-documentation-core',        
         'grails-documentation-mongo',
         'grails-documentation-redis',
-        'grails-documentation-riak',
+/*        'grails-documentation-riak',*/
         'grails-documentation-neo4j',
         'grails-documentation-simpledb',
 

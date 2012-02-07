@@ -4,5 +4,5 @@ dependencies {
     compile project(":grails-datastore-core"),
             'org.codehaus.jackson:jackson-core-asl:1.6.1',
             'org.codehaus.jackson:jackson-mapper-asl:1.6.1',
-            'org.springframework.data:spring-data-riak:1.0.0.M2-SNAPSHOT'
+            'org.springframework.data:spring-data-riak:1.0.0.M3'
 }
