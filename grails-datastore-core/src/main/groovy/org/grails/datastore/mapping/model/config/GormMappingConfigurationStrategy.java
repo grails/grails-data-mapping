@@ -382,7 +382,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 // otherwise figure out if there is a one-to-many relationship by retrieving any properties that are of the related type
                 // if there is more than one property then (for the moment) ignore the relationship
                 if (relatedClassPropertyType == null || Collection.class.isAssignableFrom(relatedClassPropertyType)) {
-                    List<PropertyDescriptor> descriptors = referencedCpf.getPropertiesOfType(entity.getJavaClass());
+                    List<PropertyDescriptor> descriptors = referencedCpf.getPropertiesAssignableFromType(entity.getJavaClass());
 
                     if (descriptors.size() == 1) {
                         final PropertyDescriptor pd = descriptors.get(0);
