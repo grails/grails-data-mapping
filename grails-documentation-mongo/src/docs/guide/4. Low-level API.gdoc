@@ -60,3 +60,9 @@ Person.collection.findOne(firstName:"Fred").lastName == "Flintstone"
 {note}
 If you are using Hibernate entities with Mongo then the collection will be scoped in the @mongo@ namespace. Example: Person.mongo.collection.count()
 {note}
+
+You can easily convert from a native MongoDB @DBObject@ into an entity using a cast:
+
+{code}
+def fred = Person.collection.findOne(firstName:"Fred") as Person
+{code}
