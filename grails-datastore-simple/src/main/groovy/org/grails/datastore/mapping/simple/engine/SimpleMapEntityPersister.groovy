@@ -184,7 +184,17 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
 
     @Override
     protected void setManyToMany(PersistentEntity persistentEntity, Object obj, Map nativeEntry, ManyToMany manyToMany, Collection associatedObjects, Map<Association, List<Serializable>> toManyKeys) {
-        final identifiers = session.persist(associatedObjects)
+
+        def identifiers
+        if(manyToMany.isOwningSide()) {
+            identifiers = session.persist(associatedObjects)
+        }
+        else {
+            identifiers = associatedObjects.collect {
+                EntityPersister persister = session.getPersister(it)
+                persister.getObjectIdentifier(it)
+            }
+        }
         toManyKeys.put(manyToMany, identifiers)
     }
 
