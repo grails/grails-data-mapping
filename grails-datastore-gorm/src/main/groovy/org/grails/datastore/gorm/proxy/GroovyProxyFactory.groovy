@@ -18,6 +18,8 @@ import org.grails.datastore.mapping.proxy.ProxyFactory
 import org.grails.datastore.mapping.core.Session
 
 import org.grails.datastore.mapping.engine.EntityPersister
+import org.springframework.dao.DataRetrievalFailureException
+import org.springframework.dao.DataIntegrityViolationException
 
 /**
  * Implements the proxy interface and creates a Groovy proxy by passing the need for javassist style proxies
@@ -72,12 +74,20 @@ class GroovyProxyFactory implements ProxyFactory {
                 return target
             default:
                 if (target == null) target = session.retrieve(type, key)
+
+                if(target == null) {
+                    throw new DataIntegrityViolationException("Error loading association [$key] of type [$type]. Associated instance no longer exists.")
+                }
                 return target[name]
             }
         }
 
         proxy.metaClass.setProperty = { String name, value ->
             if (target == null) target = session.retrieve(type, key)
+            if(target == null) {
+                throw new DataIntegrityViolationException("Error loading association [$key] of type [$type]. Associated instance no longer exists.")
+            }
+
             target[name] = value
         }
         return proxy;

@@ -121,16 +121,20 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             public void handle(PersistentEntity entity, Equals criterion, DBObject query) {
                 String propertyName = getPropertyName(entity, criterion);
                 Object value = criterion.getValue();
-                PersistentProperty property = entity.getPropertyByName(criterion.getProperty());
-                if (property instanceof ToOne) {
-                    query.put(propertyName + MONGO_ID_REFERENCE_SUFFIX, value);
-                }
-                else {
-                    MongoEntityPersister.setDBObjectValue(query, propertyName, value, entity.getMappingContext());
-                }
+                MongoEntityPersister.setDBObjectValue(query, propertyName, value, entity.getMappingContext());
             }
         });
 
+        queryHandlers.put(IsNull.class, new QueryHandler<IsNull>() {
+            public void handle(PersistentEntity entity, IsNull criterion, DBObject query) {
+                queryHandlers.get(Equals.class).handle(entity, new Equals(criterion.getProperty(), null), query);
+            }
+        });
+        queryHandlers.put(IsNotNull.class, new QueryHandler<IsNotNull>() {
+            public void handle(PersistentEntity entity, IsNotNull criterion, DBObject query) {
+                queryHandlers.get(NotEquals.class).handle(entity, new NotEquals(criterion.getProperty(), null), query);
+            }
+        });
         queryHandlers.put(EqualsProperty.class, new QueryHandler<EqualsProperty>() {
             public void handle(PersistentEntity entity, EqualsProperty criterion, DBObject query) {
                 String propertyName = getPropertyName(entity, criterion);
@@ -686,9 +690,13 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         else {
             PersistentProperty property = entity.getPropertyByName(propertyName);
             if (property != null) {
-                return MappingUtils.getTargetKey(property);
+                propertyName = MappingUtils.getTargetKey(property);
+                if(property instanceof ToOne && !(property instanceof Embedded)) {
+                    propertyName = propertyName + MONGO_ID_REFERENCE_SUFFIX;
+                }
             }
         }
+
         return propertyName;
     }
 

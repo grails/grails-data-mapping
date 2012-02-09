@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.converter.Converter;
@@ -60,7 +61,7 @@ import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class MongoDatastore extends AbstractDatastore implements InitializingBean, MappingContext.Listener {
+public class MongoDatastore extends AbstractDatastore implements InitializingBean, MappingContext.Listener, DisposableBean {
 
     public static final String PASSWORD = "password";
     public static final String USERNAME = "username";
@@ -313,5 +314,10 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 
     public void persistentEntityAdded(PersistentEntity entity) {
         createMongoTemplate(entity, mongo);
+    }
+
+    public void destroy() throws Exception {
+        if(mongo != null)
+            mongo.close();
     }
 }

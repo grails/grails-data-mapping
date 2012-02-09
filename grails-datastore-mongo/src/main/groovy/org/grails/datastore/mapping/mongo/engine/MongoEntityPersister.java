@@ -222,7 +222,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
         if (keys instanceof List) {
             List actualKeys = new ArrayList();
-            Iterator<Serializable> iterator = keys.iterator();
+            Iterator iterator = keys.iterator();
             while (iterator.hasNext()) {
                 Object key = iterator.next();
                 Object id = getIdentifierForKey(key);
@@ -241,16 +241,20 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
         List<Object> entityResults = new ArrayList<Object>();
         Iterator<Serializable> keyIterator = keys.iterator();
-        Iterator<Object> listIterator = query.list().iterator();
-        while (keyIterator.hasNext() && listIterator.hasNext()) {
+        Map<Serializable, Object> resultMap = new HashMap<Serializable, Object>();
+        for (Object o : query.list()) {
+            if(o instanceof DBObject) {
+                DBObject dbo = (DBObject) o;
+                o = createObjectFromNativeEntry(getPersistentEntity(), (Serializable) dbo.get(MONGO_ID_FIELD), dbo);
+            }
+            resultMap.put(getObjectIdentifier(o), o);
+        }
+        while (keyIterator.hasNext()) {
             Object key = getIdentifierForKey(keyIterator.next());
-            Object next = listIterator.next();
-            if (next instanceof DBObject) {
-                entityResults.add(createObjectFromNativeEntry(getPersistentEntity(), (Serializable) key, (DBObject)next));
-            }
-            else {
-                entityResults.add(next);
-            }
+            Object o = resultMap.get(key);
+            if(o != null)
+                entityResults.add(o);
+
         }
 
         return entityResults;
