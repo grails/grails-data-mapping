@@ -823,6 +823,14 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                 }
 
                                 if(association.doesCascade(CascadeType.PERSIST)) {
+                                    
+                                    if(association.isBidirectional()) {
+                                        Association inverseSide = association.getInverseSide();
+                                        if(inverseSide != null) {
+                                            EntityAccess inverseAccess = new EntityAccess(inverseSide.getOwner(), associatedObject);
+                                            inverseAccess.setProperty(inverseSide.getName(), obj);
+                                        }
+                                    }
                                     associationPersister.persist(associatedObject);
                                 }
                             }
