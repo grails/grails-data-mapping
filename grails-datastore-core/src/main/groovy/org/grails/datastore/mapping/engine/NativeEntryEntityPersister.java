@@ -1421,6 +1421,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
 
             }
+            else if (prop instanceof Custom) {
+                CustomTypeMarshaller marshaller = ((Custom)prop).getCustomTypeMarshaller();
+                return !areEqual(marshaller.read(prop, entry), currentValue, key);
+            }
             else {
                 throw new UnsupportedOperationException("dirty not detected for property " + prop.toString() + " " + prop.getClass().getSuperclass().toString());
             }
