@@ -1,13 +1,15 @@
-package org.grails.datastore
+package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+import spock.lang.Issue
 
 /**
  *
  */
 class CacheAndJoinSpec extends GormDatastoreSpec{
 
+    @Issue('GRAILS-8758')
     void "Test that the cache and join methods can be used in a test"() {
         given:"Some test data"
             new Author(name: "Bob").save flush:true
@@ -45,15 +47,4 @@ class Author {
     }
 }
 
-@Entity
-class Book {
-    Long id
-    String title
-
-    static belongsTo = [author: Author]
-
-    static constraints = {
-        title blank: false
-    }
-}
 
