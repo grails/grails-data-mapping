@@ -164,6 +164,18 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
             }
         }
     }
+
+    /**
+     * perform a cypher query
+     * @param queryString
+     * @param params
+     * @return
+     */
+    def cypher(instance, String queryString, Map params = [:]) {
+        params['this'] = instance.id
+        datastore.executionEngine.execute(queryString, params)
+    }
+
 }
 
 class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
@@ -216,4 +228,10 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
             }
         }
     }
+
+    def cypherStatic(String queryString, Map params = [:]) {
+        params['this'] = datastore.subReferenceNodes[persistentEntity.name]
+        datastore.executionEngine.execute(queryString, params)
+    }
+
 }

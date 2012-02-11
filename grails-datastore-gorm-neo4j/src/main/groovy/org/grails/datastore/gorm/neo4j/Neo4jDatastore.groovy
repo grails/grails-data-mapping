@@ -22,6 +22,7 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ConfigurableApplicationContext
 import org.neo4j.graphdb.*
 import org.springframework.util.Assert
+import org.neo4j.cypher.javacompat.ExecutionEngine
 
 /**
  * Datastore implementation for Neo4j backend
@@ -31,6 +32,7 @@ import org.springframework.util.Assert
 class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
 
     GraphDatabaseService graphDatabaseService
+    @Lazy ExecutionEngine executionEngine = new ExecutionEngine(graphDatabaseService)
     Map<Class, Node> subReferenceNodes
     String storeDir
 
