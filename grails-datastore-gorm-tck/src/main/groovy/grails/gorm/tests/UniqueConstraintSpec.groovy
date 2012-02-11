@@ -25,6 +25,11 @@ class UniqueConstraintSpec extends GormDatastoreSpec{
             two.hasErrors()
             UniqueGroup.count() == 1
 
+        when:"The first is saved again"
+            one = one.save(flush:true)
+
+        then:"The are no errors"
+            one != null
 
         when:"Three domain classes are saved within different uniqueness groups"
             one = new GroupWithin(name:"foo", org:"mycompany").save(flush:true)

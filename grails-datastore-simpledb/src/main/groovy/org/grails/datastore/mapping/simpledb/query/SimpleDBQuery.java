@@ -20,8 +20,6 @@ import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValue;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.model.types.Association;
-import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBNativeItem;
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver;
@@ -209,7 +207,7 @@ public class SimpleDBQuery extends Query {
         int limit = max < 0 ? 2500 : max; //if user did not explicitly limit maxResults, use the maximum limit allowed dy AWS (if not specified explicitly it will use 100 limit)
         query.append(" LIMIT ").append(limit);
 
-        List<Item> items = simpleDBTemplate.query(query.toString());
+        List<Item> items = simpleDBTemplate.query(query.toString(), max < 0 ? Integer.MAX_VALUE : max);
         List<Object> results = new LinkedList<Object>();
         if (projectionList.isEmpty()) {
             for (Item item : items) {

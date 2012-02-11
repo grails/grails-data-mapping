@@ -33,6 +33,22 @@ class WhereMethodSpec extends GormDatastoreSpec {
 //    }
 
 
+    def closureProperty = {
+        Person.where { lastName == "Simpson" }.list()
+    }
+    def "Test where query inside closure property declaration"() {
+        given:"some people"
+            createPeople()
+
+        when:"A query is created in a closure property"
+            def results = closureProperty.call()
+
+
+        then:"The correct results are returned"
+            results.size() == 4
+            results.every { it.lastName == "Simpson" }
+    }
+
 
     def "Test captured detached criteria instance" () {
         given:"people and pets"

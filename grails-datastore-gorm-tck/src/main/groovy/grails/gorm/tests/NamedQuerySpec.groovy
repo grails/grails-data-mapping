@@ -392,6 +392,31 @@ class NamedQuerySpec extends GormDatastoreSpec {
             true == 'grapes' in names
     }
 
+    void 'Test uniqueResult'() {
+        given:
+            def now = new Date()
+
+            new Publication(title: "Ten Day Old Paperback",
+                            datePublished: now - 10,
+                            paperback: true).save(flush: true)
+            new Publication(title: "One Hundred Day Old Paperback",
+                            datePublished: now - 100,
+                            paperback: true).save(flush: true)
+            session.clear()
+
+        when:
+            def result = Publication.lastPublishedBefore(now - 200).list()
+
+        then:
+            !result
+
+        when:
+            result = Publication.lastPublishedBefore(now - 50).list()
+
+        then:
+            'One Hundred Day Old Paperback' == result?.title
+    }
+
     void "Test findWhere method after chaining named queries"() {
         given:
             def now = new Date()
@@ -1043,6 +1068,13 @@ class Publication implements Serializable {
     }
 
     static namedQueries = {
+
+        lastPublishedBefore { date ->
+            uniqueResult = true
+            le 'datePublished', date
+            order 'datePublished', 'desc'
+        }
+
         recentPublications {
             def now = new Date()
             gt 'datePublished', now - 365

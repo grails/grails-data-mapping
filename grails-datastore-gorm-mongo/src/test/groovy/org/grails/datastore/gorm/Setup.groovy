@@ -1,3 +1,4 @@
+
 package org.grails.datastore.gorm
 
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
@@ -22,17 +23,21 @@ import org.grails.datastore.mapping.query.Query.Equals
 import org.grails.datastore.mapping.query.Query.Between
 import com.mongodb.BasicDBObject
 import org.grails.datastore.mapping.mongo.query.MongoQuery
+import org.grails.datastore.mapping.mongo.MongoSession
+import org.grails.datastore.gorm.mongo.plugin.support.MongoMethodsConfigurer
 
 /**
  * @author graemerocher
  */
 class Setup {
 
-    static mongo
-    static session
+    static MongoDatastore mongo
+    static MongoSession session
 
     static destroy() {
         session.nativeInterface.dropDatabase()
+        session.disconnect()
+        mongo.destroy()
     }
 
     static Session setup(classes) {
@@ -89,9 +94,11 @@ class Setup {
             }
         ] as Validator)
 
-        def enhancer = new MongoGormEnhancer(mongo, new DatastoreTransactionManager(datastore: mongo))
-        enhancer.enhance()
+        def txMgr = new DatastoreTransactionManager(datastore: mongo)
+        MongoMethodsConfigurer methodsConfigurer = new MongoMethodsConfigurer(mongo, txMgr)
+        methodsConfigurer.configure()
 
+        def enhancer = new MongoGormEnhancer(mongo, txMgr)
         mongo.mappingContext.addMappingContextListener({ e ->
             enhancer.enhance e
         } as MappingContext.Listener)

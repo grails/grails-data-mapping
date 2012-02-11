@@ -17,6 +17,7 @@ import java.util.concurrent.Executor
 import java.util.concurrent.CountDownLatch
 import org.grails.datastore.mapping.simpledb.SimpleDBDatastore
 import org.grails.datastore.mapping.simpledb.config.SimpleDBMappingContext
+import org.grails.datastore.mapping.simpledb.util.SimpleDBUtil
 
 class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer {
 
@@ -71,7 +72,7 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
     }
 
     def handleDBCreate = { simpleDBConfig, application, simpleDBDomainClasses, mappingContext, simpleDBDatastore ->
-        boolean dbCreate = simpleDBConfig.dbCreate
+        String dbCreate = simpleDBConfig.dbCreate
         boolean drop = false
         boolean create = false
         if ("drop-create" == dbCreate) {
@@ -121,6 +122,10 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
                 }
             })
         }
+
+        //if needed, drop/create hilo id generator domain
+        String hiloDomainName = SimpleDBUtil.getPrefixedDomainName(simpleDBDatastore.getDomainNamePrefix(), SimpleDBConst.ID_GENERATOR_HI_LO_DOMAIN_NAME)
+        handleDomain(template, existingDomains, hiloDomainName, drop, create)
 
         latch.await()
         executor.shutdown()

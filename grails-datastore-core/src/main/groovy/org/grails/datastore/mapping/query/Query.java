@@ -15,16 +15,13 @@
 package org.grails.datastore.mapping.query;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
+import java.util.*;
 
+import javax.persistence.FetchType;
 import javax.persistence.FlushModeType;
 
 import org.grails.datastore.mapping.core.ConnectionNotFoundException;
+import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.query.api.AssociationCriteria;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -55,7 +52,14 @@ public abstract class Query {
     protected List<Order> orderBy = new ArrayList<Order>();
     protected Session session;
     protected boolean uniqueResult;
+    protected Map<String, FetchType> fetchStrategies = new HashMap<String,FetchType>();
+    protected boolean queryCache;
 
+    protected Query(Session session, PersistentEntity entity) {
+        this.entity = entity;
+        this.session = session;
+    }
+    
     /**
      * @return The criteria defined by this query
      */
@@ -63,48 +67,28 @@ public abstract class Query {
         return criteria;
     }
 
+
     /**
-     * The ordering of results.
+     * Specifies whether a join query should be used (if join queries are supported by the underlying datastore)
+     *
+     * @param property The property
+     * @return The query
      */
-    public static class Order {
-        private Direction direction = Direction.ASC;
-        private String property;
-
-        public Order(String property) {
-            this.property = property;
-        }
-
-        public Order(String property, Direction direction) {
-            this.direction = direction;
-            this.property = property;
-        }
-
-        public Direction getDirection() {
-            return direction;
-        }
-
-        public String getProperty() {
-            return property;
-        }
-
-        public static Order desc(String property) {
-            return new Order(property, Direction.DESC);
-        }
-
-        public static Order asc(String property) {
-            return new Order(property, Direction.ASC);
-        }
-
-        public static enum Direction {
-            ASC, DESC
-        }
+    public Query join(String property) {
+        fetchStrategies.put(property, FetchType.EAGER);
+        return this;
     }
 
-    protected Query(Session session, PersistentEntity entity) {
-        this.entity = entity;
-        this.session = session;
+    /**
+     * Specifies whether the query results should be cached (if supported by the underlying datastore)
+     *
+     * @param cache True if caching should be enabled
+     * @return The query
+     */
+    public Query cache(boolean cache) {
+        queryCache = true;
+        return this;
     }
-
 
     public ProjectionList projections() {
         return projections;
@@ -120,39 +104,7 @@ public abstract class Query {
         addToJunction(currentJunction, criterion);
     }
 
-    private void addToJunction(Junction currentJunction, Criterion criterion) {
-        if (criterion instanceof Equals) {
-            final Equals eq = (Equals) criterion;
-            Object value = resolveIdIfEntity(eq.getValue());
-        }
-        if(criterion instanceof AssociationCriteria) {
-            AssociationCriteria ac = (AssociationCriteria) criterion;
-            AssociationQuery associationQuery = createQuery(ac.getAssociation().getName());
-            for (Criterion associationCriterion : ac.getCriteria()) {
-                associationQuery.add(associationCriterion);
-            }
-            currentJunction.add(associationQuery);
-        }
-        else if(criterion instanceof Junction) {
-            Junction j = (Junction) criterion;
-            Junction newj;
-            if(j instanceof Disjunction) {
-                newj= disjunction(currentJunction);
-            } else if(j instanceof Negation) {
-                newj= negation(currentJunction);
-            }
-            else {
-                newj= conjunction(currentJunction);
-            }
-            for (Criterion c : j.getCriteria()) {
-                addToJunction(newj, c);
-            }
-        }
-        else {
-            currentJunction.add(criterion);
-        }
-    }
-
+    
     /**
      * @return The session that created the query
      */
@@ -176,12 +128,6 @@ public abstract class Query {
         return disjunction(currentJunction);
     }
 
-    private Junction disjunction(Junction currentJunction) {
-        Disjunction dis = new Disjunction();
-        currentJunction.add(dis);
-        return dis;
-    }
-
     /**
      * Creates a disjunction (OR) query
      * @return The Junction instance
@@ -189,12 +135,6 @@ public abstract class Query {
     public Junction conjunction() {
         Junction currentJunction = criteria;
         return conjunction(currentJunction);
-    }
-
-    private Junction conjunction(Junction currentJunction) {
-        Conjunction dis = new Conjunction();
-        currentJunction.add(dis);
-        return dis;
     }
 
     /**
@@ -375,23 +315,6 @@ public abstract class Query {
         return this;
     }
 
-    protected Object resolveIdIfEntity(Object value) {
-        // use the object id as the value if its a persistent entity
-        return session.getMappingContext().isPersistentEntity(value) ? findInstanceId(value) : value;
-    }
-
-    private Serializable findInstanceId(Object value) {
-        EntityPersister ep = (EntityPersister) session.getPersister(value);
-        if (ep != null) {
-            return ep.getObjectIdentifier(value);
-        }
-
-        return (Serializable)new EntityAccess(session
-                .getMappingContext()
-                .getPersistentEntity(value.getClass().getName()), value)
-                .getIdentifier();
-    }
-
     /**
      * Used to restrict a value to be greater than the given value
      *
@@ -551,7 +474,6 @@ public abstract class Query {
         return this;
     }
 
-
     /**
      * Executes the query returning zero or many results as a list.
      *
@@ -587,17 +509,6 @@ public abstract class Query {
     }
 
     /**
-     * Default behavior is the flush the session before a query in the case of FlushModeType.AUTO.
-     * Subclasses can override this method to disable that.
-     */
-    protected void flushBeforeQuery() {
-        // flush before query execution in FlushModeType.AUTO
-        if (session.getFlushMode() == FlushModeType.AUTO) {
-            session.flush();
-        }
-    }
-
-    /**
      * Executes the query returning a single result or null
      * @return The result
      */
@@ -628,13 +539,131 @@ public abstract class Query {
      */
     protected abstract List executeQuery(PersistentEntity entity, Junction criteria);
 
+    protected Object resolveIdIfEntity(Object value) {
+        // use the object id as the value if its a persistent entity
+        MappingContext mappingContext = session.getMappingContext();
+        if(mappingContext.getProxyFactory().isProxy(value)) {
+            return mappingContext.getProxyFactory().getIdentifier(value);
+        }
+        else {
+            return mappingContext.isPersistentEntity(value) ? findInstanceId(value) : value;
+        }
+    }
+
+
+    private Serializable findInstanceId(Object value) {
+        EntityPersister ep = (EntityPersister) session.getPersister(value);
+        if (ep != null) {
+            return ep.getObjectIdentifier(value);
+        }
+
+        return (Serializable)new EntityAccess(session
+                .getMappingContext()
+                .getPersistentEntity(value.getClass().getName()), value)
+                .getIdentifier();
+    }
+
+    private Junction disjunction(Junction currentJunction) {
+        Disjunction dis = new Disjunction();
+        currentJunction.add(dis);
+        return dis;
+    }
+
+    private Junction conjunction(Junction currentJunction) {
+        Conjunction dis = new Conjunction();
+        currentJunction.add(dis);
+        return dis;
+    }
+
+    /**
+     * Default behavior is the flush the session before a query in the case of FlushModeType.AUTO.
+     * Subclasses can override this method to disable that.
+     */
+    protected void flushBeforeQuery() {
+        // flush before query execution in FlushModeType.AUTO
+        if (session.getFlushMode() == FlushModeType.AUTO) {
+            session.flush();
+        }
+    }
+
     /**
      * A criterion is used to restrict the results of a query
      */
+    private void addToJunction(Junction currentJunction, Criterion criterion) {
+        if (criterion instanceof PropertyCriterion) {
+            final PropertyCriterion pc = (PropertyCriterion) criterion;
+            Object value = resolveIdIfEntity(pc.getValue());
+            pc.setValue(value);
+        }
+        if(criterion instanceof AssociationCriteria) {
+            AssociationCriteria ac = (AssociationCriteria) criterion;
+            AssociationQuery associationQuery = createQuery(ac.getAssociation().getName());
+            for (Criterion associationCriterion : ac.getCriteria()) {
+                associationQuery.add(associationCriterion);
+            }
+            currentJunction.add(associationQuery);
+        }
+        else if(criterion instanceof Junction) {
+            Junction j = (Junction) criterion;
+            Junction newj;
+            if(j instanceof Disjunction) {
+                newj= disjunction(currentJunction);
+            } else if(j instanceof Negation) {
+                newj= negation(currentJunction);
+            }
+            else {
+                newj= conjunction(currentJunction);
+            }
+            for (Criterion c : j.getCriteria()) {
+                addToJunction(newj, c);
+            }
+        }
+        else {
+            currentJunction.add(criterion);
+        }
+    }
+
     public static interface Criterion {
 
     }
 
+    /**
+     * The ordering of results.
+     */
+    public static class Order {
+        private Direction direction = Direction.ASC;
+        private String property;
+
+        public Order(String property) {
+            this.property = property;
+        }
+
+        public Order(String property, Direction direction) {
+            this.direction = direction;
+            this.property = property;
+        }
+
+        public Direction getDirection() {
+            return direction;
+        }
+
+        public String getProperty() {
+            return property;
+        }
+
+        public static Order desc(String property) {
+            return new Order(property, Direction.DESC);
+        }
+
+        public static Order asc(String property) {
+            return new Order(property, Direction.ASC);
+        }
+
+        public static enum Direction {
+            ASC, DESC
+        }
+    }
+    
     /**
      * Restricts a property to be null
      */

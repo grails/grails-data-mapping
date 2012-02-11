@@ -24,16 +24,18 @@ import org.springframework.context.ApplicationContextAware
 import org.grails.datastore.mapping.jpa.JpaDatastore
 import org.grails.datastore.mapping.model.MappingContext
 import org.springframework.orm.jpa.JpaTransactionManager
+import org.springframework.context.ConfigurableApplicationContext
 
 class JpaDatastoreFactoryBean implements FactoryBean<JpaDatastore>, ApplicationContextAware {
 
-    EntityManagerFactory entityManagerFactory
+
     MappingContext mappingContext
     ApplicationContext applicationContext
 
     JpaDatastore getObject() {
-        def transactionManager = applicationContext.getBean(JpaTransactionManager)
-        def datastore = new JpaDatastore(mappingContext, entityManagerFactory, transactionManager, applicationContext)
+        JpaTransactionManager transactionManager = applicationContext.getBean(JpaTransactionManager)
+        EntityManagerFactory entityManagerFactory = applicationContext.getBean(EntityManagerFactory)
+        def datastore = new JpaDatastore(mappingContext, entityManagerFactory, transactionManager, (ConfigurableApplicationContext)applicationContext)
         applicationContext.addApplicationListener new DomainEventListener(datastore)
         applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
         datastore

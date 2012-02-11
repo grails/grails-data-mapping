@@ -268,7 +268,8 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         }
 
         Object entry = getCachedEntry(persister.getPersistentEntity(), id, false);
-        return ((NativeEntryEntityPersister)persister).isDirty(instance, entry);
+        Object instance2 = getCachedInstance(instance.getClass(), id);
+        return instance != instance2 || ((NativeEntryEntityPersister) persister).isDirty(instance, entry);
     }
 
     private void handleDirtyCollections() {

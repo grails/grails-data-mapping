@@ -8,7 +8,7 @@ Or configure it as a dependency in @BuildConfig.groovy@:
 
 {code}
 plugins {
-	compile ":mongodb:latest.version"
+	compile ':mongodb:1.0.0.RC4'
 }
 {code}
 
@@ -37,7 +37,7 @@ If you want to configure how Grails connects to Mongo then you can do so using t
 grails {
     mongo {
         host = "localhost"
-        port = 27107
+        port = 27017
         username = "blah"
         password = "blah"
         databaseName = "foo"

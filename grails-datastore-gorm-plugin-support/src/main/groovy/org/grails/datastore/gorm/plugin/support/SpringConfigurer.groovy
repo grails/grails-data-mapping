@@ -111,9 +111,12 @@ abstract class SpringConfigurer {
                     String validatorBeanName = "${dc.fullName}Validator"
                     AbstractBeanDefinition beandef = springConfig.getBeanConfig(validatorBeanName)?.beanDefinition ?:
                                                         springConfig.getBeanDefinition(validatorBeanName)
-                    // remove the session factory attribute if present
-                    beandef.getPropertyValues().removePropertyValue("sessionFactory")
-                    beandef.beanClassName = GrailsDomainClassValidator.name
+
+                    if(beandef != null) {
+                        // remove the session factory attribute if present
+                        beandef.getPropertyValues().removePropertyValue("sessionFactory")
+                        beandef.beanClassName = GrailsDomainClassValidator.name
+                    }
                 }
             }
             customizer.delegate = delegate

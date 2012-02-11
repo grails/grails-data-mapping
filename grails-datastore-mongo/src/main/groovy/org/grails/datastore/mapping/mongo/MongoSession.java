@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.mongodb.*;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
@@ -37,12 +38,7 @@ import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.transactions.SessionOnlyTransaction;
 import org.grails.datastore.mapping.transactions.Transaction;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.MongoException;
-import com.mongodb.WriteConcern;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mongodb.core.DbCallback;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -57,6 +53,7 @@ public class MongoSession extends AbstractSession<DB> {
     private static final Map<PersistentEntity, WriteConcern> declaredWriteConcerns = new ConcurrentHashMap<PersistentEntity, WriteConcern>();
     MongoDatastore mongoDatastore;
     private WriteConcern writeConcern = WriteConcern.NORMAL;
+    private boolean errorOccured = false;
 
     public MongoSession(MongoDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
         super(datastore, mappingContext, publisher);
@@ -102,11 +99,18 @@ public class MongoSession extends AbstractSession<DB> {
         this.writeConcern = writeConcern;
 
         try {
-            super.flush();
+            if(!errorOccured)
+                super.flush();
         }
         finally {
             this.writeConcern = current;
         }
+    }
+
+    @Override
+    public void flush() {
+        if(!errorOccured)
+            super.flush();
     }
 
     @Override
@@ -146,7 +150,11 @@ public class MongoSession extends AbstractSession<DB> {
                         pendingInsert.run();
                     }
 
-                    collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]), writeConcernToUse);
+                    WriteResult writeResult = collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]), writeConcernToUse);
+                    if(writeResult.getError() != null) {
+                        errorOccured = true;
+                        throw new DataIntegrityViolationException(writeResult.getError());
+                    }
                     for (PendingOperation pendingOperation : postOperations) {
                         pendingOperation.run();
                     }

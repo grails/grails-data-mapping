@@ -14,12 +14,6 @@
  */
 package org.grails.datastore.mapping.model.config;
 
-import static org.grails.datastore.mapping.model.config.GormProperties.BELONGS_TO;
-import static org.grails.datastore.mapping.model.config.GormProperties.EMBEDDED;
-import static org.grails.datastore.mapping.model.config.GormProperties.HAS_MANY;
-import static org.grails.datastore.mapping.model.config.GormProperties.HAS_ONE;
-import static org.grails.datastore.mapping.model.config.GormProperties.MAPPED_BY;
-import static org.grails.datastore.mapping.model.config.GormProperties.TRANSIENT;
 import groovy.lang.Closure;
 import groovy.lang.GroovyObject;
 
@@ -27,8 +21,6 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -41,11 +33,14 @@ import java.util.Set;
 
 import javax.persistence.Entity;
 
+import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.grails.datastore.mapping.reflect.ReflectionUtils;
 import org.springframework.util.StringUtils;
+
+import static org.grails.datastore.mapping.model.config.GormProperties.*;
 
 /**
  * <p>This implementation of the MappingConfigurationStrategy interface
@@ -157,10 +152,11 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         if (mappedByMap == null) mappedByMap = Collections.emptyMap();
         // hasOne for declaring a one-to-one association with the foreign key in the child
         Map hasOneMap = cpf.getStaticPropertyValue(HAS_ONE, Map.class);
-        if (hasOneMap == null) hasOneMap = Collections.emptyMap();
+        if (hasOneMap == null) hasOneMap = Collections.emptyMap();   
+        
 
         for (PropertyDescriptor descriptor : cpf.getPropertyDescriptors()) {
-            if (descriptor.getPropertyType() == null) {
+            if (descriptor.getPropertyType() == null || descriptor.getPropertyType() == Object.class) {
                 // indexed property
                 continue;
             }
@@ -168,7 +164,14 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 // non-persistent getter or setter
                 continue;
             }
+            if(descriptor.getName().equals(VERSION) && !entity.isVersioned()) {
+                continue;
+            }
 
+            Field field = cpf.getDeclaredField(descriptor.getName());
+            if(field != null && java.lang.reflect.Modifier.isTransient(field.getModifiers())) {
+                continue;
+            }
             final String propertyName = descriptor.getName();
             if (isExcludedProperty(propertyName, classMapping, transients)) continue;
             Class<?> propertyType = descriptor.getPropertyType();
@@ -180,17 +183,12 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 if (isCollectionType(currentPropType)) {
                     Class relatedClassType = (Class) hasManyMap.get(propertyName);
                     if(relatedClassType == null) {
-                        try {
-                            Field declaredField = entity.getJavaClass().getDeclaredField(propertyName);
-                            Type genericType = declaredField.getGenericType();
-                            if(genericType instanceof ParameterizedType) {
-                                Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
-                                if(typeArguments.length>0) {
-                                    relatedClassType = (Class) typeArguments[0];
-                                }
-                            }
-                        } catch (NoSuchFieldException e) {
-                            // ignore
+                        Class javaClass = entity.getJavaClass();
+
+                        Class genericClass = MappingUtils.getGenericTypeForProperty(javaClass, propertyName);
+
+                        if(genericClass != null) {
+                            relatedClassType = genericClass;
                         }
                     }
                     if(relatedClassType != null) {
@@ -384,7 +382,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 // otherwise figure out if there is a one-to-many relationship by retrieving any properties that are of the related type
                 // if there is more than one property then (for the moment) ignore the relationship
                 if (relatedClassPropertyType == null || Collection.class.isAssignableFrom(relatedClassPropertyType)) {
-                    List<PropertyDescriptor> descriptors = referencedCpf.getPropertiesOfType(entity.getJavaClass());
+                    List<PropertyDescriptor> descriptors = referencedCpf.getPropertiesAssignableFromType(entity.getJavaClass());
 
                     if (descriptors.size() == 1) {
                         final PropertyDescriptor pd = descriptors.get(0);
@@ -660,7 +658,11 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
     private boolean isExcludedProperty(String propertyName, ClassMapping classMapping, Collection transients) {
         IdentityMapping id = classMapping != null ? classMapping.getIdentifier() : null;
-        return id != null && id.getIdentifierName()[0].equals(propertyName) || id == null && propertyName.equals(IDENTITY_PROPERTY) || EXCLUDED_PROPERTIES.contains(propertyName) || transients.contains(propertyName);
+        String[] identifierName = id != null ? id.getIdentifierName() : null;
+        return identifierName != null && propertyName.equals(identifierName[0]) ||
+                id == null && propertyName.equals(IDENTITY_PROPERTY) ||
+                EXCLUDED_PROPERTIES.contains(propertyName) ||
+                transients.contains(propertyName);
     }
 
     /**

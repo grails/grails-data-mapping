@@ -14,10 +14,11 @@
  */
 package org.grails.datastore.mapping.simpledb.util;
 
+import java.util.LinkedList;
 import java.util.List;
 
-import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.services.simpledb.model.*;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.dao.DataAccessException;
@@ -27,18 +28,6 @@ import org.springframework.util.StringUtils;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.simpledb.AmazonSimpleDB;
 import com.amazonaws.services.simpledb.AmazonSimpleDBClient;
-import com.amazonaws.services.simpledb.model.Attribute;
-import com.amazonaws.services.simpledb.model.CreateDomainRequest;
-import com.amazonaws.services.simpledb.model.DeleteAttributesRequest;
-import com.amazonaws.services.simpledb.model.DeleteDomainRequest;
-import com.amazonaws.services.simpledb.model.GetAttributesRequest;
-import com.amazonaws.services.simpledb.model.Item;
-import com.amazonaws.services.simpledb.model.ListDomainsRequest;
-import com.amazonaws.services.simpledb.model.ListDomainsResult;
-import com.amazonaws.services.simpledb.model.PutAttributesRequest;
-import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
-import com.amazonaws.services.simpledb.model.SelectRequest;
-import com.amazonaws.services.simpledb.model.UpdateCondition;
 
 /**
  * Implementation of SimpleDBTemplate using AWS Java SDK.
@@ -253,13 +242,32 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         return count > 0;
     }
 
-    public List<Item> query(String query) {
-        return queryInternal(query, 1);
+    public List<Item> query(String query, int max) {
+        return queryInternal(query, max, 1);
     }
-    private List<Item> queryInternal(String query, int attempt) {
+    private List<Item> queryInternal(String query, int max, int attempt) {
+        LinkedList<Item> items = new LinkedList<Item>();
         try {
             SelectRequest selectRequest = new SelectRequest(query);
-            return sdb.select(selectRequest).getItems();
+            SelectResult result = sdb.select(selectRequest);
+            items.addAll(result.getItems());
+
+            String nextToken = null;
+            do {
+                nextToken = result.getNextToken();
+                if (nextToken != null) {
+                    selectRequest = new SelectRequest(query).withNextToken(nextToken);
+                    result = sdb.select(selectRequest);
+                    items.addAll(result.getItems());
+                }
+            } while (nextToken != null && items.size() < max);
+
+            //truncate if needed
+            while (items.size() > max){
+                items.removeLast();
+            }
+
+            return items;
         } catch (AmazonServiceException e) {
             if (SimpleDBUtil.AWS_ERR_CODE_NO_SUCH_DOMAIN.equals(e.getErrorCode())) {
                 throw new IllegalArgumentException("no such domain: " + query, e);
@@ -267,7 +275,7 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
                 //retry after a small pause
                 SimpleDBUtil.sleepBeforeRetry(attempt);
                 attempt++;
-                return queryInternal(query, attempt);
+                return queryInternal(query, max, attempt);
             } else {
                 throw e;
             }

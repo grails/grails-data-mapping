@@ -44,17 +44,18 @@ public class MongoMappingContext extends DocumentMappingContext {
             if(property != null) {
 
                 return new IdentityMapping() {
-                    @Override
                     public String[] getIdentifierName() {
-                        return new String[] { property.getName()};
+                        if(property.getName() != null)
+                            return new String[] { property.getName()};
+                        else {
+                            return new String[] { MappingFactory.IDENTITY_PROPERTY };
+                        }
                     }
 
-                    @Override
                     public ClassMapping getClassMapping() {
                         return classMapping;
                     }
 
-                    @Override
                     public Object getMappedForm() {
                         return property;
                     }

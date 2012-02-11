@@ -47,6 +47,7 @@ class GormEnhancer {
     Datastore datastore
     PlatformTransactionManager transactionManager
     List<FinderMethod> finders
+    boolean failOnError
 
     GormEnhancer(Datastore datastore) {
         this(datastore, null)
@@ -205,7 +206,9 @@ class GormEnhancer {
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
-        new GormInstanceApi<D>(cls, datastore)
+        def instanceApi = new GormInstanceApi<D>(cls, datastore)
+        instanceApi.failOnError = failOnError
+        return instanceApi
     }
 
     protected <D> GormValidationApi<D> getValidationApi(Class<D> cls) {
