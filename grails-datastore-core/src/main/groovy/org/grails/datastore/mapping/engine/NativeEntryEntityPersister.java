@@ -823,6 +823,14 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                 }
 
                                 if(association.doesCascade(CascadeType.PERSIST)) {
+                                    
+                                    if(association.isBidirectional()) {
+                                        Association inverseSide = association.getInverseSide();
+                                        if(inverseSide != null) {
+                                            EntityAccess inverseAccess = new EntityAccess(inverseSide.getOwner(), associatedObject);
+                                            inverseAccess.setProperty(inverseSide.getName(), obj);
+                                        }
+                                    }
                                     associationPersister.persist(associatedObject);
                                 }
                             }
@@ -1434,6 +1442,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     }
                 }
 
+            }
+            else if (prop instanceof Custom) {
+                CustomTypeMarshaller marshaller = ((Custom)prop).getCustomTypeMarshaller();
+                return !areEqual(marshaller.read(prop, entry), currentValue, key);
             }
             else {
                 throw new UnsupportedOperationException("dirty not detected for property " + prop.toString() + " " + prop.getClass().getSuperclass().toString());

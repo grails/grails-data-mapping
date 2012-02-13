@@ -34,9 +34,14 @@ class Setup {
         simple.mappingContext.mappingFactory.registerCustomType(new AbstractMappingAwareCustomTypeMarshaller<Birthday, Map, SimpleMapResultList>(Birthday) {
             @Override
             protected Object writeInternal(PersistentProperty property, String key, Birthday value, Map nativeTarget) {
-                final converted = value.date.time
-                nativeTarget.put(key, converted)
-                return converted
+                if (value == null) {
+                    nativeTarget.remove(key)
+                    return null
+                } else {
+                    final converted = value.date.time
+                    nativeTarget.put(key, converted)
+                    return converted
+                }
             }
 
             @Override

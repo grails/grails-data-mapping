@@ -91,6 +91,17 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
    public void setUniqueResult(boolean uniqueResult) {
         this.uniqueResult = uniqueResult;
    }
+    
+   public Criteria cache(boolean cache) {
+       query.cache(cache);
+       return this;
+   }
+    
+   public Criteria join(String property) {
+       query.join(property);
+       return this;
+   }
+
 
    public Query.ProjectionList id() {
        if (projectionList != null) {
