@@ -1086,7 +1086,14 @@ public abstract class Query {
     /**
      * A Criterion used to combine to criterion in a logical OR
      */
-    public static class Disjunction extends Junction {}
+    public static class Disjunction extends Junction {
+        public Disjunction() {
+        }
+
+        public Disjunction(List<Criterion> criteria) {
+            super(criteria);
+        }
+    }
 
     /**
      * A criterion used to negate several other criterion
