@@ -23,6 +23,10 @@ import org.springframework.context.ConfigurableApplicationContext
 import org.neo4j.graphdb.*
 import org.springframework.util.Assert
 import org.neo4j.cypher.javacompat.ExecutionEngine
+import org.neo4j.graphdb.index.IndexManager
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.neo4j.graphdb.index.AutoIndexer
+import org.grails.datastore.mapping.model.types.Simple
 
 /**
  * Datastore implementation for Neo4j backend
@@ -35,6 +39,8 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
     @Lazy ExecutionEngine executionEngine = new ExecutionEngine(graphDatabaseService)
     Map<Class, Node> subReferenceNodes
     String storeDir
+    @Lazy IndexManager indexManager = graphDatabaseService.index()
+    Map<PersistentEntity, Collection<PersistentEntity>> domainSubclasses = [:].withDefault { [] }
 
     /**
      * only to be called during testing
@@ -82,6 +88,33 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
         }
         initializeConverters(mappingContext)
         findOrCreateSubReferenceNodes()
+        setupIndexing()
+    }
+
+    protected void setupIndexing() {
+        AutoIndexer<Node> nodeAutoIndex = indexManager.nodeAutoIndexer
+        nodeAutoIndex.enabled = true
+        nodeAutoIndex.startAutoIndexingProperty(Neo4jSession.TYPE_PROPERTY_NAME)
+        for (PersistentEntity pe in mappingContext.persistentEntities) {
+
+            for (PersistentEntity parent in collectSuperclassChain(pe)) {
+                domainSubclasses[parent] << pe
+            }
+
+            for (PersistentProperty pp in pe.persistentProperties) {
+                if ((pp instanceof Simple) && (pp.mapping.mappedForm.index)) {
+                    nodeAutoIndex.startAutoIndexingProperty(pp.name)
+                }
+            }
+        }
+    }
+
+    protected List collectSuperclassChain(PersistentEntity pe, def list=[]) {
+        if (pe) {
+            list << pe
+            return collectSuperclassChain(pe.parentEntity, list)
+        }
+        list
     }
 
     protected Node createSubReferenceNode(name) {

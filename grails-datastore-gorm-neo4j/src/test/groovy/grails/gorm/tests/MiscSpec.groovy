@@ -136,6 +136,23 @@ class MiscSpec extends GormDatastoreSpec {
         tournament.teams[0].club.name == 'club'
     }
 
+    // TODO: more tests for indexing are required, add a IndexSearchSpec.groovy
+    void "test indexing"() {
+        setup:
+        def task1 = new Task(name: 'task1')
+        task1.save()
+        new Task(name: 'task2').save(flush: true)
+        session.clear()
+        def index = session.datastore.indexManager.nodeAutoIndexer.autoIndex
+
+        expect: "run native neo4j index query"
+        index.get('name', 'task1').single == task1.node
+
+        and: "a dynamic finder works"
+        Task.findAllByName('task1')*.id == [task1.id]
+
+    }
+
 }
 
 @Entity
