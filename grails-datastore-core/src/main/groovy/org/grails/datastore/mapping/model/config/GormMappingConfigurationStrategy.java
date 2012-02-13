@@ -435,9 +435,11 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                     referencedCpf, classRelationships, entity.getJavaClass());
         }
 
-        association.setAssociatedEntity(associatedEntity);
-        if (referencedPropertyName != null) {
-            association.setReferencedPropertyName(referencedPropertyName);
+        if(association != null) {
+            association.setAssociatedEntity(associatedEntity);
+            if (referencedPropertyName != null) {
+                association.setReferencedPropertyName(referencedPropertyName);
+            }
         }
         return association;
     }
