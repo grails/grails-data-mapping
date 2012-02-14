@@ -397,16 +397,13 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                             if (entity.isExternal()) {
                                 return null;
                             }
-                            throw new IllegalMappingException("Property [" + property.getName() +
-                                    "] in class [" + entity.getJavaClass().getName() +
-                                    "] is a bidirectional one-to-many with two possible properties on the inverse side. " +
-                                    "Either name one of the properties on other side of the relationship [" +
-                                    classPropertyName + "] or use the 'mappedBy' static to define the property " +
-                                    "that the relationship is mapped with. Example: static mappedBy = [" +
-                                    property.getName() + ":'myprop']");
+                            pd = descriptors.get(0);
                         }
-                        relatedClassPropertyType = pd.getPropertyType();
-                        referencedPropertyName = pd.getName();
+
+                        if(pd != null) {
+                            relatedClassPropertyType = pd.getPropertyType();
+                            referencedPropertyName = pd.getName();
+                        }
                     }
                 }
             }
@@ -744,9 +741,6 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                       javaClass.getName() + "] is not a valid property");
             }
             return null;
-        }
-        if (!entity.isExternal()) {
-            throw new IllegalMappingException("Mapping of composite identifiers currently not supported");
         }
         return null;
     }
