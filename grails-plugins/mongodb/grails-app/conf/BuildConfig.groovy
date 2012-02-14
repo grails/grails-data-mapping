@@ -12,7 +12,6 @@ grails.project.dependency.resolution = {
 
     repositories {
         mavenLocal()
-        mavenCentral()
         grailsCentral()
         mavenRepo "http://repo.grails.org/grails/core"
     }
@@ -35,8 +34,8 @@ grails.project.dependency.resolution = {
         compile("org.springframework.data:spring-data-commons-core:1.2.0.RELEASE", excludes)
         runtime("com.gmongo:gmongo:0.9.1", excludes)
 
-        def datastoreVersion = "1.0.1.BUILD-SNAPSHOT"
-        def mongoDatastoreVersion = "1.0.0.BUILD-SNAPSHOT"
+        def datastoreVersion = "1.0.2.RELEASE"
+        def mongoDatastoreVersion = "1.0.0.RC4"
 
         compile ("org.grails:grails-datastore-mongo:$mongoDatastoreVersion",
                  "org.grails:grails-datastore-gorm-mongo:$mongoDatastoreVersion",excludes)
@@ -51,9 +50,4 @@ grails.project.dependency.resolution = {
              "org.grails:grails-datastore-simple:$datastoreVersion", excludes)
     }
 
-    plugins {
-        build( ":release:1.0.0" ) {
-            export = false
-        }
-    }
 }
