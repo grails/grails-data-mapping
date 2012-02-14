@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>4 Low-level API 1.0.0.RC3</title>
+    <title>4 Low-level API 1.0.0.RC4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -80,7 +80,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
 
-                    <p><strong>Version:</strong> 1.0.0.RC3</p>
+                    <p><strong>Version:</strong> 1.0.0.RC4</p>
 
                     
                 </div>
@@ -113,8 +113,7 @@ def myAction = &#123;
 &#125;</pre></div><p class="paragraph"/>Each domain class you define also has a <code>collection</code> property that allows easy access to the underlying <code>DBCollection</code> instance and hence the GMongo API:<p class="paragraph"/><div class="code"><pre>Person.collection.count() == 1
 Person.collection.findOne(firstName:<span class="java&#45;quote">"Fred"</span>).lastName == <span class="java&#45;quote">"Flintstone"</span></pre></div><p class="paragraph"/><blockquote class="note">
 If you are using Hibernate entities with Mongo then the collection will be scoped in the <code>mongo</code> namespace. Example: Person.mongo.collection.count()
-</blockquote>
-
+</blockquote><p class="paragraph"/>You can easily convert from a native MongoDB <code>DBObject</code> into an entity using a cast:<p class="paragraph"/><div class="code"><pre>def fred = Person.collection.findOne(firstName:<span class="java&#45;quote">"Fred"</span>) as Person</pre></div>
 
 
                 <div style="clear:both;margin-top:15px;"></div>

@@ -2,12 +2,12 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>1.1 Compatibility with GORM for Hibernate 1.0.0-SNAPSHOT</title>
+    <title>GORM for Neo4j 1.0.0-SNAPSHOT</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
-    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <link rel="stylesheet" href="../../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
     <script type="text/javascript">
-function addJsClass() {
+function addJsClass(el) {
     var classes = document.body.className.split(" ");
     classes.push("js");
     document.body.className = classes.join(" ");
@@ -16,13 +16,14 @@ function addJsClass() {
 </head>
 
 <body class="body" onload="addJsClass();">
+
 <div id="navigation">
     <ul>
         <li>
             <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
                 <a href="../../guide/index.html" class="button">Table of contents</a>
 
-                <div id="nav-summary-childs" style="display:none;">
+                <div id="nav-summary-childs">
                     
                     <div class="toc-item" style="margin-left:0"><a href="../../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
                     </div>
@@ -56,58 +57,24 @@ function addJsClass() {
 <table id="colset" border="0" cellpadding="0" cellspacing="0">
     <tr>
         <td id="col1">
-            <div id="main" class="corner-all">
-
-                
+            <div id="main" class="reference corner-all">
 
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
-                
-                    <div class="toc-item next-right"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span> >></a></div>
-                
-
-
-                <div class="project">
-                    <h1>1.1 Compatibility with GORM for Hibernate - Reference Documentation</h1>
-
-                    <p><strong>Authors:</strong> Stefan Armbruster</p>
-
-                    <p><strong>Version:</strong> 1.0.0-SNAPSHOT</p>
-
-                    
-                </div>
-
-                
-
-                
-
-<h2 id="compatibility">1.1 Compatibility with GORM for Hibernate</h2>
-This implementation tries to be as compatible as possible with GORM for Hibernate. In general you can refer to the <a href="http://grails.org/doc/latest/guide/5.%20Object%20Relational%20Mapping%20(GORM).html" target="blank">GORM documentation</a> and the "Domain Classes" section of the <a href="http://grails.org/doc/latest/" target="blank">reference guide</a> (see the left nav) for usage information.<p class="paragraph"/>The following key features are supported by GORM for Neo4j:
+                <h1>cypher</h1><p class="paragraph"/><h2>Purpose</h2><p class="paragraph"/>Execute a cypher query.<p class="paragraph"/><h2>Example</h2><p class="paragraph"/><div class="code"><pre>setup:
+def person = <span class="java&#45;keyword">new</span> Person(firstName: <span class="java&#45;quote">"Bob"</span>, lastName: <span class="java&#45;quote">"Builder"</span>)
+def petType = <span class="java&#45;keyword">new</span> PetType(name: <span class="java&#45;quote">"snake"</span>)
+def pet = <span class="java&#45;keyword">new</span> Pet(name: <span class="java&#45;quote">"Fred"</span>, type: petType, owner: person)
+person.addToPets(pet)
+person.save(flush: <span class="java&#45;keyword">true</span>)
+session.clear()<p class="paragraph"/>when:
+def result = person.cypher(<span class="java&#45;quote">"start n=node(&#123;<span class="java&#45;keyword">this</span>&#125;) match n&#45;&#91;:pets&#93;&#45;&#62;m <span class="java&#45;keyword">return</span> m"</span>)<p class="paragraph"/>then:
+result.iterator().size() == 1</pre></div><p class="paragraph"/><h2>Description</h2><p class="paragraph"/><code>cypher</code> is invoked on any domain instance and returns a <a href="http://api.neo4j.org/current/org/neo4j/cypher/javacompat/ExecutionResult.html" target="blank">ExecutionResult</a>
+The parameters passed are:
 <ul class="star">
-<li>Simple persistence methods</li>
-<li>Dynamic finders</li>
-<li>Criteria queries</li>
-<li>Named queries</li>
-<li>Inheritance</li>
-<li>Embedded types</li>
-<li>Query by example</li>
-<li>Many-to-many associations (these can be modelled with a mapping class)</li>
-</ul><p class="paragraph"/>However, some features are not supported:
-<ul class="star">
-<li>HQL queries</li>
-<li>Dirty checking methods</li>
-<li>Composite primary keys</li>
-<li>Any direct interaction with the Hibernate API</li>
-<li>Custom Hibernate user types</li>
-</ul><p class="paragraph"/>There may be other limitations not mentioned here so in general it shouldn't be expected that an application based on GORM for Hibernate will "just work" without some tweaking involved. Having said that, the large majority of common GORM functionality is supported.
-
-
-
-                <div style="clear:both;margin-top:15px;"></div>
-                
-                    <div class="toc-item next-right"><a href="../../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span> >></a></div>
-                
-                <div style="clear:both"></div>
+<li>cypher query string. The query string might use a implizit <code>this</code> parameter pointing to the instance's node</li>
+<li>a optional map of cypher parameters</li>
+</ul><p class="paragraph"/>
             </div>
         </td>
         <td id="col2">
@@ -118,8 +85,10 @@ This implementation tries to be as compatible as possible with GORM for Hibernat
                 </div>
                 <div class="menu">
                     
-                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Additional Gorm Methods</h1><div class="menu-sub">
-                        
+                    <div class="menu-block">
+                        <h1 class="menu-title" onclick="toggleRef(nextElement(this))">Additional Gorm Methods</h1>
+                        <div class="menu-sub selected">
+                            
                             
                             <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/createInstanceForNode.html">createInstanceForNode</a>
                             </div>
@@ -145,16 +114,18 @@ This implementation tries to be as compatible as possible with GORM for Hibernat
                             <div class="menu-item"><a href="../../ref/Additional%20Gorm%20Methods/traverseStatic.html">traverseStatic</a>
                             </div>
                             
-                            </div>
+                        </div>
                     </div>
                     
-                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Beans</h1><div class="menu-sub">
-                        
+                    <div class="menu-block">
+                        <h1 class="menu-title" onclick="toggleRef(nextElement(this))">Beans</h1>
+                        <div class="menu-sub">
+                            
                             
                             <div class="menu-item"><a href="../../ref/Beans/graphDatabaseService.html">graphDatabaseService</a>
                             </div>
                             
-                            </div>
+                        </div>
                     </div>
                     
                 </div>
@@ -168,7 +139,8 @@ This implementation tries to be as compatible as possible with GORM for Hibernat
     
 </div>
 
-<script type="text/javascript" src="../js/docs.js"></script>
+
+<script type="text/javascript" src="../../js/docs.js"></script>
 
 </body>
 </html>
