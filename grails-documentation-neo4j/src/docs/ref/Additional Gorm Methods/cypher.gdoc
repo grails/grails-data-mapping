@@ -1,0 +1,33 @@
+h1. cypher
+
+h2. Purpose
+
+Execute a cypher query.
+
+h2. Example
+
+{code}
+setup:
+def person = new Person(firstName: "Bob", lastName: "Builder")
+def petType = new PetType(name: "snake")
+def pet = new Pet(name: "Fred", type: petType, owner: person)
+person.addToPets(pet)
+person.save(flush: true)
+session.clear()
+
+when:
+def result = person.cypher("start n=node({this}) match n-[:pets]->m return m")
+
+then:
+result.iterator().size() == 1
+{code}
+
+h2. Description
+
+@cypher@ is invoked on any domain instance and returns a "ExecutionResult":http://api.neo4j.org/current/org/neo4j/cypher/javacompat/ExecutionResult.html
+The parameters passed are:
+* cypher query string. The query string might use a implizit @this@ parameter pointing to the instance's node
+* a optional map of cypher parameters
+
+
+

@@ -9,6 +9,9 @@ import org.neo4j.graphdb.ReturnableEvaluator
 import org.neo4j.graphdb.StopEvaluator
 import org.neo4j.graphdb.TraversalPosition
 import org.neo4j.graphdb.Traverser
+import org.neo4j.graphdb.Node
+import spock.lang.IgnoreRest
+import grails.gorm.tests.PetType
 
 /**
  * check the traverser extension
@@ -149,6 +152,37 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
 
         then:
         thrown(IllegalStateException)
+    }
+
+    def "test cypher queries"() {
+        setup:
+        new Person(lastName:'person1').save()
+        new Person(lastName:'person2').save()
+        session.flush()
+        session.clear()
+
+        when:
+        def result = Person.cypherStatic("start n=node({this}) match n-[:INSTANCE]->m where m.lastName='person1' return m")
+
+        then:
+        result.iterator().size()==1
+
+    }
+
+    def "test instance based cypher query"() {
+        setup:
+        def person = new Person(firstName: "Bob", lastName: "Builder")
+        def petType = new PetType(name: "snake")
+        def pet = new Pet(name: "Fred", type: petType, owner: person)
+        person.addToPets(pet)
+        person.save(flush: true)
+        session.clear()
+
+        when:
+        def result = person.cypher("start n=node({this}) match n-[:pets]->m return m")
+
+        then:
+        result.iterator().size() == 1
     }
 
 }

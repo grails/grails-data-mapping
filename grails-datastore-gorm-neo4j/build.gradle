@@ -4,9 +4,8 @@ dependencies {
     compile project(":grails-datastore-gorm"),
             project(":grails-datastore-web"),
             project(":grails-datastore-gorm-plugin-support"),
-            "org.neo4j:neo4j-community:1.5"
+            "org.neo4j:neo4j-community:1.6"
             //project(":grails-datastore-core")
-    //runtime "org.apache.lucene:lucene-core:3.1.0"  // looks like neo4j 1.4.1. has no real dependency on lucene-core
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")
     testRuntime "javax.servlet:servlet-api:2.5"

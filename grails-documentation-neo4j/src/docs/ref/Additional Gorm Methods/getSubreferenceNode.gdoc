@@ -1,7 +1,11 @@
-h1. schemaless attributes
+h1. getSubreferenceNode
 
 h2. Purpose
 
+Return the subReference node representing a domain class in the nodespace.
+
 h2. Example
 
-h2. Description
+{code}
+Node subReference = person.subReferenceNode
+{code}
