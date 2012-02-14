@@ -61,6 +61,10 @@ public class ClassPropertyFetcher {
         return cpf;
     }
 
+    public static void clearCache()  {
+        cachedClassPropertyFetchers.clear();
+    }
+
     ClassPropertyFetcher(final Class clazz) {
         this.clazz = clazz;
         this.callback = new ReferenceInstanceCallback() {
