@@ -14,22 +14,22 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-community/jars/neo4j-community-1.5.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-community/jars/neo4j-community-1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-community/sources/neo4j-community-1.5-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-community/sources/neo4j-community-1.6-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-kernel/jars/neo4j-kernel-1.5.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-kernel/jars/neo4j-kernel-1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-kernel/sources/neo4j-kernel-1.5-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-kernel/sources/neo4j-kernel-1.6-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -47,66 +47,66 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-lucene-index/jars/neo4j-lucene-index-1.5.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-lucene-index/jars/neo4j-lucene-index-1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-lucene-index/sources/neo4j-lucene-index-1.5-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-lucene-index/sources/neo4j-lucene-index-1.6-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.lucene/lucene-core/jars/lucene-core-3.1.0.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.apache.lucene/lucene-core/jars/lucene-core-3.5.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.lucene/lucene-core/sources/lucene-core-3.1.0-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.apache.lucene/lucene-core/sources/lucene-core-3.5.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-algo/jars/neo4j-graph-algo-1.5.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-algo/jars/neo4j-graph-algo-1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-algo/sources/neo4j-graph-algo-1.5-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-algo/sources/neo4j-graph-algo-1.6-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-udc/jars/neo4j-udc-1.5.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-udc/jars/neo4j-udc-1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-udc/sources/neo4j-udc-1.5-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-udc/sources/neo4j-udc-1.6-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-matching/jars/neo4j-graph-matching-1.5.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-matching/jars/neo4j-graph-matching-1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-matching/sources/neo4j-graph-matching-1.5-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-matching/sources/neo4j-graph-matching-1.6-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-cypher/jars/neo4j-cypher-1.5.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-cypher/jars/neo4j-cypher-1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-cypher/sources/neo4j-cypher-1.5-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-cypher/sources/neo4j-cypher-1.6-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -124,11 +124,22 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-jmx/jars/neo4j-jmx-1.5.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-jmx/jars/neo4j-jmx-1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-jmx/sources/neo4j-jmx-1.5-sources.jar!/" />
+          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-jmx/sources/neo4j-jmx-1.6-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.apache.lucene/lucene-queryparser/jars/lucene-queryparser-3.5.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.apache.lucene/lucene-queryparser/sources/lucene-queryparser-3.5.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -150,6 +161,644 @@
       <library>
         <CLASSES>
           <root url="jar://$GRADLE_REPOSITORY$/com.cenqua.clover/clover/jars/clover-3.0.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/javax.servlet/servlet-api/jars/servlet-api-2.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/javax.servlet/servlet-api/sources/servlet-api-2.5-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.grails/grails-gorm/jars/grails-gorm-1.3.7.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.grails/grails-core/jars/grails-core-1.3.7.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.6.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/sources/jcl-over-slf4j-1.6.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/jars/slf4j-api-1.6.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/sources/slf4j-api-1.6.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/com.googlecode.concurrentlinkedhashmap/concurrentlinkedhashmap-lru/jars/concurrentlinkedhashmap-lru-1.2_jdk5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/com.googlecode.concurrentlinkedhashmap/concurrentlinkedhashmap-lru/sources/concurrentlinkedhashmap-lru-1.2_jdk5-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/javax.persistence/persistence-api/jars/persistence-api-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/javax.persistence/persistence-api/sources/persistence-api-1.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-collections/commons-collections/jars/commons-collections-3.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-collections/commons-collections/sources/commons-collections-3.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-lang/commons-lang/jars/commons-lang-2.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-lang/commons-lang/sources/commons-lang-2.4-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jul-to-slf4j/jars/jul-to-slf4j-1.5.8.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jul-to-slf4j/sources/jul-to-slf4j-1.5.8-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/cglib/cglib-nodep/jars/cglib-nodep-2.1_3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/cglib/cglib-nodep/sources/cglib-nodep-2.1_3-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-dbcp/commons-dbcp/jars/commons-dbcp-1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-dbcp/commons-dbcp/sources/commons-dbcp-1.3-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-pool/commons-pool/jars/commons-pool-1.5.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-pool/commons-pool/sources/commons-pool-1.5.4-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-io/commons-io/jars/commons-io-1.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-io/commons-io/sources/commons-io-1.4-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-validator/commons-validator/jars/commons-validator-1.3.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-validator/commons-validator/sources/commons-validator-1.3.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-digester/commons-digester/jars/commons-digester-1.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-digester/commons-digester/sources/commons-digester-1.6-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-beanutils/commons-beanutils/jars/commons-beanutils-1.8.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-beanutils/commons-beanutils/sources/commons-beanutils-1.8.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/oro/oro/jars/oro-2.0.8.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/oro/oro/sources/oro-2.0.8-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.grails/grails-spring/jars/grails-spring-1.3.7.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.grails/grails-docs/jars/grails-docs-1.3.7.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/radeox/radeox/jars/radeox-1.0-b2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.apache.ant/ant/jars/ant-1.7.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.apache.ant/ant/sources/ant-1.7.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.apache.ant/ant-launcher/jars/ant-launcher-1.7.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.xhtmlrenderer/core-renderer/jars/core-renderer-R8.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.xhtmlrenderer/core-renderer/sources/core-renderer-R8-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/com.lowagie/itext/jars/itext-2.0.8.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/com.lowagie/itext/sources/itext-2.0.8-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/bouncycastle/bcmail-jdk14/jars/bcmail-jdk14-138.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/bouncycastle/bcprov-jdk14/jars/bcprov-jdk14-138.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-core/jars/spring-core-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-core/sources/spring-core-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-asm/jars/spring-asm-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-asm/sources/spring-asm-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-logging/commons-logging/sources/commons-logging-1.1.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-beans/jars/spring-beans-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-beans/sources/spring-beans-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-tx/jars/spring-tx-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-tx/sources/spring-tx-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context/jars/spring-context-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context/sources/spring-context-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aop/jars/spring-aop-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aop/sources/spring-aop-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/aopalliance/aopalliance/jars/aopalliance-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/aopalliance/aopalliance/sources/aopalliance-1.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-expression/jars/spring-expression-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-expression/sources/spring-expression-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-test/jars/spring-test-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-test/sources/spring-test-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aspects/jars/spring-aspects-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aspects/sources/spring-aspects-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context-support/jars/spring-context-support-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context-support/sources/spring-context-support-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-instrument/jars/spring-instrument-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-instrument/sources/spring-instrument-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jdbc/jars/spring-jdbc-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jdbc/sources/spring-jdbc-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jms/jars/spring-jms-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jms/sources/spring-jms-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-orm/jars/spring-orm-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-orm/sources/spring-orm-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-oxm/jars/spring-oxm-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-oxm/sources/spring-oxm-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-web/jars/spring-web-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-web/sources/spring-web-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-webmvc/jars/spring-webmvc-3.0.5.RELEASE.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-webmvc/sources/spring-webmvc-3.0.5.RELEASE-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.aspectj/aspectjrt/jars/aspectjrt-1.6.8.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.aspectj/aspectjrt/sources/aspectjrt-1.6.8-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/javassist/javassist/jars/javassist-3.12.0.GA.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/javassist/javassist/sources/javassist-3.12.0.GA-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/hibernate-core/jars/hibernate-core-3.3.1.GA.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/hibernate-core/sources/hibernate-core-3.3.1.GA-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/javax.transaction/jta/jars/jta-1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/javax.transaction/jta/sources/jta-1.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/antlr/antlr/jars/antlr-2.7.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/antlr/antlr/sources/antlr-2.7.6-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/dom4j/dom4j/jars/dom4j-1.6.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/dom4j/dom4j/sources/dom4j-1.6.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/ejb3-persistence/jars/ejb3-persistence-1.0.2.GA.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/ejb3-persistence/sources/ejb3-persistence-1.0.2.GA-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/hibernate-annotations/jars/hibernate-annotations-3.4.0.GA.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/hibernate-annotations/sources/hibernate-annotations-3.4.0.GA-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/hibernate-commons-annotations/jars/hibernate-commons-annotations-3.1.0.GA.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/hibernate-commons-annotations/sources/hibernate-commons-annotations-3.1.0.GA-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/org.grails/grails-web/jars/grails-web-1.3.7.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-el/commons-el/jars/commons-el-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-el/commons-el/sources/commons-el-1.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-fileupload/commons-fileupload/jars/commons-fileupload-1.2.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$GRADLE_REPOSITORY$/commons-fileupload/commons-fileupload/sources/commons-fileupload-1.2.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/opensymphony/sitemesh/jars/sitemesh-2.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$GRADLE_REPOSITORY$/xpp3/xpp3_min/jars/xpp3_min-1.1.3.4.O.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
