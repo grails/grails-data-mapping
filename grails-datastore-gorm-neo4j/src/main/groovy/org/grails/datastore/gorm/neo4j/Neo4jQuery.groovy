@@ -41,6 +41,7 @@ import org.slf4j.Logger
 import org.apache.lucene.search.MatchAllDocsQuery
 import org.grails.datastore.mapping.model.types.Simple
 import org.apache.lucene.search.MultiPhraseQuery
+import org.neo4j.kernel.AbstractGraphDatabase
 
 /**
  * perform criteria queries on a Neo4j backend
@@ -133,9 +134,16 @@ class Neo4jQuery extends Query {
     }
 
     boolean indexQueryPossible(PersistentEntity persistentEntity, Junction junction) {
+
         if ((!projections.empty) || (junction.criteria.empty)) {
             return false
         }
+
+        // REST database -> no indexing (RestIndexManager does not support this
+        if (!(session.nativeInterface instanceof AbstractGraphDatabase)) {
+            return false
+        }
+
         Collection indexedPropertyNames = entity.persistentProperties.findAll {
             (it instanceof Simple) && (it.propertyMapping.mappedForm.index)
         }.collect {it.name}
