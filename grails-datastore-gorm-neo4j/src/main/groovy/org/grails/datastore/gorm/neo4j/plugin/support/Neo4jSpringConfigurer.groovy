@@ -22,6 +22,7 @@ import org.grails.datastore.gorm.neo4j.Neo4jOpenSessionInViewInterceptor
 import org.neo4j.kernel.impl.transaction.SpringTransactionManager
 import org.neo4j.kernel.impl.transaction.UserTransactionImpl
 import org.springframework.transaction.jta.JtaTransactionManager
+import org.neo4j.kernel.AbstractGraphDatabase
 
 /**
  * Spring configurer for Neo4j
@@ -39,42 +40,48 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
     Closure getSpringCustomizer() {
         return {
            def neo4jConfig = application.config?.grails?.neo4j  // use config from app's Datasource.groovy
-
-            String neo4jGraphDatabaseClassName
-            String neo4jDefaultLocation
-            switch (neo4jConfig.type) {
-                case "rest":
-                    neo4jGraphDatabaseClassName = "org.neo4j.rest.graphdb.RestGraphDatabase"
-                    neo4jDefaultLocation = "http://localhost:7474/db/data/"
-                    break
-                case "ha":
-                    neo4jGraphDatabaseClassName = "org.neo4j.kernel.HighlyAvailableGraphDatabase"
-                    neo4jDefaultLocation = "data/neo4j"
-                    break
-                case "embedded":
-                    neo4jGraphDatabaseClassName = "org.neo4j.kernel.EmbeddedGraphDatabase"
-                    neo4jDefaultLocation = "data/neo4j"
-                    break
-                default:  // otherwise type is used as classname
-                    neo4jGraphDatabaseClassName = neo4jConfig.type
-                    neo4jDefaultLocation = "data/neo4j"
-                    break
-            }
-
             Class neo4jGraphDatabaseClass
-            try {
-                neo4jGraphDatabaseClass = neo4jGraphDatabaseClassName as Class
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("could not load $neo4jGraphDatabaseClassName, maybe add neo4j-enterprise to dependecies section", e)
-            }
 
-            graphDatabaseService(
-                     neo4jGraphDatabaseClass,
-                     neo4jConfig.location ?: neo4jDefaultLocation,
-                     neo4jConfig.params ?: [:]
+            if (neo4jConfig.type == "rest") {
+                neo4jGraphDatabaseClass = "org.neo4j.rest.graphdb.RestGraphDatabase" as Class
+                graphDatabaseService(
+                         neo4jGraphDatabaseClass,
+                         neo4jConfig.location ?: System.getenv('NEO4J_URL') ?: "http://localhost:7474/db/data/"
+                ) { bean ->
+                    bean.destroyMethod = "shutdown"
+                }
+            } else {
+                String neo4jGraphDatabaseClassName
+                String neo4jDefaultLocation
+                switch (neo4jConfig.type) {
+                    case "ha":
+                        neo4jGraphDatabaseClassName = "org.neo4j.kernel.HighlyAvailableGraphDatabase"
+                        neo4jDefaultLocation = "data/neo4j"
+                        break
+                    case "embedded":
+                        neo4jGraphDatabaseClassName = "org.neo4j.kernel.EmbeddedGraphDatabase"
+                        neo4jDefaultLocation = "data/neo4j"
+                        break
+                    default:  // otherwise type is used as classname
+                        neo4jGraphDatabaseClassName = neo4jConfig.type
+                        neo4jDefaultLocation = "data/neo4j"
+                        break
+                }
 
-            ) { bean ->
-                bean.destroyMethod = "shutdown"
+                try {
+                    neo4jGraphDatabaseClass = neo4jGraphDatabaseClassName as Class
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException("could not load $neo4jGraphDatabaseClassName, maybe add neo4j-enterprise to dependecies section", e)
+                }
+
+                graphDatabaseService(
+                         neo4jGraphDatabaseClass,
+                         neo4jConfig.location ?: neo4jDefaultLocation,
+                         neo4jConfig.params ?: [:]
+                ) { bean ->
+                    bean.destroyMethod = "shutdown"
+                }
+
             }
 
             neo4jMappingContext(Neo4jMappingContextFactoryBean) {
@@ -92,20 +99,16 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
                 datastore = ref("neo4jDatastore")
             }
 
-            neo4jTransactionManagerService(SpringTransactionManager, graphDatabaseService)
-            neo4jUserTransactionService(UserTransactionImpl, graphDatabaseService)
-            neo4jTransactionManager(JtaTransactionManager) {
-                transactionManager = neo4jTransactionManagerService
-                userTransaction = neo4jUserTransactionService
+            // RestGraphDatabase doesn't play nicely with SpringTransactionManager
+            if (neo4jGraphDatabaseClass instanceof AbstractGraphDatabase) {
+                neo4jTransactionManagerService(SpringTransactionManager, graphDatabaseService)
+                neo4jUserTransactionService(UserTransactionImpl, graphDatabaseService)
+                neo4jTransactionManager(JtaTransactionManager) {
+                    transactionManager = neo4jTransactionManagerService
+                    userTransaction = neo4jUserTransactionService
+                }
             }
 
-///*
-//        indexService(LuceneFulltextQueryIndexService, ref("graphDatabaseService")) { bean ->
-//        //indexService(LuceneFulltextIndexService, ref("graphDatabaseService")) { bean ->
-//            bean.destroyMethod = "shutdown"
-//        }
-//*/
-//
 //        if (manager?.hasGrailsPlugin("controllers")) {
 //            neo4jOpenSessionInViewInterceptor(Neo4jOpenSessionInViewInterceptor) {
 //                datastore = ref("neo4jDatastore")
