@@ -1,0 +1,7 @@
+There is a demo application available at [https://github.com/sarmbruster/neo4jsample|https://github.com/sarmbruster/neo4jsample].
+As of now this application contains just a small set of domain classes with scaffolding controllers.
+
+The demo app uses by default a REST datasource. If you want to use a local embedded instance you need to change
+@grails-app/conf/Datasource.groovy@ to fit your needs.
+
+... more to come here...

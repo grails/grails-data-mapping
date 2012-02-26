@@ -1,6 +1,22 @@
-Starting with "Neo4j's reference node":http://api.neo4j.org/current/org/neo4j/graphdb/GraphDatabaseService.html#getReferenceNode(), each domain class itself is represented by a subreference node. The subreference node has a relationship to the reference node. Each instance of this domain class is represented by a node connected to the respective subreference node.
- All simple properties of the domain class are mapping to the node's properties. References to other domain classes are mapped by relationships.
+Since the nodespace in Neo4j has no schema as opposed to SQL, there must be some structure applied to map a given
+set of domain classes.
+
+Starting with "Neo4j's reference node":http://api.neo4j.org/current/org/neo4j/graphdb/GraphDatabaseService.html#getReferenceNode(),
+each domain class itself is represented by a subreference node. The subreference node has a relationship to the reference node,
+type "SUBREFERENCE". Each instance of this domain class is represented by a node connected to the respective subreference
+node by a relationship of type "INSTANCE".
+
+All simple properties of a domain instance are mapped to the node's properties. Since a node can only store primitives,
+Strings and arrays of both, properties of any other type must be converted before persisting. The conversion uses Spring's
+ConversionService, [Neo4jMappingContext|https://github.com/SpringSource/grails-data-mapping/blob/master/grails-datastore-gorm-neo4j/src/main/groovy/org/grails/datastore/gorm/neo4j/Neo4jMappingContext.groovy]
+adds a couple of converters to it. References to other domain classes are mapped by relationships.
+
+{note}
+Type conversion is not 100% complete for now. If you experience conversion problems, please file a ticket in Github's
+issue tracker.
+{note}
+
+The described mapping of domain classes to the node space is best illustrated with an picture:
 
 !mapping.png!
-TODO: add image illustrating this
-
+!https://github.com/SpringSource/grails-data-mapping/raw/master/grails-documentation-neo4j/resources/img/mapping.png!
