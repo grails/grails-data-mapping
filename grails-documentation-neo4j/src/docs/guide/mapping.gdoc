@@ -1,5 +1,6 @@
 Starting with "Neo4j's reference node":http://api.neo4j.org/current/org/neo4j/graphdb/GraphDatabaseService.html#getReferenceNode(), each domain class itself is represented by a subreference node. The subreference node has a relationship to the reference node. Each instance of this domain class is represented by a node connected to the respective subreference node.
  All simple properties of the domain class are mapping to the node's properties. References to other domain classes are mapped by relationships.
 
+!mapping.png!
 TODO: add image illustrating this
 

@@ -30,9 +30,9 @@ If your configuration is empty, 'embedded' is used as default.
 {note}
 
 h4. type = "rest"
-Uses a @org.neo4j.rest.graphdb.RestGraphDatabase@ instance to connect to a Neo4j database. See http://docs.neo4j.org/chunked/stable/server.html for how to setup a Neo4j server.
+Uses a @org.neo4j.rest.graphdb.RestGraphDatabase@ instance to connect to a Neo4j database. See [http://docs.neo4j.org/chunked/stable/server.html|http://docs.neo4j.org/chunked/stable/server.html] for how to setup a Neo4j server.
 
-@location@ specifies the URL of he Neo4j REST server.
+@location@ specifies the URL of he Neo4j REST server. When using the Heroku neo4j addon, omit the location. In this case location will default to env.NEO4J_URL that is provided by Heroku.
 
 Example:
 {code}
@@ -47,15 +47,15 @@ grails {
 Additionally you must add another dependency to your application's @grails-app/conf/BuildConfig.groovy@:
 
 {code}
-compile('org.neo4j:neo4j-enterprise:1.5')
+compile("org.neo4j:neo4j-rest-graphdb:1.6")
 {code}
 
-{node}
-For Neo4j HA either a commercial license is required, or you could use AGPL, see http://neo4j.org/licensing-guide/
-{node}
-
 h4. type = "ha"
-Uses a Neo4j HA setup, for details see http://docs.neo4j.org/chunked/stable/ha.html. In this case params must at least contain
+Uses a Neo4j HA setup, for details see [http://docs.neo4j.org/chunked/stable/ha.html|http://docs.neo4j.org/chunked/stable/ha.html]. In this case params must at least contain
+
+{note}
+For Neo4j HA either a commercial license is [required|http://neo4j.org/licensing-guide/], or you could use AGPL.
+{note}
 
 Example:
 {code}
@@ -69,6 +69,12 @@ grails {
         ]
     }
 }
+{code}
+
+Additionally you must add another dependency to your application's @grails-app/conf/BuildConfig.groovy@:
+
+{code}
+compile('org.neo4j:neo4j-enterprise:1.6')
 {code}
 
 h4. custom graph database

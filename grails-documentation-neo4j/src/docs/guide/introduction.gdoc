@@ -8,4 +8,5 @@ The goal of this grails-data-mapping subproject is to provide a 'as-complete-as-
 * Validating domain instances
 * access to Neo4j's traversal capabilities
 * access the Neo4j graph database in all flavours (Embedded, REST and HA)
+* using Neo4j autoindexing
 
