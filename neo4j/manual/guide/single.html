@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
-        <title>GORM for Neo4j 1.0.0-SNAPSHOT</title>
+        <title>GORM for Neo4j 1.0.0.M1</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
         <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
@@ -58,7 +58,7 @@ function addJsClass(el) {
                         <div class="project">
                             <h1>GORM for Neo4j - Reference Documentation</h1>
                             <p><strong>Authors:</strong> Stefan Armbruster</p>
-                            <p><strong>Version:</strong> 1.0.0-SNAPSHOT</p>
+                            <p><strong>Version:</strong> 1.0.0.M1</p>
                             
                         </div>
 
@@ -98,6 +98,7 @@ function addJsClass(el) {
 <li>Validating domain instances</li>
 <li>access to Neo4j's traversal capabilities</li>
 <li>access the Neo4j graph database in all flavours (Embedded, REST and HA)</li>
+<li>using Neo4j autoindexing</li>
 </ul><p class="paragraph"/>
 
 
@@ -173,16 +174,16 @@ Runs the Neo4j in embedded mode, Neo4j and Tomcat use the same JVM. No seperate 
 &#125;</pre></div><p class="paragraph"/><blockquote class="note">
 If your configuration is empty, 'embedded' is used as default.
 </blockquote><p class="paragraph"/><h4>type = "rest"</h4>
-Uses a <code>org.neo4j.rest.graphdb.RestGraphDatabase</code> instance to connect to a Neo4j database. See http://docs.neo4j.org/chunked/stable/server.html for how to setup a Neo4j server.<p class="paragraph"/><code>location</code> specifies the URL of he Neo4j REST server.<p class="paragraph"/>Example:
+Uses a <code>org.neo4j.rest.graphdb.RestGraphDatabase</code> instance to connect to a Neo4j database. See <a href="http://docs.neo4j.org/chunked/stable/server.html" target="blank">http://docs.neo4j.org/chunked/stable/server.html</a> for how to setup a Neo4j server.<p class="paragraph"/><code>location</code> specifies the URL of he Neo4j REST server. When using the Heroku neo4j addon, omit the location. In this case location will default to env.NEO4J_URL that is provided by Heroku.<p class="paragraph"/>Example:
 <div class="code"><pre>grails &#123;
     neo4j &#123;
         type = <span class="java&#45;quote">"<span class="java&#45;keyword">rest</span>"</span>
         location = <span class="java&#45;quote">"http://localhost:7474/db/data/"</span>
     &#125;
-&#125;</pre></div><p class="paragraph"/>Additionally you must add another dependency to your application's <code>grails-app/conf/BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>compile('org.neo4j:neo4j&#45;enterprise:1.5')</pre></div><p class="paragraph"/>{node}
-For Neo4j HA either a commercial license is required, or you could use AGPL, see http://neo4j.org/licensing-guide/
-{node}<p class="paragraph"/><h4>type = "ha"</h4>
-Uses a Neo4j HA setup, for details see http://docs.neo4j.org/chunked/stable/ha.html. In this case params must at least contain<p class="paragraph"/>Example:
+&#125;</pre></div><p class="paragraph"/>Additionally you must add another dependency to your application's <code>grails-app/conf/BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>compile(<span class="java&#45;quote">"org.neo4j:neo4j&#45;<span class="java&#45;keyword">rest</span>&#45;graphdb:1.6"</span>)</pre></div><p class="paragraph"/><h4>type = "ha"</h4>
+Uses a Neo4j HA setup, for details see <a href="http://docs.neo4j.org/chunked/stable/ha.html" target="blank">http://docs.neo4j.org/chunked/stable/ha.html</a>. In this case params must at least contain<p class="paragraph"/><blockquote class="note">
+For Neo4j HA either a commercial license is <a href="http://neo4j.org/licensing-guide/" target="blank">required</a>, or you could use AGPL.
+</blockquote><p class="paragraph"/>Example:
 <div class="code"><pre>grails &#123;
     neo4j &#123;
         type = <span class="java&#45;quote">"ha"</span>
@@ -192,7 +193,7 @@ Uses a Neo4j HA setup, for details see http://docs.neo4j.org/chunked/stable/ha.h
                 'ha.coordinators': 'localhost:2181,localhost:2182,localhost:2183'
         &#93;
     &#125;
-&#125;</pre></div><p class="paragraph"/><h4>custom graph database</h4>
+&#125;</pre></div><p class="paragraph"/>Additionally you must add another dependency to your application's <code>grails-app/conf/BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>compile('org.neo4j:neo4j&#45;enterprise:1.6')</pre></div><p class="paragraph"/><h4>custom graph database</h4>
 If you use a custom implementation of GraphDatabaseService, you can use
 <div class="code"><pre>grails &#123;
     neo4j &#123;
@@ -205,11 +206,24 @@ If you use a custom implementation of GraphDatabaseService, you can use
 
 
 <h1 id="mapping">3 Mapping domain classes to Neo4j node space</h1>
-Starting with <a href="http://api.neo4j.org/current/org/neo4j/graphdb/GraphDatabaseService.html#getReferenceNode()," target="blank">Neo4j's reference node</a> each domain class itself is represented by a subreference node. The subreference node has a relationship to the reference node. Each instance of this domain class is represented by a node connected to the respective subreference node.
- All simple properties of the domain class are mapping to the node's properties. References to other domain classes are mapped by relationships.<p class="paragraph"/>TODO: add image illustrating this<p class="paragraph"/>
+Since the nodespace in Neo4j has no schema as opposed to SQL, there must be some structure applied to map a given
+set of domain classes.<p class="paragraph"/>Starting with <a href="http://api.neo4j.org/current/org/neo4j/graphdb/GraphDatabaseService.html#getReferenceNode()," target="blank">Neo4j's reference node</a>
+each domain class itself is represented by a subreference node. The subreference node has a relationship to the reference node,
+type "SUBREFERENCE". Each instance of this domain class is represented by a node connected to the respective subreference
+node by a relationship of type "INSTANCE".<p class="paragraph"/>All simple properties of a domain instance are mapped to the node's properties. Since a node can only store primitives,
+Strings and arrays of both, properties of any other type must be converted before persisting. The conversion uses Spring's
+ConversionService, <a href="../ref/Httpsgithubcom Spring Sourcegrailsdatamappingblobmastergrailsdatastoregormneo4jsrcmaingroovyorggrailsdatastoregormneo4j Neo4j Mapping Contextgroovy/Neo4jMappingContext.html" class="https://github.com/SpringSource/grails-data-mapping/blob/master/grails-datastore-gorm-neo4j/src/main/groovy/org/grails/datastore/gorm/neo4j/Neo4jMappingContext.groovy">Neo4jMappingContext</a>
+adds a couple of converters to it. References to other domain classes are mapped by relationships.<p class="paragraph"/><blockquote class="note">
+Type conversion is not 100% complete for now. If you experience conversion problems, please file a ticket in Github's
+issue tracker.
+</blockquote><p class="paragraph"/>The described mapping of domain classes to the node space is best illustrated with an picture:<p class="paragraph"/><img border="0" class="center" src="../img/mapping.png"></img>
+<img border="0" class="center" src="https://github.com/SpringSource/grails-data-mapping/raw/master/grails-documentation-neo4j/resources/img/mapping.png"></img>
 
 
 <h1 id="sampleApp">4 Sample Application</h1>
+There is a demo application available at <a href="../ref/Httpsgithubcomsarmbrusterneo4jsample/https://github.com/sarmbruster/neo4jsample.html" class="https://github.com/sarmbruster/neo4jsample">https://github.com/sarmbruster/neo4jsample</a>.
+As of now this application contains just a small set of domain classes with scaffolding controllers.<p class="paragraph"/>The demo app uses by default a REST datasource. If you want to use a local embedded instance you need to change
+<code>grails-app/conf/Datasource.groovy</code> to fit your needs.<p class="paragraph"/>&#8230; more to come here&#8230;
 
 
                     </div>
