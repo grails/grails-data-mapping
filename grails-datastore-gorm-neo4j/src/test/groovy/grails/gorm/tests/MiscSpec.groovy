@@ -153,6 +153,28 @@ class MiscSpec extends GormDatastoreSpec {
 
     }
 
+    void "verify correct behaviour of version incrementing"() {
+        setup:
+        def club = new Club(name: 'club')
+        club.save(flush: true)
+        session.clear()
+
+        expect:
+        club.version == 0
+
+        when:
+        club = Club.get(club.id)
+
+        then:
+        club.version == 0
+
+        when:
+        session.flush()
+
+        then:
+        club.version == 0
+    }
+
 }
 
 @Entity

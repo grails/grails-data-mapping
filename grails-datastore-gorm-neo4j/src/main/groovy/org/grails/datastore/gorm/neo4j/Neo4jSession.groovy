@@ -71,6 +71,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
     public static final TYPE_PROPERTY_NAME = "__type__"
     public static final String SUBREFERENCE_PROPERTY_NAME = "__subreference__"
+    public static final String VERSION_PROPERTY = 'version'
     protected final Logger log = LoggerFactory.getLogger(getClass())
 
     static final ALLOWED_CLASSES_NEO4J_PROPERTIES = [
@@ -124,6 +125,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
             Node node = nativeInterface.createNode()
             node.setProperty(TYPE_PROPERTY_NAME, name)
+            node.setProperty(VERSION_PROPERTY, 0);
             Node subreferenceNode = datastore.subReferenceNodes[name]
             Assert.notNull subreferenceNode
             subreferenceNode.createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
@@ -215,20 +217,19 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                 continue
             }
 
+            boolean hasChanged = false
+
+            Node thisNode = nativeInterface.getNodeById(obj.id)
             for (PersistentProperty prop in pe.persistentProperties) {
                 def value = entityAccess.getProperty(prop.name)
-                Node thisNode = nativeInterface.getNodeById(obj.id)
                 switch (prop) {
                     case Simple:
-                        if ((prop.name == 'version') && (!inserts.contains(obj))) {
-                            value = value == null ? 0 : value + 1
-                            entityAccess.setProperty(prop.name, value)
-                        }
                         if (!ALLOWED_CLASSES_NEO4J_PROPERTIES.contains(prop.type)) {
                             value = mappingContext.conversionService.convert(value, String)
                         }
                         if (thisNode.getProperty(prop.name, null) != value) {
                             value == null ? thisNode.removeProperty(prop.name) : thisNode.setProperty(prop.name, value)
+                            hasChanged = true
                         }
                         log.debug "storing simple for $prop = $value ${thisNode.getProperty(prop.name, null)?.getClass()}"
                         break
@@ -261,6 +262,12 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                         throw new NotImplementedException("don't know how to store $prop ${prop.getClass().superclass}")
 
                 }
+            }
+
+            if (hasChanged && (!inserts.contains(obj))) {
+                def version = thisNode.getProperty(VERSION_PROPERTY) + 1
+                thisNode.setProperty(VERSION_PROPERTY, version)
+                entityAccess.setProperty(VERSION_PROPERTY, version)
             }
 
             //def entityAccess = new EntityAccess(pe, obj)
@@ -670,7 +677,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
     @Override
     void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        if (propertyChangeEvent.propertyName!='version') {
+        if (propertyChangeEvent.propertyName!=VERSION_PROPERTY) {
             dirtyObjects << propertyChangeEvent.source
         }
     }
