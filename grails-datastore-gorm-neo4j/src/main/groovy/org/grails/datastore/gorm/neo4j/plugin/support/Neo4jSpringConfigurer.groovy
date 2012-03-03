@@ -44,10 +44,15 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
 
             if (neo4jConfig.type == "rest") {
                 neo4jGraphDatabaseClass = "org.neo4j.rest.graphdb.RestGraphDatabase" as Class
-                graphDatabaseService(
-                         neo4jGraphDatabaseClass,
-                         neo4jConfig.location ?: System.getenv('NEO4J_URL') ?: "http://localhost:7474/db/data/"
-                ) { bean ->
+
+                // env paramters have precedence (Heroku uses this)
+                def location = System.env['NEO4J_HOST'] ?
+                    "http://${System.env['NEO4J_HOST']}:${System.env['NEO4J_PORT']}/db/data" :
+                    neo4jConfig.location ?: "http://localhost:7474/db/data/"
+                def login = System.env['NEO4J_LOGIN'] ?: neo4jConfig.login ?: null
+                def password = System.env['NEO4J_PASSWORD'] ?: neo4jConfig.password ?: null
+
+                graphDatabaseService(neo4jGraphDatabaseClass, location, login, password) { bean ->
                     bean.destroyMethod = "shutdown"
                 }
             } else {
