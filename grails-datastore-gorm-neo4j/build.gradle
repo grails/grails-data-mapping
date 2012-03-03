@@ -1,10 +1,11 @@
-version = "1.0.0.M12"
+//version = "1.0.0.BUILD-SNAPSHOT"
+version = "1.0.0.M13"
 
 dependencies {
     compile project(":grails-datastore-gorm"),
             project(":grails-datastore-web"),
             project(":grails-datastore-gorm-plugin-support"),
-            "org.neo4j:neo4j-community:1.6"
+            "org.neo4j:neo4j-community:1.6.1"
             //project(":grails-datastore-core")
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")
