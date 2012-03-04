@@ -24,10 +24,10 @@ As you can see the server is running on port 6379, but don't worry the Redis plu
 If you want to configure how Grails connects to redis then you can do so using the following settings in @grails-app/conf/Config.groovy@:
 
 {code}
-grails.redis.host="myserver"
-grails.redis.port=6380
-grails.redis.password="secret"
-grails.redis.pooled=true
-grails.redis.resources=15
-grails.redis.timeout=5000
+grails.'redis-gorm'.host="myserver"
+grails.'redis-gorm'.port=6380
+grails.'redis-gorm'.password="secret"
+grails.'redis-gorm'.pooled=true
+grails.'redis-gorm'.resources=15
+grails.'redis-gorm'.timeout=5000
 {code}
