@@ -39,7 +39,7 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
     @Override
     Closure getSpringCustomizer() {
         return {
-           def neo4jConfig = application.config?.grails?.neo4j  // use config from app's Datasource.groovy
+            def neo4jConfig = application.config?.grails?.neo4j  // use config from app's Datasource.groovy
             Class neo4jGraphDatabaseClass
 
             if (neo4jConfig.type == "rest") {
@@ -68,8 +68,12 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
                         neo4jDefaultLocation = "data/neo4j"
                         break
                     default:  // otherwise type is used as classname
-                        neo4jGraphDatabaseClassName = neo4jConfig.type
-                        neo4jDefaultLocation = "data/neo4j"
+                        if (neo4jConfig.type) {
+                            neo4jGraphDatabaseClassName = neo4jConfig.type
+                            neo4jDefaultLocation = "data/neo4j"
+                        } else {
+                            throw new RuntimeException("no config for neo4j found")
+                        }
                         break
                 }
 
@@ -80,9 +84,9 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
                 }
 
                 graphDatabaseService(
-                         neo4jGraphDatabaseClass,
-                         neo4jConfig.location ?: neo4jDefaultLocation,
-                         neo4jConfig.params ?: [:]
+                        neo4jGraphDatabaseClass,
+                        neo4jConfig.location ?: neo4jDefaultLocation,
+                        neo4jConfig.params ?: [:]
                 ) { bean ->
                     bean.destroyMethod = "shutdown"
                 }
