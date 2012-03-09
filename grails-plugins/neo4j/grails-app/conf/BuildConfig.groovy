@@ -47,4 +47,13 @@ grails.project.dependency.resolution = {
 
         compile('org.neo4j:neo4j-community:1.6.1')
     }
+
+    plugins {
+        runtime ":jquery:1.7.1"
+        runtime ":resources:1.1.6"
+        runtime ":release:1.0.1"
+        runtime ":svn:1.0.2"
+
+    }
+
 }

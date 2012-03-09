@@ -1,17 +1,16 @@
 <html>
     <head>
         <title>domain structure</title>
-		<meta name="layout" content="main" />
-        <g:javascript library="prototype" />
-      <g:javascript>
-function toogleCheckboxes(name, value) {
-    var filter = "input[name=" + name + "]";
-    $$(filter).each(function(s) {
-      s.checked=value;
-    })
-}
-      </g:javascript>
-	</head>
+        <meta name="layout" content="main"/>
+        <r:require module="jquery"/>
+        <g:javascript>
+            function toogleCheckboxes(name, value) {
+                $("input[name=" + name + "]").each(function () {
+                    this.checked = value;
+                })
+            };
+        </g:javascript>
+    </head>
 <body>
 
 <tmpl:nav/>
