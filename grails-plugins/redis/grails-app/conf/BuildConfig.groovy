@@ -29,7 +29,9 @@ grails.project.dependency.resolution = {
 
 		def datastoreVersion = "1.0.0.RELEASE"
 	    def redisDatastoreVersion = "1.0.0.M8"
-	    
+
+        compile 'redis.clients:jedis:2.0.0'
+
 	    compile("org.grails:grails-datastore-gorm-redis:$redisDatastoreVersion",
 	            "org.grails:grails-datastore-redis:$redisDatastoreVersion", excludes)
 
@@ -47,7 +49,5 @@ grails.project.dependency.resolution = {
         build(":release:1.0.0") {
             export = false
         }
-
-        compile ":redis:1.1"
     }
 }

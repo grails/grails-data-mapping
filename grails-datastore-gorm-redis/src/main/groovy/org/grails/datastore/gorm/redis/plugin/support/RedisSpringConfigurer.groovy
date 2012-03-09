@@ -29,7 +29,7 @@ class RedisSpringConfigurer extends SpringConfigurer{
     @Override
     Closure getSpringCustomizer() {
         return {
-            def redisConfig = application.config?.grails?.redis
+            def redisConfig = application.config?.grails?.'redis-gorm'
 
             redisDatastoreMappingContext(RedisMappingContextFactoryBean) {
                 grailsApplication = ref('grailsApplication')
