@@ -19,9 +19,16 @@ class Birthday implements Comparable{
 Custom types should go in src/groovy not grails-app/domain
 {note}
 
-If you attempt to reference this class from a domain class it will not automatically be persisted for you. However you can create a custom type implementation and register it with the Spring. For example:
+If you attempt to reference this class from a domain class it will not automatically be persisted for you. However you can create a custom type implementation and register it with Spring. For example:
 
 {code}
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller;
+import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.mongo.query.MongoQuery;
+import org.grails.datastore.mapping.query.Query;
+
 class BirthdayType extends AbstractMappingAwareCustomTypeMarshaller<Birthday, DBObject, DBObject> {
 	BirthdayType() {
 		super(Birthday)
@@ -34,7 +41,7 @@ class BirthdayType extends AbstractMappingAwareCustomTypeMarshaller<Birthday, DB
     }
 
     @Override
-    protected void queryInternal(PersistentProperty property, String key, PropertyCriterion criterion, DBObject nativeQuery) {
+    protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion criterion, DBObject nativeQuery) {
         if(criterion instanceof Between) {
             def dbo = new BasicDBObject()
             dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
@@ -84,11 +91,11 @@ protected Birthday readInternal(PersistentProperty property, String key, DBObjec
 }
 {code}
 
-You can the construct the custom type from by reading values from the @DBObject@. Finally the @queryInternal@ method allows you to handle how a custom type is queried:
+You can then construct the custom type by reading values from the @DBObject@. Finally the @queryInternal@ method allows you to handle how a custom type is queried:
 
 {code}
 @Override
-protected void queryInternal(PersistentProperty property, String key, PropertyCriterion criterion, DBObject nativeQuery) {
+protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion criterion, DBObject nativeQuery) {
     if(criterion instanceof Between) {
         def dbo = new BasicDBObject()
         dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
@@ -112,3 +119,14 @@ Person.findByBirthdayBetween(new Birthday(new Date()-7), new Birthday(new Date()
 {code}
 
 However "like" or other query types will not work.
+
+To register a custom type in a grails application simply register it as Spring bean. For example, to register the above @BirthdayType@ add the following to grails-app/conf/spring/resources.groovy:
+
+{code}
+import com.example.BirthdayType
+
+// Place your Spring DSL code here
+beans = {
+  birthdayType(BirthdayType)
+}
+{code}
