@@ -22,6 +22,13 @@ Custom types should go in src/groovy not grails-app/domain
 If you attempt to reference this class from a domain class it will not automatically be persisted for you. However you can create a custom type implementation and register it with Spring. For example:
 
 {code}
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller;
+import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.mongo.query.MongoQuery;
+import org.grails.datastore.mapping.query.Query;
+
 class BirthdayType extends AbstractMappingAwareCustomTypeMarshaller<Birthday, DBObject, DBObject> {
 	BirthdayType() {
 		super(Birthday)
@@ -34,7 +41,7 @@ class BirthdayType extends AbstractMappingAwareCustomTypeMarshaller<Birthday, DB
     }
 
     @Override
-    protected void queryInternal(PersistentProperty property, String key, PropertyCriterion criterion, DBObject nativeQuery) {
+    protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion criterion, DBObject nativeQuery) {
         if(criterion instanceof Between) {
             def dbo = new BasicDBObject()
             dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
@@ -88,7 +95,7 @@ You can then construct the custom type by reading values from the @DBObject@. Fi
 
 {code}
 @Override
-protected void queryInternal(PersistentProperty property, String key, PropertyCriterion criterion, DBObject nativeQuery) {
+protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion criterion, DBObject nativeQuery) {
     if(criterion instanceof Between) {
         def dbo = new BasicDBObject()
         dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
