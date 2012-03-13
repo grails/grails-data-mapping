@@ -40,8 +40,8 @@ import org.slf4j.LoggerFactory
 import org.slf4j.Logger
 import org.apache.lucene.search.MatchAllDocsQuery
 import org.grails.datastore.mapping.model.types.Simple
-import org.apache.lucene.search.MultiPhraseQuery
 import org.neo4j.kernel.AbstractGraphDatabase
+import org.neo4j.helpers.collection.IteratorUtil
 
 /**
  * perform criteria queries on a Neo4j backend
@@ -60,7 +60,7 @@ class Neo4jQuery extends Query {
     protected List executeQuery(PersistentEntity entity, Junction criteria) {
 
         Assert.notNull( entity, "Entity must not be null" )
-        
+
         if (indexQueryPossible(entity, criteria)) {
             try {
                 executeQueryViaIndex(entity, criteria)
@@ -162,6 +162,15 @@ class Neo4jQuery extends Query {
         def result = []
         List<Node> subReferenceNodes = getSubreferencesOfSelfAndDerived(entity)
         List<String> validClassNames = subReferenceNodes.collect { it.getProperty(Neo4jSession.SUBREFERENCE_PROPERTY_NAME)}
+
+        // shortcut for count()
+        if (criteria.empty && (projections.projectionList?.size()==1) && projections.projectionList[0] instanceof CountProjection) {
+            log.error "shortcut for count"
+            return [ subReferenceNodes.sum {
+                IteratorUtil.count((Iterable)it.getRelationships(Direction.OUTGOING, GrailsRelationshipTypes.INSTANCE))
+            } ]
+        }
+
         for (Node subReferenceNode in subReferenceNodes) {
             for (Relationship rel in subReferenceNode.getRelationships(GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING).iterator()) {
                 Node n = rel.endNode
