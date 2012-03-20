@@ -2,13 +2,15 @@ package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+import spock.lang.Issue
 
 /**
  */
 class BeforeUpdateEventSpec extends GormDatastoreSpec {
 
+    @Issue('GRAILS-8916')
     void "Test beforeUpdate event doesn't cause test failure"() {
-        when:"blah"
+        when:"An entity is saved that has a beforeUpdate event"
             BeforeUpdateBook b = new BeforeUpdateBook()
             b.save(failOnError:true)
             BeforeUpdateAuthor a = new BeforeUpdateAuthor()
@@ -17,7 +19,7 @@ class BeforeUpdateEventSpec extends GormDatastoreSpec {
             a.book = b
             a.save(failOnError:true)
 
-        then:"blah"
+        then:"The association index is persisted correctly"
             a.id == BeforeUpdateAuthor.findByBook(b).id
 
     }
