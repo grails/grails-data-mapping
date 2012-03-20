@@ -814,10 +814,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                     if (association.isBidirectional()) {
                                         Association inverseSide = association.getInverseSide();
                                         if (inverseSide != null) {
-                                            setEntryValue(cachedAssociationEntry, inverseSide.getName(), formulateDatabaseReference(association.getAssociatedEntity(), (ToOne) inverseSide, (Serializable) k));
+                                            setEntryValue(cachedAssociationEntry, inverseSide.getName(), formulateDatabaseReference(association.getAssociatedEntity(), inverseSide, (Serializable) k));
                                         }
                                         else {
-                                            setEntryValue(cachedAssociationEntry, key,  formulateDatabaseReference(association.getAssociatedEntity(), (ToOne) inverseSide, (Serializable) k));
+                                            setEntryValue(cachedAssociationEntry, key,  formulateDatabaseReference(association.getAssociatedEntity(), inverseSide, (Serializable) k));
                                         }
                                     }
                                 }
@@ -1378,8 +1378,19 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
                 if(toIndex != null && property != null) {
                     PropertyMapping<Property> pm = property.getMapping();
-                    if(pm != null && isPropertyIndexed(pm.getMappedForm()))
-                        toIndex.put(property, value);
+                    if(pm != null && isPropertyIndexed(pm.getMappedForm())) {
+                        if(property instanceof ToOne) {
+                            ToOne association = (ToOne) property;
+                            if(!association.isForeignKeyInChild()) {
+                                NativeEntryEntityPersister associationPersister = (NativeEntryEntityPersister) session.getPersister(value);
+                                toIndex.put(property, associationPersister.getObjectIdentifier(value));
+                            }
+                            
+                        }
+                        else {
+                            toIndex.put(property, value);
+                        }
+                    }
                 }
             }
         }
