@@ -763,8 +763,32 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 final Object propValue = entityAccess.getProperty(oneToMany.getName());
                 if (propValue instanceof Collection) {
                     Collection associatedObjects = (Collection) propValue;
-                    List<Serializable> keys = session.persist(associatedObjects);
-                    toManyKeys.put(oneToMany, keys);
+                    if (isInitializedCollection(associatedObjects)) {
+                        EntityPersister associationPersister = (EntityPersister) session.getPersister(oneToMany.getAssociatedEntity());
+                        if(associationPersister != null) {
+                            PersistentCollection persistentCollection;
+                            boolean newCollection = false;
+                            if(associatedObjects instanceof PersistentCollection) {
+                                persistentCollection = (PersistentCollection) associatedObjects;
+                            }
+                            else {
+                                Class associationType = oneToMany.getAssociatedEntity().getJavaClass();
+                                persistentCollection = associatedObjects instanceof Set ? new PersistentSet(associationType, getSession(), associatedObjects) : new PersistentList(associationType,getSession(), (List) associatedObjects);
+                                entityAccess.setProperty(oneToMany.getName(), persistentCollection);
+                                persistentCollection.markDirty();
+                                newCollection = true;
+                            }
+                            if(persistentCollection.isDirty()) {
+                                persistentCollection.resetDirty();
+                                List<Serializable> keys = associationPersister.persist(associatedObjects);
+                                toManyKeys.put(oneToMany, keys);
+                                if(newCollection ) {
+                                    entityAccess.setProperty(oneToMany.getName(), associatedObjects);
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
             else if (prop instanceof ManyToMany) {
@@ -773,8 +797,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 final Object propValue = entityAccess.getProperty(manyToMany.getName());
                 if (propValue instanceof Collection) {
                     Collection associatedObjects = (Collection) propValue;
-                    setManyToMany(persistentEntity, obj, e, manyToMany, associatedObjects, toManyKeys);
-                    // TODO index?
+                    if(isInitializedCollection(associatedObjects)) {
+                        setManyToMany(persistentEntity, obj, e, manyToMany, associatedObjects, toManyKeys);
+                    }
                 }
             }
             else if (prop instanceof ToOne) {
@@ -931,6 +956,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             si.addPendingUpdate((PendingUpdate) pendingOperation);
         }
         return (Serializable) k;
+    }
+
+    private boolean isInitializedCollection(Collection associatedObjects) {
+        return !(associatedObjects instanceof PersistentCollection) || ((PersistentCollection) associatedObjects).isInitialized();
     }
 
     /**
