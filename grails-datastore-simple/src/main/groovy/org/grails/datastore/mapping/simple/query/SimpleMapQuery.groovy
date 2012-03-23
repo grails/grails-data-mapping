@@ -415,7 +415,10 @@ class SimpleMapQuery extends Query {
 
             if(function != null) {
                 def allEntities = datastore[family]
-                allEntities.findAll { function(it.value[property.name]) == value }.collect { it.key }
+                allEntities.findAll {
+                    def calculatedValue = function(it.value[property.name])
+                    calculatedValue == value
+                }.collect { it.key }
             }
             else {
                 return indexer.query(value)
