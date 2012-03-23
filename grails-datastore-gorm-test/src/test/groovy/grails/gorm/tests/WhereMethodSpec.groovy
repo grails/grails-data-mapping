@@ -16,7 +16,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
 
     @Override
     List getDomainClasses() {
-        [Continent]
+        [Continent, Group]
     }
     
     
@@ -1186,6 +1186,20 @@ class WhereMethodSpec extends GormDatastoreSpec {
             results.find { it.firstName == 'Ed'}
             results.find { it.firstName == 'Fred'}
     }
+    
+    def "Test where query on sorted set"() {
+        given:"Some people and groups"
+            createPeopleAndGroups()
+        
+        when:"A where query is executed on a sorted set"
+            def query = Group.where {
+                people.lastName == "Simpson"
+            }
+            def results = query.list(sort:"name", order:"desc")
+
+        then:"The results are correct"
+            results.size() == 1
+    }
 
     protected createContinentWithCountries() {
         final continent = new Continent(name: "Africa")
@@ -1200,6 +1214,18 @@ class WhereMethodSpec extends GormDatastoreSpec {
         new Person(firstName: "Barney", lastName: "Rubble", age:35).save()
         new Person(firstName: "Fred", lastName: "Flinstone", age:41).save()
     }
+
+    protected def createPeopleAndGroups() {
+        createPeople()
+        def simpsons = Person.findAllByLastName("Simpson")
+        assert simpsons.size() == 4
+        def s = new Group(name: "Simpsons")
+        s.people.addAll(simpsons)
+        s.save flush: true
+        session.clear()
+        
+        assert Group.findByName("Simpsons").people.size() == 4
+    }    
 
     protected def createPeopleWithPets() {
         new Person(firstName: "Joe", lastName: "Bloggs", age:4)
@@ -1428,4 +1454,12 @@ class Continent {
    String name
    Set<Country> countries = []
    static hasMany = [countries:Country]
+}
+
+@Entity
+class Group {
+    Long id
+    String name
+    SortedSet people = [] as SortedSet
+    static hasMany = [people:Person]
 }

@@ -23,6 +23,7 @@ import javax.persistence.FlushModeType;
 
 import org.grails.datastore.mapping.cache.TPCacheAdapter;
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
+import org.grails.datastore.mapping.collection.*;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.*;
@@ -30,9 +31,6 @@ import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.query.Query;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.CannotAcquireLockException;
-import org.grails.datastore.mapping.collection.PersistentCollection;
-import org.grails.datastore.mapping.collection.PersistentList;
-import org.grails.datastore.mapping.collection.PersistentSet;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionImplementor;
@@ -490,6 +488,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                             ea.setPropertyNoConversion(association.getName(),
                                     new PersistentList(nativeKey, session, indexer));
                         }
+                        else if (SortedSet.class.isAssignableFrom(association.getType())) {
+                            ea.setPropertyNoConversion(association.getName(),
+                                    new PersistentSortedSet(nativeKey, session, indexer));
+                        }
                         else if (Set.class.isAssignableFrom(association.getType())) {
                             ea.setPropertyNoConversion(association.getName(),
                                     new PersistentSet(nativeKey, session, indexer));
@@ -773,7 +775,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                             }
                             else {
                                 Class associationType = oneToMany.getAssociatedEntity().getJavaClass();
-                                persistentCollection = associatedObjects instanceof Set ? new PersistentSet(associationType, getSession(), associatedObjects) : new PersistentList(associationType,getSession(), (List) associatedObjects);
+                                persistentCollection = getPersistentCollection(associatedObjects, associationType);
                                 entityAccess.setProperty(oneToMany.getName(), persistentCollection);
                                 persistentCollection.markDirty();
                                 newCollection = true;
@@ -956,6 +958,15 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             si.addPendingUpdate((PendingUpdate) pendingOperation);
         }
         return (Serializable) k;
+    }
+
+    private AbstractPersistentCollection getPersistentCollection(Collection associatedObjects, Class associationType) {
+        if(associatedObjects instanceof Set) {
+            return associatedObjects instanceof SortedSet ? new PersistentSortedSet(associationType,getSession(), (SortedSet) associatedObjects) : new PersistentSet(associationType, getSession(), associatedObjects);
+        }
+        else {
+            return new PersistentList(associationType,getSession(), (List) associatedObjects);
+        }
     }
 
     private boolean isInitializedCollection(Collection associatedObjects) {
