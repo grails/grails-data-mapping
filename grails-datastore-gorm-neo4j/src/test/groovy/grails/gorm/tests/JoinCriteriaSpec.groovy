@@ -12,18 +12,22 @@ class JoinCriteriaSpec extends GormDatastoreSpec {
 
     def "check if a criteria join get the expected results"() {
         given:
-        def aclc = new AclClass(className:'classname1').save(flush:true)
-        def aclObjId = new AclObjectIdentity('aclClass':aclc, objectId:1L).save(flush:true)
+        def aclc1 = new AclClass(className:'classname1').save(flush:true)
+        def aclc2 = new AclClass(className:'classname2').save(flush:true)
+        
+        def aclObjId1 = new AclObjectIdentity('aclClass':aclc1, objectId:1L).save(flush:true)
+        def aclObjId2 = new AclObjectIdentity('aclClass':aclc2, objectId:2L).save(flush:true)
+        
         session.clear()
 
         when:
-        def theAclClass = AclObjectIdentity.createCriteria().get {
-            eq('objectId', 1L)
-            aclClass { eq('className', 'classname1') }
+        def theObjs = AclObjectIdentity.createCriteria().list {
+            aclClass { eq('className', 'classname2') }
         }
 
         then:
-        theAclClass
+        theObjs.size() == 1
+        theObjs[0].objectId == 2L
     }
 }
 
@@ -47,6 +51,8 @@ class AclObjectIdentity {
 
     Long objectId
     AclClass aclClass
+    
+    static embedded = ['aclClass']
 
     @Override
     String toString() {
