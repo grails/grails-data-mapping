@@ -45,9 +45,9 @@ allprojects {
 
 subprojects {
     ext {
-//   releaseType = "RELEASE"
-        releaseType = "BUILD-SNAPSHOT"
-//    releaseType = "RC3"
+        releaseType = "RELEASE"
+        //releaseType = "BUILD-SNAPSHOT"
+        //releaseType = "RC3"
         isCiBuild = project.hasProperty("isCiBuild")
     }
 
