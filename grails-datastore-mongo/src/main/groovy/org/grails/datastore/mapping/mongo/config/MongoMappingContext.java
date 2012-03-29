@@ -20,6 +20,11 @@ import org.grails.datastore.mapping.document.config.DocumentMappingContext;
 import org.grails.datastore.mapping.document.config.DocumentPersistentEntity;
 import org.grails.datastore.mapping.model.*;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Models a {@link org.grails.datastore.mapping.model.MappingContext} for Mongo.
  *
@@ -27,7 +32,16 @@ import org.grails.datastore.mapping.model.*;
  */
 public class MongoMappingContext extends DocumentMappingContext {
 
-    private final class MongoDocumentMappingFactory extends
+    public static final Set<String> MONGO_SIMPLE_TYPES;
+
+    static {
+        MONGO_SIMPLE_TYPES = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+                org.bson.types.ObjectId.class.getName(),
+                com.mongodb.DBObject.class.getName()
+                )));
+    }
+
+        private final class MongoDocumentMappingFactory extends
             AbstractGormMappingFactory<MongoCollection, MongoAttribute> {
         @Override
         protected Class<MongoAttribute> getPropertyMappedFormType() {
@@ -62,6 +76,16 @@ public class MongoMappingContext extends DocumentMappingContext {
                 };
             }
             return super.getIdentityMappedForm(classMapping, property);
+        }
+
+        @Override
+        public boolean isSimpleType(Class propType) {
+            if (propType == null) return false;
+            if (propType.isArray()) {
+                return isSimpleType(propType.getComponentType()) || super.isSimpleType(propType);
+            }
+            final String typeName = propType.getName();
+            return MONGO_SIMPLE_TYPES.contains(typeName) || super.isSimpleType(propType);
         }
     }
 
