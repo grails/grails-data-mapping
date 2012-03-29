@@ -20,11 +20,6 @@ import org.grails.datastore.mapping.document.config.DocumentMappingContext;
 import org.grails.datastore.mapping.document.config.DocumentPersistentEntity;
 import org.grails.datastore.mapping.model.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Models a {@link org.grails.datastore.mapping.model.MappingContext} for Mongo.
  *
