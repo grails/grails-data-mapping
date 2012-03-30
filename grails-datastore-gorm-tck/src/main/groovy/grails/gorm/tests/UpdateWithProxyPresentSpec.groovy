@@ -48,6 +48,7 @@ class Pet implements Serializable {
     Date birthDate = new Date()
     PetType type = new PetType(name:"Unknown")
     Person owner
+    Integer age
 
     static mapping = {
         name index:true
@@ -55,12 +56,13 @@ class Pet implements Serializable {
 
     static constraints = {
         owner nullable:true
+        age nullable: true
     }
 }
 
 @Entity
 @ApplyDetachedCriteriaTransform
-class Person implements Serializable {
+class Person implements Serializable, Comparable<Person> {
     static simpsons = where {
          lastName == "Simpson"
     }
@@ -78,6 +80,11 @@ class Person implements Serializable {
         firstName index:true
         lastName index:true
         age index:true
+    }
+
+    @Override
+    int compareTo(Person t) {
+        age <=> t.age
     }
 }
 

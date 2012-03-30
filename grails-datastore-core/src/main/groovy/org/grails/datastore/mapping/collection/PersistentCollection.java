@@ -46,4 +46,9 @@ public interface PersistentCollection extends Collection {
      * Mark the collection as no longer dirty.
      */
     void resetDirty();
+
+    /**
+     * Mark the collection as dirty.
+     */
+    void markDirty();
 }

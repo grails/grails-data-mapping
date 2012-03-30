@@ -34,6 +34,12 @@ public class PersistentList extends AbstractPersistentCollection implements List
 
     private final List list;
 
+
+    public PersistentList(Class childType, Session session, List collection) {
+        super(childType, session, collection);
+        this.list = collection;
+    }
+
     public PersistentList(Collection keys, Class childType, Session session) {
         super(keys, childType, session, new ArrayList());
         list = (List)collection;

@@ -1,5 +1,9 @@
 version = "1.0.0.BUILD-SNAPSHOT"
 
+repositories {
+    maven { url "http://dist.gemstone.com/maven/release" }
+}
+
 dependencies {
 
     compile project(":grails-datastore-gorm"),

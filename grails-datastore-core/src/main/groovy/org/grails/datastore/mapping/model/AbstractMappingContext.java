@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.grails.datastore.mapping.model.types.conversion.DefaultConversionService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
@@ -27,6 +28,7 @@ import org.springframework.core.convert.support.GenericConversionService;
 import org.grails.datastore.mapping.proxy.JavassistProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.validation.Validator;
 
 /**
@@ -38,6 +40,8 @@ import org.springframework.validation.Validator;
 @SuppressWarnings("rawtypes")
 public abstract class AbstractMappingContext implements MappingContext {
 
+    public static final String GROOVY_PROXY_FACTORY_NAME = "org.grails.datastore.gorm.proxy.GroovyProxyFactory";
+    public static final String JAVASIST_PROXY_FACTORY = "javassist.util.proxy.ProxyFactory";
     protected Collection<PersistentEntity> persistentEntities = new ConcurrentLinkedQueue<PersistentEntity>();
     protected Map<String,PersistentEntity>  persistentEntitiesByName = new ConcurrentHashMap<String,PersistentEntity>();
     protected Map<PersistentEntity,Map<String,PersistentEntity>>  persistentEntitiesByDiscriminator = new ConcurrentHashMap<PersistentEntity,Map<String,PersistentEntity>>();
@@ -58,7 +62,20 @@ public abstract class AbstractMappingContext implements MappingContext {
 
     public ProxyFactory getProxyFactory() {
         if (this.proxyFactory == null) {
-            proxyFactory = DefaultProxyFactoryCreator.create();
+            ClassLoader classLoader = AbstractMappingContext.class.getClassLoader();
+            if(ClassUtils.isPresent(JAVASIST_PROXY_FACTORY, classLoader)) {
+                proxyFactory = DefaultProxyFactoryCreator.create();
+            }
+            else if(ClassUtils.isPresent(GROOVY_PROXY_FACTORY_NAME, classLoader)) {
+                try {
+                    proxyFactory = (ProxyFactory) BeanUtils.instantiate(ClassUtils.forName(GROOVY_PROXY_FACTORY_NAME, classLoader));
+                } catch (ClassNotFoundException e) {
+                    proxyFactory = DefaultProxyFactoryCreator.create();
+                }
+            }
+            else {
+                proxyFactory = DefaultProxyFactoryCreator.create();
+            }
         }
         return proxyFactory;
     }
