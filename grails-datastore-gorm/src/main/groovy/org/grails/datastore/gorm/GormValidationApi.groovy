@@ -14,11 +14,15 @@
  */
 package org.grails.datastore.gorm
 
+import org.codehaus.groovy.grails.validation.CascadingValidator
 import org.grails.datastore.gorm.support.BeforeValidateHelper
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.MappingContext
-import org.springframework.validation.*
 import org.grails.datastore.mapping.validation.ValidationErrors
+import org.springframework.validation.Errors
+import org.springframework.validation.FieldError
+import org.springframework.validation.ObjectError
+import org.springframework.validation.Validator
 
 /**
  * Methods used for validating GORM instances.
@@ -40,26 +44,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
         beforeValidateHelper = new BeforeValidateHelper()
     }
 
-    /**
-     * Validates an instance for the given arguments
-     *
-     * @param instance The instance to validate
-     * @param arguments The arguments to use
-     * @return True if the instance is valid
-     */
-    boolean validate(D instance, Map arguments) {
-        validate instance, (List)null
-    }
-
-    /**
-     * Validates an instance
-     *
-     * @param instance The instance to validate
-     * @param fields The list of fields to validate
-     * @return True if the instance is valid
-     */
-    boolean validate(D instance, List fields) {
-
+    private boolean doValidate(D instance, Map arguments, List fields) {
         beforeValidateHelper.invokeBeforeValidate instance, fields
 
         if (!validator) {
@@ -72,8 +57,12 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
 
         Errors errors = instance.errors
 
-        validator.validate instance, localErrors
-        
+        if (validator instanceof CascadingValidator) {
+            validator.validate instance, localErrors, arguments?.deepValidate != false
+        } else {
+            validator.validate instance, localErrors
+        }
+
         if (fields) {
             localErrors = filterErrors(localErrors, fields as Set, instance)
         }
@@ -85,8 +74,30 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
         }
 
         instance.errors = localErrors
-        
+
         return !instance.errors.hasErrors()
+    }
+
+    /**
+     * Validates an instance for the given arguments
+     *
+     * @param instance The instance to validate
+     * @param arguments The arguments to use
+     * @return True if the instance is valid
+     */
+    boolean validate(D instance, Map arguments) {
+        doValidate instance, arguments, (List)null
+    }
+
+    /**
+     * Validates an instance
+     *
+     * @param instance The instance to validate
+     * @param fields The list of fields to validate
+     * @return True if the instance is valid
+     */
+    boolean validate(D instance, List fields) {
+        doValidate instance, (Map)null, fields
     }
 
     private Errors filterErrors(Errors errors, Set validatedFields, Object target) {
@@ -113,7 +124,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
      * @return True if the instance is valid
      */
     boolean validate(D instance) {
-        validate instance, (List)null
+        doValidate instance, (Map)null, (List)null
     }
 
     /**
@@ -125,7 +136,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
      */
     @Deprecated
     boolean validate(D instance, boolean evict) {
-        validate instance, (List)null
+        doValidate instance, (Map)null, (List)null
     }
 
     /**
