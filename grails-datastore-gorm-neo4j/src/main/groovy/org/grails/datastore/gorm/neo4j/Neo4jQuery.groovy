@@ -25,6 +25,8 @@ import org.neo4j.graphdb.Relationship
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.springframework.util.Assert
 import java.util.regex.Pattern
+
+import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.Restrictions
 import org.grails.datastore.mapping.model.PersistentProperty
@@ -189,6 +191,21 @@ class Neo4jQuery extends Query {
         }
     }
 
+    // FIXME: does the same query multiple times
+    boolean matchesCriterionAssociationQuery(Node node, AssociationQuery query) {
+        def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(query.association)
+        def value = node.getSingleRelationship(relationshipType, direction)?.getOtherNode(node)
+        def q = new Neo4jQuery(query.session, query.entity)
+        q.add(query.criteria)
+        def list = q.list()
+        list.any { it.id == value.id }
+    }
+
+    boolean hasNonIndexedPropertyCriterion(Collection indexPropertyNames, AssociationQuery query) {
+        true
+    }
+    
+    
     List<Node> getSubreferencesOfSelfAndDerived(entity) {
         Map<Class, Node> subReferenceNodes = session.datastore.subReferenceNodes
         // TODO: handle inheritence recursively
@@ -253,9 +270,9 @@ class Neo4jQuery extends Query {
     }
 
     boolean matchesCriterionConjunction(Node node, Junction criterion) {
-        criterion.criteria.every { invokeMethod("matchesCriterion${it.getClass().simpleName}", [node,it])}
+        criterion.criteria.every { invokeMethod("matchesCriterion${it.getClass().simpleName}", [node,it]) }
     }
-
+    
     boolean matchesCriterionNegation(Node node, Junction criterion) {
         return !matchesCriterionDisjunction(node, criterion)
     }

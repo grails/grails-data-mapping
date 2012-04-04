@@ -24,6 +24,28 @@ class BeforeUpdateEventSpec extends GormDatastoreSpec {
 
     }
 
+
+    @Issue('GRAILS-8977')
+    void "Test beforeUpdate event doesn't cause test failure when setting association to null"() {
+        when:"A domain model is created"
+            BeforeUpdateBook b = new BeforeUpdateBook()
+            b.save(failOnError:true)
+
+            BeforeUpdateAuthor a = new BeforeUpdateAuthor()
+            a.save(failOnError:true)
+
+            a.book = b
+            a.save(failOnError:true)
+        then:"The domain model is valid"
+            assert a.id == BeforeUpdateAuthor.findByBook(b).id
+
+        when:"An association is set to null"
+            a.book = null
+            a.save(failOnError:true)
+
+        then:"It can be queried"
+            assert a.id == BeforeUpdateAuthor.findByBookIsNull().id
+    }
     @Override
     List getDomainClasses() {
         [BeforeUpdateAuthor, BeforeUpdateBook]
