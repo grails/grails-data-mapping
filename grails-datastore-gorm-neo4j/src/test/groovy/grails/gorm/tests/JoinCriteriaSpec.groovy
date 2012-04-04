@@ -1,6 +1,5 @@
 package grails.gorm.tests
 
-import org.hibernate.FetchMode;
 import grails.persistence.Entity
 
 class JoinCriteriaSpec extends GormDatastoreSpec {
