@@ -40,6 +40,9 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
     Closure getSpringCustomizer() {
         return {
             def neo4jConfig = application.config?.grails?.neo4j  // use config from app's Datasource.groovy
+            if (!neo4jConfig) {
+                throw new IllegalArgumentException("Unable to find 'grails.neo4j' in application config.")
+            }
             Class neo4jGraphDatabaseClass
 
             if (neo4jConfig.type == "rest") {
