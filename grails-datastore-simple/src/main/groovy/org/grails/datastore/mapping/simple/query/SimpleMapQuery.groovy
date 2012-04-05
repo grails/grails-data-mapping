@@ -139,7 +139,8 @@ class SimpleMapQuery extends Query {
             }
         }
         if (results) {
-            return applyMaxAndOffset(sortResults(results))
+//            return applyMaxAndOffset(sortResults(results))
+            return sortResults(applyMaxAndOffset(results))
         }
         return Collections.emptyList()
     }
