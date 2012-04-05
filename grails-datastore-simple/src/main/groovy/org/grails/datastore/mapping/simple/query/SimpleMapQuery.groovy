@@ -28,7 +28,7 @@ import org.grails.datastore.mapping.simple.engine.SimpleMapEntityPersister
 import org.grails.datastore.mapping.model.types.Custom
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
 import java.util.regex.Pattern
-import org.grails.datastore.mapping.query.api.Criteria
+
 import org.grails.datastore.mapping.query.api.QueryableCriteria
 import org.springframework.util.Assert
 import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion
@@ -139,28 +139,35 @@ class SimpleMapQuery extends Query {
             }
         }
         if (results) {
-            final def total = results.size()
-            if (offset > total) return Collections.emptyList()
-
-            // 0..3
-            // 0..-1
-            // 1..1
-            def max = this.max // 20
-            def from = offset // 10
-            def to = max == -1 ? -1 : (offset + max)-1      // 15
-            if (to >= total) to = -1
-
-            def finalResult = results[from..to]
-            if (orderBy) {
-                orderBy.each { Query.Order order ->
-                    def sorted = finalResult.sort { it."${order.property}"}
-                    final def os = order.direction.toString()
-                    finalResult = os == "DESC" ? sorted.reverse() : sorted
-                }
-            }
-            return finalResult
+            return applyMaxAndOffset(sortResults(results))
         }
         return Collections.emptyList()
+    }
+
+    private List applyMaxAndOffset(List sortedResults) {
+        final def total = sortedResults.size()
+        if (offset > total) return Collections.emptyList()
+
+        // 0..3
+        // 0..-1
+        // 1..1
+        def max = this.max // 20
+        def from = offset // 10
+        def to = max == -1 ? -1 : (offset + max) - 1      // 15
+        if (to >= total) to = -1
+
+        return sortedResults[from..to]
+    }
+
+    private List sortResults(List results) {
+        if (orderBy) {
+            orderBy.each { Query.Order order ->
+                def sorted = results.sort { it."${order.property}"}
+                final def os = order.direction.toString()
+                results = os == "DESC" ? sorted.reverse() : sorted
+            }
+        }
+        return results
     }
 
     def associationQueryHandlers = [
