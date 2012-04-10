@@ -1,4 +1,8 @@
-package grails.gorm.tests
+package org.grails.datastore.gorm
+
+import grails.gorm.tests.GormDatastoreSpec
+import grails.gorm.tests.TestEntity
+import grails.gorm.tests.ChildEntity
 
 /**
  * @author Daniel Wiell
