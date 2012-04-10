@@ -370,7 +370,13 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     @Override
     protected DBObject createNewEntry(String family) {
-        return new BasicDBObject();
+        BasicDBObject dbo = new BasicDBObject();
+        PersistentEntity persistentEntity = getPersistentEntity();
+        if (!persistentEntity.isRoot()) {
+            dbo.put(MONGO_CLASS_FIELD, persistentEntity.getDiscriminator());
+        }
+
+        return dbo;
     }
 
     @Override
@@ -517,9 +523,6 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         else {
             MongoSession mongoSession = (MongoSession) getSession();
             collectionName = mongoSession.getCollectionName(persistentEntity.getRootEntity());
-            if (nativeEntry != null) {
-                nativeEntry.put(MONGO_CLASS_FIELD, persistentEntity.getDiscriminator());
-            }
         }
         return collectionName;
     }
