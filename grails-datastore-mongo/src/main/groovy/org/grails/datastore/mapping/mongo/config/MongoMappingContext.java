@@ -37,6 +37,7 @@ public class MongoMappingContext extends DocumentMappingContext {
     static {
         MONGO_SIMPLE_TYPES = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
                 org.bson.types.ObjectId.class.getName(),
+                org.bson.types.Binary.class.getName(),
                 com.mongodb.DBObject.class.getName()
         )));
     }

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bson.types.Binary;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -121,6 +122,18 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         mappingContext.getConverterRegistry().addConverter(new Converter<ObjectId, String>() {
             public String convert(ObjectId source) {
                 return source.toString();
+            }
+        });
+
+        mappingContext.getConverterRegistry().addConverter(new Converter<byte[], Binary>() {
+            public Binary convert(byte[] source) {
+                return new Binary(source);
+            }
+        });
+
+        mappingContext.getConverterRegistry().addConverter(new Converter<Binary,byte[] >() {
+            public byte[] convert(Binary source) {
+                return source.getData();
             }
         });
     }

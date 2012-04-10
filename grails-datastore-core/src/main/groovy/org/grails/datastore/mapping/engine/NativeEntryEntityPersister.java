@@ -124,11 +124,14 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
     @Override
     protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj) {
-        return new EntityAccess(persistentEntity, obj);
+        EntityAccess entityAccess = new EntityAccess(persistentEntity, obj);
+        entityAccess.setConversionService(getMappingContext().getConversionService());
+        return entityAccess;
     }
 
     protected EntityAccess createEntityAccess(PersistentEntity persistentEntity, Object obj, final T nativeEntry) {
         final NativeEntryModifyingEntityAccess ea = new NativeEntryModifyingEntityAccess(persistentEntity, obj);
+        ea.setConversionService(getMappingContext().getConversionService());
         ea.setNativeEntry(nativeEntry);
         return ea;
     }
@@ -230,7 +233,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
     protected K readIdentifierFromObject(Object object) {
         EntityAccess access = createEntityAccess(getPersistentEntity(), object);
-        access.setConversionService(getMappingContext().getConversionService());
+
         final Object idValue = access.getIdentifier();
         Object key = null;
         if (idValue != null) {
