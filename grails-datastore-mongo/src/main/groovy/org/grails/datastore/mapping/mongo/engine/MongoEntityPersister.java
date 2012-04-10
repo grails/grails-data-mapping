@@ -27,13 +27,11 @@ import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.NativeEntryEntityPersister;
 import org.grails.datastore.mapping.engine.PropertyValueIndexer;
-import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
-import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.mongo.MongoDatastore;
 import org.grails.datastore.mapping.mongo.MongoSession;
+import org.grails.datastore.mapping.mongo.config.MongoAttribute;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query;
 import org.springframework.context.ApplicationEventPublisher;
@@ -140,6 +138,9 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                     if(o instanceof DBRef) {
                         DBRef dbref = (DBRef) o;
                         keys.add(dbref.getId());
+                    }
+                    else if(o != null) {
+                        keys.add(o);
                     }
                     else {
                         keys.add(null);
@@ -394,7 +395,21 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     protected Object formulateDatabaseReference(PersistentEntity persistentEntity,
               @SuppressWarnings("rawtypes") Association association, Serializable associationId) {
         DB db = (DB) session.getNativeInterface();
-        return new DBRef(db, getCollectionName(association.getAssociatedEntity()), associationId);
+        boolean isReference = isReference(association);
+        if(isReference)
+            return new DBRef(db, getCollectionName(association.getAssociatedEntity()), associationId);
+        else
+            return associationId;
+    }
+
+    private boolean isReference(Association association) {
+        PropertyMapping mapping = association.getMapping();
+        if(mapping != null) {
+            MongoAttribute attribute = (MongoAttribute) mapping.getMappedForm();
+            if(attribute != null)
+                return attribute.isReference();
+        }
+        return true;
     }
 
     @Override
@@ -632,11 +647,13 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         private DBObject nativeEntry;
         private Association association;
         @SuppressWarnings("hiding") private MongoSession session;
+        private boolean isReference = true;
 
         public MongoAssociationIndexer(DBObject nativeEntry, Association association, MongoSession session) {
             this.nativeEntry = nativeEntry;
             this.association = association;
             this.session = session;
+            this.isReference = isReference(association);
         }
 
         public void index(final Object primaryKey, final List foreignKeys) {
@@ -645,9 +662,14 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             if (!association.isBidirectional()) {
                 mongoTemplate.execute(new DbCallback<Object>() {
                     public Object doInDB(DB db) throws MongoException, DataAccessException {
-                        List<DBRef> dbRefs = new ArrayList<DBRef>();
+                        List dbRefs = new ArrayList();
                         for (Object foreignKey : foreignKeys) {
-                            dbRefs.add(new DBRef(db, getCollectionName(association.getAssociatedEntity()), foreignKey));
+                            if(isReference) {
+                                dbRefs.add(new DBRef(db, getCollectionName(association.getAssociatedEntity()), foreignKey));
+                            }
+                            else {
+                                dbRefs.add(foreignKey);
+                            }
                         }
                         nativeEntry.put(association.getName(), dbRefs);
 
