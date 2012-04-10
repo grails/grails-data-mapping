@@ -1102,7 +1102,12 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
         if (update) {
             final Object oldValue = getEntryValue(e, key);
-            if (oldValue != null && !oldValue.equals(propValue)) {
+
+            boolean unindex = oldValue == null
+                    ? propValue != null
+                    : !oldValue.equals(propValue);
+
+            if (unindex) {
                 toUnindex.put(prop, oldValue);
             }
         }
