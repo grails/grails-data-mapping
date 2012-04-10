@@ -29,6 +29,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.mongo.MongoSession;
+import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query;
@@ -634,6 +635,18 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         orderObject.put(property, order.getDirection() == Order.Direction.DESC ? -1 : 1);
                     }
                     cursor.sort(orderObject);
+                }
+                else {
+                    MongoCollection coll = (MongoCollection) entity.getMapping().getMappedForm();
+                    if(coll != null && coll.getSort() != null) {
+                        DBObject orderObject = new BasicDBObject();
+                        Order order = coll.getSort();
+                        String property = order.getProperty();
+                        property = getPropertyName(entity, property);
+                        orderObject.put(property, order.getDirection() == Order.Direction.DESC ? -1 : 1);
+                        cursor.sort(orderObject);
+                    }
+                    
                 }
 
                 return cursor;
