@@ -17,12 +17,11 @@ package org.grails.datastore.gorm.neo4j.plugin.support
 import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jMappingContextFactoryBean
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jDatastoreFactoryBean
-import org.springframework.util.Assert
 import org.grails.datastore.gorm.neo4j.Neo4jOpenSessionInViewInterceptor
 import org.neo4j.kernel.impl.transaction.SpringTransactionManager
 import org.neo4j.kernel.impl.transaction.UserTransactionImpl
-import org.springframework.transaction.jta.JtaTransactionManager
 import org.neo4j.kernel.AbstractGraphDatabase
+import org.springframework.transaction.jta.JtaTransactionManager
 
 /**
  * Spring configurer for Neo4j
@@ -40,6 +39,9 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
     Closure getSpringCustomizer() {
         return {
             def neo4jConfig = application.config?.grails?.neo4j  // use config from app's Datasource.groovy
+            if (!neo4jConfig) {
+                throw new IllegalArgumentException("Unable to find 'grails.neo4j' in application config.")
+            }
             Class neo4jGraphDatabaseClass
 
             if (neo4jConfig.type == "rest") {
@@ -109,10 +111,14 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
             }
 
             // RestGraphDatabase doesn't play nicely with SpringTransactionManager
-            if (neo4jGraphDatabaseClass instanceof AbstractGraphDatabase) {
+            if (AbstractGraphDatabase.class.isAssignableFrom(neo4jGraphDatabaseClass)) {
+
                 neo4jTransactionManagerService(SpringTransactionManager, graphDatabaseService)
+
                 neo4jUserTransactionService(UserTransactionImpl, graphDatabaseService)
-                neo4jTransactionManager(JtaTransactionManager) {
+
+//                neo4jTransactionManager(JtaTransactionManager) {
+                transactionManager(JtaTransactionManager) {
                     transactionManager = neo4jTransactionManagerService
                     userTransaction = neo4jUserTransactionService
                 }
