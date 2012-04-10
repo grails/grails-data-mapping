@@ -333,4 +333,9 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         if(mongo != null)
             mongo.close();
     }
+
+    @Override
+    public boolean isSchemaless() {
+        return true;
+    }
 }

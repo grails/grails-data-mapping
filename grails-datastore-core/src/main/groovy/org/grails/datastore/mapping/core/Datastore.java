@@ -99,4 +99,11 @@ public interface Datastore {
      * @param skip whether to skip or not
      */
     void setSkipValidation(Object o, boolean skip);
+
+    /**
+     * Whether the datastore is schema-less. That is it allows changes to the schema runtime, dynamic attributes etc.
+     *
+     * @return True if it does
+     */
+    boolean isSchemaless();
 }

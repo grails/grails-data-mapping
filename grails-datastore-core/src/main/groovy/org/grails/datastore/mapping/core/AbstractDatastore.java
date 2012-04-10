@@ -192,4 +192,8 @@ public abstract class AbstractDatastore implements Datastore {
         final Property keyValue = pm.getMappedForm();
         return keyValue != null && keyValue.isIndex();
     }
+
+    public boolean isSchemaless() {
+        return false;
+    }
 }
