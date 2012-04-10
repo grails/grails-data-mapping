@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codehaus.groovy.grails.validation;
+package org.grails.datastore.gorm.validation;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -20,9 +20,6 @@ import org.springframework.validation.Validator;
 /**
  * Extends the default Spring Validator interface and provides an additional method that specifies whether
  * validation should cascade into associations.
- *
- * @author Graeme Rocher
- * @since 0.5
  */
 public interface CascadingValidator extends Validator {
 

@@ -14,7 +14,7 @@
  */
 package org.grails.datastore.gorm
 
-import org.codehaus.groovy.grails.validation.CascadingValidator
+import org.grails.datastore.gorm.validation.CascadingValidator
 import org.grails.datastore.gorm.support.BeforeValidateHelper
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.MappingContext

@@ -1,10 +1,10 @@
 package grails.gorm.tests
 
 import org.grails.datastore.mapping.validation.ValidatingEventListener
-import org.springframework.validation.Errors
+
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.springframework.validation.Validator
-import org.codehaus.groovy.grails.validation.CascadingValidator
+import org.grails.datastore.gorm.validation.CascadingValidator
 import spock.lang.Unroll
 
 /**
