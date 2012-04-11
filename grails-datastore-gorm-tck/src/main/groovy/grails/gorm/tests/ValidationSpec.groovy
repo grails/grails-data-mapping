@@ -1,7 +1,11 @@
 package grails.gorm.tests
 
 import org.grails.datastore.mapping.validation.ValidatingEventListener
-import org.springframework.validation.Errors
+
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.springframework.validation.Validator
+import org.grails.datastore.gorm.validation.CascadingValidator
+import spock.lang.Unroll
 
 /**
  * Tests validation semantics.
@@ -175,5 +179,42 @@ class ValidationSpec extends GormDatastoreSpec {
             !session.datastore.hasCurrentSession()
             t != null
             1 == TestEntity.count()
+    }
+
+    void "Two parameter validate is called on entity validator if it implements Validator interface"() {
+        given:
+            def mockValidator = Mock(Validator)
+            session.mappingContext.addEntityValidator(persistentEntityFor(Task), mockValidator)
+            def task = new Task()
+
+        when:
+            task.validate()
+
+        then:
+            1 * mockValidator.validate(task, _)
+    }
+
+    @Unroll
+    void "deepValidate parameter is honoured if entity validator implements CascadingValidator"() {
+        given:
+            def mockValidator = Mock(CascadingValidator)
+            session.mappingContext.addEntityValidator(persistentEntityFor(Task), mockValidator)
+            def task = new Task()
+
+        when:
+            task.validate(validateParams)
+
+        then:
+            1 * mockValidator.validate(task, _, cascade)
+
+        where:
+            validateParams        | cascade
+            [:]                   | true
+            [deepValidate: true]  | true
+            [deepValidate: false] | false
+    }
+
+    private PersistentEntity persistentEntityFor(Class c) {
+        session.mappingContext.persistentEntities.find { it.javaClass == c }
     }
 }
