@@ -5,9 +5,10 @@ include "grails-datastore-core",
         "grails-datastore-jpa",
         "grails-datastore-redis",
 /*        "grails-datastore-riak",*/
-        "grails-datastore-simple",
+//        "grails-datastore-simple",
         "grails-datastore-web",
         "grails-datastore-simpledb",
+        "grails-datastore-dynamodb",
 /*
         "grails-datastore-jcr",
         "grails-datastore-cassandra",
@@ -20,6 +21,7 @@ include "grails-datastore-core",
 /*        'grails-documentation-riak',*/
         'grails-documentation-neo4j',
         'grails-documentation-simpledb',
+        'grails-documentation-dynamodb',
 
         // Core GORM Implementation projects
         'grails-datastore-gorm',
@@ -40,7 +42,8 @@ include "grails-datastore-core",
 /*        'grails-datastore-gorm-riak',*/
         'grails-datastore-gorm-mongo',
         'grails-datastore-gorm-gemfire',
-        'grails-datastore-gorm-simpledb'
+        'grails-datastore-gorm-simpledb',
+        'grails-datastore-gorm-dynamodb'
 /*
         'grails-datastore-gorm-hibernate',
         'grails-datastore-gorm-jcr',
