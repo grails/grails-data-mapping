@@ -45,10 +45,11 @@ allprojects {
 
 subprojects {
     ext {
-        releaseType = "RELEASE"
-        //releaseType = "BUILD-SNAPSHOT"
+//        releaseType = "RELEASE"
+        releaseType = "BUILD-SNAPSHOT"
         //releaseType = "RC3"
         isCiBuild = project.hasProperty("isCiBuild")
+        isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
     }
 
     version = "1.0.6.${releaseType}"
@@ -202,6 +203,7 @@ subprojects {
 
         signing {
             sign configurations.archives
+            required { !isBuildSnapshot && gradle.taskGraph.contains(uploadArchives) }
         }
 
         configure(install.repositories.mavenInstaller) {
