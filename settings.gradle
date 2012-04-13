@@ -5,7 +5,7 @@ include "grails-datastore-core",
         "grails-datastore-jpa",
         "grails-datastore-redis",
 /*        "grails-datastore-riak",*/
-//        "grails-datastore-simple",
+        "grails-datastore-simple",
         "grails-datastore-web",
         "grails-datastore-simpledb",
         "grails-datastore-dynamodb",

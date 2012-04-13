@@ -1,5 +1,14 @@
 Below are the details of the changes across releases:
 
+h4. 1.0 RC5
+
+* Support for direct links instead of DBRefs with reference:false in the mapping
+* Support for defining Mongo basic types as properties of a domain (Binary, DBObject etc.)
+
+h4. 1.0 RC4
+
+* Bug fixes
+
 h4. 1.0 RC3
 
 * Easy conversion of DBObject to entity methods added

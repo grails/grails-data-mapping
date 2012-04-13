@@ -45,13 +45,14 @@ allprojects {
 
 subprojects {
     ext {
-        releaseType = "RELEASE"
-        //releaseType = "BUILD-SNAPSHOT"
+//        releaseType = "RELEASE"
+        releaseType = "BUILD-SNAPSHOT"
         //releaseType = "RC3"
         isCiBuild = project.hasProperty("isCiBuild")
+        isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
     }
 
-    version = "1.0.5.${releaseType}"
+    version = "1.0.6.${releaseType}"
     group = "org.grails"
 
 
@@ -63,6 +64,9 @@ subprojects {
         apply plugin: 'maven'
         apply plugin: 'idea'
         apply plugin: 'signing'
+        sourceCompatibility = "1.5"
+        targetCompatibility = "1.5"
+
 /*        apply from: "file:${rootDir}/clover.gradle"*/
 
         install.doLast {
@@ -199,6 +203,7 @@ subprojects {
 
         signing {
             sign configurations.archives
+            required { !isBuildSnapshot && gradle.taskGraph.contains(uploadArchives) }
         }
 
         configure(install.repositories.mavenInstaller) {
