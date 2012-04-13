@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <title>3 Mapping Domain Classes to DynamoDB 0.1</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
+    <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
+    <script type="text/javascript">
+function addJsClass() {
+    var classes = document.body.className.split(" ");
+    classes.push("js");
+    document.body.className = classes.join(" ");
+}
+    </script>
+</head>
+
+<body class="body" onload="addJsClass();">
+<div id="navigation">
+    <ul>
+        <li>
+            <div id="nav-summary" onmouseover="toggleNavSummary(false)" onmouseout="toggleNavSummary(true)">
+                <a href="../guide/index.html" class="button">Table of contents</a>
+
+                <div id="nav-summary-childs" style="display:none;">
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/introduction.html"><strong>1</strong><span>Introduction</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/gettingStarted.html"><strong>2</strong><span>Getting Started</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/mapping.html"><strong>3</strong><span>Mapping Domain Classes to DynamoDB</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/transactions.html"><strong>4</strong><span>Transactions</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../guide/releaseNotes.html"><strong>5</strong><span>Release Notes</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+        </li>
+        <li class="separator selected">
+            <a id="ref-button" onclick="localToggle(); return false;" href="#">Quick Reference</a>
+        </li>
+    </ul>
+</div>
+<div id="header">
+    <div class="images clearfix">
+        
+        
+    </div>
+    <p></p>
+</div>
+
+
+<table id="colset" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td id="col1">
+            <div id="main" class="corner-all">
+
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+
+                <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
+
+                
+                    <div class="toc-item next-right"><a href="../guide/transactions.html"><strong>4</strong><span>Transactions</span> >></a></div>
+                
+
+
+                <div class="project">
+                    <h1>3 Mapping Domain Classes to DynamoDB - Reference Documentation</h1>
+
+                    <p><strong>Authors:</strong> Roman Stepanenko</p>
+
+                    <p><strong>Version:</strong> 0.1</p>
+
+                    
+                </div>
+
+                
+                <div id="table-of-content">
+                    <h2>Table of Contents</h2>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#identityGeneration"><strong>3.1</strong><span>IdentityGeneration</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0px"><a href="#provisionedThroughput"><strong>3.2</strong><span>Provisioned Throughput</span></a>
+                    </div>
+                    
+                </div>
+                
+
+                
+
+<h1 id="mapping">3 Mapping Domain Classes to DynamoDB</h1>
+<h3>Mapping to AWS Tables</h3><p class="paragraph"/>The way GORM for DynamoDB works is to map each domain class to a AWS DynamoDB domain.
+For example, given a domain class such as:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> id
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName
+    <span class="java&#45;keyword">static</span> hasMany = &#91;pets:Pet&#93;<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"dynamodb"</span>
+&#125;</pre></div><p class="paragraph"/>The plugin will map <code>Person</code> class to a DynamoDB table called "Person".
+By default the table name will be the class name, however it can be explicitly specified:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> id
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName
+    <span class="java&#45;keyword">static</span> hasMany = &#91;pets:Pet&#93;<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"dynamodb"</span>
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        table 'PEOPLE'
+    &#125;
+&#125;</pre></div><p class="paragraph"/>In this case <code>Person</code> class will be mapped to 'PEOPLE' DynamoDB table.<p class="paragraph"/>Please note:  <em class="italic">if you specified a table name prefix in the configuration, all table names will be prefixed</em> . For example, if you specified
+<div class="code"><pre>grails &#123;
+    dynamodb &#123;
+        accessKey = '...'
+        secretKey = '...'
+        tableNamePrefix = 'DEV_' //optional, used when the same AWS account is shared between more than one environment
+    &#125;
+&#125;</pre></div>
+then resulting table name will be DEV_Person for first example and DEV_PEOPLE for second example.<p class="paragraph"/><h3>Mapping to AWS Attributes</h3><p class="paragraph"/>By default, each java property will be mapped as an identically named AWS DynamoDB attribute.
+For example, given a domain class such as:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> id
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"dynamodb"</span>
+&#125;</pre></div><p class="paragraph"/>will result in the following attribute names in 'Person' domain:
+<ul class="star">
+<li>firstName</li>
+<li>lastName</li>
+</ul><p class="paragraph"/><code>id</code> field is always mapped to <code>itemName()</code> for the record representing this domain class instance.<p class="paragraph"/>It is possible to specify custom AWS attribute names for each java attribute:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> id
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"dynamodb"</span>
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        firstName key:'FIRST_NAME'
+        lastName key:'LAST_NAME'
+    &#125;
+&#125;</pre></div>
+
+
+
+<h2 id="identityGeneration">3.1 IdentityGeneration</h2>
+The plugin works only with String identifiers. Assignment and generation of ids is done automatically, however the String
+id field must be currently explicitly declared in the domain class:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> id
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"dynamodb"</span>
+&#125;</pre></div><p class="paragraph"/>By default, generated ids are generated with <code>java.lang.UUID</code>. It is also possible to use hilo numeric value generator
+(please note that the id field must still be declared as String):
+<div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> id
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"dynamodb"</span><p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapping = &#123;
+        id_generator type: 'hilo', maxLo: 500
+    &#125;
+&#125;</pre></div><p class="paragraph"/>
+
+
+<h2 id="provisionedThroughput">3.2 Provisioned Throughput</h2>
+DynamoDB gives you complete control of the performance characteristics for each table via read and write throughput provisioning.
+Complete details can be found at <a href="http://docs.amazonwebservices.com/amazondynamodb/latest/developerguide/WorkingWithDDTables.html#ProvisionedThroughput" target="blank">Amazon DynamoDB documentation</a><p class="paragraph"/>Developer can specify read or write (or both) throughput on a per-domain class basis using the following syntax:
+<div class="code"><pre>class Person &#123;
+    <span class="java&#45;object">String</span> id
+    <span class="java&#45;object">String</span> firstName
+    <span class="java&#45;object">String</span> lastName<p class="paragraph"/>    <span class="java&#45;keyword">static</span> mapWith = <span class="java&#45;quote">"dynamodb"</span>
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        throughput read:4, write:6 //optional, <span class="java&#45;keyword">if</span> not specified <span class="java&#45;keyword">default</span> values will be used
+    &#125;
+&#125;</pre></div>
+The implementation of plugin will use specified values, or will fall back to default read and write throughput values specified in the configuration options.
+
+
+
+                <div style="clear:both;margin-top:15px;"></div>
+                
+                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                
+                    <div class="toc-item next-right"><a href="../guide/transactions.html"><strong>4</strong><span>Transactions</span> >></a></div>
+                
+                <div style="clear:both"></div>
+            </div>
+        </td>
+        <td id="col2">
+            <div class="local clearfix">
+                <div class="local-title">
+                    <a href="../guide/index.html" target="mainFrame">Quick Reference</a>
+                    <span class="toggle">(<a href="#" onclick="localToggle(); return false;">hide</a>)</span>
+                </div>
+                <div class="menu">
+                    
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div id="footer">
+    
+    Official production and development support for plugin is available via OSMoss: <a href="http://www.osmoss.com/project/grails-gorm-dynamodb">http://www.osmoss.com/project/grails-gorm-dynamodb</a>
+</div>
+
+<script type="text/javascript" src="../js/docs.js"></script>
+
+</body>
+</html>

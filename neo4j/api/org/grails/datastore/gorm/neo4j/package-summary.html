@@ -93,10 +93,10 @@ Package org.grails.datastore.gorm.neo4j
         <TR BGCOLOR="white" CLASS="TableRowColor">
         <TD WIDTH="15%"><B><A HREF="DummyEntityPersister.html" title="class in org/grails/datastore/gorm/neo4j">DummyEntityPersister</A></B></TD>
         <TD>dummy implementation of org.grails.datastore.mapping.engine.EntityPersister
- The Neo4j gorm implementation does all persistence stuff in <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jSession.html' title='Neo4jSession'>Neo4jSession</a>, so there's no
+ The Neo4j gorm implementation does all persistence stuff in Neo4jSession, so there's no
  need for a org.grails.datastore.mapping.engine.EntityPersister, except on issue:
  org.grails.datastore.gorm.proxy.GroovyProxyFactory references
- org.grails.datastore.mapping.engine.EntityPersister#setObjectIdentifier so <a href='../../../../../org/grails/datastore/gorm/neo4j/Neo4jSession.html#proxy' title='Neo4jSession.proxy'>Neo4jSession.proxy</a> needs
+ org.grails.datastore.mapping.engine.EntityPersister#setObjectIdentifier so Neo4jSession#proxy#proxy needs
  to pass a valid EntityPersister - that's the purpose of this class.</TD>
         </TR>
 
@@ -159,7 +159,7 @@ Package org.grails.datastore.gorm.neo4j
 
         <TR BGCOLOR="white" CLASS="TableRowColor">
         <TD WIDTH="15%"><B><A HREF="Neo4jTransaction.html" title="class in org/grails/datastore/gorm/neo4j">Neo4jTransaction</A></B></TD>
-        <TD>wrapping a Neo4j org.neo4j.graphdb.Transaction into a Spring data mapping org.grails.datastore.mapping.transactions.Transaction</TD>
+        <TD>wrapping a Neo4j org.neo4j.graphdb.Transaction into a Spring data mapping Transaction</TD>
         </TR>
 
         <TR BGCOLOR="white" CLASS="TableRowColor">

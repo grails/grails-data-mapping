@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3.6 Custom User Types 1.0.0.RC4</title>
+    <title>3.6 Custom User Types 1.0.0.RC5</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -80,7 +80,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
 
-                    <p><strong>Version:</strong> 1.0.0.RC4</p>
+                    <p><strong>Version:</strong> 1.0.0.RC5</p>
 
                     
                 </div>
@@ -99,7 +99,12 @@ GORM for MongoDB will persist all common known Java types like String, Integer, 
     &#125;
 &#125;</pre></div><p class="paragraph"/><blockquote class="note">
 Custom types should go in src/groovy not grails-app/domain
-</blockquote><p class="paragraph"/>If you attempt to reference this class from a domain class it will not automatically be persisted for you. However you can create a custom type implementation and register it with the Spring. For example:<p class="paragraph"/><div class="code"><pre>class BirthdayType <span class="java&#45;keyword">extends</span> AbstractMappingAwareCustomTypeMarshaller&#60;Birthday, DBObject, DBObject&#62; &#123;
+</blockquote><p class="paragraph"/>If you attempt to reference this class from a domain class it will not automatically be persisted for you. However you can create a custom type implementation and register it with Spring. For example:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> com.mongodb.BasicDBObject;
+<span class="java&#45;keyword">import</span> com.mongodb.DBObject;
+<span class="java&#45;keyword">import</span> org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller;
+<span class="java&#45;keyword">import</span> org.grails.datastore.mapping.model.PersistentProperty;
+<span class="java&#45;keyword">import</span> org.grails.datastore.mapping.mongo.query.MongoQuery;
+<span class="java&#45;keyword">import</span> org.grails.datastore.mapping.query.Query;<p class="paragraph"/>class BirthdayType <span class="java&#45;keyword">extends</span> AbstractMappingAwareCustomTypeMarshaller&#60;Birthday, DBObject, DBObject&#62; &#123;
 	BirthdayType() &#123;
 		<span class="java&#45;keyword">super</span>(Birthday)
 	&#125;
@@ -109,7 +114,7 @@ Custom types should go in src/groovy not grails-app/domain
         nativeTarget.put(key, converted)
         <span class="java&#45;keyword">return</span> converted
     &#125;<p class="paragraph"/>    @Override
-    <span class="java&#45;keyword">protected</span> void queryInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, PropertyCriterion criterion, DBObject nativeQuery) &#123;
+    <span class="java&#45;keyword">protected</span> void queryInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Query.PropertyCriterion criterion, DBObject nativeQuery) &#123;
         <span class="java&#45;keyword">if</span>(criterion <span class="java&#45;keyword">instanceof</span> Between) &#123;
             def dbo = <span class="java&#45;keyword">new</span> BasicDBObject()
             dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
@@ -138,8 +143,8 @@ Custom types should go in src/groovy not grails-app/domain
         <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date(num))
     &#125;
     <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">null</span>
-&#125;</pre></div><p class="paragraph"/>You can the construct the custom type from by reading values from the <code>DBObject</code>. Finally the <code>queryInternal</code> method allows you to handle how a custom type is queried:<p class="paragraph"/><div class="code"><pre>@Override
-<span class="java&#45;keyword">protected</span> void queryInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, PropertyCriterion criterion, DBObject nativeQuery) &#123;
+&#125;</pre></div><p class="paragraph"/>You can then construct the custom type by reading values from the <code>DBObject</code>. Finally the <code>queryInternal</code> method allows you to handle how a custom type is queried:<p class="paragraph"/><div class="code"><pre>@Override
+<span class="java&#45;keyword">protected</span> void queryInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Query.PropertyCriterion criterion, DBObject nativeQuery) &#123;
     <span class="java&#45;keyword">if</span>(criterion <span class="java&#45;keyword">instanceof</span> Between) &#123;
         def dbo = <span class="java&#45;keyword">new</span> BasicDBObject()
         dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
@@ -153,7 +158,11 @@ Custom types should go in src/groovy not grails-app/domain
 	    <span class="java&#45;keyword">throw</span> <span class="java&#45;keyword">new</span> RuntimeException(<span class="java&#45;quote">"unsupported query type <span class="java&#45;keyword">for</span> property $property"</span>)
     &#125;
 &#125;</pre></div><p class="paragraph"/>The method gets passed a <code>criterion</code> which is the type of query and depending on the type of query you may handle the query differently. For example the above implementation supports <code>between</code> and <code>equals</code> style queries. So the following 2 queries will work:<p class="paragraph"/><div class="code"><pre>Person.findByBirthday(<span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date()&#45;7)) // find someone who was born 7 days ago
-Person.findByBirthdayBetween(<span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date()&#45;7), <span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date())) // find someone who was born in the last 7 days</pre></div><p class="paragraph"/>However "like" or other query types will not work.
+Person.findByBirthdayBetween(<span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date()&#45;7), <span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date())) // find someone who was born in the last 7 days</pre></div><p class="paragraph"/>However "like" or other query types will not work.<p class="paragraph"/>To register a custom type in a grails application simply register it as Spring bean. For example, to register the above <code>BirthdayType</code> add the following to grails-app/conf/spring/resources.groovy:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> com.example.BirthdayType<p class="paragraph"/>// Place your Spring DSL code here
+beans = &#123;
+  birthdayType(BirthdayType)
+&#125;</pre></div>
+
 
 
                 <div style="clear:both;margin-top:15px;"></div>
