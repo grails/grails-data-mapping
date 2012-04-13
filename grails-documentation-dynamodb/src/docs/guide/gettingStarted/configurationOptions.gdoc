@@ -1,0 +1,83 @@
+h3. Configuration options for dynamodb plugin
+
+dynamodb plugin supports the following configuration options:
+{table}
+*Name* | *Required* | *Description*
+accessKey | Y | AWS access key value. IMPORTANT: *You have to properly guard this value. Do not keep it in version control system if anyone except authorized persons has access to your VCS*
+secretKey | Y | AWS secret key value. IMPORTANT: *You have to properly guard this value. Do not keep it in version control system if anyone except authorized persons has access to your VCS*
+tableNamePrefix | N | if this property is specified, the value will be prefixed to all AWS table names. It is handy when the same AWS account is shared between more than one environment.
+defaultReadCapacityUnits | N | If individual domain class does not explicitly declare its read throughput capacity, this value will be used. If this property is not provided, plugin will use minimum allowed DynamoDB value of 3
+defaultWriteCapacityUnits | N | If individual domain class does not explicitly declare its write throughput capacity, this value will be used. If this property is not provided, plugin will use minimum allowed DynamoDB value of 5
+dbCreate | N | similar to GORM for hibernate. Currently supports *'drop'* (will drop the tables for domain classes at startup), *'create'* (will create tables for domain classes at startup if they do not exist), *'drop-create'* (at startup will ensure that all domains are present and are *empty* - do not use in PROD environment!)
+disableDrop | N | boolean property used as an extra protection against accidentally dropping data by setting dbCreate flag to 'drop' or 'drop-create'. Typically, this property would be set to true in PROD configuration after initial release of the application. Since AWS DynamoDB does not provide backup, accidentally dropping PROD tables can have a devastating effect. If the value of this property is true, the plugin will throw an exception if dbCreate is 'drop' or 'create-drop'.
+{table}
+
+To configure, provide the following in the Config.groovy or your custom MyApp.groovy config file:
+{code}
+grails {
+    dynamodb {
+        accessKey = '...'
+        secretKey = '...'
+        tableNamePrefix = 'DEV_' //optional, used when the same AWS account is shared between more than one environment
+        dbCreate = 'drop-create' // optional, one of 'drop', 'create', 'drop-create'
+    }
+}
+{code}
+
+Per-environment configuration works as well. For example:
+{code}
+grails {
+    dynamodb {
+        accessKey = '...'
+        secretKey = '...'
+    }
+}
+
+environments {
+    production {
+        grails {
+            dynamodb {
+                disableDrop = true //extra protection against accidental misconfiguration of the 'dbCreate' flag
+                tableNamePrefix = 'PROD_' //this setting is optional, used when the same AWS account is shared between more than one environment
+                dbCreate = 'create' // one of 'drop, 'create', 'drop-create'
+            }
+        }
+    }
+    development {
+        grails {
+            dynamodb {
+                tableNamePrefix = 'DEV_' //this setting is optional, used when the same AWS account is shared between more than one environment
+                dbCreate = 'drop-create' // one of 'drop, 'create', 'drop-create'
+            }
+        }
+    }
+}
+{code}
+
+Or, if you use separate AWS accounts for PROD and dev:
+{code}
+environments {
+    production {
+        grails {
+            dynamodb {
+                accessKey = '... production account ...'
+                secretKey = '... production account ...'
+                dbCreate = 'create' // one of 'drop, 'create', 'drop-create'
+            }
+        }
+    }
+    development {
+        grails {
+            dynamodb {
+                accessKey = '... dev account ...'
+                secretKey = '... dev account ...'
+                tableNamePrefix = 'DEV_' //this setting is optional, used when the same AWS account is shared between more than one environment
+                dbCreate = 'drop-create' // one of 'drop, 'create', 'drop-create'
+            }
+        }
+    }
+}
+{code}
+
+
+

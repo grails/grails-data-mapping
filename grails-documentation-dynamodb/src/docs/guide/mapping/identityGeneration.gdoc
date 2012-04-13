@@ -1,0 +1,29 @@
+The plugin works only with String identifiers. Assignment and generation of ids is done automatically, however the String
+id field must be currently explicitly declared in the domain class:
+
+{code}
+class Person {
+    String id
+    String firstName
+    String lastName
+
+    static mapWith = "dynamodb"
+}
+{code}
+
+By default, generated ids are generated with @java.lang.UUID@. It is also possible to use hilo numeric value generator
+(please note that the id field must still be declared as String):
+{code}
+class Person {
+    String id
+    String firstName
+    String lastName
+
+    static mapWith = "dynamodb"
+
+    static mapping = {
+        id_generator type: 'hilo', maxLo: 500
+    }
+}
+{code}
+

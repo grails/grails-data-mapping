@@ -1,0 +1,50 @@
+AWS DynamoDB imposes several critical restrictions.
+
+h3. Eventual consistency model
+
+DynamoDB is based on the premise of eventual consistency model.
+With eventual consistency, when you submit an update to DynamoDB, the database server handling your
+request will forward the update to the other database servers where that table
+is replicated. The full update of all replicas does not happen before your update 
+request returns. The replication continues in the background while other requests are handled. 
+In other words, 
+if you update an object and do a query right after 
+updating it, you might get an old value back. There are ways to force strong consistency behavior but they go against the 
+whole premise of choosing DynamoDB in the first place - DynamoDB is best used by applications able to deal with
+eventual consistency and benefit from the ability to remain available in the midst of a failure. Future
+versions of the plugin might add support for strong consistency though.
+
+The best way to fight eventual consistency in the application is *not* to assume that the information is
+available right after create/update/delete and store the objects you just modified or created in the cache. Generally,
+information becomes visible within a couple of seconds, however it is a really bad idea to try to 
+implement artificial delay in the application layer because when AWS experiences some problems the 
+eventually consistency window might be 
+drastically increased. Design for failure and you will get fewer surprises when they happen.
+
+DynamoDB does allow enforcing consistent behavior but it is not currently supported by the plugin.
+
+h3. No indexes
+Unlike SimpleDB, DynamoDB does not index non-primary key columns and so the only way GORM queries can work is by scanning all
+records in the table to match specified criteria, which can have potential performance impact when the number of records grows.
+
+h3. No OR
+All scan filters in DynamoDB assume 'AND' behavior, which means the only way for plugin to implement
+GORM finder (name = 'Mike' OR name = 'Bob') is internally to execute two scans and then build unique list of items in memory.
+
+*It is highly adivisable to avoid or minimize using OR clauses in your queries* for the sake of performance.
+
+h3. No Negation clause
+DynamoDB does provide NE (not equals) comparison operator but does not provide support for negation clause. Current plugin implementation
+does not support negation clause either ('not equals' comparison is supported though).
+
+h3. No ordering
+DynamoDB does not support ordering or results, which means plugin has to order results in memory.
+
+h3. Transactions
+AWS DynamoDB doesn't support explicit transactional boundaries or isolation levels. There is no notion of
+a commit or a rollback. There is some implicit support for atomic writes, but it only applies within the 
+scope of each individual item being written.
+
+However, GORM for DynamoDB does batch up inserts
+and updates until the session is flushed. This makes it possible to support some rollback options. See more details
+in 'Transactions' chapter

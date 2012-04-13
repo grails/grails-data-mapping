@@ -1,0 +1,13 @@
+introduction:
+    title: Introduction
+    currentFeatureSet: Current Feature Set
+    dynamoDBSpecifics: DynamoDB Specifics
+gettingStarted:
+    title: Getting Started
+    configurationOptions: Configuration Options
+mapping:
+    title: Mapping Domain Classes to DynamoDB
+    identityGeneration: IdentityGeneration
+    provisionedThroughput: Provisioned Throughput
+transactions: Transactions
+releaseNotes: Release Notes
