@@ -1,3 +1,5 @@
+h4. Basic Mapping
+
 The way GORM for Mongo works is to map each domain class to a Mongo collection. For example given a domain class such as:
 
 {code}
@@ -9,6 +11,8 @@ class Person {
 {code}
 
 This will map onto a Mongo [DBCollection|http://api.mongodb.org/java/current/com/mongodb/DBCollection.html] called "person".
+
+h4. Embedded Documents
 
 It is quite common in Mongo to embed documents within documents (nested documents). This can be done with GORM embedded types:
 
@@ -33,6 +37,8 @@ class Person {
 }
 {code}
 
+h4. Basic Collection Types
+
 You can also map lists and maps of basic types (such as strings) simply by defining the appropriate collection type:
 
 {code}
@@ -47,6 +53,8 @@ new Person(friends:['Fred', 'Bob'], pets:[chuck:"Dog", eddie:'Parrot']).save(flu
 {code}
 
 Basic collection types are stored as native ArrayList and BSON documents within the Mongo documents.
+
+h4. Customized Collection and Database Mapping
 
 You may wish to customize how a domain class maps onto a @DBCollection@. This is possible using the @mapping@ block as follows:
 
@@ -69,6 +77,19 @@ class Person {
     ..
     static mapping = {
         firstName attr:"first_name"
+    }
+}
+{code}
+
+For non-embedded associations by default GORM for MongoDB will map links between documents using MongoDB [database references|http://www.mongodb.org/display/DOCS/Database+References] also known as @DBRefs@.
+
+If you prefer not to use DBRefs then you tell GORM to use direct links by using the @reference:false@ mapping:
+
+{code}
+class Person {
+    ..
+    static mapping = {
+        address reference:false
     }
 }
 {code}
