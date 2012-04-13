@@ -51,8 +51,10 @@ subprojects {
         isCiBuild = project.hasProperty("isCiBuild")
     }
 
-    version = "1.0.5.${releaseType}"
+    version = "1.0.6.${releaseType}"
     group = "org.grails"
+    sourceCompatibility = "1.5"
+    targetCompatibility = "1.5"
 
 
     def isStandardGroovyMavenProject = isGroovyProject(project)
