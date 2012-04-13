@@ -28,7 +28,7 @@ class RedisGormGrailsPlugin {
 
     def version = "1.0.0.M8"
     def grailsVersion = "1.3.4 > *"
-    def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry', 'redis']
+    def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
     def observe = ['services', 'domainClass']
     
     def author = "Graeme Rocher"

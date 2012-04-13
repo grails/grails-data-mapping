@@ -18,6 +18,7 @@ class SpringConfigurerSpec extends Specification{
         then:"The context contains the necessary beans"
             ctx.containsBean("simpleDatastore")
             ctx.containsBean("simpleTransactionManager")
+            ctx.containsBean("transactionManager")
             ctx.containsBean("simplePersistenceInterceptor")
             ctx.containsBean("simplePersistenceContextInterceptorAggregator")
             ctx.containsBean("simpleOpenSessionInViewInterceptor")
@@ -32,7 +33,7 @@ class SpringConfigurerSpec extends Specification{
     }
 }
 class SimpleSpringConfigurer extends SpringConfigurer {
-    Map manager = [hasGrailsPlugin:{ true }]
+    Map manager = [hasGrailsPlugin:{ String name -> name != 'hibernate' ? true : false }]
     Map application = [:]
     @Override
     String getDatastoreType() {

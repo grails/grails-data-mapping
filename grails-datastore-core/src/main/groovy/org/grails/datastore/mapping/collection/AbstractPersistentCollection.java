@@ -40,6 +40,12 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
 
     protected final Collection collection;
 
+    protected AbstractPersistentCollection(Class childType, Session session, Collection collection) {
+        this.childType = childType;
+        this.collection = collection;
+        this.session = session;
+    }
+
     protected AbstractPersistentCollection(Collection keys, Class childType,
             Session session, Collection collection) {
         this.session = session;
@@ -211,7 +217,7 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
 
     /* misc methods */
 
-    protected void markDirty() {
+    public void markDirty() {
         dirty = true;
     }
 }

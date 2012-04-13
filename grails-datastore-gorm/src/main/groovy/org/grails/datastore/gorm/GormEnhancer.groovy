@@ -36,6 +36,7 @@ import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.transaction.PlatformTransactionManager
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.grails.datastore.gorm.validation.constraints.UniqueConstraintFactory
+import org.grails.datastore.mapping.model.types.Basic
 
 /**
  * Enhances a class with GORM behavior
@@ -127,7 +128,8 @@ class GormEnhancer {
 
         for (p in e.associations) {
             def prop = p
-            if ((prop instanceof OneToMany) || (prop instanceof ManyToMany)) {
+            def isBasic = prop instanceof Basic
+            if ((prop instanceof OneToMany) || (prop instanceof ManyToMany) || isBasic) {
                 def associatedEntity = prop.associatedEntity
                 mc."addTo${prop.capitilizedName}" = { arg ->
                     def obj
@@ -137,6 +139,10 @@ class GormEnhancer {
                     if (arg instanceof Map) {
                         obj = associatedEntity.javaClass.newInstance(arg)
                         delegate[prop.name].add(obj)
+                    }
+                    else if (isBasic) {
+                        delegate[prop.name].add(arg)
+                        return delegate
                     }
                     else if (associatedEntity.javaClass.isInstance(arg)) {
                         obj = arg

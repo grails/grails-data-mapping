@@ -1,7 +1,7 @@
 version = "1.0.0.BUILD-SNAPSHOT"
 
 repositories {
-    mavenRepo urls:'http://dist.gemstone.com/maven/release'
+    maven { url "http://dist.gemstone.com/maven/release" }
 }
 
 dependencies {

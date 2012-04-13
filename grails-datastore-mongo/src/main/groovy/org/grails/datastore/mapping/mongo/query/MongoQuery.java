@@ -29,6 +29,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.mongo.MongoSession;
+import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query;
@@ -181,10 +182,10 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
             public void handle(PersistentEntity entity, NotEquals criterion, DBObject query) {
-                DBObject notEqualQuery = new BasicDBObject();
+                String propertyName = getPropertyName(entity, criterion);
+                DBObject notEqualQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(notEqualQuery, MONGO_NE_OPERATOR, criterion.getValue(), entity.getMappingContext());
 
-                String propertyName = getPropertyName(entity, criterion);
                 query.put(propertyName, notEqualQuery);
             }
         });
@@ -276,40 +277,40 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         queryHandlers.put(GreaterThan.class, new QueryHandler<GreaterThan>() {
             public void handle(PersistentEntity entity, GreaterThan criterion, DBObject query) {
-                DBObject greaterThanQuery = new BasicDBObject();
+                String propertyName = getPropertyName(entity, criterion);
+                DBObject greaterThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(greaterThanQuery, MONGO_GT_OPERATOR, criterion.getValue(), entity.getMappingContext());
 
-                String propertyName = getPropertyName(entity, criterion);
                 query.put(propertyName, greaterThanQuery);
             }
         });
 
         queryHandlers.put(GreaterThanEquals.class, new QueryHandler<GreaterThanEquals>() {
             public void handle(PersistentEntity entity, GreaterThanEquals criterion, DBObject query) {
-                DBObject greaterThanQuery = new BasicDBObject();
+                String propertyName = getPropertyName(entity, criterion);
+                DBObject greaterThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(greaterThanQuery, MONGO_GTE_OPERATOR, criterion.getValue(), entity.getMappingContext());
 
-                String propertyName = getPropertyName(entity, criterion);
                 query.put(propertyName, greaterThanQuery);
             }
         });
 
         queryHandlers.put(LessThan.class, new QueryHandler<LessThan>() {
             public void handle(PersistentEntity entity, LessThan criterion, DBObject query) {
-                DBObject lessThanQuery = new BasicDBObject();
+                String propertyName = getPropertyName(entity, criterion);
+                DBObject lessThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(lessThanQuery, MONGO_LT_OPERATOR, criterion.getValue(), entity.getMappingContext());
 
-                String propertyName = getPropertyName(entity, criterion);
                 query.put(propertyName, lessThanQuery);
             }
         });
 
         queryHandlers.put(LessThanEquals.class, new QueryHandler<LessThanEquals>() {
             public void handle(PersistentEntity entity, LessThanEquals criterion, DBObject query) {
-                DBObject lessThanQuery = new BasicDBObject();
+                String propertyName = getPropertyName(entity, criterion);
+                DBObject lessThanQuery = getOrCreatePropertyQuery(query, propertyName);
                 MongoEntityPersister.setDBObjectValue(lessThanQuery, MONGO_LTE_OPERATOR, criterion.getValue(), entity.getMappingContext());
 
-                String propertyName = getPropertyName(entity, criterion);
                 query.put(propertyName, lessThanQuery);
             }
         });
@@ -367,19 +368,19 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         negatedHandlers.put(In.class, new QueryHandler<In>() {
             public void handle(PersistentEntity entity, In in, DBObject query) {
-                DBObject inQuery = new BasicDBObject();
-                inQuery.put(MONGO_NIN_OPERATOR, in.getValues());
                 String property = getPropertyName(entity, in);
+                DBObject inQuery = getOrCreatePropertyQuery(query, property);
+                inQuery.put(MONGO_NIN_OPERATOR, in.getValues());
                 query.put(property, inQuery);
             }
         });
 
         negatedHandlers.put(Between.class, new QueryHandler<Between>() {
             public void handle(PersistentEntity entity, Between between, DBObject query) {
-                DBObject betweenQuery = new BasicDBObject();
+                String property = getPropertyName(entity, between);
+                DBObject betweenQuery = getOrCreatePropertyQuery(query, property);
                 betweenQuery.put(MONGO_LTE_OPERATOR, between.getFrom());
                 betweenQuery.put(MONGO_GTE_OPERATOR, between.getTo());
-                String property = getPropertyName(entity, between);
                 query.put(property, betweenQuery);
             }
         });
@@ -411,6 +412,15 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 queryHandlers.get(GreaterThanEquals.class).handle(entity, Restrictions.gte(criterion.getProperty(), criterion.getValue()), query);
             }
         });
+    }
+
+    private static DBObject getOrCreatePropertyQuery(DBObject query, String propertyName) {
+        Object existing = query.get(propertyName);
+        DBObject queryObject = existing instanceof DBObject ? (DBObject) existing : null;
+        if(queryObject == null) {
+            queryObject = new BasicDBObject();
+        }
+        return queryObject;
     }
 
 
@@ -625,6 +635,18 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         orderObject.put(property, order.getDirection() == Order.Direction.DESC ? -1 : 1);
                     }
                     cursor.sort(orderObject);
+                }
+                else {
+                    MongoCollection coll = (MongoCollection) entity.getMapping().getMappedForm();
+                    if(coll != null && coll.getSort() != null) {
+                        DBObject orderObject = new BasicDBObject();
+                        Order order = coll.getSort();
+                        String property = order.getProperty();
+                        property = getPropertyName(entity, property);
+                        orderObject.put(property, order.getDirection() == Order.Direction.DESC ? -1 : 1);
+                        cursor.sort(orderObject);
+                    }
+                    
                 }
 
                 return cursor;

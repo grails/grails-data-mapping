@@ -583,7 +583,7 @@ public class JpaQueryBuilder {
                 final String name = eq.getProperty();
                 PersistentProperty prop = validateProperty(entity, name, Query.ILike.class);
                 Class propType = prop.getType();
-                q.append("lower(")
+                whereClause.append("lower(")
                  .append(logicalName)
                  .append(DOT)
                  .append(name)
@@ -591,8 +591,8 @@ public class JpaQueryBuilder {
                  .append(" like lower(")
                  .append(QUESTIONMARK);
                 if(!hibernateCompatible)
-                 q.append(++position);
-                q.append(")");
+                 whereClause.append(++position);
+                whereClause.append(")");
                 parameters.add(conversionService.convert( eq.getValue(), propType ));
                 return position;
             }

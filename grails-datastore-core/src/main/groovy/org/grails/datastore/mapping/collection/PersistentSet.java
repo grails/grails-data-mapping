@@ -31,6 +31,10 @@ import org.grails.datastore.mapping.engine.AssociationIndexer;
 @SuppressWarnings("rawtypes")
 public class PersistentSet extends AbstractPersistentCollection implements Set {
 
+    public PersistentSet(Class childType, Session session, Collection collection) {
+        super(childType, session, collection);
+    }
+
     public PersistentSet(Collection keys, Class childType, Session session) {
         super(keys, childType, session, new HashSet());
     }

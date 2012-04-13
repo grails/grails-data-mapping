@@ -10,6 +10,21 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException
  */
 class JpaQueryBuilderSpec extends GormDatastoreSpec{
 
+    void "Test update query with ilike criterion"() {
+        given:"Some criteria"
+            DetachedCriteria criteria = new DetachedCriteria(Person).build {
+                eq 'age', 10
+                ilike 'firstName', 'Bob'
+            }
+
+        when:"A jpa query is built"
+            def builder = new JpaQueryBuilder(session.mappingContext.getPersistentEntity(Person.name),criteria.criteria)
+            def queryInfo = builder.buildUpdate(firstName:"Fred")
+
+        then:"The query is valid"
+            queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.firstName=?1 WHERE (person.age=?2 AND lower(person.firstName) like lower(?3))'
+    }
+
     void "Test exception is thrown in join with delete"() {
         given:"Some criteria"
             DetachedCriteria criteria = new DetachedCriteria(Person).build {
@@ -23,7 +38,7 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
             def builder = new JpaQueryBuilder(session.mappingContext.getPersistentEntity(Person.name),criteria.criteria)
             builder.buildDelete()
 
-        then:"The query is valid"
+        then:"The query throws an exception"
             def e = thrown(InvalidDataAccessResourceUsageException)
             e.message == 'Joins cannot be used in a DELETE or UPDATE operation'
 

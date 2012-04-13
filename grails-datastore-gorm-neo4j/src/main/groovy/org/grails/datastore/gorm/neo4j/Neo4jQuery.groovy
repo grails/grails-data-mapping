@@ -25,6 +25,8 @@ import org.neo4j.graphdb.Relationship
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.springframework.util.Assert
 import java.util.regex.Pattern
+
+import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.Restrictions
 import org.grails.datastore.mapping.model.PersistentProperty
@@ -40,8 +42,8 @@ import org.slf4j.LoggerFactory
 import org.slf4j.Logger
 import org.apache.lucene.search.MatchAllDocsQuery
 import org.grails.datastore.mapping.model.types.Simple
-import org.apache.lucene.search.MultiPhraseQuery
 import org.neo4j.kernel.AbstractGraphDatabase
+import org.neo4j.helpers.collection.IteratorUtil
 
 /**
  * perform criteria queries on a Neo4j backend
@@ -60,7 +62,7 @@ class Neo4jQuery extends Query {
     protected List executeQuery(PersistentEntity entity, Junction criteria) {
 
         Assert.notNull( entity, "Entity must not be null" )
-        
+
         if (indexQueryPossible(entity, criteria)) {
             try {
                 executeQueryViaIndex(entity, criteria)
@@ -162,6 +164,15 @@ class Neo4jQuery extends Query {
         def result = []
         List<Node> subReferenceNodes = getSubreferencesOfSelfAndDerived(entity)
         List<String> validClassNames = subReferenceNodes.collect { it.getProperty(Neo4jSession.SUBREFERENCE_PROPERTY_NAME)}
+
+        // shortcut for count()
+        if (criteria.empty && (projections.projectionList?.size()==1) && projections.projectionList[0] instanceof CountProjection) {
+            log.error "shortcut for count"
+            return [ subReferenceNodes.sum {
+                IteratorUtil.count((Iterable)it.getRelationships(Direction.OUTGOING, GrailsRelationshipTypes.INSTANCE))
+            } ]
+        }
+
         for (Node subReferenceNode in subReferenceNodes) {
             for (Relationship rel in subReferenceNode.getRelationships(GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING).iterator()) {
                 Node n = rel.endNode
@@ -180,6 +191,21 @@ class Neo4jQuery extends Query {
         }
     }
 
+    // FIXME: does the same query multiple times
+    boolean matchesCriterionAssociationQuery(Node node, AssociationQuery query) {
+        def (relationshipType, direction) = Neo4jUtils.relationTypeAndDirection(query.association)
+        def value = node.getSingleRelationship(relationshipType, direction)?.getOtherNode(node)
+        def q = new Neo4jQuery(query.session, query.entity)
+        q.add(query.criteria)
+        def list = q.list()
+        list.any { it.id == value.id }
+    }
+
+    boolean hasNonIndexedPropertyCriterion(Collection indexPropertyNames, AssociationQuery query) {
+        true
+    }
+    
+    
     List<Node> getSubreferencesOfSelfAndDerived(entity) {
         Map<Class, Node> subReferenceNodes = session.datastore.subReferenceNodes
         // TODO: handle inheritence recursively
@@ -244,9 +270,9 @@ class Neo4jQuery extends Query {
     }
 
     boolean matchesCriterionConjunction(Node node, Junction criterion) {
-        criterion.criteria.every { invokeMethod("matchesCriterion${it.getClass().simpleName}", [node,it])}
+        criterion.criteria.every { invokeMethod("matchesCriterion${it.getClass().simpleName}", [node,it]) }
     }
-
+    
     boolean matchesCriterionNegation(Node node, Junction criterion) {
         return !matchesCriterionDisjunction(node, criterion)
     }

@@ -16,9 +16,15 @@ class WhereMethodSpec extends GormDatastoreSpec {
 
     @Override
     List getDomainClasses() {
-        [Continent]
+        [Continent, Group]
     }
+    
+    
+
+    
+    
 //   TODO: Fix RHS function calls
+//    @Ignore
 //    def "Test year function with to-one association"() {
 //        given:"people and pets"
 //            createPeopleWithPets()
@@ -176,7 +182,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
       given:"A bunch of people with pets"
             createPeopleWithPets()
             def p = new Person(firstName: "Old", lastName: "Person").save()
-            new Pet(owner:p, birthDate: new Date() - 750, name:"Old Dog").save()
+            new Pet(owner:p, birthDate: new GregorianCalendar(2009,1, 1).time, name:"Old Dog").save()
 
 
       when:"A function is used on the property"
@@ -1144,6 +1150,57 @@ class WhereMethodSpec extends GormDatastoreSpec {
 
     }
 
+
+    def "Test where query with overlapping parameter and property names with association query"() {
+        given:"some people"
+            createPeopleWithPets()
+
+        when:"A variable is declared that overlaps with a property of the class"
+            def age = 10
+            def pets = []
+            def query = Person.where {
+                pets.age == age
+            }
+            def results = query.list()
+
+        then:"The variable takes precedence"
+            query.count() == 2
+            results.find { it.firstName == 'Joe'}
+            results.find { it.firstName == 'Ed'}
+    }
+
+    def "Test where query with overlapping parameter and property names"() {
+        given:"some people"
+             createPeopleWithPets()
+
+        when:"A variable is declared that overlaps with a property of the class"
+            def age = 5
+            def pets = []
+            def query = Person.where {
+                age > age && pets { age > age}
+            }
+            def results = query.list()
+
+        then:"The variable takes precedence"
+            query.count() == 2
+            results.find { it.firstName == 'Ed'}
+            results.find { it.firstName == 'Fred'}
+    }
+    
+    def "Test where query on sorted set"() {
+        given:"Some people and groups"
+            createPeopleAndGroups()
+        
+        when:"A where query is executed on a sorted set"
+            def query = Group.where {
+                people.lastName == "Simpson"
+            }
+            def results = query.list(sort:"name", order:"desc")
+
+        then:"The results are correct"
+            results.size() == 1
+    }
+
     protected createContinentWithCountries() {
         final continent = new Continent(name: "Africa")
         continent.countries << new Country(name:"SA", population:304830) << new Country(name:"Zim", population:304830)
@@ -1158,12 +1215,34 @@ class WhereMethodSpec extends GormDatastoreSpec {
         new Person(firstName: "Fred", lastName: "Flinstone", age:41).save()
     }
 
+    protected def createPeopleAndGroups() {
+        createPeople()
+        def simpsons = Person.findAllByLastName("Simpson")
+        assert simpsons.size() == 4
+        def s = new Group(name: "Simpsons")
+        s.people.addAll(simpsons)
+        s.save flush: true
+        session.clear()
+        
+        assert Group.findByName("Simpsons").people.size() == 4
+    }    
+
     protected def createPeopleWithPets() {
-        new Person(firstName: "Joe", lastName: "Bloggs").addToPets(name: "Jack").addToPets(name: "Butch").save()
+        new Person(firstName: "Joe", lastName: "Bloggs", age:4)
+                .addToPets(name: "Jack", age: 5, birthDate: new GregorianCalendar(2011,1, 1).time)
+                .addToPets(name: "Butch", age: 10, birthDate: new GregorianCalendar(2011,1, 1).time)
+                .save()
 
-        new Person(firstName: "Ed", lastName: "Floggs").addToPets(name: "Mini").addToPets(name: "Barbie").addToPets(name:"Ken").save()
+        new Person(firstName: "Ed", lastName: "Floggs", age: 6)
+                .addToPets(name: "Mini", age: 10, birthDate: new GregorianCalendar(2011,1, 1).time)
+                .addToPets(name: "Barbie", age: 4, birthDate: new GregorianCalendar(2011,1, 1).time)
+                .addToPets(name:"Ken", birthDate: new GregorianCalendar(2011,1, 1).time)
+                .save()
 
-        new Person(firstName: "Fred", lastName: "Cloggs").addToPets(name: "Jim").addToPets(name: "Joe").save()
+        new Person(firstName: "Fred", lastName: "Cloggs", age: 12)
+                .addToPets(name: "Jim", age: 2, birthDate: new GregorianCalendar(2011,1, 1).time)
+                .addToPets(name: "Joe", age: 9, birthDate: new GregorianCalendar(2011,1, 1).time)
+                .save()
     }
 
     def queryUsingFunctionOnToOneAssociationProperty() {
@@ -1353,44 +1432,13 @@ class CallMe {
     }
 
     def doQuery() {
-      Person.simpsons.where {
-          firstName == "Bart"
-      }
-
-    }
-
-    def functionQuery() {
-        Person.where {
-              year(pets.birthDate) == 2009
+        def age = 5
+        def pets = []
+        def query = Person.where {
+            age > age && pets { age > 5}
         }
     }
 
-    def inheritanceQuery() {
-            def query = Person.where {
-                livedIn { name == 'SA'}
-            }
-    }
-
-    def parameterizedQuery() {
-        def fn = "Bart"
-        def ln = "Simpson"
-
-        Person.where { firstName != fn && lastName == ln }.sort("firstName", "desc")
-    }
-
-    def propertyProjection() {
-        def people = Person.where { lastName == "Simpson" }
-        people = people.property("id").property('firstName').list()
-        return people
-    }
-
-    def nestedAssociationQuery() {
-        def fn = "Joe"
-        Pet.where {
-            owner { firstName == fn }
-        }.list()
-
-    }
 
 
 }
@@ -1406,4 +1454,12 @@ class Continent {
    String name
    Set<Country> countries = []
    static hasMany = [countries:Country]
+}
+
+@Entity
+class Group {
+    Long id
+    String name
+    SortedSet people = [] as SortedSet
+    static hasMany = [people:Person]
 }

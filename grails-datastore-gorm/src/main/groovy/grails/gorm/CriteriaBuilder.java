@@ -964,7 +964,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         if (property == null && persistentEntity.getIdentity().getName().equals(propertyName)) {
             property = persistentEntity.getIdentity();
         }
-        if (property == null) {
+        if (property == null && !session.getDatastore().isSchemaless()) {
             throw new IllegalArgumentException("Property [" + propertyName +
                     "] is not a valid property of class [" + persistentEntity + "]");
         }

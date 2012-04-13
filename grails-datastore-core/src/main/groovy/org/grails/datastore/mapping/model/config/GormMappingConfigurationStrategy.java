@@ -580,7 +580,8 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         if (association != null) {
             PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity, context, propType);
             association.setAssociatedEntity(associatedEntity);
-            if (relatedClassPropertyName != null) {
+            boolean isNotCircular = entity != associatedEntity;
+            if (relatedClassPropertyName != null && isNotCircular) {
                 association.setReferencedPropertyName(relatedClassPropertyName);
             }
         }

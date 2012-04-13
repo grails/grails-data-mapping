@@ -3,11 +3,13 @@ package org.grails.datastore.gorm
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 import org.grails.datastore.mapping.model.types.Association
+import spock.lang.Ignore
 
 /**
  */
 class HasManyDefaultMappedBySpec extends GormDatastoreSpec{
 
+    @Ignore
     void "Test that has-many with multiple potential matches for the other side matches correctly"() {
         
         when:"A has many with multiple potential matching sides is retrieved"

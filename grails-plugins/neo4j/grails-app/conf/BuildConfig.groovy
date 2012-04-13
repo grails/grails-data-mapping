@@ -33,8 +33,8 @@ grails.project.dependency.resolution = {
         }
 
         def datastoreVersion = "1.0.2.RELEASE"
-        //def neo4jDatastoreVersion = "1.0.0.BUILD-SNAPSHOT"
-        def neo4jDatastoreVersion = "1.0.0.M13"
+        def neo4jDatastoreVersion = "1.0.0.BUILD-SNAPSHOT"
+        //def neo4jDatastoreVersion = "1.0.0.M13"
 
         compile("org.grails:grails-datastore-gorm-neo4j:$neo4jDatastoreVersion",
                 "org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
@@ -47,4 +47,13 @@ grails.project.dependency.resolution = {
 
         compile('org.neo4j:neo4j-community:1.6.1')
     }
+
+    plugins {
+        runtime ":jquery:1.7.1"
+        runtime ":resources:1.1.6"
+        runtime ":release:1.0.1"
+        runtime ":svn:1.0.2"
+        runtime ":spock:0.6"
+    }
+
 }

@@ -65,6 +65,12 @@ abstract class SpringConfigurer {
                 datastore = ref("${typeLower}Datastore")
             }
 
+            def currentSpringConfig = getSpringConfig()
+
+            if(!currentSpringConfig.containsBean("transactionManager") && !manager?.hasGrailsPlugin('hibernate')) {
+                currentSpringConfig.addAlias('transactionManager', "${typeLower}TransactionManager")
+            }
+
             "${typeLower}PersistenceInterceptor"(DatastorePersistenceContextInterceptor, ref("${typeLower}Datastore"))
 
             "${typeLower}PersistenceContextInterceptorAggregator"(PersistenceContextInterceptorAggregator)
@@ -74,10 +80,10 @@ abstract class SpringConfigurer {
                 "${interceptorName}"(OpenSessionInViewInterceptor) {
                     datastore = ref("${typeLower}Datastore")
                 }
-                if (getSpringConfig().containsBean("controllerHandlerMappings")) {
+                if (currentSpringConfig.containsBean("controllerHandlerMappings")) {
                     controllerHandlerMappings.interceptors << ref(interceptorName)
                 }
-                if (getSpringConfig().containsBean("annotationHandlerMapping")) {
+                if (currentSpringConfig.containsBean("annotationHandlerMapping")) {
                     if (annotationHandlerMapping.interceptors) {
                         annotationHandlerMapping.interceptors << ref(interceptorName)
                     }

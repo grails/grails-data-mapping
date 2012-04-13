@@ -28,7 +28,6 @@
           <root url="jar://$DOTGRAILS$/ivy-cache/commons-el/commons-el/jars/commons-el-1.0.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/commons-beanutils/commons-beanutils/jars/commons-beanutils-1.8.3.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/org.codehaus.groovy/groovy-all/jars/groovy-all-1.8.6.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-community/jars/neo4j-community-1.6.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/org.slf4j/slf4j-api/jars/slf4j-api-1.6.2.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/org.springframework/spring-webmvc/jars/spring-webmvc-3.1.0.RELEASE.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/org.springframework/spring-web/jars/spring-web-3.1.0.RELEASE.jar!/" />
@@ -78,19 +77,6 @@
           <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.ant/ant-junit/jars/ant-junit-1.8.2.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.ant/ant-launcher/jars/ant-launcher-1.8.2.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.ant/ant/jars/ant-1.8.2.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.tomcat.embed/tomcat-embed-logging-log4j/jars/tomcat-embed-logging-log4j-7.0.25.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.tomcat.embed/tomcat-embed-jasper/jars/tomcat-embed-jasper-7.0.25.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.tomcat.embed/tomcat-embed-core/jars/tomcat-embed-core-7.0.25.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-jmx/jars/neo4j-jmx-1.6.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.scala-lang/scala-library/jars/scala-library-2.9.0-1.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-cypher/jars/neo4j-cypher-1.6.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-graph-matching/jars/neo4j-graph-matching-1.6.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-udc/jars/neo4j-udc-1.6.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-graph-algo/jars/neo4j-graph-algo-1.6.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.lucene/lucene-core/jars/lucene-core-3.5.0.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-lucene-index/jars/neo4j-lucene-index-1.6.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.geronimo.specs/geronimo-jta_1.1_spec/jars/geronimo-jta_1.1_spec-1.1.1.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-kernel/jars/neo4j-kernel-1.6.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/xml-resolver/xml-resolver/jars/xml-resolver-1.2.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/xerces/xercesImpl/jars/xercesImpl-2.8.1.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/net.sourceforge.nekohtml/nekohtml/jars/nekohtml-1.9.9.jar!/" />
@@ -125,6 +111,27 @@
           <root url="jar://$DOTGRAILS$/ivy-cache/ant/ant/jars/ant-1.6.5.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.maven/maven-ant-tasks/jars/maven-ant-tasks-2.1.0.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.ivy/ivy/jars/ivy-2.2.0.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.tomcat.embed/tomcat-embed-logging-log4j/jars/tomcat-embed-logging-log4j-7.0.25.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.tomcat.embed/tomcat-embed-jasper/jars/tomcat-embed-jasper-7.0.25.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.tomcat.embed/tomcat-embed-core/jars/tomcat-embed-core-7.0.25.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.scala-lang/scala-library/jars/scala-library-2.9.0-1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.lucene/lucene-core/jars/lucene-core-3.5.0.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.geronimo.specs/geronimo-jta_1.1_spec/jars/geronimo-jta_1.1_spec-1.1.1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-jmx/jars/neo4j-jmx-1.6.1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-cypher/jars/neo4j-cypher-1.6.1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-graph-matching/jars/neo4j-graph-matching-1.6.1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-udc/jars/neo4j-udc-1.6.1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-graph-algo/jars/neo4j-graph-algo-1.6.1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-lucene-index/jars/neo4j-lucene-index-1.6.1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-kernel/jars/neo4j-kernel-1.6.1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-community/jars/neo4j-community-1.6.1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.grails/grails-datastore-web/jars/grails-datastore-web-1.0.2.RELEASE.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.grails/grails-datastore-gorm-plugin-support/jars/grails-datastore-gorm-plugin-support-1.0.2.RELEASE.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.grails/grails-datastore-gorm-neo4j/jars/grails-datastore-gorm-neo4j-1.0.0.M13.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.grails/grails-datastore-simple/jars/grails-datastore-simple-1.0.2.RELEASE.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.grails/grails-datastore-core/jars/grails-datastore-core-1.0.2.RELEASE.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.grails/grails-datastore-gorm/jars/grails-datastore-gorm-1.0.2.RELEASE.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.grails/grails-datastore-gorm-test/jars/grails-datastore-gorm-test-1.0.2.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
