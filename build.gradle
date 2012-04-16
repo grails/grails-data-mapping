@@ -203,7 +203,7 @@ subprojects {
 
         signing {
             sign configurations.archives
-            required { !isBuildSnapshot && gradle.taskGraph.contains(uploadArchives) }
+            required { !isBuildSnapshot && gradle.taskGraph.hasTask(uploadArchives) }
         }
 
         configure(install.repositories.mavenInstaller) {
