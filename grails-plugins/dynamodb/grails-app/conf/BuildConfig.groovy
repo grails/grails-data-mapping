@@ -19,13 +19,9 @@ grails.project.dependency.resolution = {
     String datastoreVersion = "1.0.0.RELEASE"
 
     repositories {
-        grailsPlugins()
-        grailsHome()
+        mavenLocal()
         grailsCentral()
         mavenRepo "http://repo.grails.org/grails/core"
-        mavenLocal()
-        mavenCentral()
-        mavenRepo 'http://repository.codehaus.org'
     }
 
     dependencies {
@@ -48,12 +44,6 @@ grails.project.dependency.resolution = {
         test("org.grails:grails-datastore-gorm-test:$datastoreVersion",
              "org.grails:grails-datastore-simple:$datastoreVersion") {
             transitive = false
-        }
-    }
-    
-    plugins {
-        build( ":release:1.0.1" ) {
-            exported = false
         }
     }
 }

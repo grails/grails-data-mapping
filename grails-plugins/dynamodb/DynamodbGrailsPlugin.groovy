@@ -33,6 +33,7 @@ class DynamodbGrailsPlugin {
 
     // URL to the plugin's documentation
     def documentation = "http://grails.org/plugin/dynamodb"
+    def issueManagement = [system: "JIRA", url: "http://jira.grails.org/browse/GPDYNAMODB"]
 
     def doWithSpring = new DynamoDBSpringConfigurer().getConfiguration()
 
