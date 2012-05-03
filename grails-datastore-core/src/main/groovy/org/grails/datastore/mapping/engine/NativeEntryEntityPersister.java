@@ -1032,6 +1032,13 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         if (associatedEntity != null) {
             final List<PersistentProperty> embeddedProperties = associatedEntity.getPersistentProperties();
             final EntityAccess embeddedEntityAccess = createEntityAccess(associatedEntity, embeddedInstance);
+            PersistentProperty identity = associatedEntity.getIdentity();
+            if(identity != null) {
+                Object embeddedId = embeddedEntityAccess.getProperty(identity.getName());
+                if(embeddedId != null) {
+                    setEntryValue(embeddedEntry, getPropertyKey(identity), embeddedId);
+                }
+            }
             for (PersistentProperty persistentProperty : embeddedProperties) {
                 if (persistentProperty instanceof Simple) {
                     setEntryValue(embeddedEntry, getPropertyKey(persistentProperty), embeddedEntityAccess.getProperty(persistentProperty.getName()));

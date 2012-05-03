@@ -81,6 +81,19 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         }
     }
 
+
+    @Override
+    protected void refreshObjectStateFromNativeEntry(PersistentEntity persistentEntity, Object obj, Serializable nativeKey, DBObject nativeEntry, boolean isEmbedded) {
+        if(isEmbedded) {
+            Object id = nativeEntry.get(MONGO_ID_FIELD);
+            super.refreshObjectStateFromNativeEntry(persistentEntity, obj, (Serializable) id, nativeEntry, isEmbedded);
+        }
+        else {
+
+            super.refreshObjectStateFromNativeEntry(persistentEntity, obj, nativeKey, nativeEntry, isEmbedded);
+        }
+    }
+
     @Override
     protected DBObject getEmbedded(DBObject nativeEntry, String key) {
         final Object embeddedDocument = nativeEntry.get(key);
@@ -191,7 +204,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                     }
 
                     Object instance = newEntityInstance(embeddedPersistentEntity);
-                    refreshObjectStateFromNativeEntry(embeddedPersistentEntity, instance, null, nativeEntry);
+                    refreshObjectStateFromNativeEntry(embeddedPersistentEntity, instance, null, nativeEntry, true);
                     instances.add(instance);
                 }
             }
@@ -423,6 +436,14 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
         MappingContext mappingContext = getMappingContext();
         setDBObjectValue(nativeEntry, key, value, mappingContext);
+    }
+
+    @Override
+    protected String getPropertyKey(PersistentProperty prop) {
+        if(prop instanceof Identity) {
+            return MONGO_ID_FIELD;
+        }
+        return super.getPropertyKey(prop);
     }
 
     public static void setDBObjectValue(DBObject nativeEntry, String key, Object value, MappingContext mappingContext) {
