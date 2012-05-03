@@ -585,8 +585,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         Object oldVersion = previous.get("version");
         Object currentVersion = ea.getProperty("version");
         if (Number.class.isAssignableFrom(ea.getPropertyType("version"))) {
-            oldVersion = ((Number)oldVersion).longValue();
-            currentVersion = ((Number)currentVersion).longValue();
+            oldVersion = oldVersion != null ? ((Number)oldVersion).longValue() : oldVersion;
+            currentVersion = currentVersion != null ? ((Number)currentVersion).longValue() : currentVersion;
         }
         if (oldVersion != null && currentVersion != null && !oldVersion.equals(currentVersion)) {
             throw new OptimisticLockingException(persistentEntity, key);
