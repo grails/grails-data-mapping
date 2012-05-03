@@ -29,6 +29,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.mongo.MongoSession;
+import org.grails.datastore.mapping.mongo.config.MongoAttribute;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.grails.datastore.mapping.query.AssociationQuery;
@@ -714,7 +715,11 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             if (property != null) {
                 propertyName = MappingUtils.getTargetKey(property);
                 if(property instanceof ToOne && !(property instanceof Embedded)) {
-                    propertyName = propertyName + MONGO_ID_REFERENCE_SUFFIX;
+                    ToOne association = (ToOne) property;
+                    MongoAttribute attr = (MongoAttribute) association.getMapping().getMappedForm();
+                    boolean isReference = attr == null || attr.isReference();
+                    if(isReference)
+                        propertyName = propertyName + MONGO_ID_REFERENCE_SUFFIX;
                 }
             }
         }

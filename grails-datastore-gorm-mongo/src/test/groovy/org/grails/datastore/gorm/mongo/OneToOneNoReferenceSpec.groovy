@@ -20,6 +20,21 @@ class OneToOneNoReferenceSpec extends GormDatastoreSpec{
             NoRef.collection.findOne().other == other.id
     }
 
+    
+    void "Test that querying an association works"() {
+        when:"A domain class is saved that has references disabled"
+            def other = new OtherNoRef().save()
+            def noref = new NoRef(other: other)
+            noref.save flush:true
+            session.clear()
+
+            other = OtherNoRef.get(other.id)
+            noref = NoRef.findByOther(other)
+
+        then:"The association can be queried"
+            other != null
+            noref != null
+    }
     @Override
     List getDomainClasses() {
         [OtherNoRef,NoRef]
