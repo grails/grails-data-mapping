@@ -1,3 +1,5 @@
+h4. Basics
+
 Mongo doesn't require that you specify indices to query, but like a relational database without specifying indices your queries will be significantly slower.
 
 With that in mind it is important to specify the properties you plan to query using the mapping block:
@@ -36,3 +38,18 @@ Person.withCriteria {
     arguments hint:["firstName":1]
 }
 {code}
+
+h4. Compound Indices
+
+MongoDB supports the notion of [compound keys|http://www.mongodb.org/display/DOCS/Indexes#Indexes-CompoundKeys]. GORM for MongoDB enables this feature at the mapping level using the @compoundIndex@ mapping:
+
+{code}
+class Person {
+    ...
+    static mapping = {
+        compoundIndex name:1, age:-1
+    }
+}
+{code}
+
+As per the MongoDB docs 1 is for ascending and -1 is for descending.
