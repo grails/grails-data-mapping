@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
-        <title>GORM for Mongo 1.0.0.RELEASE</title>
+        <title>GORM for Mongo 1.0.0.GA</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
         <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
@@ -62,7 +62,7 @@ function addJsClass(el) {
                         <div class="project">
                             <h1>GORM for Mongo - Reference Documentation</h1>
                             <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
-                            <p><strong>Version:</strong> 1.0.0.RELEASE</p>
+                            <p><strong>Version:</strong> 1.0.0.GA</p>
                             
                         </div>
 
@@ -142,7 +142,10 @@ This implementation tries to be as compatible as possible with GORM for Hibernat
 
 
 <h2 id="1.2 Release Notes">1.2 Release Notes</h2>
-Below are the details of the changes across releases:<p class="paragraph"/><h4>1.0 RC5</h4>
+Below are the details of the changes across releases:<p class="paragraph"/><h4>1.0 GA</h4>
+<ul class="star">
+<li>Bug fixes</li>
+</ul><p class="paragraph"/><h4>1.0 RC5</h4>
 <ul class="star">
 <li>Support for direct links instead of DBRefs with reference:false in the mapping</li>
 <li>Support for defining Mongo basic types as properties of a domain (Binary, DBObject etc.)</li>
@@ -194,8 +197,8 @@ Below are the details of the changes across releases:<p class="paragraph"/><h4>1
 
 <h1 id="2. Getting Started">2 Getting Started</h1>
 To get started with GORM for Mongo you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin mongodb</pre></div><p class="paragraph"/>Or configure it as a dependency in <code>BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
-	compile ':mongodb:1.0.0.RC4'
-&#125;</pre></div><p class="paragraph"/>With that done you need to set up a running Mongodb server. Refer to the <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="blank">Mongodb Quick Start guide</a> for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above commands executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>Thu Nov 11 16:54:08 MongoDB starting : pid=4600 port=27017 dbpath=/data/db/ 64&#45;bit
+	compile ':mongodb:1.0.0.GA'
+&#125;</pre></div><p class="paragraph"/>With that done you need to set up a running MongoDB server. Refer to the <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="blank">MongoDB Quick Start guide</a> for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above commands executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>Thu Nov 11 16:54:08 MongoDB starting : pid=4600 port=27017 dbpath=/data/db/ 64&#45;bit
 Thu Nov 11 16:54:08 db version v1.6.3, pdfile version 4.5
 Thu Nov 11 16:54:08 git version: 278bd2ac2f2efbee556f32c13c1b6803224d1c01
 Thu Nov 11 16:54:08 sys info: Darwin erh2.10gen.cc 9.6.0 Darwin Kernel Version 9.6.0: Mon Nov 24 17:37:00 PST 2008; root:xnu&#45;1228.9.59~1/RELEASE_I386 i386 BOOST_LIB_VERSION=1_40
