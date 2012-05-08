@@ -8,11 +8,11 @@ Or configure it as a dependency in @BuildConfig.groovy@:
 
 {code}
 plugins {
-	compile ':mongodb:1.0.0.RC4'
+	compile ':mongodb:1.0.0.GA'
 }
 {code}
 
-With that done you need to set up a running Mongodb server. Refer to the [Mongodb Quick Start guide|http://www.mongodb.org/display/DOCS/Quickstart] for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:
+With that done you need to set up a running MongoDB server. Refer to the [MongoDB Quick Start guide|http://www.mongodb.org/display/DOCS/Quickstart] for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:
 
 {code}
 MONGO_HOME/bin/mongod

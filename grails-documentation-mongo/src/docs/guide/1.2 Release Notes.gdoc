@@ -1,5 +1,9 @@
 Below are the details of the changes across releases:
 
+h4. 1.0 GA
+
+* Bug fixes
+
 h4. 1.0 RC5
 
 * Support for direct links instead of DBRefs with reference:false in the mapping
