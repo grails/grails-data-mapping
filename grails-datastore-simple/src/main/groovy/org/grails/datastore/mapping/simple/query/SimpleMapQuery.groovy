@@ -70,6 +70,16 @@ class SimpleMapQuery extends Query {
 
         def nullEntries = entityMap.entrySet().findAll { it.value == null }
         entityMap.keySet().removeAll(nullEntries.collect { it.key })
+
+        if (orderBy) {
+            orderBy.reverseEach { Query.Order order ->
+                boolean desc = order.direction == Query.Order.Direction.DESC
+                entityMap = entityMap.sort { a, b ->
+                    int cmp = (a.value."${order.property}" <=> b.value."${order.property}")
+                    return desc ? -cmp : cmp
+                }
+            }
+        }
         if (projections.isEmpty()) {
             results = entityMap.values() as List
         }
@@ -137,9 +147,17 @@ class SimpleMapQuery extends Query {
                     }
                 }
             }
+            if (results.size() <= 1)                            // [<col>]
+                results
+            else if (projectionCount == 1)                      // [<row>, <row>, ...]
+                results
+            else if (!(results[0] instanceof Collection))       // [<col>, <col>, ...]
+                results = [results]
+            else                                                // [[<col>, <col>, ...], ...]
+                results = results.transpose()
         }
         if (results) {
-            return applyMaxAndOffset(sortResults(results))
+            return applyMaxAndOffset(results)
         }
         return Collections.emptyList()
     }
@@ -157,17 +175,6 @@ class SimpleMapQuery extends Query {
         if (to >= total) to = -1
 
         return sortedResults[from..to]
-    }
-
-    private List sortResults(List results) {
-        if (orderBy) {
-            orderBy.each { Query.Order order ->
-                def sorted = results.sort { it."${order.property}"}
-                final def os = order.direction.toString()
-                results = os == "DESC" ? sorted.reverse() : sorted
-            }
-        }
-        return results
     }
 
     def associationQueryHandlers = [
