@@ -1253,7 +1253,16 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             newIter = new ArrayList((Collection) objs);
         }
         for (Object obj : newIter) {
-            keys.add(persist(obj));
+            if(persistentEntity.isInstance(obj)) {
+                if(persistentEntity.getJavaClass().equals(obj.getClass())) {
+                    keys.add(persist(obj));
+                }
+                else {
+                    // subclass persister
+                    EntityPersister persister = (EntityPersister) getSession().getPersister(obj);
+                    keys.add(persister.persist(obj));
+                }
+            }
         }
         return keys;
     }
