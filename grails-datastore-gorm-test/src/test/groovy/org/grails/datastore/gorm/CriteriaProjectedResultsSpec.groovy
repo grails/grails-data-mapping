@@ -13,7 +13,7 @@ class CriteriaProjectedResultsSpec extends GormDatastoreSpec {
             Check c = new Check(amount: 57).save()
 
         then:"The count is 1"
-            Check.count()
+            1 == Check.count()
 
         when:"A sum projection is executed"
             def total = Check.withCriteria {
@@ -43,7 +43,6 @@ class CriteriaProjectedResultsSpec extends GormDatastoreSpec {
             [[1, 57]] == model
     }
 
-    @Ignore
     void "Test single projection multiple rows"() {
         given:"multiple records"
             new Check(amount: 57, descr: 'fifty-seven').save()
@@ -60,7 +59,7 @@ class CriteriaProjectedResultsSpec extends GormDatastoreSpec {
             }
 
         then:"A list of lists is returned"
-            [[29], [57], [83]] == model
+            [29, 57, 83] == model
     }
 
     void "Test multiple projections with multiple rows"() {
@@ -177,38 +176,44 @@ class CriteriaProjectedResultsSpec extends GormDatastoreSpec {
     }
 
     void testOrderAndOffset() {
-        new Check(amount: 57, descr: 'fifty-seven').save()
-        new Check(amount: 83, descr: 'eighty-three').save()
-        new Check(amount: 29, descr: 'twenty-nine').save()
-        new Check(amount: 83, descr: 'seventy').save()
+        given:"A domain model"
+            new Check(amount: 57, descr: 'fifty-seven').save()
+            new Check(amount: 83, descr: 'eighty-three').save()
+            new Check(amount: 29, descr: 'twenty-nine').save()
+            new Check(amount: 83, descr: 'seventy').save()
 
-        assert 4 == Check.count()
+        expect:"All items are present"
+            4 == Check.count()
 
-        def model = Check.withCriteria {
-            projections {
-                property('descr')
-                property('amount')
+        when:"A query is executed with 2 orderings in different directions, offset, and limit"
+            def model = Check.withCriteria {
+                projections {
+                    property('descr')
+                    property('amount')
+                }
+                order('amount', 'asc')
+                order('descr', 'desc')
+                firstResult(1)
+                maxResults(2)
             }
-            order('amount', 'asc')
-            order('descr', 'desc')
-            firstResult(1)
-            maxResults(2)
-        }
 
-        [['fifty-seven', 57], ['seven', 83]] == model
+        then:"The results are correct"
+            [['fifty-seven', 57], ['seventy', 83]] == model
 
-        model = Check.withCriteria {
-            projections {
-                property('descr')
-                property('amount')
+        when:"A query is executed with 2 orderings in same direction, offset, and limit"
+            model = Check.withCriteria {
+                projections {
+                    property('descr')
+                    property('amount')
+                }
+                order('amount', 'asc')
+                order('descr', 'asc')
+                firstResult(2)
+                maxResults(2)
             }
-            order('amount', 'asc')
-            order('descr', 'asc')
-            firstResult(2)
-            maxResults(2)
-        }
 
-        [['eighty-three', 83], ['seventy', 83]] == model
+        then:"The results are correct"
+            [['eighty-three', 83], ['seventy', 83]] == model
     }
 
     @Override
