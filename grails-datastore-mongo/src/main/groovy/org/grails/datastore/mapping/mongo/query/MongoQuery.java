@@ -42,6 +42,7 @@ import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.data.mongodb.core.DbCallback;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.util.StringUtils;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -432,10 +433,19 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     private static void handleLike(PersistentEntity entity, Like like, DBObject query, boolean caseSensitive) {
         Object value = like.getValue();
         if (value == null) value = "null";
-        String expr = value.toString().replace("%", ".*");
+
+        String[] array = value.toString().split("%", -1);
+        for (int i=0; i<array.length; i++) {
+            array[i] = Pattern.quote(array[i]);
+        }
+        String expr = StringUtils.arrayToDelimitedString(array, ".*");
         if (!expr.startsWith(".*")) {
             expr = '^'+expr;
         }
+        if (!expr.endsWith(".*")) {
+            expr = expr+'$';
+        }
+
         Pattern regex = caseSensitive ? Pattern.compile(expr) : Pattern.compile(expr, Pattern.CASE_INSENSITIVE);
         String propertyName = getPropertyName(entity, like);
         query.put(propertyName, regex);
