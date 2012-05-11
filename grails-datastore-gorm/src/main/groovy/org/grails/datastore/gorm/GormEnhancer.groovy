@@ -37,6 +37,7 @@ import org.springframework.transaction.PlatformTransactionManager
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.grails.datastore.gorm.validation.constraints.UniqueConstraintFactory
 import org.grails.datastore.mapping.model.types.Basic
+import org.grails.datastore.mapping.model.types.EmbeddedCollection
 
 /**
  * Enhances a class with GORM behavior
@@ -129,7 +130,7 @@ class GormEnhancer {
         for (p in e.associations) {
             def prop = p
             def isBasic = prop instanceof Basic
-            if ((prop instanceof OneToMany) || (prop instanceof ManyToMany) || isBasic) {
+            if ((prop instanceof OneToMany) || (prop instanceof ManyToMany) || isBasic || (prop instanceof EmbeddedCollection)) {
                 def associatedEntity = prop.associatedEntity
                 mc."addTo${prop.capitilizedName}" = { arg ->
                     def obj
