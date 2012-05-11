@@ -435,7 +435,13 @@ class SimpleMapQuery extends Query {
                 }.collect { it.key }
             }
             else {
-                return indexer.query(value)
+                if(value == null && (property instanceof ToOne)) {
+                    def allEntities = datastore[family]
+                    return allEntities.findAll { it.value[property.name] == null }.collect { it.key }
+                }
+                else {
+                    return indexer.query(value)
+                }
             }
         },
         (Query.IsNull): { Query.IsNull equals, PersistentProperty property, Closure function = null , boolean onValue = false->
