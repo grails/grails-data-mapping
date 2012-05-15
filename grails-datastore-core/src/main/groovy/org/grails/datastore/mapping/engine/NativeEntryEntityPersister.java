@@ -1030,7 +1030,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             embeddedEntry = embeddedPersister.createNewEntry(embeddedPersister.getEntityFamily());
         }
 
-        final PersistentEntity associatedEntity = association.getAssociatedEntity();
+        final PersistentEntity associatedEntity = embeddedPersister == null ? association.getAssociatedEntity() : embeddedPersister.getPersistentEntity();
         if (associatedEntity != null) {
             final List<PersistentProperty> embeddedProperties = associatedEntity.getPersistentProperties();
             final EntityAccess embeddedEntityAccess = createEntityAccess(associatedEntity, embeddedInstance);
