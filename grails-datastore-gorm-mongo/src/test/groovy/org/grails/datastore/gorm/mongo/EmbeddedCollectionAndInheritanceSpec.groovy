@@ -14,7 +14,7 @@ class EmbeddedCollectionAndInheritanceSpec extends GormDatastoreSpec{
         when:"A embedded subclass entity is added to a collection"
             def p = new ECAISPerson()
             p.save()
-            p.pets << new ECAISDog(name:"Joe")
+            p.pets << new ECAISDog(name:"Joe",anotherField:"foo")
             p.save(flush:true)
             session.clear()
 
@@ -23,9 +23,10 @@ class EmbeddedCollectionAndInheritanceSpec extends GormDatastoreSpec{
             p != null
             p.pets.size() == 1
             p.pets[0] instanceof ECAISDog
+	    p.pets[0].anotherField == 'foo'
 
         when:"An embedded subclass entity is updated in the collection"
-            p.pets << new ECAISDog(name:"Fred")
+            p.pets << new ECAISDog(name:"Fred", anotherField: 'bar')
             p.save(flush:true)
             session.clear()
             p = ECAISPerson.get(p.id)
@@ -35,11 +36,14 @@ class EmbeddedCollectionAndInheritanceSpec extends GormDatastoreSpec{
             p.pets.size() == 2
             p.pets[0] instanceof ECAISDog
             p.pets[0].name == "Joe"
+	    p.pets[0].anotherField == 'foo'
             p.pets[1] instanceof ECAISDog
             p.pets[1].name == "Fred"
+	    p.pets[1].anotherField == 'bar'
 
         when:"An update is made to an embedded collection entry but not the collection itself"
             p.pets[0].name = "Changed"
+            p.pets[0].anotherField = "ChangedAnotherField"
             p.save(flush:true)
             session.clear()
             p = ECAISPerson.get(p.id)
@@ -48,8 +52,10 @@ class EmbeddedCollectionAndInheritanceSpec extends GormDatastoreSpec{
             p.pets.size() == 2
             p.pets[0] instanceof ECAISDog
             p.pets[0].name == "Changed"
+            p.pets[0].anotherField == "ChangedAnotherField"
             p.pets[1] instanceof ECAISDog
             p.pets[1].name == "Fred"
+	    p.pets[1].anotherField == 'bar'
 
         when:"An embedded entity is removed from a collection"
             p.pets.remove(0)
@@ -61,6 +67,7 @@ class EmbeddedCollectionAndInheritanceSpec extends GormDatastoreSpec{
             p.pets.size() == 1
             p.pets[0] instanceof ECAISDog
             p.pets[0].name == "Fred"
+	    p.pets[0].anotherField == 'bar'
 
     }
 
@@ -88,4 +95,5 @@ class ECAISPet {
 class ECAISDog extends ECAISPet {
     String id
     String name
+    String anotherField
 }
