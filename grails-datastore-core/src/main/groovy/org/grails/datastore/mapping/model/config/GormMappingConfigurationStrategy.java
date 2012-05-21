@@ -424,6 +424,11 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             ((ManyToMany)association).setInversePropertyName(relatedClassPropertyName);
             many = true;
         }
+        else {
+            // uni-directional one-to-many
+            association = propertyFactory.createOneToMany(entity, context, property);
+
+        }
 
         PersistentEntity associatedEntity = getOrCreateAssociatedEntity(entity, context, relatedClassType);
         if (many) {
