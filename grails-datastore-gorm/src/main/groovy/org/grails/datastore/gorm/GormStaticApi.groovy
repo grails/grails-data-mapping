@@ -401,6 +401,90 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         return findAllWhere(queryMap, args)
     }
 
+    /** 
+     * Finds the first object using the natural sort order
+     * 
+     * @return the first object in the datastore, null if none exist
+     */
+    D first() {
+        first([:])
+    }
+    
+    /**
+     * Finds the first object sorted by propertyName
+     * 
+     * @param propertyName the name of the property to sort by
+     * 
+     * @return the first object in the datastore sorted by propertyName, null if none exist
+     */
+    D first(String propertyName) {
+        first(sort: propertyName)
+    }
+    
+    /** 
+     * Finds the first object.  If queryParams includes 'sort', that will
+     * dictate the sort order, otherwise natural sort order will be used.
+     * queryParams may include any of the same parameters that might be passed
+     * to the list(Map) method.  This method will ignore 'order' and 'max' as
+     * those are always 'asc' and 1, respectively.
+     * 
+     * @return the first object in the datastore, null if none exist
+     */
+    D first(Map queryParams) {
+        queryParams.max = 1
+        queryParams.order = 'asc'
+        if(!queryParams.containsKey('sort')) {
+            def idPropertyName = persistentEntity.identity?.name
+            if(idPropertyName) {
+                queryParams.sort = idPropertyName
+            }
+        }
+        def resultList = list(queryParams)
+        resultList ? resultList[0] : null
+    }
+
+    /** 
+     * Finds the last object using the natural sort order
+     * 
+     * @return the last object in the datastore, null if none exist
+     */
+    D last() {
+        last([:])
+    }
+    
+    /**
+     * Finds the last object sorted by propertyName
+     * 
+     * @param propertyName the name of the property to sort by
+     * 
+     * @return the last object in the datastore sorted by propertyName, null if none exist
+     */
+    D last(String propertyName) {
+        last(sort: propertyName)
+    }
+    
+    /** 
+     * Finds the last object.  If queryParams includes 'sort', that will
+     * dictate the sort order, otherwise natural sort order will be used.
+     * queryParams may include any of the same parameters that might be passed
+     * to the list(Map) method.  This method will ignore 'order' and 'max' as
+     * those are always 'asc' and 1, respectively.
+     * 
+     * @return the last object in the datastore, null if none exist
+     */
+    D last(Map queryParams) {
+        queryParams.max = 1
+        queryParams.order = 'desc'
+        if(!queryParams.containsKey('sort')) {
+            def idPropertyName = persistentEntity.identity?.name
+            if(idPropertyName) {
+                queryParams.sort = idPropertyName
+            }
+        }
+        def resultList = list(queryParams)
+        resultList ? resultList[0] : null
+    }
+
     private Map createQueryMapForExample(PersistentEntity persistentEntity, D example) {
         def props = persistentEntity.persistentProperties.findAll { PersistentProperty prop ->
             !(prop instanceof Association)
