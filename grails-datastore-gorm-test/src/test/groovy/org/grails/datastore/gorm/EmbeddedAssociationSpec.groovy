@@ -2,6 +2,7 @@ package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+import spock.lang.Shared
 
 class EmbeddedAssociationSpec extends GormDatastoreSpec {
 
@@ -9,9 +10,11 @@ class EmbeddedAssociationSpec extends GormDatastoreSpec {
         GormDatastoreSpec.TEST_CLASSES << Individual << Address
     }
 
+    @Shared Date now = new Date()
+
     void "Test persistence of embedded entities"() {
         given:
-            def i = new Individual(name:"Bob", address: new Address(postCode:"30483"))
+            def i = new Individual(name:"Bob", address: new Address(postCode:"30483"), bio: new Bio(birthday: new Birthday(now)))
 
             i.save(flush:true)
             session.clear()
@@ -24,6 +27,7 @@ class EmbeddedAssociationSpec extends GormDatastoreSpec {
             i.name == 'Bob'
             i.address != null
             i.address.postCode == '30483'
+            i.bio.birthday.date == now
     }
 }
 
@@ -32,7 +36,9 @@ class Individual {
     Long id
     String name
     Address address
-    static embedded = ['address']
+    Bio bio
+
+    static embedded = ['address', 'bio']
 
     static mapping = {
         name index:true
@@ -43,4 +49,9 @@ class Individual {
 class Address {
     Long id
     String postCode
+}
+
+// Test embedded associations with custom types
+class Bio {
+    Birthday birthday
 }
