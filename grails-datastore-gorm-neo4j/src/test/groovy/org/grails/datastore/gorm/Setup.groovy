@@ -21,32 +21,26 @@ import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
+import org.neo4j.test.ImpermanentGraphDatabase
 
 class Setup {
 
     protected final Logger log = LoggerFactory.getLogger(getClass())
 
-
     static session
     static datastore
     static transaction
-    static storeDir
 
     static destroy() {
         transaction.rollback()
         session.nativeInterface.shutdown()
-        new File(storeDir).deleteDir()
     }
 
     static Session setup(classes) {
 
-        storeDir = File.createTempFile("neo4j",null)
-        assert storeDir.delete()
-        assert storeDir.mkdir()
-        storeDir = storeDir.path
         def ctx = new GenericApplicationContext()
         ctx.refresh()
-        datastore = new Neo4jDatastore(storeDir: storeDir, applicationContext: ctx)
+        datastore = new Neo4jDatastore(graphDatabaseService: new ImpermanentGraphDatabase(), applicationContext: ctx)
 
         /*Neo4jSession.metaClass.invokeMethod = { String name, args ->
             def metaMethod = Neo4jSession.metaClass.getMetaMethod(name, args)

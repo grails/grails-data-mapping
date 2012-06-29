@@ -114,7 +114,7 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
                 { TraversalPosition p -> false },
                 { TraversalPosition p -> p.currentNode().getProperty("__type__",null) == Person.name } ).size()
 
-        2 == person.traverse(
+        1 == person.traverse(
                         { TraversalPosition p -> true },
                         { TraversalPosition p -> true } ).size()
     }
