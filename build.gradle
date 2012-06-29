@@ -28,6 +28,7 @@ apply plugin: 'project-report'
 
 allprojects {
     repositories {
+        mavenCentral()
         maven { url "http://repo.grails.org/grails/core" }
 //        mavenLocal()
     }
