@@ -21,5 +21,6 @@ import org.neo4j.graphdb.RelationshipType
  */
 enum GrailsRelationshipTypes implements RelationshipType {
     SUBREFERENCE,
-    INSTANCE
+    INSTANCE,
+    SUBSUBREFERENCE
 }

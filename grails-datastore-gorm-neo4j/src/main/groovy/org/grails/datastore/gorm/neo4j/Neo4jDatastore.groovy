@@ -36,9 +36,12 @@ import org.neo4j.kernel.AbstractGraphDatabase
  */
 class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
 
+    public static final NUMBER_OF_SUBSUBREFERENCE_NODES = 2 ** 7
+
     GraphDatabaseService graphDatabaseService
     @Lazy ExecutionEngine executionEngine = new ExecutionEngine(graphDatabaseService)
     Map<Class, Node> subReferenceNodes
+    Map<Node, Map<Integer, Node>> subSubReferenceNodes
     String storeDir
     @Lazy IndexManager indexManager = graphDatabaseService.index()
     Map<PersistentEntity, Collection<PersistentEntity>> domainSubclasses = [:].withDefault { [] }
@@ -120,33 +123,34 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
         list
     }
 
-    protected Node createSubReferenceNode(name) {
+    protected void findOrCreateSubReferenceNodes() {
         Transaction tx = graphDatabaseService.beginTx()
         try {
-            Node subReferenceNode = graphDatabaseService.createNode()
-            subReferenceNode.setProperty(Neo4jSession.SUBREFERENCE_PROPERTY_NAME, name)
-            graphDatabaseService.referenceNode.createRelationshipTo(subReferenceNode, GrailsRelationshipTypes.SUBREFERENCE)
+            subReferenceNodes = [:]
+            Node referenceNode = graphDatabaseService.referenceNode
+
+            for (Relationship rel in referenceNode.getRelationships(GrailsRelationshipTypes.SUBREFERENCE, Direction.OUTGOING).iterator()) {
+                Node endNode = rel.endNode
+                String clazzName = endNode.getProperty(Neo4jSession.SUBREFERENCE_PROPERTY_NAME)
+                subReferenceNodes[clazzName] = endNode
+            }
+
+            for (PersistentEntity pe in mappingContext.persistentEntities) {
+                if (!subReferenceNodes.containsKey(pe.name)) {
+                    subReferenceNodes[pe.name] = createSubReferenceNode(pe.name)
+                }
+            }
             tx.success()
-            return subReferenceNode
         } finally {
             tx.finish()
         }
     }
 
-    protected void findOrCreateSubReferenceNodes() {
-        subReferenceNodes = [:]
-        Node referenceNode = graphDatabaseService.referenceNode
-        for (Relationship rel in referenceNode.getRelationships(GrailsRelationshipTypes.SUBREFERENCE, Direction.OUTGOING).iterator()) {
-            Node endNode = rel.endNode
-            String clazzName = endNode.getProperty(Neo4jSession.SUBREFERENCE_PROPERTY_NAME)
-            subReferenceNodes[clazzName] = endNode
-        }
-
-        for (PersistentEntity pe in mappingContext.persistentEntities) {
-            if (!subReferenceNodes.containsKey(pe.name)) {
-                subReferenceNodes[pe.name] = createSubReferenceNode(pe.name)
-            }
-        }
+    protected Node createSubReferenceNode(name) {
+            Node subReferenceNode = graphDatabaseService.createNode()
+            subReferenceNode.setProperty(Neo4jSession.SUBREFERENCE_PROPERTY_NAME, name)
+            graphDatabaseService.referenceNode.createRelationshipTo(subReferenceNode, GrailsRelationshipTypes.SUBREFERENCE)
+            return subReferenceNode
     }
 
 }

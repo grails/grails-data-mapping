@@ -126,9 +126,11 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
             Node node = nativeInterface.createNode()
             node.setProperty(TYPE_PROPERTY_NAME, name)
             node.setProperty(VERSION_PROPERTY, 0);
-            Node subreferenceNode = datastore.subReferenceNodes[name]
-            Assert.notNull subreferenceNode
-            subreferenceNode.createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
+
+            Node subSubReferenceNode = findOrCreateSubSubReferenceNode(datastore.subReferenceNodes[name])
+            Assert.notNull subSubReferenceNode
+
+            subSubReferenceNode.createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
             log.debug "created node $node.id with class $name"
             o.id = node.id
             inserts << o
@@ -169,6 +171,26 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         o.id
     }
 
+    /**
+     * return a subSubReference node for the current operation.
+     * Current strategy is to use current thread's is module 128
+     * @param subSubReferenceMap
+     * @return
+     */
+    Node findOrCreateSubSubReferenceNode(Node subReferenceNode) {
+        int hashValue = Thread.currentThread().id % Neo4jDatastore.NUMBER_OF_SUBSUBREFERENCE_NODES
+        def subSubReferenceNode = subReferenceNode.getRelationships(GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.OUTGOING).find {
+            it.getProperty("hash") == hashValue
+        }?.endNode
+        if (!subSubReferenceNode) {
+            subSubReferenceNode = datastore.graphDatabaseService.createNode()
+            Relationship rel = subReferenceNode.createRelationshipTo(subSubReferenceNode, GrailsRelationshipTypes.SUBSUBREFERENCE)
+            rel.setProperty("hash", hashValue)
+        }
+        return subSubReferenceNode
+        //subSubReferenceMap.get(subSubReferneceKey)
+    }
+
     @Override
     void refresh(Object o) {
         throw new NotImplementedException()
@@ -182,7 +204,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
     }
 
     private boolean isProxy(object) {
-        object.metaClass.methods.any { it.name == 'isProxy'}
+        object.metaClass.methods.any { it.name == 'isProxy'}  // TODO: hotspot, to be optimized
     }
 
     @Override
@@ -273,7 +295,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
             //def entityAccess = new EntityAccess(pe, obj)
             event = inserts.contains(obj) ?
                 new PostInsertEvent(datastore, pe, entityAccess) : new PostUpdateEvent(datastore, pe, entityAccess)
-            applicationEventPublisher.publishEvent(event)
+            applicationEventPublisher.publishEvent(event) // TODO: hotspot
             persistedCounter++
         }
         inserts.clear()
@@ -480,7 +502,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                                 readToOneProperty(prop, node, entityAccess)
                             }
 
-                        default:
+                            default:
                             throw new NotImplementedException("don't know how to read $prop ${prop.getClass().superclass}")
                     }
                 }
