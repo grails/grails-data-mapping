@@ -14,11 +14,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-community/1.6.1/jar/d367d180cf9ed7451b0d0ab06b7280f8c5b9fae7/neo4j-community-1.6.1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-community/1.8.M05/jar/67dd5556412c7785ff810fcdbf208b9cd13df1db/neo4j-community-1.8.M05.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-community/1.6.1/source/84b14c50141403935feaad1e420bdd48a761c66b/neo4j-community-1.6.1-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-community/1.8.M05/source/9f2dd8fe55331c233a4db98b6153194e5b9363b2/neo4j-community-1.8.M05-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -47,11 +47,11 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-kernel/1.6.1/jar/7d8f0efb29f0f1eb9e4a3d4c0a9bb84095e22e69/neo4j-kernel-1.6.1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-kernel/1.8.M05/jar/619a54b600c99ee252f61c1f9474eede026b36a6/neo4j-kernel-1.8.M05.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-kernel/1.6.1/source/65436f91f4c24e64f887a6add0b55dc5100b5d2a/neo4j-kernel-1.6.1-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-kernel/1.8.M05/source/a370af904ce94f8b59ceb133faca8be235cf5d3e/neo4j-kernel-1.8.M05-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -69,77 +69,77 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-lucene-index/1.6.1/jar/16b75f1ad27e94d3f502001ce77da0f39c0cc308/neo4j-lucene-index-1.6.1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-lucene-index/1.8.M05/jar/12eaad25f4503b2d1ee695b861f5066598e737cc/neo4j-lucene-index-1.8.M05.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-lucene-index/1.6.1/source/2f5237789ddfcf76d072ae65240a18974c40f5ce/neo4j-lucene-index-1.6.1-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-lucene-index/1.8.M05/source/336476b7cade412c36dd35d0c69ea45ac4cc182a/neo4j-lucene-index-1.8.M05-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graph-algo/1.6.1/jar/bdcd1f05694b2aa5a58450a6a831b6f127aa555f/neo4j-graph-algo-1.6.1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graph-algo/1.8.M05/jar/e296b13e25fa61adfdba69fe844f7adfb278fcf5/neo4j-graph-algo-1.8.M05.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graph-algo/1.6.1/source/13b5a023ca5734a210e1b033040798e8ffc1e4e7/neo4j-graph-algo-1.6.1-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graph-algo/1.8.M05/source/f848e47ffe497417cb3183aba47512918092adc3/neo4j-graph-algo-1.8.M05-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-udc/1.6.1/jar/fddacddab329a688b8baa2e5ab9ace8189019106/neo4j-udc-1.6.1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-udc/1.8.M05/jar/7a5f2a9d1dcf8197af0048b9f7702fcf888f31b0/neo4j-udc-1.8.M05.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-udc/1.6.1/source/87c32657c0913b0ed0a6dfdf7b97a2015915d6c2/neo4j-udc-1.6.1-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-udc/1.8.M05/source/cf99f2e98b9201ebfdbeb542808389f0e12b8739/neo4j-udc-1.8.M05-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graph-matching/1.6.1/jar/f7660a6515dd47a3d239e3fe3593c4b3adca969e/neo4j-graph-matching-1.6.1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graph-matching/1.8.M05/jar/e4930242af9734c4448d51df0b43f5341394cb94/neo4j-graph-matching-1.8.M05.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graph-matching/1.6.1/source/7c98dc450c406b29f497ba450d95417569e0adb7/neo4j-graph-matching-1.6.1-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graph-matching/1.8.M05/source/7b7f965c6d36fe1ed0f52a69ad7a32a46e798839/neo4j-graph-matching-1.8.M05-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.scala-lang/scala-library/2.9.0-1/jar/b01e1ceb44e6bedc0b3af3867daa31d988d30ba8/scala-library-2.9.0-1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.scala-lang/scala-library/2.9.1-1/jar/40dc7767615d4a6a85102de453a91382e0d8347e/scala-library-2.9.1-1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.scala-lang/scala-library/2.9.0-1/source/2710b057d8cdf8c45f2067f16c9beea2d4a14285/scala-library-2.9.0-1-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.scala-lang/scala-library/2.9.1-1/source/ac726d89ce32ca0572ff1761c95f541c8cdb03a7/scala-library-2.9.1-1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-cypher/1.6.1/jar/29bca14df47169fd807ee0381cc559c3e52f4dc6/neo4j-cypher-1.6.1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-cypher/1.8.M05/jar/c8e032ec73c6775cc019bcd74ceb4b757b2b003e/neo4j-cypher-1.8.M05.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-cypher/1.6.1/source/65c86078b05186068246bc07b4dc8571482ae215/neo4j-cypher-1.6.1-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-cypher/1.8.M05/source/6ccf849fa1c9d81b4c99dce9536887de89c59dd4/neo4j-cypher-1.8.M05-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-jmx/1.6.1/jar/37225f8cb3715b401280d67d7e3b299accbaabaf/neo4j-jmx-1.6.1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-jmx/1.8.M05/jar/6a68130951d441517c600091de0b84a55f4b616f/neo4j-jmx-1.8.M05.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-jmx/1.6.1/source/62e102f623738d5afd80f04d69540910c7e6be56/neo4j-jmx-1.6.1-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-jmx/1.8.M05/source/eaf0696f6a2b63ecc2f8f8d3515c71524b3d4aba/neo4j-jmx-1.8.M05-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -182,10 +182,21 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graphviz/1.6.1/jar/12c4591e8bffb80c1228eb8062217c9105c7eb0b/neo4j-graphviz-1.6.1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-kernel/1.8.M05/jar/6f149c0dca97a56c7a280debf7771eacf04c6be8/neo4j-kernel-1.8.M05-tests.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graphviz/1.8.M05/jar/4e4c362d4464306d4acce2e7e3b69967d21ba689/neo4j-graphviz-1.8.M05.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graphviz/1.8.M05/source/23746849611fb8f99fad3f38cb2798284524204c/neo4j-graphviz-1.8.M05-sources.jar!/" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">

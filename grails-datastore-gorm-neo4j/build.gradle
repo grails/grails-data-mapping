@@ -1,7 +1,12 @@
 version = "1.0.0.BUILD-SNAPSHOT"
 //version = "1.0.0.M13"
 
-ext.neo4jVersion = "1.6.1";
+ext.neo4jVersion = "1.8.M05"
+
+/*repositories {
+    mavenCentral()
+//    maven { url "http://repo.grails.org/grails/core" }
+}*/
 
 dependencies {
     compile project(":grails-datastore-gorm"),
@@ -12,6 +17,7 @@ dependencies {
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck"),
                 'org.codehaus.gpars:gpars:0.12',
+                [group: "org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:'tests'],
                 "org.neo4j:neo4j-graphviz:$neo4jVersion"
     testRuntime "javax.servlet:servlet-api:2.5"
     testRuntime "org.grails:grails-gorm:$grailsVersion"
