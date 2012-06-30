@@ -518,18 +518,22 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         result
     }
 
+
+    static memoizePropertyChangeListener = Collections.synchronizedMap([:].withDefault() { false }) // it.respondsTo("addPropertyChangeListener")})
+    //def instanceSupportsPropertyChangeListener = { Class clazz -> clazz.respondsTo("addPropertyChangeListener")}.memoize()
+
     private void monitorSettersForObject(object) {
-        try {
+        if (memoizePropertyChangeListener[object.class] == true) {
             object.addPropertyChangeListener(this)
-        } catch (MissingMethodException e) {
+        } else {
             nonMonitorableObjects << object
         }
     }
 
     private void unmonitorSettersForObject(object) {
-        try {
+        if (memoizePropertyChangeListener[object.class] == true) {
             object.removePropertyChangeListener(this)
-        } catch (MissingMethodException e) {
+        } else {
             nonMonitorableObjects.remove(object)
         }
     }
