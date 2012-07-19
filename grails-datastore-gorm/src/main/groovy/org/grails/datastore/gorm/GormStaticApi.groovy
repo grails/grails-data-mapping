@@ -176,7 +176,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 	 * @param objectToSave Collection of objects to save
 	 * @return A list of object identifiers
 	 */
-	List<Serializable> saveAll(Collection<?> objectsToSave) {
+	List<Serializable> saveAll(Iterable<?> objectsToSave) {
 		execute({ Session session ->
 			session.persist objectsToSave
 		} as SessionCallback)
@@ -196,7 +196,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 	 * Deletes a list of objects in one go
 	 * @param objectsToDelete Collection of objects to delete
 	 */
-	void deleteAll(Collection<?> objectToDelete) {
+	void deleteAll(Iterable<?> objectToDelete) {
 		execute({ Session session ->
 			session.delete objectsToDelete
 		} as SessionCallback)
