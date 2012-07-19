@@ -171,6 +171,17 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         } as SessionCallback)
     }
 
+	/**
+	 * Saves a list of objects in one go
+	 * @param objectToSave Collection of objects to save
+	 * @return A list of object identifiers
+	 */
+	List<Serializable> saveAll(Collection<?> objectsToSave) {
+		execute({ Session session ->
+			session.persist objectsToSave
+		} as SessionCallback)
+	}
+
     /**
      * Deletes a list of objects in one go
      * @param objectsToDelete The objects to delete
@@ -180,6 +191,16 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
            session.delete objectsToDelete
         } as SessionCallback)
     }
+
+	/**
+	 * Deletes a list of objects in one go
+	 * @param objectsToDelete Collection of objects to delete
+	 */
+	void deleteAll(Collection<?> objectToDelete) {
+		execute({ Session session ->
+			session.delete objectsToDelete
+		} as SessionCallback)
+	}
 
     /**
      * Creates an instance of this class
