@@ -188,7 +188,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      */
     void deleteAll(D... objectsToDelete) {
         execute({ Session session ->
-           session.delete objectsToDelete
+           session.delete Arrays.asList(objectsToDelete)
         } as SessionCallback)
     }
 
@@ -196,9 +196,9 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 	 * Deletes a list of objects in one go
 	 * @param objectsToDelete Collection of objects to delete
 	 */
-	void deleteAll(Iterable<?> objectToDelete) {
+	void deleteAll(Iterable objectToDelete) {
 		execute({ Session session ->
-			session.delete objectsToDelete
+			session.delete objectToDelete
 		} as SessionCallback)
 	}
 
