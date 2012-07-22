@@ -22,6 +22,7 @@ import grails.gorm.tests.SaveAllSpec
 import grails.gorm.tests.UpdateWithProxyPresentSpec
 import grails.gorm.tests.ValidationSpec
 import grails.gorm.tests.WithTransactionSpec
+import grails.gorm.tests.DeleteAllSpec
 
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
@@ -50,7 +51,9 @@ import org.junit.runners.Suite.SuiteClasses
 //  UpdateWithProxyPresentSpec,
 //  AttachMethodSpec,
 //  WithTransactionSpec,
-  CrudOperationsSpec
+  CrudOperationsSpec,
+  SaveAllSpec,
+  DeleteAllSpec
 ])
 class HibernateSuite {
 
