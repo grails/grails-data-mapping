@@ -20,6 +20,7 @@ FindByExampleSpec,
 FindByMethodSpec,
 FindOrCreateWhereSpec,
 FindOrSaveWhereSpec,
+FindWhereSpec,
 GormEnhancerSpec,
 GroovyProxySpec,
 InheritanceSpec,
@@ -44,7 +45,8 @@ WithTransactionSpec,
 
 ApiExtensionsSpec,
 ManyToManySpec,
-MiscSpec
+MiscSpec,
+JoinCriteriaSpec
 
 ])
 class Neo4jSuite {

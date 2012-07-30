@@ -14,143 +14,132 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-community/jars/neo4j-community-1.6.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-community/1.6.1/jar/d367d180cf9ed7451b0d0ab06b7280f8c5b9fae7/neo4j-community-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-community/sources/neo4j-community-1.6-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-community/1.6.1/source/84b14c50141403935feaad1e420bdd48a761c66b/neo4j-community-1.6.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-kernel/jars/neo4j-kernel-1.6.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.codehaus.groovy/groovy-all/1.7.10/jar/793040169a2a11a12b70e1a5fb4cf670bfd37a8a/groovy-all-1.7.10.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-kernel/sources/neo4j-kernel-1.6-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.codehaus.groovy/groovy-all/1.7.10/source/9e0124705130dc0e0b38dfcc9a45368e48be176f/groovy-all-1.7.10-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.geronimo.specs/geronimo-jta_1.1_spec/jars/geronimo-jta_1.1_spec-1.1.1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1/jar/aabab3165b8ea936b9360abbf448459c0d04a5a4/geronimo-jta_1.1_spec-1.1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.geronimo.specs/geronimo-jta_1.1_spec/sources/geronimo-jta_1.1_spec-1.1.1-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1/source/a84978fba1f1916bf2931e44d961705a9e64aec7/geronimo-jta_1.1_spec-1.1.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-lucene-index/jars/neo4j-lucene-index-1.6.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-kernel/1.6.1/jar/7d8f0efb29f0f1eb9e4a3d4c0a9bb84095e22e69/neo4j-kernel-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-lucene-index/sources/neo4j-lucene-index-1.6-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-kernel/1.6.1/source/65436f91f4c24e64f887a6add0b55dc5100b5d2a/neo4j-kernel-1.6.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.lucene/lucene-core/jars/lucene-core-3.5.0.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.apache.lucene/lucene-core/3.5.0/jar/90ff0731fafb05c01fee4f2247140d56e9c30a3b/lucene-core-3.5.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.lucene/lucene-core/sources/lucene-core-3.5.0-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.apache.lucene/lucene-core/3.5.0/source/757113199f9c8c18c678c96d61c2c4160b9baa6/lucene-core-3.5.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-algo/jars/neo4j-graph-algo-1.6.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-lucene-index/1.6.1/jar/16b75f1ad27e94d3f502001ce77da0f39c0cc308/neo4j-lucene-index-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-algo/sources/neo4j-graph-algo-1.6-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-lucene-index/1.6.1/source/2f5237789ddfcf76d072ae65240a18974c40f5ce/neo4j-lucene-index-1.6.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-udc/jars/neo4j-udc-1.6.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graph-algo/1.6.1/jar/bdcd1f05694b2aa5a58450a6a831b6f127aa555f/neo4j-graph-algo-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-udc/sources/neo4j-udc-1.6-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graph-algo/1.6.1/source/13b5a023ca5734a210e1b033040798e8ffc1e4e7/neo4j-graph-algo-1.6.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-matching/jars/neo4j-graph-matching-1.6.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-udc/1.6.1/jar/fddacddab329a688b8baa2e5ab9ace8189019106/neo4j-udc-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-graph-matching/sources/neo4j-graph-matching-1.6-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-udc/1.6.1/source/87c32657c0913b0ed0a6dfdf7b97a2015915d6c2/neo4j-udc-1.6.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-cypher/jars/neo4j-cypher-1.6.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graph-matching/1.6.1/jar/f7660a6515dd47a3d239e3fe3593c4b3adca969e/neo4j-graph-matching-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-cypher/sources/neo4j-cypher-1.6-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graph-matching/1.6.1/source/7c98dc450c406b29f497ba450d95417569e0adb7/neo4j-graph-matching-1.6.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.scala-lang/scala-library/jars/scala-library-2.9.0-1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.scala-lang/scala-library/2.9.0-1/jar/b01e1ceb44e6bedc0b3af3867daa31d988d30ba8/scala-library-2.9.0-1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.scala-lang/scala-library/sources/scala-library-2.9.0-1-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.scala-lang/scala-library/2.9.0-1/source/2710b057d8cdf8c45f2067f16c9beea2d4a14285/scala-library-2.9.0-1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-jmx/jars/neo4j-jmx-1.6.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-cypher/1.6.1/jar/29bca14df47169fd807ee0381cc559c3e52f4dc6/neo4j-cypher-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.neo4j/neo4j-jmx/sources/neo4j-jmx-1.6-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-cypher/1.6.1/source/65c86078b05186068246bc07b4dc8571482ae215/neo4j-cypher-1.6.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.lucene/lucene-queryparser/jars/lucene-queryparser-3.5.0.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-jmx/1.6.1/jar/37225f8cb3715b401280d67d7e3b299accbaabaf/neo4j-jmx-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.lucene/lucene-queryparser/sources/lucene-queryparser-3.5.0-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.groovy/groovy-all/jars/groovy-all-1.7.8.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.codehaus.groovy/groovy-all/sources/groovy-all-1.7.8-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-jmx/1.6.1/source/62e102f623738d5afd80f04d69540910c7e6be56/neo4j-jmx-1.6.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -160,7 +149,40 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/com.cenqua.clover/clover/jars/clover-3.0.2.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/junit/junit/4.8.2/jar/c94f54227b08100974c36170dcb53329435fe5ad/junit-4.8.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/junit/junit/4.8.2/source/cccca612a66b8387c399be31d69daf000de2ac9e/junit-4.8.2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.spockframework/spock-core/0.5-groovy-1.7/jar/fb43e6e46414ebb8c67695439d36c814007bf6b5/spock-core-0.5-groovy-1.7.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.spockframework/spock-core/0.5-groovy-1.7/source/30fc4b307d31812e874330a1a2be3f092001ea81/spock-core-0.5-groovy-1.7-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.codehaus.gpars/gpars/0.12/jar/19518714432a4e6872204fc6154129b2559de2d6/gpars-0.12.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.codehaus.gpars/gpars/0.12/source/26193343a2127cd4c7744d6049c944c873a94979/gpars-0.12-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.neo4j/neo4j-graphviz/1.6.1/jar/12c4591e8bffb80c1228eb8062217c9105c7eb0b/neo4j-graphviz-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -169,18 +191,18 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/javax.servlet/servlet-api/jars/servlet-api-2.5.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/javax.servlet/servlet-api/2.5/jar/5959582d97d8b61f4d154ca9e495aafd16726e34/servlet-api-2.5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/javax.servlet/servlet-api/sources/servlet-api-2.5-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/javax.servlet/servlet-api/2.5/source/21599814ad9a605b86f3e6381571beccd861a32/servlet-api-2.5-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.grails/grails-gorm/jars/grails-gorm-1.3.7.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.grails/grails-gorm/1.3.7/jar/6f9a906b429e2c47aa3b1e3ccb00b068aaa3c8d0/grails-gorm-1.3.7.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -189,7 +211,7 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.grails/grails-core/jars/grails-core-1.3.7.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.grails/grails-web/1.3.7/jar/6e9172f0668afcd7c52f0e0a1803bac7b068e173/grails-web-1.3.7.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -198,172 +220,205 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/jars/jcl-over-slf4j-1.6.2.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.hamcrest/hamcrest-core/1.2/jar/44d12ff84e43c7d0539131f75c92f2f88dba6549/hamcrest-core-1.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jcl-over-slf4j/sources/jcl-over-slf4j-1.6.2-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.hamcrest/hamcrest-core/1.2/source/e9be1c6a53b4d4e7564756e924a9fa8b1661ec6a/hamcrest-core-1.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/jars/slf4j-api-1.6.2.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/junit/junit-dep/4.8.2/jar/127b170317b80223b74b5a17ffbe44bd4b12e532/junit-dep-4.8.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/slf4j-api/sources/slf4j-api-1.6.2-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/junit/junit-dep/4.8.2/source/dc40b58e487595d522d4cbe2417e61ead41555c8/junit-dep-4.8.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/com.googlecode.concurrentlinkedhashmap/concurrentlinkedhashmap-lru/jars/concurrentlinkedhashmap-lru-1.2_jdk5.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.codehaus.jsr166-mirror/jsr166y/1.7.0/jar/8547fcb1c29b4f8c745c3f49a536aca58fc30f54/jsr166y-1.7.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/com.googlecode.concurrentlinkedhashmap/concurrentlinkedhashmap-lru/sources/concurrentlinkedhashmap-lru-1.2_jdk5-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.codehaus.jsr166-mirror/jsr166y/1.7.0/source/eed19da111cd283e375501a88b2b082c0e494187/jsr166y-1.7.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/javax.persistence/persistence-api/jars/persistence-api-1.0.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.codehaus.jsr166-mirror/extra166y/1.7.0/jar/c8ca938286e7a9cca58671ca3029574a35660fc/extra166y-1.7.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/javax.persistence/persistence-api/sources/persistence-api-1.0-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.codehaus.jsr166-mirror/extra166y/1.7.0/source/5ef7033b8f84b72819d3e04fb96ab00e818fda8b/extra166y-1.7.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-collections/commons-collections/jars/commons-collections-3.2.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.slf4j/slf4j-api/1.6.2/jar/8619e95939167fb37245b5670135e4feb0ec7d50/slf4j-api-1.6.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-collections/commons-collections/sources/commons-collections-3.2-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.slf4j/slf4j-api/1.6.2/source/6b5f6572792e2192ecf714ea12ae894b0fbcf750/slf4j-api-1.6.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-lang/commons-lang/jars/commons-lang-2.4.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.slf4j/jcl-over-slf4j/1.6.2/jar/ac4cd2d6d0cf4342b4e8fd520c686851fc681912/jcl-over-slf4j-1.6.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-lang/commons-lang/sources/commons-lang-2.4-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.slf4j/jcl-over-slf4j/1.6.2/source/f1d6a191e0e09278a1f114e5812044b1f2faa459/jcl-over-slf4j-1.6.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jul-to-slf4j/jars/jul-to-slf4j-1.5.8.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-lang/commons-lang/2.4/jar/16313e02a793435009f1e458fa4af5d879f6fb11/commons-lang-2.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.slf4j/jul-to-slf4j/sources/jul-to-slf4j-1.5.8-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-lang/commons-lang/2.4/source/2b8c4b3035e45520ef42033e823c7d33e4b4402c/commons-lang-2.4-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/cglib/cglib-nodep/jars/cglib-nodep-2.1_3.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.slf4j/jul-to-slf4j/1.5.8/jar/f852f8a1a93e4965f0cc873e75546146d0ca62fd/jul-to-slf4j-1.5.8.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/cglib/cglib-nodep/sources/cglib-nodep-2.1_3-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.slf4j/jul-to-slf4j/1.5.8/source/1d57daed60fb2de9bd8fa1fe871b73a9914127b0/jul-to-slf4j-1.5.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-dbcp/commons-dbcp/jars/commons-dbcp-1.3.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-collections/commons-collections/3.2/jar/f951934aa5ae5a88d7e6dfaa6d32307d834a88be/commons-collections-3.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-dbcp/commons-dbcp/sources/commons-dbcp-1.3-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-collections/commons-collections/3.2/source/73d0340eaecbb0ec9d3e0ace90547ef08cbfaf27/commons-collections-3.2-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-pool/commons-pool/jars/commons-pool-1.5.4.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-io/commons-io/1.4/jar/a8762d07e76cfde2395257a5da47ba7c1dbd3dce/commons-io-1.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-pool/commons-pool/sources/commons-pool-1.5.4-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-io/commons-io/1.4/source/48753e43ff29409fbbeadfb36186cbe27e41b179/commons-io-1.4-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-io/commons-io/jars/commons-io-1.4.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/javax.persistence/persistence-api/1.0/jar/5725f57873e05e068803e2bf9d5a8ea3740ffec5/persistence-api-1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-io/commons-io/sources/commons-io-1.4-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/javax.persistence/persistence-api/1.0/source/2773a7910e8f0c7d59749dc4fcef2a4b94fcf85a/persistence-api-1.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-validator/commons-validator/jars/commons-validator-1.3.1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/cglib/cglib-nodep/2.1_3/jar/58d3be5953547c0019e5704d6ed4ffda3b0c7c66/cglib-nodep-2.1_3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-validator/commons-validator/sources/commons-validator-1.3.1-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/cglib/cglib-nodep/2.1_3/source/fd60a4ee07d2bce9fffcb2a3d88bdcdc1011ea5b/cglib-nodep-2.1_3-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-digester/commons-digester/jars/commons-digester-1.6.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-pool/commons-pool/1.5.4/jar/75b6e20c596ed2945a259cea26d7fadd298398e6/commons-pool-1.5.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-digester/commons-digester/sources/commons-digester-1.6-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-pool/commons-pool/1.5.4/source/3e226507788e09f02eef641e868624fb823af6e6/commons-pool-1.5.4-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-beanutils/commons-beanutils/jars/commons-beanutils-1.8.0.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-dbcp/commons-dbcp/1.3/jar/b295a6a7d6220d04948493594991dc761ffbdd1e/commons-dbcp-1.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-beanutils/commons-beanutils/sources/commons-beanutils-1.8.0-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-dbcp/commons-dbcp/1.3/source/fb2cf9cc6084a0102a533d7b6a2f7dc0da369b40/commons-dbcp-1.3-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/oro/oro/jars/oro-2.0.8.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-beanutils/commons-beanutils/1.8.0/jar/c651d5103c649c12b20d53731643e5fffceb536/commons-beanutils-1.8.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/oro/oro/sources/oro-2.0.8-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-beanutils/commons-beanutils/1.8.0/source/2818502bbb50bbcbd3f57e92a2bfe4d496f37688/commons-beanutils-1.8.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.grails/grails-spring/jars/grails-spring-1.3.7.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-digester/commons-digester/1.6/jar/e2822f655f2c182681c2cf27f224a425ccb2983d/commons-digester-1.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-digester/commons-digester/1.6/source/776f60b31da3df0306a8b41387534659c097b5a6/commons-digester-1.6-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-validator/commons-validator/1.3.1/jar/d1fd6b1510f25e827adffcf17de3c85fa00e9391/commons-validator-1.3.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-validator/commons-validator/1.3.1/source/f6cb785bd9d1b6865637b220d2a596a5505a8241/commons-validator-1.3.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/oro/oro/2.0.8/jar/5592374f834645c4ae250f4c9fbb314c9369d698/oro-2.0.8.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/oro/oro/2.0.8/source/3598e790ecd76ff7eb249853d4d00822ae1a5e71/oro-2.0.8-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.grails/grails-spring/1.3.7/jar/fe209012515e28b03a65321a59bd7ec016865925/grails-spring-1.3.7.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -372,7 +427,7 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.grails/grails-docs/jars/grails-docs-1.3.7.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/radeox/radeox/1.0-b2/jar/e39a4d9db4f702a0aff1da637a395d3563cba457/radeox-1.0-b2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -381,7 +436,7 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/radeox/radeox/jars/radeox-1.0-b2.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.apache.ant/ant-launcher/1.7.1/jar/a9cbbcefbbb5e7f97596045268243a8c1c7aafca/ant-launcher-1.7.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -390,18 +445,18 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.ant/ant/jars/ant-1.7.1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.apache.ant/ant/1.7.1/jar/1d33711018e7649a8427fff62a87f94f4e7d310f/ant-1.7.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.ant/ant/sources/ant-1.7.1-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.apache.ant/ant/1.7.1/source/c94ffbfe67f4cd1042d44d25f253b8ce4252cb12/ant-1.7.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.apache.ant/ant-launcher/jars/ant-launcher-1.7.1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/bouncycastle/bcmail-jdk14/138/jar/14ff2dfec8578f5f6838c4d6a77a86789afe5382/bcmail-jdk14-138.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -410,29 +465,7 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.xhtmlrenderer/core-renderer/jars/core-renderer-R8.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.xhtmlrenderer/core-renderer/sources/core-renderer-R8-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/com.lowagie/itext/jars/itext-2.0.8.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/com.lowagie/itext/sources/itext-2.0.8-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/bouncycastle/bcmail-jdk14/jars/bcmail-jdk14-138.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/bouncycastle/bcprov-jdk14/138/jar/de366c3243a586eb3c0e2bcde1ed9bb1bfb985ff/bcprov-jdk14-138.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -441,7 +474,29 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/bouncycastle/bcprov-jdk14/jars/bcprov-jdk14-138.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.lowagie/itext/2.0.8/jar/3734dd08e513c321d2121f2b3a7498300c596fe3/itext-2.0.8.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.lowagie/itext/2.0.8/source/ddd89fde30264c9e5003a2f8c52094dcc7752ed2/itext-2.0.8-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.xhtmlrenderer/core-renderer/R8/jar/88e6306a7c88e3c3082ae548999025cb14002f1/core-renderer-R8.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.xhtmlrenderer/core-renderer/R8/source/895674c26bbea6bd507ba06fa6c93de546aa168f/core-renderer-R8-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.grails/grails-docs/1.3.7/jar/d0eacd9d82006869dc935cac47fb7792a3280bf2/grails-docs-1.3.7.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -450,315 +505,238 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-core/jars/spring-core-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.googlecode.concurrentlinkedhashmap/concurrentlinkedhashmap-lru/1.2_jdk5/jar/d49f4f513e7023ab567002e2a92eba29210ad87c/concurrentlinkedhashmap-lru-1.2_jdk5.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-core/sources/spring-core-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.googlecode.concurrentlinkedhashmap/concurrentlinkedhashmap-lru/1.2_jdk5/source/c0da4237c6a2f5b80def2d37ab08324fdadf4df1/concurrentlinkedhashmap-lru-1.2_jdk5-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-asm/jars/spring-asm-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-asm/3.0.5.RELEASE/jar/7f22a0e9f325e6565b4ea56b479ad76311d146b/spring-asm-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-asm/sources/spring-asm-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-asm/3.0.5.RELEASE/source/a7af48d717c27d3e24c3b91f2ee7db071580bc5c/spring-asm-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-logging/commons-logging/1.1.1/jar/5043bfebc3db072ed80fbd362e7caf00e885d8ae/commons-logging-1.1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-logging/commons-logging/sources/commons-logging-1.1.1-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-logging/commons-logging/1.1.1/source/f3f156cbff0e0fb0d64bfce31a352cce4a33bc19/commons-logging-1.1.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-beans/jars/spring-beans-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-core/3.0.5.RELEASE/jar/1633e94943d57746ef76910489f1cd71fe667e04/spring-core-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-beans/sources/spring-beans-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-core/3.0.5.RELEASE/source/5e85a2d0d58fe27604eb447170e877e408a28ead/spring-core-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-tx/jars/spring-tx-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-beans/3.0.5.RELEASE/jar/4b352a9c3b427294e264ca4d460d07417ca9350e/spring-beans-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-tx/sources/spring-tx-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-beans/3.0.5.RELEASE/source/701dc97fbe8a80d3f1d5147f747a78f0332440ec/spring-beans-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context/jars/spring-context-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/aopalliance/aopalliance/1.0/jar/235ba8b489512805ac13a8f9ea77a1ca5ebe3e8/aopalliance-1.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context/sources/spring-context-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/aopalliance/aopalliance/1.0/source/4a4b6d692e17846a9f3da036438a7ac491d3c814/aopalliance-1.0-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aop/jars/spring-aop-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-aop/3.0.5.RELEASE/jar/c7a17803cc10512e26e285073639543f0c7c764/spring-aop-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aop/sources/spring-aop-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-aop/3.0.5.RELEASE/source/b3cb2378715a780add6fecf9d316fb899c153adb/spring-aop-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/aopalliance/aopalliance/jars/aopalliance-1.0.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-expression/3.0.5.RELEASE/jar/5b8e53877cb58c94f15a0d8172da3569f4b4f3fb/spring-expression-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/aopalliance/aopalliance/sources/aopalliance-1.0-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-expression/3.0.5.RELEASE/source/48ed82e050e351f5272c67a0c397c4e06f8a6a6d/spring-expression-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-expression/jars/spring-expression-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-context/3.0.5.RELEASE/jar/6b05e397566cc7750d2d25f81a7441fe1aeecb75/spring-context-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-expression/sources/spring-expression-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-context/3.0.5.RELEASE/source/b1f911a36626dc3e134a63fba5f724d5b29c9589/spring-context-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-test/jars/spring-test-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-web/3.0.5.RELEASE/jar/d5c550739c4c0cb7ca527ef46c9aed72fb215eee/spring-web-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-test/sources/spring-test-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-web/3.0.5.RELEASE/source/e30965cacab00533698e0b8835deaf274266d6c7/spring-web-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aspects/jars/spring-aspects-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-context-support/3.0.5.RELEASE/jar/d954c447bf274048bd5a6b7ed575f15cd0924fd0/spring-context-support-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-aspects/sources/spring-aspects-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-context-support/3.0.5.RELEASE/source/d468eaca37360a905914cd05614d63df04c95181/spring-context-support-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context-support/jars/spring-context-support-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-instrument/3.0.5.RELEASE/jar/e21d62306c949cc68b7bd0127862f363c9041c0a/spring-instrument-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-context-support/sources/spring-context-support-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-instrument/3.0.5.RELEASE/source/e7eba47a639564a1d182e3c799e75b0f6fd2b6d3/spring-instrument-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-instrument/jars/spring-instrument-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-tx/3.0.5.RELEASE/jar/91eb9bd9baa61a62590a8093667107cb2c7c8184/spring-tx-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-instrument/sources/spring-instrument-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-tx/3.0.5.RELEASE/source/20aa826b3884f6d0ddce2e0fca20b160f8ccf3f9/spring-tx-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jdbc/jars/spring-jdbc-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-jdbc/3.0.5.RELEASE/jar/2af0bad1d8d681ed2e014b684287acc448ab30cb/spring-jdbc-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jdbc/sources/spring-jdbc-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-jdbc/3.0.5.RELEASE/source/c8ac8ff6f389f6d249f51ed0a266fd811537af9f/spring-jdbc-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jms/jars/spring-jms-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-orm/3.0.5.RELEASE/jar/cff2c955d1a510bab6e1eb2d1ced309f6ec37ce9/spring-orm-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-jms/sources/spring-jms-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-orm/3.0.5.RELEASE/source/7514e501c926fc793fb0214c7d4567021091e77d/spring-orm-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-orm/jars/spring-orm-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-oxm/3.0.5.RELEASE/jar/40f68d7e580d4a6154baff96c5a42a1945186d49/spring-oxm-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-orm/sources/spring-orm-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-oxm/3.0.5.RELEASE/source/bbdca07f276ca8bbd82a56d85e2ee848f22c640/spring-oxm-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-oxm/jars/spring-oxm-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-test/3.0.5.RELEASE/jar/4540fba71d41869a6ed5fb504317f2e702761690/spring-test-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-oxm/sources/spring-oxm-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-test/3.0.5.RELEASE/source/1d4bea4059bc8711933bc322b09875dc3cd3c1c3/spring-test-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-web/jars/spring-web-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-aspects/3.0.5.RELEASE/jar/13f585a0ee2575778975eea0568ec6947e255e41/spring-aspects-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-web/sources/spring-web-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-aspects/3.0.5.RELEASE/source/61aa42855b79736034ffbac7d614f348f59f72eb/spring-aspects-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-webmvc/jars/spring-webmvc-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-jms/3.0.5.RELEASE/jar/5a880fd07605747e5a641f78fd8039a761c5865e/spring-jms-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.springframework/spring-webmvc/sources/spring-webmvc-3.0.5.RELEASE-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-jms/3.0.5.RELEASE/source/542a3177f62f83df1a02817e55f0033011f6baed/spring-jms-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.aspectj/aspectjrt/jars/aspectjrt-1.6.8.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-webmvc/3.0.5.RELEASE/jar/8b1c7176edb4a7e5381ffc5a398a5e2e8ed88909/spring-webmvc-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.aspectj/aspectjrt/sources/aspectjrt-1.6.8-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.springframework/spring-webmvc/3.0.5.RELEASE/source/5e2a2355c16938144e50d8981e47832bbcdcee8d/spring-webmvc-3.0.5.RELEASE-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/javassist/javassist/jars/javassist-3.12.0.GA.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.aspectj/aspectjrt/1.6.8/jar/8c234df6a43dd5ba355803122e33caa7ccd11011/aspectjrt-1.6.8.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/javassist/javassist/sources/javassist-3.12.0.GA-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.aspectj/aspectjrt/1.6.8/source/2e399f32ac7388ecbb042017df2ff1bc1ca8c16/aspectjrt-1.6.8-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/hibernate-core/jars/hibernate-core-3.3.1.GA.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/hibernate-core/sources/hibernate-core-3.3.1.GA-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/javax.transaction/jta/jars/jta-1.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/javax.transaction/jta/sources/jta-1.1-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/antlr/antlr/jars/antlr-2.7.6.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/antlr/antlr/sources/antlr-2.7.6-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/dom4j/dom4j/jars/dom4j-1.6.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/dom4j/dom4j/sources/dom4j-1.6.1-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/ejb3-persistence/jars/ejb3-persistence-1.0.2.GA.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/ejb3-persistence/sources/ejb3-persistence-1.0.2.GA-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/hibernate-annotations/jars/hibernate-annotations-3.4.0.GA.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/hibernate-annotations/sources/hibernate-annotations-3.4.0.GA-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/hibernate-commons-annotations/jars/hibernate-commons-annotations-3.1.0.GA.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.hibernate/hibernate-commons-annotations/sources/hibernate-commons-annotations-3.1.0.GA-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.grails/grails-web/jars/grails-web-1.3.7.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.grails/grails-core/1.3.7/jar/b1019d5a09296af2a11f52f657a2258b17893664/grails-core-1.3.7.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -767,29 +745,128 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-el/commons-el/jars/commons-el-1.0.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/javax.transaction/jta/1.1/jar/2ca09f0b36ca7d71b762e14ea2ff09d5eac57558/jta-1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-el/commons-el/sources/commons-el-1.0-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/javax.transaction/jta/1.1/source/d5dad66d06246bd2e1e369cebff27faa9beb065a/jta-1.1-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-fileupload/commons-fileupload/jars/commons-fileupload-1.2.1.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/antlr/antlr/2.7.6/jar/cf4f67dae5df4f9932ae7810f4548ef3e14dd35e/antlr-2.7.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/commons-fileupload/commons-fileupload/sources/commons-fileupload-1.2.1-sources.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/antlr/antlr/2.7.6/source/604014ca080ee7d3547f044ff4bd2c6ebfc0b82b/antlr-2.7.6-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/opensymphony/sitemesh/jars/sitemesh-2.4.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/xml-apis/xml-apis/1.0.b2/jar/3136ca936f64c9d68529f048c2618bd356bf85c9/xml-apis-1.0.b2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/xml-apis/xml-apis/1.0.b2/source/d8525661c5a0a05702fa41873d250d135031ec25/xml-apis-1.0.b2-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/dom4j/dom4j/1.6.1/jar/5d3ccc056b6f056dbf0dddfdf43894b9065a8f94/dom4j-1.6.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/dom4j/dom4j/1.6.1/source/a8e7149359255f43e0e5e3b1837948f9ed5861fb/dom4j-1.6.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.hibernate/hibernate-core/3.3.1.GA/jar/cc563d9d86dd915e0dee2ca841cf5c42420e05bf/hibernate-core-3.3.1.GA.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.hibernate/hibernate-core/3.3.1.GA/source/3cc559d98789a6d056104711dbf356ec0b2a12c6/hibernate-core-3.3.1.GA-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.hibernate/ejb3-persistence/1.0.2.GA/jar/be6483b6ed60a15588f54f91c25a09c745df0760/ejb3-persistence-1.0.2.GA.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.hibernate/ejb3-persistence/1.0.2.GA/source/653e73df771a0c38dbed3e6081c0fce7900a0a72/ejb3-persistence-1.0.2.GA-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.hibernate/hibernate-commons-annotations/3.1.0.GA/jar/d4cada41969292a73f98eaa676e0695cef2f8ca9/hibernate-commons-annotations-3.1.0.GA.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.hibernate/hibernate-commons-annotations/3.1.0.GA/source/faaebce0943425b8c57f08988b682c47fafefab7/hibernate-commons-annotations-3.1.0.GA-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.hibernate/hibernate-annotations/3.4.0.GA/jar/c4975772be5d9ec713bf475cf3315aad83b9046/hibernate-annotations-3.4.0.GA.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.hibernate/hibernate-annotations/3.4.0.GA/source/7fc93a468b912e2f70fb34ee4943de2f8b0709e1/hibernate-annotations-3.4.0.GA-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/javassist/javassist/3.12.0.GA/jar/88b21d1ef06323beff58664cffa62848c033ecd2/javassist-3.12.0.GA.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/javassist/javassist/3.12.0.GA/source/ea2821228cbe0e80aceac2db4302699c1a711f42/javassist-3.12.0.GA-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-el/commons-el/1.0/jar/1df2c042b3f2de0124750241ac6c886dbfa2cc2c/commons-el-1.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-el/commons-el/1.0/source/fd3913ea5d63d0aed104f3665ab99ae5352d6b8e/commons-el-1.0-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-fileupload/commons-fileupload/1.2.1/jar/384faa82e193d4e4b0546059ca09572654bc3970/commons-fileupload-1.2.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/commons-fileupload/commons-fileupload/1.2.1/source/eded3ff1ed6dff680af4a8c31a5a187536aed126/commons-fileupload-1.2.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/opensymphony/sitemesh/2.4/jar/fa84c82cce30a9a632c08dd2277d63993d972cf5/sitemesh-2.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -798,54 +875,10 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/xpp3/xpp3_min/jars/xpp3_min-1.1.3.4.O.jar!/" />
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/xpp3/xpp3_min/1.1.3.4.O/jar/cbb9d21eed484a16e0c0bd712830a80c75970753/xpp3_min-1.1.3.4.O.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/junit/junit/jars/junit-4.8.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/junit/junit/sources/junit-4.8.2-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.spockframework/spock-core/jars/spock-core-0.5-groovy-1.7.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.spockframework/spock-core/sources/spock-core-0.5-groovy-1.7-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/junit/junit-dep/jars/junit-dep-4.8.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/junit/junit-dep/sources/junit-dep-4.8.2-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.hamcrest/hamcrest-core/jars/hamcrest-core-1.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$GRADLE_REPOSITORY$/org.hamcrest/hamcrest-core/sources/hamcrest-core-1.2-sources.jar!/" />
-        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="grails-datastore-gorm-tck" scope="TEST" />

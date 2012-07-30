@@ -194,7 +194,10 @@ class Neo4jGormStaticApi<D> extends GormStaticApi<D> {
                 // run neo4j traverser
                 Traverser traverser = args ? subReferenceNode.traverse(order, stopEvaluator, returnableEvaluator, args) :
                     subReferenceNode.traverse(order, stopEvaluator, returnableEvaluator,
-                    GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH)
+                            GrailsRelationshipTypes.INSTANCE, Direction.BOTH,
+                            GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH,
+                            GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.BOTH,
+                    )
 
                 // iterate result, unmarshall nodes to domain class instances if possible
                 traverser.collect { Node node ->

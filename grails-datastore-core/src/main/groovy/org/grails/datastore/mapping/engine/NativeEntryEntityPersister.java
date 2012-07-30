@@ -1046,8 +1046,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     setEntryValue(embeddedEntry, getPropertyKey(persistentProperty), embeddedEntityAccess.getProperty(persistentProperty.getName()));
                 }
                 else if (persistentProperty instanceof Custom) {
-                    Custom custom = (Custom)persistentProperty;
-                    handleCustom(custom, embeddedEntityAccess, embeddedEntry);
+                    CustomTypeMarshaller customTypeMarshaller = ((Custom) persistentProperty).getCustomTypeMarshaller();
+                    if (customTypeMarshaller.supports(getSession().getDatastore())) {
+                        customTypeMarshaller.write(persistentProperty, embeddedEntityAccess.getProperty(persistentProperty.getName()), embeddedEntry);
+                    }
                 }
                 else if (persistentProperty instanceof Association) {
                     if(persistentProperty instanceof Embedded) {
