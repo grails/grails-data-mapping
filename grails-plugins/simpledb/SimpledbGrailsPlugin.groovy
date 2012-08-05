@@ -17,7 +17,7 @@ class SimpledbGrailsPlugin {
     def scm = [ url: "https://github.com/SpringSource/grails-data-mapping" ]
     def developers = [
         [ name: "Roman Stepanenko", email: "rs.opensource@gmail.com" ] ]
-    def version = "0.4"
+    def version = "0.5.BUILD-SNAPSHOT"
     def grailsVersion = "1.3.5 > *"
     def observe = ['services', 'domainClass']
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
