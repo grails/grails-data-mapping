@@ -1,5 +1,10 @@
 Below are the details of the changes across releases:
 
+h4. Version 0.4
+* Upgraded to latest AWS version
+* Minor AWS internal improvements
+* bugfix: for already existing object with non-null value of the property, setting that property to null was NOT propagating null to AWS, leaving AWS with the previous value
+
 h4. Version 0.3
 * Implemented hilo numeric id generator to use as alternative to default UUID
 * Enum fields are supported
