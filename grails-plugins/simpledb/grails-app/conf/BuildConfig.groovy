@@ -44,7 +44,7 @@ grails.project.dependency.resolution = {
          }        
 
         runtime("stax:stax:1.2.0", excludes)
-        runtime('com.amazonaws:aws-java-sdk:1.3.3')
+        runtime('com.amazonaws:aws-java-sdk:1.3.14')
 
         test("org.grails:grails-datastore-gorm-test:$datastoreVersion",
              "org.grails:grails-datastore-simple:$datastoreVersion") {
@@ -53,7 +53,7 @@ grails.project.dependency.resolution = {
     }
     
     plugins {
-        build( ":release:1.0.1" ) {
+        build( ":release:2.0.4" ) {
             exported = false
         }
     }
