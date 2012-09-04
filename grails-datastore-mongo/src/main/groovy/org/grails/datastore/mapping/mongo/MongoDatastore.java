@@ -194,6 +194,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                 dbFactory.setMongoOptions(mongoOptions);
             }
 
+            dbFactory.afterPropertiesSet();
             mongo = dbFactory.getObject();
         }
 
