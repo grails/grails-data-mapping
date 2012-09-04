@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.mapping.simpledb.engine;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +35,7 @@ import com.amazonaws.services.simpledb.model.ReplaceableItem;
  */
 public class SimpleDBNativeItem {
 
-    private Map<String, String> data = new ConcurrentHashMap<String, String>(); //todo - not sure about concurrency requirements - can it be simplified to use HashMap?
+    private Map<String, String> data = Collections.synchronizedMap(new HashMap<String, String>());
 
     public SimpleDBNativeItem() {}
 
@@ -46,11 +48,7 @@ public class SimpleDBNativeItem {
     }
 
     public void put(String key, String value) {
-        if (value == null) {
-            data.remove(key); //concurrent hash map does not allow null values
-        } else {
-            data.put(key, value);
-        }
+        data.put(key, value);
     }
 
     public String get(String key) {

@@ -174,7 +174,7 @@ public class SimpleDBEntityPersister extends NativeEntryEntityPersister<SimpleDB
 
     @Override
     protected void setEntryValue(SimpleDBNativeItem nativeEntry, String key, Object value) {
-       if (value != null && !getMappingContext().isPersistentEntity(value)) {
+       if (!getMappingContext().isPersistentEntity(value)) {
            String stringValue = SimpleDBConverterUtil.convertToString(value, getMappingContext());
 
            nativeEntry.put(key, stringValue);

@@ -12,6 +12,12 @@ import org.neo4j.graphdb.Traverser
 import org.neo4j.graphdb.Node
 import spock.lang.IgnoreRest
 import grails.gorm.tests.PetType
+import org.neo4j.graphdb.GraphDatabaseService
+import org.neo4j.tooling.GlobalGraphOperations
+import org.neo4j.visualization.asciidoc.AsciidocHelper
+import org.neo4j.graphdb.traversal.TraversalDescription
+import org.neo4j.kernel.Traversal
+import org.neo4j.graphdb.Path
 
 /**
  * check the traverser extension
@@ -25,35 +31,53 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
 
         when:
         def traverserResult = Person.traverseStatic(Traverser.Order.BREADTH_FIRST, StopEvaluator.END_OF_GRAPH, ReturnableEvaluator.ALL_BUT_START_NODE,
-                GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH)
+                GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH, GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.BOTH)
         def size = traverserResult.size()
 
         then:
 
         size == Person.traverseStatic(StopEvaluator.END_OF_GRAPH, ReturnableEvaluator.ALL_BUT_START_NODE,
-            GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH).size()
+            GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH, GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.BOTH).size()
 
         size+1 == Person.traverseStatic(Traverser.Order.BREADTH_FIRST,
                 { TraversalPosition p -> false },
                 { TraversalPosition p -> true },
-            GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH).size()
+            GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH, GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.BOTH).size()
 
         size+1 == Person.traverseStatic(
                 { TraversalPosition p -> false },
                 { TraversalPosition p -> true },
-            GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH).size()
+            GrailsRelationshipTypes.INSTANCE, Direction.BOTH, GrailsRelationshipTypes.SUBREFERENCE, Direction.BOTH, GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.BOTH).size()
 
         size+1 == Person.traverseStatic(
                 { TraversalPosition p -> false },
                 { TraversalPosition p -> true } ).size()
 
-        Person.count() == Person.traverseStatic(
-                { TraversalPosition p -> false },
-                { TraversalPosition p -> p.currentNode().getProperty("__type__",null) == Person.name } ).size()
+        //println AsciidocHelper.createGraphViz("title", session.nativeInterface, "abc");
 
-        Person.count()+2 == Person.traverseStatic( // +2: referenceNode + self (aka subreferenceNode)
+        /*Node subReferenceNode = ((Neo4jDatastore)session.datastore).subReferenceNodes[Person.class.name]
+        Traversal.description().depthFirst()
+                .relationships(GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.OUTGOING)
+                .relationships(GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING)
+                .traverse(subReferenceNode).each { Path p ->
+            println p
+        }*/
+
+        Person.count() == Person.traverseStatic(
+                { return false },
+                { TraversalPosition p -> return p.currentNode().getProperty("__type__", null) == Person.name },
+                GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.OUTGOING,
+                GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING,
+        ).size()
+
+        // +2: referenceNode + self (aka subreferenceNode)
+        Person.count()+2 == Person.traverseStatic(
+                        { TraversalPosition p -> false },
                         { TraversalPosition p -> true },
-                        { TraversalPosition p -> true } ).size()
+                GrailsRelationshipTypes.SUBREFERENCE, Direction.OUTGOING,
+                GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.OUTGOING,
+                GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING,
+        ).size()
     }
 
     def "test instance based traversing"() {
@@ -162,7 +186,7 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
         session.clear()
 
         when:
-        def result = Person.cypherStatic("start n=node({this}) match n-[:INSTANCE]->m where m.lastName='person1' return m")
+        def result = Person.cypherStatic("start n=node({this}) match n-[:SUBSUBREFERENCE]->subRef-[:INSTANCE]->m where m.lastName='person1' return m")
 
         then:
         result.iterator().size()==1

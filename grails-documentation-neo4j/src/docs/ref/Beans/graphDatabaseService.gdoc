@@ -2,17 +2,17 @@ h1. graphDatabaseService
 
 h2. Purpose
 
-A Spring bean that provides access to the lower level Neo4j GraphDatabase instance.
+A Spring bean that provides access to the lower level Neo4j GraphDatabaseService instance.
 
 h2. Examples
 
 {code}
-def graphDatabase
+def graphDatabaseService
 
 def foo = {
-    def graphDatabase
+    def graphDatabaseService
     def myAction = {
-        def node = graphDatabase.createNode() // create
+        def node = graphDatabaseService.createNode() // create
         ... do something with node ...s
     }
 }

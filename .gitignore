@@ -14,7 +14,9 @@ Servers/
 out
 stacktrace.log
 *.iws
-
+*.iml
+.idea/*
+classes/*
 /grails-datastore-gorm-gemfire/.settings/
 /grails-datastore-gorm-jpa/.settings/
 /grails-datastore-gorm-mongo/.settings/

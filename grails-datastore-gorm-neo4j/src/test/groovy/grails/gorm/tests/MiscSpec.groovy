@@ -1,6 +1,12 @@
 package grails.gorm.tests
 
 import grails.persistence.Entity
+import groovyx.gpars.GParsPool
+import org.grails.datastore.gorm.neo4j.GrailsRelationshipTypes
+import org.neo4j.graphdb.Direction
+import org.neo4j.graphdb.Node
+import org.neo4j.helpers.collection.IteratorUtil
+import spock.lang.Ignore
 
 /**
  * some more unrelated testcases, in more belong together logically, consider refactoring them into a seperate spec
@@ -175,6 +181,91 @@ class MiscSpec extends GormDatastoreSpec {
         club.version == 0
     }
 
+    def "verify concurrent adding does not cause LockingExceptions"() {
+        when:
+        GParsPool.withPool(numberOfThreads) {
+            (1..numberOfTeams).eachParallel { counter ->
+                Team.withNewTransaction {
+                    new Team(name: "Team $counter").save(failOnError: true)
+                }
+            }
+        }
+        Node subReferenceNode = session.datastore.subReferenceNodes[Team.class.name]
+
+        then: "correct number of teams has been created"
+        Team.count() == numberOfTeams
+
+        and: "the number of subsubreferenceNodes is correct"
+        subReferenceNode.getRelationships(GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.OUTGOING).size() == numberOfThreads
+
+        where:
+        numberOfThreads | numberOfTeams | numberOfSubSubReferenceNodes
+        1               | 20            | 1
+        2               | 20            | 2
+        4               | 20            | 4
+        8               | 20            | 8
+
+    }
+
+    @Ignore
+    def "do peformance tests"() {
+        when:
+        def start = System.currentTimeMillis()
+        Team.withNewTransaction {
+            for (i in 1..10000) {
+                new Team(name: "Team $i").save()
+            }
+        }
+        def delta = System.currentTimeMillis() - start
+        println "create 10000 in $delta msec"
+
+        then:
+        delta > 0
+
+        when:
+        start = System.currentTimeMillis()
+        def count = Team.count()
+        delta = System.currentTimeMillis() - start
+        println "count is $count, delta $delta"
+
+        then:
+        delta > 0
+
+    }
+
+    @Ignore
+    def "manual perf test"() {
+        when:
+
+        Node subRef
+        Team.withNewTransaction {
+            subRef = session.nativeInterface.createNode()
+        }
+        def start = System.currentTimeMillis()
+        Team.withNewTransaction {
+            for (i in 1..10000) {
+                Node node = session.nativeInterface.createNode()
+                node.setProperty("name", "Team $i".toString())
+                subRef.createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
+            }
+        }
+        def delta = System.currentTimeMillis() - start
+        println "create 10000 in $delta msec"
+
+        then:
+        delta > 0
+
+        when:
+        start = System.currentTimeMillis()
+        def count = IteratorUtil.count((Iterator)subRef.getRelationships(Direction.OUTGOING, GrailsRelationshipTypes.INSTANCE))
+        delta = System.currentTimeMillis() - start
+        println "count is $count, delta $delta"
+
+        then:
+        delta > 0
+
+    }
+
 }
 
 @Entity
@@ -202,3 +293,4 @@ class Club {
     List teams
     static hasMany = [teams: Team ]
 }
+
