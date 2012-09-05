@@ -658,7 +658,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private ClassNode getPropertyType(ClassNode classNode, String prop) {
         Map<String, ClassNode> cachedProperties = cachedClassProperties.get(classNode.getName());
-        if(cachedProperties != null) {
+        if(cachedProperties != null && cachedProperties.containsKey(prop)) {
             return cachedProperties.get(prop);
         }
         ClassNode type = null;
@@ -669,6 +669,12 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             MethodNode methodNode = currentClassNode.getMethod(GrailsNameUtils.getGetterName(prop), new Parameter[0]);
             if (methodNode != null) {
                 type = methodNode.getReturnType();
+            }
+            else {
+                FieldNode fieldNode = classNode.getDeclaredField(prop);
+                if(fieldNode != null) {
+                    type = fieldNode.getType();
+                }
             }
         }
         return type;

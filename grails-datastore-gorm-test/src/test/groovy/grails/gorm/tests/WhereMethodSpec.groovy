@@ -112,7 +112,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
             def results = people.property("lastName").property('firstName').list()
 
         then:"The correct results are returned"
-            results == [["Simpson", "Simpson", "Simpson", "Simpson"], ["Homer", "Marge", "Bart", "Lisa"]]
+            results == [["Simpson", "Homer"], ["Simpson", "Marge"], ["Simpson", "Bart"], ["Simpson", "Lisa"]]
     }
 
     def "Test where with multiple property projections"() {
@@ -127,7 +127,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
             }.list()
 
         then:"The correct results are returned"
-            results == [["Simpson", "Simpson", "Simpson", "Simpson"], ["Homer", "Marge", "Bart", "Lisa"]]
+            results == [["Simpson", "Homer"], ["Simpson", "Marge"], ["Simpson", "Bart"], ["Simpson", "Lisa"]]
     }
 
 
@@ -359,6 +359,21 @@ class WhereMethodSpec extends GormDatastoreSpec {
       then:"the correct results are returned"
         query.count() == 4
   }
+
+    def "Test comparing property with single ended association"() {
+        given:"people and pets"
+            createPeopleWithPets()
+
+        when:"We query a property against the property of a single-ended association"
+            def query = getClassThatCallsWhere().doQuery()
+//            def query = Pet.where {
+//                name == owner.firstName
+//            }
+
+        then:"the correct results are returned"
+            query.count() == 0
+    }
+
   def "Test ilike operator"() {
       given:"A bunch of people"
            createPeople()
@@ -1431,12 +1446,11 @@ class CallMe {
             Person.where(myDetachedCriteria)
     }
 
+
     def doQuery() {
-        def age = 5
-        def pets = []
-        def query = Person.where {
-            age > age && pets { age > 5}
-        }
+            def query = Pet.where {
+                name == owner.firstName
+            }
     }
 
 
