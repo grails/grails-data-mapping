@@ -574,7 +574,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
     @Override
     void delete(Iterable objects) {
-        throw new NotImplementedException()
+        for (instance in objects) {
+            delete(instance)
+        }
     }
 
     @Override
