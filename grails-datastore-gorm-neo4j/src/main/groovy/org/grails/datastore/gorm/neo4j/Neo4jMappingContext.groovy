@@ -29,6 +29,9 @@ import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy
 import org.grails.datastore.gorm.neo4j.converters.IntArrayToIntegerArrayConverter
 import org.grails.datastore.gorm.neo4j.converters.LongArrayToLongArrayConverter
+import org.grails.datastore.gorm.neo4j.converters.IntegerToByteConverter
+import org.grails.datastore.gorm.neo4j.converters.DoubleToFloatConverter
+import org.grails.datastore.gorm.neo4j.converters.IntegerToShortConverter
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -51,6 +54,9 @@ class Neo4jMappingContext extends AbstractMappingContext {
         addTypeConverter(new StringToURLConverter())
         addTypeConverter(new IntArrayToIntegerArrayConverter())
         addTypeConverter(new LongArrayToLongArrayConverter())
+        addTypeConverter(new IntegerToByteConverter())
+        addTypeConverter(new DoubleToFloatConverter())
+        addTypeConverter(new IntegerToShortConverter())
     }
 
     @Override
