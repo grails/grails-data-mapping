@@ -180,7 +180,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
     Node findOrCreateSubSubReferenceNode(Node subReferenceNode) {
         int hashValue = Thread.currentThread().id % Neo4jDatastore.NUMBER_OF_SUBSUBREFERENCE_NODES
         def subSubReferenceNode = subReferenceNode.getRelationships(GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.OUTGOING).find {
-            it.getProperty("hash") == hashValue
+            it.getProperty("hash", null) == hashValue
         }?.endNode
         if (!subSubReferenceNode) {
             subSubReferenceNode = datastore.graphDatabaseService.createNode()

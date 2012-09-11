@@ -196,7 +196,7 @@ class MiscSpec extends GormDatastoreSpec {
         Team.count() == numberOfTeams
 
         and: "the number of subsubreferenceNodes is correct"
-        subReferenceNode.getRelationships(GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.OUTGOING).size() == numberOfThreads
+        subReferenceNode.getRelationships(GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.OUTGOING).iterator().size() == numberOfThreads
 
         where:
         numberOfThreads | numberOfTeams | numberOfSubSubReferenceNodes
