@@ -18,7 +18,6 @@ import static org.grails.datastore.mapping.query.Query.*
 import static org.apache.lucene.search.BooleanClause.Occur.*
 import static org.grails.datastore.mapping.query.Query.Order.Direction.*
 
-import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.Node
 import org.neo4j.graphdb.Relationship
 
@@ -42,12 +41,7 @@ import org.slf4j.LoggerFactory
 import org.slf4j.Logger
 import org.apache.lucene.search.MatchAllDocsQuery
 import org.grails.datastore.mapping.model.types.Simple
-import org.neo4j.kernel.AbstractGraphDatabase
-import org.neo4j.helpers.collection.IteratorUtil
-import org.neo4j.graphdb.Traverser
-import org.neo4j.graphdb.StopEvaluator
-import org.neo4j.graphdb.ReturnableEvaluator
-import org.neo4j.graphdb.TraversalPosition
+import org.neo4j.cypher.javacompat.ExecutionEngine
 
 /**
  * perform criteria queries on a Neo4j backend
@@ -70,6 +64,8 @@ class Neo4jQuery extends Query {
         if (indexQueryPossible(entity, criteria)) {
             try {
                 executeQueryViaIndex(entity, criteria)
+            } catch (UnsupportedOperationException e) {
+                executeQueryViaRelationships(entity, criteria)
             } catch (NotImplementedException e) {
                 executeQueryViaRelationships(entity, criteria)
             }
@@ -96,6 +92,10 @@ class Neo4jQuery extends Query {
         indexManager.nodeAutoIndexer.autoIndex.query(query.toString()).iterator().collect {
             session.retrieve(persistentEntity.javaClass, it.id)
         }))
+    }
+
+    ExecutionEngine getExecutionEngine() {
+        session.datastore.executionEngine
     }
 
     static MAP_JUNCTION_TO_BOOLEAN_CLAUSE = [
@@ -145,11 +145,6 @@ class Neo4jQuery extends Query {
             return false
         }
 
-        // REST database -> no indexing (RestIndexManager does not support this
-        if (!(session.nativeInterface instanceof AbstractGraphDatabase)) {
-            return false
-        }
-
         Collection indexedPropertyNames = entity.persistentProperties.findAll {
             (it instanceof Simple) && (it.propertyMapping.mappedForm.index)
         }.collect {it.name}
@@ -171,42 +166,29 @@ class Neo4jQuery extends Query {
 
         // shortcut for count()
         if (criteria.empty && (projections.projectionList?.size()==1) && projections.projectionList[0] instanceof CountProjection) {
-            log.error "shortcut for count"
-            return [ subReferenceNodes.sum {
-                it.getRelationships(Direction.OUTGOING, GrailsRelationshipTypes.SUBSUBREFERENCE).sum {
-                    IteratorUtil.count((Iterable)it.endNode.getRelationships(Direction.OUTGOING, GrailsRelationshipTypes.INSTANCE))
-                }
-                //IteratorUtil.count((Iterable)it.getRelationships(Direction.OUTGOING, GrailsRelationshipTypes.INSTANCE))
-            } ]
+            log.info "using shortcut for count"
+            def cypherResult = executionEngine.execute("""
+               START n=node({subReferenceNodes})
+               MATCH n-[:SUBSUBREFERENCE*0..1]->s-[:INSTANCE]->instance
+               RETURN COUNT(*) as count
+            """, [subReferenceNodes: subReferenceNodes ])
+            def cypherResultRow = cypherResult.iterator().next()
+            def count = cypherResultRow.get('count')
+            return [count]
         }
 
-        for (Node subReferenceNode in subReferenceNodes) {
+        def cypherResult = executionEngine.execute("""
+            START n=node({subReferenceNodes})
+            MATCH n-[:SUBSUBREFERENCE*0..1]->s-[:INSTANCE]->instance
+            RETURN instance
+        """, [subReferenceNodes: subReferenceNodes ])
 
-            subReferenceNode.traverse(Traverser.Order.DEPTH_FIRST,
-                    StopEvaluator.END_OF_GRAPH,
-                    { TraversalPosition pos ->
-                        pos.lastRelationshipTraversed()?.type == GrailsRelationshipTypes.INSTANCE
-                    } as ReturnableEvaluator,
-                    GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.OUTGOING,
-                    GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING
-            ).each { Node n ->
-                Assert.isTrue n.getProperty(Neo4jSession.TYPE_PROPERTY_NAME, null) in validClassNames
-
-                if (invokeMethod("matchesCriterion${criteria.getClass().simpleName}", [n, criteria])) {
-                    result << session.retrieve(entity.javaClass, n.id)
-                }
-
+        for (def row in cypherResult) {
+            Node node = row.instance
+            Assert.isTrue node.getProperty(Neo4jSession.TYPE_PROPERTY_NAME, null) in validClassNames
+            if (invokeMethod("matchesCriterion${criteria.getClass().simpleName}", [node, criteria])) {
+                result << session.retrieve(entity.javaClass, node.id)
             }
-/*
-            for (Relationship rel in subReferenceNode.getRelationships(GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING).iterator()) {
-                Node n = rel.endNode
-                Assert.isTrue n.getProperty(Neo4jSession.TYPE_PROPERTY_NAME, null) in validClassNames
-
-                if (invokeMethod("matchesCriterion${criteria.getClass().simpleName}", [n, criteria])) {
-                    result << session.retrieve(entity.javaClass, n.id)
-                }
-            }
-*/
         }
 
         if (projections.projectionList) { // TODO: optimize, for count we do not need to create all objects
