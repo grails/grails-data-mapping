@@ -271,6 +271,39 @@
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.sun.jersey/jersey-server/1.9/bundle/3a6ea7cc5e15c824953f9f3ece2201b634d90d18/jersey-server-1.9.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.sun.jersey/jersey-server/1.9/source/d710a3f1d00388a093da6511ca26a743366edf60/jersey-server-1.9-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.sun.jersey/jersey-core/1.9/bundle/8341846f18187013bb9e27e46b7ee00a6395daf4/jersey-core-1.9.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.sun.jersey/jersey-core/1.9/source/56cafb409f0468aef023b327f25daa54b284fe8d/jersey-core-1.9-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.sun.jersey/jersey-client/1.9/bundle/d3c4b2b5f89db32c96ceddcb863684821910a7bb/jersey-client-1.9.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.sun.jersey/jersey-client/1.9/source/fcd4ed548c23e5036fe9628cbb36e7b440a6a090/jersey-client-1.9-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
           <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.hamcrest/hamcrest-core/1.2/jar/44d12ff84e43c7d0539131f75c92f2f88dba6549/hamcrest-core-1.2.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -310,6 +343,15 @@
         <SOURCES>
           <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.codehaus.jsr166-mirror/extra166y/1.7.0/source/5ef7033b8f84b72819d3e04fb96ab00e818fda8b/extra166y-1.7.0-sources.jar!/" />
         </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/asm/asm/3.2/jar/9bc1511dec6adf302991ced13303e4140fdf9ab7/asm-3.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
@@ -501,26 +543,6 @@
         <JAVADOC />
         <SOURCES>
           <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/org.mortbay.jetty/jetty/6.1.25/source/b6f38493bf7bef80ef2b7d4290af7c467a0af9a6/jetty-6.1.25-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/asm/asm/3.2/jar/9bc1511dec6adf302991ced13303e4140fdf9ab7/asm-3.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.sun.jersey/jersey-server/1.9/bundle/3a6ea7cc5e15c824953f9f3ece2201b634d90d18/jersey-server-1.9.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.sun.jersey/jersey-server/1.9/source/d710a3f1d00388a093da6511ca26a743366edf60/jersey-server-1.9-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -770,28 +792,6 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.sun.jersey/jersey-core/1.4/bundle/581e0382e0304c99731d0ff37acd82d60c4b11b/jersey-core-1.4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.sun.jersey/jersey-core/1.4/source/8ccf8dca6314455deeb47d30fb5fa0c26983f18d/jersey-core-1.4-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" scope="TEST">
-      <library>
-        <CLASSES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.sun.jersey/jersey-client/1.4/bundle/52cfcc38459807b5c7bbcf3a15fa7e4d3bbe0c52/jersey-client-1.4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$HOME_DIR$/.gradle/caches/artifacts-8/filestore/com.sun.jersey/jersey-client/1.4/source/dcb764fbd01fe0b18ef1f421eba75290a118f353/jersey-client-1.4-sources.jar!/" />
-        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" scope="TEST">
