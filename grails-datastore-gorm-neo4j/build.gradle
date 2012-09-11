@@ -1,12 +1,17 @@
 version = "1.0.0.BUILD-SNAPSHOT"
 //version = "1.0.0.M13"
 
-ext.neo4jVersion = "1.8.M05"
+ext.neo4jVersion = "1.8.M07"
 
-/*repositories {
-    mavenCentral()
+repositories {
+    //mavenLocal()
+    //mavenCentral()
+
+    // some artifacts used are not available on mavenCentral
+    maven { url "http://m2.neo4j.org/content/repositories/releases/" }
+    maven { url "http://m2.neo4j.org/content/repositories/snapshots/" }
 //    maven { url "http://repo.grails.org/grails/core" }
-}*/
+}
 
 dependencies {
     compile project(":grails-datastore-gorm"),
@@ -18,11 +23,14 @@ dependencies {
                 project(":grails-datastore-gorm-tck"),
                 'org.codehaus.gpars:gpars:0.12',
                 [group: "org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:'tests'],
+                [group: "org.neo4j.app", name:"neo4j-server", version:neo4jVersion, classifier:'tests'],
+                [group: "org.neo4j.app", name:"neo4j-server", version:neo4jVersion],
+                [group: "org.neo4j", name:"neo4j-rest-graphdb", version:'1.8-SNAPSHOT'],
+                [group: "org.neo4j", name:"neo4j-rest-graphdb", version:'1.8-SNAPSHOT', classifier:'tests'],
                 "org.neo4j:neo4j-graphviz:$neo4jVersion"
-    testRuntime "javax.servlet:servlet-api:2.5"
-    testRuntime "org.grails:grails-gorm:$grailsVersion"
-    testRuntime "org.grails:grails-web:$grailsVersion"
-
+    testRuntime "javax.servlet:servlet-api:2.5",
+                "org.grails:grails-gorm:$grailsVersion",
+                "org.grails:grails-web:$grailsVersion"
 }
 
 /*
