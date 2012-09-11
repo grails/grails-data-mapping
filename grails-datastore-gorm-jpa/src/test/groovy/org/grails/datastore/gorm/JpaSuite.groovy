@@ -27,6 +27,7 @@ import org.junit.runners.Suite
 import org.junit.runners.Suite.SuiteClasses
 import grails.gorm.tests.DetachedCriteriaSpec
 import grails.gorm.tests.UniqueConstraintSpec
+import grails.gorm.tests.DeleteAllSpec
 //import grails.gorm.tests.WhereMethodSpec
 
 @RunWith(Suite)
@@ -55,7 +56,9 @@ import grails.gorm.tests.UniqueConstraintSpec
 //  WithTransactionSpec,
 //  CrudOperationsSpec
    // WhereMethodSpec
-UniqueConstraintSpec
+UniqueConstraintSpec,
+SaveAllSpec,
+DeleteAllSpec
 ])
 class JpaSuite {
 

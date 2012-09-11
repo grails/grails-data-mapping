@@ -23,6 +23,8 @@ import grails.gorm.tests.NamedQuerySpec
 import grails.gorm.tests.OrderBySpec
 import grails.gorm.tests.RangeQuerySpec
 import grails.gorm.tests.ValidationSpec
+import grails.gorm.tests.SaveAllSpec
+import grails.gorm.tests.DeleteAllSpec
 
 /**
  * @author graemerocher
@@ -49,6 +51,8 @@ import grails.gorm.tests.ValidationSpec
 //    AttachMethodSpec,
 //    WithTransactionSpec,
 //    CrudOperationsSpec
+SaveAllSpec,
+DeleteAllSpec
 ])
 class RedisSuite {
 }

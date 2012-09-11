@@ -16,6 +16,9 @@ import org.grails.datastore.mapping.proxy.EntityProxy;
  */
 public class SimpleDBConverterUtil {
     public static String convertToString(Object value, MappingContext mappingContext) {
+        if (value == null) {
+            return null;
+        }
         String stringValue = null;
         if (value instanceof String) {
             stringValue = (String)value;
