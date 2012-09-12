@@ -206,7 +206,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
     }
 
     private boolean isProxy(object) {
-        object.metaClass.methods.any { it.name == 'isProxy'}  // TODO: hotspot, to be optimized
+        object.metaClass.getMetaMethod("isProxy", null) != null
     }
 
     @Override
