@@ -168,35 +168,42 @@ class Neo4jQuery extends Query {
 
         // shortcut for count()
         if (criteria.empty && (projections.projectionList?.size()==1) && projections.projectionList[0] instanceof CountProjection) {
-            log.debug "using shortcut for count"
-            def cypherResult = executionEngine.execute("""
+            def cypherStatement = """
                START n=node({subReferenceNodes})
                MATCH n-[:SUBSUBREFERENCE*0..1]->s-[:INSTANCE]->instance
                RETURN COUNT(*) as count
-            """, [subReferenceNodes: subReferenceNodes ])
+            """
+            if (log.debugEnabled) {
+                log.debug "using shortcut for count, cypher is: $cypherStatement"
+            }
+            def cypherResult = executionEngine.execute(cypherStatement, [subReferenceNodes: subReferenceNodes ])
             def cypherResultRow = cypherResult.iterator().next()
             def count = cypherResultRow.get('count')
             return [count]
-        }
-
-        def cypherResult = executionEngine.execute("""
-            START n=node({subReferenceNodes})
-            MATCH n-[:SUBSUBREFERENCE*0..1]->s-[:INSTANCE]->instance
-            RETURN instance
-        """, [subReferenceNodes: subReferenceNodes ])
-
-        for (def row in cypherResult) {
-            Node node = row.instance
-            Assert.isTrue node.getProperty(Neo4jSession.TYPE_PROPERTY_NAME, null) in validClassNames
-            if (invokeMethod("matchesCriterion${criteria.getClass().simpleName}", [node, criteria])) {
-                result << session.retrieve(entity.javaClass, node.id)
-            }
-        }
-
-        if (projections.projectionList) { // TODO: optimize, for count we do not need to create all objects
-            projection(result)
         } else {
-            orderBy(paginate(result))
+
+            def cypherStatement = """
+                START n=node({subReferenceNodes})
+                MATCH n-[:SUBSUBREFERENCE*0..1]->s-[:INSTANCE]->instance
+                RETURN instance
+            """
+            if (log.debugEnabled) {
+                log.debug "executing cypher statement: $cypherStatement"
+            }
+            def cypherResult = executionEngine.execute(cypherStatement, [subReferenceNodes: subReferenceNodes])
+
+            for (def row in cypherResult) {
+                Node node = row.instance
+                Assert.isTrue node.getProperty(Neo4jSession.TYPE_PROPERTY_NAME, null) in validClassNames
+                if (invokeMethod("matchesCriterion${criteria.getClass().simpleName}", [node, criteria])) {
+                    result << session.retrieve(entity.javaClass, node.id)
+                }
+            }
+            if (projections.projectionList) { // TODO: optimize: add paginate and order to cypher statement
+                projection(result)
+            } else {
+                orderBy(paginate(result))
+            }
         }
     }
 
