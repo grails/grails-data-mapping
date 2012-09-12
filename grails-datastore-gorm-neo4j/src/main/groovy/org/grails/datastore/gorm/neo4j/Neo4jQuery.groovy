@@ -86,7 +86,9 @@ class Neo4jQuery extends Query {
 //        query.add(new TermQuery(new Term(Neo4jSession.TYPE_PROPERTY_NAME, persistentEntity.name)), MUST)
         query.add(buildIndexQuery(persistentEntity, junction), MUST)
 //        def query = buildIndexQuery(persistentEntity, junction)
-        log.info("lucene query: $query")
+        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.debug("lucene query: $query")
+        }
 
         orderBy(paginate(
         indexManager.nodeAutoIndexer.autoIndex.query(query.toString()).iterator().collect {
@@ -166,7 +168,7 @@ class Neo4jQuery extends Query {
 
         // shortcut for count()
         if (criteria.empty && (projections.projectionList?.size()==1) && projections.projectionList[0] instanceof CountProjection) {
-            log.info "using shortcut for count"
+            log.debug "using shortcut for count"
             def cypherResult = executionEngine.execute("""
                START n=node({subReferenceNodes})
                MATCH n-[:SUBSUBREFERENCE*0..1]->s-[:INSTANCE]->instance

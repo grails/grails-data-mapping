@@ -34,7 +34,9 @@ class Neo4jOpenSessionInViewInterceptor extends OpenSessionInViewInterceptor {
 
     @Override
     void preHandle(WebRequest request) {
-        log.debug "preHandle ${request.getDescription(true)}"
+        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.debug "preHandle ${request.getDescription(true)}"
+        }
         super.preHandle(request)
         transactions.push(DatastoreUtils.getSession(datastore, true).beginTransaction())
     }
@@ -44,6 +46,8 @@ class Neo4jOpenSessionInViewInterceptor extends OpenSessionInViewInterceptor {
         super.afterCompletion(request, ex)
         Transaction transaction = transactions.pop()
         ex ? transaction.rollback() : transaction.commit()
-        log.debug "afterCompletion ${request.getDescription(true)}"
+        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.debug "afterCompletion ${request.getDescription(true)}"
+        }
     }
 }
