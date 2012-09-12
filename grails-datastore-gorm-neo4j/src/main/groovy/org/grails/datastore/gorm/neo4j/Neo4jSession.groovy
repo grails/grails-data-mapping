@@ -63,6 +63,7 @@ import java.beans.PropertyChangeListener
 import java.beans.PropertyChangeEvent
 import org.grails.datastore.mapping.query.api.QueryableCriteria
 import org.springframework.beans.BeanWrapperImpl
+import org.springframework.core.convert.ConverterNotFoundException
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -253,7 +254,12 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                 switch (prop) {
                     case Simple:
                         if (!ALLOWED_CLASSES_NEO4J_PROPERTIES.contains(prop.type)) {
-                            value = mappingContext.conversionService.convert(value, String)
+                            try {
+                                value = mappingContext.conversionService.convert(value, Long.TYPE)
+                            } catch (ConverterNotFoundException e) {
+                                value = mappingContext.conversionService.convert(value, String)
+                            }
+
                         }
                         if (thisNode.getProperty(prop.name, null) != value) {
                             value == null ? thisNode.removeProperty(prop.name) : thisNode.setProperty(prop.name, value)
