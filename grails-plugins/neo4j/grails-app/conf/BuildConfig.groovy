@@ -45,13 +45,13 @@ grails.project.dependency.resolution = {
         test("org.grails:grails-datastore-gorm-test:$datastoreVersion",
              "org.grails:grails-datastore-simple:$datastoreVersion", exlcudes)
 
-        compile('org.neo4j:neo4j-community:1.6.1')
+        compile('org.neo4j:neo4j-community:1.8.RC1')
     }
 
     plugins {
         runtime ":jquery:1.7.1"
         runtime ":resources:1.1.6"
-        runtime ":release:1.0.1"
+        runtime ":release:2.0.4"
         runtime ":svn:1.0.2"
         runtime ":spock:0.6"
     }

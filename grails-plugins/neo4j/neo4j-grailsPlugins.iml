@@ -1,17 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="web" name="GrailsWeb">
+      <configuration>
+        <webroots>
+          <root url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/jquery-1.7.1/web-app" relative="/" />
+        </webroots>
+        <sourceRoots />
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$DOTGRAILS$/2.0.1/projects/neo4j/plugins/release-1.0.1">
-      <sourceFolder url="file://$DOTGRAILS$/2.0.1/projects/neo4j/plugins/release-1.0.1/src/java" isTestSource="false" />
-      <sourceFolder url="file://$DOTGRAILS$/2.0.1/projects/neo4j/plugins/release-1.0.1/src/groovy" isTestSource="false" />
+    <content url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/jquery-1.7.1">
+      <sourceFolder url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/jquery-1.7.1/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/jquery-1.7.1/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/jquery-1.7.1/grails-app/services" isTestSource="false" />
+      <sourceFolder url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/jquery-1.7.1/grails-app/taglib" isTestSource="false" />
     </content>
-    <content url="file://$DOTGRAILS$/2.0.1/projects/neo4j/plugins/svn-1.0.2">
-      <sourceFolder url="file://$DOTGRAILS$/2.0.1/projects/neo4j/plugins/svn-1.0.2/src/groovy" isTestSource="false" />
+    <content url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/release-1.0.1">
+      <sourceFolder url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/release-1.0.1/src/java" isTestSource="false" />
+      <sourceFolder url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/release-1.0.1/src/groovy" isTestSource="false" />
+    </content>
+    <content url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/resources-1.1.6">
+      <sourceFolder url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/resources-1.1.6/src/java" isTestSource="false" />
+      <sourceFolder url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/resources-1.1.6/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/resources-1.1.6/grails-app/i18n" isTestSource="false" />
+      <sourceFolder url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/resources-1.1.6/grails-app/taglib" isTestSource="false" />
+    </content>
+    <content url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/spock-0.6" />
+    <content url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/svn-1.0.2">
+      <sourceFolder url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/svn-1.0.2/src/groovy" isTestSource="false" />
+    </content>
+    <content url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/webxml-1.4.1">
+      <sourceFolder url="file://$DOTGRAILS$/2.0.4/projects/neo4j/plugins/webxml-1.4.1/src/groovy" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.1" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="grails-2.0.4" level="application" />
     <orderEntry type="module-library" exported="">
       <library name="Grails User Library (neo4j-grailsPlugins)">
         <CLASSES>
@@ -46,7 +72,6 @@
           <root url="jar://$DOTGRAILS$/ivy-cache/net.sf.ehcache/ehcache-core/jars/ehcache-core-2.4.6.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/xpp3/xpp3_min/jars/xpp3_min-1.1.4c.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/javax.servlet/jstl/jars/jstl-1.1.2.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/com.h2database/h2/jars/h2-1.2.147.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/commons-pool/commons-pool/jars/commons-pool-1.5.6.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/commons-dbcp/commons-dbcp/jars/commons-dbcp-1.4.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/oro/oro/jars/oro-2.0.8.jar!/" />
@@ -114,27 +139,66 @@
           <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.tomcat.embed/tomcat-embed-logging-log4j/jars/tomcat-embed-logging-log4j-7.0.25.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.tomcat.embed/tomcat-embed-jasper/jars/tomcat-embed-jasper-7.0.25.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.tomcat.embed/tomcat-embed-core/jars/tomcat-embed-core-7.0.25.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.scala-lang/scala-library/jars/scala-library-2.9.0-1.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.lucene/lucene-core/jars/lucene-core-3.5.0.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.geronimo.specs/geronimo-jta_1.1_spec/jars/geronimo-jta_1.1_spec-1.1.1.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-jmx/jars/neo4j-jmx-1.6.1.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-cypher/jars/neo4j-cypher-1.6.1.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-graph-matching/jars/neo4j-graph-matching-1.6.1.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-udc/jars/neo4j-udc-1.6.1.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-graph-algo/jars/neo4j-graph-algo-1.6.1.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-lucene-index/jars/neo4j-lucene-index-1.6.1.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-kernel/jars/neo4j-kernel-1.6.1.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-community/jars/neo4j-community-1.6.1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.hamcrest/hamcrest-core/jars/hamcrest-core-1.2.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/junit/junit-dep/jars/junit-dep-4.9.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.spockframework/spock-core/jars/spock-core-0.6-groovy-1.8.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.spockframework/spock-grails-support/jars/spock-grails-support-0.6-groovy-1.8.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/org.grails/grails-datastore-web/jars/grails-datastore-web-1.0.2.RELEASE.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/org.grails/grails-datastore-gorm-plugin-support/jars/grails-datastore-gorm-plugin-support-1.0.2.RELEASE.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.grails/grails-datastore-gorm-neo4j/jars/grails-datastore-gorm-neo4j-1.0.0.M13.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.grails/grails-datastore-simple/jars/grails-datastore-simple-1.0.2.RELEASE.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.grails/grails-datastore-core/jars/grails-datastore-core-1.0.2.RELEASE.jar!/" />
-          <root url="jar://$DOTGRAILS$/ivy-cache/org.grails/grails-datastore-gorm/jars/grails-datastore-gorm-1.0.2.RELEASE.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.grails/grails-datastore-gorm-neo4j/jars/grails-datastore-gorm-neo4j-1.0.0.BUILD-SNAPSHOT.jar!/" />
           <root url="jar://$DOTGRAILS$/ivy-cache/org.grails/grails-datastore-gorm-test/jars/grails-datastore-gorm-test-1.0.2.RELEASE.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-jmx/jars/neo4j-jmx-1.8.RC1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.scala-lang/scala-library/jars/scala-library-2.9.1-1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-cypher/jars/neo4j-cypher-1.8.RC1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-graph-matching/jars/neo4j-graph-matching-1.8.RC1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-udc/jars/neo4j-udc-1.8.RC1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-graph-algo/jars/neo4j-graph-algo-1.8.RC1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.lucene/lucene-core/jars/lucene-core-3.5.0.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-lucene-index/jars/neo4j-lucene-index-1.8.RC1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.apache.geronimo.specs/geronimo-jta_1.1_spec/jars/geronimo-jta_1.1_spec-1.1.1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-kernel/jars/neo4j-kernel-1.8.RC1.jar!/" />
+          <root url="jar://$DOTGRAILS$/ivy-cache/org.neo4j/neo4j-community/jars/neo4j-community-1.8.RC1.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.integration-tests/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.jdbc/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.jdbc/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.web.servlet/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.web.servlet/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.transaction/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.transaction/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.context/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.context/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.context.support/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.context.support/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.test/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.test/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.beans/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.beans/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.orm/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.orm/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.instrument.tomcat/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.jms/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.jms/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.oxm/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.oxm/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.instrument/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.web/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.web/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.aop/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.aop/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.web.portlet/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.web.portlet/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.web.struts/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.web.struts/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.core/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.core/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.aspects/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.aspects/src/main/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.expression/src/test/java" />
+          <root url="file://$HOME_DIR$/lib/spring-framework/org.springframework.expression/src/main/java" />
+        </SOURCES>
       </library>
     </orderEntry>
   </component>

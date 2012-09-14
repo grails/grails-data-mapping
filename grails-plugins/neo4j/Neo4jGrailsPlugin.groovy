@@ -8,7 +8,7 @@ class Neo4jGrailsPlugin {
     def organization = [ name: "Stefan Armbruster", url: "http://blog.armbruster-it.de/" ]
     def developers = [
         [ name: "Stefan Armbruster", email: "stefan@armbruster-it.de" ] ]
-    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPNEO4J" ]
+    def issueManagement = [ system: "JIRA", url: "https://github.com/SpringSource/grails-data-mapping/issues" ]
     def scm = [ url: "https://github.com/sarmbruster/grails-data-mapping" ]
 
     //def version = "1.0.0.M2"
