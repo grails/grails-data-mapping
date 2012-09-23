@@ -51,9 +51,12 @@ grails.project.dependency.resolution = {
     plugins {
         runtime ":jquery:1.7.1"
         runtime ":resources:1.1.6"
-        runtime ":release:2.0.4"
-        runtime ":svn:1.0.2"
-        runtime ":spock:0.6"
+        runtime ":tomcat:$grailsVersion"
+        build ":release:2.0.4", {
+            export = false
+        }
+        //runtime ":svn:1.0.2"
+        test ":spock:0.6"
     }
 
 }
