@@ -1,16 +1,10 @@
 package org.grails.datastore.gorm.neo4j
 
-import grails.plugin.spock.IntegrationSpec
-import org.neo4j.graphdb.GraphDatabaseService
 import grails.converters.JSON
-import grails.web.JSONBuilder
+import grails.plugin.spock.IntegrationSpec
 import org.codehaus.groovy.grails.web.json.JSONElement
-import neo4j.DummyDomain
-import spock.lang.Ignore
-import java.text.SimpleDateFormat
-import spock.lang.IgnoreRest
-import org.apache.commons.lang.CharRange
 import org.neo4j.graphdb.DynamicRelationshipType
+import org.neo4j.graphdb.GraphDatabaseService
 
 class GetOrSetSpec extends IntegrationSpec {
 
