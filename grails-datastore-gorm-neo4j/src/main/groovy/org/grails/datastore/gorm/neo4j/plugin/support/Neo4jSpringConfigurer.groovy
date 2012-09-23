@@ -69,6 +69,10 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
                         neo4jGraphDatabaseClassName = "org.neo4j.kernel.EmbeddedGraphDatabase"
                         neo4jDefaultLocation = "data/neo4j"
                         break
+                    case "impermanent":
+                        neo4jGraphDatabaseClassName = "org.neo4j.test.ImpermanentGraphDatabase"
+                        neo4jDefaultLocation = "data/neo4j"
+                        break
                     default:  // otherwise type is used as classname
                         if (neo4jConfig.type) {
                             neo4jGraphDatabaseClassName = neo4jConfig.type
