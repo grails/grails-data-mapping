@@ -24,6 +24,8 @@ import javax.persistence.FlushModeType;
 import org.grails.datastore.mapping.cache.TPCacheAdapter;
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.collection.*;
+import org.grails.datastore.mapping.engine.event.PostDeleteEvent;
+import org.grails.datastore.mapping.engine.event.PreLoadEvent;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.*;
@@ -217,16 +219,26 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     @Override
     protected final void deleteEntities(PersistentEntity persistentEntity, Iterable objects) {
         if (objects != null) {
-            final List<K> keys = new ArrayList<K>();
+            final Set<K> keys = new LinkedHashSet<K>();
+            final List deleteList = new ArrayList();
             for (Object object : objects) {
                 K key = readIdentifierFromObject(object);
                 if (key != null) {
-                    keys.add(key);
+                    if (!keys.contains(key)) {
+                        if (!cancelDelete(persistentEntity, createEntityAccess(persistentEntity, object))) {
+                            // only delete if not cancelled
+                            keys.add(key);
+                            deleteList.add(object);
+                        }
+                    }
                 }
             }
 
             if (!keys.isEmpty()) {
-                deleteEntries(getEntityFamily(), keys);
+                deleteEntries(getEntityFamily(), new ArrayList<K>(keys));
+                for (Object object : deleteList) {
+                    firePostDeleteEvent(persistentEntity, createEntityAccess(persistentEntity, object));
+                }
             }
         }
     }
@@ -405,10 +417,16 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
                     if (embeddedEntry != null) {
                         Object embeddedInstance = newEntityInstance(embedded.getAssociatedEntity());
-                        createEntityAccess(embedded.getAssociatedEntity(), embeddedInstance);
                         refreshObjectStateFromNativeEntry(embedded.getAssociatedEntity(),
                               embeddedInstance, null, embeddedEntry, true);
                         ea.setProperty(propKey, embeddedInstance);
+                        if (embedded.isBidirectional()) {
+                            Association inverseSide = embedded.getInverseSide();
+                            // fix up the owner link
+                            EntityAccess embeddedEa =
+                                    createEntityAccess(embedded.getAssociatedEntity(), embeddedInstance);
+                            embeddedEa.setProperty(inverseSide.getName(), obj);
+                        }
                     }
                 }
 
@@ -563,6 +581,8 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
             }
         }
+        // entity is now fully loaded.
+        firePostLoadEvent(persistentEntity, ea);
     }
 
     /**

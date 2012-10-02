@@ -39,7 +39,6 @@ import org.grails.datastore.mapping.engine.LockableEntityPersister;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.grails.datastore.mapping.engine.event.PreDeleteEvent;
 import org.grails.datastore.mapping.engine.event.PreInsertEvent;
-import org.grails.datastore.mapping.engine.event.PreLoadEvent;
 import org.grails.datastore.mapping.engine.event.PreUpdateEvent;
 import org.grails.datastore.mapping.gemfire.GemfireDatastore;
 import org.grails.datastore.mapping.gemfire.GemfireSession;
@@ -136,16 +135,11 @@ public class GemfireEntityPersister extends LockableEntityPersister {
 
     @Override
     protected List<Object> retrieveAllEntities(PersistentEntity persistentEntity, final Serializable[] keys) {
-        final GemfireTemplate template = gemfireDatastore.getTemplate(persistentEntity);
-        return (List<Object>) template.execute(new GemfireCallback() {
-            public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
-                return region.getAll(Arrays.asList(keys));
-            }
-        });
+        return retrieveAllEntities(persistentEntity, Arrays.asList(keys));
     }
 
     @Override
-    protected List<Object> retrieveAllEntities(PersistentEntity persistentEntity, final Iterable<Serializable> keys) {
+    protected List<Object> retrieveAllEntities(final PersistentEntity persistentEntity, final Iterable<Serializable> keys) {
         final GemfireTemplate template = gemfireDatastore.getTemplate(persistentEntity);
         return (List<Object>) template.execute(new GemfireCallback() {
             public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
@@ -161,7 +155,12 @@ public class GemfireEntityPersister extends LockableEntityPersister {
 
             List getListOfValues(final Map all) {
                 if (all != null) {
-                    return new ArrayList(all.values());
+                    Collection nativeEntries = all.values();
+                    List values = new ArrayList(nativeEntries.size());
+                    for (Object entry : nativeEntries) {
+                        values.add(handleDatastoreLoad(persistentEntity, entry));
+                    }
+                    return values;
                 }
                 return Collections.emptyList();
             }
@@ -246,23 +245,34 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                 final Object entry = region.get(lookupKey);
 
                 if (entry != null) {
-                    publisher.publishEvent(new PreLoadEvent(session.getDatastore(), getPersistentEntity(),
-                         new EntityAccess(persistentEntity, entry)));
+                    return handleDatastoreLoad(persistentEntity, entry);
                 }
 
-                for (Association association : persistentEntity.getAssociations()) {
-                    if (association instanceof OneToMany) {
-                        final EntityAccess ea = createEntityAccess(persistentEntity, entry);
-                        final String propertyName = association.getName();
-                        final Object currentState = ea.getProperty(propertyName);
-                        if (currentState == null) {
-                            initializeCollectionState(association, ea, propertyName);
-                        }
-                    }
-                }
-                return entry;
+                return null;
             }
         });
+    }
+
+    /**
+     * Handle loading an event from store, including firing necessary events.
+     * @param persistentEntity The entity type
+     * @param entry The native entry taken from the store.
+     * @return The domain entity
+     */
+    private Object handleDatastoreLoad(PersistentEntity persistentEntity, Object entry) {
+        final EntityAccess ea = createEntityAccess(persistentEntity, entry);
+        firePreLoadEvent(persistentEntity, ea);
+        for (Association association : persistentEntity.getAssociations()) {
+            if (association instanceof OneToMany) {
+                final String propertyName = association.getName();
+                final Object currentState = ea.getProperty(propertyName);
+                if (currentState == null) {
+                    initializeCollectionState(association, ea, propertyName);
+                }
+            }
+        }
+        firePostLoadEvent(persistentEntity, ea);
+        return entry;
     }
 
     private Object initializeCollectionState(Association association, EntityAccess ea, String propertyName) {

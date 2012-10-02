@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import org.grails.datastore.mapping.core.Session
+import grails.gorm.DetachedCriteria
 
 /**
  * @author graemerocher
@@ -75,6 +76,34 @@ class DomainEventsSpec extends GormDatastoreSpec {
         then:
             1 == PersonEvent.STORE.beforeDelete
             1 == PersonEvent.STORE.afterDelete
+    }
+
+    void "Test multi-delete events"() {
+        given:
+            def freds = (1..3).collect {
+                new PersonEvent(name: "Fred$it").save(flush:true)
+            }
+            session.clear()
+
+        when:
+            freds = PersonEvent.findAllByIdInList(freds*.id)
+
+        then:
+            3 == freds.size()
+            0 == PersonEvent.STORE.beforeDelete
+            0 == PersonEvent.STORE.afterDelete
+
+        when:
+            new DetachedCriteria(PersonEvent).build {
+                'in'('id', freds*.id)
+            }.deleteAll()
+            session.flush()
+            freds = PersonEvent.findAllByIdInList(freds*.id)
+
+        then:
+            0 == freds.size()
+            3 == PersonEvent.STORE.beforeDelete
+            3 == PersonEvent.STORE.afterDelete
     }
 
     void "Test before update event"() {
@@ -155,6 +184,25 @@ class DomainEventsSpec extends GormDatastoreSpec {
                 1 == PersonEvent.STORE.beforeLoad
             }
             1 == PersonEvent.STORE.afterLoad
+    }
+
+    void "Test multi-load events"() {
+        given:
+            def freds = (1..3).collect {
+                new PersonEvent(name: "Fred$it").save(flush:true)
+            }
+            session.clear()
+
+        when:
+            freds = PersonEvent.findAllByIdInList(freds*.id)
+
+        then:
+            3 == freds.size()
+            if (!'JpaSession'.equals(session.getClass().simpleName)) {
+                // JPA doesn't seem to support a pre-load event
+                3 == PersonEvent.STORE.beforeLoad
+            }
+            3 == PersonEvent.STORE.afterLoad
     }
 
     void "Test bean autowiring"() {
