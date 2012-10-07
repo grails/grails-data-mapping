@@ -77,11 +77,13 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
-        new Neo4jSession(
+        def session = new Neo4jSession(
                 datastore: this,
                 mappingContext: mappingContext,
                 applicationEventPublisher: applicationEventPublisher
         )
+        session.beginTransaction()
+        session
     }
 
     void afterPropertiesSet() {

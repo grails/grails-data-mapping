@@ -110,9 +110,9 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
 
             }
 
-            neo4jOpenSessionInViewInterceptor(Neo4jOpenSessionInViewInterceptor) {
+            /*neo4jOpenSessionInViewInterceptor(Neo4jOpenSessionInViewInterceptor) {
                 datastore = ref("neo4jDatastore")
-            }
+            }*/
 
             // RestGraphDatabase doesn't play nicely with SpringTransactionManager
             if (AbstractGraphDatabase.class.isAssignableFrom(neo4jGraphDatabaseClass)) {
