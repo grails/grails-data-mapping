@@ -603,7 +603,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     protected void checkVersion(final EntityAccess ea, final DBObject previous,
                                 final PersistentEntity persistentEntity, final Object key) {
-        Object oldVersion = previous.get("version");
+        Object oldVersion = previous != null ? previous.get("version") : null;
         Object currentVersion = ea.getProperty("version");
         if (Number.class.isAssignableFrom(ea.getPropertyType("version"))) {
             oldVersion = oldVersion != null ? ((Number)oldVersion).longValue() : oldVersion;
