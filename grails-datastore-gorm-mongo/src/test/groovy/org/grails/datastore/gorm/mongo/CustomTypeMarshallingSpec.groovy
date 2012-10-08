@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
 import org.bson.types.ObjectId
+import grails.persistence.Entity
 
 class CustomTypeMarshallingSpec extends GormDatastoreSpec {
 
@@ -41,6 +42,7 @@ class CustomTypeMarshallingSpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class Person {
     ObjectId id
     String name
