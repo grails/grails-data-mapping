@@ -19,15 +19,9 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import org.grails.datastore.mapping.engine.event.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.engine.event.PostDeleteEvent;
-import org.grails.datastore.mapping.engine.event.PostInsertEvent;
-import org.grails.datastore.mapping.engine.event.PostLoadEvent;
-import org.grails.datastore.mapping.engine.event.PostUpdateEvent;
-import org.grails.datastore.mapping.engine.event.PreInsertEvent;
-import org.grails.datastore.mapping.engine.event.PreLoadEvent;
-import org.grails.datastore.mapping.engine.event.PreUpdateEvent;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
@@ -161,9 +155,6 @@ public abstract class EntityPersister implements Persister {
             return null;
         }
 
-        publisher.publishEvent(new PostLoadEvent(session.getDatastore(),
-                entity, new EntityAccess(entity, o)));
-
         return o;
     }
 
@@ -236,7 +227,7 @@ public abstract class EntityPersister implements Persister {
     }
 
    /**
-    * Fire the beforeUpdate even on an entityAccess object and return true if the operation should be cancelled
+    * Fire the beforeUpdate event on an entityAccess object and return true if the operation should be cancelled
     * @param persistentEntity The entity
     * @param entityAccess The entity access
     * @return true if the operation should be cancelled
@@ -248,6 +239,19 @@ public abstract class EntityPersister implements Persister {
        return event.isCancelled();
    }
 
+    /**
+     * Fire the beforeDelete event on an entityAccess object and return true if the operation should be cancelled
+     * @param persistentEntity The entity
+     * @param entityAccess The entity access
+     * @return true if the operation should be cancelled
+     */
+    public boolean cancelDelete( final PersistentEntity persistentEntity,
+                                 final EntityAccess entityAccess) {
+        PreDeleteEvent event = new PreDeleteEvent(session.getDatastore(), persistentEntity, entityAccess);
+        publisher.publishEvent(event);
+        return event.isCancelled();
+    }
+
     public void firePostUpdateEvent(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
             final EntityAccess entityAccess) {
         publisher.publishEvent(new PostUpdateEvent(
@@ -257,6 +261,18 @@ public abstract class EntityPersister implements Persister {
     public void firePostDeleteEvent(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
             final EntityAccess entityAccess) {
         publisher.publishEvent(new PostDeleteEvent(
+                session.getDatastore(), persistentEntity, entityAccess));
+    }
+
+    public void firePreLoadEvent(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
+            final EntityAccess entityAccess) {
+        publisher.publishEvent(new PreLoadEvent(
+                session.getDatastore(), persistentEntity, entityAccess));
+    }
+
+    public void firePostLoadEvent(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
+            final EntityAccess entityAccess) {
+        publisher.publishEvent(new PostLoadEvent(
                 session.getDatastore(), persistentEntity, entityAccess));
     }
 

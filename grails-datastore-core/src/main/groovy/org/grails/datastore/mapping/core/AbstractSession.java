@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -175,7 +176,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             @SuppressWarnings("unused") boolean forDirtyCheck) {
         entryCache.put(key, entry);
     }
-    
+
     public Collection getCachedCollection(PersistentEntity entity, Serializable key, String name) {
         if (key == null || name == null) {
             return null;
@@ -602,6 +603,8 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             return;
         }
 
+        // sort the objects into sets by Persister, in case the objects are of different types.
+        Map<Persister, List> toDelete = new HashMap<Persister, List>();
         for (Object object : objects) {
             if (object == null) {
                 continue;
@@ -610,11 +613,20 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             if (p == null) {
                 continue;
             }
-
+            List listForPersister = toDelete.get(p);
+            if (listForPersister == null) {
+                toDelete.put(p, listForPersister = new ArrayList());
+            }
+            listForPersister.add(object);
+        }
+        // for each type (usually only 1 type), set up a pendingDelete of that type
+        for (Map.Entry<Persister, List> entry : toDelete.entrySet()) {
+            final Persister p = entry.getKey();
+            final List objectsForP = entry.getValue();
             pendingDeletes.add(new Runnable() {
                 public void run() {
-                    p.delete(objects);
-                    for (Object o : objects) {
+                    p.delete(objectsForP);
+                    for (Object o : objectsForP) {
                         clear(o);
                     }
                 }
