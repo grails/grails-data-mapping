@@ -74,8 +74,13 @@ grails {
 Additionally you must add another dependency to your application's @grails-app/conf/BuildConfig.groovy@:
 
 {code}
-compile('org.neo4j:neo4j-enterprise:1.6')
+compile('org.neo4j:neo4j-enterprise:1.8.RC1')
 {code}
+
+h4. type = "impermanent"
+Uses [ImpermanentGraphDatabase|https://github.com/neo4j/community/blob/master/kernel/src/test/java/org/neo4j/test/ImpermanentGraphDatabase.java].
+This option required a dependency to artifact [group: "org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:'tests'] in BuildConfig.groovy.
+ImpermanentGraphDatabase is intended to be used for testing.
 
 h4. custom graph database
 If you use a custom implementation of GraphDatabaseService, you can use

@@ -34,11 +34,15 @@ class Neo4jTransaction implements Transaction {
     Neo4jTransaction(GraphDatabaseService graphDatabaseService) {
         this.graphDatabaseService = graphDatabaseService
         nativeTransaction = graphDatabaseService.beginTx()
-        log.debug "new: $nativeTransaction"
+        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.debug "new: $nativeTransaction"
+        }
     }
 
     void commit() {
-        log.debug "commit $nativeTransaction"
+        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.debug "commit $nativeTransaction"
+        }
         nativeTransaction.success()
         nativeTransaction.finish()
         //nativeTransaction = graphDatabaseService.beginTx()
@@ -46,7 +50,9 @@ class Neo4jTransaction implements Transaction {
     }
 
     void rollback() {
-        log.debug "rollback $nativeTransaction"
+        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.debug "rollback $nativeTransaction"
+        }
         nativeTransaction.failure()
         nativeTransaction.finish()
         //nativeTransaction = graphDatabaseService.beginTx()

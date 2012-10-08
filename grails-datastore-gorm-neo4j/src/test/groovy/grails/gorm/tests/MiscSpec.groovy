@@ -7,6 +7,8 @@ import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.Node
 import org.neo4j.helpers.collection.IteratorUtil
 import spock.lang.Ignore
+import spock.lang.Issue
+import spock.lang.IgnoreRest
 
 /**
  * some more unrelated testcases, in more belong together logically, consider refactoring them into a seperate spec
@@ -196,7 +198,7 @@ class MiscSpec extends GormDatastoreSpec {
         Team.count() == numberOfTeams
 
         and: "the number of subsubreferenceNodes is correct"
-        subReferenceNode.getRelationships(GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.OUTGOING).size() == numberOfThreads
+        subReferenceNode.getRelationships(GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.OUTGOING).iterator().size() == numberOfThreads
 
         where:
         numberOfThreads | numberOfTeams | numberOfSubSubReferenceNodes
@@ -264,6 +266,26 @@ class MiscSpec extends GormDatastoreSpec {
         then:
         delta > 0
 
+    }
+
+    @Issue("https://github.com/SpringSource/grails-data-mapping/issues/52")
+    def "check that date properties are stored natively as longs"() {
+        when:
+            def pet = new Pet(birthDate: new Date()).save(flush: true)
+        then:
+            pet.node.getProperty("birthDate") instanceof Long
+    }
+
+    @Issue("https://github.com/SpringSource/grails-data-mapping/issues/52")
+    def "verify backward compatibility, check that date properties stored as string can be read"() {
+        setup: "create a instance with a date property and manually assign a string to it"
+            def date = new Date()
+            def pet = new Pet(birthDate: date).save(flush: true)
+            pet.node.setProperty("birthDate", date.time.toString())
+        when: "reloading the instance"
+            pet = Pet.get(pet.id)
+        then: "the string stored date gets parsed correctly"
+            pet.birthDate == date
     }
 
 }

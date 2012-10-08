@@ -8,4 +8,5 @@ gettingStarted:
     combiningNeo4jAndHibernate: Combining Neo4j And Hibernate
     advancedConfiguration: Advanced Configuration
 mapping: Mapping domain classes to Neo4j node space
+neo4jEnhancements: Enhancements to Neo4j core API
 sampleApp: Sample Application

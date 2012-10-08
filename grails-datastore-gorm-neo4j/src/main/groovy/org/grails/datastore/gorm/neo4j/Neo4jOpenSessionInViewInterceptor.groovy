@@ -25,7 +25,10 @@ import org.springframework.web.context.request.WebRequest
  * provide a transaction context for each request
  * since the interceptor might be called multiple times for the same request (by e.g. using <g:include>)
  * all previous transactions must be kept for releasing them later. For this a Stack is used.
+ *
+ * NOTE: this class is deprecated now since Neo4jSession spawns the transaction itself
  */
+@Deprecated
 class Neo4jOpenSessionInViewInterceptor extends OpenSessionInViewInterceptor {
 
     protected final Logger log = LoggerFactory.getLogger(getClass())
@@ -34,7 +37,9 @@ class Neo4jOpenSessionInViewInterceptor extends OpenSessionInViewInterceptor {
 
     @Override
     void preHandle(WebRequest request) {
-        log.debug "preHandle ${request.getDescription(true)}"
+        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.debug "preHandle ${request.getDescription(true)}"
+        }
         super.preHandle(request)
         transactions.push(DatastoreUtils.getSession(datastore, true).beginTransaction())
     }
@@ -44,6 +49,8 @@ class Neo4jOpenSessionInViewInterceptor extends OpenSessionInViewInterceptor {
         super.afterCompletion(request, ex)
         Transaction transaction = transactions.pop()
         ex ? transaction.rollback() : transaction.commit()
-        log.debug "afterCompletion ${request.getDescription(true)}"
+        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.debug "afterCompletion ${request.getDescription(true)}"
+        }
     }
 }

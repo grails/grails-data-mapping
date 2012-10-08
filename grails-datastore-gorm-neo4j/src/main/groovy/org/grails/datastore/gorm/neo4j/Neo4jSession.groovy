@@ -63,6 +63,7 @@ import java.beans.PropertyChangeListener
 import java.beans.PropertyChangeEvent
 import org.grails.datastore.mapping.query.api.QueryableCriteria
 import org.springframework.beans.BeanWrapperImpl
+import org.springframework.core.convert.ConverterNotFoundException
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -112,7 +113,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
     @Override
     Transaction beginTransaction() {
-        transaction = new Neo4jTransaction(nativeInterface)
+        if (!transaction) {
+            transaction = new Neo4jTransaction(nativeInterface)
+        }
         transaction
     }
 
@@ -131,7 +134,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
             Assert.notNull subSubReferenceNode
 
             subSubReferenceNode.createRelationshipTo(node, GrailsRelationshipTypes.INSTANCE)
-            log.debug "created node $node.id with class $name"
+            if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+                log.debug "created node $node.id with class $name"
+            }
             o.id = node.id
             inserts << o
 
@@ -180,7 +185,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
     Node findOrCreateSubSubReferenceNode(Node subReferenceNode) {
         int hashValue = Thread.currentThread().id % Neo4jDatastore.NUMBER_OF_SUBSUBREFERENCE_NODES
         def subSubReferenceNode = subReferenceNode.getRelationships(GrailsRelationshipTypes.SUBSUBREFERENCE, Direction.OUTGOING).find {
-            it.getProperty("hash") == hashValue
+            it.getProperty("hash", null) == hashValue
         }?.endNode
         if (!subSubReferenceNode) {
             subSubReferenceNode = datastore.graphDatabaseService.createNode()
@@ -204,7 +209,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
     }
 
     private boolean isProxy(object) {
-        object.metaClass.methods.any { it.name == 'isProxy'}  // TODO: hotspot, to be optimized
+        object.metaClass.getMetaMethod("isProxy", null) != null
     }
 
     @Override
@@ -215,7 +220,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         objects.addAll(dirtyObjects)
         objects.addAll(inserts)
 
-        log.info "pre flush counting: nonMonitorable: ${nonMonitorableObjects.size()}, dirty: ${dirtyObjects.size()}, inserts: ${inserts.size()}, total: ${objects.size()}"
+        if (log.infoEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.info "pre flush counting: nonMonitorable: ${nonMonitorableObjects.size()}, dirty: ${dirtyObjects.size()}, inserts: ${inserts.size()}, total: ${objects.size()}"
+        }
 
         def alreadyPersisted = [] as Set // required to prevent doubled (and cyclic) saves
 
@@ -227,7 +234,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
             if ((obj in alreadyPersisted) || isProxy(obj)) {
                 continue
             }
-            log.debug "flush obj ${obj.getClass().name} $id"
+            if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+                log.debug "flush obj ${obj.getClass().name} $id"
+            }
             alreadyPersisted << obj
             PersistentEntity pe = mappingContext.getPersistentEntity(obj.getClass().name)
 
@@ -247,13 +256,20 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                 switch (prop) {
                     case Simple:
                         if (!ALLOWED_CLASSES_NEO4J_PROPERTIES.contains(prop.type)) {
-                            value = mappingContext.conversionService.convert(value, String)
+                            try {
+                                value = mappingContext.conversionService.convert(value, Long.TYPE)
+                            } catch (ConverterNotFoundException e) {
+                                value = mappingContext.conversionService.convert(value, String)
+                            }
+
                         }
                         if (thisNode.getProperty(prop.name, null) != value) {
                             value == null ? thisNode.removeProperty(prop.name) : thisNode.setProperty(prop.name, value)
                             hasChanged = true
                         }
-                        log.debug "storing simple for $prop = $value ${thisNode.getProperty(prop.name, null)?.getClass()}"
+                        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+                            log.debug "storing simple for $prop = $value ${thisNode.getProperty(prop.name, null)?.getClass()}"
+                        }
                         break
 
                     case ToOne:
@@ -300,7 +316,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         }
         inserts.clear()
         dirtyObjects.clear()
-        log.info "post flush counting: persisted: $persistedCounter"
+        if (log.infoEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.info "post flush counting: persisted: $persistedCounter"
+        }
     }
 
     private def writeToManyProperty(value, Association association, Node thisNode, obj) {
@@ -340,7 +358,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                     existingNodesIds << target
                 } else {
                     rel.delete()
-                    log.debug "delete relationship ${rel.startNode.id} -> ${rel.endNode.id} ($rel.type.name()}"
+                    if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+                        log.debug "delete relationship ${rel.startNode.id} -> ${rel.endNode.id} ($rel.type.name()}"
+                    }
                 }
             }
 
@@ -351,7 +371,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                     (startNode, endNode) = [endNode, startNode]
                 }
                 startNode.createRelationshipTo(endNode, relationshipType)
-                log.debug "created relationship ${startNode.id} -> ${endNode.id} ($relationshipType}"
+                if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+                    log.debug "created relationship ${startNode.id} -> ${endNode.id} ($relationshipType}"
+                }
             }
         }
         returnValue
@@ -370,7 +392,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         def endNodeId = rel?.getOtherNode(thisNode)?.id
         if (endNodeId && ((value == null) || (value.id != endNodeId))) {
             rel.delete()
-            log.debug "delete relationship ${rel.startNode.id} -> ${rel.endNode.id} ($rel.type.name()}"
+            if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+                log.debug "delete relationship ${rel.startNode.id} -> ${rel.endNode.id} ($rel.type.name()}"
+            }
         }
 
         if ((value != null) && (value.id != endNodeId)) {
@@ -380,7 +404,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                 (startNode, endNode) = [endNode, startNode]
             }
             startNode.createRelationshipTo(endNode, relationshipType)
-            log.debug "created relationship ${startNode.id} -> ${endNode.id} ($relationshipType}"
+            if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+                log.debug "created relationship ${startNode.id} -> ${endNode.id} ($relationshipType}"
+            }
 
             if (association.bidirectional) {
                 def referencePropertyAccess = new EntityAccess(association.associatedEntity, value)
@@ -457,7 +483,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
     @Override
     def <T> T retrieve(Class<T> type, Serializable key) {
-        log.debug "retrieving $type for id $key"
+        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.debug "retrieving $type for id $key"
+        }
         def id = key as long
         if (id == null) {
             return null
@@ -482,7 +510,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                             def value = node.getProperty(prop.name, null)
                             value = mappingContext.conversionService.convert(value, prop.type)
                             entityAccess.setProperty(prop.name, value)
-                            log.debug "reading simple for $prop $value"
+                            if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+                                log.debug "reading simple for $prop $value"
+                            }
                             break
 
                         case ToOne:
@@ -514,22 +544,28 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                 return null
             }
         }
-        log.debug "returning for $key ${System.identityHashCode(result)}"
+        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.debug "returning for $key ${System.identityHashCode(result)}"
+        }
         result
     }
 
+
+    static memoizePropertyChangeListener = Collections.synchronizedMap([:].withDefault() { false }) // it.respondsTo("addPropertyChangeListener")})
+    //def instanceSupportsPropertyChangeListener = { Class clazz -> clazz.respondsTo("addPropertyChangeListener")}.memoize()
+
     private void monitorSettersForObject(object) {
-        try {
+        if (memoizePropertyChangeListener[object.class] == true) {
             object.addPropertyChangeListener(this)
-        } catch (MissingMethodException e) {
+        } else {
             nonMonitorableObjects << object
         }
     }
 
     private void unmonitorSettersForObject(object) {
-        try {
+        if (memoizePropertyChangeListener[object.class] == true) {
             object.removePropertyChangeListener(this)
-        } catch (MissingMethodException e) {
+        } else {
             nonMonitorableObjects.remove(object)
         }
     }
@@ -559,7 +595,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
     @Override
     def <T> T proxy(Class<T> type, Serializable key) {
-        log.debug "creating proxy for $type, id $key"
+        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.debug "creating proxy for $type, id $key"
+        }
         mappingContext.proxyFactory.createProxy(this, type, key)
     }
 
@@ -570,7 +608,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
     @Override
     void delete(Iterable objects) {
-        throw new NotImplementedException()
+        for (instance in objects) {
+            delete(instance)
+        }
     }
 
     @Override
@@ -663,7 +703,9 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
             default:
                 throw new NotImplementedException()
         }
-        log.debug "addObjectToReverseSide: property value $propertyValue"
+        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.debug "addObjectToReverseSide: property value $propertyValue"
+        }
     }
 
 

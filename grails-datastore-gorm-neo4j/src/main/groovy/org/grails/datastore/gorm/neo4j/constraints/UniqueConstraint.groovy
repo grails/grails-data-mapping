@@ -42,14 +42,18 @@ class UniqueConstraint extends AbstractConstraint {
         }
 
         Node subreferenceNode = target.subreferenceNode
-        log.debug "subreferenceNode $subreferenceNode"
+        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.debug "subreferenceNode $subreferenceNode"
+        }
         // TODO: consider using index for this
 
         Relationship hasMatchingNode = subreferenceNode.getRelationships(GrailsRelationshipTypes.INSTANCE, Direction.OUTGOING).iterator().find {
             (it.endNode.id != target.id) && (it.endNode.getProperty(constraintPropertyName, null) == propertyValue)
 
         }
-        log.debug "hasMatchingNode $hasMatchingNode"
+        if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
+            log.debug "hasMatchingNode $hasMatchingNode"
+        }
 
         if (hasMatchingNode) {
             rejectValue(target, errors, UNIQUE_CONSTRAINT,
