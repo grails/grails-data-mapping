@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.grails.datastore.mapping.gemfire.engine.GemfireEntityPersister;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.data.gemfire.GemfireCallback;
 import org.springframework.data.gemfire.GemfireTemplate;
@@ -400,11 +401,13 @@ public class GemfireQuery extends Query {
                     else {
                         finalResults = wrapResultInList(result);
                     }
+                    handleAfterLoad(finalResults);
                 }
                 else {
                     if (result instanceof SelectResults) {
                         SelectResults selectResults = (SelectResults) result;
-                        finalResults = applyProjections(selectResults.asList(), projectionList);
+                        List resultList = selectResults.asList();
+                        finalResults = applyProjections(resultList, projectionList);
                     }
                     else {
                         finalResults = wrapResultInList(result);
@@ -435,6 +438,15 @@ public class GemfireQuery extends Query {
                 return finalResults;
             }
         });
+    }
+
+    private void handleAfterLoad(List finalResults) {
+        for (Object o : finalResults) {
+            GemfireEntityPersister persister = (GemfireEntityPersister) getSession().getPersister(o);
+            if(persister != null) {
+                persister.handleDatastoreLoad(getEntity(), o);
+            }
+        }
     }
 
     /**

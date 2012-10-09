@@ -259,7 +259,7 @@ public class GemfireEntityPersister extends LockableEntityPersister {
      * @param entry The native entry taken from the store.
      * @return The domain entity
      */
-    private Object handleDatastoreLoad(PersistentEntity persistentEntity, Object entry) {
+    public Object handleDatastoreLoad(PersistentEntity persistentEntity, Object entry) {
         final EntityAccess ea = createEntityAccess(persistentEntity, entry);
         firePreLoadEvent(persistentEntity, ea);
         for (Association association : persistentEntity.getAssociations()) {
