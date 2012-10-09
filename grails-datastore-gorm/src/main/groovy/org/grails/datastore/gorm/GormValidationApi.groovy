@@ -14,7 +14,6 @@
  */
 package org.grails.datastore.gorm
 
-import org.grails.datastore.gorm.validation.CascadingValidator
 import org.grails.datastore.gorm.support.BeforeValidateHelper
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.MappingContext
@@ -23,6 +22,7 @@ import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 import org.springframework.validation.Validator
+import org.codehaus.groovy.grails.validation.CascadingValidator
 
 /**
  * Methods used for validating GORM instances.
