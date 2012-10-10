@@ -311,10 +311,12 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         Expression arguments = call.getArguments();
         try {
             if (isCandidateMethodCallForTransform(objectExpression, method, arguments)) {
-                ClassExpression ce = (ClassExpression) objectExpression;
-                ClassNode classNode = ce.getType();
-                this.currentClassNode = classNode;
-                visitMethodCall(classNode, (ArgumentListExpression) arguments);
+                ClassExpression ce = getTargetClassExpresssion(objectExpression);
+                if(ce != null) {
+                    ClassNode classNode = ce.getType();
+                    this.currentClassNode = classNode;
+                    visitMethodCall(classNode, (ArgumentListExpression) arguments);
+                }
             }
             else if(objectExpression instanceof VariableExpression) {
                 VariableExpression var = (VariableExpression) objectExpression;
@@ -343,8 +345,30 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         super.visitMethodCallExpression(call);
     }
 
+    private ClassExpression getTargetClassExpresssion(Expression objectExpression) {
+        if(objectExpression instanceof ClassExpression) {
+            return (ClassExpression) objectExpression;
+        }
+        else if(objectExpression instanceof MethodCallExpression) {
+            MethodCallExpression mce = (MethodCallExpression) objectExpression;
+
+            Expression oe = mce.getObjectExpression();
+            if(oe instanceof ClassExpression )
+                return (ClassExpression) oe;
+        }
+        return null;
+    }
+
     private boolean isCandidateMethodCallForTransform(Expression objectExpression, Expression method, Expression arguments) {
-        return (objectExpression instanceof ClassExpression) && isCandidateWhereMethod(method, arguments);
+        return ((objectExpression instanceof ClassExpression) || isObjectExpressionWhereCall(objectExpression)) && isCandidateWhereMethod(method, arguments);
+    }
+
+    private boolean isObjectExpressionWhereCall(Expression objectExpression) {
+        if(objectExpression instanceof MethodCallExpression) {
+            MethodCallExpression mce = (MethodCallExpression) objectExpression;
+            return isCandidateWhereMethod(mce.getMethodAsString(),mce.getArguments());
+        }
+        return false;
     }
 
     private void visitMethodCall(ClassNode classNode, ArgumentListExpression arguments) {

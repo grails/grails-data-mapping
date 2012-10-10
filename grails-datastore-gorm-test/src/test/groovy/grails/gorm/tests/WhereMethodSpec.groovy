@@ -6,6 +6,7 @@ import org.grails.datastore.gorm.GormEnhancer
 import spock.lang.Ignore
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import grails.persistence.Entity
+import spock.lang.Issue
 
 /**
  * Tests for the new where method used to define detached criteria using the new DSL
@@ -41,6 +42,33 @@ class WhereMethodSpec extends GormDatastoreSpec {
 
     def closureProperty = {
         Person.where { lastName == "Simpson" }.list()
+    }
+
+    @Issue('GRAILS-9471')
+    def "Test chaining where queries directly"() {
+        given:"Some people"
+            createPeople()
+
+        when:"2 where queries are combined in a sequence"
+            def results = Person.where { lastName == 'Simpson' }.where { firstName == 'Bart'}.list()
+
+        then:"The correct results are returned"
+            results.size() == 1
+            results[0].firstName == 'Bart'
+    }
+
+    @Issue('GRAILS-9447')
+    def "Test where query integer type conversion"() {
+        given:"some people"
+            createPeopleWithPets()
+
+        when:"A where query is used with an integer value and a long property type"
+            def results = Pet.where { owner.id == 2 }.list()
+
+        then:"The correct results are returned and type conversion happens as expected"
+            results.size() == 3
+            results[0].id == 3
+
     }
     def "Test where query inside closure property declaration"() {
         given:"some people"
@@ -1448,9 +1476,7 @@ class CallMe {
 
 
     def doQuery() {
-            def query = Pet.where {
-                name == owner.firstName
-            }
+        Person.where { lastName == 'Simpson' }.where { firstName == 'Bart '}.list()
     }
 
 
