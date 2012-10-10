@@ -34,6 +34,7 @@ import org.grails.datastore.gorm.query.criteria.DetachedAssociationCriteria
 import org.grails.datastore.mapping.query.Query.Order.Direction
 import org.grails.datastore.mapping.query.api.QueryableCriteria
 import org.grails.datastore.mapping.query.Query.PropertyCriterion
+import javax.persistence.FetchType
 
 /**
  * Represents criteria that is not bound to the current connection and can be built up and re-used at a later date
@@ -42,17 +43,19 @@ import org.grails.datastore.mapping.query.Query.PropertyCriterion
  * @since 1.0
  */
 class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T> {
-    
-    private List<Criterion> criteria = []
-    private List<Order> orders = []
-    private List<Projection> projections = []
-    private Class targetClass
-    private List<DynamicFinder> dynamicFinders = null
-    private Integer defaultOffset = null
-    private Integer defaultMax = null
 
-    private List<Junction> junctions = []
-    private PersistentEntity persistentEntity
+    protected List<Criterion> criteria = []
+    protected List<Order> orders = []
+    protected List<Projection> projections = []
+    protected Class targetClass
+    protected List<DynamicFinder> dynamicFinders = null
+    protected Integer defaultOffset = null
+    protected Integer defaultMax = null
+
+    protected List<Junction> junctions = []
+    protected PersistentEntity persistentEntity
+    protected Map<String, FetchType> fetchStrategies = new HashMap<String,FetchType>();
+
     ProjectionList projectionList = new DetachedProjections(projections)
 
     /**
@@ -61,6 +64,32 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      */
     DetachedCriteria(Class<T> targetClass) {
         this.targetClass = targetClass
+    }
+
+    Map<String, FetchType> getFetchStrategies() {
+        return fetchStrategies
+    }
+
+    /**
+     * Specifies whether a join query should be used (if join queries are supported by the underlying datastore)
+     *
+     * @param property The property
+     * @return The query
+     */
+    Criteria join(String property) {
+        fetchStrategies[property] = FetchType.EAGER
+        return this
+    }
+
+    /**
+     * Specifies whether a select (lazy) query should be used (if join queries are supported by the underlying datastore)
+     *
+     * @param property The property
+     * @return The query
+     */
+    Criteria select(String property) {
+        fetchStrategies[property] = FetchType.LAZY
+        return this
     }
 
     PersistentEntity getPersistentEntity() {

@@ -80,6 +80,18 @@ public abstract class Query {
     }
 
     /**
+     * Specifies whether a select (lazy) query should be used (if join queries are supported by the underlying datastore)
+     *
+     * @param property The property
+     * @return The query
+     */
+    public Query select(String property) {
+        fetchStrategies.put(property, FetchType.LAZY);
+        return this;
+    }
+
+
+    /**
      * Specifies whether the query results should be cached (if supported by the underlying datastore)
      *
      * @param cache True if caching should be enabled
@@ -622,6 +634,7 @@ public abstract class Query {
             currentJunction.add(criterion);
         }
     }
+
 
     public static interface Criterion {
 

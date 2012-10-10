@@ -53,6 +53,8 @@ import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.FetchType;
+import static javax.persistence.FetchType.*;
 /**
  * Abstract base class for dynamic finders.
  */
@@ -414,6 +416,18 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             List<Query.Order> orders = detachedCriteria.getOrders();
             for (Query.Order order : orders) {
                 q.order(order);
+            }
+
+            Map<String, FetchType> fetchStrategies = detachedCriteria.getFetchStrategies();
+            for (Map.Entry<String, FetchType> entry : fetchStrategies.entrySet()) {
+                switch(entry.getValue()) {
+                    case EAGER:
+                        q.join(entry.getKey()); break;
+                    case LAZY:
+                        q.select(entry.getKey());
+
+                }
+
             }
         }
     }
