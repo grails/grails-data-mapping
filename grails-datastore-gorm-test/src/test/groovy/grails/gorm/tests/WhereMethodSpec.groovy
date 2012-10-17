@@ -15,12 +15,46 @@ import spock.lang.Issue
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
+	def gcl
+	
     @Override
     List getDomainClasses() {
-        [Continent, Group]
+        def list = [Continent, Group]
+		
+		gcl= new GroovyClassLoader()
+		list << gcl.parseClass('''
+import grails.gorm.tests.*
+import grails.gorm.*
+import grails.persistence.*
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+
+@ApplyDetachedCriteriaTransform
+@Entity
+class Todo { 
+		Long id
+		String title
+		static doStuff() {
+			where { title == 'blah' }
+		}
+}
+''')
+		return list
     }
     
-    
+    def "Test a static method that calls where"() {
+					
+		when:"a static method call, calls into where"
+			def Todo = this.gcl.loadClass("Todo")
+			Todo.newInstance(title:"blah").save()
+			Todo.newInstance(title:"two").save(flush:true)
+			def query = Todo.doStuff()	
+			
+		then:"The query is valid"
+			query != null
+			Todo.count() == 2
+			query.count() == 1
+			query.find().title == 'blah'
+	}
 
     
     
@@ -388,19 +422,18 @@ class WhereMethodSpec extends GormDatastoreSpec {
         query.count() == 4
   }
 
-    def "Test comparing property with single ended association"() {
-        given:"people and pets"
-            createPeopleWithPets()
-
-        when:"We query a property against the property of a single-ended association"
-            def query = getClassThatCallsWhere().doQuery()
+//    def "Test comparing property with single ended association"() {
+//        given:"people and pets"
+//            createPeopleWithPets()
+//
+//        when:"We query a property against the property of a single-ended association"            
 //            def query = Pet.where {
 //                name == owner.firstName
 //            }
-
-        then:"the correct results are returned"
-            query.count() == 0
-    }
+//
+//        then:"the correct results are returned"
+//            query.count() == 0
+//    }
 
   def "Test ilike operator"() {
       given:"A bunch of people"
@@ -1474,12 +1507,11 @@ class CallMe {
             Person.where(myDetachedCriteria)
     }
 
+	static doStuff() {
+			Person.where {
 
-    def doQuery() {
-        Person.where { lastName == 'Simpson' }.where { firstName == 'Bart '}.list()
-    }
-
-
+			}
+	}
 
 }
 ''', "Test").newInstance()

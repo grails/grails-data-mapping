@@ -327,6 +327,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     this.currentClassNode = varType;
                     visitMethodCall(varType, (ArgumentListExpression) arguments);
                 }
+                else if(THIS_EXPRESSION.getName().equals(varName) && currentClassNode != null){
+                		visitMethodCall(this.currentClassNode, (ArgumentListExpression)arguments);
+                }
             }
             else if(objectExpression instanceof PropertyExpression) {
                 PropertyExpression pe = (PropertyExpression) objectExpression;
