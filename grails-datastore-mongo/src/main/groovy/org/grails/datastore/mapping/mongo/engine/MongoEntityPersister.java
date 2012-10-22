@@ -118,19 +118,6 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         nativeEntry.put(key, embeddedEntries.toArray());
     }
 
-    @Override
-    protected DBObject handleEmbeddedInstance(Association association, Object embeddedInstance) {
-        DBObject entry = super.handleEmbeddedInstance(association, embeddedInstance);
-        if(!(association instanceof Basic)) {
-            PersistentEntity associatedEntity = association.getAssociatedEntity();
-            MappingContext mappingContext = associatedEntity.getMappingContext();
-            if(mappingContext.isInInheritanceHierarchy(associatedEntity)) {
-                setEntryValue(entry, "_embeddedClassName", embeddedInstance.getClass().getName());
-            }
-        }
-        return entry;
-    }
-
     /**
      * Implementors who want to support one-to-many associations embedded should implement this method
      *
@@ -190,21 +177,9 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             BasicDBList list = (BasicDBList)embeddedInstances;
             for (Object dbo : list) {
                 if (dbo instanceof BasicDBObject) {
-                    PersistentEntity embeddedPersistentEntity;
                     BasicDBObject nativeEntry = (BasicDBObject)dbo;
-                    PersistentEntity associatedEntity = embeddedCollection.getAssociatedEntity();
-                    MappingContext mappingContext = associatedEntity.getMappingContext();
-                    String embeddedClassName = mappingContext.isInInheritanceHierarchy(associatedEntity) ? (String)nativeEntry.get("_embeddedClassName") : null;
-                    if(embeddedClassName != null) {
-                        embeddedPersistentEntity =
-                            getMappingContext().getPersistentEntity(embeddedClassName);
-                    }
-                    else {
-                        embeddedPersistentEntity = associatedEntity;
-                    }
-
-                    Object instance = newEntityInstance(embeddedPersistentEntity);
-                    refreshObjectStateFromNativeEntry(embeddedPersistentEntity, instance, null, nativeEntry, true);
+                    Object instance =
+                            createObjectFromEmbeddedNativeEntry(embeddedCollection.getAssociatedEntity(), nativeEntry);
                     instances.add(instance);
                 }
             }
