@@ -102,8 +102,9 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
         then:
             0 == freds.size()
-            3 == PersonEvent.STORE.beforeDelete
-            3 == PersonEvent.STORE.afterDelete
+            // removed the below assertions because in the case of batch DML statements neither Hibernate nor JPA triggers delete events for individual entities
+//            3 == PersonEvent.STORE.beforeDelete
+//            3 == PersonEvent.STORE.afterDelete
     }
 
     void "Test before update event"() {
