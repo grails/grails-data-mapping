@@ -315,7 +315,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 if(ce != null) {
                     ClassNode classNode = ce.getType();
                     this.currentClassNode = classNode;
-                    visitMethodCall(classNode, (ArgumentListExpression) arguments);
+                    visitMethodCall(classNode, arguments);
                 }
             }
             else if(objectExpression instanceof VariableExpression) {
@@ -325,10 +325,10 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 ClassNode varType = detachedCriteriaVariables.get(varName);
                 if(varType != null && isCandidateWhereMethod(method, arguments)) {
                     this.currentClassNode = varType;
-                    visitMethodCall(varType, (ArgumentListExpression) arguments);
+                    visitMethodCall(varType, arguments);
                 }
                 else if(THIS_EXPRESSION.getName().equals(varName) && currentClassNode != null){
-                		visitMethodCall(this.currentClassNode, (ArgumentListExpression)arguments);
+                		visitMethodCall(this.currentClassNode, arguments);
                 }
             }
             else if(objectExpression instanceof PropertyExpression) {
@@ -338,7 +338,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 if(isDomainClass(classNode)) {
                     ClassNode propertyType = getPropertyType(classNode, propName);
                     if(propertyType != null && DETACHED_CRITERIA_CLASS_NODE.equals(propertyType)) {
-                        visitMethodCall(classNode, (ArgumentListExpression) arguments);
+                        visitMethodCall(classNode, arguments);
                     }
                 }
             }
@@ -374,9 +374,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         return false;
     }
 
-    private void visitMethodCall(ClassNode classNode, ArgumentListExpression arguments) {
-        if (isDomainClass(classNode)) {
-            visitMethodCallOnDetachedCriteria(classNode, arguments);
+    private void visitMethodCall(ClassNode classNode, Expression arguments) {
+        if (isDomainClass(classNode) && (arguments instanceof ArgumentListExpression)) {
+            visitMethodCallOnDetachedCriteria(classNode, (ArgumentListExpression)arguments);
         }
     }
 
@@ -410,7 +410,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         Expression arguments = call.getArguments();
         if(isCandidateWhereMethod(method,arguments)) {
             ClassNode classNode = call.getOwnerType();
-            visitMethodCall(classNode, (ArgumentListExpression) arguments);
+            visitMethodCall(classNode, arguments);
         }
         super.visitStaticMethodCallExpression(call);
     }
