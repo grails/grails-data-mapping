@@ -923,7 +923,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 }
                 newCode.addStatement(new ExpressionStatement(new MethodCallExpression(DELEGATE_EXPRESSION, propertyName, arguments)));
             }
-            else {
+            else if(!variableScope.isReferencedLocalVariable(propertyName)) {
                 sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query property \""+propertyName+"\" - no such property on class "+this.currentClassNode.getName()+" exists.", Token.newString(propertyName, pe.getLineNumber(), pe.getColumnNumber()), sourceUnit));
             }
         }

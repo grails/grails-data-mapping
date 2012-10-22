@@ -40,21 +40,6 @@ class Todo {
 ''')
 		return list
     }
-    
-    def "Test a static method that calls where"() {
-					
-		when:"a static method call, calls into where"
-			def Todo = this.gcl.loadClass("Todo")
-			Todo.newInstance(title:"blah").save()
-			Todo.newInstance(title:"two").save(flush:true)
-			def query = Todo.doStuff()	
-			
-		then:"The query is valid"
-			query != null
-			Todo.count() == 2
-			query.count() == 1
-			query.find().title == 'blah'
-	}
 
     
     
@@ -76,6 +61,44 @@ class Todo {
 
     def closureProperty = {
         Person.where { lastName == "Simpson" }.list()
+    }
+
+
+    @Issue('GRAILS-8526')
+    def "Test association query with referenced arguments"() {
+        given:"some people and pets"
+            createPeopleWithPets()
+
+        when:"A query is built from arguments to a method"
+            def q = getSomePets(name: "Ed")
+            def results = q.list()
+
+        then:"The results are correct"
+            results.size() == 3
+
+    }
+
+
+    def "Test a static method that calls where"() {
+
+        when:"a static method call, calls into where"
+        def Todo = this.gcl.loadClass("Todo")
+        Todo.newInstance(title:"blah").save()
+        Todo.newInstance(title:"two").save(flush:true)
+        def query = Todo.doStuff()
+
+        then:"The query is valid"
+        query != null
+        Todo.count() == 2
+        query.count() == 1
+        query.find().title == 'blah'
+    }
+
+
+    private getSomePets(args) {
+        Pet.where {
+            owner.firstName == args.name
+        }
     }
 
     @Issue('GRAILS-9471')
@@ -1512,6 +1535,15 @@ class CallMe {
 
 			}
 	}
+
+	def doQuery() {
+	    getSomePets(name:"Ed")
+	}
+    private getSomePets(args) {
+        Pet.where {
+            owner.firstName == args.name
+        }
+    }
 
 }
 ''', "Test").newInstance()
