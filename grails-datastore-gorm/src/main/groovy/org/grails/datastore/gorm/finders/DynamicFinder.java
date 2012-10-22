@@ -371,6 +371,22 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         }
         String orderParam = (String)argMap.get(ARGUMENT_ORDER);
 
+        Object fetchObj = argMap.get(ARGUMENT_FETCH);
+        if (fetchObj instanceof Map) {
+            Map fetch = (Map)fetchObj;
+            for (Object o : fetch.keySet()) {
+                String associationName = (String) o;
+                FetchType fetchType = getFetchMode(fetch.get(associationName));
+                switch(fetchType) {
+                    case LAZY:
+                       q.select(associationName);
+                    break;
+                    case EAGER:
+                        q.join(associationName);
+                }
+            }
+        }
+
         final String sort = (String)argMap.get(ARGUMENT_SORT);
         final String order = ORDER_DESC.equalsIgnoreCase(orderParam) ? ORDER_DESC : ORDER_ASC;
         final int max = maxParam == null ? -1 : maxParam;
@@ -392,6 +408,23 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         if(q instanceof QueryArgumentsAware) {
             ((QueryArgumentsAware)q).setArguments(argMap);
         }
+    }
+
+    /**
+     * Retrieves the fetch mode for the specified instance; otherwise returns the default FetchMode.
+     *
+     * @param object The object, converted to a string
+     * @return The FetchMode
+     */
+    public static FetchType getFetchMode(Object object) {
+        String name = object != null ? object.toString() : "default";
+        if (name.equalsIgnoreCase(FetchType.EAGER.toString()) || name.equalsIgnoreCase("join")) {
+            return FetchType.EAGER;
+        }
+        if (name.equalsIgnoreCase(FetchType.LAZY.toString()) || name.equalsIgnoreCase("select")) {
+            return FetchType.LAZY;
+        }
+        return FetchType.LAZY;
     }
 
     protected void configureQueryWithArguments(Class clazz, Query query, Object[] arguments) {
