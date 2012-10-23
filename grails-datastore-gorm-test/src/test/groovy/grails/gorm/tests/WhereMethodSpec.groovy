@@ -38,11 +38,31 @@ class Todo {
 		}
 }
 ''')
+
+        list << gcl.parseClass('''
+import grails.gorm.tests.*
+import grails.gorm.*
+import grails.persistence.*
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+
+@ApplyDetachedCriteriaTransform
+@Entity
+class Project {
+		Long id
+		String name
+		static hasMany =[todos:Todo]
+        Set todos
+
+        static todosThatStartWithA = where {
+            todos.title ==~ "A%"
+        }
+}
+''')
 		return list
     }
 
     
-    
+
 //   TODO: Fix RHS function calls
 //    @Ignore
 //    def "Test year function with to-one association"() {
@@ -63,6 +83,36 @@ class Todo {
         Person.where { lastName == "Simpson" }.list()
     }
 
+    def "Test error when using incorrect property of a to-one association"() {
+        when:"A an unknown domain class property is referenced"
+        queryUsingUnknownToOneAssociationProperty()
+        then:
+        MultipleCompilationErrorsException e = thrown()
+        e.message.contains 'Cannot query property "firstN" - no such property on class grails.gorm.tests.Person exists.'
+    }
+
+
+
+    @Issue('GRAILS-9425')
+    def "Test that static definition of where query works with associations"() {
+         given:"given a project and some todos"
+             def Todo = this.gcl.loadClass("Todo")
+             def Project = this.gcl.loadClass("Project")
+
+             Project.newInstance(name: "Foo").save()
+             Project.newInstance(name: "Bar")
+                     .addToTodos(title:"A todo")
+                     .addToTodos(title:"Another")
+                     .save(flush: true)
+
+            session.clear()
+
+         when:"a statically defined where query is used"
+            def results = Project.todosThatStartWithA.list()
+
+         then:"The correct results are returned"
+            results.size() == 1
+    }
 
     @Issue('GRAILS-8526')
     def "Test association query with referenced arguments"() {
@@ -82,16 +132,16 @@ class Todo {
     def "Test a static method that calls where"() {
 
         when:"a static method call, calls into where"
-        def Todo = this.gcl.loadClass("Todo")
-        Todo.newInstance(title:"blah").save()
-        Todo.newInstance(title:"two").save(flush:true)
-        def query = Todo.doStuff()
+            def Todo = this.gcl.loadClass("Todo")
+            Todo.newInstance(title:"blah").save()
+            Todo.newInstance(title:"two").save(flush:true)
+            def query = Todo.doStuff()
 
         then:"The query is valid"
-        query != null
-        Todo.count() == 2
-        query.count() == 1
-        query.find().title == 'blah'
+            query != null
+            Todo.count() == 2
+            query.count() == 1
+            query.find().title == 'blah'
     }
 
 
@@ -736,15 +786,6 @@ class Todo {
             MultipleCompilationErrorsException e = thrown()
             e.message.contains 'Cannot query on property "doesntExist" - no such property on class grails.gorm.tests.Person exists.'
    }
-
-   def "Test error when using incorrect property of a to-one association"() {
-       when:"A an unknown domain class property is referenced"
-          queryUsingUnknownToOneAssociationProperty()
-       then:
-            MultipleCompilationErrorsException e = thrown()
-            e.message.contains 'Cannot query property "firstN" - no such property on class grails.gorm.tests.Person exists.'
-   }
-
 
     def "Test error when using function on property of a to-one association"() {
         when:"A function is used on a property expression"

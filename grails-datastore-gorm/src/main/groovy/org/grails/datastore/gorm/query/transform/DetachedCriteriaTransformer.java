@@ -57,10 +57,12 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     public static final ClassNode FUNCTION_CALL_CRITERION = new ClassNode(FunctionCallingCriterion.class);
     public static final String EQUALS_OPERATOR = "==";
     public static final String IS_NULL_CRITERION = "isNull";
+    public static final ConstantExpression WHERE_LAZY = new ConstantExpression("whereLazy");
 
     private SourceUnit sourceUnit;
     private static final Set<String> CANDIDATE_METHODS = new HashSet<String>() {{
         add("where");
+        add("whereLazy");
         add("whereAny");
         add("findAll");
         add("find");
@@ -196,7 +198,8 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                             transformClosureExpression(classNode, closureExpression);
 
 
-                            MethodCallExpression newInitialExpression = new MethodCallExpression(new ConstructorCallExpression(DETACHED_CRITERIA_CLASS_NODE, new ArgumentListExpression(new ClassExpression(classNode))), "build", new ArgumentListExpression(closureExpression));
+                            String buildMethod = mce.getMethodAsString().equals("whereLazy") ? "buildLazy" : "build";
+                            MethodCallExpression newInitialExpression = new MethodCallExpression(new ConstructorCallExpression(DETACHED_CRITERIA_CLASS_NODE, new ArgumentListExpression(new ClassExpression(classNode))), buildMethod, new ArgumentListExpression(closureExpression));
                             node.setInitialValueExpression(newInitialExpression);
                             node.setType(DETACHED_CRITERIA_CLASS_NODE);
                             staticDetachedCriteriaVariables.put(node.getName(), classNode);
@@ -328,7 +331,8 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     visitMethodCall(varType, arguments);
                 }
                 else if(THIS_EXPRESSION.getName().equals(varName) && currentClassNode != null && isCandidateWhereMethod(method.getText(), arguments)){
-                		visitMethodCall(this.currentClassNode, arguments);
+                	visitMethodCall(this.currentClassNode, arguments);
+                    call.setMethod(WHERE_LAZY);
                 }
             }
             else if(objectExpression instanceof PropertyExpression) {
@@ -884,7 +888,8 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             if (propertyNames.contains(propertyName)) {
                 String associationProperty = pe.getPropertyAsString();
 
-                List<String> associationPropertyNames = null;
+                List<String> associationPropertyNames = Collections.emptyList();
+
                 ClassNode type = getPropertyType(propertyName);
                 if(!isDomainClass(type)) {
                     ClassNode associationTypeFromGenerics = getAssociationTypeFromGenerics(type);
@@ -892,6 +897,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                         type = associationTypeFromGenerics;
                         associationPropertyNames = getPropertyNamesForAssociation(associationTypeFromGenerics);
                     }
+                }
+                else {
+                    associationPropertyNames = getPropertyNamesForAssociation(type);
                 }
                 if(associationPropertyNames == null) {
                     associationPropertyNames = getPropertyNamesForAssociation(type);

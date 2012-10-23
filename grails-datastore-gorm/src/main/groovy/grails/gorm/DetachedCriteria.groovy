@@ -55,6 +55,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     protected List<Junction> junctions = []
     protected PersistentEntity persistentEntity
     protected Map<String, FetchType> fetchStrategies = new HashMap<String,FetchType>();
+    protected Closure lazyQuery
 
     ProjectionList projectionList = new DetachedProjections(projections)
 
@@ -109,6 +110,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     public void add(Criterion criterion) {
+        applyLazyCriteria()
         if(criterion instanceof PropertyCriterion) {
             if(criterion.value instanceof Closure) {
                 criterion.value = buildQueryableCriteria(criterion.value)
@@ -753,6 +755,20 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         return newCriteria
     }
 
+
+    /**
+     * Enable the builder syntax for contructing Criteria
+     *
+     * @param callable The callable closure
+     * @return This criteria instance
+     */
+
+    DetachedCriteria<T> buildLazy(Closure callable) {
+        DetachedCriteria newCriteria = this.clone()
+        newCriteria.lazyQuery = callable
+        return newCriteria
+    }
+
     /**
      * Sets the default max to use and returns a new criteria instance. This method does not mutate the original criteria!
      *
@@ -900,6 +916,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
 
     private withPopulatedQuery(Map args, Closure additionalCriteria, Closure callable)  {
         targetClass.withDatastoreSession { Session session ->
+            applyLazyCriteria()
             Query query = session.createQuery(targetClass)
             if(defaultMax != null) {
                 query.max(defaultMax)
@@ -917,6 +934,14 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
             DynamicFinder.populateArgumentsForCriteria(targetClass, query, args)
 
             callable.call(query)
+        }
+    }
+
+    private void applyLazyCriteria() {
+        if (lazyQuery != null) {
+            def criteria = lazyQuery
+            lazyQuery = null
+            this.with criteria
         }
     }
 

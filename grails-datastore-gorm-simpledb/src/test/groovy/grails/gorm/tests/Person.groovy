@@ -20,6 +20,14 @@ class Person implements Serializable {
     Set pets = [] as Set
     static hasMany = [pets: Pet]
 
+    static peopleWithOlderPets = where {
+        pets {
+            age > 9
+        }
+    }
+    static peopleWithOlderPets2 = where {
+        pets.age > 9
+    }
     public String toString() {
         return "Person{" +
                 "firstName='" + firstName + '\'' +
