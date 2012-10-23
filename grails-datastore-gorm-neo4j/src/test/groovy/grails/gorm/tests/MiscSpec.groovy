@@ -8,7 +8,6 @@ import org.neo4j.graphdb.Node
 import org.neo4j.helpers.collection.IteratorUtil
 import spock.lang.Ignore
 import spock.lang.Issue
-import spock.lang.IgnoreRest
 
 /**
  * some more unrelated testcases, in more belong together logically, consider refactoring them into a seperate spec

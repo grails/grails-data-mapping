@@ -1,5 +1,5 @@
-//version = "1.0.0.BUILD-SNAPSHOT"
-version = "1.0.0.M13"
+version = "1.0.0.BUILD-SNAPSHOT"
+//version = "1.0.0.M14"
 
 ext.neo4jVersion = "1.8"
 
