@@ -98,11 +98,12 @@ class DomainEventsSpec extends GormDatastoreSpec {
                 'in'('id', freds*.id)
             }.deleteAll()
             session.flush()
-            freds = PersonEvent.findAllByIdInList(freds*.id)
 
         then:
-            0 == freds.size()
-            // removed the below assertions because in the case of batch DML statements neither Hibernate nor JPA triggers delete events for individual entities
+            0 == PersonEvent.count()
+            0 == PersonEvent.list().size()
+
+        // removed the below assertions because in the case of batch DML statements neither Hibernate nor JPA triggers delete events for individual entities
 //            3 == PersonEvent.STORE.beforeDelete
 //            3 == PersonEvent.STORE.afterDelete
     }
