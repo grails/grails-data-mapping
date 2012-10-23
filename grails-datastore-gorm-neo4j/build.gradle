@@ -25,8 +25,8 @@ dependencies {
                 [group: "org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:'tests'],
                 [group: "org.neo4j.app", name:"neo4j-server", version:neo4jVersion, classifier:'tests'],
                 [group: "org.neo4j.app", name:"neo4j-server", version:neo4jVersion],
-                [group: "org.neo4j", name:"neo4j-rest-graphdb", version:'1.8-SNAPSHOT'],
-                [group: "org.neo4j", name:"neo4j-rest-graphdb", version:'1.8-SNAPSHOT', classifier:'tests'],
+                [group: "org.neo4j", name:"neo4j-rest-graphdb", version:'1.8'],
+                [group: "org.neo4j", name:"neo4j-rest-graphdb", version:'1.8', classifier:'tests'],
                 "org.neo4j:neo4j-graphviz:$neo4jVersion"
     testRuntime "javax.servlet:servlet-api:2.5",
                 "org.grails:grails-gorm:$grailsVersion",
