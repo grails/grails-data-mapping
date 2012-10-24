@@ -33,8 +33,8 @@ grails.project.dependency.resolution = {
         }
 
         def datastoreVersion = "1.0.2.RELEASE"
-        //def neo4jDatastoreVersion = "1.0.0.BUILD-SNAPSHOT"
-        def neo4jDatastoreVersion = "1.0.0.M13"
+        def neo4jDatastoreVersion = "1.0.0.BUILD-SNAPSHOT"
+        //def neo4jDatastoreVersion = "1.0.0.M14"
 
         compile("org.grails:grails-datastore-gorm-neo4j:$neo4jDatastoreVersion",
                 "org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
