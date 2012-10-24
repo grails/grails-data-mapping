@@ -83,6 +83,106 @@ class Project {
         Person.where { lastName == "Simpson" }.list()
     }
 
+    @Issue('GRAILS-8256')
+    def "Test query with 3 level deep domain association"() {
+        given:"create people and faces"
+          createPeopleWithFaces()
+
+        when:"A query that uses criteria 2 levels deep is executed"
+            def results = Nose.withCriteria {
+                face { person { eq 'lastName', 'Simpson' } }
+            }
+
+        then:"The results are correct"
+            results.size() == 4
+
+        when:"A query that queries an association 2 levels deep is executed"
+            def query = Nose.where {
+                face.person.lastName == "Simpson"
+            }
+
+        then:"The correct results are returned"
+            query.count() == 4
+
+        when:"A query that queries an association 2 levels deep is executed via nesting"
+            query = Nose.where {
+                face { person { lastName == "Simpson" } }
+            }
+
+        then:"The correct results are returned"
+            query.count() == 4
+    }
+
+    private createPeopleWithFaces() {
+        final h = new Person(firstName: "Homer", lastName: "Simpson", age: 45)
+        h.face = new Face(name: "Homer", nose: new Nose(), person: h )
+        h.save()
+        final m = new Person(firstName: "Marge", lastName: "Simpson", age: 40)
+        m.face = new Face(name: "Marge", nose: new Nose(), person: m)
+        m.save()
+
+        final b = new Person(firstName: "Bart", lastName: "Simpson", age: 9)
+        b.face = new Face(name: "Bart", nose: new Nose(hasFreckles: true), person: b)
+        b.save()
+
+        final l = new Person(firstName: "Lisa", lastName: "Simpson", age: 7)
+        l.face = new Face(name: "Lisa", nose: new Nose(hasFreckles: true), person: l)
+        l.save()
+
+        final ba = new Person(firstName: "Barney", lastName: "Rubble", age: 35)
+        ba.face = new Face(name: "Barney", nose: new Nose())
+        ba.save()
+
+        assert Person.count() == 5
+        assert Face.count() == 5
+
+    }
+
+    @Issue('GRAILS-8256')
+    def "Test query with 3 level deep collection association"() {
+        given:"some people with pets in groups"
+            createPeopleInGroupsWithPets()
+
+        when:"A query that uses criteria 2 levels deep is executed"
+            def results = Group.withCriteria {
+                people { pets { eq 'name', 'Jack' } }
+            }
+
+        then:"The results are correct"
+            results.size() == 1
+        when:"A query that queries an association 2 levels deep is executed"
+            def query = Group.where {
+                people.pets.name == "Jack"
+            }
+
+        then:"The correct results are returned"
+            query.count() == 1
+
+        when:"A query that queries an association 2 levels deep is executed via nesting"
+            query = Group.where {
+                people { pets { name == "Jack" } }
+            }
+
+        then:"The correct results are returned"
+            query.count() == 1
+    }
+
+    @Issue('GRAILS-8366')
+    def "Test calling method on RHS of collection size() query"() {
+        given:"some people and pets"
+            createPeopleWithPets()
+
+        when:"A query that inspects the size() of a collection and calls a method on the RHS is called"
+            def query = Person.where {
+                pets.size() == processPetSize(3)
+            }
+
+        then:"The query returns the correct results"
+            query.count() == 1
+    }
+
+    private processPetSize(int size) { size }
+
     def "Test error when using incorrect property of a to-one association"() {
         when:"A an unknown domain class property is referenced"
         queryUsingUnknownToOneAssociationProperty()
@@ -1365,7 +1465,28 @@ class Project {
         session.clear()
         
         assert Group.findByName("Simpsons").people.size() == 4
-    }    
+    }
+
+    protected def createPeopleInGroupsWithPets() {
+        createPeopleWithPets()
+        def peopleWith2Pets = Person.findAllByLastNameOrLastName("Bloggs", "Cloggs")
+        assert peopleWith2Pets.size() == 2
+        def s = new Group(name: "2 Pets")
+        s.people.addAll(peopleWith2Pets)
+        s.save flush: true
+
+        def peopleWith3Pets = Person.findAllByLastName("Floggs")
+        assert peopleWith3Pets.size() == 1
+        s = new Group(name: "3 Pets")
+        s.people.addAll(peopleWith3Pets)
+        s.save flush: true
+
+
+        session.clear()
+
+        assert Group.findByName("2 Pets").people.size() == 2
+        assert Group.findByName("3 Pets").people.size() == 1
+    }
 
     protected def createPeopleWithPets() {
         new Person(firstName: "Joe", lastName: "Bloggs", age:4)
@@ -1578,12 +1699,9 @@ class CallMe {
 	}
 
 	def doQuery() {
-	    getSomePets(name:"Ed")
-	}
-    private getSomePets(args) {
-        Pet.where {
-            owner.firstName == args.name
-        }
+            def query = Group.where {
+                people.pets.name == "Jack"
+            }
     }
 
 }
@@ -1605,6 +1723,6 @@ class Continent {
 class Group {
     Long id
     String name
-    SortedSet people = [] as SortedSet
+    SortedSet<Person> people = [] as SortedSet
     static hasMany = [people:Person]
 }

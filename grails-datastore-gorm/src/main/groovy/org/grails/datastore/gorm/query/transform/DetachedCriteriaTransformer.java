@@ -658,7 +658,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     private List<String> getPropertyNamesForAssociation(ClassNode type) {
-        List<String> associationPropertyNames = null;
+        List<String> associationPropertyNames = Collections.emptyList();
         if(type != null) {
             if(isDomainClass(type)) {
                 associationPropertyNames = getPropertyNames(type);
@@ -883,26 +883,74 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private void handleAssociationQueryViaPropertyExpression(PropertyExpression pe, Expression oppositeSide, String operator, BlockStatement newCode, List<String> propertyNames, String functionName, VariableScope variableScope) {
         Expression objectExpression = pe.getObjectExpression();
-        if (objectExpression instanceof VariableExpression) {
+        if(objectExpression instanceof PropertyExpression) {
+            // nested property expression, we have to find the root variable expression and walk backwards through all the properties involved
+            List<String> associationMethodCalls = new ArrayList<String>();
+
+            while(objectExpression instanceof PropertyExpression) {
+                PropertyExpression currentPe = (PropertyExpression) objectExpression;
+                associationMethodCalls.add(currentPe.getPropertyAsString());
+                objectExpression = currentPe.getObjectExpression();
+            }
+
+            if(objectExpression instanceof VariableExpression) {
+                VariableExpression ve = (VariableExpression) objectExpression;
+
+                associationMethodCalls.add(ve.getName());
+
+                Collections.reverse(associationMethodCalls);
+
+                ClassNode currentType = currentClassNode;
+                BlockStatement currentBody = newCode;
+
+                for (Iterator<String> iterator = associationMethodCalls.iterator(); iterator.hasNext(); ) {
+                    String associationMethodCall = iterator.next();
+
+                    ClosureAndArguments closureAndArguments = new ClosureAndArguments(variableScope);
+
+                    ArgumentListExpression arguments = closureAndArguments.getArguments();
+                    ClassNode type = getPropertyTypeFromGenerics(associationMethodCall, currentType);
+
+
+                    currentType = type;
+                    currentBody.addStatement(new ExpressionStatement(new MethodCallExpression(DELEGATE_EXPRESSION, associationMethodCall, arguments)));
+                    currentBody = closureAndArguments.getCurrentBody();
+
+
+                    if(!iterator.hasNext()) {
+                        String associationProperty = pe.getPropertyAsString();
+                        List<String> associationPropertyNames = getPropertyNamesForAssociation(type);
+                        ClassNode existing = this.currentClassNode;
+                        try {
+
+                            this.currentClassNode = type;
+                            boolean hasNoProperties = associationPropertyNames.isEmpty();
+                            if(functionName != null) {
+                                handleFunctionCall(currentBody, operator, oppositeSide, functionName, new ConstantExpression(associationProperty));
+                            }
+                            else {
+                                addCriteriaCallMethodExpression(currentBody, operator, oppositeSide, associationProperty, associationPropertyNames, hasNoProperties, variableScope);
+                            }
+                        } finally {
+                            this.currentClassNode = existing;
+                        }
+
+                    }
+
+                }
+            }
+
+        }
+        else if (objectExpression instanceof VariableExpression) {
             String propertyName = objectExpression.getText();
             if (propertyNames.contains(propertyName)) {
                 String associationProperty = pe.getPropertyAsString();
 
-                List<String> associationPropertyNames = Collections.emptyList();
-
-                ClassNode type = getPropertyType(propertyName);
-                if(!isDomainClass(type)) {
-                    ClassNode associationTypeFromGenerics = getAssociationTypeFromGenerics(type);
-                    if(associationTypeFromGenerics != null) {
-                        type = associationTypeFromGenerics;
-                        associationPropertyNames = getPropertyNamesForAssociation(associationTypeFromGenerics);
-                    }
-                }
-                else {
-                    associationPropertyNames = getPropertyNamesForAssociation(type);
-                }
+                ClassNode classNode = currentClassNode;
+                ClassNode type = getPropertyTypeFromGenerics(propertyName, classNode);
+                List<String> associationPropertyNames = getPropertyNamesForAssociation(type);
                 if(associationPropertyNames == null) {
-                    associationPropertyNames = getPropertyNamesForAssociation(type);
+                    associationPropertyNames = getPropertyNamesForAssociation(classNode);
                 }
 
 
@@ -936,6 +984,18 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             }
         }
 
+
+    }
+
+    private ClassNode getPropertyTypeFromGenerics(String propertyName, ClassNode classNode) {
+        ClassNode type = getPropertyType(classNode, propertyName);
+        if(!isDomainClass(type)) {
+            ClassNode associationTypeFromGenerics = getAssociationTypeFromGenerics(type);
+            if(associationTypeFromGenerics != null && isDomainClass(associationTypeFromGenerics)) {
+                type = associationTypeFromGenerics;
+            }
+        }
+        return type;
     }
 
     private void addCriteriaCallMethodExpression(BlockStatement newCode, String operator, Expression rightExpression, String propertyName, List<String> propertyNames, boolean addAll, VariableScope variableScope) {
