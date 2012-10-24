@@ -352,6 +352,13 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         return obj;
     }
 
+    public Object createObjectFromEmbeddedNativeEntry(PersistentEntity persistentEntity, T nativeEntry) {
+        persistentEntity = discriminatePersistentEntity(persistentEntity, nativeEntry);
+        Object obj = newEntityInstance(persistentEntity);
+        refreshObjectStateFromNativeEntry(persistentEntity, obj, null, nativeEntry, true);
+        return obj;
+    }
+
     protected void cacheNativeEntry(PersistentEntity persistentEntity,
             Serializable nativeKey, T nativeEntry) {
         SessionImplementor<Object> si = (SessionImplementor<Object>) session;
@@ -416,9 +423,8 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     T embeddedEntry = getEmbedded(nativeEntry, propKey);
 
                     if (embeddedEntry != null) {
-                        Object embeddedInstance = newEntityInstance(embedded.getAssociatedEntity());
-                        refreshObjectStateFromNativeEntry(embedded.getAssociatedEntity(),
-                              embeddedInstance, null, embeddedEntry, true);
+                        Object embeddedInstance =
+                                createObjectFromEmbeddedNativeEntry(embedded.getAssociatedEntity(), embeddedEntry);
                         ea.setProperty(propKey, embeddedInstance);
                         if (embedded.isBidirectional()) {
                             Association inverseSide = embedded.getInverseSide();
@@ -429,7 +435,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                         }
                     }
                 }
-
                 else {
                     ToOne association = (ToOne) prop;
 
@@ -454,6 +459,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     }
                     if (isEmbeddedEntry(tmp)) {
                         PersistentEntity associatedEntity = ((ToOne) prop).getAssociatedEntity();
+                        associatedEntity = discriminatePersistentEntity(associatedEntity, (T) tmp);
                         Object instance = newEntityInstance(associatedEntity);
                         refreshObjectStateFromNativeEntry(associatedEntity,instance, null, (T) tmp, false);
                         ea.setProperty(prop.getName(), instance);
