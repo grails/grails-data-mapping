@@ -6,6 +6,7 @@ import org.grails.datastore.gorm.GormEnhancer
 import spock.lang.Ignore
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import grails.persistence.Entity
+import spock.lang.Issue
 
 /**
  * Tests for the new where method used to define detached criteria using the new DSL
@@ -14,15 +15,54 @@ import grails.persistence.Entity
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
+	def gcl
+	
     @Override
     List getDomainClasses() {
-        [Continent, Group]
+        def list = [Continent, Group]
+		
+		gcl= new GroovyClassLoader()
+		list << gcl.parseClass('''
+import grails.gorm.tests.*
+import grails.gorm.*
+import grails.persistence.*
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+
+@ApplyDetachedCriteriaTransform
+@Entity
+class Todo { 
+		Long id
+		String title
+		static doStuff() {
+			where { title == 'blah' }
+		}
+}
+''')
+
+        list << gcl.parseClass('''
+import grails.gorm.tests.*
+import grails.gorm.*
+import grails.persistence.*
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+
+@ApplyDetachedCriteriaTransform
+@Entity
+class Project {
+		Long id
+		String name
+		static hasMany =[todos:Todo]
+        Set todos
+
+        static todosThatStartWithA = where {
+            todos.title ==~ "A%"
+        }
+}
+''')
+		return list
     }
-    
-    
 
     
-    
+
 //   TODO: Fix RHS function calls
 //    @Ignore
 //    def "Test year function with to-one association"() {
@@ -41,6 +81,201 @@ class WhereMethodSpec extends GormDatastoreSpec {
 
     def closureProperty = {
         Person.where { lastName == "Simpson" }.list()
+    }
+
+    @Issue('GRAILS-8256')
+    def "Test query with 3 level deep domain association"() {
+        given:"create people and faces"
+          createPeopleWithFaces()
+
+        when:"A query that uses criteria 2 levels deep is executed"
+            def results = Nose.withCriteria {
+                face { person { eq 'lastName', 'Simpson' } }
+            }
+
+        then:"The results are correct"
+            results.size() == 4
+
+        when:"A query that queries an association 2 levels deep is executed"
+            def query = Nose.where {
+                face.person.lastName == "Simpson"
+            }
+
+        then:"The correct results are returned"
+            query.count() == 4
+
+        when:"A query that queries an association 2 levels deep is executed via nesting"
+            query = Nose.where {
+                face { person { lastName == "Simpson" } }
+            }
+
+        then:"The correct results are returned"
+            query.count() == 4
+    }
+
+    private createPeopleWithFaces() {
+        final h = new Person(firstName: "Homer", lastName: "Simpson", age: 45)
+        h.face = new Face(name: "Homer", nose: new Nose(), person: h )
+        h.save()
+        final m = new Person(firstName: "Marge", lastName: "Simpson", age: 40)
+        m.face = new Face(name: "Marge", nose: new Nose(), person: m)
+        m.save()
+
+        final b = new Person(firstName: "Bart", lastName: "Simpson", age: 9)
+        b.face = new Face(name: "Bart", nose: new Nose(hasFreckles: true), person: b)
+        b.save()
+
+        final l = new Person(firstName: "Lisa", lastName: "Simpson", age: 7)
+        l.face = new Face(name: "Lisa", nose: new Nose(hasFreckles: true), person: l)
+        l.save()
+
+        final ba = new Person(firstName: "Barney", lastName: "Rubble", age: 35)
+        ba.face = new Face(name: "Barney", nose: new Nose())
+        ba.save()
+
+        assert Person.count() == 5
+        assert Face.count() == 5
+
+    }
+
+    @Issue('GRAILS-8256')
+    def "Test query with 3 level deep collection association"() {
+        given:"some people with pets in groups"
+            createPeopleInGroupsWithPets()
+
+        when:"A query that uses criteria 2 levels deep is executed"
+            def results = Group.withCriteria {
+                people { pets { eq 'name', 'Jack' } }
+            }
+
+        then:"The results are correct"
+            results.size() == 1
+        when:"A query that queries an association 2 levels deep is executed"
+            def query = Group.where {
+                people.pets.name == "Jack"
+            }
+
+        then:"The correct results are returned"
+            query.count() == 1
+
+        when:"A query that queries an association 2 levels deep is executed via nesting"
+            query = Group.where {
+                people { pets { name == "Jack" } }
+            }
+
+        then:"The correct results are returned"
+            query.count() == 1
+    }
+
+    @Issue('GRAILS-8366')
+    def "Test calling method on RHS of collection size() query"() {
+        given:"some people and pets"
+            createPeopleWithPets()
+
+        when:"A query that inspects the size() of a collection and calls a method on the RHS is called"
+            def query = Person.where {
+                pets.size() == processPetSize(3)
+            }
+
+        then:"The query returns the correct results"
+            query.count() == 1
+    }
+
+    private processPetSize(int size) { size }
+
+    def "Test error when using incorrect property of a to-one association"() {
+        when:"A an unknown domain class property is referenced"
+        queryUsingUnknownToOneAssociationProperty()
+        then:
+        MultipleCompilationErrorsException e = thrown()
+        e.message.contains 'Cannot query property "firstN" - no such property on class grails.gorm.tests.Person exists.'
+    }
+
+
+
+    @Issue('GRAILS-9425')
+    def "Test that static definition of where query works with associations"() {
+         given:"given a project and some todos"
+             def Todo = this.gcl.loadClass("Todo")
+             def Project = this.gcl.loadClass("Project")
+
+             Project.newInstance(name: "Foo").save()
+             Project.newInstance(name: "Bar")
+                     .addToTodos(title:"A todo")
+                     .addToTodos(title:"Another")
+                     .save(flush: true)
+
+            session.clear()
+
+         when:"a statically defined where query is used"
+            def results = Project.todosThatStartWithA.list()
+
+         then:"The correct results are returned"
+            results.size() == 1
+    }
+
+    @Issue('GRAILS-8526')
+    def "Test association query with referenced arguments"() {
+        given:"some people and pets"
+            createPeopleWithPets()
+
+        when:"A query is built from arguments to a method"
+            def q = getSomePets(name: "Ed")
+            def results = q.list()
+
+        then:"The results are correct"
+            results.size() == 3
+
+    }
+
+
+    def "Test a static method that calls where"() {
+
+        when:"a static method call, calls into where"
+            def Todo = this.gcl.loadClass("Todo")
+            Todo.newInstance(title:"blah").save()
+            Todo.newInstance(title:"two").save(flush:true)
+            def query = Todo.doStuff()
+
+        then:"The query is valid"
+            query != null
+            Todo.count() == 2
+            query.count() == 1
+            query.find().title == 'blah'
+    }
+
+
+    private getSomePets(args) {
+        Pet.where {
+            owner.firstName == args.name
+        }
+    }
+
+    @Issue('GRAILS-9471')
+    def "Test chaining where queries directly"() {
+        given:"Some people"
+            createPeople()
+
+        when:"2 where queries are combined in a sequence"
+            def results = Person.where { lastName == 'Simpson' }.where { firstName == 'Bart'}.list()
+
+        then:"The correct results are returned"
+            results.size() == 1
+            results[0].firstName == 'Bart'
+    }
+
+    @Issue('GRAILS-9447')
+    def "Test where query integer type conversion"() {
+        given:"some people"
+            createPeopleWithPets()
+
+        when:"A where query is used with an integer value and a long property type"
+            def results = Pet.where { owner.id == 2 }.list()
+
+        then:"The correct results are returned and type conversion happens as expected"
+            results.size() == 3
+            results[0].id == 3
+
     }
     def "Test where query inside closure property declaration"() {
         given:"some people"
@@ -112,7 +347,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
             def results = people.property("lastName").property('firstName').list()
 
         then:"The correct results are returned"
-            results == [["Simpson", "Simpson", "Simpson", "Simpson"], ["Homer", "Marge", "Bart", "Lisa"]]
+            results == [["Simpson", "Homer"], ["Simpson", "Marge"], ["Simpson", "Bart"], ["Simpson", "Lisa"]]
     }
 
     def "Test where with multiple property projections"() {
@@ -127,7 +362,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
             }.list()
 
         then:"The correct results are returned"
-            results == [["Simpson", "Simpson", "Simpson", "Simpson"], ["Homer", "Marge", "Bart", "Lisa"]]
+            results == [["Simpson", "Homer"], ["Simpson", "Marge"], ["Simpson", "Bart"], ["Simpson", "Lisa"]]
     }
 
 
@@ -359,6 +594,20 @@ class WhereMethodSpec extends GormDatastoreSpec {
       then:"the correct results are returned"
         query.count() == 4
   }
+
+//    def "Test comparing property with single ended association"() {
+//        given:"people and pets"
+//            createPeopleWithPets()
+//
+//        when:"We query a property against the property of a single-ended association"            
+//            def query = Pet.where {
+//                name == owner.firstName
+//            }
+//
+//        then:"the correct results are returned"
+//            query.count() == 0
+//    }
+
   def "Test ilike operator"() {
       given:"A bunch of people"
            createPeople()
@@ -637,15 +886,6 @@ class WhereMethodSpec extends GormDatastoreSpec {
             MultipleCompilationErrorsException e = thrown()
             e.message.contains 'Cannot query on property "doesntExist" - no such property on class grails.gorm.tests.Person exists.'
    }
-
-   def "Test error when using incorrect property of a to-one association"() {
-       when:"A an unknown domain class property is referenced"
-          queryUsingUnknownToOneAssociationProperty()
-       then:
-            MultipleCompilationErrorsException e = thrown()
-            e.message.contains 'Cannot query property "firstN" - no such property on class grails.gorm.tests.Person exists.'
-   }
-
 
     def "Test error when using function on property of a to-one association"() {
         when:"A function is used on a property expression"
@@ -1225,7 +1465,28 @@ class WhereMethodSpec extends GormDatastoreSpec {
         session.clear()
         
         assert Group.findByName("Simpsons").people.size() == 4
-    }    
+    }
+
+    protected def createPeopleInGroupsWithPets() {
+        createPeopleWithPets()
+        def peopleWith2Pets = Person.findAllByLastNameOrLastName("Bloggs", "Cloggs")
+        assert peopleWith2Pets.size() == 2
+        def s = new Group(name: "2 Pets")
+        s.people.addAll(peopleWith2Pets)
+        s.save flush: true
+
+        def peopleWith3Pets = Person.findAllByLastName("Floggs")
+        assert peopleWith3Pets.size() == 1
+        s = new Group(name: "3 Pets")
+        s.people.addAll(peopleWith3Pets)
+        s.save flush: true
+
+
+        session.clear()
+
+        assert Group.findByName("2 Pets").people.size() == 2
+        assert Group.findByName("3 Pets").people.size() == 1
+    }
 
     protected def createPeopleWithPets() {
         new Person(firstName: "Joe", lastName: "Bloggs", age:4)
@@ -1431,15 +1692,17 @@ class CallMe {
             Person.where(myDetachedCriteria)
     }
 
-    def doQuery() {
-        def age = 5
-        def pets = []
-        def query = Person.where {
-            age > age && pets { age > 5}
-        }
+	static doStuff() {
+			Person.where {
+
+			}
+	}
+
+	def doQuery() {
+            def query = Group.where {
+                people.pets.name == "Jack"
+            }
     }
-
-
 
 }
 ''', "Test").newInstance()
@@ -1460,6 +1723,6 @@ class Continent {
 class Group {
     Long id
     String name
-    SortedSet people = [] as SortedSet
+    SortedSet<Person> people = [] as SortedSet
     static hasMany = [people:Person]
 }

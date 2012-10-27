@@ -120,6 +120,14 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     /**
      *
      * @param callable Callable closure containing detached criteria definition
+     * @return The DetachedCriteria instance that is lazily initialized
+     */
+    DetachedCriteria<D> whereLazy(Closure callable) {
+        new DetachedCriteria(persistentClass).buildLazy(callable)
+    }
+    /**
+     *
+     * @param callable Callable closure containing detached criteria definition
      * @return The DetachedCriteria instance
      */
     DetachedCriteria<D> whereAny(Closure callable) {

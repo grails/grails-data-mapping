@@ -14,22 +14,13 @@
  */
 package org.grails.datastore.gorm.neo4j
 
-import org.grails.datastore.gorm.neo4j.converters.StringToBigDecimalConverter
-import org.grails.datastore.gorm.neo4j.converters.StringToBigIntegerConverter
-import org.grails.datastore.gorm.neo4j.converters.StringToCurrencyConverter
-import org.grails.datastore.gorm.neo4j.converters.StringToLocaleConverter
-import org.grails.datastore.gorm.neo4j.converters.StringToShortConverter
-import org.grails.datastore.gorm.neo4j.converters.StringToTimeZoneConverter
-import org.grails.datastore.gorm.neo4j.converters.StringToURLConverter
+import org.grails.datastore.gorm.neo4j.converters.*
 import org.grails.datastore.mapping.document.config.Attribute
 import org.grails.datastore.mapping.model.AbstractMappingContext
 import org.grails.datastore.mapping.model.MappingConfigurationStrategy
 import org.grails.datastore.mapping.model.MappingFactory
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrategy
-import org.grails.datastore.gorm.neo4j.converters.IntArrayToIntegerArrayConverter
-import org.grails.datastore.gorm.neo4j.converters.LongArrayToLongArrayConverter
-
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
@@ -42,6 +33,8 @@ class Neo4jMappingContext extends AbstractMappingContext {
         mappingFactory = new GraphGormMappingFactory()
         syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory)
         //addTypeConverter(new StringToNumberConverterFactory().getConverter(BigDecimal))
+        addTypeConverter(new DateToLongConverter())
+        addTypeConverter(new LongToDateConverter())
         addTypeConverter(new StringToShortConverter())
         addTypeConverter(new StringToBigIntegerConverter())
         addTypeConverter(new StringToBigDecimalConverter())
@@ -51,6 +44,9 @@ class Neo4jMappingContext extends AbstractMappingContext {
         addTypeConverter(new StringToURLConverter())
         addTypeConverter(new IntArrayToIntegerArrayConverter())
         addTypeConverter(new LongArrayToLongArrayConverter())
+        addTypeConverter(new IntegerToByteConverter())
+        addTypeConverter(new DoubleToFloatConverter())
+        addTypeConverter(new IntegerToShortConverter())
     }
 
     @Override

@@ -11,7 +11,7 @@ import org.grails.datastore.mapping.collection.PersistentList
  * Time: 14:44
  * To change this template use File | Settings | File Templates.
  */
-class ObservableListWrapper {
+class ObservableListWrapper implements Serializable {
 
     @Delegate List wrapped
     def entity

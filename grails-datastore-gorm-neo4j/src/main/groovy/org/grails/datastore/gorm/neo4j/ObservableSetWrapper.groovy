@@ -11,7 +11,7 @@ import java.beans.PropertyChangeEvent
  * Time: 14:44
  * To change this template use File | Settings | File Templates.
  */
-class ObservableSetWrapper {
+class ObservableSetWrapper implements Serializable {
 
     @Delegate Set wrapped
     def entity

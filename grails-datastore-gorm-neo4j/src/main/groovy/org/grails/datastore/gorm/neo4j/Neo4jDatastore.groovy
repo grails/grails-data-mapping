@@ -27,7 +27,6 @@ import org.neo4j.graphdb.index.IndexManager
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.neo4j.graphdb.index.AutoIndexer
 import org.grails.datastore.mapping.model.types.Simple
-import org.neo4j.kernel.AbstractGraphDatabase
 
 /**
  * Datastore implementation for Neo4j backend
@@ -78,11 +77,13 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
-        new Neo4jSession(
+        def session = new Neo4jSession(
                 datastore: this,
                 mappingContext: mappingContext,
                 applicationEventPublisher: applicationEventPublisher
         )
+        session.beginTransaction()
+        session
     }
 
     void afterPropertiesSet() {
@@ -96,20 +97,18 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
     }
 
     protected void setupIndexing() {
-        if (graphDatabaseService instanceof AbstractGraphDatabase) {
-            AutoIndexer<Node> nodeAutoIndex = indexManager.nodeAutoIndexer
-            nodeAutoIndex.enabled = true
-            nodeAutoIndex.startAutoIndexingProperty(Neo4jSession.TYPE_PROPERTY_NAME)
-            for (PersistentEntity pe in mappingContext.persistentEntities) {
+        AutoIndexer<Node> nodeAutoIndex = indexManager.nodeAutoIndexer
+        nodeAutoIndex.enabled = true
+        nodeAutoIndex.startAutoIndexingProperty(Neo4jSession.TYPE_PROPERTY_NAME)
+        for (PersistentEntity pe in mappingContext.persistentEntities) {
 
-                for (PersistentEntity parent in collectSuperclassChain(pe)) {
-                    domainSubclasses[parent] << pe
-                }
+            for (PersistentEntity parent in collectSuperclassChain(pe)) {
+                domainSubclasses[parent] << pe
+            }
 
-                for (PersistentProperty pp in pe.persistentProperties) {
-                    if ((pp instanceof Simple) && (pp.mapping.mappedForm.index)) {
-                        nodeAutoIndex.startAutoIndexingProperty(pp.name)
-                    }
+            for (PersistentProperty pp in pe.persistentProperties) {
+                if ((pp instanceof Simple) && (pp.mapping.mappedForm.index)) {
+                    nodeAutoIndex.startAutoIndexingProperty(pp.name)
                 }
             }
         }

@@ -20,6 +20,7 @@ class Person implements Serializable {
     Set pets = [] as Set
     static hasMany = [pets: Pet]
 
+
     public String toString() {
         return "Person{" +
                 "firstName='" + firstName + '\'' +

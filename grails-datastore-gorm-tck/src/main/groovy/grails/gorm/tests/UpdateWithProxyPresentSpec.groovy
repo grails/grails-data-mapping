@@ -49,6 +49,7 @@ class Pet implements Serializable {
     PetType type = new PetType(name:"Unknown")
     Person owner
     Integer age
+    Face face
 
     static mapping = {
         name index:true
@@ -57,6 +58,7 @@ class Pet implements Serializable {
     static constraints = {
         owner nullable:true
         age nullable: true
+        face nulable:true
     }
 }
 
@@ -74,12 +76,25 @@ class Person implements Serializable, Comparable<Person> {
     Integer age = 0
     Set<Pet> pets = [] as Set
     static hasMany = [pets:Pet]
+    Face face
 
+//    static peopleWithOlderPets = where {
+//        pets {
+//            age > 9
+//        }
+//    }
+//    static peopleWithOlderPets2 = where {
+//        pets.age > 9
+//    }
 
     static mapping = {
         firstName index:true
         lastName index:true
         age index:true
+    }
+
+    static constraints = {
+        face nullable:true
     }
 
     @Override
