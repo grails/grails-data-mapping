@@ -120,6 +120,12 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         transaction
     }
 
+    /*@Override
+    void disconnect() {
+        transaction?.commit()
+        super.disconnect()
+    }*/
+
     @Override
     Serializable persist(Object o) {
         Assert.notNull o
