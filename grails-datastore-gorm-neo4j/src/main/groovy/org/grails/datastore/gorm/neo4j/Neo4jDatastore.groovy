@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm.neo4j
 
+import org.grails.datastore.mapping.core.AbstractDatastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
