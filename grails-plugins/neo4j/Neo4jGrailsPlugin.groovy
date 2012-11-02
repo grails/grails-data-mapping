@@ -123,7 +123,7 @@ class Neo4jGrailsPlugin {
     }
 
     def doWithApplicationContext = { applicationContext ->
-        ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint.class );
+        //ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint.class );
     }
 
     def onChange = { event ->

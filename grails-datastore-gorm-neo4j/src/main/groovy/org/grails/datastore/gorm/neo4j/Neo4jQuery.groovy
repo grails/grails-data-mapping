@@ -116,7 +116,7 @@ class Neo4jQuery extends Query {
     protected org.apache.lucene.search.Query buildIndexQuery(PersistentEntity persistentEntity, Junction junction) {
         org.apache.lucene.search.Query query = new BooleanQuery()
         BooleanClause.Occur queryType = MAP_JUNCTION_TO_BOOLEAN_CLAUSE[junction.class.simpleName]
-        assert queryType
+        //assert queryType
 
         for (Criterion criterion in junction.criteria) {
             query.add(buildIndexQuery(persistentEntity, criterion), queryType)
