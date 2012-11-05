@@ -1,5 +1,8 @@
 Below are the details of the changes across releases:
 
+h4. Version 05.
+* Upgraded to latest AWS version 1.3.23
+
 h4. Version 0.4
 * Upgraded to latest AWS version
 * Minor AWS internal improvements
