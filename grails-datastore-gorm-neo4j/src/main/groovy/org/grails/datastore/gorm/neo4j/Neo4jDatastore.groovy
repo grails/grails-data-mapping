@@ -17,17 +17,16 @@ package org.grails.datastore.gorm.neo4j
 import org.grails.datastore.mapping.core.AbstractDatastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.types.Simple
+import org.neo4j.cypher.javacompat.ExecutionEngine
+import org.neo4j.graphdb.*
+import org.neo4j.graphdb.index.AutoIndexer
+import org.neo4j.graphdb.index.IndexManager
 import org.neo4j.kernel.EmbeddedGraphDatabase
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.context.ConfigurableApplicationContext
-import org.neo4j.graphdb.*
 import org.springframework.util.Assert
-import org.neo4j.cypher.javacompat.ExecutionEngine
-import org.neo4j.graphdb.index.IndexManager
-import org.grails.datastore.mapping.model.PersistentProperty
-import org.neo4j.graphdb.index.AutoIndexer
-import org.grails.datastore.mapping.model.types.Simple
-
 /**
  * Datastore implementation for Neo4j backend
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -77,13 +76,11 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
-        def session = new Neo4jSession(
+        new Neo4jSession(
                 datastore: this,
                 mappingContext: mappingContext,
                 applicationEventPublisher: applicationEventPublisher
         )
-        session.beginTransaction()
-        session
     }
 
     void afterPropertiesSet() {

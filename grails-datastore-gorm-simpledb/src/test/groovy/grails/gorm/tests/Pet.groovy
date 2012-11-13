@@ -18,6 +18,7 @@ class Pet implements Serializable {
     Date birthDate = new Date()
     PetType type = new PetType(name: "Unknown")
     Person owner
+    Integer age
 
     public String toString() {
         return "Pet{" +
@@ -26,11 +27,13 @@ class Pet implements Serializable {
                 ", birthDate=" + birthDate +
                 ", type=" + type +
                 ", owner=" + owner +
+                ", age=" + age +
                 '}';
     }
 
 
     static constraints = {
         owner nullable:true
+        age nullable: true
     }
 }

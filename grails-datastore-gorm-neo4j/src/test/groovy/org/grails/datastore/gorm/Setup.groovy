@@ -73,7 +73,7 @@ class Setup {
             }
         }*/
 
-        ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint)
+        //ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint)
 
         for (cls in classes) {
             datastore.mappingContext.addPersistentEntity(cls)

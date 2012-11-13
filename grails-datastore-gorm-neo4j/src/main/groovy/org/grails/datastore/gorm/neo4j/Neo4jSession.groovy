@@ -96,7 +96,8 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
             Byte.TYPE,
             Float.TYPE,
             Short.TYPE,
-            Double.TYPE
+            Double.TYPE,
+            byte[].class
     ]
 
     Transaction transaction  // defacto a Neo4jTransaction
@@ -118,6 +119,12 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         }
         transaction
     }
+
+    /*@Override
+    void disconnect() {
+        transaction?.commit()
+        super.disconnect()
+    }*/
 
     @Override
     Serializable persist(Object o) {

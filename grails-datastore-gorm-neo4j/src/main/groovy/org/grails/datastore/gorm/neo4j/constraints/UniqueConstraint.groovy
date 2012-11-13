@@ -28,6 +28,7 @@ import org.springframework.validation.Errors
  * @author Stefan Armbruster
  * @since 0.2
  */
+@Deprecated
 class UniqueConstraint extends AbstractConstraint {
 
     protected final Logger log = LoggerFactory.getLogger(getClass())
