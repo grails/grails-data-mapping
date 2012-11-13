@@ -68,7 +68,11 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
         }
 
         for(error in errors.allErrors) {
-            if(error.bindingFailure) {
+            if(error instanceof FieldError) {
+                if(error.bindingFailure) {
+                    localErrors.addError error
+                }
+            } else {
                 localErrors.addError error
             }
         }
