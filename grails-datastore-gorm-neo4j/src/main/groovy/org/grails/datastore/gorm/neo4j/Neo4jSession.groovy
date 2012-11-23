@@ -68,7 +68,7 @@ import org.springframework.core.convert.ConverterNotFoundException
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
-class Neo4jSession extends AbstractAttributeStoringSession implements PropertyChangeListener, Serializable {
+class Neo4jSession extends AbstractAttributeStoringSession implements PropertyChangeListener {
 
     public static final TYPE_PROPERTY_NAME = "__type__"
     public static final String SUBREFERENCE_PROPERTY_NAME = "__subreference__"
