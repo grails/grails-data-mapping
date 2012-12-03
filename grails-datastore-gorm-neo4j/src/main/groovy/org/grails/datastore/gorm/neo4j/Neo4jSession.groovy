@@ -557,9 +557,10 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         result
     }
 
-
-    static memoizePropertyChangeListener = Collections.synchronizedMap([:].withDefault() { false }) // it.respondsTo("addPropertyChangeListener")})
-    //def instanceSupportsPropertyChangeListener = { Class clazz -> clazz.respondsTo("addPropertyChangeListener")}.memoize()
+    // global map that remembers if a given domain class supports propertyChangeListeners
+    static memoizePropertyChangeListener = Collections.synchronizedMap([:].withDefault() {
+        it.newInstance().respondsTo("addPropertyChangeListener") as Boolean
+    })
 
     private void monitorSettersForObject(object) {
         if (memoizePropertyChangeListener[object.class] == true) {
