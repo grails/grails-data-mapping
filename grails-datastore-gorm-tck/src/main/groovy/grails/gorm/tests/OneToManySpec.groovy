@@ -120,4 +120,23 @@ class OneToManySpec extends GormDatastoreSpec {
             person.pets.size()==2
 
     }
+
+    void "Test persist of association with proxy"() {
+        given: "A domain model with a many-to-one"
+        def person = new Person(firstName: "Fred", lastName: "Flintstone")
+        person.save(flush:true)
+        session.clear()
+        def pet = new Pet(name: "Dino", owner: Person.load(person.id))
+        pet.save(flush: true)
+        session.clear()
+
+        when: "The association is queried"
+        pet = Pet.findByName("Dino")
+
+        then: "The domain model is valid"
+        pet != null
+        pet.name == "Dino"
+        pet.owner != null
+        pet.owner.firstName == "Fred"
+    }
 }
