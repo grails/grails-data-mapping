@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
-        <title>GORM for AWS SimpleDB 0.3</title>
+        <title>GORM for AWS SimpleDB 0.5</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
         <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
@@ -60,7 +60,7 @@ function addJsClass(el) {
                         <div class="project">
                             <h1>GORM for AWS SimpleDB - Reference Documentation</h1>
                             <p><strong>Authors:</strong> Roman Stepanenko</p>
-                            <p><strong>Version:</strong> 0.3</p>
+                            <p><strong>Version:</strong> 0.5</p>
                             
                         </div>
 
@@ -379,7 +379,15 @@ executed, hence we allow for some transactional semantics.<p class="paragraph"/>
 
 
 <h1 id="releaseNotes">5 Release Notes</h1>
-Below are the details of the changes across releases:<p class="paragraph"/><h4>Version 0.3</h4>
+Below are the details of the changes across releases:<p class="paragraph"/><h4>Version 05.</h4>
+<ul class="star">
+<li>Upgraded to latest AWS version 1.3.23</li>
+</ul><p class="paragraph"/><h4>Version 0.4</h4>
+<ul class="star">
+<li>Upgraded to latest AWS version</li>
+<li>Minor AWS internal improvements</li>
+<li>bugfix: for already existing object with non-null value of the property, setting that property to null was NOT propagating null to AWS, leaving AWS with the previous value</li>
+</ul><p class="paragraph"/><h4>Version 0.3</h4>
 <ul class="star">
 <li>Implemented hilo numeric id generator to use as alternative to default UUID</li>
 <li>Enum fields are supported</li>
