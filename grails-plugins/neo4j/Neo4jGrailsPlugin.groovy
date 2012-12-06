@@ -20,7 +20,7 @@ class Neo4jGrailsPlugin {
     def issueManagement = [ system: "JIRA", url: "https://github.com/SpringSource/grails-data-mapping/issues" ]
     def scm = [ url: "https://github.com/sarmbruster/grails-data-mapping" ]
 
-    //def version = "1.0.0.M4"
+    //def version = "1.0.0.M6"
     def version = "1.0.0.SNAPSHOT"
     def grailsVersion = "1.2 > *"
     //def observe = ['services']

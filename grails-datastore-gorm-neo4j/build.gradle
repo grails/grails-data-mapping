@@ -1,7 +1,9 @@
 version = "1.0.0.BUILD-SNAPSHOT"
-//version = "1.0.0.M14"
+//version = "1.0.0.M16"
 
 ext.neo4jVersion = "1.8"
+ext.gdmVersion = "1.1.1.RELEASE"
+ext.gdmTestVersion = "1.1.0.RELEASE"
 
 repositories {
     //mavenLocal()
@@ -14,27 +16,37 @@ repositories {
 }
 
 dependencies {
-    compile project(":grails-datastore-gorm"),
-            project(":grails-datastore-web"),
-            project(":grails-datastore-gorm-plugin-support"),
-            "org.neo4j:neo4j-community:$neo4jVersion"
-            //project(":grails-datastore-core")
-    testCompile project(":grails-datastore-gorm-test"),
-                project(":grails-datastore-gorm-tck"),
-                'org.codehaus.gpars:gpars:0.12',
-                [group: "org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:'tests'],
-                [group: "org.neo4j.app", name:"neo4j-server", version:neo4jVersion, classifier:'tests'],
-                [group: "org.neo4j.app", name:"neo4j-server", version:neo4jVersion],
-                [group: "org.neo4j", name:"neo4j-rest-graphdb", version:'1.8'],
-                [group: "org.neo4j", name:"neo4j-rest-graphdb", version:'1.8', classifier:'tests'],
-                "org.neo4j:neo4j-graphviz:$neo4jVersion"
-    testRuntime "javax.servlet:servlet-api:2.5",
-                "org.grails:grails-gorm:$grailsVersion",
-                "org.grails:grails-web:$grailsVersion",
-                'com.sun.jersey:jersey-server:1.9',
-                'com.sun.jersey:jersey-core:1.9',
-                'com.sun.jersey:jersey-client:1.9'
+    compile "org.neo4j:neo4j-community:$neo4jVersion"
 
+    // during development (aka snapshot version), use project dependencies
+    // during release, use 'regular' dependencies
+    if (version =~ /SNAPSHOT/) {
+        compile project(":grails-datastore-gorm"),
+                project(":grails-datastore-web"),
+                project(":grails-datastore-gorm-plugin-support")
+        testCompile project(":grails-datastore-gorm-test"),
+                project(":grails-datastore-gorm-tck")
+    } else {
+        compile "org.grails:grails-datastore-gorm:$gdmVersion",
+                "org.grails:grails-datastore-web:$gdmVersion",
+                "org.grails:grails-datastore-gorm-plugin-support:$gdmVersion"
+        testCompile "org.grails:grails-datastore-gorm-test:$gdmVersion",
+                "org.grails:grails-datastore-gorm-tck:$gdmVersion"
+    }
+
+    testCompile 'org.codehaus.gpars:gpars:0.12',
+            [group: "org.neo4j", name: "neo4j-kernel", version: neo4jVersion, classifier: 'tests'],
+            [group: "org.neo4j.app", name: "neo4j-server", version: neo4jVersion, classifier: 'tests'],
+            [group: "org.neo4j.app", name: "neo4j-server", version: neo4jVersion],
+            [group: "org.neo4j", name: "neo4j-rest-graphdb", version: '1.8'],
+            [group: "org.neo4j", name: "neo4j-rest-graphdb", version: '1.8', classifier: 'tests'],
+            "org.neo4j:neo4j-graphviz:$neo4jVersion"
+    testRuntime "javax.servlet:servlet-api:2.5",
+            "org.grails:grails-gorm:$grailsVersion",
+            "org.grails:grails-web:$grailsVersion",
+            'com.sun.jersey:jersey-server:1.9',
+            'com.sun.jersey:jersey-core:1.9',
+            'com.sun.jersey:jersey-client:1.9'
 }
 
 /*

@@ -12,6 +12,20 @@ import spock.lang.Unroll
  */
 class ValidationSpec extends GormDatastoreSpec {
 
+    void 'Test validating an object that has had values rejected with an ObjectError'() {
+        given:
+            def t = new TestEntity(name: 'someName') 
+
+        when:
+            t.errors.reject 'foo'
+            def isValid = t.validate()
+            def errorCount = t.errors.errorCount
+
+        then:
+            !isValid
+            1 == errorCount
+    }
+
     void "Test disable validation"() {
         session.datastore.applicationContext.addApplicationListener(
            new ValidatingEventListener(session.datastore))

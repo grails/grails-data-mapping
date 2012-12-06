@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import grails.persistence.Entity
+import groovy.beans.Bindable
 import groovyx.gpars.GParsPool
 import org.grails.datastore.gorm.neo4j.GrailsRelationshipTypes
 import org.neo4j.graphdb.Direction
@@ -300,6 +301,18 @@ class MiscSpec extends GormDatastoreSpec {
         value == 'abc'.bytes
     }
 
+    @Issue("https://github.com/SpringSource/grails-data-mapping/issues/34")
+    def "domain classes use propertyChangeListener when possible"() {
+        expect: "Team is @Bindable, so propertyChangeListeners are used"
+            new Team().respondsTo("addPropertyChangeListener")
+        and: "User does not use @Bindable"
+            !new User().respondsTo("addPropertyChangeListener")
+        when: "force evaluation if class supports propertyChangeListeners"
+            new Team(name: 'team1').save()
+        then:
+            session.memoizePropertyChangeListener[Team.class] == true
+    }
+
 }
 
 @Entity
@@ -311,6 +324,7 @@ class Tournament {
     static hasMany = [teams: Team ]
 }
 
+@Bindable
 @Entity
 class Team {
     Long id
