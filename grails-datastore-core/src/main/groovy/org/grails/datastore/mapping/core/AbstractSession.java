@@ -358,6 +358,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         pendingUpdates.clear();
         pendingDeletes.clear();
         attributes.clear();
+        objectToKey.clear();
         exceptionOccurred = false;
     }
 
