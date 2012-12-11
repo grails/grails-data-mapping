@@ -19,7 +19,7 @@ class WhereMethodSpec extends GormDatastoreSpec {
 	
     @Override
     List getDomainClasses() {
-        def list = [Continent, Group]
+        def list = [Continent, Group, Proposal, Advisor]
 		
 		gcl= new GroovyClassLoader()
 		list << gcl.parseClass('''
@@ -517,6 +517,18 @@ class Project {
         results.size() == 4
         results[0].firstName == "Bart"
   }
+
+    @Issue('GRAILS-9658')
+    def "Test findAll with assocation query"() {
+
+        when:"We use findAll is called with an association"
+            def results = getClassThatCallsWhere().doQuery()
+//            def session = [user: [username:"Fred"]]
+//            def results = Proposal.findAll { advisor.username == session.user.username && approvalDate != null }
+
+        then:"The correct results are returned"
+            results != null
+    }
 
   def "Test try catch finally"() {
       given:"A bunch of people"
@@ -1699,9 +1711,9 @@ class CallMe {
 	}
 
 	def doQuery() {
-            def query = Group.where {
-                people.pets.name == "Jack"
-            }
+            def session = [user: [username:"Fred"]]
+            def results = Proposal.findAll { advisor.username == session.user.username && approvalDate != null }
+
     }
 
 }
@@ -1726,3 +1738,31 @@ class Group {
     SortedSet<Person> people = [] as SortedSet
     static hasMany = [people:Person]
 }
+
+@Entity
+class Proposal {
+    Long id
+    String name
+    Advisor advisor
+    Date approvalDate
+
+    static constraints = {
+        advisor nullable:false
+        name nullable:false
+        approvalDate nullable:true
+    }
+}
+
+@Entity
+class Advisor {
+    Long id
+    String username
+
+    static constraints = {
+        username nullable:false
+        proposals nullable:true
+    }
+
+    static hasMany = [proposals: Proposal]
+}
+

@@ -217,7 +217,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     node.setInitialValueExpression(newClosureExpression);
                 }
             } catch (Exception e) {
-                sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred apply query transformations: " + e.getMessage(), Token.newString(node.getName(), node.getLineNumber(), node.getColumnNumber()), sourceUnit));
+                sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred applying query transformations: " + e.getMessage(), Token.newString(node.getName(), node.getLineNumber(), node.getColumnNumber()), sourceUnit));
             }
         }
 
@@ -282,7 +282,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     expression.setRightExpression(newClosureExpression);
                 }
             } catch (Exception e) {
-                sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred apply query transformations [ " + e.getMessage() + "] to source ["+sourceUnit.getName()+"]. Please report an issue.", Token.newString(initializationExpression.getText(), initializationExpression.getLineNumber(), initializationExpression.getColumnNumber()), sourceUnit));
+                sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred applying query transformations [ " + e.getMessage() + "] to source ["+sourceUnit.getName()+"]. Please report an issue.", Token.newString(initializationExpression.getText(), initializationExpression.getLineNumber(), initializationExpression.getColumnNumber()), sourceUnit));
             }
         }
         super.visitDeclarationExpression(expression);
@@ -347,7 +347,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 }
             }
         } catch (Exception e) {
-            sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred apply query transformations: " + e.getMessage(), Token.newString(call.getMethodAsString(), call.getLineNumber(), call.getColumnNumber()), sourceUnit));
+            sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred applying query transformations: " + e.getMessage(), Token.newString(call.getMethodAsString(), call.getLineNumber(), call.getColumnNumber()), sourceUnit));
         }
         super.visitMethodCallExpression(call);
     }
@@ -911,6 +911,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     ArgumentListExpression arguments = closureAndArguments.getArguments();
                     ClassNode type = getPropertyTypeFromGenerics(associationMethodCall, currentType);
 
+                    if(type == null) break;
 
                     currentType = type;
                     currentBody.addStatement(new ExpressionStatement(new MethodCallExpression(DELEGATE_EXPRESSION, associationMethodCall, arguments)));
@@ -989,7 +990,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private ClassNode getPropertyTypeFromGenerics(String propertyName, ClassNode classNode) {
         ClassNode type = getPropertyType(classNode, propertyName);
-        if(!isDomainClass(type)) {
+        if(type != null && !isDomainClass(type)) {
             ClassNode associationTypeFromGenerics = getAssociationTypeFromGenerics(type);
             if(associationTypeFromGenerics != null && isDomainClass(associationTypeFromGenerics)) {
                 type = associationTypeFromGenerics;
