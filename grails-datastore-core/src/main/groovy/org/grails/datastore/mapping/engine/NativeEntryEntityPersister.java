@@ -845,96 +845,90 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     final Object associatedObject = entityAccess.getProperty(prop.getName());
                     if (associatedObject != null) {
                         @SuppressWarnings("hiding")
+                        Serializable associationId;
+                        NativeEntryEntityPersister associationPersister = (NativeEntryEntityPersister) session.getPersister(associatedObject);
                         ProxyFactory proxyFactory = getProxyFactory();
-                        // never cascade to proxies
-                        if (proxyFactory.isInitialized(associatedObject)) {
-                            Serializable associationId = null;
-                            NativeEntryEntityPersister associationPersister = (NativeEntryEntityPersister) session.getPersister(associatedObject);
-                            if (!session.contains(associatedObject)) {
-                                Serializable tempId = associationPersister.getObjectIdentifier(associatedObject);
-                                if (tempId == null) {
-                                    if (association.isOwningSide()) {
-                                        tempId = session.persist(associatedObject);
-                                    }
-                                }
-                                associationId = tempId;
-                            }
-                            else {
-                                associationId = associationPersister.getObjectIdentifier(associatedObject);
-                            }
-
-                            // handling of hasOne inverse key
-                            if (association.isForeignKeyInChild()) {
-                                T cachedAssociationEntry = (T) si.getCachedEntry(association.getAssociatedEntity(), associationId);
-                                if (cachedAssociationEntry != null) {
-                                    if (association.isBidirectional()) {
-                                        Association inverseSide = association.getInverseSide();
-                                        if (inverseSide != null) {
-                                            setEntryValue(cachedAssociationEntry, inverseSide.getName(), formulateDatabaseReference(association.getAssociatedEntity(), inverseSide, (Serializable) k));
-                                        }
-                                        else {
-                                            setEntryValue(cachedAssociationEntry, key,  formulateDatabaseReference(association.getAssociatedEntity(), inverseSide, (Serializable) k));
-                                        }
-                                    }
-                                }
-
-                                if(association.doesCascade(CascadeType.PERSIST)) {
-                                    
-                                    if(association.isBidirectional()) {
-                                        Association inverseSide = association.getInverseSide();
-                                        if(inverseSide != null) {
-                                            EntityAccess inverseAccess = new EntityAccess(inverseSide.getOwner(), associatedObject);
-                                            inverseAccess.setProperty(inverseSide.getName(), obj);
-                                        }
-                                    }
-                                    associationPersister.persist(associatedObject);
+                        if (proxyFactory.isInitialized(associatedObject) && !session.contains(associatedObject)) {
+                            Serializable tempId = associationPersister.getObjectIdentifier(associatedObject);
+                            if (tempId == null) {
+                                if (association.isOwningSide()) {
+                                    tempId = session.persist(associatedObject);
                                 }
                             }
-                            // handle of standard many-to-one
-                            else {
-                                if (associationId != null) {
-                                    if (indexed && doesRequirePropertyIndexing()) {
-                                        toIndex.put(prop, associationId);
-                                        if (isUpdate) {
-                                            Object oldValue = getEntryValue(e, key);
-                                            oldValue = oldValue != null ? convertToNativeKey( (Serializable) oldValue) : oldValue;
+                            associationId = tempId;
+                        } else {
+                            associationId = associationPersister.getObjectIdentifier(associatedObject);
+                        }
 
-                                            if (oldValue != null && !oldValue.equals(associationId)) {
-                                                toUnindex.put(prop, oldValue);
-                                            }
+                        // handling of hasOne inverse key
+                        if (association.isForeignKeyInChild()) {
+                            T cachedAssociationEntry = (T) si.getCachedEntry(association.getAssociatedEntity(), associationId);
+                            if (cachedAssociationEntry != null) {
+                                if (association.isBidirectional()) {
+                                    Association inverseSide = association.getInverseSide();
+                                    if (inverseSide != null) {
+                                        setEntryValue(cachedAssociationEntry, inverseSide.getName(), formulateDatabaseReference(association.getAssociatedEntity(), inverseSide, (Serializable) k));
+                                    } else {
+                                        setEntryValue(cachedAssociationEntry, key, formulateDatabaseReference(association.getAssociatedEntity(), inverseSide, (Serializable) k));
+                                    }
+                                }
+                            }
+
+                            if (association.doesCascade(CascadeType.PERSIST)) {
+
+                                if (association.isBidirectional()) {
+                                    Association inverseSide = association.getInverseSide();
+                                    if (inverseSide != null) {
+                                        EntityAccess inverseAccess = new EntityAccess(inverseSide.getOwner(), associatedObject);
+                                        inverseAccess.setProperty(inverseSide.getName(), obj);
+                                    }
+                                }
+                                associationPersister.persist(associatedObject);
+                            }
+                        }
+                        // handle of standard many-to-one
+                        else {
+                            if (associationId != null) {
+                                if (indexed && doesRequirePropertyIndexing()) {
+                                    toIndex.put(prop, associationId);
+                                    if (isUpdate) {
+                                        Object oldValue = getEntryValue(e, key);
+                                        oldValue = oldValue != null ? convertToNativeKey((Serializable) oldValue) : oldValue;
+
+                                        if (oldValue != null && !oldValue.equals(associationId)) {
+                                            toUnindex.put(prop, oldValue);
                                         }
                                     }
-                                    setEntryValue(e, key, formulateDatabaseReference(persistentEntity, association, associationId));
+                                }
+                                setEntryValue(e, key, formulateDatabaseReference(persistentEntity, association, associationId));
 
-                                    if (association.isBidirectional()) {
-                                        Association inverse = association.getInverseSide();
+                                if (association.isBidirectional()) {
+                                    Association inverse = association.getInverseSide();
+                                    if (inverse instanceof OneToMany) {
+                                        inverseCollectionUpdates.put((OneToMany) inverse, associationId);
+                                    }
+                                    // unwrap the entity in case it is a proxy, since we may need to update the reverse link.
+                                    Object inverseEntity = proxyFactory.unwrap(entityAccess.getProperty(association.getName()));
+                                    if (inverseEntity != null) {
+                                        EntityAccess inverseAccess = createEntityAccess(association.getAssociatedEntity(), inverseEntity);
+                                        Object entity = entityAccess.getEntity();
                                         if (inverse instanceof OneToMany) {
-                                            inverseCollectionUpdates.put((OneToMany) inverse, associationId);
-                                        }
-                                        Object inverseEntity = entityAccess.getProperty(association.getName());
-                                        if (inverseEntity != null) {
-                                            EntityAccess inverseAccess = createEntityAccess(association.getAssociatedEntity(), inverseEntity);
-                                            Object entity = entityAccess.getEntity();
-                                            if (inverse instanceof OneToMany) {
-                                                Collection existingValues = (Collection) inverseAccess.getProperty(inverse.getName());
-                                                if (existingValues == null) {
-                                                    existingValues = MappingUtils.createConcreteCollection(inverse.getType());
-                                                    inverseAccess.setProperty(inverse.getName(), existingValues);
-                                                }
-                                                if(!existingValues.contains(entity))
-                                                    existingValues.add(entity);
+                                            Collection existingValues = (Collection) inverseAccess.getProperty(inverse.getName());
+                                            if (existingValues == null) {
+                                                existingValues = MappingUtils.createConcreteCollection(inverse.getType());
+                                                inverseAccess.setProperty(inverse.getName(), existingValues);
                                             }
-                                            else if (inverse instanceof ToOne) {
-                                                inverseAccess.setProperty(inverse.getName(), entity);
-                                            }
+                                            if (!existingValues.contains(entity))
+                                                existingValues.add(entity);
+                                        } else if (inverse instanceof ToOne) {
+                                            inverseAccess.setProperty(inverse.getName(), entity);
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                    else {
-                       setEntryValue(e, getPropertyKey(prop), null);
+                    } else {
+                        setEntryValue(e, getPropertyKey(prop), null);
                     }
                 }
             }
@@ -1486,7 +1480,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                     toIndex.put(property, null);
                                 }
                             }
-                            
+
                         }
                         else {
                             toIndex.put(property, value);
