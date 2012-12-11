@@ -47,12 +47,16 @@ class JpaMethodsConfigurer extends DynamicMethodsConfigurer{
 
     @Override
     protected GormInstanceApi createGormInstanceApi(Class cls) {
-        return new JpaInstanceApi(cls, datastore)
+        def api = new JpaInstanceApi(cls, datastore)
+        api.failOnError = failOnError
+        api
     }
 
     @Override
     protected GormEnhancer createEnhancer() {
-        return new JpaGormEnhancer(datastore,transactionManager)
+        def ge = new JpaGormEnhancer(datastore, transactionManager)
+        ge.failOnError = failOnError
+        ge
     }
 
 

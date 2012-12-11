@@ -47,15 +47,20 @@ class Neo4jMethodsConfigurer extends DynamicMethodsConfigurer {
 
     @Override
     protected GormInstanceApi createGormInstanceApi(Class cls) {
-        return new Neo4jGormInstanceApi(cls, datastore)
+        def api = new Neo4jGormInstanceApi(cls, datastore)
+        api.failOnError = failOnError
+        api
     }
 
     @Override
     protected GormEnhancer createEnhancer() {
+        def ge
         if (transactionManager) {
-            return new Neo4jGormEnhancer(datastore, transactionManager)
+            ge = new Neo4jGormEnhancer(datastore, transactionManager)
+        } else {
+            ge = new Neo4jGormEnhancer(datastore)
         }
-
-        new Neo4jGormEnhancer(datastore)
+        ge.failOnError = failOnError
+        ge
     }
 }

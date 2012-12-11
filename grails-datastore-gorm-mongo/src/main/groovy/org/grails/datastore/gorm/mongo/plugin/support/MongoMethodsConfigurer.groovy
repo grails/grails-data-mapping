@@ -93,20 +93,25 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
 
     @Override
     protected GormStaticApi createGormStaticApi(Class cls, List<FinderMethod> finders) {
-        return new MongoGormStaticApi(cls, datastore, finders)
+        new MongoGormStaticApi(cls, datastore, finders)
     }
 
     @Override
     protected GormInstanceApi createGormInstanceApi(Class cls) {
-        return new MongoGormInstanceApi(cls, datastore)
+        final api = new MongoGormInstanceApi(cls, datastore)
+        api.failOnError = failOnError
+        api
     }
 
     @Override
     protected GormEnhancer createEnhancer() {
+        def ge
         if(transactionManager != null)
-            return new MongoGormEnhancer(datastore, transactionManager)
+            ge = new MongoGormEnhancer(datastore, transactionManager)
         else
-            return new MongoGormEnhancer(datastore)
+            ge = new MongoGormEnhancer(datastore)
+        ge.failOnError = failOnError
+        ge
     }
 
 

@@ -44,14 +44,20 @@ class RedisMethodsConfigurer extends DynamicMethodsConfigurer {
 
     @Override
     protected GormInstanceApi createGormInstanceApi(Class cls) {
-        return new RedisGormInstanceApi(cls, datastore)
+        def api = new RedisGormInstanceApi(cls, datastore)
+        api.failOnError = failOnError
+        api
     }
 
     @Override
     protected GormEnhancer createEnhancer() {
+        def ge
         if (transactionManager) {
-            return new RedisGormEnhancer(datastore, transactionManager)
+            ge = new RedisGormEnhancer(datastore, transactionManager)
+        } else {
+            ge = new RedisGormEnhancer(datastore)
         }
-        return new RedisGormEnhancer(datastore)
+        ge.failOnError = failOnError
+        ge
     }
 }
