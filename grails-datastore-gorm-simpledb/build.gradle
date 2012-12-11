@@ -1,4 +1,4 @@
-version = "0.5"
+version = "0.6.BUILD-SNAPSHOT"
 
 configurations {
     grails
