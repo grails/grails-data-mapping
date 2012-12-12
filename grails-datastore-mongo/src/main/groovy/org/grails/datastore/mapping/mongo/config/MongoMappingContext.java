@@ -14,16 +14,15 @@
  */
 package org.grails.datastore.mapping.mongo.config;
 
+import com.mongodb.DBRef;
+import org.bson.types.*;
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory;
 import org.grails.datastore.mapping.document.config.Collection;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
-import org.grails.datastore.mapping.document.config.DocumentPersistentEntity;
 import org.grails.datastore.mapping.model.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Models a {@link org.grails.datastore.mapping.model.MappingContext} for Mongo.
@@ -31,18 +30,31 @@ import java.util.Set;
  * @author Graeme Rocher
  */
 public class MongoMappingContext extends DocumentMappingContext {
+    /**
+     * Java types supported as mongo property types.
+     */
+    public static final Set<String> MONGO_NATIVE_TYPES = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+            Double.class.getName(),
+            String.class.getName(),
+            com.mongodb.DBObject.class.getName(),
+            org.bson.types.Binary.class.getName(),
+            org.bson.types.ObjectId.class.getName(),
+            DBRef.class.getName(),
+            Boolean.class.getName(),
+            Date.class.getName(),
+            Pattern.class.getName(),
+            Symbol.class.getName(),
+            Integer.class.getName(),
+            BSONTimestamp.class.getName(),
+            Code.class.getName(),
+            CodeWScope.class.getName(),
+            Long.class.getName(),
+            UUID.class.getName()
+    )));
 
-    public static final Set<String> MONGO_SIMPLE_TYPES;
+    public static final Set<String> MONGO_SIMPLE_TYPES = MONGO_NATIVE_TYPES;
 
-    static {
-        MONGO_SIMPLE_TYPES = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
-                org.bson.types.ObjectId.class.getName(),
-                org.bson.types.Binary.class.getName(),
-                com.mongodb.DBObject.class.getName()
-        )));
-    }
-
-        private final class MongoDocumentMappingFactory extends
+    private final class MongoDocumentMappingFactory extends
             AbstractGormMappingFactory<MongoCollection, MongoAttribute> {
         @Override
         protected Class<MongoAttribute> getPropertyMappedFormType() {

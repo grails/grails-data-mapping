@@ -1,5 +1,6 @@
 package org.grails.datastore.mapping.model.types.conversion;
 
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.support.GenericConversionService;
 
 /**
@@ -10,12 +11,21 @@ import org.springframework.core.convert.support.GenericConversionService;
 public class DefaultConversionService extends GenericConversionService{
 
     @Override
-    public <T> T convert(Object source, Class<T> targetType) {
-        if(targetType.isEnum() && source instanceof CharSequence) {
-             return (T) Enum.valueOf((Class)targetType, source.toString());
+    public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+        if(targetType.getType().isEnum() && source instanceof CharSequence) {
+             return Enum.valueOf((Class)targetType.getType(), source.toString());
+        } else if (targetType.getType().equals(String.class) && source instanceof Enum) {
+            return ((Enum)source).name();
         }
         else {
-            return super.convert(source, targetType);
+            return super.convert(source, sourceType, targetType);
         }
+    }
+
+    @Override
+    public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+        return (targetType.getType().isEnum() && CharSequence.class.isAssignableFrom(sourceType.getType())) ||
+                (targetType.getType().equals(String.class) && sourceType.getType().isEnum()) ||
+                super.canConvert(sourceType, targetType);
     }
 }

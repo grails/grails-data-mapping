@@ -32,9 +32,11 @@ import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.mongo.MongoDatastore;
 import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.config.MongoAttribute;
+import org.grails.datastore.mapping.mongo.config.MongoMappingContext;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataAccessException;
 
 import com.mongodb.BasicDBList;
@@ -376,15 +378,6 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         return value;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static List<? extends Class> convertToString = Arrays.asList(
-        BigDecimal.class,
-        BigInteger.class,
-        Locale.class,
-        TimeZone.class,
-        Currency.class,
-        URL.class);
-
     @Override
     protected Object formulateDatabaseReference(PersistentEntity persistentEntity,
               @SuppressWarnings("rawtypes") Association association, Serializable associationId) {
@@ -408,7 +401,6 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     @Override
     protected void setEntryValue(DBObject nativeEntry, String key, Object value) {
-
         MappingContext mappingContext = getMappingContext();
         setDBObjectValue(nativeEntry, key, value, mappingContext);
     }
@@ -422,53 +414,64 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     public static void setDBObjectValue(DBObject nativeEntry, String key, Object value, MappingContext mappingContext) {
-        if (mappingContext.isPersistentEntity(value)) {
-            return;
-        }
-
-        if(value == null) {
-            nativeEntry.put(key, null);
-        }
-        // test whether the value can be BSON encoded, if it can't convert to String
-        else if (shouldConvertToString(value.getClass())) {
-            value = value.toString();
-        }
-		else if (Enum.class.isAssignableFrom(value.getClass())) {
-			value = ((Enum)value).name();
-		}
-		else if (value instanceof Collection) {
-			// Test whether this collection is a collection can be BSON encoded, if not convert to String
-			boolean collConvertToString = false;
-			boolean collConvertFromEnum = false;
-			for (Object item : (Collection)value) {
-				collConvertToString = shouldConvertToString(item.getClass());
-				collConvertFromEnum = Enum.class.isAssignableFrom(item.getClass());
-				break;
-			}
-			if (collConvertToString || collConvertFromEnum) {
-				Object[] objs = ((Collection)value).toArray();
-				((Collection)value).clear();
-				for(Object item : objs) {
-					if (collConvertToString)
-						((Collection)value).add(item.toString());
-					else
-						((Collection)value).add(((Enum)item).name());
-				}
-			}
-		}
-        else if (value instanceof Calendar) {
-            value = ((Calendar)value).getTime();
-        }
-
-        nativeEntry.put(key, value);
+        Object nativeValue = getSimpleNativePropertyValue(value, mappingContext);
+        nativeEntry.put(key, nativeValue);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static boolean shouldConvertToString(Class theClass) {
-        for (Class classToCheck : convertToString) {
-            if (classToCheck.isAssignableFrom(theClass)) return true;
+    /**
+     * Convert a value into a type suitable for use in Mongo. Collections and maps are converted recursively. The
+     * mapping context is used for the conversion if possible, otherwise toString() is the eventual fallback.
+     * @param value The value to convert (or null)
+     * @param mappingContext The mapping context.
+     * @return The converted value (or null)
+     */
+    public static Object getSimpleNativePropertyValue(Object value, MappingContext mappingContext) {
+        Object nativeValue;
+
+        if(value == null || mappingContext.isPersistentEntity(value)) {
+            nativeValue = null;
+        } else if (value instanceof Collection) {
+            Collection existingColl = (Collection)value;
+            List<Object> nativeColl = new ArrayList<Object>(existingColl.size());
+            for(Object item : existingColl) {
+                nativeColl.add(getSimpleNativePropertyValue(item, mappingContext));
+            }
+            nativeValue = nativeColl;
+        } else if (value instanceof Map) {
+            Map<String, Object> existingMap = (Map)value;
+            Map<String, Object> newMap = new LinkedHashMap<String, Object>();
+            for (Map.Entry<String, Object> entry :existingMap.entrySet()){
+                newMap.put(entry.getKey(), getSimpleNativePropertyValue(entry.getValue(), mappingContext));
+            }
+            nativeValue = newMap;
+        } else {
+            nativeValue = toNativeSimplePropertyValue(value, mappingContext);
         }
-        return false;
+        return nativeValue;
+    }
+
+    private static Object toNativeSimplePropertyValue(Object item, MappingContext mappingContext) {
+        Object toAdd;
+        if (item != null) {
+            if (MongoMappingContext.MONGO_NATIVE_TYPES.contains(item.getClass().getName())) {
+                // easy case, no conversion required.
+                toAdd = item;
+            } else {
+                ConversionService conversionService = mappingContext.getConversionService();
+                // go for toInteger or toString.
+                if (conversionService.canConvert(item.getClass(), Integer.class)) {
+                    toAdd = conversionService.convert(item, Integer.class);
+                } else if (conversionService.canConvert(item.getClass(), String.class)) {
+                    toAdd = conversionService.convert(item, String.class);
+                } else {
+                    // fall back if no explicit converter is registered, good for URL, Locale, etc.
+                    toAdd = item.toString();
+                }
+            }
+        } else {
+            toAdd = null;
+        }
+        return toAdd;
     }
 
     @Override

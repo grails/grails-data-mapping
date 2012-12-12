@@ -31,6 +31,9 @@ import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.*;
 import org.grails.datastore.mapping.model.types.*;
 import org.grails.datastore.mapping.query.Query;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
+import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.CannotAcquireLockException;
 import org.grails.datastore.mapping.config.Property;
@@ -385,33 +388,12 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         for (final PersistentProperty prop : props) {
             String propKey = getNativePropertyKey(prop);
             if (prop instanceof Simple) {
+                // this magically converts most types to the correct property type, using bean converters.
                 ea.setProperty(prop.getName(), getEntryValue(nativeEntry, propKey));
             }
             else if(prop instanceof Basic) {
                 Object entryValue = getEntryValue(nativeEntry, propKey);
-                if(entryValue instanceof Map) {
-                    entryValue = new LinkedHashMap((Map) entryValue);
-                }
-                else if(entryValue instanceof Collection) {
-                    Collection collection = MappingUtils.createConcreteCollection(prop.getType());
-
-                    Class propertyType = prop.getType();
-                    Class genericType = MappingUtils.getGenericTypeForProperty(persistentEntity.getJavaClass(), prop.getName());
-                    Collection collectionValue = (Collection) entryValue;
-                    if(genericType != null && genericType.isEnum()) {
-                        for (Object o : collectionValue) {
-                            if(!(o instanceof Enum)) {
-                                collection.add( Enum.valueOf(genericType, o.toString()) );
-                            }
-                        }
-                    }
-                    else {
-                        collection.addAll(collectionValue);
-                    }
-
-
-                    entryValue = collection;
-                }
+                entryValue = convertBasicEntryValue(persistentEntity, prop, entryValue);
                 ea.setProperty(prop.getName(), entryValue);
             }
             else if (prop instanceof Custom) {
@@ -589,6 +571,70 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         }
         // entity is now fully loaded.
         firePostLoadEvent(persistentEntity, ea);
+    }
+
+    /**
+     * Convert a Basic (collection-style) property native entry value taken from an entity into the target property
+     * type. This takes into account any generic parameter types specified on the property (e.g. Collection&lt;Locale>
+     * tells us to convert elements into Locale objects). If you don't specify generic properties, collection elements
+     * are not modified.
+     *
+     * If the target type is known from the generic parameters, the conversion process is essentially identical to that
+     * used for single Simple properties.
+     * @param persistentEntity The persistent entity
+     * @param prop The property in question
+     * @param entryValue The value of the entry
+     * @return The transformed entry type.
+     */
+    protected Object convertBasicEntryValue(PersistentEntity persistentEntity, PersistentProperty prop, Object entryValue) {
+        // In both cases, we use a BeanWrapper to provide all possible conversions, including those from the
+        // ConversionService as well as standard property editor conversions, etc.
+        // Enums are handled automatically, as are other standard types such as Locale, URI, Integer, etc.
+        if(entryValue instanceof Map) {
+            Map nativeMap = (Map) entryValue;
+            LinkedHashMap targetMap = new LinkedHashMap();
+            Class propertyType = prop.getType();
+            Class genericType = MappingUtils.getGenericTypeForMapProperty(persistentEntity.getJavaClass(),
+                    prop.getName(), false);
+            if (genericType != null) {
+                SimpleTypeConverter converter = new SimpleTypeConverter();
+                converter.setConversionService(getMappingContext().getConversionService());
+                for (Object o : nativeMap.entrySet()) {
+                    Map.Entry entry = (Map.Entry) o;
+                    String key = (String) entry.getKey();
+                    Object value = entry.getValue();
+                    value = converter.convertIfNecessary(value, genericType);
+                    targetMap.put(key, value);
+                }
+            } else {
+                // just hope they don't need converting!
+                targetMap.putAll(nativeMap);
+            }
+
+            entryValue = targetMap;
+        }
+        else if(entryValue instanceof Collection) {
+            Collection collection = MappingUtils.createConcreteCollection(prop.getType());
+
+            Class propertyType = prop.getType();
+            Class genericType = MappingUtils.getGenericTypeForProperty(persistentEntity.getJavaClass(), prop.getName());
+            Collection collectionValue = (Collection) entryValue;
+            if(genericType != null) {
+                SimpleTypeConverter converter = new SimpleTypeConverter();
+                converter.setConversionService(getMappingContext().getConversionService());
+                for (Object o : collectionValue) {
+                    o = converter.convertIfNecessary(o, genericType);
+                    collection.add(o);
+                }
+            }
+            else {
+                // just hope they don't need converting!
+                collection.addAll(collectionValue);
+            }
+
+            entryValue = collection;
+        }
+        return entryValue;
     }
 
     /**
