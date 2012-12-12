@@ -16,8 +16,10 @@ package org.grails.datastore.gorm.finders;
 
 import groovy.lang.Range;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
@@ -62,22 +64,15 @@ public abstract class MethodExpression {
             Class<?> type = prop.getType();
             for (int i = 0; i < argumentsRequired; i++) {
                 Object arg = arguments[i];
-                if(arg != null && !type.isAssignableFrom(arg.getClass()) && !(Enum.class.isAssignableFrom(type))) {
+                if(arg != null && !type.isAssignableFrom(arg.getClass())) {
                         arguments[i] = conversionService.convert(arg, type);
                 }
             }
         }
     }
-    
+
     public void setArguments(Object[] arguments) {
         this.arguments = arguments;
-        if (arguments != null) {
-            for (int i = 0; i < arguments.length; i++) {
-                if (arguments[i] instanceof Enum) {
-                    arguments[i] = arguments[i].toString();
-                }
-            }
-        }
     }
 
     public Object[] getArguments() {
@@ -143,24 +138,24 @@ public abstract class MethodExpression {
     	public Ilike(Class<?> targetClass, String propertyName) {
     		super(targetClass, propertyName);
     	}
-    	
+
     	@Override
     	public Query.Criterion createCriterion() {
     		return Restrictions.ilike(propertyName, arguments[0].toString());
     	}
     }
-    
+
     public static class Rlike extends MethodExpression {
     	public Rlike(Class<?> targetClass, String propertyName) {
     		super(targetClass, propertyName);
     	}
-    	
+
     	@Override
     	public Query.Criterion createCriterion() {
     		return Restrictions.rlike(propertyName, arguments[0].toString());
     	}
     }
-    
+
     public static class InList extends MethodExpression {
         public InList(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);
@@ -178,10 +173,30 @@ public abstract class MethodExpression {
 
             super.setArguments(arguments);
         }
-        
+
         @Override
         public void convertArguments(PersistentEntity persistentEntity) {
-            // setArguments already made sure arguments[0] is a Collection
+            ConversionService conversionService = persistentEntity
+                    .getMappingContext().getConversionService();
+            PersistentProperty<?> prop = persistentEntity
+                    .getPropertyByName(propertyName);
+            if (prop == null) {
+                if (propertyName.equals(persistentEntity.getIdentity().getName())) {
+                    prop = persistentEntity.getIdentity();
+                }
+            }
+            if (prop != null) {
+                Class<?> type = prop.getType();
+                Collection collection = (Collection) arguments[0];
+                List<Object> converted = new ArrayList<Object>(collection.size());
+                for (Object o : collection) {
+                    if(o != null && !type.isAssignableFrom(o.getClass())) {
+                        o = conversionService.convert(o, type);
+                    }
+                    converted.add(o);
+                }
+                arguments[0] = converted;
+            }
         }
 
     }
@@ -212,13 +227,13 @@ public abstract class MethodExpression {
             super(targetClass, propertyName);
             argumentsRequired = 1;
         }
-        
+
         @Override
         public Query.Criterion createCriterion() {
             Range<?> range = (Range<?>) arguments[0];
             return Restrictions.between(propertyName, range.getFrom(), range.getTo());
         }
-        
+
         @Override
         public void convertArguments(PersistentEntity persistentEntity) {
             // setArguments already made sure arguments[0] is a Range...
@@ -229,11 +244,11 @@ public abstract class MethodExpression {
             Assert.isTrue(arguments.length == 1, "An 'inRange' query requires exactly 1 argument");
             Assert.isTrue(arguments[0] instanceof Range,
                     "An 'inRange' query requires a Range argument");
-            
+
             super.setArguments(arguments);
         }
     }
-    
+
     public static class IsNull extends MethodExpression {
         public IsNull(Class<?> targetClass, String propertyName) {
             super(targetClass, propertyName);

@@ -90,11 +90,13 @@ class EnumSpec extends GormDatastoreSpec {
             def v1Instances
             def v2Instances
             def v3Instances
+            def v12Instances
 
         when:
             v1Instances = EnumThing.findAllByEn(TestEnum.V1)
             v2Instances = EnumThing.findAllByEn(TestEnum.V2)
             v3Instances = EnumThing.findAllByEn(TestEnum.V3)
+            v12Instances = EnumThing.findAllByEnInList([TestEnum.V1, TestEnum.V2])
 
         then:
             v1Instances != null
@@ -107,6 +109,9 @@ class EnumSpec extends GormDatastoreSpec {
 
             v3Instances != null
             v3Instances.isEmpty()
+
+            v12Instances != null
+            v12Instances.size() == 3
     }
 
 
