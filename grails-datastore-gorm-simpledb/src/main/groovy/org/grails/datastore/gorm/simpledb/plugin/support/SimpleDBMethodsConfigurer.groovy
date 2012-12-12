@@ -51,15 +51,20 @@ class SimpleDBMethodsConfigurer extends DynamicMethodsConfigurer{
 
     @Override
     protected GormInstanceApi createGormInstanceApi(Class cls) {
-        return new SimpleDBGormInstanceApi(cls, datastore)
+        def api = new SimpleDBGormInstanceApi(cls, datastore)
+        api.failOnError = failOnError
+        api
     }
 
     @Override
     protected GormEnhancer createEnhancer() {
+        def ge
         if(transactionManager != null)
-            return new SimpleDBGormEnhancer(datastore, transactionManager)
+            ge = new SimpleDBGormEnhancer(datastore, transactionManager)
         else
-            return new SimpleDBGormEnhancer(datastore)
+            ge = new SimpleDBGormEnhancer(datastore)
+        ge.failOnError = failOnError
+        ge
     }
 
 

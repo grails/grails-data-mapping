@@ -50,15 +50,20 @@ class DynamoDBMethodsConfigurer extends DynamicMethodsConfigurer{
 
     @Override
     protected GormInstanceApi createGormInstanceApi(Class cls) {
-        return new DynamoDBGormInstanceApi(cls, datastore)
+        def api = new DynamoDBGormInstanceApi(cls, datastore)
+        api.failOnError = failOnError
+        api
     }
 
     @Override
     protected GormEnhancer createEnhancer() {
+        def ge
         if(transactionManager != null)
-            return new DynamoDBGormEnhancer(datastore, transactionManager)
+            ge = new DynamoDBGormEnhancer(datastore, transactionManager)
         else
-            return new DynamoDBGormEnhancer(datastore)
+            ge = new DynamoDBGormEnhancer(datastore)
+        ge.failOnError = failOnError
+        ge
     }
 
 
