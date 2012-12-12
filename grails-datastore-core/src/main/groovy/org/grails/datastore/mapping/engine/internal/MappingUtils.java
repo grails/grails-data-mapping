@@ -88,6 +88,24 @@ public class MappingUtils {
         return genericClass;
     }
 
+    public static Class getGenericTypeForMapProperty(Class javaClass, String propertyName, boolean isKeyType) {
+        Class genericClass = null;
+
+        try {
+            Field declaredField = javaClass.getDeclaredField(propertyName);
+            Type genericType = declaredField.getGenericType();
+            if(genericType instanceof ParameterizedType) {
+                Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
+                if(typeArguments.length>0) {
+                    genericClass = (Class) typeArguments[isKeyType ? 0 : 1];
+                }
+            }
+        } catch (NoSuchFieldException e) {
+            // ignore
+        }
+        return genericClass;
+    }
+
     public static Class getGenericType(Class propertyType) {
         Class genericType = null;
         TypeVariable[] typeParameters = propertyType.getTypeParameters();

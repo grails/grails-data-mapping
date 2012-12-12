@@ -13,10 +13,14 @@ class EnumCollectionSpec extends GormDatastoreSpec {
         given:
             def i = new Teacher(name:"Melvin", subject: Subject.MATH)
 
+        when:
             i.save(flush:true)
-            session.clear()
+
+        then:"Saving it doesn't break it"
+            i.subject == Subject.MATH
 
         when:
+            session.clear()
             i = Teacher.findByName("Melvin")
 
         then:
@@ -29,10 +33,15 @@ class EnumCollectionSpec extends GormDatastoreSpec {
         given:
             def i = new Teacher2(name:"Melvin", subject: Subject.MATH)
             i.otherSubjects = [Subject.HISTORY, Subject.HOME_EC]
-            i.save(flush:true)
-            session.clear()
 
-        when:
+        when:"The entity is saved and flushed"
+            i.save(flush:true)
+
+        then:"The collection hasn't been broken by saving it"
+            i.otherSubjects == [Subject.HISTORY, Subject.HOME_EC]
+
+        when:"The entity is queried for afresh"
+            session.clear()
             i = Teacher2.findByName("Melvin")
 
         then:
@@ -71,4 +80,9 @@ class Teacher2 {
 
 enum Subject {
 	HISTORY, MATH, ENGLISH, HOME_EC;
+
+    @Override
+    String toString() {
+        "Surprise!"
+    }
 }

@@ -219,18 +219,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             @SuppressWarnings("unchecked")
             public void handle(PersistentEntity entity, In in, DBObject query) {
                 DBObject inQuery = new BasicDBObject();
-                List ids = new ArrayList();
-                for (Object value : in.getValues()) {
-                    PersistentEntity pe = entity.getMappingContext().getPersistentEntity(
-                            value.getClass().getName());
-                    if (value == null || pe == null) {
-                        ids.add(value);
-                    }
-                    else {
-                        ids.add(new EntityAccess(pe, value).getIdentifier());
-                    }
-                }
-                inQuery.put(MONGO_IN_OPERATOR, ids);
+                List values = getInListQueryValues(entity, in);
+                inQuery.put(MONGO_IN_OPERATOR, values);
                 String propertyName = getPropertyName(entity, in);
                 query.put(propertyName, inQuery);
             }
@@ -370,9 +360,10 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         negatedHandlers.put(In.class, new QueryHandler<In>() {
             public void handle(PersistentEntity entity, In in, DBObject query) {
+                Object nativePropertyValue = getInListQueryValues(entity, in);
                 String property = getPropertyName(entity, in);
                 DBObject inQuery = getOrCreatePropertyQuery(query, property);
-                inQuery.put(MONGO_NIN_OPERATOR, in.getValues());
+                inQuery.put(MONGO_NIN_OPERATOR, nativePropertyValue);
                 query.put(property, inQuery);
             }
         });
@@ -428,6 +419,28 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     private static void addWherePropertyComparison(DBObject query, String propertyName, String otherPropertyName, String operator) {
         query.put(MONGO_WHERE_OPERATOR, new StringBuilder(MONGO_THIS_PREFIX).append(propertyName).append(operator).append(MONGO_THIS_PREFIX).append(otherPropertyName).toString());
+    }
+
+    /**
+     * Get the list of native values to use in the query. This converts entities to ids and other types to
+     * their persisted types.
+     * @param entity The entity
+     * @param in The criterion
+     * @return The list of native values suitable for passing to Mongo.
+     */
+    private static List<Object> getInListQueryValues(PersistentEntity entity, In in) {
+        List<Object> values = new ArrayList<Object>(in.getValues().size());
+        for (Object value : in.getValues()) {
+            if (entity.getMappingContext().isPersistentEntity(value)) {
+                PersistentEntity pe = entity.getMappingContext().getPersistentEntity(
+                        value.getClass().getName());
+                values.add(new EntityAccess(pe, value).getIdentifier());
+            } else {
+                value = MongoEntityPersister.getSimpleNativePropertyValue(value, entity.getMappingContext());
+                values.add(value);
+            }
+        }
+        return values;
     }
 
     private static void handleLike(PersistentEntity entity, Like like, DBObject query, boolean caseSensitive) {
@@ -885,6 +898,36 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             }
 
             return  object;
+        }
+
+        /**
+         * Override to transform elements if necessary during iteration.
+         * @return an iterator over the elements in this list in proper sequence
+         */
+        @Override
+        public Iterator iterator() {
+            final ListIterator iterator = super.listIterator();
+            return new Iterator() {
+                @Override
+                public boolean hasNext() {
+                    return iterator.hasNext();
+                }
+
+                @Override
+                public Object next() {
+                    Object object = iterator.next();
+                    if (object instanceof DBObject) {
+                        object = convertDBObject(object);
+                        iterator.set(object);
+                    }
+                    return object;
+                }
+
+                @Override
+                public void remove() {
+                    iterator.remove();
+                }
+            };
         }
 
         protected Object convertDBObject(Object object) {

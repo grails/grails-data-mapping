@@ -107,6 +107,7 @@ public abstract class MappingFactory<R,T> {
 
     public boolean isSimpleType(Class propType) {
         if (propType == null) return false;
+        if (propType.isEnum()) return true;
         if (propType.isArray()) {
             return isSimpleType(propType.getComponentType());
         }

@@ -56,14 +56,43 @@ class InListQuerySpec extends GormDatastoreSpec{
             results[1].name == "T-rex"
     }
 
+    void "Test that in list queries work for simple types"() {
+        given:"Some test data"
+        createPets()
+        session.clear()
+
+        when:"Querying a property in a given list of strings"
+        def results = PetType.withCriteria {
+            inList 'name', ['Tyrannosaur', 'Saurapod']
+            order "name"
+        }
+
+        then:"The correct results are returned"
+        results.size() == 2
+        results[0].name == "Saurapod"
+        results[1].name == "Tyrannosaur"
+
+        when:"Querying an association in a given list of integers"
+        results = Pet.withCriteria {
+            inList 'age', [10, 5]
+            order "name"
+        }
+
+        then:"The correct results are returned"
+        results.size() == 2
+        results[0].name == "Dino"
+        results[1].name == "Flipper"
+    }
+
+
     void createPets() {
         def owner = new Person(firstName: "Fred", lastName: "Flintstone").save()
         assert owner != null
         def saurapod = new PetType(name: "Saurapod").save()
         def tyrannosaur = new PetType(name: "Tyrannosaur").save()
         def plesiosaur = new PetType(name: "Plesiosaur").save()
-        assert new Pet(name: "Dino",owner: owner, type: saurapod).save()
-        assert new Pet(name: "T-rex",owner: owner, type: tyrannosaur).save()
-        assert new Pet(name: "Flipper",owner: owner, type: plesiosaur).save(flush:true)
+        assert new Pet(name: "Dino", owner: owner, type: saurapod, age: 5).save()
+        assert new Pet(name: "T-rex", owner: owner, type: tyrannosaur, age: 4).save()
+        assert new Pet(name: "Flipper", owner: owner, type: plesiosaur, age: 10).save(flush:true)
     }
 }
