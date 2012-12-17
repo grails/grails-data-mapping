@@ -52,7 +52,7 @@ public class MongoSession extends AbstractSession<DB> {
 
     private static final Map<PersistentEntity, WriteConcern> declaredWriteConcerns = new ConcurrentHashMap<PersistentEntity, WriteConcern>();
     MongoDatastore mongoDatastore;
-    private WriteConcern writeConcern = WriteConcern.NORMAL;
+    private WriteConcern writeConcern = null;
     private boolean errorOccured = false;
 
     public MongoSession(MongoDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
@@ -128,10 +128,8 @@ public class MongoSession extends AbstractSession<DB> {
             final String collectionNameToUse = getCollectionName(entity.isRoot() ? entity : entity.getRootEntity());
             template.execute(new DbCallback<Object>() {
                 public Object doInDB(DB db) throws MongoException, DataAccessException {
-                    WriteConcern writeConcernToUse = writeConcern;
 
-
-                    writeConcernToUse = getDeclaredWriteConcern(writeConcernToUse, entity);
+                    WriteConcern writeConcernToUse = getDeclaredWriteConcern(entity);
                     final DBCollection collection = db.getCollection(collectionNameToUse);
 
                     final Collection<PendingInsert> pendingInserts = inserts.get(entity);
@@ -150,7 +148,9 @@ public class MongoSession extends AbstractSession<DB> {
                         pendingInsert.run();
                     }
 
-                    WriteResult writeResult = collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]), writeConcernToUse);
+
+                    WriteResult writeResult = writeConcernToUse != null ? collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]), writeConcernToUse )
+                                                                            : collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]));
                     if(writeResult.getError() != null) {
                         errorOccured = true;
                         throw new DataIntegrityViolationException(writeResult.getError());
@@ -162,6 +162,10 @@ public class MongoSession extends AbstractSession<DB> {
                 }
             });
         }
+    }
+
+    public WriteConcern getDeclaredWriteConcern(PersistentEntity entity) {
+        return getDeclaredWriteConcern(this.writeConcern, entity);
     }
 
     private WriteConcern getDeclaredWriteConcern(WriteConcern defaultConcern, PersistentEntity entity) {

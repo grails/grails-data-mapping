@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.util.*;
 
+import com.mongodb.*;
 import org.bson.types.ObjectId;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.core.SessionImplementor;
@@ -39,16 +40,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataAccessException;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import com.mongodb.CommandResult;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.DBRef;
-import com.mongodb.MongoException;
-import com.mongodb.WriteResult;
 import org.springframework.data.mongodb.core.DbCallback;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -278,7 +269,11 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
                 DBObject dbo = createDBObjectWithKey(key);
                 MongoSession mongoSession = (MongoSession) session;
-                dbCollection.remove(dbo, mongoSession.getWriteConcern());
+                WriteConcern writeConcern = mongoSession.getDeclaredWriteConcern(getPersistentEntity());
+                if(writeConcern != null)
+                    dbCollection.remove(dbo, writeConcern);
+                else
+                    dbCollection.remove(dbo);
                 return null;
             }
 
@@ -542,7 +537,11 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 }
 
                 MongoSession mongoSession = (MongoSession) session;
-                dbCollection.update(dbo, entry, false, false, mongoSession.getWriteConcern());
+                WriteConcern writeConcern = mongoSession.getDeclaredWriteConcern(getPersistentEntity());
+                if(writeConcern != null)
+                    dbCollection.update(dbo, entry, false, false, writeConcern);
+                else
+                    dbCollection.update(dbo, entry, false, false);
                 return null;
             }
         });
