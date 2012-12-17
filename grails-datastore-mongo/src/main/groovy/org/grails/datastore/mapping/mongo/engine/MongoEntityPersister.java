@@ -24,6 +24,7 @@ import com.mongodb.*;
 import org.bson.types.ObjectId;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.core.SessionImplementor;
+import org.grails.datastore.mapping.core.impl.PendingUpdateAdapter;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.NativeEntryEntityPersister;
@@ -49,6 +50,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("ALL")
 public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, Object> {
 
     private static final String NEXT_ID_SUFFIX = ".next_id";
@@ -102,9 +104,45 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @Override
-    protected void setEmbeddedCollection(DBObject nativeEntry, String key, Collection<?> instances,
+    protected void setEmbeddedCollection(final DBObject nativeEntry, final String key, Collection<?> instances,
             List<DBObject> embeddedEntries) {
         if (instances == null || instances.isEmpty()) {
+            SessionImplementor impl = (SessionImplementor) getSession();
+            final Object oid = nativeEntry.get(MONGO_ID_FIELD);
+            final DBObject ni = nativeEntry;
+            nativeEntry.removeField(key);
+            Object inSession = impl.getCachedInstance(getPersistentEntity().getJavaClass(), (Serializable) oid);
+            if(inSession != null) {
+
+                impl.addPendingUpdate(new PendingUpdateAdapter(getPersistentEntity(), oid, nativeEntry, null) {
+                    @Override
+                    public void run() {
+                        mongoTemplate.execute(new DbCallback<Object>() {
+                            public Object doInDB(DB con) throws MongoException, DataAccessException {
+                                @SuppressWarnings("hiding") String collectionName = getCollectionName(getPersistentEntity(), ni);
+                                DBCollection dbCollection = con.getCollection(collectionName);
+
+                                DBObject updateOp = new BasicDBObject();
+
+                                updateOp.put("$unset", new BasicDBObject(key, ""));
+
+                                DBObject dbo = createDBObjectWithKey(oid);
+
+                                MongoSession mongoSession = (MongoSession) session;
+                                WriteConcern writeConcern = mongoSession.getDeclaredWriteConcern(getPersistentEntity());
+                                if(writeConcern != null)
+                                    dbCollection.update(dbo, updateOp, false, false, writeConcern);
+                                else
+                                    dbCollection.update(dbo, updateOp, false, false);
+                                return null;
+                            }
+                        });
+
+
+                    }
+                });
+            }
+
             return;
         }
 

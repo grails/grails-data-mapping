@@ -1061,6 +1061,11 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         // will have to store the embedded entity in an appropriate way (as a sub-document in a document store for example)
         Object embeddedInstances = entityAccess.getProperty(prop.getName());
         if (!(embeddedInstances instanceof Collection) || ((Collection)embeddedInstances).isEmpty()) {
+            if(embeddedInstances == null)
+                setEmbeddedCollection(e, key, null, null);
+            else {
+                setEmbeddedCollection(e, key, MappingUtils.createConcreteCollection(prop.getType()), new ArrayList<T>());
+            }
             return;
         }
 
