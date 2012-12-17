@@ -107,6 +107,7 @@ public class RedisDatastore extends AbstractDatastore implements InitializingBea
     }
 
     public void destroy() throws Exception {
+        super.destroy();
         if (pool != null) {
             pool.destroy();
         }

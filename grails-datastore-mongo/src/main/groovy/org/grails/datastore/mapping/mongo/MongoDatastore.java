@@ -331,6 +331,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     }
 
     public void destroy() throws Exception {
+        super.destroy();
         if(mongo != null)
             mongo.close();
     }

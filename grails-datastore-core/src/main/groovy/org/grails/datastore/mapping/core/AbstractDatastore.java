@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -39,7 +40,7 @@ import org.springframework.validation.Errors;
  * @since 1.0
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class AbstractDatastore implements Datastore {
+public abstract class AbstractDatastore implements Datastore, DisposableBean {
 
     private ApplicationContext applicationContext;
 
@@ -67,6 +68,12 @@ public abstract class AbstractDatastore implements Datastore {
         this.connectionDetails = connectionDetails != null ? connectionDetails : Collections.<String, String>emptyMap();
         setApplicationContext(ctx);
         this.cacheAdapterRepository = cacheAdapterRepository;
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        ERRORS_MAP.remove();
+        VALIDATE_MAP.remove();
     }
 
     public void setApplicationContext(ConfigurableApplicationContext ctx) {

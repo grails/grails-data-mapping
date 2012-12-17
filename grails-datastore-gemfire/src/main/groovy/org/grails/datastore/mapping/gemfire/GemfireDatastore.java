@@ -273,6 +273,7 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
     }
 
     public void destroy() throws Exception {
+        super.destroy();
         if (gemfireCache == null) {
             return;
         }
