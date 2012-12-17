@@ -31,7 +31,7 @@ import org.springframework.dao.DataIntegrityViolationException
 class GroovyProxyFactory implements ProxyFactory {
 
     boolean isProxy(Object object) {
-        object.metaClass.getMetaMethod("isProxy", null) != null
+        object != null && object.metaClass.getMetaMethod("isProxy", null) != null
     }
 
     Serializable getIdentifier(Object obj) {
