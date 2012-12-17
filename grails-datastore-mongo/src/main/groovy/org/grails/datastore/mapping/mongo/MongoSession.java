@@ -180,7 +180,8 @@ public class MongoSession extends AbstractSession<DB> {
                 }
             }
 
-            declaredWriteConcerns.put(entity, writeConcern);
+            if(writeConcern != null)
+                declaredWriteConcerns.put(entity, writeConcern);
         }
         return writeConcern;
     }
