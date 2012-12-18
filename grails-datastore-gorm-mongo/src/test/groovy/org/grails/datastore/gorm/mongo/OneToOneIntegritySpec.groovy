@@ -41,13 +41,9 @@ class OneToOneIntegritySpec extends GormDatastoreSpec {
         when:"The low level API is accessed"
             def petDbo = Pet.collection.findOne(name:"Dino")
             def ownerRef =petDbo.owner
-            def ownerDbo = ownerRef.fetch()
         then:"check the state is valid"
             petDbo != null
-            ownerDbo != null
-            ownerDbo.firstName == 'Fred'
-            ownerRef.id == person.id
-            ownerRef.ref == 'person'
+            ownerRef == person.id
 
     }
 
@@ -84,10 +80,7 @@ class OneToOneIntegritySpec extends GormDatastoreSpec {
         then:"check the state is valid"
             noseDbo != null
             noseDbo.hasFreckles == true
-            faceRef instanceof DBRef
-            faceRef.id == face.id
-            faceRef.ref == 'face'
-            faceRef.fetch().name == "Joe"
+            faceRef == face.id
 
 
     }
