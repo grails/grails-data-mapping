@@ -595,12 +595,12 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                                 }
                             }
                             else {
-                                if(distinct) {
-                                    propertyResults = collection.distinct(propertyName);
+                                if(distinct || (projection instanceof IdProjection)) {
+                                    propertyResults = collection.distinct(propertyName, query);
                                 }
                                 else {
 
-                                    DBCursor propertyCursor = collection.find(new BasicDBObject(), new BasicDBObject(propertyName, 1));
+                                    DBCursor propertyCursor = collection.find(query, new BasicDBObject(propertyName, 1));
                                     ArrayList projectedProperties = new ArrayList();
                                     while(propertyCursor.hasNext()) {
                                         DBObject dbo = propertyCursor.next();
