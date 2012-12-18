@@ -43,6 +43,7 @@ class MongoSpringConfigurerSpec extends Specification{
 
         then:"The application context is created"
             ctx != null
+            ctx.containsBean("persistenceInterceptor")
             mappingContext.defaultMapping == closureConfig
             entity != null
             entity.getPropertyByName('pets').getMapping().mappedForm.reference == true
