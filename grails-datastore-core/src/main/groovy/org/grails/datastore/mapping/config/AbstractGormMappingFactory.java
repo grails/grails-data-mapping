@@ -97,7 +97,7 @@ public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R,
             }
         }
 
-        T defaultMapping = properties.get("*");
+        T defaultMapping = properties != null ? properties.get("*") : null;
         if(defaultMapping != null) {
             try {
                 return (T)((Property)defaultMapping).clone();
