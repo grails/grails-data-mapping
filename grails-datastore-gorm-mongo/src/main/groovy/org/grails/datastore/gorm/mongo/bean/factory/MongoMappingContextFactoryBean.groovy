@@ -33,7 +33,7 @@ class MongoMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
     @Override
     protected MappingContext createMappingContext() {
         Assert.hasText(defaultDatabaseName, "Property [defaultDatabaseName] must be set!")
-        return new MongoMappingContext(defaultDatabaseName, defaultMapping.defaultMapping);
+        return new MongoMappingContext(defaultDatabaseName, defaultMapping?.defaultMapping);
     }
 }
 @Canonical
