@@ -51,14 +51,13 @@ class EmbeddedWithNonEmbeddedAssociationsSpec extends GormDatastoreSpec{
 
         then:"It is correctly defined"
             boatDbo.name == "The Float"
-            boatDbo.captain instanceof DBRef
-            boatDbo.captain.fetch().name == "Bob"
+            Captain.collection.findOne(boatDbo.captain).name == "Bob"
             boatDbo.firstMate instanceof DBObject
             boatDbo.firstMate.name == "Jim"
             boatDbo.crew.size() == 2
             boatDbo.crew[0].name == "Fred"
             boatDbo.crew[1].name == "Joe"
-            boatDbo.crew[0].captain instanceof DBRef
+            boatDbo.crew[0].captain == boatDbo.captain
 
 
 
