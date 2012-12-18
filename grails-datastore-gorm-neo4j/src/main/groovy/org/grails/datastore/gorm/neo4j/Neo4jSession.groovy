@@ -493,7 +493,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
             log.debug "retrieving $type for id $key"
         }
-        def id = key as long
+        def id = mappingContext.getConversionService().convert(key, Long)
         if (id == null) {
             return null
         }
