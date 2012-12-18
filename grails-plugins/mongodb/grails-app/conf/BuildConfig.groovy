@@ -29,13 +29,13 @@ grails.project.dependency.resolution = {
             transitive = false
         }
 
-        compile("org.mongodb:mongo-java-driver:2.7.1",,excludes)
-        compile("org.springframework.data:spring-data-mongodb:1.0.0.RELEASE", excludes)
-        compile("org.springframework.data:spring-data-commons-core:1.2.0.RELEASE", excludes)
-        runtime("com.gmongo:gmongo:0.9.1", excludes)
+        compile("org.mongodb:mongo-java-driver:2.10.1",,excludes)
+        compile("org.springframework.data:spring-data-mongodb:1.1.0.RELEASE", excludes)
+        compile("org.springframework.data:spring-data-commons-core:1.4.0.RELEASE", excludes)
+        runtime("com.gmongo:gmongo:1.0", excludes)
 
-        def datastoreVersion = "1.0.7.RELEASE"
-        def mongoDatastoreVersion = "1.0.0.RELEASE"
+        def datastoreVersion = "1.1.3.RELEASE"
+        def mongoDatastoreVersion = "1.1.0.RELEASE"
 
         compile ("org.grails:grails-datastore-mongo:$mongoDatastoreVersion",
                  "org.grails:grails-datastore-gorm-mongo:$mongoDatastoreVersion",excludes)
