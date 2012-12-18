@@ -46,13 +46,23 @@ class MappingConfigurationBuilder {
             return
         }
 
+
+
         def setterName = NameUtils.getSetterName(name)
         if (target.respondsTo(setterName)) {
             target[name] = args.size() == 1 ? args[0] : args
         }
         else {
             if (args[0] instanceof Map) {
-                def instance = properties[name] ?: propertyClass.newInstance()
+
+                def instance
+                if(properties['*']) {
+                    instance = properties['*'].clone()
+                }
+                else {
+                    instance = properties[name] ?: propertyClass.newInstance()
+                }
+
                 def binder = new DataBinder(instance)
                 binder.bind(new MutablePropertyValues(args[0]))
                 properties[name] = instance

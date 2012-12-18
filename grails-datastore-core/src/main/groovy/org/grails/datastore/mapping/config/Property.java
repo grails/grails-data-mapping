@@ -16,7 +16,7 @@ package org.grails.datastore.mapping.config;
 
 import javax.persistence.FetchType;
 
-public class Property {
+public class Property implements Cloneable{
 
     private boolean index = false;
     private boolean nullable = false;
@@ -24,6 +24,11 @@ public class Property {
     private String targetName;
     private String generator;
     private String propertyName;
+
+    @Override
+    public Property clone() throws CloneNotSupportedException {
+        return (Property) super.clone();
+    }
 
     /**
      * The target to map to, could be a database column, document attribute, or hash key

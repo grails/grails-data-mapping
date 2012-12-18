@@ -15,6 +15,7 @@
 
 package org.grails.datastore.mapping.document.config;
 
+import groovy.lang.Closure;
 import org.grails.datastore.mapping.model.AbstractMappingContext;
 import org.grails.datastore.mapping.model.MappingConfigurationStrategy;
 import org.grails.datastore.mapping.model.MappingFactory;
@@ -33,15 +34,27 @@ public class DocumentMappingContext extends AbstractMappingContext {
     MappingFactory<Collection, Attribute> mappingFactory;
 
     private MappingConfigurationStrategy syntaxStrategy;
+    private Closure defaultMapping;
 
     public DocumentMappingContext(String defaultDatabaseName) {
         Assert.notNull(defaultDatabaseName, "Argument [defaultDatabaseName] cannot be null");
         this.defaultDatabaseName = defaultDatabaseName;
-        mappingFactory = createDocumentMappingFactory();
+        mappingFactory = createDocumentMappingFactory(null);
+        syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
+    }
+    public DocumentMappingContext(String defaultDatabaseName, Closure defaultMapping) {
+        Assert.notNull(defaultDatabaseName, "Argument [defaultDatabaseName] cannot be null");
+        this.defaultDatabaseName = defaultDatabaseName;
+        mappingFactory = createDocumentMappingFactory(defaultMapping);
+        this.defaultMapping = defaultMapping;
         syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory);
     }
 
-    protected MappingFactory createDocumentMappingFactory() {
+    public Closure getDefaultMapping() {
+        return defaultMapping;
+    }
+
+    protected MappingFactory createDocumentMappingFactory(Closure defaultMapping) {
         return new GormDocumentMappingFactory();
     }
 

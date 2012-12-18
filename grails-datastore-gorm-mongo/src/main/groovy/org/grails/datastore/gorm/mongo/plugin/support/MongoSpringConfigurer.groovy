@@ -21,6 +21,7 @@ import org.grails.datastore.gorm.mongo.bean.factory.GMongoFactoryBean
 import org.grails.datastore.gorm.mongo.bean.factory.MongoMappingContextFactoryBean
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.data.mongodb.core.MongoOptionsFactoryBean
+import org.grails.datastore.gorm.mongo.bean.factory.DefaultMappingHolder
 
 /**
  * Mongo specific configuration logic for Spring
@@ -50,6 +51,9 @@ class MongoSpringConfigurer extends SpringConfigurer {
                 defaultDatabaseName = databaseName
                 grailsApplication = ref('grailsApplication')
                 pluginManager = ref('pluginManager')
+                if(mongoConfig.default.mapping instanceof Closure) {
+                    defaultMapping = new DefaultMappingHolder((Closure)mongoConfig.default.mapping)
+                }
             }
 
             mongoOptions(MongoOptionsFactoryBean) {

@@ -31,7 +31,7 @@ public class MongoAttribute extends Attribute {
 
     @SuppressWarnings("rawtypes")
     private Map indexAttributes;
-    private boolean reference = true;
+    private boolean reference = false;
 
     public boolean isReference() {
         return reference;

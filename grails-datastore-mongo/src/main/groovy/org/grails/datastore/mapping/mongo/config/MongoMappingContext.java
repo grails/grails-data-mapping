@@ -15,6 +15,7 @@
 package org.grails.datastore.mapping.mongo.config;
 
 import com.mongodb.DBRef;
+import groovy.lang.Closure;
 import org.bson.types.*;
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory;
 import org.grails.datastore.mapping.document.config.Collection;
@@ -106,10 +107,16 @@ public class MongoMappingContext extends DocumentMappingContext {
         super(defaultDatabaseName);
     }
 
+    public MongoMappingContext(String defaultDatabaseName, Closure defaultMapping) {
+        super(defaultDatabaseName, defaultMapping);
+    }
+
     @SuppressWarnings("rawtypes")
     @Override
-    protected MappingFactory createDocumentMappingFactory() {
-        return new MongoDocumentMappingFactory();
+    protected MappingFactory createDocumentMappingFactory(Closure defaultMapping) {
+        MongoDocumentMappingFactory mongoDocumentMappingFactory = new MongoDocumentMappingFactory();
+        mongoDocumentMappingFactory.setDefaultMapping(defaultMapping);
+        return mongoDocumentMappingFactory;
     }
 
     @Override

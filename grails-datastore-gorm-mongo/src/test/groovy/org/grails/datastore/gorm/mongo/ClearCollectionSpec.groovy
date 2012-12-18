@@ -1,11 +1,66 @@
 package org.grails.datastore.gorm.mongo
 
+import grails.gorm.tests.GormDatastoreSpec
+import org.bson.types.ObjectId
+import grails.persistence.Entity
+
 /**
- * Created with IntelliJ IDEA.
- * User: graemerocher
- * Date: 12/17/12
- * Time: 1:49 PM
- * To change this template use File | Settings | File Templates.
  */
-class ClearCollectionSpec {
+class ClearCollectionSpec extends GormDatastoreSpec{
+
+    void "Test clear embedded mongo collection"() {
+        given:"An entity with an embedded collection"
+            Building  b = new Building(buildingName: "WTC", rooms: [new Room(roomNo: 1),new Room(roomNo: 1)]).save(flush:true)
+            session.clear()
+
+        when:"The entity is queried"
+            b = Building.get(b.id)
+
+        then:"The entity was persisted correctly"
+            b.buildingName == "WTC"
+            b.rooms.size() == 2
+            b.rooms[0].roomNo == "1"
+
+        when:"The association is cleared"
+            b.rooms.clear()
+            b.save(flush: true)
+            session.clear()
+            b = Building.get(b.id)
+
+        then:"It is empty"
+            b.rooms.size() == 0
+
+    }
+
+    @Override
+    List getDomainClasses() {
+        [Building, Room]
+    }
+}
+
+@Entity
+class Building {
+    ObjectId id
+    String buildingName;
+    List<Room> rooms;
+
+    static mapWith = "mongo"
+    static mapping = {
+        collection "building"
+        version false
+    }
+    static constraints = {
+        rooms(blank:true,nullable:true)
+    }
+    static embedded = ['rooms']
+}
+
+@Entity
+class Room {
+    ObjectId id
+    String roomNo
+
+    static mapWith = "mongo"
+    static constraints = {
+    }
 }

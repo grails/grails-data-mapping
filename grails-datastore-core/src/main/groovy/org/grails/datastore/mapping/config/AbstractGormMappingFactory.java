@@ -34,6 +34,7 @@ import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R, T> {
 
     protected Map<PersistentEntity, Map<String, T>> entityToPropertyMap = new HashMap<PersistentEntity, Map<String, T>>();
+    private Closure defaultMapping;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -42,6 +43,9 @@ public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R,
         R family = BeanUtils.instantiate(getEntityMappedFormType());
         MappingConfigurationBuilder builder = new MappingConfigurationBuilder(family, getPropertyMappedFormType());
 
+        if(defaultMapping != null) {
+            builder.evaluate(defaultMapping);
+        }
         Closure value = cpf.getStaticPropertyValue(GormProperties.MAPPING, Closure.class);
         if (value != null) {
             builder.evaluate(value);
@@ -52,6 +56,11 @@ public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R,
         }
         entityToPropertyMap.put(entity, builder.getProperties());
         return family;
+    }
+
+
+    public void setDefaultMapping(Closure defaultMapping) {
+        this.defaultMapping = defaultMapping;
     }
 
     protected abstract Class<T> getPropertyMappedFormType();
@@ -87,6 +96,17 @@ public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R,
                 return (T) property;
             }
         }
-        return BeanUtils.instantiate(getPropertyMappedFormType());
+
+        T defaultMapping = properties.get("*");
+        if(defaultMapping != null) {
+            try {
+                return (T)((Property)defaultMapping).clone();
+            } catch (CloneNotSupportedException e) {
+                return BeanUtils.instantiate(getPropertyMappedFormType());
+            }
+        }
+        else {
+            return BeanUtils.instantiate(getPropertyMappedFormType());
+        }
     }
 }
