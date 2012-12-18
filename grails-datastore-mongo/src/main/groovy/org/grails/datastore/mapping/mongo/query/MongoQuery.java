@@ -564,7 +564,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         projectedResults.add(manualProjections.countDistinct((Collection) results.clone(), getPropertyName(entity, mp.getPropertyName())));
 
                     }
-                    else if ((projection instanceof PropertyProjection) || (projection instanceof IdProjection)) {
+                    else if ((projection instanceof DistinctPropertyProjection) || (projection instanceof PropertyProjection) || (projection instanceof IdProjection)) {
+                        final boolean distinct = (projection instanceof DistinctPropertyProjection);
                         final PersistentProperty persistentProperty;
                         final String propertyName;
                         if (projection instanceof IdProjection) {
@@ -584,11 +585,30 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                             if(max > -1) {
                                 // if there is a limit then we have to do a manual projection since the MongoDB driver doesn't support limits and distinct together
                                 cursor = executeQueryAndApplyPagination(collection, query);
-                                propertyResults = manualProjections.property(new MongoResultList(cursor, mongoEntityPersister), propertyName);
+                                if(distinct) {
+
+                                    propertyResults = new ArrayList(manualProjections.distinct(new MongoResultList(cursor, mongoEntityPersister), propertyName));
+                                }
+                                else {
+                                    propertyResults = manualProjections.property(new MongoResultList(cursor, mongoEntityPersister), propertyName);
+
+                                }
                             }
                             else {
+                                if(distinct) {
+                                    propertyResults = collection.distinct(propertyName);
+                                }
+                                else {
 
-                                propertyResults = collection.distinct(propertyName, query);
+                                    DBCursor propertyCursor = collection.find(new BasicDBObject(), new BasicDBObject(propertyName, 1));
+                                    ArrayList projectedProperties = new ArrayList();
+                                    while(propertyCursor.hasNext()) {
+                                        DBObject dbo = propertyCursor.next();
+                                        projectedProperties.add(dbo.get(propertyName));
+                                    }
+
+                                    propertyResults = projectedProperties;
+                                }
                             }
 
 
@@ -955,4 +975,5 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             return arrayList;
         }
     }
+
 }

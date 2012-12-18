@@ -72,7 +72,7 @@ public class ManualProjections {
         return propertyValues.size();
     }
 
-    private Collection distinct(Collection results, String property) {
+    public Collection distinct(Collection results, String property) {
         List propertyValues = property(results, property);
 
         return DefaultGroovyMethods.unique(propertyValues);
