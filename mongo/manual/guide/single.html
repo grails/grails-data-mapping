@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
-        <title>GORM for Mongo 1.0.0.RC4</title>
+        <title>GORM for Mongo 1.1.0.GA</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8" />
         <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8" />
@@ -62,7 +62,7 @@ function addJsClass(el) {
                         <div class="project">
                             <h1>GORM for Mongo - Reference Documentation</h1>
                             <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
-                            <p><strong>Version:</strong> 1.0.0.RC4</p>
+                            <p><strong>Version:</strong> 1.1.0.GA</p>
                             
                         </div>
 
@@ -142,53 +142,26 @@ This implementation tries to be as compatible as possible with GORM for Hibernat
 
 
 <h2 id="1.2 Release Notes">1.2 Release Notes</h2>
-Below are the details of the changes across releases:<p class="paragraph"/><h4>1.0 RC3</h4>
+Below are the details of the changes across releases:<p class="paragraph"/><h4>1.1 GA</h4>
 <ul class="star">
-<li>Easy conversion of DBObject to entity methods added</li>
-</ul><p class="paragraph"/><h4>1.0 RC1 and RC2</h4>
+<li>DBRefs no longer used by default for associations</li>
+<li>Upgrade to GMongo 1.0 and Spring Data MongoDB 1.1</li>
+<li>Support for global mapping configuration</li>
+</ul><p class="paragraph"/><h5>Upgrading to 1.1 GA</h5><p class="paragraph"/><blockquote class="warning">
+MongoDB plugin 1.1 GA and above requires Grails 2.0.x as a minimum Grails version, if you are using Grails 1.3.x you will need to stay with 1.0
+</blockquote><p class="paragraph"/>If you are using 1.0 and are upgrading to 1.1 you need to either migrate your database to note use DBRefs or configure the plugin to use DBRefs when upgrading, otherwise you will experience data integrity issues.<p class="paragraph"/>To configure the plugin to use DBRefs (1.0 behavior), specify a global mapping configuration in Config.groovy of:<p class="paragraph"/><div class="code"><pre>grails.mongo.<span class="java&#45;keyword">default</span>.mapping = &#123;
+    '&#42;'(reference: <span class="java&#45;keyword">true</span>)
+&#125;</pre></div><p class="paragraph"/>This will make all associations reference types.<p class="paragraph"/>
+<h4>1.0 GA</h4>
 <ul class="star">
-<li>Support for querying embedded associations</li>
-<li>Support for hint query modifier</li>
-<li>Support for assigned identifiers</li>
-</ul><p class="paragraph"/><h4>1.0 Milestone 7</h4>
-<ul class="star">
-<li>Support for hasOne associations</li>
-<li>Support for custom user types</li>
-<li>Associations now linked via DBRef</li>
-</ul><p class="paragraph"/><h4>1.0 Milestone 6</h4>
-<ul class="star">
-<li>Support for embedded collections of Mongo domain classes</li>
-</ul><p class="paragraph"/><h4>1.0 Milestone 5</h4>
-<ul class="star">
-<li>Remaining GORM events (beforeLoad, afterLoad)</li>
-<li>Optimistic locking via versioning</li>
-<li>Services can now be made transactional for Mongo only via transactional = "mongo"</li>
-</ul><p class="paragraph"/><h4>1.0 Milestone 4</h4>
-<ul class="star">
-<li>Bug fixes and minor improvements</li>
-</ul><p class="paragraph"/><h4>1.0 Milestone 3</h4>
-<ul class="star">
-<li>Bug fixes and minor improvements</li>
-</ul><p class="paragraph"/><h4>1.0 Milestone 2</h4><p class="paragraph"/>Features added in 1.0 Milestone 2:
-<ul class="star">
-<li>Embedded types</li>
-<li>Support for Maps and Lists</li>
-<li>Geospacial Indexing</li>
-<li>Schemaless Domain Models (Dynamic Attributes)</li>
-<li>Custom Index Attributes</li>
-</ul><p class="paragraph"/><h4>1.0 Milestone 1</h4><p class="paragraph"/>Features added in 1.0 Milestone 1:
-<ul class="star">
-<li>Dynamic finders</li>
-<li>Criteria queries</li>
-<li>Named queries</li>
-<li>Support for GMongo as a lower level API</li>
+<li>Initial feature complete 1.0 release</li>
 </ul><p class="paragraph"/>
 
 
 <h1 id="2. Getting Started">2 Getting Started</h1>
 To get started with GORM for Mongo you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin mongodb</pre></div><p class="paragraph"/>Or configure it as a dependency in <code>BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
-	compile ':mongodb:1.0.0.RC4'
-&#125;</pre></div><p class="paragraph"/>With that done you need to set up a running Mongodb server. Refer to the <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="blank">Mongodb Quick Start guide</a> for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above commands executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>Thu Nov 11 16:54:08 MongoDB starting : pid=4600 port=27017 dbpath=/data/db/ 64&#45;bit
+	compile ':mongodb:1.0.0.GA'
+&#125;</pre></div><p class="paragraph"/>With that done you need to set up a running MongoDB server. Refer to the <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="blank">MongoDB Quick Start guide</a> for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above commands executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>Thu Nov 11 16:54:08 MongoDB starting : pid=4600 port=27017 dbpath=/data/db/ 64&#45;bit
 Thu Nov 11 16:54:08 db version v1.6.3, pdfile version 4.5
 Thu Nov 11 16:54:08 git version: 278bd2ac2f2efbee556f32c13c1b6803224d1c01
 Thu Nov 11 16:54:08 sys info: Darwin erh2.10gen.cc 9.6.0 Darwin Kernel Version 9.6.0: Mon Nov 24 17:37:00 PST 2008; root:xnu&#45;1228.9.59~1/RELEASE_I386 i386 BOOST_LIB_VERSION=1_40
@@ -215,7 +188,7 @@ If you have both the Hibernate and Mongo plugins installed then by default all c
 
 
 <h2 id="2.3 Advanced Configuration">2.3 Advanced Configuration</h2>
-As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your <code>grails-app/conf/DataSource.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
+<h4>Mongo Database Connection Configuration</h4><p class="paragraph"/>As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your <code>grails-app/conf/DataSource.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
     mongo &#123;
         host = <span class="java&#45;quote">"localhost"</span>
         port = 27107
@@ -238,16 +211,19 @@ As mentioned the GORM for Mongo plugin will configure all the defaults for you, 
     mongo &#123;
         replicaSet = &#91; <span class="java&#45;quote">"localhost:27017"</span>, <span class="java&#45;quote">"localhost:27018"</span>&#93;
     &#125;
-&#125;</pre></div><p class="paragraph"/>The replica sets are defined using a list of strings that conform to the Mongo <a href="http://api.mongodb.org/java/current/com/mongodb/DBAddress.html" target="blank">DBAddress</a> specification.
+&#125;</pre></div><p class="paragraph"/>The replica sets are defined using a list of strings that conform to the Mongo <a href="http://api.mongodb.org/java/current/com/mongodb/DBAddress.html" target="blank">DBAddress</a> specification.<p class="paragraph"/><h4>Global Mapping Configuration</h4><p class="paragraph"/>Using the <code>grails.mongo.default.mapping</code> setting in <code>Config.groovy</code> you can configure global mapping options across your domain classes. This is useful if, for example, you want to disable optimistic locking globally or you wish to use <code>DBRefs</code> in your association mappings. For example, the following configuration will disable optimistic locking globally and use <code>DBRefs</code> for all properties:<p class="paragraph"/><div class="code"><pre>grails.mongo.<span class="java&#45;keyword">default</span>.mapping = &#123;
+    version <span class="java&#45;keyword">false</span>
+    '&#42;'(reference:<span class="java&#45;keyword">true</span>)
+&#125;</pre></div><p class="paragraph"/>The <code>*</code> method is used to indicate that the setting applies to all properties.
 
 
 
 <h1 id="3. Mapping Domain Classes to Mongo Collections">3 Mapping Domain Classes to Mongo Collections</h1>
-The way GORM for Mongo works is to map each domain class to a Mongo collection. For example given a domain class such as:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+<h4>Basic Mapping</h4><p class="paragraph"/>The way GORM for Mongo works is to map each domain class to a Mongo collection. For example given a domain class such as:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     <span class="java&#45;object">String</span> firstName
     <span class="java&#45;object">String</span> lastName
     <span class="java&#45;keyword">static</span> hasMany = &#91;pets:Pet&#93;
-&#125;</pre></div><p class="paragraph"/>This will map onto a Mongo <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html" target="blank">DBCollection</a> called "person".<p class="paragraph"/>It is quite common in Mongo to embed documents within documents (nested documents). This can be done with GORM embedded types:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+&#125;</pre></div><p class="paragraph"/>This will map onto a Mongo <a href="http://api.mongodb.org/java/current/com/mongodb/DBCollection.html" target="blank">DBCollection</a> called "person".<p class="paragraph"/><h4>Embedded Documents</h4><p class="paragraph"/>It is quite common in Mongo to embed documents within documents (nested documents). This can be done with GORM embedded types:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     <span class="java&#45;object">String</span> firstName
     <span class="java&#45;object">String</span> lastName
     Address address
@@ -258,10 +234,10 @@ The way GORM for Mongo works is to map each domain class to a Mongo collection. 
     Address address
     List otherAddresses
     <span class="java&#45;keyword">static</span> embedded = &#91;'address', 'otherAddresses'&#93;
-&#125;</pre></div><p class="paragraph"/>You can also map lists and maps of basic types (such as strings) simply by defining the appropriate collection type:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+&#125;</pre></div><p class="paragraph"/><h4>Basic Collection Types</h4><p class="paragraph"/>You can also map lists and maps of basic types (such as strings) simply by defining the appropriate collection type:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     List&#60;<span class="java&#45;object">String</span>&#62; friends
     Map pets
-&#125;<p class="paragraph"/>...<p class="paragraph"/><span class="java&#45;keyword">new</span> Person(friends:&#91;'Fred', 'Bob'&#93;, pets:&#91;chuck:<span class="java&#45;quote">"Dog"</span>, eddie:'Parrot'&#93;).save(flush:<span class="java&#45;keyword">true</span>)</pre></div><p class="paragraph"/>Basic collection types are stored as native ArrayList and BSON documents within the Mongo documents.<p class="paragraph"/>You may wish to customize how a domain class maps onto a <code>DBCollection</code>. This is possible using the <code>mapping</code> block as follows:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+&#125;<p class="paragraph"/>...<p class="paragraph"/><span class="java&#45;keyword">new</span> Person(friends:&#91;'Fred', 'Bob'&#93;, pets:&#91;chuck:<span class="java&#45;quote">"Dog"</span>, eddie:'Parrot'&#93;).save(flush:<span class="java&#45;keyword">true</span>)</pre></div><p class="paragraph"/>Basic collection types are stored as native ArrayList and BSON documents within the Mongo documents.<p class="paragraph"/><h4>Customized Collection and Database Mapping</h4><p class="paragraph"/>You may wish to customize how a domain class maps onto a <code>DBCollection</code>. This is possible using the <code>mapping</code> block as follows:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     ..
     <span class="java&#45;keyword">static</span> mapping = &#123;
         collection <span class="java&#45;quote">"mycollection"</span>
@@ -271,6 +247,11 @@ The way GORM for Mongo works is to map each domain class to a Mongo collection. 
     ..
     <span class="java&#45;keyword">static</span> mapping = &#123;
         firstName attr:<span class="java&#45;quote">"first_name"</span>
+    &#125;
+&#125;</pre></div><p class="paragraph"/>For non-embedded associations by default GORM for MongoDB will map links between documents using MongoDB <a href="http://www.mongodb.org/display/DOCS/Database+References" target="blank">database references</a> also known as <code>DBRefs</code>.<p class="paragraph"/>If you prefer not to use DBRefs then you tell GORM to use direct links by using the <code>reference:false</code> mapping:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    ..
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        address reference:<span class="java&#45;keyword">false</span>
     &#125;
 &#125;</pre></div>
 
@@ -285,7 +266,7 @@ By default in GORM entities are supplied with an integer-based identifier. So fo
 
 
 <h2 id="3.2 Indexing Queries">3.2 Indexing Queries</h2>
-Mongo doesn't require that you specify indices to query, but like a relational database without specifying indices your queries will be significantly slower.<p class="paragraph"/>With that in mind it is important to specify the properties you plan to query using the mapping block:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+<h4>Basics</h4><p class="paragraph"/>Mongo doesn't require that you specify indices to query, but like a relational database without specifying indices your queries will be significantly slower.<p class="paragraph"/>With that in mind it is important to specify the properties you plan to query using the mapping block:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     <span class="java&#45;object">String</span> name
     <span class="java&#45;keyword">static</span> mapping = &#123;
         name index:<span class="java&#45;keyword">true</span>
@@ -298,8 +279,12 @@ Mongo doesn't require that you specify indices to query, but like a relational d
 &#125;</pre></div><p class="paragraph"/>You can use MongoDB <a href="http://www.mongodb.org/display/DOCS/Optimization#Optimization-Hint" target="blank">Query Hints</a> by passing the <code>hint</code> argument to any dynamic finder:<p class="paragraph"/><div class="code"><pre>def people = Person.findByName(<span class="java&#45;quote">"Bob"</span>, &#91;hint:&#91;name:1&#93;&#93;)</pre></div><p class="paragraph"/>Or in a criteria query using the query "arguments" method<p class="paragraph"/><div class="code"><pre>Person.withCriteria &#123;
 	eq 'firstName', 'Bob'
     arguments hint:&#91;<span class="java&#45;quote">"firstName"</span>:1&#93;
-&#125;</pre></div>
-
+&#125;</pre></div><p class="paragraph"/><h4>Compound Indices</h4><p class="paragraph"/>MongoDB supports the notion of <a href="http://www.mongodb.org/display/DOCS/Indexes#Indexes-CompoundKeys" target="blank">compound keys</a>. GORM for MongoDB enables this feature at the mapping level using the <code>compoundIndex</code> mapping:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+    &#8230;
+    <span class="java&#45;keyword">static</span> mapping = &#123;
+        compoundIndex name:1, age:&#45;1
+    &#125;
+&#125;</pre></div><p class="paragraph"/>As per the MongoDB docs 1 is for ascending and -1 is for descending.
 
 
 <h2 id="3.3 Customizing the WriteConcern">3.3 Customizing the WriteConcern</h2>
@@ -360,7 +345,12 @@ GORM for MongoDB will persist all common known Java types like String, Integer, 
     &#125;
 &#125;</pre></div><p class="paragraph"/><blockquote class="note">
 Custom types should go in src/groovy not grails-app/domain
-</blockquote><p class="paragraph"/>If you attempt to reference this class from a domain class it will not automatically be persisted for you. However you can create a custom type implementation and register it with the Spring. For example:<p class="paragraph"/><div class="code"><pre>class BirthdayType <span class="java&#45;keyword">extends</span> AbstractMappingAwareCustomTypeMarshaller&#60;Birthday, DBObject, DBObject&#62; &#123;
+</blockquote><p class="paragraph"/>If you attempt to reference this class from a domain class it will not automatically be persisted for you. However you can create a custom type implementation and register it with Spring. For example:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> com.mongodb.BasicDBObject;
+<span class="java&#45;keyword">import</span> com.mongodb.DBObject;
+<span class="java&#45;keyword">import</span> org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller;
+<span class="java&#45;keyword">import</span> org.grails.datastore.mapping.model.PersistentProperty;
+<span class="java&#45;keyword">import</span> org.grails.datastore.mapping.mongo.query.MongoQuery;
+<span class="java&#45;keyword">import</span> org.grails.datastore.mapping.query.Query;<p class="paragraph"/>class BirthdayType <span class="java&#45;keyword">extends</span> AbstractMappingAwareCustomTypeMarshaller&#60;Birthday, DBObject, DBObject&#62; &#123;
 	BirthdayType() &#123;
 		<span class="java&#45;keyword">super</span>(Birthday)
 	&#125;
@@ -370,7 +360,7 @@ Custom types should go in src/groovy not grails-app/domain
         nativeTarget.put(key, converted)
         <span class="java&#45;keyword">return</span> converted
     &#125;<p class="paragraph"/>    @Override
-    <span class="java&#45;keyword">protected</span> void queryInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, PropertyCriterion criterion, DBObject nativeQuery) &#123;
+    <span class="java&#45;keyword">protected</span> void queryInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Query.PropertyCriterion criterion, DBObject nativeQuery) &#123;
         <span class="java&#45;keyword">if</span>(criterion <span class="java&#45;keyword">instanceof</span> Between) &#123;
             def dbo = <span class="java&#45;keyword">new</span> BasicDBObject()
             dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
@@ -399,8 +389,8 @@ Custom types should go in src/groovy not grails-app/domain
         <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date(num))
     &#125;
     <span class="java&#45;keyword">return</span> <span class="java&#45;keyword">null</span>
-&#125;</pre></div><p class="paragraph"/>You can the construct the custom type from by reading values from the <code>DBObject</code>. Finally the <code>queryInternal</code> method allows you to handle how a custom type is queried:<p class="paragraph"/><div class="code"><pre>@Override
-<span class="java&#45;keyword">protected</span> void queryInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, PropertyCriterion criterion, DBObject nativeQuery) &#123;
+&#125;</pre></div><p class="paragraph"/>You can then construct the custom type by reading values from the <code>DBObject</code>. Finally the <code>queryInternal</code> method allows you to handle how a custom type is queried:<p class="paragraph"/><div class="code"><pre>@Override
+<span class="java&#45;keyword">protected</span> void queryInternal(PersistentProperty property, <span class="java&#45;object">String</span> key, Query.PropertyCriterion criterion, DBObject nativeQuery) &#123;
     <span class="java&#45;keyword">if</span>(criterion <span class="java&#45;keyword">instanceof</span> Between) &#123;
         def dbo = <span class="java&#45;keyword">new</span> BasicDBObject()
         dbo.put(MongoQuery.MONGO_GTE_OPERATOR, criterion.getFrom().date.time);
@@ -414,7 +404,11 @@ Custom types should go in src/groovy not grails-app/domain
 	    <span class="java&#45;keyword">throw</span> <span class="java&#45;keyword">new</span> RuntimeException(<span class="java&#45;quote">"unsupported query type <span class="java&#45;keyword">for</span> property $property"</span>)
     &#125;
 &#125;</pre></div><p class="paragraph"/>The method gets passed a <code>criterion</code> which is the type of query and depending on the type of query you may handle the query differently. For example the above implementation supports <code>between</code> and <code>equals</code> style queries. So the following 2 queries will work:<p class="paragraph"/><div class="code"><pre>Person.findByBirthday(<span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date()&#45;7)) // find someone who was born 7 days ago
-Person.findByBirthdayBetween(<span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date()&#45;7), <span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date())) // find someone who was born in the last 7 days</pre></div><p class="paragraph"/>However "like" or other query types will not work.
+Person.findByBirthdayBetween(<span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date()&#45;7), <span class="java&#45;keyword">new</span> Birthday(<span class="java&#45;keyword">new</span> Date())) // find someone who was born in the last 7 days</pre></div><p class="paragraph"/>However "like" or other query types will not work.<p class="paragraph"/>To register a custom type in a grails application simply register it as Spring bean. For example, to register the above <code>BirthdayType</code> add the following to grails-app/conf/spring/resources.groovy:<p class="paragraph"/><div class="code"><pre><span class="java&#45;keyword">import</span> com.example.BirthdayType<p class="paragraph"/>// Place your Spring DSL code here
+beans = &#123;
+  birthdayType(BirthdayType)
+&#125;</pre></div>
+
 
 
 <h1 id="4. Low-level API">4 Low-level API</h1>
@@ -454,7 +448,9 @@ Mongo doesn't support transactions directly, however GORM for Mongo does batch u
 
 
 <h1 id="6. Unit Testing">6 Unit Testing</h1>
-The Mongo plugin provides a Groovy mixin called <a href="../ref/Testing/DatastoreUnitTestMixin.html" class="testing">DatastoreUnitTestMixin</a> for testing purposes. This mixin sets up a datastore implementation that operates against an in-memory <code>ConcurrentHashMap</code>. The datastore implementation that operates against an in-memory map is as complete as the one for Mongo and provides support for:
+If you are using Grails 1.3.x then the Mongo plugin provides a Groovy mixin called <a href="../ref/Testing/DatastoreUnitTestMixin.html" class="testing">DatastoreUnitTestMixin</a> for testing purposes. For Grails 2.0.x and above you can use the normal @TestFor support and Grails' built in testing mechanism.<p class="paragraph"/><blockquote class="note">
+The below documentation applies to Grails 1.3.x only. Grails 2.0.x users can use the built in GORM testing support that ships with Grails 2.0.
+</blockquote><p class="paragraph"/>This mixin sets up a datastore implementation that operates against an in-memory <code>ConcurrentHashMap</code>. The datastore implementation that operates against an in-memory map is as complete as the one for Mongo and provides support for:
 <ul class="star">
 <li>Simple persistence methods</li>
 <li>Dynamic finders</li>
