@@ -628,7 +628,9 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                     associatedEntity = context.addPersistentEntity(type);
                 }
             } catch (IllegalMappingException e) {
-                return context.createEmbeddedEntity(type);
+                PersistentEntity embeddedEntity = context.createEmbeddedEntity(type);
+                embeddedEntity.initialize();
+                return embeddedEntity;
             }
         }
         return associatedEntity;

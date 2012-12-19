@@ -71,8 +71,11 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
         if(!(entity instanceof EmbeddedPersistentEntity)) {
 
-            hasNumericalIdentifier = Long.class.isAssignableFrom(entity.getIdentity().getType());
-            hasStringIdentifier = String.class.isAssignableFrom(entity.getIdentity().getType());
+            PersistentProperty identity = entity.getIdentity();
+            if(identity != null) {
+                hasNumericalIdentifier = Long.class.isAssignableFrom(identity.getType());
+                hasStringIdentifier = String.class.isAssignableFrom(identity.getType());
+            }
         }
     }
 
