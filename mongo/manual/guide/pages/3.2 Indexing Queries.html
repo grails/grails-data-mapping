@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3.2 Indexing Queries 1.0.0.GA</title>
+    <title>3.2 Indexing Queries 1.0.0.RC4</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -80,7 +80,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
 
-                    <p><strong>Version:</strong> 1.0.0.GA</p>
+                    <p><strong>Version:</strong> 1.0.0.RC4</p>
 
                     
                 </div>
@@ -90,7 +90,7 @@ function addJsClass() {
                 
 
 <h2 id="3.2 Indexing Queries">3.2 Indexing Queries</h2>
-<h4>Basics</h4><p class="paragraph"/>Mongo doesn't require that you specify indices to query, but like a relational database without specifying indices your queries will be significantly slower.<p class="paragraph"/>With that in mind it is important to specify the properties you plan to query using the mapping block:<p class="paragraph"/><div class="code"><pre>class Person &#123;
+Mongo doesn't require that you specify indices to query, but like a relational database without specifying indices your queries will be significantly slower.<p class="paragraph"/>With that in mind it is important to specify the properties you plan to query using the mapping block:<p class="paragraph"/><div class="code"><pre>class Person &#123;
     <span class="java&#45;object">String</span> name
     <span class="java&#45;keyword">static</span> mapping = &#123;
         name index:<span class="java&#45;keyword">true</span>
@@ -103,12 +103,8 @@ function addJsClass() {
 &#125;</pre></div><p class="paragraph"/>You can use MongoDB <a href="http://www.mongodb.org/display/DOCS/Optimization#Optimization-Hint" target="blank">Query Hints</a> by passing the <code>hint</code> argument to any dynamic finder:<p class="paragraph"/><div class="code"><pre>def people = Person.findByName(<span class="java&#45;quote">"Bob"</span>, &#91;hint:&#91;name:1&#93;&#93;)</pre></div><p class="paragraph"/>Or in a criteria query using the query "arguments" method<p class="paragraph"/><div class="code"><pre>Person.withCriteria &#123;
 	eq 'firstName', 'Bob'
     arguments hint:&#91;<span class="java&#45;quote">"firstName"</span>:1&#93;
-&#125;</pre></div><p class="paragraph"/><h4>Compound Indices</h4><p class="paragraph"/>MongoDB supports the notion of <a href="http://www.mongodb.org/display/DOCS/Indexes#Indexes-CompoundKeys" target="blank">compound keys</a>. GORM for MongoDB enables this feature at the mapping level using the <code>compoundIndex</code> mapping:<p class="paragraph"/><div class="code"><pre>class Person &#123;
-    &#8230;
-    <span class="java&#45;keyword">static</span> mapping = &#123;
-        compoundIndex name:1, age:&#45;1
-    &#125;
-&#125;</pre></div><p class="paragraph"/>As per the MongoDB docs 1 is for ascending and -1 is for descending.
+&#125;</pre></div>
+
 
 
                 <div style="clear:both;margin-top:15px;"></div>
