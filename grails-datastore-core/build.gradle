@@ -1,11 +1,26 @@
 dependencies {
     compile "com.googlecode.concurrentlinkedhashmap:concurrentlinkedhashmap-lru:1.2_jdk5"
-    compile "org.springframework:spring-core:$springVersion"
-    compile "org.springframework:spring-beans:$springVersion"
-    compile "org.springframework:spring-tx:$springVersion"
-    compile "org.springframework:spring-context:$springVersion"
+    compile "org.springframework:spring-core:$springVersion" , {
+        exclude module:'commons-logging'
+    }
+    compile "org.springframework:spring-beans:$springVersion", {
+        exclude module:'spring-core'
+    }
+    compile "org.springframework:spring-tx:$springVersion", {
+        exclude module:'spring-context'
+        exclude module:'spring-core'
+        exclude module:'spring-beans'
+        exclude module:'spring-aop'
+    }
+    compile "org.springframework:spring-context:$springVersion", {
+        exclude module:'spring-core'
+        exclude module:'spring-expression'
+        exclude module:'spring-aop'
+        exclude module:'spring-beans'
+        exclude module:'spring-asm'
+    }
     compile 'javax.persistence:persistence-api:1.0'
-    compile 'javassist:javassist:3.12.0.GA'
+    compile 'org.javassist:javassist:3.16.1-GA'
     compile 'javax.transaction:jta:1.1'
     compile 'commons-collections:commons-collections:3.2'
 

@@ -44,7 +44,7 @@ grails.project.dependency.resolution = {
                 "org.grails:grails-datastore-core:$datastoreVersion",                
                 "org.grails:grails-datastore-web:$datastoreVersion",excludes)
         
-        runtime 'javassist:javassist:3.12.0.GA'
+        runtime 'org.javassist:javassist:3.16.1-GA'
 
         test("org.grails:grails-datastore-gorm-test:$datastoreVersion",
              "org.grails:grails-datastore-simple:$datastoreVersion", excludes)
