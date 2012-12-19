@@ -1,3 +1,5 @@
+h4. Mongo Database Connection Configuration
+
 As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your @grails-app/conf/DataSource.groovy@ file:
 
 {code}
@@ -50,3 +52,16 @@ grails {
 {code}
 
 The replica sets are defined using a list of strings that conform to the Mongo [DBAddress|http://api.mongodb.org/java/current/com/mongodb/DBAddress.html] specification.
+
+h4. Global Mapping Configuration
+
+Using the @grails.mongo.default.mapping@ setting in @Config.groovy@ you can configure global mapping options across your domain classes. This is useful if, for example, you want to disable optimistic locking globally or you wish to use @DBRefs@ in your association mappings. For example, the following configuration will disable optimistic locking globally and use @DBRefs@ for all properties:
+
+{code}
+grails.mongo.default.mapping = {
+    version false
+    '*'(reference:true)
+}
+{code}
+
+The @*@ method is used to indicate that the setting applies to all properties.
