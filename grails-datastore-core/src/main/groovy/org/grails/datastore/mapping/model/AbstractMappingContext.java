@@ -164,7 +164,17 @@ public abstract class AbstractMappingContext implements MappingContext {
 
         persistentEntities.remove(entity); persistentEntities.add(entity);
         persistentEntitiesByName.put(entity.getName(), entity);
-        entity.initialize();
+
+		try {
+			entity.initialize();
+		}
+		catch(IllegalMappingException x) {
+			persistentEntities.remove(entity);
+			persistentEntitiesByName.remove(entity.getName());
+			throw x;
+		}
+
+
         if (!entity.isRoot()) {
             PersistentEntity root = entity.getRootEntity();
             Map<String, PersistentEntity> children = persistentEntitiesByDiscriminator.get(root);
