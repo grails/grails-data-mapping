@@ -54,6 +54,14 @@ class EmbeddedAssociationSpec extends GormDatastoreSpec {
             i.address != null
             i.address.postCode == '28749'
 
+        when:"The embedded association is set to null"
+            i.address = null
+            i.save(flush:true)
+            session.clear()
+            i = Individual.get(i.id)
+
+        then:"The embedded association is updated correctly"
+            i.address == null
 
     }
 

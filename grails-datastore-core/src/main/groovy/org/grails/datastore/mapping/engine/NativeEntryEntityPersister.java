@@ -1082,6 +1082,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     protected void handleEmbeddedToOne(Association association, String key, EntityAccess entityAccess, T nativeEntry) {
         Object embeddedInstance = entityAccess.getProperty(association.getName());
         if (embeddedInstance == null) {
+            setEmbedded(nativeEntry, key, null);
             return;
         }
 
