@@ -70,20 +70,35 @@ public class MappingUtils {
         return elements;
     }
 
+    /**
+     * Get a declared field, searching super classes for the field if it is not found in the class.
+     * @param javaClass The class to search.
+     * @param propertyName The name of the field.
+     * @return The field, or null if it couldn't be found.
+     */
+    public static Field getDeclaredField(Class javaClass, String propertyName) {
+        while (javaClass != null) {
+            Field[] declaredFields = javaClass.getDeclaredFields();
+            for (Field declaredField : declaredFields) {
+                if (declaredField.getName().equals(propertyName)) {
+                    return declaredField;
+                }
+            }
+            javaClass = javaClass.getSuperclass();
+        }
+        return null;
+    }
+
     public static Class getGenericTypeForProperty(Class javaClass, String propertyName) {
         Class genericClass = null;
 
-        try {
-            Field declaredField = javaClass.getDeclaredField(propertyName);
-            Type genericType = declaredField.getGenericType();
-            if(genericType instanceof ParameterizedType) {
-                Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
-                if(typeArguments.length>0) {
-                    genericClass = (Class) typeArguments[0];
-                }
+        Field declaredField = getDeclaredField(javaClass, propertyName);
+        Type genericType = declaredField != null ? declaredField.getGenericType() : null;
+        if(genericType instanceof ParameterizedType) {
+            Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
+            if(typeArguments.length>0) {
+                genericClass = (Class) typeArguments[0];
             }
-        } catch (NoSuchFieldException e) {
-            // ignore
         }
         return genericClass;
     }
@@ -91,17 +106,13 @@ public class MappingUtils {
     public static Class getGenericTypeForMapProperty(Class javaClass, String propertyName, boolean isKeyType) {
         Class genericClass = null;
 
-        try {
-            Field declaredField = javaClass.getDeclaredField(propertyName);
-            Type genericType = declaredField.getGenericType();
-            if(genericType instanceof ParameterizedType) {
-                Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
-                if(typeArguments.length>0) {
-                    genericClass = (Class) typeArguments[isKeyType ? 0 : 1];
-                }
+        Field declaredField = getDeclaredField(javaClass, propertyName);
+        Type genericType = declaredField != null ? declaredField.getGenericType() : null;
+        if(genericType instanceof ParameterizedType) {
+            Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
+            if(typeArguments.length>0) {
+                genericClass = (Class) typeArguments[isKeyType ? 0 : 1];
             }
-        } catch (NoSuchFieldException e) {
-            // ignore
         }
         return genericClass;
     }

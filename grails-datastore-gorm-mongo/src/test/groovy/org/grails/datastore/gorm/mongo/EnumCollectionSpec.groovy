@@ -5,8 +5,9 @@ import grails.persistence.Entity
 
 class EnumCollectionSpec extends GormDatastoreSpec {
 
-    static {
-        GormDatastoreSpec.TEST_CLASSES << Teacher << Teacher2
+    @Override
+    List getDomainClasses() {
+        return [Teacher, Teacher2, DerivedTeacher]
     }
 
     void "Test persistence of enum"() {
@@ -53,6 +54,32 @@ class EnumCollectionSpec extends GormDatastoreSpec {
             i.otherSubjects[0] == Subject.HISTORY
             i.otherSubjects[1] == Subject.HOME_EC
     }
+
+    void "Test persistence of parent enum collections"() {
+        given:
+        def i = new DerivedTeacher(name:"Melvin", subject: Subject.MATH, extra: 'hello')
+        i.otherSubjects = [Subject.HISTORY, Subject.HOME_EC]
+
+        when:"The entity is saved and flushed"
+        i.save(flush:true)
+
+        then:"The collection hasn't been broken by saving it"
+        i.otherSubjects == [Subject.HISTORY, Subject.HOME_EC]
+
+        when:"The entity is queried for afresh"
+        session.clear()
+        i = DerivedTeacher.findByName("Melvin")
+
+        then:
+        i != null
+        i.name == 'Melvin'
+        i.subject == Subject.MATH
+        i.otherSubjects != null
+        i.otherSubjects.size() == 2
+        i.otherSubjects[0] == Subject.HISTORY
+        i.otherSubjects[1] == Subject.HOME_EC
+        i.extra == 'hello'
+    }
 }
 
 @Entity
@@ -72,6 +99,15 @@ class Teacher2 {
     String name
     Subject subject
     List<Subject> otherSubjects
+
+    static mapping = {
+        name index:true
+    }
+}
+
+@Entity
+class DerivedTeacher extends Teacher2 {
+    String extra
 
     static mapping = {
         name index:true
