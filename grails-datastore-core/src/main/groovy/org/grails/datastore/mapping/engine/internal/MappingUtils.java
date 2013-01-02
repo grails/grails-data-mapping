@@ -48,9 +48,9 @@ public class MappingUtils {
     }
 
     /**
-     * Creates a concrete collection for the suppied interface
+     * Creates a concrete collection for the supplied interface
      * @param interfaceType The interface
-     * @return ArrayList for List, TreeSet for SortedSet, HashSet for Set etc.
+     * @return ArrayList for List, TreeSet for SortedSet, LinkedHashSet for Set etc.
      */
     @SuppressWarnings("rawtypes")
     public static Collection createConcreteCollection(Class interfaceType) {
@@ -65,7 +65,7 @@ public class MappingUtils {
             elements = new ArrayDeque();
         }
         else {
-            elements = new HashSet();
+            elements = new LinkedHashSet();
         }
         return elements;
     }
