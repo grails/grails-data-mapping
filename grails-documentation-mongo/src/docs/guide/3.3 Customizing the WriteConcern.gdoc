@@ -12,3 +12,7 @@ class Person {
     }
 }
 {code}
+
+{note}
+For versioned entities, if a lower level of WriteConcern than WriteConcern.ACKNOWLEDGE is specified, WriteConcern.ACKNOWLEDGE will also be used for updates, to ensure that optimistic locking failures are reported.
+{note}

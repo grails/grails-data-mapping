@@ -619,21 +619,37 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 DBCollection dbCollection = con.getCollection(collectionName);
                 DBObject dbo = createDBObjectWithKey(key);
 
-                if (isVersioned(ea)) {
-                    // TODO this should be done with a CAS approach if possible
-                    DBObject previous = dbCollection.findOne(dbo);
-                    checkVersion(ea, previous, persistentEntity, key);
+                boolean versioned = isVersioned(ea);
+                if (versioned) {
+                    Object currentVersion = getCurrentVersion(ea);
+                    incrementVersion(ea);
+                    // query for old version to ensure atomicity
+                    if (currentVersion != null) {
+                        dbo.put("version", currentVersion);
+                    }
                 }
 
                 DBObject newEntry = modifyNullsToUnsets(entry);
 
                 MongoSession mongoSession = (MongoSession) session;
                 WriteConcern writeConcern = mongoSession.getDeclaredWriteConcern(getPersistentEntity());
+                WriteResult result;
                 if (writeConcern != null) {
-                    dbCollection.update(dbo, newEntry, false, false, writeConcern);
+                    result = dbCollection.update(dbo, newEntry, false, false, writeConcern);
                 }
                 else {
-                    dbCollection.update(dbo, newEntry, false, false);
+                    result = dbCollection.update(dbo, newEntry, false, false);
+                }
+                if (versioned) {
+                    // ok, we need to check whether the write worked:
+                    // note that this will use the standard write concern unless it wasn't at least ACKNOWLEDGE:
+                    CommandResult error = result.getLastError(WriteConcern.ACKNOWLEDGED);
+                    // may as well handle any networking errors:
+                    error.throwOnError();
+                    // if the document count "n" of the update was 0, the versioning check must have failed:
+                    if (error.getInt("n") == 0) {
+                        throw new OptimisticLockingException(persistentEntity, key);
+                    }
                 }
                 return null;
             }
@@ -669,18 +685,12 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         return (Collection)nativeEntry.get(manyToMany.getName() + "_$$manyToManyIds");
     }
 
-    protected void checkVersion(final EntityAccess ea, final DBObject previous,
-                                final PersistentEntity persistentEntity, final Object key) {
-        Object oldVersion = previous != null ? previous.get("version") : null;
+    protected Object getCurrentVersion(final EntityAccess ea) {
         Object currentVersion = ea.getProperty("version");
         if (Number.class.isAssignableFrom(ea.getPropertyType("version"))) {
-            oldVersion = oldVersion != null ? ((Number)oldVersion).longValue() : oldVersion;
             currentVersion = currentVersion != null ? ((Number)currentVersion).longValue() : currentVersion;
         }
-        if (oldVersion != null && currentVersion != null && !oldVersion.equals(currentVersion)) {
-            throw new OptimisticLockingException(persistentEntity, key);
-        }
-        incrementVersion(ea);
+        return currentVersion;
     }
 
     @Override
