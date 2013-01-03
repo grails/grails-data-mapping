@@ -5,6 +5,21 @@ package grails.gorm.tests
  */
 class FindByMethodSpec extends GormDatastoreSpec {
 
+    void 'Test passing null as the sole argument to a dynamic finder multiple times'() {
+        // see GRAILS-3463
+        when:
+            def people = Person.findAllByLastName(null)
+
+        then:
+            !people
+
+        when:
+            people - Person.findAllByLastName(null)
+
+        then:
+            !people
+    }
+
 	void 'Test Using AND Multiple Times In A Dynamic Finder'() {
 		given:
 		    new Person(firstName: 'Jake', lastName: 'Brown', age: 11).save()

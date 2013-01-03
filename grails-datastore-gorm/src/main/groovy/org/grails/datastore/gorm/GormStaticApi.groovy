@@ -102,7 +102,8 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         // register the method invocation for next time
         synchronized(this) {
             mc.static."$methodName" = { Object[] varArgs ->
-                 method.invoke(delegate, methodName, *varArgs)
+                def argumentsForMethod = varArgs?.length == 1 && varArgs[0].getClass().isArray() ? varArgs[0] : varArgs
+                method.invoke(delegate, methodName, argumentsForMethod)
             }
         }
         return method.invoke(cls, methodName, args)
