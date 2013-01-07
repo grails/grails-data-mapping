@@ -102,6 +102,8 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         // register the method invocation for next time
         synchronized(this) {
             mc.static."$methodName" = { Object[] varArgs ->
+                // FYI... This is relevant to http://jira.grails.org/browse/GRAILS-3463 and may
+                // become problematic if http://jira.codehaus.org/browse/GROOVY-5876 is addressed...
                 def argumentsForMethod = varArgs?.length == 1 && varArgs[0].getClass().isArray() ? varArgs[0] : varArgs
                 method.invoke(delegate, methodName, argumentsForMethod)
             }
