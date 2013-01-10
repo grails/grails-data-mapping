@@ -172,9 +172,14 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     @Override
     protected void setEmbeddedCollectionKeys(Association association, EntityAccess embeddedEntityAccess, DBObject embeddedEntry, List<Serializable> keys) {
-        List<DBRef> dbRefs = new ArrayList<DBRef>();
+        List dbRefs = new ArrayList();
+        boolean reference = isReference(association);
         for (Object foreignKey : keys) {
-            dbRefs.add(new DBRef((DB) session.getNativeInterface(), getCollectionName(association.getAssociatedEntity()), foreignKey));
+            if (reference) {
+                dbRefs.add(new DBRef((DB) session.getNativeInterface(), getCollectionName(association.getAssociatedEntity()), foreignKey));
+            } else {
+                dbRefs.add(foreignKey);
+            }
         }
         embeddedEntry.put(association.getName(), dbRefs);
     }
