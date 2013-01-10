@@ -12,8 +12,15 @@
 		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>com.springsource.sts.grails.core.nature</nature>
+		<nature>org.grails.ide.eclipse.core.nature</nature>
 		<nature>org.eclipse.jdt.groovy.core.groovyNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>.link_to_grails_plugins</name>
+			<type>2</type>
+			<location>/home/burt/workspace.nosql/grails-data-mapping/grails-plugins/mongodb/target/plugins</location>
+		</link>
+	</linkedResources>
 </projectDescription>

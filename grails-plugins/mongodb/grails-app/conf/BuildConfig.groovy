@@ -1,23 +1,20 @@
-grails.project.class.dir = "target/classes"
-grails.project.test.class.dir = "target/test-classes"
-grails.project.test.reports.dir = "target/test-reports"
+grails.project.work.dir = 'target'
+grails.project.source.level = 1.6
 
 grails.project.dependency.resolution = {
 
     inherits( "global" ) {
         excludes 'xml-apis', 'netty'
     }
-
-    log "warn"
+    log 'warn'
 
     repositories {
-        mavenLocal()
         grailsCentral()
-        mavenRepo "http://repo.grails.org/grails/core"
+        mavenLocal()
+        mavenCentral()
     }
 
     dependencies {
-
         def excludes = {
             excludes "slf4j-simple", "persistence-api", "commons-logging", "jcl-over-slf4j", "slf4j-api", "jta"
             excludes "spring-core", "spring-beans", "spring-aop", "spring-asm","spring-webmvc","spring-tx", "spring-context", "spring-web", "log4j", "slf4j-log4j12"
@@ -50,4 +47,9 @@ grails.project.dependency.resolution = {
              "org.grails:grails-datastore-simple:$datastoreVersion", excludes)
     }
 
+    plugins {
+        build(':release:2.2.0', ':rest-client-builder:1.0.3') {
+            export = false
+        }
+    }
 }
