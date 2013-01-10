@@ -3,9 +3,7 @@ package org.grails.datastore.gorm.mongo
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
-/**
- */
-class EmbeddedSimpleObjectSpec extends GormDatastoreSpec{
+class EmbeddedSimpleObjectSpec extends GormDatastoreSpec {
 
     void "Test embedded non-domain object"() {
         when:"An entity with a simple non-domain embedded object is persisted"
@@ -22,7 +20,6 @@ class EmbeddedSimpleObjectSpec extends GormDatastoreSpec{
         [Space]
     }
 }
-
 
 @Entity
 class Space {

@@ -14,27 +14,27 @@
  */
 package org.grails.datastore.mapping.simple.query
 
-import org.springframework.dao.InvalidDataAccessResourceUsageException
+import java.util.regex.Pattern
+
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValue
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.model.types.Custom
 import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.query.AssociationQuery
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.query.Restrictions
+import org.grails.datastore.mapping.query.api.QueryableCriteria
+import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion
 import org.grails.datastore.mapping.simple.SimpleMapSession
 import org.grails.datastore.mapping.simple.engine.SimpleMapEntityPersister
-import org.grails.datastore.mapping.model.types.Custom
-import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
-import java.util.regex.Pattern
-
-import org.grails.datastore.mapping.query.api.QueryableCriteria
+import org.springframework.dao.InvalidDataAccessResourceUsageException
 import org.springframework.util.Assert
-import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion
 
 /**
- * Simple query implementation that queries a map of objects
+ * Simple query implementation that queries a map of objects.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -64,7 +64,6 @@ class SimpleMapQuery extends Query {
             if (!entity.isRoot()) {
                 def childKeys = datastore[family].keySet()
                 entityMap = entityMap.subMap(childKeys)
-
             }
         }
 
@@ -101,7 +100,7 @@ class SimpleMapQuery extends Query {
                 else if (p instanceof Query.CountProjection) {
                     results.add(entityList.size())
                 }
-                else if(p instanceof Query.CountDistinctProjection) {
+                else if (p instanceof Query.CountDistinctProjection) {
                     final uniqueList = new ArrayList(entityList).unique { it."$p.propertyName"}
                     results.add(uniqueList.size() )
                 }
@@ -121,10 +120,9 @@ class SimpleMapQuery extends Query {
                         results.add(average)
                     }
                     else {
-
                         PersistentProperty prop = entity.getPropertyByName(p.propertyName)
                         boolean distinct = p instanceof Query.DistinctPropertyProjection
-                        if(distinct) {
+                        if (distinct) {
                             propertyValues = propertyValues.unique()
                         }
 
@@ -183,22 +181,22 @@ class SimpleMapQuery extends Query {
             return executeAssociationSubQuery(datastore[getFamily(association.associatedEntity)], association.associatedEntity,queryCriteria, aq.association)
         },
 
-        (FunctionCallingCriterion): { allEntities, Association association, FunctionCallingCriterion fcc -> 
+        (FunctionCallingCriterion): { allEntities, Association association, FunctionCallingCriterion fcc ->
             def criterion = fcc.propertyCriterion
             def handler = associationQueryHandlers[criterion.class]
             def function = functionHandlers[fcc.functionName]
-            if(handler != null && function != null) {
+            if (handler != null && function != null) {
                 try {
                    return handler.call(allEntities, association,criterion, function)
                 }
                 catch(MissingMethodException e) {
-                    throw new InvalidDataAccessResourceUsageException("Unsupported function '$function' used in query")                    
+                    throw new InvalidDataAccessResourceUsageException("Unsupported function '$function' used in query")
                 }
             }
             else {
                 throw new InvalidDataAccessResourceUsageException("Unsupported function '$function' used in query")
             }
-        },    
+        },
         (Query.Like): { allEntities, Association association, Query.Like like, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 def regexFormat = like.pattern.replaceAll('%', '.*?')
@@ -318,7 +316,7 @@ class SimpleMapQuery extends Query {
         List resultList = []
         for (Query.Criterion criterion in queryCriteria.getCriteria()) {
             def handler = associationQueryHandlers[criterion.getClass()]
-            
+
             if (handler) {
                 resultList << handler.call(allEntities, property, criterion)
             }
@@ -347,12 +345,12 @@ class SimpleMapQuery extends Query {
             def criterion = fcc.propertyCriterion
             def handler = handlers[criterion.class]
             def function = functionHandlers[fcc.functionName]
-            if(handler != null && function != null) {
+            if (handler != null && function != null) {
                 try {
                     handler.call(criterion, property, function, fcc.onValue)
                 }
                 catch(MissingMethodException e) {
-                    throw new InvalidDataAccessResourceUsageException("Unsupported function '$function' used in query")                    
+                    throw new InvalidDataAccessResourceUsageException("Unsupported function '$function' used in query")
                 }
             }
             else {
@@ -427,7 +425,7 @@ class SimpleMapQuery extends Query {
             def indexer = entityPersister.getPropertyIndexer(property)
             final value = subqueryIfNecessary(equals)
 
-            if(function != null) {
+            if (function != null) {
                 def allEntities = datastore[family]
                 allEntities.findAll {
                     def calculatedValue = function(it.value[property.name])
@@ -435,7 +433,7 @@ class SimpleMapQuery extends Query {
                 }.collect { it.key }
             }
             else {
-                if(value == null && (property instanceof ToOne)) {
+                if (value == null && (property instanceof ToOne)) {
                     def allEntities = datastore[family]
                     return allEntities.findAll { it.value[property.name] == null }.collect { it.key }
                 }
@@ -499,7 +497,7 @@ class SimpleMapQuery extends Query {
             def name = between.property
             def allEntities = datastore[family]
 
-            if(function != null)
+            if (function != null)
                 allEntities.findAll { function(it.value[name]) >= from && function(it.value[name]) <= to }.collect { it.key }
             else
                 allEntities.findAll { it.value[name] >= from && it.value[name] <= to }.collect { it.key }
@@ -608,9 +606,9 @@ class SimpleMapQuery extends Query {
 
     protected def subqueryIfNecessary(Query.PropertyCriterion pc, boolean uniqueResult = true) {
         def value = pc.value
-        if(value instanceof QueryableCriteria) {
+        if (value instanceof QueryableCriteria) {
             QueryableCriteria criteria = value
-            if(uniqueResult) {
+            if (uniqueResult) {
                 value = criteria.find()
             }
             else {
@@ -663,9 +661,9 @@ class SimpleMapQuery extends Query {
             else {
                 PersistentProperty property = getValidProperty(criterion)
 
-                if((property instanceof Custom) && (criterion instanceof Query.PropertyCriterion)) {
-                    CustomTypeMarshaller customTypeMarshaller = ((Custom) property).getCustomTypeMarshaller();
-                    customTypeMarshaller.query(property, criterion, resultList);
+                if ((property instanceof Custom) && (criterion instanceof Query.PropertyCriterion)) {
+                    CustomTypeMarshaller customTypeMarshaller = ((Custom) property).getCustomTypeMarshaller()
+                    customTypeMarshaller.query(property, criterion, resultList)
                     continue
                 }
                 else {
@@ -674,7 +672,6 @@ class SimpleMapQuery extends Query {
                     def results = handler?.call(criterion, property) ?: []
                     resultList.results << results
                 }
-
             }
         }
         return applyJunctionToResults(criteria,resultList.results)

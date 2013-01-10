@@ -1,14 +1,13 @@
 package org.grails.datastore.gorm.mongo
 
-import spock.lang.Specification
 import grails.gorm.tests.GormDatastoreSpec
-import org.bson.types.ObjectId
 import grails.persistence.Entity
+
+import org.bson.types.ObjectId
+
 import spock.lang.Issue
 
-/**
- */
-class CascadeDeleteSpec extends GormDatastoreSpec{
+class CascadeDeleteSpec extends GormDatastoreSpec {
 
     @Issue('GPMONGODB-187')
     void "Test that a delete cascade from owner to child"() {
@@ -23,11 +22,9 @@ class CascadeDeleteSpec extends GormDatastoreSpec{
             def found1 = CascadeUser.findByName("user2")
             def found1a = CascadeUserSettings.findByUser(found1)
 
-
         then:"The data is correct"
             found1 != null
             found1.settings.size()  == 1
-
 
         when:"The owner is deleted"
             found1.delete(flush:true)
@@ -49,22 +46,17 @@ class CascadeDeleteSpec extends GormDatastoreSpec{
 class CascadeUser {
 
     ObjectId id
-
     String name
 
     Set<CascadeUserSettings> settings
     static hasMany = [settings:CascadeUserSettings]
-
-    static constraints = {
-    }
 }
+
 @Entity
 class CascadeUserSettings {
 
     ObjectId id
-
     boolean someSetting = true
 
     static belongsTo = [user:CascadeUser]
-
 }

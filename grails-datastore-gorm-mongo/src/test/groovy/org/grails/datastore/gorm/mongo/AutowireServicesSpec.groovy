@@ -2,12 +2,10 @@ package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+
 import org.springframework.context.support.GenericApplicationContext
 
-/**
- *
- */
-class AutowireServicesSpec extends GormDatastoreSpec{
+class AutowireServicesSpec extends GormDatastoreSpec {
 
     void "Test that services can be autowired"() {
         given:"A service registered in the application context"
@@ -34,15 +32,12 @@ class AutowireServicesSpec extends GormDatastoreSpec{
 
         then:"The order is correctly removed"
             orderService.orders.size() == 0
-
     }
 
     @Override
     List getDomainClasses() {
         [Pizza]
     }
-
-
 }
 
 @Entity

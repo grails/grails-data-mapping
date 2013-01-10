@@ -14,19 +14,43 @@
  */
 package org.grails.datastore.mapping.dynamodb.util;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.dynamodb.AmazonDynamoDB;
-import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodb.model.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.dao.DataAccessException;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.dynamodb.AmazonDynamoDB;
+import com.amazonaws.services.dynamodb.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.amazonaws.services.dynamodb.model.AttributeValueUpdate;
+import com.amazonaws.services.dynamodb.model.Condition;
+import com.amazonaws.services.dynamodb.model.CreateTableRequest;
+import com.amazonaws.services.dynamodb.model.DeleteItemRequest;
+import com.amazonaws.services.dynamodb.model.DeleteTableRequest;
+import com.amazonaws.services.dynamodb.model.DescribeTableRequest;
+import com.amazonaws.services.dynamodb.model.ExpectedAttributeValue;
+import com.amazonaws.services.dynamodb.model.GetItemRequest;
+import com.amazonaws.services.dynamodb.model.GetItemResult;
+import com.amazonaws.services.dynamodb.model.Key;
+import com.amazonaws.services.dynamodb.model.KeySchema;
+import com.amazonaws.services.dynamodb.model.ListTablesRequest;
+import com.amazonaws.services.dynamodb.model.ListTablesResult;
+import com.amazonaws.services.dynamodb.model.ProvisionedThroughput;
+import com.amazonaws.services.dynamodb.model.PutItemRequest;
+import com.amazonaws.services.dynamodb.model.ResourceNotFoundException;
+import com.amazonaws.services.dynamodb.model.ScanRequest;
+import com.amazonaws.services.dynamodb.model.ScanResult;
+import com.amazonaws.services.dynamodb.model.TableDescription;
+import com.amazonaws.services.dynamodb.model.UpdateItemRequest;
 
 /**
  * Implementation of DynamoDBTemplate using AWS Java SDK.
@@ -111,7 +135,6 @@ public class DynamoDBTemplateImpl implements DynamoDBTemplate {
      * @param attributes
      * @throws DataAccessException
      */
-    @Override
     public void putItem(String tableName, Map<String, AttributeValue> attributes) throws DataAccessException {
         putItemInternal(tableName, attributes, 1);
     }
@@ -146,7 +169,6 @@ public class DynamoDBTemplateImpl implements DynamoDBTemplate {
      * @param expectedVersion
      * @throws DataAccessException
      */
-    @Override
     public void putItemVersioned(String tableName, Key key, Map<String, AttributeValue> attributes, String expectedVersion, PersistentEntity persistentEntity) throws DataAccessException {
         putItemVersionedInternal(tableName, key, attributes, expectedVersion, persistentEntity, 1);
     }
@@ -179,7 +201,6 @@ public class DynamoDBTemplateImpl implements DynamoDBTemplate {
      * @param attributes
      * @throws DataAccessException
      */
-    @Override
     public void updateItem(String tableName, Key key, Map<String, AttributeValueUpdate> attributes) throws DataAccessException {
         updateItemInternal(tableName, key, attributes, 1);
     }
@@ -213,7 +234,6 @@ public class DynamoDBTemplateImpl implements DynamoDBTemplate {
      * @param attributes
      * @throws DataAccessException
      */
-    @Override
     public void updateItemVersioned(String tableName, Key key, Map<String, AttributeValueUpdate> attributes, String expectedVersion, PersistentEntity persistentEntity) throws DataAccessException {
         updateItemVersionedInternal(tableName, key, attributes, expectedVersion, persistentEntity, 1);
     }
@@ -330,13 +350,11 @@ public class DynamoDBTemplateImpl implements DynamoDBTemplate {
         }
     }
 
-    @Override
     public int scanCount(String tableName, Map<String, Condition> filter) {
         return scanCountInternal(tableName, filter, 1);
     }
 
     private int scanCountInternal(String tableName, Map<String, Condition> filter, int attempt) {
-        LinkedList<Map<String, AttributeValue>> items = new LinkedList<Map<String, AttributeValue>>();
         try {
             ScanRequest request = new ScanRequest(tableName).withScanFilter(filter).withCount(true);
             ScanResult result = ddb.scan(request);
@@ -369,7 +387,6 @@ public class DynamoDBTemplateImpl implements DynamoDBTemplate {
         }
     }
 
-    @Override
     public void createTable(String tableName, KeySchema ks, ProvisionedThroughput provisionedThroughput) throws DataAccessException {
         CreateTableRequest request = new CreateTableRequest()
                 .withTableName(tableName)
@@ -377,7 +394,7 @@ public class DynamoDBTemplateImpl implements DynamoDBTemplate {
                 .withProvisionedThroughput(provisionedThroughput);
 
         try {
-            CreateTableResult result = ddb.createTable(request);
+            /*CreateTableResult result =*/ ddb.createTable(request);
             //now we must wait until table is ACTIVE
             TableDescription tableDescription = waitTillTableState(tableName, "ACTIVE");
             if (!"ACTIVE".equals(tableDescription.getTableStatus())) {
@@ -404,7 +421,6 @@ public class DynamoDBTemplateImpl implements DynamoDBTemplate {
      * @return
      * @throws DataAccessException
      */
-    @Override
     public TableDescription describeTable(String tableName) throws DataAccessException{
         TableDescription tableDescription = ddb.describeTable(new DescribeTableRequest().withTableName(tableName)).getTable();
         return tableDescription;

@@ -15,14 +15,6 @@
 package org.grails.datastore.mapping.dynamodb.model.types;
 
 import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar;
-import org.springframework.core.GenericTypeResolver;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.core.convert.converter.ConverterRegistry;
-import org.springframework.core.convert.converter.GenericConverter;
-
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.util.Date;
 
 /**
  * A registrar that registers type converters used for DynamoDB.

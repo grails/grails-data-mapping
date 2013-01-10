@@ -3,9 +3,7 @@ package org.grails.datastore.gorm
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
-/**
- */
-class CircularManyToOneSpec extends GormDatastoreSpec{
+class CircularManyToOneSpec extends GormDatastoreSpec {
 
     void "Test that a circular many-to-one persists correctly"() {
         when:"A self referencing domain model is created"
@@ -18,12 +16,11 @@ class CircularManyToOneSpec extends GormDatastoreSpec{
             TreeNode grandchild = new TreeNode(parent: child, name:"grandchild")
             grandchild.save(flush:true)
 
-
         then:"The associations are configured correctly"
             root.parent == null
             child.parent == root
             grandchild.parent == child
-        
+
         when:"The model is queried"
             session.clear()
             grandchild = TreeNode.findByName("grandchild")

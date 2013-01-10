@@ -27,7 +27,6 @@ public interface EntityProxy {
      */
     void initialize();
 
-
     /**
      * Obtains the target performing initialization if necessary
      * @return The target

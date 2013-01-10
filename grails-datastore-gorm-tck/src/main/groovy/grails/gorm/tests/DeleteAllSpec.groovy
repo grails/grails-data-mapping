@@ -19,7 +19,7 @@ class DeleteAllSpec extends GormDatastoreSpec {
             def fred = new Person(firstName:"Fred", lastName:"Flintstone").save(flush: true)
             def joe = new Person(firstName:"Joe", lastName:"Doe").save(flush: true)
 
-            Vector<Person> people = new Vector<Person>();
+            Vector<Person> people = new Vector<Person>()
             people.add(bob)
             people.add(fred)
             people.add(joe)

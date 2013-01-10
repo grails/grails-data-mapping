@@ -49,9 +49,10 @@ public class ListOrderByFinder extends AbstractFinder {
 
     @SuppressWarnings("rawtypes")
     public Object invoke(final Class clazz, final String methodName, final Object[] arguments) {
-    	return invoke(clazz, methodName, null, arguments);
+        return invoke(clazz, methodName, null, arguments);
     }
-    	@SuppressWarnings("rawtypes")
+
+    @SuppressWarnings("rawtypes")
     public Object invoke(final Class clazz, final String methodName, final Closure additionalCriteria, final Object[] arguments) {
 
         Matcher match = pattern.matcher(methodName);

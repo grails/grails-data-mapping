@@ -41,8 +41,7 @@ public class SimpleDBAssociationIndexer implements AssociationIndexer {
     private Association association;
     private SimpleDBSession session;
 
-    public SimpleDBAssociationIndexer(@SuppressWarnings("unused") SimpleDBNativeItem nativeEntry,
-              Association association, SimpleDBSession session) {
+    public SimpleDBAssociationIndexer(SimpleDBNativeItem nativeEntry, Association association, SimpleDBSession session) {
         this.association = association;
         this.session = session;
     }

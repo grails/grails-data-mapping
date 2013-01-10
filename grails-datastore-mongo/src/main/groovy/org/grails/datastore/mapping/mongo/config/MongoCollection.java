@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.grails.datastore.mapping.document.config.Collection;
+import org.grails.datastore.mapping.query.Query;
 
 import com.mongodb.WriteConcern;
-import org.grails.datastore.mapping.query.Query;
 
 /**
  * Provides configuration options for mapping Mongo DBCollection instances
@@ -36,22 +36,20 @@ public class MongoCollection extends Collection {
     private List<Map> compoundIndices = new ArrayList<Map>();
     private Query.Order sort;
 
-
     public Query.Order getSort() {
         return sort;
     }
 
-    
     public void setSort(Object s) {
-        if(s instanceof Query.Order) {
+        if (s instanceof Query.Order) {
             this.sort = (Query.Order) s;
         }
-        if(s instanceof Map) {
+        if (s instanceof Map) {
             Map m = (Map) s;
-            if(!m.isEmpty()) {
+            if (!m.isEmpty()) {
                 Map.Entry entry = (Map.Entry) m.entrySet().iterator().next();
                 Object key = entry.getKey();
-                if("desc".equalsIgnoreCase(entry.getValue().toString())) {
+                if ("desc".equalsIgnoreCase(entry.getValue().toString())) {
                     this.sort = Query.Order.desc(key.toString());
                 }
                 else {
@@ -62,7 +60,6 @@ public class MongoCollection extends Collection {
         else {
             this.sort = Query.Order.asc(s.toString());
         }
-
     }
 
     /**

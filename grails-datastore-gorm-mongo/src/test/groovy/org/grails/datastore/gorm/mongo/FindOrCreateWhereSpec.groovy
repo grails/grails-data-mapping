@@ -4,10 +4,7 @@ import grails.gorm.tests.GormDatastoreSpec
 import grails.gorm.tests.Person
 import grails.gorm.tests.Pet
 
-/**
- */
-class FindOrCreateWhereSpec extends GormDatastoreSpec{
-
+class FindOrCreateWhereSpec extends GormDatastoreSpec {
 
     void "Test findOrCreateWhere with association"() {
         given:"A domain class with a bidirectional one-to-many"

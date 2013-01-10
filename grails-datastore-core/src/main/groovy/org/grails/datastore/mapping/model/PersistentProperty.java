@@ -41,7 +41,7 @@ public interface PersistentProperty<T> {
 
     /**
      * Whether the property can be set to null
-     * 
+     *
      * @return True if it can
      */
     boolean isNullable();

@@ -4,10 +4,8 @@ import grails.persistence.Entity
 import spock.lang.Issue
 import grails.gorm.tests.GormDatastoreSpec
 
-/**
- */
 class HasOneSetInverseSideSpec extends GormDatastoreSpec{
-    
+
     @Issue('GRAILS-8757')
     void "Test that saving a one-to-one automatically sets the inverse side"() {
         when:"A bidirectional one-to-one is saved"
@@ -18,26 +16,22 @@ class HasOneSetInverseSideSpec extends GormDatastoreSpec{
 
         then:"The inverse side is autmotically set"
             house.id != null
-            address.house != null        
-        
+            address.house != null
+
         when:"The association is queried"
             session.clear()
             house = House.get(house.id)
-        
+
         then:"The data model is valid"
             house.id != null
             house.address != null
             house.address.house != null
-
-
     }
 
     @Override
     List getDomainClasses() {
         [House, HouseAddress]
     }
-
-
 }
 
 @Entity
@@ -53,6 +47,5 @@ class House {
 class HouseAddress {
     Long id
     String street
-
     House house
 }

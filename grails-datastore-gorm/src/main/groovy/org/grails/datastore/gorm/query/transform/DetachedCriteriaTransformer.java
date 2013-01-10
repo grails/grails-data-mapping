@@ -17,25 +17,68 @@ package org.grails.datastore.gorm.query.transform;
 import grails.gorm.DetachedCriteria;
 import grails.persistence.Entity;
 import grails.util.GrailsNameUtils;
-import org.codehaus.groovy.ast.*;
-import org.codehaus.groovy.ast.expr.*;
-import org.codehaus.groovy.ast.stmt.*;
-import org.codehaus.groovy.control.SourceUnit;
-import org.codehaus.groovy.control.messages.LocatedMessage;
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
-import org.codehaus.groovy.grails.commons.GrailsResourceUtils;
-import org.codehaus.groovy.grails.compiler.injection.GrailsASTUtils;
-import org.codehaus.groovy.syntax.Token;
-import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion;
-import org.grails.datastore.mapping.query.Query;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.codehaus.groovy.ast.AnnotationNode;
+import org.codehaus.groovy.ast.ClassCodeVisitorSupport;
+import org.codehaus.groovy.ast.ClassHelper;
+import org.codehaus.groovy.ast.ClassNode;
+import org.codehaus.groovy.ast.FieldNode;
+import org.codehaus.groovy.ast.GenericsType;
+import org.codehaus.groovy.ast.MethodNode;
+import org.codehaus.groovy.ast.Parameter;
+import org.codehaus.groovy.ast.PropertyNode;
+import org.codehaus.groovy.ast.Variable;
+import org.codehaus.groovy.ast.VariableScope;
+import org.codehaus.groovy.ast.expr.ArgumentListExpression;
+import org.codehaus.groovy.ast.expr.BinaryExpression;
+import org.codehaus.groovy.ast.expr.BitwiseNegationExpression;
+import org.codehaus.groovy.ast.expr.CastExpression;
+import org.codehaus.groovy.ast.expr.ClassExpression;
+import org.codehaus.groovy.ast.expr.ClosureExpression;
+import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
+import org.codehaus.groovy.ast.expr.DeclarationExpression;
+import org.codehaus.groovy.ast.expr.Expression;
+import org.codehaus.groovy.ast.expr.MapEntryExpression;
+import org.codehaus.groovy.ast.expr.MapExpression;
+import org.codehaus.groovy.ast.expr.MethodCallExpression;
+import org.codehaus.groovy.ast.expr.NotExpression;
+import org.codehaus.groovy.ast.expr.PropertyExpression;
+import org.codehaus.groovy.ast.expr.RangeExpression;
+import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
+import org.codehaus.groovy.ast.expr.VariableExpression;
+import org.codehaus.groovy.ast.stmt.BlockStatement;
+import org.codehaus.groovy.ast.stmt.CaseStatement;
+import org.codehaus.groovy.ast.stmt.CatchStatement;
+import org.codehaus.groovy.ast.stmt.ExpressionStatement;
+import org.codehaus.groovy.ast.stmt.ForStatement;
+import org.codehaus.groovy.ast.stmt.IfStatement;
+import org.codehaus.groovy.ast.stmt.Statement;
+import org.codehaus.groovy.ast.stmt.SwitchStatement;
+import org.codehaus.groovy.ast.stmt.TryCatchStatement;
+import org.codehaus.groovy.ast.stmt.WhileStatement;
+import org.codehaus.groovy.control.SourceUnit;
+import org.codehaus.groovy.control.messages.LocatedMessage;
+import org.codehaus.groovy.grails.commons.GrailsClassUtils;
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import org.codehaus.groovy.grails.commons.GrailsResourceUtils;
+import org.codehaus.groovy.syntax.Token;
+import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion;
 
 /**
  * ClassCodeVisitorSupport that transforms where methods into detached criteria queries
@@ -43,6 +86,7 @@ import java.util.*;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("unchecked")
 public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private static final Class<?>[] EMPTY_JAVA_CLASS_ARRAY = {};
@@ -51,97 +95,64 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     public static final String AND_OPERATOR = "&";
     public static final String OR_OPERATOR = "|";
     public static final ClassNode DETACHED_CRITERIA_CLASS_NODE = new ClassNode(DetachedCriteria.class);
-    public static final HashSet<String> CANDIDATE_METHODS_WHERE_ONLY = new HashSet<String>() {{
-        add("where");
-    }};
+    public static final Set<String> CANDIDATE_METHODS_WHERE_ONLY = newSet("where");
     public static final ClassNode FUNCTION_CALL_CRITERION = new ClassNode(FunctionCallingCriterion.class);
     public static final String EQUALS_OPERATOR = "==";
     public static final String IS_NULL_CRITERION = "isNull";
     public static final ConstantExpression WHERE_LAZY = new ConstantExpression("whereLazy");
 
     private SourceUnit sourceUnit;
-    private static final Set<String> CANDIDATE_METHODS = new HashSet<String>() {{
-        add("where");
-        add("whereLazy");
-        add("whereAny");
-        add("findAll");
-        add("find");
-    }};
+    private static final Set<String> CANDIDATE_METHODS = newSet("where", "whereLazy", "whereAny", "findAll", "find");
 
-    private static final Set<String> SUPPORTED_FUNCTIONS = new HashSet<String>() {{
-        add("lower");
-        add("upper");
-        add("trim");
-        add("length");
-        add("second");
-        add("hour");
-        add("minute");
-        add("day");
-        add("month");
-        add("year");
+    private static final Set<String> SUPPORTED_FUNCTIONS = newSet(
+            "lower", "upper", "trim", "length", "second",
+            "hour", "minute", "day", "month", "year");
 
+    private static final Map<String, String> OPERATOR_TO_CRITERIA_METHOD_MAP = newMap(
+        "==", "eq",
+        "!=", "ne",
+        ">", "gt",
+        "<", "lt",
+        ">=", "ge",
+        "<=", "le",
+        "==~", "like",
+        "=~", "ilike",
+        "in", "inList");
 
-    }};
+    private static final Map<String, ClassNode> OPERATOR_TO_CRITERION_METHOD_MAP = newMap(
+        "==", new ClassNode(Query.Equals.class),
+        "!=", new ClassNode(Query.NotEquals.class),
+        ">", new ClassNode(Query.GreaterThan.class),
+        "<", new ClassNode(Query.LessThan.class),
+        ">=", new ClassNode(Query.GreaterThanEquals.class),
+        "<=", new ClassNode(Query.LessThanEquals.class),
+        "==~", new ClassNode(Query.Like.class),
+        "=~", new ClassNode(Query.ILike.class),
+        "in", new ClassNode(Query.In.class));
 
-    private static final Map<String, String> OPERATOR_TO_CRITERIA_METHOD_MAP = new HashMap<String, String>() {{
-        put("==", "eq");
-        put("!=", "ne");
-        put(">", "gt");
-        put("<", "lt");
-        put(">=", "ge");
-        put("<=", "le");
-        put("==~", "like");
-        put("=~", "ilike");
-        put("in", "inList");
+    private static final Map<String, String> PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP = newMap(
+        "==", "eqProperty",
+        "!=", "neProperty",
+        ">", "gtProperty",
+        "<", "ltProperty",
+        ">=", "geProperty",
+        "<=", "leProperty");
 
-    }};
-    private static final Map<String, ClassNode> OPERATOR_TO_CRITERION_METHOD_MAP = new HashMap<String, ClassNode>() {{
-        put("==", new ClassNode(Query.Equals.class));
-        put("!=", new ClassNode(Query.NotEquals.class));
-        put(">", new ClassNode(Query.GreaterThan.class));
-        put("<", new ClassNode(Query.LessThan.class));
-        put(">=", new ClassNode(Query.GreaterThanEquals.class));
-        put("<=", new ClassNode(Query.LessThanEquals.class));
-        put("==~", new ClassNode(Query.Like.class));
-        put("=~", new ClassNode(Query.ILike.class));
-        put("in", new ClassNode(Query.In.class));
+    private static final Map<String, String> SIZE_OPERATOR_TO_CRITERIA_METHOD_MAP = newMap(
+        "==", "sizeEq",
+        "!=", "sizeNe",
+        ">", "sizeGt",
+        "<", "sizeLt",
+        ">=", "sizeGe",
+        "<=", "sizeLe");
 
-    }};
-    private static final Map<String, ClassNode> OPERATOR_TO_PROPERTY_CRITERION_METHOD_MAP = new HashMap<String, ClassNode>() {{
-        put("==", new ClassNode(Query.EqualsProperty.class));
-        put("!=", new ClassNode(Query.NotEqualsProperty.class));
-        put(">", new ClassNode(Query.GreaterThanProperty.class));
-        put("<", new ClassNode(Query.LessThanProperty.class));
-        put(">=", new ClassNode(Query.GreaterThanEqualsProperty.class));
-        put("<=", new ClassNode(Query.LessThanEqualsProperty.class));
-    }};
-    private static final Map<String, String> PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP = new HashMap<String, String>() {{
-        put("==", "eqProperty");
-        put("!=", "neProperty");
-        put(">", "gtProperty");
-        put("<", "ltProperty");
-        put(">=", "geProperty");
-        put("<=", "leProperty");
-
-    }};
-    private static final Map<String, String> SIZE_OPERATOR_TO_CRITERIA_METHOD_MAP = new HashMap<String, String>() {{
-        put("==", "sizeEq");
-        put("!=", "sizeNe");
-        put(">", "sizeGt");
-        put("<", "sizeLt");
-        put(">=", "sizeGe");
-        put("<=", "sizeLe");
-
-    }};
-    private static final Map<String, String> AGGREGATE_FUNCTIONS = new HashMap<String, String>() {{
-        put("avg", "avg");
-        put("max", "max");
-        put("min", "min");
-        put("sum", "sum");
-        put("property", "property");
-        put("count", "countDistinct");
-    }};
-
+    private static final Map<String, String> AGGREGATE_FUNCTIONS = newMap(
+        "avg", "avg",
+        "max", "max",
+        "min", "min",
+        "sum", "sum",
+        "property", "property",
+        "count", "countDistinct");
 
     private Map<String, ClassNode> detachedCriteriaVariables = new HashMap<String, ClassNode>();
     private Map<String, ClassNode> staticDetachedCriteriaVariables = new HashMap<String, ClassNode>();
@@ -153,13 +164,12 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         this.sourceUnit = sourceUnit;
     }
 
-
     @Override
     public void visitClass(ClassNode node) {
         try {
             this.currentClassNode = node;
             super.visitClass(node);
-        } catch(Exception e){
+        } catch(Exception e) {
             StringWriter stringWriter = new StringWriter();
             e.printStackTrace(new PrintWriter(stringWriter));
             sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred apply query transformations: " + e.getMessage(), Token.newString(node.getName(),node.getLineNumber(), node.getColumnNumber()), sourceUnit));
@@ -182,21 +192,20 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     @Override
     public void visitField(FieldNode node) {
         ClassNode classNode = node.getOwner();
-        if(node.isStatic() && isDomainClass(classNode)) {
+        if (node.isStatic() && isDomainClass(classNode)) {
             Expression initialExpression = node.getInitialExpression();
-            if(initialExpression instanceof MethodCallExpression) {
+            if (initialExpression instanceof MethodCallExpression) {
                 MethodCallExpression mce = (MethodCallExpression) initialExpression;
 
-                if(isCandidateWhereMethod(mce.getMethod(), mce.getArguments())) {
+                if (isCandidateWhereMethod(mce.getMethod(), mce.getArguments())) {
                     ArgumentListExpression args = (ArgumentListExpression) mce.getArguments();
                     List<Expression> argsExpressions = args.getExpressions();
                     int totalExpressions = argsExpressions.size();
-                    if(totalExpressions > 0) {
+                    if (totalExpressions > 0) {
                         Expression expression = argsExpressions.get(totalExpressions - 1);
-                        if(expression instanceof ClosureExpression) {
+                        if (expression instanceof ClosureExpression) {
                             ClosureExpression closureExpression = (ClosureExpression) expression;
                             transformClosureExpression(classNode, closureExpression);
-
 
                             String buildMethod = mce.getMethodAsString().equals("whereLazy") ? "buildLazy" : "build";
                             MethodCallExpression newInitialExpression = new MethodCallExpression(new ConstructorCallExpression(DETACHED_CRITERIA_CLASS_NODE, new ArgumentListExpression(new ClassExpression(classNode))), buildMethod, new ArgumentListExpression(closureExpression));
@@ -224,26 +233,24 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         super.visitField(node);
     }
 
-
-
     @Override
     public void visitDeclarationExpression(DeclarationExpression expression) {
         Expression initializationExpression = expression.getRightExpression();
-        if(initializationExpression instanceof MethodCallExpression) {
+        if (initializationExpression instanceof MethodCallExpression) {
             MethodCallExpression call = (MethodCallExpression) initializationExpression;
             Expression objectExpression = call.getObjectExpression();
             Expression method = call.getMethod();
             Expression arguments = call.getArguments();
-            if(isCandidateMethod(method.getText(), arguments, CANDIDATE_METHODS_WHERE_ONLY)) {
+            if (isCandidateMethod(method.getText(), arguments, CANDIDATE_METHODS_WHERE_ONLY)) {
                 ClassNode classNode = new ClassNode(DetachedCriteria.class);
                 ClassNode targetType = objectExpression.getType();
-                if(isDomainClass(targetType)) {
+                if (isDomainClass(targetType)) {
                     classNode.setGenericsTypes(new GenericsType[]{new GenericsType(targetType)});
 
                     VariableExpression variableExpression = expression.getVariableExpression();
-                    if(variableExpression.isClosureSharedVariable()) {
+                    if (variableExpression.isClosureSharedVariable()) {
                         Variable accessedVariable = variableExpression.getAccessedVariable();
-                        if(accessedVariable instanceof VariableExpression) {
+                        if (accessedVariable instanceof VariableExpression) {
                             ((VariableExpression)accessedVariable).setType(classNode);
                         }
                     }
@@ -254,20 +261,19 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     detachedCriteriaVariables.put(variableName, targetType);
                 }
             }
-
         }
-        else if(initializationExpression instanceof ConstructorCallExpression) {
+        else if (initializationExpression instanceof ConstructorCallExpression) {
             String variableName = expression.getVariableExpression().getName();
             ConstructorCallExpression cce = (ConstructorCallExpression) initializationExpression;
 
             ClassNode type = cce.getType();
-            if(DETACHED_CRITERIA_CLASS_NODE.getName().equals(type.getName())) {
+            if (DETACHED_CRITERIA_CLASS_NODE.getName().equals(type.getName())) {
                 Expression arguments = cce.getArguments();
-                if(arguments instanceof ArgumentListExpression) {
+                if (arguments instanceof ArgumentListExpression) {
                     ArgumentListExpression ale = (ArgumentListExpression) arguments;
-                    if(ale.getExpressions().size() == 1) {
+                    if (ale.getExpressions().size() == 1) {
                         Expression exp = ale.getExpression(0);
-                        if(exp instanceof ClassExpression) {
+                        if (exp instanceof ClassExpression) {
                             ClassExpression clse = (ClassExpression) exp;
                             detachedCriteriaVariables.put(variableName, clse.getType());
                         }
@@ -315,63 +321,66 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         try {
             if (isCandidateMethodCallForTransform(objectExpression, method, arguments)) {
                 ClassExpression ce = getTargetClassExpresssion(objectExpression);
-                if(ce != null) {
+                if (ce != null) {
                     ClassNode classNode = ce.getType();
                     this.currentClassNode = classNode;
                     visitMethodCall(classNode, arguments);
                 }
             }
-            else if(objectExpression instanceof VariableExpression) {
+            else if (objectExpression instanceof VariableExpression) {
                 VariableExpression var = (VariableExpression) objectExpression;
                 String varName = var.getName();
 
                 ClassNode varType = detachedCriteriaVariables.get(varName);
-                if(varType != null && isCandidateWhereMethod(method, arguments)) {
+                if (varType != null && isCandidateWhereMethod(method, arguments)) {
                     this.currentClassNode = varType;
                     visitMethodCall(varType, arguments);
                 }
-                else if(THIS_EXPRESSION.getName().equals(varName) && currentClassNode != null && isCandidateWhereMethod(method.getText(), arguments)){
-                	visitMethodCall(this.currentClassNode, arguments);
+                else if (THIS_EXPRESSION.getName().equals(varName) && currentClassNode != null && isCandidateWhereMethod(method.getText(), arguments)) {
+                    visitMethodCall(this.currentClassNode, arguments);
                     call.setMethod(WHERE_LAZY);
                 }
             }
-            else if(objectExpression instanceof PropertyExpression) {
+            else if (objectExpression instanceof PropertyExpression) {
                 PropertyExpression pe = (PropertyExpression) objectExpression;
                 String propName = pe.getPropertyAsString();
                 ClassNode classNode = pe.getObjectExpression().getType();
-                if(isDomainClass(classNode)) {
+                if (isDomainClass(classNode)) {
                     ClassNode propertyType = getPropertyType(classNode, propName);
-                    if(propertyType != null && DETACHED_CRITERIA_CLASS_NODE.equals(propertyType)) {
+                    if (propertyType != null && DETACHED_CRITERIA_CLASS_NODE.equals(propertyType)) {
                         visitMethodCall(classNode, arguments);
                     }
                 }
             }
         } catch (Exception e) {
-            sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred applying query transformations: " + e.getMessage(), Token.newString(call.getMethodAsString(), call.getLineNumber(), call.getColumnNumber()), sourceUnit));
+            sourceUnit.getErrorCollector().addError(new LocatedMessage("Fatal error occurred applying query transformations: " + e.getMessage(),
+                    Token.newString(call.getMethodAsString(), call.getLineNumber(), call.getColumnNumber()), sourceUnit));
         }
         super.visitMethodCallExpression(call);
     }
 
     private ClassExpression getTargetClassExpresssion(Expression objectExpression) {
-        if(objectExpression instanceof ClassExpression) {
+        if (objectExpression instanceof ClassExpression) {
             return (ClassExpression) objectExpression;
         }
-        else if(objectExpression instanceof MethodCallExpression) {
+        if (objectExpression instanceof MethodCallExpression) {
             MethodCallExpression mce = (MethodCallExpression) objectExpression;
 
             Expression oe = mce.getObjectExpression();
-            if(oe instanceof ClassExpression )
+            if (oe instanceof ClassExpression) {
                 return (ClassExpression) oe;
+            }
         }
         return null;
     }
 
     private boolean isCandidateMethodCallForTransform(Expression objectExpression, Expression method, Expression arguments) {
-        return ((objectExpression instanceof ClassExpression) || isObjectExpressionWhereCall(objectExpression)) && isCandidateWhereMethod(method, arguments);
+        return ((objectExpression instanceof ClassExpression) || isObjectExpressionWhereCall(objectExpression)) &&
+                isCandidateWhereMethod(method, arguments);
     }
 
     private boolean isObjectExpressionWhereCall(Expression objectExpression) {
-        if(objectExpression instanceof MethodCallExpression) {
+        if (objectExpression instanceof MethodCallExpression) {
             MethodCallExpression mce = (MethodCallExpression) objectExpression;
             return isCandidateWhereMethod(mce.getMethodAsString(),mce.getArguments());
         }
@@ -390,7 +399,6 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             if (expression instanceof ClosureExpression) {
                 ClosureExpression closureExpression = (ClosureExpression) expression;
                 transformClosureExpression(classNode, closureExpression);
-
             }
         }
     }
@@ -412,7 +420,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     public void visitStaticMethodCallExpression(StaticMethodCallExpression call) {
         String method = call.getMethod();
         Expression arguments = call.getArguments();
-        if(isCandidateWhereMethod(method,arguments)) {
+        if (isCandidateWhereMethod(method,arguments)) {
             ClassNode classNode = call.getOwnerType();
             visitMethodCall(classNode, arguments);
         }
@@ -420,7 +428,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     protected void transformClosureExpression(ClassNode classNode, ClosureExpression closureExpression) {
-        if(transformedExpressions.contains(closureExpression)) return;
+        if (transformedExpressions.contains(closureExpression)) return;
         List<String> propertyNames = getPropertyNames(classNode);
         Statement code = closureExpression.getCode();
         BlockStatement newCode = new BlockStatement();
@@ -432,8 +440,8 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             addBlockStatementToNewQuery(bs, newCode, addAll, propertyNames, closureExpression.getVariableScope());
             newCode.setVariableScope(bs.getVariableScope());
         }
-        
-        if(!newCode.getStatements().isEmpty()) {
+
+        if (!newCode.getStatements().isEmpty()) {
             transformedExpressions.add(closureExpression);
             closureExpression.setCode(newCode);
         }
@@ -442,7 +450,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     private List<String> getPropertyNames(ClassNode classNode) {
         String className = classNode.getName();
         Map<String, ClassNode> cachedProperties = cachedClassProperties.get(className);
-        if(cachedProperties == null) {
+        if (cachedProperties == null) {
             cachedProperties = new HashMap<String, ClassNode>();
             cachedProperties.put(GrailsDomainClassProperty.IDENTITY, new ClassNode(Long.class));
             cachedProperties.put(GrailsDomainClassProperty.VERSION, new ClassNode(Long.class));
@@ -468,15 +476,15 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         for (PropertyNode property : properties) {
 
             String propertyName = property.getName();
-            if(GrailsDomainClassProperty.HAS_MANY.equals(propertyName) || GrailsDomainClassProperty.BELONGS_TO.equals(propertyName) || GrailsDomainClassProperty.HAS_ONE.equals(propertyName)) {
+            if (GrailsDomainClassProperty.HAS_MANY.equals(propertyName) || GrailsDomainClassProperty.BELONGS_TO.equals(propertyName) || GrailsDomainClassProperty.HAS_ONE.equals(propertyName)) {
                 Expression initialExpression = property.getInitialExpression();
-                if(initialExpression instanceof MapExpression) {
+                if (initialExpression instanceof MapExpression) {
                     MapExpression me = (MapExpression) initialExpression;
                     List<MapEntryExpression> mapEntryExpressions = me.getMapEntryExpressions();
                     for (MapEntryExpression mapEntryExpression : mapEntryExpressions) {
                         Expression keyExpression = mapEntryExpression.getKeyExpression();
                         Expression valueExpression = mapEntryExpression.getValueExpression();
-                        if(valueExpression instanceof ClassExpression) {
+                        if (valueExpression instanceof ClassExpression) {
                             cachedProperties.put(keyExpression.getText(), valueExpression.getType());
                         }
                     }
@@ -496,14 +504,14 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     private void addStatementToNewQuery(Statement statement, BlockStatement newCode, boolean addAll, List<String> propertyNames, VariableScope variableScope) {
-        if(statement instanceof BlockStatement) {
+        if (statement instanceof BlockStatement) {
              addBlockStatementToNewQuery((BlockStatement)statement, newCode, addAll, propertyNames, variableScope);
         }
         else if (statement instanceof ExpressionStatement) {
             ExpressionStatement es = (ExpressionStatement) statement;
 
             Expression expression = es.getExpression();
-            if(expression instanceof DeclarationExpression) {
+            if (expression instanceof DeclarationExpression) {
                 newCode.addStatement(es);
             }
             else if (expression instanceof BinaryExpression) {
@@ -513,14 +521,14 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 NotExpression not = (NotExpression) expression;
 
                 handleNegation(propertyNames, newCode, not, variableScope);
-            } else if(expression instanceof MethodCallExpression) {
+            } else if (expression instanceof MethodCallExpression) {
                 MethodCallExpression methodCall = (MethodCallExpression) expression;
 
                 handleAssociationMethodCallExpression(newCode, methodCall, propertyNames, variableScope);
             }
         }
         else {
-            if(statement instanceof IfStatement) {
+            if (statement instanceof IfStatement) {
                 IfStatement ifs = (IfStatement) statement;
                 Statement ifb = ifs.getIfBlock();
                 BlockStatement newIfBlock = new BlockStatement();
@@ -528,16 +536,15 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 ifs.setIfBlock(flattenStatementIfNecessary(newIfBlock));
 
                 Statement elseBlock = ifs.getElseBlock();
-                if(elseBlock != null) {
+                if (elseBlock != null) {
                     BlockStatement newElseBlock = new BlockStatement();
                     addStatementToNewQuery(elseBlock, newElseBlock, addAll, propertyNames, variableScope);
                     ifs.setElseBlock(flattenStatementIfNecessary(newElseBlock));
                 }
                 newCode.addStatement(ifs);
             }
-            else if(statement instanceof SwitchStatement) {
+            else if (statement instanceof SwitchStatement) {
                 SwitchStatement sw = (SwitchStatement) statement;
-
 
                 List<CaseStatement> caseStatements = sw.getCaseStatements();
                 for (CaseStatement caseStatement : caseStatements) {
@@ -549,7 +556,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                 newCode.addStatement(sw);
             }
-            else if(statement instanceof ForStatement) {
+            else if (statement instanceof ForStatement) {
                 ForStatement fs = (ForStatement) statement;
                 Statement loopBlock = fs.getLoopBlock();
                 BlockStatement newLoopBlock = new BlockStatement();
@@ -557,7 +564,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 fs.setLoopBlock(flattenStatementIfNecessary(newLoopBlock));
                 newCode.addStatement(fs);
             }
-            else if(statement instanceof WhileStatement) {
+            else if (statement instanceof WhileStatement) {
                 WhileStatement ws = (WhileStatement) statement;
                 Statement loopBlock = ws.getLoopBlock();
                 BlockStatement newLoopBlock = new BlockStatement();
@@ -565,7 +572,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 ws.setLoopBlock(flattenStatementIfNecessary(newLoopBlock));
                 newCode.addStatement(ws);
             }
-            else if(statement instanceof TryCatchStatement) {
+            else if (statement instanceof TryCatchStatement) {
                 TryCatchStatement tcs = (TryCatchStatement) statement;
                 Statement tryStatement = tcs.getTryStatement();
 
@@ -583,7 +590,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 }
 
                 Statement finallyStatement = tcs.getFinallyStatement();
-                if(finallyStatement != null) {
+                if (finallyStatement != null) {
                     BlockStatement newFinallyStatement = new BlockStatement();
                     addStatementToNewQuery(finallyStatement, newFinallyStatement, addAll, propertyNames, variableScope);
                     tcs.setFinallyStatement(flattenStatementIfNecessary(newFinallyStatement));
@@ -594,15 +601,13 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 newCode.addStatement(statement);
             }
         }
-
     }
 
     private Statement flattenStatementIfNecessary(BlockStatement blockStatement) {
         if (blockStatement.getStatements().size() == 1) {
             return blockStatement.getStatements().get(0);
-        } else {
-            return blockStatement;
         }
+        return blockStatement;
     }
 
     private void handleAssociationMethodCallExpression(BlockStatement newCode, MethodCallExpression methodCall, List<String> propertyNames, VariableScope variableScope) {
@@ -610,37 +615,37 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         String methodName = method.getText();
         ArgumentListExpression arguments = methodCall.getArguments() instanceof ArgumentListExpression ? (ArgumentListExpression) methodCall.getArguments() : null;
 
-        if(methodName.equals("call") && hasClosureArgument(arguments)) {
+        if (methodName.equals("call") && hasClosureArgument(arguments)) {
             methodName = methodCall.getObjectExpression().getText();
         }
-        if(isAssociationMethodCall(propertyNames, methodName, arguments)) {
+        if (isAssociationMethodCall(propertyNames, methodName, arguments)) {
             ClosureAndArguments closureAndArguments = new ClosureAndArguments(variableScope);
             ClosureExpression associationQuery = (ClosureExpression) arguments.getExpression(0);
             BlockStatement currentBody = closureAndArguments.getCurrentBody();
             ArgumentListExpression argList = closureAndArguments.getArguments();
             newCode.addStatement(new ExpressionStatement(new MethodCallExpression(DELEGATE_EXPRESSION, methodName, argList)));
             Statement associationCode = associationQuery.getCode();
-            if(associationCode instanceof BlockStatement) {
+            if (associationCode instanceof BlockStatement) {
 
                 List<String> associationPropertyNames = null;
                 ClassNode type = getPropertyType(methodName);
-                if(!isDomainClass(type)) {
+                if (!isDomainClass(type)) {
                     ClassNode associationTypeFromGenerics = getAssociationTypeFromGenerics(type);
-                    if(associationTypeFromGenerics != null) {
+                    if (associationTypeFromGenerics != null) {
                         type = associationTypeFromGenerics;
                         associationPropertyNames = getPropertyNamesForAssociation(associationTypeFromGenerics);
                     }
                 }
-                if(associationPropertyNames == null) {
+                if (associationPropertyNames == null) {
                     associationPropertyNames = getPropertyNames(type);
                 }
 
                 ClassNode existing = currentClassNode;
                 try {
-                    if(!associationPropertyNames.isEmpty() && !isDomainClass(type)) {
+                    if (!associationPropertyNames.isEmpty() && !isDomainClass(type)) {
 
                         type = getAssociationTypeFromGenerics(type);
-                        if(type != null) {
+                        if (type != null) {
                             associationPropertyNames = getPropertyNames(type);
                         }
                     }
@@ -659,14 +664,15 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private List<String> getPropertyNamesForAssociation(ClassNode type) {
         List<String> associationPropertyNames = Collections.emptyList();
-        if(type != null) {
-            if(isDomainClass(type)) {
+        if (type != null) {
+            if (isDomainClass(type)) {
                 associationPropertyNames = getPropertyNames(type);
             }
             else {
                 ClassNode associationType = getAssociationTypeFromGenerics(type);
-                if(associationType != null)
+                if (associationType != null) {
                     associationPropertyNames = getPropertyNames(associationType);
+                }
             }
         }
         return associationPropertyNames;
@@ -675,7 +681,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     private ClassNode getAssociationTypeFromGenerics(ClassNode type) {
         GenericsType[] genericsTypes = type.getGenericsTypes();
         ClassNode associationType = null;
-        if(genericsTypes != null && genericsTypes.length == 1) {
+        if (genericsTypes != null && genericsTypes.length == 1) {
             GenericsType genericType = genericsTypes[0];
             associationType = genericType.getType();
         }
@@ -689,12 +695,12 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private ClassNode getPropertyType(ClassNode classNode, String prop) {
         Map<String, ClassNode> cachedProperties = cachedClassProperties.get(classNode.getName());
-        if(cachedProperties != null && cachedProperties.containsKey(prop)) {
+        if (cachedProperties != null && cachedProperties.containsKey(prop)) {
             return cachedProperties.get(prop);
         }
         ClassNode type = null;
         PropertyNode property = classNode.getProperty(prop);
-        if(property != null) {
+        if (property != null) {
             type = property.getType();
         } else {
             MethodNode methodNode = currentClassNode.getMethod(GrailsNameUtils.getGetterName(prop), new Parameter[0]);
@@ -703,7 +709,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             }
             else {
                 FieldNode fieldNode = classNode.getDeclaredField(prop);
-                if(fieldNode != null) {
+                if (fieldNode != null) {
                     type = fieldNode.getType();
                 }
             }
@@ -759,15 +765,15 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             }
         }   else  {
 
-            if(leftExpression instanceof MethodCallExpression) {
+            if (leftExpression instanceof MethodCallExpression) {
                 MethodCallExpression mce = (MethodCallExpression) leftExpression;
                 String methodName = mce.getMethodAsString();
                 Expression objectExpression = mce.getObjectExpression();
-                if("size".equals(methodName) && (objectExpression instanceof VariableExpression)) {
+                if ("size".equals(methodName) && (objectExpression instanceof VariableExpression)) {
                     String propertyName = objectExpression.getText();
-                    if(propertyNames.contains(propertyName)) {
+                    if (propertyNames.contains(propertyName)) {
                         String sizeOperator = SIZE_OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
-                        if(sizeOperator != null) {
+                        if (sizeOperator != null) {
                               addCriteriaCall(newCode,operator,rightExpression, propertyName, propertyNames, addAll, sizeOperator, variableScope);
                         }
                         else {
@@ -782,23 +788,21 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 }
                 else {
                     boolean isFunctionCall = isFunctionCall(mce, methodName, objectExpression);
-                    if(isFunctionCall) {
-
+                    if (isFunctionCall) {
                         String functionName = methodName;
                         ArgumentListExpression existingArgs = (ArgumentListExpression) mce.getArguments();
                         Expression propertyNameExpression = existingArgs.getExpression(0);
-                        if(propertyNameExpression instanceof PropertyExpression) {
+                        if (propertyNameExpression instanceof PropertyExpression) {
                            handleAssociationQueryViaPropertyExpression((PropertyExpression) propertyNameExpression, rightExpression,operator,newCode,propertyNames,functionName, variableScope);
                         }
                         else {
-
                            handleFunctionCall(newCode, operator, rightExpression, functionName, propertyNameExpression);
                         }
                         return;
                     }
                 }
-
             }
+
             String methodNameToCall = null;
             if (operator.contains(AND_OPERATOR)) {
                 methodNameToCall = "and";
@@ -822,7 +826,6 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     newCode.addStatement(statement);
                 }
             }
-
         }
     }
 
@@ -845,9 +848,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         ArgumentListExpression constructorArgs = new ArgumentListExpression();
         constructorArgs.addExpression(new ConstantExpression(functionName));
         ClassNode criterionClassNode = OPERATOR_TO_CRITERION_METHOD_MAP.get(operator);
-        if(criterionClassNode != null) {
+        if (criterionClassNode != null) {
             ArgumentListExpression criterionConstructorArguments = new ArgumentListExpression();
-            if(!(propertyNameExpression instanceof ConstantExpression)) {
+            if (!(propertyNameExpression instanceof ConstantExpression)) {
                 propertyNameExpression = new ConstantExpression(propertyNameExpression.getText());
             }
             criterionConstructorArguments.addExpression(propertyNameExpression);
@@ -865,10 +868,10 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     private void handleBinaryExpressionSide(Expression expressionSide, Expression oppositeSide, String operator, BlockStatement newCode, boolean addAll, List<String> propertyNames, VariableScope variableScope) {
         if (expressionSide instanceof BinaryExpression) {
             addBinaryExpressionToNewBody(propertyNames, newCode, (BinaryExpression) expressionSide, addAll, variableScope);
-        } else if(expressionSide instanceof NotExpression) {
+        } else if (expressionSide instanceof NotExpression) {
             handleNegation(propertyNames, newCode, (NotExpression) expressionSide, variableScope);
         }
-        else if(expressionSide instanceof MethodCallExpression) {
+        else if (expressionSide instanceof MethodCallExpression) {
             MethodCallExpression methodCallExpression = (MethodCallExpression) expressionSide;
             handleAssociationMethodCallExpression(newCode, methodCallExpression, propertyNames, variableScope);
         }
@@ -883,7 +886,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private void handleAssociationQueryViaPropertyExpression(PropertyExpression pe, Expression oppositeSide, String operator, BlockStatement newCode, List<String> propertyNames, String functionName, VariableScope variableScope) {
         Expression objectExpression = pe.getObjectExpression();
-        if(objectExpression instanceof PropertyExpression) {
+        if (objectExpression instanceof PropertyExpression) {
             // nested property expression, we have to find the root variable expression and walk backwards through all the properties involved
             List<String> associationMethodCalls = new ArrayList<String>();
 
@@ -893,7 +896,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 objectExpression = currentPe.getObjectExpression();
             }
 
-            if(objectExpression instanceof VariableExpression) {
+            if (objectExpression instanceof VariableExpression) {
                 VariableExpression ve = (VariableExpression) objectExpression;
 
                 associationMethodCalls.add(ve.getName());
@@ -911,14 +914,13 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     ArgumentListExpression arguments = closureAndArguments.getArguments();
                     ClassNode type = getPropertyTypeFromGenerics(associationMethodCall, currentType);
 
-                    if(type == null) break;
+                    if (type == null) break;
 
                     currentType = type;
                     currentBody.addStatement(new ExpressionStatement(new MethodCallExpression(DELEGATE_EXPRESSION, associationMethodCall, arguments)));
                     currentBody = closureAndArguments.getCurrentBody();
 
-
-                    if(!iterator.hasNext()) {
+                    if (!iterator.hasNext()) {
                         String associationProperty = pe.getPropertyAsString();
                         List<String> associationPropertyNames = getPropertyNamesForAssociation(type);
                         ClassNode existing = this.currentClassNode;
@@ -926,7 +928,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                             this.currentClassNode = type;
                             boolean hasNoProperties = associationPropertyNames.isEmpty();
-                            if(functionName != null) {
+                            if (functionName != null) {
                                 handleFunctionCall(currentBody, operator, oppositeSide, functionName, new ConstantExpression(associationProperty));
                             }
                             else {
@@ -935,12 +937,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                         } finally {
                             this.currentClassNode = existing;
                         }
-
                     }
-
                 }
             }
-
         }
         else if (objectExpression instanceof VariableExpression) {
             String propertyName = objectExpression.getText();
@@ -950,26 +949,22 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 ClassNode classNode = currentClassNode;
                 ClassNode type = getPropertyTypeFromGenerics(propertyName, classNode);
                 List<String> associationPropertyNames = getPropertyNamesForAssociation(type);
-                if(associationPropertyNames == null) {
+                if (associationPropertyNames == null) {
                     associationPropertyNames = getPropertyNamesForAssociation(classNode);
                 }
-
-
-
 
                 ClosureAndArguments closureAndArguments = new ClosureAndArguments(variableScope);
                 BlockStatement currentBody = closureAndArguments.getCurrentBody();
                 ArgumentListExpression arguments = closureAndArguments.getArguments();
 
                 boolean hasNoProperties = associationPropertyNames.isEmpty();
-                if(!hasNoProperties && !associationPropertyNames.contains(associationProperty)) {
+                if (!hasNoProperties && !associationPropertyNames.contains(associationProperty)) {
                      sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query property \""+associationProperty+"\" - no such property on class "+type.getName()+" exists.", Token.newString(propertyName, pe.getLineNumber(), pe.getColumnNumber()), sourceUnit));
                 }
                 ClassNode existing = this.currentClassNode;
                 try {
-
                     this.currentClassNode = type;
-                    if(functionName != null) {
+                    if (functionName != null) {
                         handleFunctionCall(currentBody, operator, oppositeSide, functionName, new ConstantExpression(associationProperty));
                     }
                     else {
@@ -980,19 +975,17 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 }
                 newCode.addStatement(new ExpressionStatement(new MethodCallExpression(DELEGATE_EXPRESSION, propertyName, arguments)));
             }
-            else if(!variableScope.isReferencedLocalVariable(propertyName)) {
+            else if (!variableScope.isReferencedLocalVariable(propertyName)) {
                 sourceUnit.getErrorCollector().addError(new LocatedMessage("Cannot query property \""+propertyName+"\" - no such property on class "+this.currentClassNode.getName()+" exists.", Token.newString(propertyName, pe.getLineNumber(), pe.getColumnNumber()), sourceUnit));
             }
         }
-
-
     }
 
     private ClassNode getPropertyTypeFromGenerics(String propertyName, ClassNode classNode) {
         ClassNode type = getPropertyType(classNode, propertyName);
-        if(type != null && !isDomainClass(type)) {
+        if (type != null && !isDomainClass(type)) {
             ClassNode associationTypeFromGenerics = getAssociationTypeFromGenerics(type);
-            if(associationTypeFromGenerics != null && isDomainClass(associationTypeFromGenerics)) {
+            if (associationTypeFromGenerics != null && isDomainClass(associationTypeFromGenerics)) {
                 type = associationTypeFromGenerics;
             }
         }
@@ -1001,7 +994,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
     private void addCriteriaCallMethodExpression(BlockStatement newCode, String operator, Expression rightExpression, String propertyName, List<String> propertyNames, boolean addAll, VariableScope variableScope) {
         String methodToCall = OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
-        if(methodToCall == null) {
+        if (methodToCall == null) {
             sourceUnit.getErrorCollector().addError(new LocatedMessage("Unsupported operator ["+operator+"] used in query", Token.newString(rightExpression.getText(), rightExpression.getLineNumber(),rightExpression.getColumnNumber()), sourceUnit));
         }
         addCriteriaCall(newCode, operator, rightExpression, propertyName, propertyNames, addAll, methodToCall, variableScope);
@@ -1010,54 +1003,52 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     private void addCriteriaCall(BlockStatement newCode, String operator, Expression rightExpression, String propertyName, List<String> propertyNames, boolean addAll, String methodToCall, VariableScope variableScope) {
         if (rightExpression instanceof VariableExpression) {
             String rightPropertyName = rightExpression.getText();
-            if(!variableScope.isReferencedLocalVariable(rightPropertyName)) {
+            if (!variableScope.isReferencedLocalVariable(rightPropertyName)) {
                 if ((propertyNames.contains(rightPropertyName) || addAll) && PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP.containsKey(operator)) {
                     methodToCall = PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP.get(operator);
                     rightExpression = new ConstantExpression(rightPropertyName);
                 }
             }
-        } else if(rightExpression instanceof MethodCallExpression) {
+        } else if (rightExpression instanceof MethodCallExpression) {
             // potential aggregation
             MethodCallExpression aggregateMethodCall = (MethodCallExpression) rightExpression;
             String methodName = aggregateMethodCall.getMethodAsString();
             String aggregateFunctionName = AGGREGATE_FUNCTIONS.get(methodName);
-            if("of".equals(methodName) && aggregateMethodCall.getObjectExpression() instanceof MethodCallExpression) {
+            if ("of".equals(methodName) && aggregateMethodCall.getObjectExpression() instanceof MethodCallExpression) {
                 ArgumentListExpression arguments = (ArgumentListExpression)aggregateMethodCall.getArguments();
-                if(arguments.getExpressions().size() == 1 && arguments.getExpression(0) instanceof ClosureExpression) {
+                if (arguments.getExpressions().size() == 1 && arguments.getExpression(0) instanceof ClosureExpression) {
                     ClosureExpression ce = (ClosureExpression) arguments.getExpression(0);
                     transformClosureExpression(this.currentClassNode,ce);
                     aggregateMethodCall = (MethodCallExpression) aggregateMethodCall.getObjectExpression();
 
                     aggregateFunctionName = AGGREGATE_FUNCTIONS.get(aggregateMethodCall.getMethodAsString());
                     ArgumentListExpression aggregateMethodCallArguments = (ArgumentListExpression)aggregateMethodCall.getArguments();
-                    if(aggregateFunctionName != null && aggregateMethodCallArguments.getExpressions().size() == 1) {
+                    if (aggregateFunctionName != null && aggregateMethodCallArguments.getExpressions().size() == 1) {
                         Expression expression = aggregateMethodCallArguments.getExpression(0);
                         String aggregatePropertyName = null;
-                        if(expression instanceof VariableExpression || expression instanceof ConstantExpression) {
+                        if (expression instanceof VariableExpression || expression instanceof ConstantExpression) {
                             aggregatePropertyName = expression.getText();
                         }
 
                         boolean validProperty = aggregatePropertyName != null && propertyNames.contains(aggregatePropertyName);
-                        if(validProperty) {
+                        if (validProperty) {
                             BlockStatement bs = (BlockStatement) ce.getCode();
                             addProjectionToCurrentBody(bs, aggregateFunctionName, aggregatePropertyName, variableScope);
                             rightExpression = new MethodCallExpression(new ConstructorCallExpression(DETACHED_CRITERIA_CLASS_NODE, new ArgumentListExpression(new ClassExpression(this.currentClassNode))), "build", new ArgumentListExpression(ce));
                         }
                     }
-
                 }
-
             }
-            else if(aggregateFunctionName != null) {
+            else if (aggregateFunctionName != null) {
                 Expression arguments = aggregateMethodCall.getArguments();
-                if(arguments instanceof ArgumentListExpression) {
+                if (arguments instanceof ArgumentListExpression) {
                     ArgumentListExpression argList = (ArgumentListExpression) arguments;
                     List<Expression> expressions = argList.getExpressions();
                     int argCount = expressions.size();
-                    if(argCount == 1) {
+                    if (argCount == 1) {
                         Expression expression = expressions.get(0);
                         String aggregatePropertyName = null;
-                        if(expression instanceof VariableExpression || expression instanceof ConstantExpression) {
+                        if (expression instanceof VariableExpression || expression instanceof ConstantExpression) {
                             aggregatePropertyName = expression.getText();
                         }
                         else {
@@ -1066,7 +1057,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                         }
 
                         boolean validProperty = aggregatePropertyName != null && propertyNames.contains(aggregatePropertyName);
-                        if(validProperty) {
+                        if (validProperty) {
                                 ClosureAndArguments closureAndArguments = new ClosureAndArguments(variableScope);
                                 BlockStatement currentBody = closureAndArguments.getCurrentBody();
 
@@ -1074,7 +1065,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 
                                 rightExpression = closureAndArguments.getClosureExpression();
 
-                                if("property".equals(aggregateFunctionName)) {
+                                if ("property".equals(aggregateFunctionName)) {
                                     methodToCall = methodToCall + "All";
                                 }
                         }
@@ -1084,7 +1075,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     }
                 }
             }
-            else if(isFunctionCall(aggregateMethodCall)) {
+            else if (isFunctionCall(aggregateMethodCall)) {
                 // TODO: Allow function calls on right hand arguments
                 ArgumentListExpression existingArgs = (ArgumentListExpression) aggregateMethodCall.getArguments();
                 Expression propertyNameExpression = existingArgs.getExpression(0);
@@ -1095,9 +1086,9 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 //                ArgumentListExpression constructorArgs = new ArgumentListExpression();
 //                constructorArgs.addExpression(new ConstantExpression(methodName));
 //                ClassNode criterionClassNode = OPERATOR_TO_PROPERTY_CRITERION_METHOD_MAP.get(operator);
-//                if(criterionClassNode != null) {
+//                if (criterionClassNode != null) {
 //                    ArgumentListExpression criterionConstructorArguments = new ArgumentListExpression();
-//                    if(!(propertyNameExpression instanceof ConstantExpression)) {
+//                    if (!(propertyNameExpression instanceof ConstantExpression)) {
 //                        propertyNameExpression = new ConstantExpression(propertyNameExpression.getText());
 //                    }
 //                    criterionConstructorArguments.addExpression(new ConstantExpression(propertyName));
@@ -1114,7 +1105,6 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
 //                    sourceUnit.getErrorCollector().addError(new LocatedMessage("Function call "+aggregateFunctionName+" not allowed on property \""+propertyNameExpression.getText()+"\".", Token.newString(propertyName,aggregateMethodCall.getLineNumber(), aggregateMethodCall.getColumnNumber()), sourceUnit));
 //                }
 //                return;
-
             }
         } else {
             if ("like".equals(methodToCall) && rightExpression instanceof BitwiseNegationExpression) {
@@ -1122,7 +1112,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 BitwiseNegationExpression bne = (BitwiseNegationExpression) rightExpression;
                 rightExpression = bne.getExpression();
             }
-            else if("inList".equals(methodToCall) && rightExpression instanceof RangeExpression) {
+            else if ("inList".equals(methodToCall) && rightExpression instanceof RangeExpression) {
                 methodToCall = "between";
                 RangeExpression re = (RangeExpression) rightExpression;
                 ArgumentListExpression betweenArgs = new ArgumentListExpression();
@@ -1134,25 +1124,25 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         }
         ArgumentListExpression arguments;
 
-        if(rightExpression instanceof ArgumentListExpression) {
+        if (rightExpression instanceof ArgumentListExpression) {
             arguments = (ArgumentListExpression) rightExpression;
         }
-        else if(rightExpression instanceof ConstantExpression) {
+        else if (rightExpression instanceof ConstantExpression) {
             ConstantExpression constant = (ConstantExpression) rightExpression;
-            if(constant.getValue() == null) {
+            if (constant.getValue() == null) {
                 boolean singleArg = false;
-                if(operator.equals(EQUALS_OPERATOR)) {
+                if (operator.equals(EQUALS_OPERATOR)) {
                     singleArg = true;
                     methodToCall = IS_NULL_CRITERION;
                 }
-                else if(operator.equals("!=")) {
+                else if (operator.equals("!=")) {
                     singleArg = true;
                     methodToCall = "isNotNull";
                 }
 
                 arguments = new ArgumentListExpression();
                 arguments.addExpression(new ConstantExpression(propertyName));
-                if(!singleArg) {
+                if (!singleArg) {
                     arguments.addExpression(rightExpression);
                 }
             }
@@ -1160,7 +1150,6 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                 arguments = new ArgumentListExpression();
                 arguments.addExpression(new ConstantExpression(propertyName))
                         .addExpression(rightExpression);
-
             }
         }
         else {
@@ -1180,11 +1169,11 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     protected boolean isDomainClass(ClassNode classNode) {
-        if(classNode == null) return false;
+        if (classNode == null) return false;
         String filePath = classNode.getModule() != null ? classNode.getModule().getDescription() : null;
-        if(filePath != null) {
+        if (filePath != null) {
             try {
-                if(GrailsResourceUtils.isDomainClass(new File(filePath).toURI().toURL())) {
+                if (GrailsResourceUtils.isDomainClass(new File(filePath).toURI().toURL())) {
                     return true;
                 }
             } catch (MalformedURLException e) {
@@ -1245,5 +1234,29 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         public ClosureExpression getClosureExpression() {
             return closureExpression;
         }
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static <K, V> Map newMap(Object... keysAndValues) {
+        if (keysAndValues == null) {
+            return Collections.emptyMap();
+        }
+        if (keysAndValues.length % 2 == 1) {
+            throw new IllegalArgumentException("Must have an even number of keys and values");
+        }
+
+        Map<K, V> map = new HashMap<K, V>();
+        for (int i = 0; i < keysAndValues.length; i += 2) {
+            map.put((K)keysAndValues[i], (V)keysAndValues[i + 1]);
+        }
+        return map;
+    }
+
+    private static <T> Set<T> newSet(T... values) {
+        if (values == null) {
+            return Collections.emptySet();
+        }
+
+        return new HashSet<T>(Arrays.asList(values));
     }
 }

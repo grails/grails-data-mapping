@@ -8,7 +8,6 @@ import grails.persistence.Entity
  * @author Roman Stepanenko
  * @since 0.1
  */
-
 @Entity
 class UniqueGroup implements Serializable {
     String id
@@ -19,11 +18,7 @@ class UniqueGroup implements Serializable {
         name unique: true
     }
 
-    public String toString() {
-        return "UniqueGroup{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                '}';
+    String toString() {
+        "UniqueGroup{id='$id', version=$version, name='$name'}"
     }
 }

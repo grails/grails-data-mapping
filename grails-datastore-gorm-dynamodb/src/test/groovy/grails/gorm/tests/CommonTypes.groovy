@@ -8,7 +8,6 @@ import grails.persistence.Entity
  * @author Roman Stepanenko
  * @since 0.1
  */
-
 @Entity
 class CommonTypes implements Serializable {
     String id
@@ -32,26 +31,7 @@ class CommonTypes implements Serializable {
     Locale loc
     Currency cur
 
-    public String toString() {
-        return "CommonTypes{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", l=" + l +
-                ", b=" + b +
-                ", s=" + s +
-                ", bool=" + bool +
-                ", i=" + i +
-                ", url=" + url +
-                ", date=" + date +
-                ", c=" + c +
-                ", bd=" + bd +
-                ", bi=" + bi +
-                ", d=" + d +
-                ", f=" + f +
-                ", tz=" + tz +
-                ", loc=" + loc +
-                ", cur=" + cur +
-                '}';
+    String toString() {
+        "CommonTypes{$id='$id', version=$version, name='$name', l=$l, b=$b, s=$s, bool=$bool, i=$i, url=$url, date=$date, c=$c, bd=$bd, bi=$bi, d=$d, f=$f, tz=$tz, loc=$loc, cur=$cur}"
     }
 }

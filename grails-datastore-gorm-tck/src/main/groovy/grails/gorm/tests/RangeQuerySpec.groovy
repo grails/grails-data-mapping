@@ -16,7 +16,6 @@ class RangeQuerySpec extends GormDatastoreSpec {
                 new Publication(title:"The Observer", datePublished: now - 10.days).save()
             }
 
-
         when:
             def results = use(TimeCategory) {
                 Publication.findAllByDatePublishedBetween(now-6.days, now)
@@ -25,7 +24,6 @@ class RangeQuerySpec extends GormDatastoreSpec {
         then:
             results != null
             results.size() == 2
-
     }
 
     void "Test between query"() {
@@ -88,34 +86,34 @@ class RangeQuerySpec extends GormDatastoreSpec {
             new Person(firstName: 'Zack', lastName: 'Brown', age: 14).save()
             new Person(firstName: 'Jeff', lastName: 'Brown', age: 41).save()
             new Person(firstName: 'Zack', lastName: 'Galifianakis', age: 41).save()
-            
+
         when:
             def cnt = Person.countByAgeInRange(14..41)
-            
+
         then:
             3 == cnt
-            
+
         when:
             cnt = Person.countByAgeInRange(41..14)
-            
+
         then:
             3 == cnt
 
         when:
             cnt = Person.countByAgeInRange(14..<30)
-            
+
         then:
             1 == cnt
 
         when:
             cnt = Person.countByAgeInRange(14..<42)
-            
+
         then:
             3 == cnt
 
         when:
             cnt = Person.countByAgeInRange(15..40)
-            
+
         then:
             0 == cnt
     }

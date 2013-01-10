@@ -14,28 +14,26 @@
  */
 package org.grails.datastore.gorm.mongo.plugin.support
 
-import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
-import org.grails.datastore.mapping.core.Datastore
-import org.springframework.transaction.PlatformTransactionManager
+import org.grails.datastore.gorm.GormEnhancer
+import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
-import org.grails.datastore.gorm.GormInstanceApi
-import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.mongo.MongoGormStaticApi
-import org.grails.datastore.gorm.mongo.MongoGormInstanceApi
 import org.grails.datastore.gorm.mongo.MongoGormEnhancer
-import com.mongodb.DBObject
+import org.grails.datastore.gorm.mongo.MongoGormInstanceApi
+import org.grails.datastore.gorm.mongo.MongoGormStaticApi
+import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
+import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
-import org.springframework.dao.TransientDataAccessException
+import org.grails.datastore.mapping.mongo.query.MongoQuery
+import org.springframework.transaction.PlatformTransactionManager
+
 import com.mongodb.BasicDBObject
 import com.mongodb.DBCursor
-import org.springframework.core.GenericCollectionTypeResolver
-import org.grails.datastore.mapping.mongo.query.MongoQuery
+import com.mongodb.DBObject
 
 /**
- *
- * Mongo specific dynamic methods configurer
+ * Mongo specific dynamic methods configurer.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -81,10 +79,8 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
             else {
                 throw new IllegalArgumentException("Cannot convert DBCursor [$delegate] to target type $cls. Type is not a persistent entity")
             }
-            
         }
     }
-
 
     @Override
     String getDatastoreType() {
@@ -106,13 +102,13 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
     @Override
     protected GormEnhancer createEnhancer() {
         def ge
-        if(transactionManager != null)
-            ge = new MongoGormEnhancer(datastore, transactionManager)
-        else
+        if (transactionManager == null) {
             ge = new MongoGormEnhancer(datastore)
+        }
+        else {
+            ge = new MongoGormEnhancer(datastore, transactionManager)
+        }
         ge.failOnError = failOnError
         ge
     }
-
-
 }

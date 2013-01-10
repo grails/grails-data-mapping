@@ -70,7 +70,6 @@ public abstract class AbstractDatastore implements Datastore, DisposableBean {
         this.cacheAdapterRepository = cacheAdapterRepository;
     }
 
-    @Override
     public void destroy() throws Exception {
         ERRORS_MAP.remove();
         VALIDATE_MAP.remove();
@@ -105,7 +104,7 @@ public abstract class AbstractDatastore implements Datastore, DisposableBean {
      * @param connectionDetails The session details
      * @return The session object
      */
-    protected abstract Session createSession(@SuppressWarnings("hiding") Map<String, String> connectionDetails);
+    protected abstract Session createSession(Map<String, String> connectionDetails);
 
     public Session getCurrentSession() throws ConnectionNotFoundException {
         return DatastoreUtils.doGetSession(this, false);
@@ -188,7 +187,7 @@ public abstract class AbstractDatastore implements Datastore, DisposableBean {
         return VALIDATE_MAP.get();
     }
 
-    protected void initializeConverters(@SuppressWarnings("hiding") MappingContext mappingContext) {
+    protected void initializeConverters(MappingContext mappingContext) {
         final ConverterRegistry conversionService = mappingContext.getConverterRegistry();
         BasicTypeConverterRegistrar registrar = new BasicTypeConverterRegistrar();
         registrar.register(conversionService);

@@ -2,14 +2,13 @@ package grails.gorm.tests
 
 import org.grails.datastore.mapping.simpledb.model.types.SimpleDBTypeConverterRegistrar
 
-import spock.lang.Ignore
-
 /**
  * Tests back and forth conversion to String of numeric and other datatypes.
  *
  * @author Roman Stepanenko
  */
 class StringConversionSpec extends GormDatastoreSpec {
+
     void "Test byte conversion"() {
         given:
             def fromString = SimpleDBTypeConverterRegistrar.STRING_TO_BYTE_CONVERTER
@@ -65,7 +64,6 @@ class StringConversionSpec extends GormDatastoreSpec {
             fromString.convert(toString.convert(Short.MIN_VALUE+1 as short)) == Short.MIN_VALUE+1 as short
             fromString.convert(toString.convert(Short.MIN_VALUE+2 as short)) == Short.MIN_VALUE+2 as short
             fromString.convert(toString.convert(Short.MIN_VALUE+30 as short)) == Short.MIN_VALUE+30 as short
-
 
             //test that for short numeric string conversion happens as is
             fromString.convert("1") == 1 as short
@@ -152,7 +150,7 @@ class StringConversionSpec extends GormDatastoreSpec {
             fromString.convert(toString.convert(Integer.MIN_VALUE+1 as int)) == Integer.MIN_VALUE+1 as int
             fromString.convert(toString.convert(Integer.MIN_VALUE+2 as int)) == Integer.MIN_VALUE+2 as int
             fromString.convert(toString.convert(Integer.MIN_VALUE+30 as int)) == Integer.MIN_VALUE+30 as int
-        
+
             //test that for short numeric string conversion happens as is
             fromString.convert("1") == 1 as long
             fromString.convert("-1") == -1 as long

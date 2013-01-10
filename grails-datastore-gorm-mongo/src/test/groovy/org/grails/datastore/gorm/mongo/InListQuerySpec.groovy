@@ -1,14 +1,13 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
-import spock.lang.Issue
-import grails.gorm.tests.Pet
 import grails.gorm.tests.Person
+import grails.gorm.tests.Pet
 import grails.gorm.tests.PetType
 
-/**
- */
-class InListQuerySpec extends GormDatastoreSpec{
+import spock.lang.Issue
+
+class InListQuerySpec extends GormDatastoreSpec {
 
     @Issue("GPMONGODB-160")
     void "Test that ne works for a single-ended association"() {
@@ -35,15 +34,15 @@ class InListQuerySpec extends GormDatastoreSpec{
         given:"Some test data"
             createPets()
             session.clear()
-        
+
         when:"Querying an association in a given list"
             def list = PetType.withCriteria {
                 or {
                     eq 'name', 'Tyrannosaur'
                     eq 'name', 'Saurapod'
                 }
-            }   
-        
+            }
+
             assert list.size() == 2
             def results = Pet.withCriteria {
                 inList 'type', list
@@ -83,7 +82,6 @@ class InListQuerySpec extends GormDatastoreSpec{
         results[0].name == "Dino"
         results[1].name == "Flipper"
     }
-
 
     void createPets() {
         def owner = new Person(firstName: "Fred", lastName: "Flintstone").save()

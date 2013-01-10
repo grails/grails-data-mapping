@@ -56,7 +56,6 @@ public abstract class AbstractMappingAwareCustomTypeMarshaller<T, N, Q> implemen
         return nativeQuery;
     }
 
-    @SuppressWarnings("unused")
     protected void queryInternal(PersistentProperty property, String key, Query.PropertyCriterion value, Q nativeQuery) {
         throw new InvalidDataAccessResourceUsageException("Custom type [" + getTargetType().getName() +
                 "] does not support querying");

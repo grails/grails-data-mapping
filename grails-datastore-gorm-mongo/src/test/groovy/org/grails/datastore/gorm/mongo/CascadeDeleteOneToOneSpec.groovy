@@ -1,13 +1,14 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
-import org.bson.types.ObjectId
 import grails.persistence.Entity
+
+import org.bson.types.ObjectId
 
 /**
  * @author Graeme Rocher
  */
-class CascadeDeleteOneToOneSpec extends GormDatastoreSpec{
+class CascadeDeleteOneToOneSpec extends GormDatastoreSpec {
 
     void "Test owner deletes child in one-to-one cascade"() {
 
@@ -33,13 +34,13 @@ class CascadeDeleteOneToOneSpec extends GormDatastoreSpec{
             assert found1b == null
     }
 
-
     void "Test delete doesnt cascade if no belongsTo"() {
         when:"A one-to-one with no belongsTo is persisted"
             def c = new Company(name:"Apple", ceo:new Executive(name:"Tim Cook").save(), designer:new Employee(name:"Bob"))
             c.save flush:true
             session.clear()
             c = Company.get(c.id)
+
         then:"The relationship can be retrieved"
             c != null
             c.ceo != null
@@ -53,14 +54,12 @@ class CascadeDeleteOneToOneSpec extends GormDatastoreSpec{
             Company.count() == 0
             Employee.count() == 0
             Executive.count() == 1
-
     }
 
     @Override
     List getDomainClasses() {
         [SystemUser, UserSettings, Company, Executive,Employee]
     }
-
 }
 
 @Entity
@@ -92,11 +91,13 @@ class Company {
     Executive ceo
     Employee designer
 }
+
 @Entity
 class Executive {
     String id
     String name
 }
+
 @Entity
 class Employee {
     String id

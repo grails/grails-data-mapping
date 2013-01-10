@@ -1,12 +1,10 @@
 package org.grails.datastore.gorm
 
-import spock.lang.Specification
-import spock.lang.Issue
-import grails.persistence.Entity
 import grails.gorm.tests.GormDatastoreSpec
+import grails.persistence.Entity
 
-/**
- */
+import spock.lang.Issue
+
 class AutoLinkOneToManyAssociationSpec extends GormDatastoreSpec{
 
     @Issue('GRAILS-8815')
@@ -37,8 +35,6 @@ class AutoLinkOneToManyAssociationSpec extends GormDatastoreSpec{
     List getDomainClasses() {
         [AutoLinkListAuthor,AutoLinkListBook]
     }
-
-
 }
 
 @Entity

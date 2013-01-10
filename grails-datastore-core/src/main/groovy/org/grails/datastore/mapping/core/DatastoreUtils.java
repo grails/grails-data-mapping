@@ -37,6 +37,7 @@ import org.springframework.util.Assert;
  * @author Juergen Hoeller
  * @author Graeme Rocher
  */
+@SuppressWarnings("rawtypes")
 public abstract class DatastoreUtils {
 
      public static final Log logger = LogFactory.getLog(DatastoreUtils.class);

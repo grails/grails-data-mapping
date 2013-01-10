@@ -15,6 +15,11 @@
 
 package org.grails.datastore.mapping.jpa.query;
 
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.grails.datastore.mapping.jpa.JpaSession;
@@ -28,17 +33,13 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.jpa.JpaCallback;
 import org.springframework.orm.jpa.JpaTemplate;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-import java.util.List;
-
 /**
  * Query implementation for JPA.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-@SuppressWarnings({"hiding", "rawtypes", "unchecked"})
+@SuppressWarnings("rawtypes")
 public class JpaQuery extends Query {
     private static final Log LOG = LogFactory.getLog(JpaQuery.class);
 
@@ -74,8 +75,9 @@ public class JpaQuery extends Query {
     @Override
     protected List executeQuery(final PersistentEntity entity, final Junction criteria) {
         final JpaTemplate jpaTemplate = getSession().getJpaTemplate();
-        if(!JpaSession.hasTransaction())
+        if (!JpaSession.hasTransaction()) {
             jpaTemplate.setFlushEager(false);
+        }
 
         return (List)jpaTemplate.execute(new JpaCallback<Object>() {
             public Object doInJpa(EntityManager em) throws PersistenceException {
@@ -87,8 +89,9 @@ public class JpaQuery extends Query {
     @Override
     public Object singleResult() {
         final JpaTemplate jpaTemplate = getSession().getJpaTemplate();
-        if(!JpaSession.hasTransaction())
+        if (!JpaSession.hasTransaction()) {
             jpaTemplate.setFlushEager(false);
+        }
         try {
             return jpaTemplate.execute(new JpaCallback<Object>() {
                 public Object doInJpa(EntityManager em) throws PersistenceException {
@@ -100,12 +103,7 @@ public class JpaQuery extends Query {
         }
     }
 
-
-
-
-    Object executeQuery(final PersistentEntity entity, final Junction criteria,
-            EntityManager em, boolean singleResult) {
-
+    Object executeQuery(final PersistentEntity entity, final Junction criteria, EntityManager em, boolean singleResult) {
 
         JpaQueryBuilder queryBuilder = new JpaQueryBuilder(entity, criteria, projections, orderBy);
         queryBuilder.setConversionService(session.getDatastore().getMappingContext().getConversionService());
@@ -133,6 +131,4 @@ public class JpaQuery extends Query {
         }
         return q.getSingleResult();
     }
-
-
 }

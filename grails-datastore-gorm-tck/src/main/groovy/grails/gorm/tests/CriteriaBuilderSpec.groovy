@@ -1,6 +1,6 @@
 package grails.gorm.tests
 
-import spock.lang.Ignore;
+import spock.lang.Ignore
 
 /**
  * Abstract base test for criteria queries. Subclasses should do the necessary setup to configure GORM
@@ -283,6 +283,4 @@ class CriteriaBuilderSpec extends GormDatastoreSpec {
             results.find { it.name = "Barney Child"}
             results.find { it.name = "Frank Child"}
     }
-
-
 }

@@ -1,8 +1,8 @@
 package grails.gorm.tests
 
 import grails.gorm.DetachedCriteria
+
 import org.grails.datastore.mapping.query.jpa.JpaQueryBuilder
-import org.grails.datastore.mapping.query.Query.Conjunction
 import org.springframework.dao.InvalidDataAccessResourceUsageException
 
 /**
@@ -55,7 +55,6 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
             builder.hibernateCompatible = true
             def queryInfo = builder.buildUpdate(firstName:'Bob updated', age:30)
 
-
         then:"The query is valid"
             queryInfo.query != null
             queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.age=?, person.firstName=? WHERE (person.firstName=?)'
@@ -71,7 +70,6 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
         when:"A jpa query is built"
             def builder = new JpaQueryBuilder(session.mappingContext.getPersistentEntity(Person.name),criteria.criteria)
             def queryInfo = builder.buildUpdate(firstName:'Bob updated', age:30)
-
 
         then:"The query is valid"
             queryInfo.query != null
@@ -89,7 +87,6 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
             def builder = new JpaQueryBuilder(session.mappingContext.getPersistentEntity(Person.name),criteria.criteria)
             def queryInfo = builder.buildUpdate(age:30)
 
-
         then:"The query is valid"
             queryInfo.query != null
             queryInfo.query == 'UPDATE grails.gorm.tests.Person person SET person.age=?1 WHERE (person.firstName=?2)'
@@ -105,7 +102,6 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
         when:"A jpa query is built"
             def builder = new JpaQueryBuilder(session.mappingContext.getPersistentEntity(Person.name),criteria.criteria)
             def queryInfo = builder.buildDelete()
-
 
         then:"The query is valid"
             queryInfo.query != null
@@ -124,7 +120,6 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
             builder.hibernateCompatible = true
             def query = builder.buildSelect().query
 
-
         then:"The query is valid"
             query != null
             query == 'SELECT DISTINCT person FROM grails.gorm.tests.Person AS person WHERE (person.firstName=?)'
@@ -140,7 +135,6 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
             def builder = new JpaQueryBuilder(session.mappingContext.getPersistentEntity(Person.name),criteria.criteria)
             def query = builder.buildSelect().query
 
-
         then:"The query is valid"
             query != null
             query == 'SELECT DISTINCT person FROM grails.gorm.tests.Person AS person WHERE (person.firstName=?1)'
@@ -153,13 +147,11 @@ class JpaQueryBuilderSpec extends GormDatastoreSpec{
                     eq 'firstName', 'Bob'
                     eq 'firstName', 'Fred'
                 }
-
             }
 
         when:"A jpa query is built"
             def builder = new JpaQueryBuilder(session.mappingContext.getPersistentEntity(Person.name),criteria.criteria)
             final queryInfo = builder.buildSelect()
-
 
         then:"The query is valid"
             queryInfo.query!= null

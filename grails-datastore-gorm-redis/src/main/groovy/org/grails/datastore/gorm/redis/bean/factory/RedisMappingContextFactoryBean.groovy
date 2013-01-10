@@ -25,6 +25,6 @@ import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
  */
 class RedisMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
     protected MappingContext createMappingContext() {
-        new KeyValueMappingContext("");
+        new KeyValueMappingContext("")
     }
 }

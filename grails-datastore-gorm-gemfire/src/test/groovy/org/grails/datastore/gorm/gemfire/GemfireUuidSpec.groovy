@@ -39,6 +39,6 @@ class UsesUuid {
     String name
 
     static mapping = {
-        id generator: 'uuid'    
+        id generator: 'uuid'
     }
 }

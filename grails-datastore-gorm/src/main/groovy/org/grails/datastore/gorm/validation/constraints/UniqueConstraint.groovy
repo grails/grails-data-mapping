@@ -15,18 +15,18 @@
 
 package org.grails.datastore.gorm.validation.constraints
 
-import org.codehaus.groovy.grails.validation.AbstractConstraint
-import org.springframework.validation.Errors
-import org.grails.datastore.mapping.core.Session
 import grails.util.GrailsNameUtils
+
+import org.codehaus.groovy.grails.validation.AbstractConstraint
 import org.grails.datastore.mapping.core.Datastore
-import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.EntityPersister
+import org.springframework.validation.Errors
 
 /**
- * Implementation of the unique constraint for the datastore abstraction
+ * Implementation of the unique constraint for the datastore abstraction.
  */
-class UniqueConstraint extends AbstractConstraint{
+class UniqueConstraint extends AbstractConstraint {
 
     Datastore datastore
 
@@ -40,16 +40,16 @@ class UniqueConstraint extends AbstractConstraint{
 
             EntityPersister persister = session.getPersister(target)
             def id = getIdentifier(target, persister)
-            if(constraintParameter instanceof Boolean) {
-                if(constraintParameter) {
-                    if(propertyValue != null) {
+            if (constraintParameter instanceof Boolean) {
+                if (constraintParameter) {
+                    if (propertyValue != null) {
 
                         final existing = constraintOwningClass."findBy${GrailsNameUtils.getClassName(constraintPropertyName, '')}"(propertyValue)
-                        if(existing != null) {
+                        if (existing != null) {
                             def existingId = getIdentifier(existing, persister)
-                            if(id != existingId) {
+                            if (id != existingId) {
                                 def args = [ constraintPropertyName, constraintOwningClass, propertyValue ] as Object[]
-                                rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"));
+                                rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"))
                             }
                         }
                     }
@@ -57,49 +57,46 @@ class UniqueConstraint extends AbstractConstraint{
             }
             else {
                 List group = []
-                if(constraintParameter instanceof Collection) {
+                if (constraintParameter instanceof Collection) {
                     group.addAll(constraintParameter)
                 }
-                else if(constraintParameter != null) {
+                else if (constraintParameter != null) {
                     group.add(constraintParameter.toString())
                 }
-
 
                 List nullConstraintParameters = group.findAll{target[it] == null}
                 def existing = false
 
                 if (nullConstraintParameters) {
                    existing = constraintOwningClass.createCriteria().list {
-		                    eq constraintPropertyName, propertyValue
-		                    for(prop in group) {
-		                        if (target[prop] != null) {
-		                          eq prop, target[prop]
-		                        }
-
-		                    }
+                       eq constraintPropertyName, propertyValue
+                       for (prop in group) {
+                           if (target[prop] != null) {
+                               eq prop, target[prop]
+                           }
+                       }
                    }
 
-	               // see if there is a result where all the nullConstraintParameters are null
-		           existing = existing?.find {
-	                   null == nullConstraintParameters.findResult {param -> it[param]}
+                   // see if there is a result where all the nullConstraintParameters are null
+                   existing = existing?.find {
+                       null == nullConstraintParameters.findResult {param -> it[param]}
                    }
-
                 } else {
-                   existing = constraintOwningClass.createCriteria().get {
-		                    eq constraintPropertyName, propertyValue
-		                    for(prop in group) {
-		                        if (target[prop] != null) {
-		                          eq prop, target[prop]
-		                        }
-		                    }
-                   }
+                    existing = constraintOwningClass.createCriteria().get {
+                        eq constraintPropertyName, propertyValue
+                        for (prop in group) {
+                            if (target[prop] != null) {
+                                eq prop, target[prop]
+                            }
+                        }
+                    }
                 }
 
-                if(existing) {
+                if (existing) {
                     def existingId = getIdentifier(existing, persister)
-                    if(id != existingId) {
+                    if (id != existingId) {
                         def args = [ constraintPropertyName, constraintOwningClass, propertyValue ] as Object[]
-                        rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"));
+                        rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"))
                     }
                 }
             }
@@ -107,19 +104,20 @@ class UniqueConstraint extends AbstractConstraint{
     }
 
     private Serializable getIdentifier(target, EntityPersister persister) {
-        if(target != null ) {
-            if(persister == null) {
-                def entity = datastore.mappingContext.getPersistentEntity(target.class.name)
-                if(entity != null) {
-                    return target[entity.identity.name]
-                }
-            }
-            else {
-               return persister.getObjectIdentifier(target)
+        if (target == null) {
+            return
+        }
+
+        if (persister == null) {
+            def entity = datastore.mappingContext.getPersistentEntity(target.class.name)
+            if (entity != null) {
+                return target[entity.identity.name]
             }
         }
+        else {
+            return persister.getObjectIdentifier(target)
+        }
     }
-
 
     def withManualFlushMode(Closure callable) {
         constraintOwningClass.withSession { Session session ->
@@ -134,24 +132,21 @@ class UniqueConstraint extends AbstractConstraint{
         }
     }
 
-
     /**
      * Return whether the constraint is valid for the owning class
      *
      * @return True if it is
      */
-    public boolean isValid() {
+    boolean isValid() {
         final entity = datastore?.getMappingContext()?.getPersistentEntity(constraintOwningClass.name)
-        if(entity) {
+        if (entity) {
             return !entity.isExternal()
         }
-        return false;
+        return false
     }
 
     @Override
-    boolean supports(Class aClass) {
-        return true
-    }
+    boolean supports(Class aClass) { true }
 
     @Override
     String getName() { "unique" }

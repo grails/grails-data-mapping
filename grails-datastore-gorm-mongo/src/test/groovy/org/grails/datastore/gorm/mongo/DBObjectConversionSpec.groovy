@@ -1,22 +1,18 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
-import com.mongodb.Mongo
-import com.mongodb.DB
-import com.mongodb.DBObject
 
-/**
- * 
- */
 class DBObjectConversionSpec extends GormDatastoreSpec {
+
     @Override
     List getDomainClasses() {
         [Boat, Sailor, Captain]
-    }    
+    }
+
     void "Test that it is possible to convert DBObjects to GORM entities"() {
         given:"A domain model with embedded associations that have non-embedded associations"
             createCrew()
-        
+
         when:"A DBObject is read then converted to an entity"
             Boat boat = Boat.collection.findOne() as Boat
 
@@ -32,7 +28,7 @@ class DBObjectConversionSpec extends GormDatastoreSpec {
             boat.captain.shipmates.size() == 1
             Captain.count() == 1
             Sailor.count() == 1
-            Boat.count() == 1        
+            Boat.count() == 1
     }
 
     void "Test that it is possible to convert DBCursors to GORM entities"() {

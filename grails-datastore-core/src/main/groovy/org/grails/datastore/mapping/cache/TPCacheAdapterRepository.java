@@ -29,7 +29,7 @@ public interface TPCacheAdapterRepository<T> {
      * @param entityJavaClass equivalent to {@link PersistentEntity.getJavaClass()}
      * @param cacheAdapter
      */
-    void setTPCacheAdapter(Class entityJavaClass, TPCacheAdapter<T> cacheAdapter);
+    void setTPCacheAdapter(@SuppressWarnings("rawtypes") Class entityJavaClass, TPCacheAdapter<T> cacheAdapter);
 
     /**
      * Sets {@link TPCacheAdapter} for the specified FQN java class of {@link PersistentEntity}.

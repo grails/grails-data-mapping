@@ -2,11 +2,9 @@ package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+
 import spock.lang.Issue
 
-/**
- *
- */
 class CacheAndJoinSpec extends GormDatastoreSpec{
 
     @Issue('GRAILS-8758')
@@ -21,7 +19,7 @@ class CacheAndJoinSpec extends GormDatastoreSpec{
                 maxResults 1
                 cache true
             }
-        
+
         then:"Results are returned"
             a != null
     }
@@ -30,10 +28,7 @@ class CacheAndJoinSpec extends GormDatastoreSpec{
     List getDomainClasses() {
         [Author, Book]
     }
-
-
 }
-
 
 @Entity
 class Author {
@@ -46,5 +41,3 @@ class Author {
         name blank: false
     }
 }
-
-

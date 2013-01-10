@@ -16,13 +16,8 @@ class PlantNumericIdValue implements Serializable {
     boolean goesInPatch
     String name
 
-    public String toString() {
-        return "PlantNumericIdValue{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", goesInPatch=" + goesInPatch +
-                ", name='" + name + '\'' +
-                '}';
+    String toString() {
+        "PlantNumericIdValue{id='$id', version=$version, goesInPatch=$goesInPatch, name='$name'}"
     }
 
     static mapping = {

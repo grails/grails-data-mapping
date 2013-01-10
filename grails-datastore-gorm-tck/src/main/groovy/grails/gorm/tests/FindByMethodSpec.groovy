@@ -5,71 +5,71 @@ package grails.gorm.tests
  */
 class FindByMethodSpec extends GormDatastoreSpec {
 
-	void 'Test Using AND Multiple Times In A Dynamic Finder'() {
-		given:
-		    new Person(firstName: 'Jake', lastName: 'Brown', age: 11).save()
-		    new Person(firstName: 'Zack', lastName: 'Brown', age: 14).save()
-		    new Person(firstName: 'Jeff', lastName: 'Brown', age: 41).save()
-		    new Person(firstName: 'Zack', lastName: 'Galifianakis', age: 41).save()
-			
-		when:
-		    def people = Person.findAllByFirstNameAndLastNameAndAge('Jeff', 'Brown', 1)
-			
-		then:
-		    0 == people?.size()
-			
-		when:
-		    people = Person.findAllByFirstNameAndLastNameAndAgeGreaterThan('Zack', 'Brown', 20)
-			
-		then:
-		    0 == people?.size()
-			
-		when:
-		    people = Person.findAllByFirstNameAndLastNameAndAgeGreaterThan('Zack', 'Brown', 8)
-			
-		then:
-		    1 == people?.size()
-			14 == people[0].age
-			
-		when:
-		    def cnt = Person.countByFirstNameAndLastNameAndAge('Jake', 'Brown', 11)
-			
-	    then:
-		    1 == cnt
-			
-		when:
-		    cnt = Person.countByFirstNameAndLastNameAndAgeInList('Zack', 'Brown', [12, 13, 14, 15])
-			
-		then:
-		    1 == cnt
-	}
-	
-	void 'Test Using OR Multiple Times In A Dynamic Finder'() {
-		given:
-		    new Person(firstName: 'Jake', lastName: 'Brown', age: 11).save()
-		    new Person(firstName: 'Zack', lastName: 'Brown', age: 14).save()
-		    new Person(firstName: 'Jeff', lastName: 'Brown', age: 41).save()
-		    new Person(firstName: 'Zack', lastName: 'Galifianakis', age: 41).save()
-			
-		when:
-		    def people = Person.findAllByFirstNameOrLastNameOrAge('Zack', 'Tyler', 125)
-			
-		then:
-		    2 == people?.size()
-			
-		when:
-		    people = Person.findAllByFirstNameOrLastNameOrAge('Zack', 'Brown', 125)
-			
-	    then:
-		    4 == people?.size()
-			
-		when:
-		    def cnt = Person.countByFirstNameOrLastNameOrAgeInList('Jeff', 'Wilson', [11, 41])
-			
-		then:
-		    3 == cnt
-	}
-	
+    void 'Test Using AND Multiple Times In A Dynamic Finder'() {
+        given:
+            new Person(firstName: 'Jake', lastName: 'Brown', age: 11).save()
+            new Person(firstName: 'Zack', lastName: 'Brown', age: 14).save()
+            new Person(firstName: 'Jeff', lastName: 'Brown', age: 41).save()
+            new Person(firstName: 'Zack', lastName: 'Galifianakis', age: 41).save()
+
+        when:
+            def people = Person.findAllByFirstNameAndLastNameAndAge('Jeff', 'Brown', 1)
+
+        then:
+            0 == people?.size()
+
+        when:
+            people = Person.findAllByFirstNameAndLastNameAndAgeGreaterThan('Zack', 'Brown', 20)
+
+        then:
+            0 == people?.size()
+
+        when:
+            people = Person.findAllByFirstNameAndLastNameAndAgeGreaterThan('Zack', 'Brown', 8)
+
+        then:
+            1 == people?.size()
+            14 == people[0].age
+
+        when:
+            def cnt = Person.countByFirstNameAndLastNameAndAge('Jake', 'Brown', 11)
+
+        then:
+            1 == cnt
+
+        when:
+            cnt = Person.countByFirstNameAndLastNameAndAgeInList('Zack', 'Brown', [12, 13, 14, 15])
+
+        then:
+            1 == cnt
+    }
+
+    void 'Test Using OR Multiple Times In A Dynamic Finder'() {
+        given:
+            new Person(firstName: 'Jake', lastName: 'Brown', age: 11).save()
+            new Person(firstName: 'Zack', lastName: 'Brown', age: 14).save()
+            new Person(firstName: 'Jeff', lastName: 'Brown', age: 41).save()
+            new Person(firstName: 'Zack', lastName: 'Galifianakis', age: 41).save()
+
+        when:
+            def people = Person.findAllByFirstNameOrLastNameOrAge('Zack', 'Tyler', 125)
+
+        then:
+            2 == people?.size()
+
+        when:
+            people = Person.findAllByFirstNameOrLastNameOrAge('Zack', 'Brown', 125)
+
+        then:
+            4 == people?.size()
+
+        when:
+            def cnt = Person.countByFirstNameOrLastNameOrAgeInList('Jeff', 'Wilson', [11, 41])
+
+        then:
+            3 == cnt
+    }
+
     void testBooleanPropertyQuery() {
         given:
             new Highway(bypassed: true, name: 'Bypassed Highway').save()
@@ -264,172 +264,168 @@ class FindByMethodSpec extends GormDatastoreSpec {
             'Some Title' == book.title
             originalId == book.id
     }
-	
-	
-	void "Test patterns which shold throw MissingMethodException"() {
-			// Redis doesn't like Like queries...			
-//		when:
-//			Book.findOrCreateByAuthorLike('B%')
-//			
-//		then:
-//			thrown MissingMethodException
-			
-		when:
-			Book.findOrCreateByAuthorInList(['Jeff'])
-			
-		then:
-			thrown MissingMethodException
-			
-		when:
-			Book.findOrCreateByAuthorOrTitle('Jim', 'Title')
-			
-		then:
-			thrown MissingMethodException
-			
-		when:
-			Book.findOrCreateByAuthorNotEqual('B')
-			
-		then:
-			thrown MissingMethodException
-			
-		when:
-			Book.findOrCreateByAuthorGreaterThan('B')
-			
-		then:
-			thrown MissingMethodException
-			
-		when:
-			Book.findOrCreateByAuthorLessThan('B')
-			
-		then:
-			thrown MissingMethodException
-			
-		when:
-			Book.findOrCreateByAuthorBetween('A', 'B')
-			
-		then:
-			thrown MissingMethodException
-			
-		when:
-			Book.findOrCreateByAuthorGreaterThanEquals('B')
-			
-		then:
-			thrown MissingMethodException
-			
-		when:
-			Book.findOrCreateByAuthorLessThanEquals('B')
-			
-		then:
-			thrown MissingMethodException
-			
-			// GemFire doesn't like these...
-//		when:
-//			Book.findOrCreateByAuthorIlike('B%')
-//			
-//		then:
-//			thrown MissingMethodException
 
-//		when:
-//			Book.findOrCreateByAuthorRlike('B%')
-//			
-//		then:
-//			thrown MissingMethodException
-			
-//		when:
-//			Book.findOrCreateByAuthorIsNull()
-//			
-//		then:
-//			thrown MissingMethodException
-			
-//		when:
-//			Book.findOrCreateByAuthorIsNotNull()
-//			
-//		then:
-//			thrown MissingMethodException
-			
+    void "Test patterns which shold throw MissingMethodException"() {
+            // Redis doesn't like Like queries...
+//        when:
+//            Book.findOrCreateByAuthorLike('B%')
+//
+//        then:
+//            thrown MissingMethodException
 
-			// Redis doesn't like Like queries...			
-//		when:
-//			Book.findOrSaveByAuthorLike('B%')
-//			
-//		then:
-//			thrown MissingMethodException
-			
-		when:
-			Book.findOrSaveByAuthorInList(['Jeff'])
-			
-		then:
-			thrown MissingMethodException
-			
-		when:
-			Book.findOrSaveByAuthorOrTitle('Jim', 'Title')
-			
-		then:
-			thrown MissingMethodException
-			
-		when:
-			Book.findOrSaveByAuthorNotEqual('B')
-			
-		then:
-			thrown MissingMethodException
-			
-		when:
-			Book.findOrSaveByAuthorGreaterThan('B')
-			
-		then:
-			thrown MissingMethodException
-			
-		when:
-			Book.findOrSaveByAuthorLessThan('B')
-			
-		then:
-			thrown MissingMethodException
-			
-		when:
-			Book.findOrSaveByAuthorBetween('A', 'B')
-			
-		then:
-			thrown MissingMethodException
-			
-		when:
-			Book.findOrSaveByAuthorGreaterThanEquals('B')
-			
-		then:
-			thrown MissingMethodException
-			
-		when:
-			Book.findOrSaveByAuthorLessThanEquals('B')
-			
-		then:
-			thrown MissingMethodException
-			
-			// GemFire doesn't like these...
-//		when:
-//			Book.findOrSaveByAuthorIlike('B%')
-//			
-//		then:
-//			thrown MissingMethodException
+        when:
+            Book.findOrCreateByAuthorInList(['Jeff'])
 
-//		when:
-//			Book.findOrSaveByAuthorRlike('B%')
-//			
-//		then:
-//			thrown MissingMethodException
-			
-//		when:
-//			Book.findOrSaveByAuthorIsNull()
-//			
-//		then:
-//			thrown MissingMethodException
-			
-//		when:
-//			Book.findOrSaveByAuthorIsNotNull()
-//			
-//		then:
-//			thrown MissingMethodException
-			
-	}
+        then:
+            thrown MissingMethodException
 
+        when:
+            Book.findOrCreateByAuthorOrTitle('Jim', 'Title')
+
+        then:
+            thrown MissingMethodException
+
+        when:
+            Book.findOrCreateByAuthorNotEqual('B')
+
+        then:
+            thrown MissingMethodException
+
+        when:
+            Book.findOrCreateByAuthorGreaterThan('B')
+
+        then:
+            thrown MissingMethodException
+
+        when:
+            Book.findOrCreateByAuthorLessThan('B')
+
+        then:
+            thrown MissingMethodException
+
+        when:
+            Book.findOrCreateByAuthorBetween('A', 'B')
+
+        then:
+            thrown MissingMethodException
+
+        when:
+            Book.findOrCreateByAuthorGreaterThanEquals('B')
+
+        then:
+            thrown MissingMethodException
+
+        when:
+            Book.findOrCreateByAuthorLessThanEquals('B')
+
+        then:
+            thrown MissingMethodException
+
+            // GemFire doesn't like these...
+//        when:
+//            Book.findOrCreateByAuthorIlike('B%')
+//
+//        then:
+//            thrown MissingMethodException
+
+//        when:
+//            Book.findOrCreateByAuthorRlike('B%')
+//
+//        then:
+//            thrown MissingMethodException
+
+//        when:
+//            Book.findOrCreateByAuthorIsNull()
+//
+//        then:
+//            thrown MissingMethodException
+
+//        when:
+//            Book.findOrCreateByAuthorIsNotNull()
+//
+//        then:
+//            thrown MissingMethodException
+
+            // Redis doesn't like Like queries...
+//        when:
+//            Book.findOrSaveByAuthorLike('B%')
+//
+//        then:
+//            thrown MissingMethodException
+
+        when:
+            Book.findOrSaveByAuthorInList(['Jeff'])
+
+        then:
+            thrown MissingMethodException
+
+        when:
+            Book.findOrSaveByAuthorOrTitle('Jim', 'Title')
+
+        then:
+            thrown MissingMethodException
+
+        when:
+            Book.findOrSaveByAuthorNotEqual('B')
+
+        then:
+            thrown MissingMethodException
+
+        when:
+            Book.findOrSaveByAuthorGreaterThan('B')
+
+        then:
+            thrown MissingMethodException
+
+        when:
+            Book.findOrSaveByAuthorLessThan('B')
+
+        then:
+            thrown MissingMethodException
+
+        when:
+            Book.findOrSaveByAuthorBetween('A', 'B')
+
+        then:
+            thrown MissingMethodException
+
+        when:
+            Book.findOrSaveByAuthorGreaterThanEquals('B')
+
+        then:
+            thrown MissingMethodException
+
+        when:
+            Book.findOrSaveByAuthorLessThanEquals('B')
+
+        then:
+            thrown MissingMethodException
+
+            // GemFire doesn't like these...
+//        when:
+//            Book.findOrSaveByAuthorIlike('B%')
+//
+//        then:
+//            thrown MissingMethodException
+
+//        when:
+//            Book.findOrSaveByAuthorRlike('B%')
+//
+//        then:
+//            thrown MissingMethodException
+
+//        when:
+//            Book.findOrSaveByAuthorIsNull()
+//
+//        then:
+//            thrown MissingMethodException
+
+//        when:
+//            Book.findOrSaveByAuthorIsNotNull()
+//
+//        then:
+//            thrown MissingMethodException
+    }
 }
 
 class Highway implements Serializable {

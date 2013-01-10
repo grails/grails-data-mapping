@@ -3,9 +3,7 @@ package org.grails.datastore.gorm.mongo
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
-/**
- */
-class EmbeddedWithIdSpecifiedSpec extends GormDatastoreSpec{
+class EmbeddedWithIdSpecifiedSpec extends GormDatastoreSpec {
 
     void "Test that id is saved of embedded entity if specified"() {
          when:"A domain model with an embedded id specified"
@@ -14,7 +12,7 @@ class EmbeddedWithIdSpecifiedSpec extends GormDatastoreSpec{
             sc.save flush:true
             session.clear()
             sc = SystemCustomer.get(sc.id)
-        
+
          then:"The id is saved too"
             sc != null
             sc.kpis.size() == 1
@@ -30,18 +28,15 @@ class EmbeddedWithIdSpecifiedSpec extends GormDatastoreSpec{
     List getDomainClasses() {
         [SystemCustomer, PreorderTreeNode, MultiLevelKpi]
     }
-
-
 }
 
 @Entity
 class PreorderTreeNode {
-
     String id
     Integer left = 1
     Integer right = 2
-
 }
+
 @Entity
 class SystemCustomer {
     String id
@@ -51,7 +46,7 @@ class SystemCustomer {
 
     String name
     MultiLevelKpi singleKpi
-    public String toString() { name }
+    String toString() { name }
 }
 
 @Entity

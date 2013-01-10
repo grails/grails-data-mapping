@@ -15,7 +15,6 @@
 
 package org.grails.datastore.mapping.query.api;
 
-
 /**
  * Models a list of projections
  *

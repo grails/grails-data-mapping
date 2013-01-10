@@ -15,12 +15,14 @@
 package org.grails.datastore.mapping.core;
 
 /**
- * Exception thrown when an identity cannot be generated
+ * Thrown when an identity cannot be generated.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
 public class IdentityGenerationException extends RuntimeException {
+
+    private static final long serialVersionUID = 1;
 
     public IdentityGenerationException(String msg) {
         super(msg);

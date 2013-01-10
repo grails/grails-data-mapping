@@ -14,11 +14,12 @@
  */
 package org.grails.datastore.gorm.mongo.bean.factory
 
+import groovy.transform.Canonical
+
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext
 import org.springframework.util.Assert
-import groovy.transform.Canonical
 
 /**
  * Factory bean for construction the Mongo DocumentMappingContext.
@@ -33,9 +34,10 @@ class MongoMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
     @Override
     protected MappingContext createMappingContext() {
         Assert.hasText(defaultDatabaseName, "Property [defaultDatabaseName] must be set!")
-        return new MongoMappingContext(defaultDatabaseName, defaultMapping?.defaultMapping);
+        return new MongoMappingContext(defaultDatabaseName, defaultMapping?.defaultMapping)
     }
 }
+
 @Canonical
 class DefaultMappingHolder {
     Closure defaultMapping

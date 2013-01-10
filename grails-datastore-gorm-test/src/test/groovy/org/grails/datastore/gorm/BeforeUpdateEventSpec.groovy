@@ -2,10 +2,9 @@ package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+
 import spock.lang.Issue
 
-/**
- */
 class BeforeUpdateEventSpec extends GormDatastoreSpec {
 
     @Issue('GRAILS-8916')
@@ -21,9 +20,7 @@ class BeforeUpdateEventSpec extends GormDatastoreSpec {
 
         then:"The association index is persisted correctly"
             a.id == BeforeUpdateAuthor.findByBook(b).id
-
     }
-
 
     @Issue('GRAILS-8977')
     void "Test beforeUpdate event doesn't cause test failure when setting association to null"() {
@@ -46,6 +43,7 @@ class BeforeUpdateEventSpec extends GormDatastoreSpec {
         then:"It can be queried"
             assert a.id == BeforeUpdateAuthor.findByBookIsNull().id
     }
+
     @Override
     List getDomainClasses() {
         [BeforeUpdateAuthor, BeforeUpdateBook]
@@ -56,9 +54,6 @@ class BeforeUpdateEventSpec extends GormDatastoreSpec {
 class BeforeUpdateBook {
     Long id
     static hasMany = [authors:BeforeUpdateAuthor]
-
-    static constraints = {
-    }
 }
 
 @Entity
@@ -66,10 +61,9 @@ class BeforeUpdateAuthor {
     Long id
     BeforeUpdateBook book
 
-    def beforeUpdate(){}
+    def beforeUpdate() {}
 
     static constraints = {
         book(nullable:true)
     }
 }
-

@@ -14,13 +14,14 @@
  */
 package org.grails.datastore.mapping.simpledb.util;
 
-import com.amazonaws.services.simpledb.model.Attribute;
-import com.amazonaws.services.simpledb.model.Item;
-import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
+import java.util.List;
+
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.dao.DataAccessException;
 
-import java.util.List;
+import com.amazonaws.services.simpledb.model.Attribute;
+import com.amazonaws.services.simpledb.model.Item;
+import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 
 /**
  * Simple decorator used in testing to fight eventual consistency of SimpleDB.
@@ -94,7 +95,7 @@ public class DelayAfterWriteSimpleDBTemplateDecorator implements SimpleDBTemplat
         return template.query(query, max);
     }
 
-    private void pause(){
+    private void pause() {
         try { Thread.sleep(delayMillis); } catch (InterruptedException e) { /* ignored */ }
     }
 }

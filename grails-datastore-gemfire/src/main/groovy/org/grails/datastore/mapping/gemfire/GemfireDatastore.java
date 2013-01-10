@@ -22,6 +22,12 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.grails.datastore.mapping.core.AbstractDatastore;
+import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.model.DatastoreConfigurationException;
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -30,12 +36,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.gemfire.CacheFactoryBean;
 import org.springframework.data.gemfire.GemfireTemplate;
 import org.springframework.data.gemfire.RegionFactoryBean;
-import org.grails.datastore.mapping.core.AbstractDatastore;
-import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.model.DatastoreConfigurationException;
-import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.PersistentProperty;
 
 import com.gemstone.gemfire.cache.AttributesFactory;
 import com.gemstone.gemfire.cache.Cache;
@@ -222,8 +222,6 @@ public class GemfireDatastore extends AbstractDatastore implements InitializingB
                     System.out.println("Gemfire query took " + (System.currentTimeMillis() - now) + "ms");
                 }
             }
-
-
         }*/);
         return region;
     }

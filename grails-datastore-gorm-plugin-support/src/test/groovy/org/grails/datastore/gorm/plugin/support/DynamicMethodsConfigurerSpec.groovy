@@ -1,16 +1,18 @@
 package org.grails.datastore.gorm.plugin.support
 
-import spock.lang.Specification
-import org.grails.datastore.mapping.core.Datastore
-import org.springframework.transaction.PlatformTransactionManager
-import org.grails.datastore.mapping.simple.SimpleMapDatastore
-import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import grails.persistence.Entity
-import org.springframework.validation.Validator
-import org.springframework.validation.Errors
+
 import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
-import grails.validation.ValidationException
+import org.grails.datastore.mapping.core.Datastore
+import org.grails.datastore.mapping.simple.SimpleMapDatastore
+import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
+import org.grails.datastore.mapping.validation.ValidationException
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.validation.Errors
+import org.springframework.validation.Validator
+
+import spock.lang.Specification
 
 /**
  *
@@ -67,7 +69,6 @@ class DynamicMethodsConfigurerSpec extends Specification{
                           for (ConstrainedProperty cp in constrainedProperties.values()) {
                               cp.validate(target, target[cp.propertyName], errors)
                           }
-
                       }
               ] as Validator)
 

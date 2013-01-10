@@ -15,26 +15,27 @@
 
 package org.grails.datastore.gorm.jpa
 
+import static org.grails.datastore.mapping.validation.ValidatingEventListener.*
+
 import javax.persistence.EntityManager
 import javax.persistence.Query
-import org.grails.datastore.gorm.finders.FinderMethod
+
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
-import org.springframework.core.convert.ConversionService
+import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
+import org.grails.datastore.mapping.core.VoidSessionCallback
 import org.grails.datastore.mapping.jpa.JpaSession
+import org.springframework.core.convert.ConversionService
 import org.springframework.orm.jpa.JpaCallback
 import org.springframework.orm.jpa.JpaTemplate
 import org.springframework.transaction.PlatformTransactionManager
-import static org.grails.datastore.mapping.validation.ValidatingEventListener.*
-import org.grails.datastore.mapping.jpa.JpaDatastore
-import org.grails.datastore.mapping.core.VoidSessionCallback
 
 /**
- * Extends the default {@link GormEnhancer} adding supporting for JPQL methods
+ * Extends the default {@link GormEnhancer} adding supporting for JPQL methods.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -59,13 +60,10 @@ class JpaGormEnhancer extends GormEnhancer {
 }
 
 class JpaInstanceApi<D> extends GormInstanceApi<D> {
-    
-    
 
     JpaInstanceApi(Class<D> persistentClass, Datastore datastore) {
         super(persistentClass, datastore)
     }
-    
 
     @Override
     protected void execute(VoidSessionCallback callback) {
@@ -78,7 +76,6 @@ class JpaInstanceApi<D> extends GormInstanceApi<D> {
         def session = datastore.connect()
         callback.doInSession(session)
     }
-
 
     D merge(instance, Map params) {
         def merged
@@ -157,8 +154,6 @@ class JpaStaticApi<D> extends GormStaticApi<D> {
         def session = datastore.connect()
         callback.doInSession(session)
     }
-
-
 
     @Override
     List<D> executeQuery(String query) {

@@ -25,7 +25,8 @@ public class DelayAfterWriteDynamoDBSession extends DynamoDBSession {
 
     private long delayMillis;
 
-    public DelayAfterWriteDynamoDBSession(DynamoDBDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, long delayMillis, TPCacheAdapterRepository cacheAdapterRepository) {
+    public DelayAfterWriteDynamoDBSession(DynamoDBDatastore datastore, MappingContext mappingContext,
+            ApplicationEventPublisher publisher, long delayMillis, TPCacheAdapterRepository<?> cacheAdapterRepository) {
         super(datastore, mappingContext, publisher, cacheAdapterRepository);
         this.delayMillis = delayMillis;
     }
@@ -37,7 +38,7 @@ public class DelayAfterWriteDynamoDBSession extends DynamoDBSession {
         }
     }
 
-    private void pause(){
+    private void pause() {
         try { Thread.sleep(delayMillis); } catch (InterruptedException e) { /* ignored */ }
     }
 }

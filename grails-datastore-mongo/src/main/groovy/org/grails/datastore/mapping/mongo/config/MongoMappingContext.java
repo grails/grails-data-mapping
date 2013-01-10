@@ -14,22 +14,39 @@
  */
 package org.grails.datastore.mapping.mongo.config;
 
-import com.mongodb.DBRef;
 import groovy.lang.Closure;
-import org.bson.types.*;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Pattern;
+
+import org.bson.types.BSONTimestamp;
+import org.bson.types.Code;
+import org.bson.types.CodeWScope;
+import org.bson.types.Symbol;
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory;
 import org.grails.datastore.mapping.document.config.Collection;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
-import org.grails.datastore.mapping.model.*;
+import org.grails.datastore.mapping.model.AbstractClassMapping;
+import org.grails.datastore.mapping.model.ClassMapping;
+import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
+import org.grails.datastore.mapping.model.IdentityMapping;
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.MappingFactory;
+import org.grails.datastore.mapping.model.PersistentEntity;
 
-import java.util.*;
-import java.util.regex.Pattern;
+import com.mongodb.DBRef;
 
 /**
  * Models a {@link org.grails.datastore.mapping.model.MappingContext} for Mongo.
  *
  * @author Graeme Rocher
  */
+@SuppressWarnings("rawtypes")
 public class MongoMappingContext extends DocumentMappingContext {
     /**
      * Java types supported as mongo property types.
@@ -69,27 +86,26 @@ public class MongoMappingContext extends DocumentMappingContext {
 
         @Override
         protected IdentityMapping getIdentityMappedForm(final ClassMapping classMapping, final MongoAttribute property) {
-            if(property != null) {
-
-                return new IdentityMapping() {
-                    public String[] getIdentifierName() {
-                        if(property.getName() != null)
-                            return new String[] { property.getName()};
-                        else {
-                            return new String[] { MappingFactory.IDENTITY_PROPERTY };
-                        }
-                    }
-
-                    public ClassMapping getClassMapping() {
-                        return classMapping;
-                    }
-
-                    public Object getMappedForm() {
-                        return property;
-                    }
-                };
+            if (property == null) {
+                return super.getIdentityMappedForm(classMapping, property);
             }
-            return super.getIdentityMappedForm(classMapping, property);
+
+            return new IdentityMapping() {
+                public String[] getIdentifierName() {
+                    if (property.getName() == null) {
+                        return new String[] { MappingFactory.IDENTITY_PROPERTY };
+                    }
+                    return new String[] { property.getName()};
+                }
+
+                public ClassMapping getClassMapping() {
+                    return classMapping;
+                }
+
+                public Object getMappedForm() {
+                    return property;
+                }
+            };
         }
 
         @Override
@@ -111,7 +127,6 @@ public class MongoMappingContext extends DocumentMappingContext {
         super(defaultDatabaseName, defaultMapping);
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     protected MappingFactory createDocumentMappingFactory(Closure defaultMapping) {
         MongoDocumentMappingFactory mongoDocumentMappingFactory = new MongoDocumentMappingFactory();
@@ -123,7 +138,6 @@ public class MongoMappingContext extends DocumentMappingContext {
     public PersistentEntity createEmbeddedEntity(Class type) {
         return new DocumentEmbeddedPersistentEntity(type, this);
     }
-
 
     class DocumentEmbeddedPersistentEntity extends EmbeddedPersistentEntity {
 
@@ -150,5 +164,4 @@ public class MongoMappingContext extends DocumentMappingContext {
             }
         }
     }
-
 }

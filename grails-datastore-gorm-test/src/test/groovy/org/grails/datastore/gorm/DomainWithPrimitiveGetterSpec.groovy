@@ -2,10 +2,9 @@ package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+
 import spock.lang.Issue
 
-/**
- */
 class DomainWithPrimitiveGetterSpec extends GormDatastoreSpec{
 
     @Issue('GRAILS-8788')
@@ -14,7 +13,7 @@ class DomainWithPrimitiveGetterSpec extends GormDatastoreSpec{
             def author = new DomainWithPrimitiveGetterAuthor(name: "Stephen King")
             author.save()
             def book = new DomainWithPrimitiveGetterBook(title: "The Stand", author: author)
-            book.save flush:true    
+            book.save flush:true
         then:"The save executes correctly"
             DomainWithPrimitiveGetterBook.count() == 1
             DomainWithPrimitiveGetterAuthor.count() == 1
@@ -31,8 +30,6 @@ class DomainWithPrimitiveGetterBook {
     Long id
     String title
     DomainWithPrimitiveGetterAuthor author
-    static constraints = {
-    }
     int getValue(int param) {
         return 0
     }
@@ -42,6 +39,4 @@ class DomainWithPrimitiveGetterAuthor {
     Long id
     String name
     static hasMany = [books: DomainWithPrimitiveGetterBook]
-    static constraints = {
-    }
 }

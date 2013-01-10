@@ -8,7 +8,6 @@ import grails.persistence.Entity
  * @author Roman Stepanenko
  * @since 0.1
  */
-
 @Entity
 class GroupWithin implements Serializable {
     String id
@@ -21,12 +20,7 @@ class GroupWithin implements Serializable {
 //        org index:true
     }
 
-    public String toString() {
-        return "GroupWithin{" +
-                "id='" + id + '\'' +
-                ", version=" + version +
-                ", name='" + name + '\'' +
-                ", org='" + org + '\'' +
-                '}';
+    String toString() {
+        "GroupWithin{id='$id', version=$version, name='$name', org='$org'}"
     }
 }

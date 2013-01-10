@@ -1,10 +1,10 @@
 package grails.gorm.tests
 
-import org.grails.datastore.mapping.validation.ValidatingEventListener
-
-import org.grails.datastore.mapping.model.PersistentEntity
-import org.springframework.validation.Validator
 import org.grails.datastore.gorm.validation.CascadingValidator
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.validation.ValidatingEventListener
+import org.springframework.validation.Validator
+
 import spock.lang.Unroll
 
 /**
@@ -14,7 +14,7 @@ class ValidationSpec extends GormDatastoreSpec {
 
     void 'Test validating an object that has had values rejected with an ObjectError'() {
         given:
-            def t = new TestEntity(name: 'someName') 
+            def t = new TestEntity(name: 'someName')
 
         when:
             t.errors.reject 'foo'

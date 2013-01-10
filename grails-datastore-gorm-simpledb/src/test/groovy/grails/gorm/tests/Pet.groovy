@@ -8,7 +8,6 @@ import grails.persistence.Entity
  * @author Roman Stepanenko
  * @since 0.1
  */
-
 @Entity
 class Pet implements Serializable {
     String id
@@ -20,17 +19,9 @@ class Pet implements Serializable {
     Person owner
     Integer age
 
-    public String toString() {
-        return "Pet{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", birthDate=" + birthDate +
-                ", type=" + type +
-                ", owner=" + owner +
-                ", age=" + age +
-                '}';
+    String toString() {
+        "Pet{id='$id', name='$name', birthDate=$birthDate, type=$type, owner=$owner, age=$age}"
     }
-
 
     static constraints = {
         owner nullable:true

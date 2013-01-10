@@ -1,14 +1,16 @@
 package org.grails.datastore.gorm.mongo
 
-import grails.persistence.Entity
 import grails.gorm.tests.GormDatastoreSpec
-import spock.lang.Issue
+import grails.persistence.Entity
+
 import org.springframework.dao.DataIntegrityViolationException
+
+import spock.lang.Issue
 
 /**
  * Tests for usage of assigned identifiers
  */
-class AssignedIdentifierSpec extends GormDatastoreSpec{
+class AssignedIdentifierSpec extends GormDatastoreSpec {
 
     void "Test that entities can be saved, retrieved and updated with assigned ids"() {
         when:"An entity is saved with an assigned id"
@@ -40,7 +42,7 @@ class AssignedIdentifierSpec extends GormDatastoreSpec{
             River.count() == 0
             River.get("Amazon") == null
     }
-    
+
     @Issue("GPMONGODB-152")
     void "Test that saving a second object with an assigned identifier produces an error"() {
         when:"An entity is saved with an assigned id"
@@ -53,11 +55,11 @@ class AssignedIdentifierSpec extends GormDatastoreSpec{
             r != null
             r.name == "Amazon"
             r.country == "Brazil"
-        
+
         when:"A second object with the same id is saved"
             r = new River(name:"Amazon", country: "Brazil")
             r.save flush:true
-        
+
         then:"An error is produced"
             River.count() == 1
             thrown DataIntegrityViolationException
@@ -81,8 +83,7 @@ class AssignedIdentifierSpec extends GormDatastoreSpec{
             l.save flush: true
             session.clear()
             l = Lake.get("Lake Ontario")
-        
-        
+
         then:"The object is correctly retrieved by assigned id"
             l != null
             l.id == "Lake Ontario"
@@ -98,19 +99,18 @@ class AssignedIdentifierSpec extends GormDatastoreSpec{
         session.clear()
         l = Lake.get("Lake Ontario")
 
-
         then:"The object is correctly retrieved by assigned id"
         l != null
         l.id == "Lake Ontario"
         l.country == "Canada"
-    }    
+    }
+
     @Override
     List getDomainClasses() {
         [River, Lake]
     }
-
-
 }
+
 @Entity
 class River {
     String name

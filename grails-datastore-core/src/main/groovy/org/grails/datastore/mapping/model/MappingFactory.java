@@ -24,11 +24,29 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
-import org.grails.datastore.mapping.model.types.*;
+import org.grails.datastore.mapping.model.types.Basic;
+import org.grails.datastore.mapping.model.types.Custom;
+import org.grails.datastore.mapping.model.types.Embedded;
+import org.grails.datastore.mapping.model.types.EmbeddedCollection;
+import org.grails.datastore.mapping.model.types.Identity;
+import org.grails.datastore.mapping.model.types.ManyToMany;
+import org.grails.datastore.mapping.model.types.ManyToOne;
+import org.grails.datastore.mapping.model.types.OneToMany;
+import org.grails.datastore.mapping.model.types.OneToOne;
+import org.grails.datastore.mapping.model.types.Simple;
+import org.grails.datastore.mapping.model.types.ToOne;
 
 /**
  * <p>An abstract factory for creating persistent property instances.</p>
@@ -161,7 +179,7 @@ public abstract class MappingFactory<R,T> {
      */
     public Custom<T> createCustom(PersistentEntity owner, MappingContext context, PropertyDescriptor pd) {
         CustomTypeMarshaller customTypeMarshaller = typeConverterMap.get(pd.getPropertyType());
-        if(customTypeMarshaller == null) {
+        if (customTypeMarshaller == null) {
             throw new IllegalStateException("Cannot create a custom type without a type converter for type " + pd.getPropertyType());
         }
         return new Custom<T>(owner, context, pd, customTypeMarshaller) {
@@ -188,7 +206,6 @@ public abstract class MappingFactory<R,T> {
             }
         };
     }
-
 
     protected PropertyMapping<T> createPropertyMapping(final PersistentProperty<T> property, final PersistentEntity owner) {
         return new PropertyMapping<T>() {

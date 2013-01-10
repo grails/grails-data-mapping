@@ -3,9 +3,8 @@ package org.grails.datastore.gorm.mongo
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
-/**
- */
-class InheritanceQueryingSpec extends GormDatastoreSpec{
+class InheritanceQueryingSpec extends GormDatastoreSpec {
+
     def cleanup() {
         A.get("id")?.delete(flush:true)
         B.get("id")?.delete(flush:true)
@@ -75,8 +74,6 @@ class InheritanceQueryingSpec extends GormDatastoreSpec{
     List getDomainClasses() {
         [A,B]
     }
-
-
 }
 
 @Entity

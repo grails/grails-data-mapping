@@ -28,6 +28,7 @@ import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrateg
  * @author Roman Stepanenko based on Graeme Rocher code for MongoDb and Redis
  * @since 0.1
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class DynamoDBMappingContext extends AbstractMappingContext {
 
     protected MappingConfigurationStrategy syntaxStrategy;
@@ -43,7 +44,7 @@ public class DynamoDBMappingContext extends AbstractMappingContext {
     }
 
     @Override
-    protected PersistentEntity createPersistentEntity(@SuppressWarnings("rawtypes") Class javaClass) {
+    protected PersistentEntity createPersistentEntity(Class javaClass) {
         DynamoDBPersistentEntity dynamoDBPersistentEntity = new DynamoDBPersistentEntity(javaClass, this);
 
         //initialize mapping form for DynamoDBPersistentEntity here - otherwise there are some

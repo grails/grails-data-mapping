@@ -4,14 +4,14 @@ import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
 /**
- * Tests for the case where a custom mapping is used
+ * Tests for the case where a custom mapping is used.
  */
-class CustomCollectionAndAttributeMappingSpec extends GormDatastoreSpec{
+class CustomCollectionAndAttributeMappingSpec extends GormDatastoreSpec {
+
     @Override
     List getDomainClasses() {
         [CCAAMPerson]
     }
-
 
     void "Test that custom collection and attribute names are correctly used"() {
         when:"An entity with custom collection and attribute naming is persisted"
@@ -52,31 +52,29 @@ class CustomCollectionAndAttributeMappingSpec extends GormDatastoreSpec{
         then:"The results are correct"
             results.size() == 1
             results[0].groupId == 10
-
     }
-
-
 }
+
 @Entity
 class CCAAMPerson {
-   String id
-   Integer groupId
-   List<CCAAMPet> pets = []
+    String id
+    Integer groupId
+    List<CCAAMPet> pets = []
 
-   static mapWith = "mongo"
+    static mapWith = "mongo"
 
-   static embedded = ['pets']
+    static embedded = ['pets']
 
-   static mapping = {
-     collection 'persons'
-     groupId attribute: 'gid'
-     pets attribute: 'ps'
-   }
+    static mapping = {
+        collection 'persons'
+        groupId attribute: 'gid'
+        pets attribute: 'ps'
+    }
 }
 
 class CCAAMPet {
     String name
     static mapping = {
-        name attribute:"nom"
+        name attribute: "nom"
     }
 }

@@ -23,7 +23,9 @@ import org.springframework.validation.BeanPropertyBindingResult;
  * @author Graeme Rocher
  * @since 2.0
  */
-public class ValidationErrors extends BeanPropertyBindingResult{
+public class ValidationErrors extends BeanPropertyBindingResult {
+    private static final long serialVersionUID = 1;
+
     /**
      * Creates a new instance of the {@link org.springframework.validation.BeanPropertyBindingResult} class.
      *
@@ -41,7 +43,6 @@ public class ValidationErrors extends BeanPropertyBindingResult{
     public ValidationErrors(Object target) {
         super(target, target.getClass().getName());
     }
-
 
     public Object getAt(String field) {
         return getFieldError(field);

@@ -14,10 +14,10 @@
  */
 package grails.gorm;
 
-import org.grails.datastore.mapping.query.Query;
-
 import java.util.AbstractList;
 import java.util.List;
+
+import org.grails.datastore.mapping.query.Query;
 
 /**
  * A result list implementation that provides an additional property called 'totalCount' to obtain the total number of
@@ -26,7 +26,8 @@ import java.util.List;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class PagedResultList extends AbstractList{
+@SuppressWarnings({"rawtypes", "unchecked"})
+public class PagedResultList extends AbstractList {
 
     private Query query;
     private List resultList;
@@ -41,14 +42,11 @@ public class PagedResultList extends AbstractList{
      */
     public int getTotalCount() {
         initialize();
-        if(totalCount == Integer.MIN_VALUE) {
+        if (totalCount == Integer.MIN_VALUE) {
             query.offset(0);
             query.max(-1);
-            query
-                .projections()
-                    .count();
+            query.projections().count();
             totalCount = ((Number)query.singleResult()).intValue();
-
         }
 
         return totalCount;
@@ -79,10 +77,10 @@ public class PagedResultList extends AbstractList{
     }
 
     private void initialize() {
-        if(resultList == null)
+        if (resultList == null) {
             resultList = query.list();
+        }
     }
-
 
     @Override
     public int size() {

@@ -1,12 +1,10 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
-import spock.lang.Issue
 import grails.persistence.Entity
 
-/**
- *
- */
+import spock.lang.Issue
+
 class AddToMethodWithBasicCollectionSpec extends GormDatastoreSpec{
 
     @Issue('GRAILS-8779')
@@ -16,9 +14,9 @@ class AddToMethodWithBasicCollectionSpec extends GormDatastoreSpec{
             book.addToAuthors("Graeme")
                 .addToAuthors("Jeff")
                 .save(flush:true)
-        
+
             session.clear()
-        
+
             book = BasicBook.get(book.id)
         then:"The model is saved correctly"
             book.title == "DGG"
@@ -31,10 +29,7 @@ class AddToMethodWithBasicCollectionSpec extends GormDatastoreSpec{
     List getDomainClasses() {
         [BasicBook]
     }
-
-
 }
-
 
 @Entity
 class BasicBook {
@@ -45,4 +40,3 @@ class BasicBook {
     Set<String> authors
     String title
 }
-

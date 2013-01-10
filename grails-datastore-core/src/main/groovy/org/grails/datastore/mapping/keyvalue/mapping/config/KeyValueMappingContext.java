@@ -57,7 +57,7 @@ public class KeyValueMappingContext extends AbstractMappingContext {
         return keyspace;
     }
 
-    protected void initializeDefaultMappingFactory(@SuppressWarnings("hiding") String keyspace) {
+    protected void initializeDefaultMappingFactory(String keyspace) {
         // TODO: Need to abstract the construction of these to support JPA syntax etc.
         if (ClassUtils.isPresent(GROOVY_OBJECT_CLASS, KeyValueMappingContext.class.getClassLoader())) {
             mappingFactory = new GormKeyValueMappingFactory(keyspace);

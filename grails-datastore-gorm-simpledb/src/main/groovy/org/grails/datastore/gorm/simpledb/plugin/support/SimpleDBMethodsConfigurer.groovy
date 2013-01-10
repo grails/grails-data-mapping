@@ -14,26 +14,24 @@
  */
 package org.grails.datastore.gorm.simpledb.plugin.support
 
-import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
-
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
+import org.grails.datastore.gorm.simpledb.SimpleDBGormEnhancer
+import org.grails.datastore.gorm.simpledb.SimpleDBGormInstanceApi
+import org.grails.datastore.gorm.simpledb.SimpleDBGormStaticApi
 import org.grails.datastore.mapping.core.Datastore
 import org.springframework.transaction.PlatformTransactionManager
-import org.grails.datastore.gorm.simpledb.SimpleDBGormStaticApi
-import org.grails.datastore.gorm.simpledb.SimpleDBGormInstanceApi
-import org.grails.datastore.gorm.simpledb.SimpleDBGormEnhancer
 
 /**
- *
- * SimpleDB specific dynamic methods configurer
+ * SimpleDB specific dynamic methods configurer.
  *
  * @author Roman Stepanenko based on Graeme Rocher
  * @since 0.1
  */
-class SimpleDBMethodsConfigurer extends DynamicMethodsConfigurer{
+class SimpleDBMethodsConfigurer extends DynamicMethodsConfigurer {
 
     SimpleDBMethodsConfigurer(Datastore datastore, PlatformTransactionManager transactionManager) {
         super(datastore, transactionManager)
@@ -59,13 +57,13 @@ class SimpleDBMethodsConfigurer extends DynamicMethodsConfigurer{
     @Override
     protected GormEnhancer createEnhancer() {
         def ge
-        if(transactionManager != null)
-            ge = new SimpleDBGormEnhancer(datastore, transactionManager)
-        else
+        if (transactionManager == null) {
             ge = new SimpleDBGormEnhancer(datastore)
+        }
+        else {
+            ge = new SimpleDBGormEnhancer(datastore, transactionManager)
+        }
         ge.failOnError = failOnError
         ge
     }
-
-
 }

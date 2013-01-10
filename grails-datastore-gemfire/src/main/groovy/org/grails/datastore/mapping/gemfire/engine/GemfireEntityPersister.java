@@ -75,7 +75,6 @@ public class GemfireEntityPersister extends LockableEntityPersister {
 
     private GemfireDatastore gemfireDatastore;
     private Map<Object, Lock> distributedLocksHeld = new ConcurrentHashMap<Object, Lock>();
-    private static final String CASCADE_PROCESSED = "cascade.processed";
     private static AtomicInteger identifierGenerator = new AtomicInteger(0);
 
     public GemfireEntityPersister(MappingContext mappingContext, PersistentEntity entity,
@@ -205,7 +204,6 @@ public class GemfireEntityPersister extends LockableEntityPersister {
 
                 if (!persistentEntity.isRoot()) {
                     doWithParents(persistentEntity, new GemfireCallback() {
-                        @SuppressWarnings("hiding")
                         public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
                             region.putAll(putMap);
                             return null;
@@ -330,7 +328,6 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                 region.put(finalId, obj);
                 if (!persistentEntity.isRoot()) {
                     doWithParents(persistentEntity, new GemfireCallback() {
-                        @SuppressWarnings("hiding")
                         public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
                             region.put(finalId, obj);
                             return null;
@@ -378,7 +375,7 @@ public class GemfireEntityPersister extends LockableEntityPersister {
         final List<Association> associations = persistentEntity.getAssociations();
         for (Association association : associations) {
             if (association.doesCascade(CascadeType.PERSIST)) {
-                @SuppressWarnings("hiding") final Session session = getSession();
+                final Session session = getSession();
                 String processKey = association + ">" + obj;
                 if (association instanceof ToOne) {
                     final Object associatedObject = access.getProperty(association.getName());
@@ -516,7 +513,6 @@ public class GemfireEntityPersister extends LockableEntityPersister {
                 region.remove(identifier);
                 if (!persistentEntity.isRoot()) {
                     doWithParents(persistentEntity, new GemfireCallback() {
-                        @SuppressWarnings("hiding")
                         public Object doInGemfire(Region region) throws GemFireCheckedException, GemFireException {
                             region.remove(identifier);
                             return null;

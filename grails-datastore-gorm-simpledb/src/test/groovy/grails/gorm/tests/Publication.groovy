@@ -8,7 +8,6 @@ import grails.persistence.Entity
  * @author Roman Stepanenko
  * @since 0.1
  */
-
 @Entity
 class Publication implements Serializable {
     String id
@@ -18,13 +17,8 @@ class Publication implements Serializable {
     Date datePublished
     Boolean paperback = true
 
-    public String toString() {
-        return "Publication{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", paperback=" + paperback +
-                ", datePublished=" + datePublished +
-                '}';
+    String toString() {
+        "Publication{id='$id', title='$title', paperback=$paperback, datePublished=$datePublished}"
     }
 
     static namedQueries = {

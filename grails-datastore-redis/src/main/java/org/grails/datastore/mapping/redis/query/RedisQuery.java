@@ -26,10 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
-import org.grails.datastore.mapping.query.projections.ManualProjections;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
@@ -42,6 +38,9 @@ import org.grails.datastore.mapping.redis.engine.RedisPropertyValueIndexer;
 import org.grails.datastore.mapping.redis.util.RedisCallback;
 import org.grails.datastore.mapping.redis.util.RedisTemplate;
 import org.grails.datastore.mapping.redis.util.SortParams;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 
 /**
  * A Query implementation for Redis.
@@ -49,7 +48,7 @@ import org.grails.datastore.mapping.redis.util.SortParams;
  * @author Graeme Rocher
  * @since 1.0
  */
-@SuppressWarnings({"hiding", "rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RedisQuery extends Query {
     private RedisEntityPersister entityPersister;
     private RedisTemplate template;
@@ -120,7 +119,6 @@ public class RedisQuery extends Query {
                         return unsupportedProjection(projectionType);
                     }
                     else if (projection instanceof CountDistinctProjection) {
-                        List resultList = new ArrayList();
                         PropertyProjection propertyProjection = (PropertyProjection) projection;
                         final PersistentProperty validProperty = getValidProperty(propertyProjection);
                         final List<String> values = projectProperty(finalKey, postSortAndPaginationKey, validProperty);
@@ -219,8 +217,7 @@ public class RedisQuery extends Query {
         return finalKey;
     }
 
-    private String executeSubQuery(Junction junction,
-             @SuppressWarnings("unused") List<Criterion> criteria) {
+    private String executeSubQuery(Junction junction, List<Criterion> criteria) {
         List<String> indices = getIndexNames(junction, entityPersister);
 
         if (indices.isEmpty()) {
@@ -485,8 +482,7 @@ public class RedisQuery extends Query {
 
     private String executeBetweenInternal(RedisEntityPersister entityPersister,
             PersistentProperty prop, Object fromObject, Object toObject,
-            @SuppressWarnings("unused") boolean includeFrom,
-            @SuppressWarnings("unused") boolean includeTo) {
+            boolean includeFrom, boolean includeTo) {
         String sortKey = entityPersister.getPropertySortKey(prop);
         if (fromObject instanceof Date) {
             fromObject = ((Date)fromObject).getTime();

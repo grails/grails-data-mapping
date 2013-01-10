@@ -12,7 +12,7 @@ import java.util.*;
  * @author Graeme Rocher
  * @since 1.0
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class PersistentSortedSet extends AbstractPersistentCollection implements SortedSet {
 
     public PersistentSortedSet(Class childType, Session session, SortedSet collection) {
@@ -27,7 +27,6 @@ public class PersistentSortedSet extends AbstractPersistentCollection implements
         super(associationKey, session, indexer, new TreeSet());
     }
 
-    @Override
     public Comparator comparator() {
         return getSortedSet().comparator();
     }
@@ -37,27 +36,22 @@ public class PersistentSortedSet extends AbstractPersistentCollection implements
         return ((SortedSet)collection);
     }
 
-    @Override
     public SortedSet subSet(Object o, Object o1) {
         return getSortedSet().subSet(o,o1);
     }
 
-    @Override
     public SortedSet headSet(Object o) {
         return getSortedSet().headSet(o);
     }
 
-    @Override
     public SortedSet tailSet(Object o) {
         return getSortedSet().tailSet(o);
     }
 
-    @Override
     public Object first() {
         return getSortedSet().first();
     }
 
-    @Override
     public Object last() {
         return getSortedSet().last();
     }

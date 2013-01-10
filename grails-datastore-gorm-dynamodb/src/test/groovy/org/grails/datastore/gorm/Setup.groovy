@@ -1,28 +1,29 @@
 package org.grails.datastore.gorm
 
-import java.util.concurrent.CountDownLatch
+import grails.gorm.tests.PlantNumericIdValue
 
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+
+import org.grails.datastore.gorm.dynamodb.DynamoDBGormEnhancer
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
-import org.springframework.context.support.GenericApplicationContext
 import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.dynamodb.DynamoDBDatastore
+import org.grails.datastore.mapping.dynamodb.config.DynamoDBMappingContext
+import org.grails.datastore.mapping.dynamodb.engine.DynamoDBAssociationInfo
+import org.grails.datastore.mapping.dynamodb.engine.DynamoDBTableResolver
+import org.grails.datastore.mapping.dynamodb.engine.DynamoDBTableResolverFactory
+import org.grails.datastore.mapping.dynamodb.util.DynamoDBTemplate
+import org.grails.datastore.mapping.dynamodb.util.DynamoDBUtil
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
+import org.springframework.context.support.GenericApplicationContext
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
-import org.grails.datastore.mapping.dynamodb.DynamoDBDatastore
-import org.grails.datastore.gorm.dynamodb.DynamoDBGormEnhancer
-import org.grails.datastore.mapping.dynamodb.config.DynamoDBMappingContext
-import org.grails.datastore.mapping.dynamodb.util.DynamoDBTemplate
-import org.grails.datastore.mapping.dynamodb.engine.DynamoDBAssociationInfo
-import org.grails.datastore.mapping.dynamodb.engine.DynamoDBTableResolverFactory
-import org.grails.datastore.mapping.dynamodb.engine.DynamoDBTableResolver
-import grails.gorm.tests.PlantNumericIdValue
-import org.grails.datastore.mapping.dynamodb.util.DynamoDBUtil
-import java.util.concurrent.Executors
-import java.util.concurrent.ExecutorService
 
 /**
  * In order to run AWS DynamoDB tests you have to define two system variables: AWS_ACCESS_KEY and AWS_SECRET_KEY with
@@ -48,7 +49,7 @@ class Setup {
         println ''+ new Date() + ': currently existing dynamodb tables: '+existingTables.size()+" : "+existingTables
         tableNames.each { table->
             boolean delete=false
-            if (delete && existingTables.contains(table)){
+            if (delete && existingTables.contains(table)) {
                 println ''+ new Date() + ': deleting dynamodb table: '+table
                 dynamoDB.getDynamoDBTemplate().deleteTable(table)
             }
@@ -70,7 +71,6 @@ class Setup {
             connectionDetails.put(DynamoDBDatastore.ACCESS_KEY, props['AWS_ACCESS_KEY'])
             connectionDetails.put(DynamoDBDatastore.SECRET_KEY, props['AWS_SECRET_KEY'])
         }
-
 
         connectionDetails.put(DynamoDBDatastore.TABLE_NAME_PREFIX_KEY, "TEST_")
         connectionDetails.put(DynamoDBDatastore.DELAY_AFTER_WRITES_MS, "3000") //this flag will cause pausing for that many MS after each write - to fight eventual consistency
@@ -122,7 +122,7 @@ class Setup {
     static void cleanOrCreateDomainsIfNeeded(def domainClasses, mappingContext, dynamoDBDatastore) {
         DynamoDBTemplate template = dynamoDBDatastore.getDynamoDBTemplate()
         List<String> existingTables = template.listTables()
-        DynamoDBTableResolverFactory resolverFactory = new DynamoDBTableResolverFactory();
+        DynamoDBTableResolverFactory resolverFactory = new DynamoDBTableResolverFactory()
 
         ExecutorService executorService = Executors.newFixedThreadPool(10) //dynamodb allows no more than 10 tables to be created simultaneously
         CountDownLatch latch = new CountDownLatch(domainClasses.size())

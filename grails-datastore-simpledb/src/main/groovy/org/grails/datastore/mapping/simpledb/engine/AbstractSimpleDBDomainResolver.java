@@ -33,7 +33,7 @@ public abstract class AbstractSimpleDBDomainResolver implements SimpleDBDomainRe
      * Helper getter for subclasses.
      * @return entityFamily
      */
-    protected String getEntityFamily(){
+    protected String getEntityFamily() {
         return entityFamily;
     }
 }

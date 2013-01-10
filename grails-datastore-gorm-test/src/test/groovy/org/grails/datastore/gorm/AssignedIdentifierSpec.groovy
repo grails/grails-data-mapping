@@ -1,7 +1,7 @@
 package org.grails.datastore.gorm
 
-import grails.persistence.Entity
 import grails.gorm.tests.GormDatastoreSpec
+import grails.persistence.Entity
 
 /**
  * Tests for usage of assigned identifiers
@@ -43,9 +43,8 @@ class AssignedIdentifierSpec extends GormDatastoreSpec{
     List getDomainClasses() {
         [River]
     }
-
-
 }
+
 @Entity
 class River {
     String name

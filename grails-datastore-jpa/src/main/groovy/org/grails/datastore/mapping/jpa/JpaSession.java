@@ -15,18 +15,17 @@
 package org.grails.datastore.mapping.jpa;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceException;
 
-import org.grails.datastore.mapping.query.api.QueryableCriteria;
-import org.grails.datastore.mapping.query.jpa.JpaQueryBuilder;
-import org.grails.datastore.mapping.query.jpa.JpaQueryInfo;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.grails.datastore.mapping.core.AbstractAttributeStoringSession;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.Persister;
@@ -34,7 +33,12 @@ import org.grails.datastore.mapping.jpa.query.JpaQuery;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.api.QueryableCriteria;
+import org.grails.datastore.mapping.query.jpa.JpaQueryBuilder;
+import org.grails.datastore.mapping.query.jpa.JpaQueryInfo;
 import org.grails.datastore.mapping.transactions.Transaction;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.jpa.JpaCallback;
 import org.springframework.orm.jpa.JpaTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -121,7 +125,7 @@ public class JpaSession extends AbstractAttributeStoringSession {
     }
 
     public void flush() {
-        if(hasTransaction()) {
+        if (hasTransaction()) {
             jpaTemplate.flush();
         }
     }

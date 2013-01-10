@@ -48,7 +48,7 @@ class SchemalessSpec extends GormDatastoreSpec{
             newResults.size() == 1
             newResults[0].name == 'Pineapple'
             newResults[0]['color'] == 'Yellow'
-        
+
         when:"A dynamic finder is used on a schemaless property"
             session.clear()
             def plant = Plant.findByColor("Yellow")
@@ -64,7 +64,5 @@ class SchemalessSpec extends GormDatastoreSpec{
 
         then:"The dynamic finder works"
             plant.name == "Pineapple"
-
-
     }
 }

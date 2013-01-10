@@ -14,11 +14,9 @@
  */
 package org.grails.datastore.mapping.dynamodb.engine;
 
-import org.grails.datastore.mapping.model.ClassMapping;
-import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.dynamodb.DynamoDBDatastore;
-import org.grails.datastore.mapping.dynamodb.config.DynamoDBDomainClassMappedForm;
 import org.grails.datastore.mapping.dynamodb.util.DynamoDBUtil;
+import org.grails.datastore.mapping.model.PersistentEntity;
 
 /**
  * Encapsulates logic of building appropriately configured DynamoDBTableResolver instance.
@@ -30,12 +28,6 @@ public class DynamoDBTableResolverFactory {
 
     public DynamoDBTableResolver buildResolver(PersistentEntity entity, DynamoDBDatastore dynamoDBDatastore) {
         String entityFamily = DynamoDBUtil.getMappedTableName(entity);
-
-        @SuppressWarnings("unchecked")
-        ClassMapping<DynamoDBDomainClassMappedForm> classMapping = entity.getMapping();
-        DynamoDBDomainClassMappedForm mappedForm = classMapping.getMappedForm();
-
         return new ConstDynamoDBTableResolver(entityFamily, dynamoDBDatastore.getTableNamePrefix());
     }
-
 }

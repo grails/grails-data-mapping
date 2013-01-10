@@ -30,7 +30,6 @@ class InheritanceSpec extends GormDatastoreSpec {
             "United Kingdom" == countries[0].name
     }
 
-
     @Ignore
     void "Test querying with inheritance"() {
 
@@ -70,6 +69,6 @@ class InheritanceSpec extends GormDatastoreSpec {
     }
 
     def clearSession() {
-        City.withSession { session -> session.flush(); }
+        City.withSession { session -> session.flush() }
     }
 }

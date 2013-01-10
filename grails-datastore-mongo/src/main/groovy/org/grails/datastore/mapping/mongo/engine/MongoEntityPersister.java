@@ -15,22 +15,33 @@
 package org.grails.datastore.mapping.mongo.engine;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.mongodb.*;
 import org.bson.types.ObjectId;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.core.SessionImplementor;
-import org.grails.datastore.mapping.core.impl.PendingUpdateAdapter;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.NativeEntryEntityPersister;
 import org.grails.datastore.mapping.engine.PropertyValueIndexer;
-import org.grails.datastore.mapping.model.*;
-import org.grails.datastore.mapping.model.types.*;
+import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.PropertyMapping;
+import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.EmbeddedCollection;
+import org.grails.datastore.mapping.model.types.Identity;
+import org.grails.datastore.mapping.model.types.ManyToMany;
 import org.grails.datastore.mapping.mongo.MongoDatastore;
 import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.config.MongoAttribute;
@@ -40,9 +51,20 @@ import org.grails.datastore.mapping.query.Query;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.DataAccessException;
-
 import org.springframework.data.mongodb.core.DbCallback;
 import org.springframework.data.mongodb.core.MongoTemplate;
+
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.CommandResult;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import com.mongodb.DBRef;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 
 /**
  * A {@link org.grails.datastore.mapping.engine.EntityPersister} implementation for the Mongo document store
@@ -50,7 +72,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
  * @author Graeme Rocher
  * @since 1.0
  */
-@SuppressWarnings("ALL")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, Object> {
 
     private static final String NEXT_ID_SUFFIX = ".next_id";
@@ -69,25 +91,23 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         mongoTemplate = datastore.getMongoTemplate(entity);
         collectionName = datastore.getCollectionName(entity);
 
-        if(!(entity instanceof EmbeddedPersistentEntity)) {
+        if (!(entity instanceof EmbeddedPersistentEntity)) {
 
             PersistentProperty identity = entity.getIdentity();
-            if(identity != null) {
+            if (identity != null) {
                 hasNumericalIdentifier = Long.class.isAssignableFrom(identity.getType());
                 hasStringIdentifier = String.class.isAssignableFrom(identity.getType());
             }
         }
     }
 
-
     @Override
     protected void refreshObjectStateFromNativeEntry(PersistentEntity persistentEntity, Object obj, Serializable nativeKey, DBObject nativeEntry, boolean isEmbedded) {
-        if(isEmbedded) {
+        if (isEmbedded) {
             Object id = nativeEntry.get(MONGO_ID_FIELD);
             super.refreshObjectStateFromNativeEntry(persistentEntity, obj, (Serializable) id, nativeEntry, isEmbedded);
         }
         else {
-
             super.refreshObjectStateFromNativeEntry(persistentEntity, obj, nativeKey, nativeEntry, isEmbedded);
         }
     }
@@ -107,8 +127,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @Override
-    protected void setEmbeddedCollection(final DBObject nativeEntry, final String key, Collection<?> instances,
-            List<DBObject> embeddedEntries) {
+    protected void setEmbeddedCollection(final DBObject nativeEntry, final String key, Collection<?> instances, List<DBObject> embeddedEntries) {
         if (instances == null || instances.isEmpty()) {
             nativeEntry.put(key, null);
             return;
@@ -127,28 +146,28 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
      */
     @Override
     protected List loadEmbeddedCollectionKeys(Association association, EntityAccess ea, DBObject nativeEntry) {
-        if(nativeEntry != null) {
+        if (nativeEntry == null) {
+            return super.loadEmbeddedCollectionKeys(association, ea, nativeEntry);
+        }
 
-            Object entry = nativeEntry.get(getPropertyKey(association));
-            List keys = new ArrayList();
-            if(entry instanceof List) {
-                List entries = (List) entry;
-                for (Object o : entries) {
-                    if(o instanceof DBRef) {
-                        DBRef dbref = (DBRef) o;
-                        keys.add(dbref.getId());
-                    }
-                    else if(o != null) {
-                        keys.add(o);
-                    }
-                    else {
-                        keys.add(null);
-                    }
+        Object entry = nativeEntry.get(getPropertyKey(association));
+        List keys = new ArrayList();
+        if (entry instanceof List) {
+            List entries = (List) entry;
+            for (Object o : entries) {
+                if (o instanceof DBRef) {
+                    DBRef dbref = (DBRef) o;
+                    keys.add(dbref.getId());
+                }
+                else if (o != null) {
+                    keys.add(o);
+                }
+                else {
+                    keys.add(null);
                 }
             }
-            return keys;
         }
-        return super.loadEmbeddedCollectionKeys(association, ea, nativeEntry);
+        return keys;
     }
 
     @Override
@@ -161,7 +180,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @Override
-    protected void loadEmbeddedCollection(@SuppressWarnings("rawtypes") EmbeddedCollection embeddedCollection,
+    protected void loadEmbeddedCollection(EmbeddedCollection embeddedCollection,
             EntityAccess ea, Object embeddedInstances, String propertyKey) {
 
         Collection<Object> instances;
@@ -202,7 +221,6 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected List<Object> retrieveAllEntities(PersistentEntity persistentEntity,
             Iterable<Serializable> keys) {
 
@@ -231,7 +249,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         Iterator<Serializable> keyIterator = keys.iterator();
         Map<Serializable, Object> resultMap = new HashMap<Serializable, Object>();
         for (Object o : query.list()) {
-            if(o instanceof DBObject) {
+            if (o instanceof DBObject) {
                 DBObject dbo = (DBObject) o;
                 o = createObjectFromNativeEntry(getPersistentEntity(), (Serializable) dbo.get(MONGO_ID_FIELD), dbo);
             }
@@ -240,9 +258,9 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         while (keyIterator.hasNext()) {
             Object key = getIdentifierForKey(keyIterator.next());
             Object o = resultMap.get(key);
-            if(o != null)
+            if (o != null) {
                 entityResults.add(o);
-
+            }
         }
 
         return entityResults;
@@ -250,7 +268,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     private Object getIdentifierForKey(Object key) {
         Object id = key;
-        if(key instanceof DBRef) {
+        if (key instanceof DBRef) {
             DBRef ref = (DBRef) key;
             id = ref.getId();
         }
@@ -276,10 +294,12 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 DBObject dbo = createDBObjectWithKey(key);
                 MongoSession mongoSession = (MongoSession) session;
                 WriteConcern writeConcern = mongoSession.getDeclaredWriteConcern(getPersistentEntity());
-                if(writeConcern != null)
+                if (writeConcern != null) {
                     dbCollection.remove(dbo, writeConcern);
-                else
+                }
+                else {
                     dbCollection.remove(dbo);
+                }
                 return null;
             }
 
@@ -290,12 +310,11 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @Override
-    protected Object generateIdentifier(final PersistentEntity persistentEntity,
-            final DBObject nativeEntry) {
+    protected Object generateIdentifier(final PersistentEntity persistentEntity, final DBObject nativeEntry) {
         return mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
 
-                @SuppressWarnings("hiding") String collectionName = getCollectionName(persistentEntity, nativeEntry);
+                String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
                 DBCollection dbCollection = con.getCollection(collectionName + NEXT_ID_SUFFIX);
 
@@ -346,7 +365,6 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         });
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
         // We don't need to implement this for Mongo since Mongo automatically creates indexes for us
@@ -354,7 +372,6 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
     public AssociationIndexer getAssociationIndexer(DBObject nativeEntry, Association association) {
         return new MongoAssociationIndexer(nativeEntry, association, (MongoSession) session);
     }
@@ -373,29 +390,29 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     @Override
     protected Object getEntryValue(DBObject nativeEntry, String property) {
         Object value = nativeEntry.get(property);
-        if(value instanceof DBRef) {
+        if (value instanceof DBRef) {
             return getIdentifierForKey(value);
         }
         return value;
     }
 
     @Override
-    protected Object formulateDatabaseReference(PersistentEntity persistentEntity,
-              @SuppressWarnings("rawtypes") Association association, Serializable associationId) {
+    protected Object formulateDatabaseReference(PersistentEntity persistentEntity, Association association, Serializable associationId) {
         DB db = (DB) session.getNativeInterface();
         boolean isReference = isReference(association);
-        if(isReference)
+        if (isReference) {
             return new DBRef(db, getCollectionName(association.getAssociatedEntity()), associationId);
-        else
-            return associationId;
+        }
+        return associationId;
     }
 
     private boolean isReference(Association association) {
         PropertyMapping mapping = association.getMapping();
-        if(mapping != null) {
+        if (mapping != null) {
             MongoAttribute attribute = (MongoAttribute) mapping.getMappedForm();
-            if(attribute != null)
+            if (attribute != null) {
                 return attribute.isReference();
+            }
         }
         return true;
     }
@@ -408,7 +425,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     @Override
     protected String getPropertyKey(PersistentProperty prop) {
-        if(prop instanceof Identity) {
+        if (prop instanceof Identity) {
             return MONGO_ID_FIELD;
         }
         return super.getPropertyKey(prop);
@@ -429,19 +446,19 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     public static Object getSimpleNativePropertyValue(Object value, MappingContext mappingContext) {
         Object nativeValue;
 
-        if(value == null || mappingContext.isPersistentEntity(value)) {
+        if (value == null || mappingContext.isPersistentEntity(value)) {
             nativeValue = null;
         } else if (value instanceof Collection) {
             Collection existingColl = (Collection)value;
             List<Object> nativeColl = new ArrayList<Object>(existingColl.size());
-            for(Object item : existingColl) {
+            for (Object item : existingColl) {
                 nativeColl.add(getSimpleNativePropertyValue(item, mappingContext));
             }
             nativeValue = nativeColl;
         } else if (value instanceof Map) {
             Map<String, Object> existingMap = (Map)value;
             Map<String, Object> newMap = new LinkedHashMap<String, Object>();
-            for (Map.Entry<String, Object> entry :existingMap.entrySet()){
+            for (Map.Entry<String, Object> entry :existingMap.entrySet()) {
                 newMap.put(entry.getKey(), getSimpleNativePropertyValue(entry.getValue(), mappingContext));
             }
             nativeValue = newMap;
@@ -500,23 +517,23 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     private DBObject removeNullEntries(DBObject nativeEntry) {
-        for(String key : new HashSet<String>(nativeEntry.keySet())) {
+        for (String key : new HashSet<String>(nativeEntry.keySet())) {
             Object o = nativeEntry.get(key);
-            if(o == null) {
+            if (o == null) {
                 nativeEntry.removeField(key);
-            } else if(o instanceof Object[]) {
-                for(Object o2 : (Object[])o) {
-                    if(o2 instanceof DBObject) {
+            } else if (o instanceof Object[]) {
+                for (Object o2 : (Object[])o) {
+                    if (o2 instanceof DBObject) {
                         removeNullEntries((DBObject)o2);
                     }
                 }
-            } else if(o instanceof List) {
-                for(Object o2 : (List)o) {
-                    if(o2 instanceof DBObject) {
+            } else if (o instanceof List) {
+                for (Object o2 : (List)o) {
+                    if (o2 instanceof DBObject) {
                         removeNullEntries((DBObject)o2);
                     }
                 }
-            } else if(o instanceof DBObject) {
+            } else if (o instanceof DBObject) {
                 removeNullEntries((DBObject)o);
             }
         }
@@ -540,7 +557,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     private String getCollectionName(PersistentEntity persistentEntity, DBObject nativeEntry) {
-        @SuppressWarnings("hiding") String collectionName;
+        String collectionName;
         if (persistentEntity.isRoot()) {
             MongoSession mongoSession = (MongoSession) getSession();
             collectionName = mongoSession.getCollectionName(persistentEntity);
@@ -555,26 +572,26 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     private DBObject modifyNullsToUnsets(DBObject nativeEntry) {
         DBObject unsets = new BasicDBObject();
         DBObject sets = new BasicDBObject();
-        for(String key : nativeEntry.keySet()) {
+        for (String key : nativeEntry.keySet()) {
             Object o = nativeEntry.get(key);
-            if(o == null) {
+            if (o == null) {
                 unsets.put(key, 1);
-            } else if("_id".equals(key)) {
-            } else if(o instanceof Object[]) {
+            } else if ("_id".equals(key)) {
+            } else if (o instanceof Object[]) {
                 sets.put(key, o);
-                for(Object o2 : (Object[])o) {
-                    if(o2 instanceof DBObject) {
+                for (Object o2 : (Object[])o) {
+                    if (o2 instanceof DBObject) {
                         removeNullEntries((DBObject)o2);
                     }
                 }
-            } else if(o instanceof List) {
+            } else if (o instanceof List) {
                 sets.put(key, o);
-                for(Object o2 : (List)o) {
-                    if(o2 instanceof DBObject) {
+                for (Object o2 : (List)o) {
+                    if (o2 instanceof DBObject) {
                         removeNullEntries((DBObject)o2);
                     }
                 }
-            } else if(o instanceof DBObject) {
+            } else if (o instanceof DBObject) {
                 sets.put(key, removeNullEntries((DBObject)o));
             } else {
                 sets.put(key, o);
@@ -582,18 +599,18 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         }
         DBObject newEntry = new BasicDBObject();
         newEntry.put("$set", sets);
-        if(!unsets.keySet().isEmpty())
+        if (!unsets.keySet().isEmpty()) {
             newEntry.put("$unset", unsets);
+        }
         return newEntry;
     }
-
 
     @Override
     public void updateEntry(final PersistentEntity persistentEntity, final EntityAccess ea,
             final Object key, final DBObject entry) {
         mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
-                @SuppressWarnings("hiding") String collectionName = getCollectionName(persistentEntity, entry);
+                String collectionName = getCollectionName(persistentEntity, entry);
                 DBCollection dbCollection = con.getCollection(collectionName);
                 DBObject dbo = createDBObjectWithKey(key);
 
@@ -607,16 +624,17 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
                 MongoSession mongoSession = (MongoSession) session;
                 WriteConcern writeConcern = mongoSession.getDeclaredWriteConcern(getPersistentEntity());
-                if(writeConcern != null)
+                if (writeConcern != null) {
                     dbCollection.update(dbo, newEntry, false, false, writeConcern);
-                else
+                }
+                else {
                     dbCollection.update(dbo, newEntry, false, false);
+                }
                 return null;
             }
         });
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     protected void setManyToMany(PersistentEntity persistentEntity, Object obj,
             DBObject nativeEntry, ManyToMany manyToMany, Collection associatedObjects,
@@ -640,7 +658,6 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         nativeEntry.put(manyToMany.getName() + "_$$manyToManyIds", ids);
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     protected Collection getManyToManyKeys(PersistentEntity persistentEntity, Object object,
             Serializable nativeKey, DBObject nativeEntry, ManyToMany manyToMany) {
@@ -665,7 +682,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     protected void deleteEntries(String family, final List<Object> keys) {
         mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
-                @SuppressWarnings("hiding") String collectionName = getCollectionName(getPersistentEntity());
+                String collectionName = getCollectionName(getPersistentEntity());
                 DBCollection dbCollection = con.getCollection(collectionName);
 
                 MongoSession mongoSession = (MongoSession) getSession();
@@ -712,11 +729,10 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         return !dbo.equals(cached);
     }
 
-    @SuppressWarnings("rawtypes")
     private class MongoAssociationIndexer implements AssociationIndexer {
         private DBObject nativeEntry;
         private Association association;
-        @SuppressWarnings("hiding") private MongoSession session;
+        private MongoSession session;
         private boolean isReference = true;
 
         public MongoAssociationIndexer(DBObject nativeEntry, Association association, MongoSession session) {
@@ -734,7 +750,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                     public Object doInDB(DB db) throws MongoException, DataAccessException {
                         List dbRefs = new ArrayList();
                         for (Object foreignKey : foreignKeys) {
-                            if(isReference) {
+                            if (isReference) {
                                 dbRefs.add(new DBRef(db, getCollectionName(association.getAssociatedEntity()), foreignKey));
                             }
                             else {
@@ -743,7 +759,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                         }
                         nativeEntry.put(association.getName(), dbRefs);
 
-                        if(primaryKey != null) {
+                        if (primaryKey != null) {
                             final DBCollection collection = db.getCollection(getCollectionName(association.getOwner()));
                             DBObject query = new BasicDBObject(MONGO_ID_FIELD, primaryKey);
                             collection.update(query, nativeEntry);
@@ -752,10 +768,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                     }
                 });
             }
-
         }
 
-        @SuppressWarnings("unchecked")
         public List query(Object primaryKey) {
             // for a unidirectional one-to-many we use the embedded keys
             if (!association.isBidirectional()) {

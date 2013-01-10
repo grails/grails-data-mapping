@@ -6,20 +6,19 @@ import org.springframework.core.convert.support.GenericConversionService;
 /**
  * Default conversion service th
  * @author Graeme Rocher
- *
  */
-public class DefaultConversionService extends GenericConversionService{
+@SuppressWarnings({"rawtypes", "unchecked"})
+public class DefaultConversionService extends GenericConversionService {
 
     @Override
     public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-        if(targetType.getType().isEnum() && source instanceof CharSequence) {
+        if (targetType.getType().isEnum() && source instanceof CharSequence) {
              return Enum.valueOf((Class)targetType.getType(), source.toString());
-        } else if (targetType.getType().equals(String.class) && source instanceof Enum) {
+        }
+        if (targetType.getType().equals(String.class) && source instanceof Enum) {
             return ((Enum)source).name();
         }
-        else {
-            return super.convert(source, sourceType, targetType);
-        }
+        return super.convert(source, sourceType, targetType);
     }
 
     @Override

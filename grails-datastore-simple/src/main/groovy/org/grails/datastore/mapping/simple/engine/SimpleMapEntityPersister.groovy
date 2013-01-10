@@ -14,7 +14,8 @@
  */
 package org.grails.datastore.mapping.simple.engine
 
-import org.springframework.context.ApplicationEventPublisher
+import org.grails.datastore.mapping.config.Property
+import org.grails.datastore.mapping.core.IdentityGenerationException
 import org.grails.datastore.mapping.core.OptimisticLockingException
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.AssociationIndexer
@@ -26,12 +27,11 @@ import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.query.Query
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.grails.datastore.mapping.simple.query.SimpleMapQuery
-import org.grails.datastore.mapping.config.Property
-import org.grails.datastore.mapping.core.IdentityGenerationException
-import org.grails.datastore.mapping.model.types.ManyToMany
+import org.springframework.context.ApplicationEventPublisher
 
 /**
  * A simple implementation of the {@link org.grails.datastore.mapping.engine.EntityPersister} abstract class that backs onto an in-memory map.
@@ -55,7 +55,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
         family = getFamily(entity, entity.getMapping())
         final identity = entity.getIdentity()
         def idType = identity?.type
-        if(idType == Integer) {
+        if (idType == Integer) {
             lastKey = 0
         }
         else {
@@ -85,7 +85,6 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
     protected boolean isPropertyIndexed(Property mappedProperty) {
         return true // index all
     }
-
 
     PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
         return new PropertyValueIndexer() {
@@ -186,7 +185,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
     protected void setManyToMany(PersistentEntity persistentEntity, Object obj, Map nativeEntry, ManyToMany manyToMany, Collection associatedObjects, Map<Association, List<Serializable>> toManyKeys) {
 
         def identifiers
-        if(manyToMany.isOwningSide()) {
+        if (manyToMany.isOwningSide()) {
             identifiers = session.persist(associatedObjects)
         }
         else {
@@ -204,7 +203,6 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
         final primaryKey = getObjectIdentifier(obj)
         indexer.query(primaryKey)
     }
-
 
     protected Map createNewEntry(String family) {
         return [:]
@@ -237,9 +235,9 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
     protected generateIdentifier(PersistentEntity persistentEntity, Map id) {
         final isRoot = persistentEntity.root
         final type = isRoot ? persistentEntity.identity.type : persistentEntity.rootEntity.identity.type
-        if((String.isAssignableFrom(type)) || (Number.isAssignableFrom(type))) {
+        if ((String.isAssignableFrom(type)) || (Number.isAssignableFrom(type))) {
             def key
-            if(isRoot) {
+            if (isRoot) {
                 key = ++lastKey
 
             }
@@ -303,7 +301,7 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
                 if (Number.isAssignableFrom(entityAccess.getPropertyType('version'))) {
                     oldVersion = existing.version?.toLong()
                     currentVersion = entityAccess.getProperty('version')?.toLong()
-                    if(currentVersion == null && oldVersion == null) {
+                    if (currentVersion == null && oldVersion == null) {
                         currentVersion = 0L
                         entityAccess.setProperty("version", currentVersion)
                         entry["version"] = currentVersion

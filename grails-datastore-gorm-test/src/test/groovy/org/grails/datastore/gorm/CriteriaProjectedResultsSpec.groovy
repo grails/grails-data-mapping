@@ -2,10 +2,7 @@ package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
-import spock.lang.Ignore
 
-/**
- */
 class CriteriaProjectedResultsSpec extends GormDatastoreSpec {
 
     void "Test single projection"() {
@@ -30,7 +27,6 @@ class CriteriaProjectedResultsSpec extends GormDatastoreSpec {
         given:"A domain instance"
             Check c = new Check(amount: 57).save()
 
-
         when:"A projection is used with two projected results"
             def model = Check.withCriteria {
                 projections {
@@ -49,7 +45,6 @@ class CriteriaProjectedResultsSpec extends GormDatastoreSpec {
             new Check(amount: 83, descr: 'eighty-three').save()
             new Check(amount: 29, descr: 'twenty-nine').save()
 
-
         when:"A query is executed"
             def model = Check.withCriteria {
                 projections {
@@ -67,7 +62,6 @@ class CriteriaProjectedResultsSpec extends GormDatastoreSpec {
             new Check(amount: 57, descr: 'fifty-seven').save()
             new Check(amount: 83, descr: 'eighty-three').save()
             new Check(amount: 29, descr: 'twenty-nine').save()
-
 
         when:"A query with multiple projections is executed"
             def model = Check.withCriteria {
@@ -88,7 +82,6 @@ class CriteriaProjectedResultsSpec extends GormDatastoreSpec {
             new Check(amount: 83, descr: 'eighty-three').save()
             new Check(amount: 29, descr: 'twenty-nine').save()
             new Check(amount: 83, descr: 'seventy').save()
-
 
         when:"The model is queried"
             def model = Check.withCriteria {
@@ -134,7 +127,6 @@ class CriteriaProjectedResultsSpec extends GormDatastoreSpec {
             new Check(amount: 83, descr: 'eighty-three').save()
             new Check(amount: 29, descr: 'twenty-nine').save()
             new Check(amount: 83, descr: 'seventy').save()
-
 
         when:"A query is executed with 2 projectsions and 2 orders in different directions"
             def model = Check.withCriteria {
@@ -221,7 +213,6 @@ class CriteriaProjectedResultsSpec extends GormDatastoreSpec {
         [Check]
     }
 }
-
 
 @Entity
 class Check {

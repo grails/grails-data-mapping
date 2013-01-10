@@ -14,10 +14,9 @@
  */
 package org.grails.datastore.mapping.dynamodb.config;
 
-import org.grails.datastore.mapping.keyvalue.mapping.config.Family;
-import org.grails.datastore.mapping.dynamodb.util.DynamoDBConst;
-
 import java.util.Map;
+
+import org.grails.datastore.mapping.keyvalue.mapping.config.Family;
 
 /**
  * Mapping for
@@ -83,7 +82,6 @@ public class DynamoDBDomainClassMappedForm extends Family {
     public void setThroughput(Map<String, Object> throughput) {
         this.throughput = throughput;
     }
-
 
     @Override
     public String toString() {

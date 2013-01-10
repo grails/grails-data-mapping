@@ -41,8 +41,8 @@ class ClearCollectionSpec extends GormDatastoreSpec{
 @Entity
 class Building {
     ObjectId id
-    String buildingName;
-    List<Room> rooms;
+    String buildingName
+    List<Room> rooms
 
     static mapWith = "mongo"
     static mapping = {

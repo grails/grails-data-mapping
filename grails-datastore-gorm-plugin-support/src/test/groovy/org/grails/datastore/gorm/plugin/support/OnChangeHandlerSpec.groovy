@@ -1,11 +1,12 @@
 package org.grails.datastore.gorm.plugin.support
 
-import spock.lang.Specification
 import org.grails.datastore.mapping.core.Datastore
-import org.springframework.transaction.PlatformTransactionManager
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.springframework.context.support.GenericApplicationContext
+import org.springframework.transaction.PlatformTransactionManager
+
+import spock.lang.Specification
 
 /**
  * Tests for onChange event handling
@@ -88,5 +89,4 @@ class SimpleOnChangeHandler extends OnChangeHandler {
     String getDatastoreType() {
         return "Simple"
     }
-
 }

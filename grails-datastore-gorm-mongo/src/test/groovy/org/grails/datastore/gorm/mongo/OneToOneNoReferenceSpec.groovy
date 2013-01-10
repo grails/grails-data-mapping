@@ -1,13 +1,11 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
-import org.bson.types.ObjectId
 import grails.persistence.Entity
 
-/**
- */
-class OneToOneNoReferenceSpec extends GormDatastoreSpec{
+import org.bson.types.ObjectId
 
+class OneToOneNoReferenceSpec extends GormDatastoreSpec{
 
     void "Test that associations can be saved with no dbrefs"() {
         when:"A domain class is saved that has references disabled"
@@ -20,7 +18,6 @@ class OneToOneNoReferenceSpec extends GormDatastoreSpec{
             NoRef.collection.findOne().other == other.id
     }
 
-    
     void "Test that querying an association works"() {
         when:"A domain class is saved that has references disabled"
             def other = new OtherNoRef().save()
@@ -35,6 +32,7 @@ class OneToOneNoReferenceSpec extends GormDatastoreSpec{
             other != null
             noref != null
     }
+
     @Override
     List getDomainClasses() {
         [OtherNoRef,NoRef]
@@ -57,5 +55,4 @@ class NoRef {
 class OtherNoRef {
 
     ObjectId id
-
 }

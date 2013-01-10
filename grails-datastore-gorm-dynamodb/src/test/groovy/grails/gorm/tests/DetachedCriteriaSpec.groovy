@@ -231,8 +231,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
 //            results.every { it.lastName == 'Simpson'}
 //    }
 
-
-    protected def createPeople() {
+    protected void createPeople() {
         new Person(firstName: "Homer", lastName: "Simpson").save()
         new Person(firstName: "Marge", lastName: "Simpson").save()
         new Person(firstName: "Bart", lastName: "Simpson").save()
@@ -240,5 +239,4 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
         new Person(firstName: "Barney", lastName: "Rubble").save()
         new Person(firstName: "Fred", lastName: "Flinstone").save()
     }
-
 }

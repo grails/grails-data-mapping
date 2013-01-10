@@ -27,6 +27,7 @@ import java.util.List;
  */
 public interface AssociationCriteria {
 
+    @SuppressWarnings("rawtypes")
     Association getAssociation();
 
     List<Query.Criterion> getCriteria();

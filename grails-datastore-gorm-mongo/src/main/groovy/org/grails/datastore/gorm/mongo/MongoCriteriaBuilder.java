@@ -34,6 +34,7 @@ import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public class MongoCriteriaBuilder extends CriteriaBuilder {
 
     public MongoCriteriaBuilder(final Class<?> targetClass, final Session session, final Query query) {

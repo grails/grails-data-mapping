@@ -36,7 +36,7 @@ public class FindOrCreateByFinder extends AbstractFindByFinder {
     public FindOrCreateByFinder(final String methodPattern, final Datastore datastore) {
         super(Pattern.compile(methodPattern), datastore);
     }
-    
+
     public FindOrCreateByFinder(final Datastore datastore) {
         this(METHOD_PATTERN, datastore);
     }
@@ -44,12 +44,11 @@ public class FindOrCreateByFinder extends AbstractFindByFinder {
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected Object doInvokeInternal(final DynamicFinderInvocation invocation) {
-    	
+
         if (OPERATOR_OR.equals(invocation.getOperator())) {
-    		throw new MissingMethodException(invocation.getMethodName(), invocation.getJavaClass(), invocation.getArguments());
+            throw new MissingMethodException(invocation.getMethodName(), invocation.getJavaClass(), invocation.getArguments());
         }
 
-        
         Object result = null;
         try {
             result = super.doInvokeInternal(invocation);
@@ -60,16 +59,16 @@ public class FindOrCreateByFinder extends AbstractFindByFinder {
             Map m = new HashMap();
             List<MethodExpression> expressions = invocation.getExpressions();
             for (MethodExpression me : expressions) {
-            	if(!(me instanceof MethodExpression.Equal)) {
-            		throw new MissingMethodException(invocation.getMethodName(), invocation.getJavaClass(), invocation.getArguments());
-            	}
+                if (!(me instanceof MethodExpression.Equal)) {
+                    throw new MissingMethodException(invocation.getMethodName(), invocation.getJavaClass(), invocation.getArguments());
+                }
                 String propertyName = me.propertyName;
                 Object[] arguments = me.getArguments();
                 m.put(propertyName, arguments[0]);
             }
             MetaClass metaClass = GroovySystem.getMetaClassRegistry().getMetaClass(invocation.getJavaClass());
             result = metaClass.invokeConstructor(new Object[]{m});
-            if(shouldSaveOnCreate()) {
+            if (shouldSaveOnCreate()) {
                 metaClass.invokeMethod(result, "save", null);
             }
         }

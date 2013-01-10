@@ -14,6 +14,15 @@
  */
 package org.grails.datastore.mapping.query.jpa;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
@@ -26,14 +35,13 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 
-import java.util.*;
-
 /**
  * Builds JPA 1.0 String-based queries from the Query model
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class JpaQueryBuilder {
     private static final String DISTINCT_CLAUSE = "DISTINCT ";
     private static final String SELECT_CLAUSE = "SELECT ";
@@ -51,7 +59,6 @@ public class JpaQueryBuilder {
     public static final String LOGICAL_AND = " AND ";
     public static final String UPDATE_CLAUSE = "UPDATE ";
     public static final String DELETE_CLAUSE = "DELETE ";
-
 
     public static final String LOGICAL_OR = " OR ";
     private static final Map<Class, QueryHandler> queryHandlers = new HashMap<Class, QueryHandler>();
@@ -110,7 +117,7 @@ public class JpaQueryBuilder {
      * @return The JpaQueryInfo object
      */
     public JpaQueryInfo buildUpdate(Map<String, Object> propertiesToUpdate) {
-        if(propertiesToUpdate.isEmpty()) {
+        if (propertiesToUpdate.isEmpty()) {
             throw new InvalidDataAccessResourceUsageException("No properties specified to update");
         }
         StringBuilder queryString = new StringBuilder(UPDATE_CLAUSE).append(entity.getName()).append(SPACE).append(logicalName);
@@ -120,7 +127,6 @@ public class JpaQueryBuilder {
         StringBuilder whereClause = new StringBuilder();
         buildWhereClause(entity, criteria, queryString, whereClause, logicalName, false, parameters);
         return new JpaQueryInfo(queryString.toString(), parameters);
-
     }
 
     /**
@@ -236,7 +242,7 @@ public class JpaQueryBuilder {
          .append(name)
          .append(operator)
          .append(QUESTIONMARK);
-        if(!hibernateCompatible)
+        if (!hibernateCompatible)
           q.append(++position);
         return position;
     }
@@ -248,7 +254,7 @@ public class JpaQueryBuilder {
                               StringBuilder q, StringBuilder whereClause, String logicalName, int position, List parameters,
                               ConversionService conversionService, boolean allowJoins, boolean hibernateCompatible) {
 
-                if(!allowJoins) {
+                if (!allowJoins) {
                     throw new InvalidDataAccessResourceUsageException("Joins cannot be used in a DELETE or UPDATE operation");
                 }
                 AssociationQuery aq = (AssociationQuery) criterion;
@@ -537,13 +543,13 @@ public class JpaQueryBuilder {
                            .append(qualifiedName)
                            .append(" >= ")
                            .append(QUESTIONMARK);
-               if(!hibernateCompatible)
+               if (!hibernateCompatible)
                     whereClause.append(++position);
                 whereClause.append(" AND ")
                            .append(qualifiedName)
                            .append(" <= ")
                            .append(QUESTIONMARK);
-                if(!hibernateCompatible)
+                if (!hibernateCompatible)
                     whereClause.append(++position);
                            whereClause.append(CLOSE_BRACKET);
 
@@ -590,7 +596,7 @@ public class JpaQueryBuilder {
                  .append(")")
                  .append(" like lower(")
                  .append(QUESTIONMARK);
-                if(!hibernateCompatible)
+                if (!hibernateCompatible)
                  whereClause.append(++position);
                 whereClause.append(")");
                 parameters.add(conversionService.convert( eq.getValue(), propType ));
@@ -611,7 +617,7 @@ public class JpaQueryBuilder {
                 for (Iterator i = eq.getValues().iterator(); i.hasNext();) {
                     Object val = i.next();
                     whereClause.append(QUESTIONMARK);
-                    if(!hibernateCompatible)
+                    if (!hibernateCompatible)
                         whereClause.append(++position);
                     if (i.hasNext()) {
                         whereClause.append(COMMA);
@@ -659,16 +665,15 @@ public class JpaQueryBuilder {
         while (iterator.hasNext()) {
             String propertyName = iterator.next();
             PersistentProperty prop = entity.getPropertyByName(propertyName);
-            if(prop == null) throw new InvalidDataAccessResourceUsageException("Property '"+propertyName+"' of class '"+entity.getName()+"' specified in update does not exist");
+            if (prop == null) throw new InvalidDataAccessResourceUsageException("Property '"+propertyName+"' of class '"+entity.getName()+"' specified in update does not exist");
 
             parameters.add(propertiesToUpdate.get(propertyName));
             queryString.append(SPACE).append(logicalName).append(DOT).append(propertyName).append('=').append(QUESTIONMARK);
-            if(!hibernateCompatible)
+            if (!hibernateCompatible)
                 queryString.append(parameters.size());
-            if(iterator.hasNext()) {
+            if (iterator.hasNext()) {
                 queryString.append(COMMA);
             }
-
         }
     }
 
@@ -681,7 +686,6 @@ public class JpaQueryBuilder {
          .append(DOT)
          .append(otherProperty);
     }
-
 
     private static PersistentProperty validateProperty(PersistentEntity entity, String name, Class criterionType) {
         if (entity.getIdentity().getName().equals(name)) return entity.getIdentity();
@@ -745,9 +749,9 @@ public class JpaQueryBuilder {
                 position = qh.handle(entity, criterion, q, whereClause, logicalName,
                         position, parameters, conversionService, allowJoins, hibernateCompatible);
             }
-            else if(criterion instanceof AssociationCriteria) {
+            else if (criterion instanceof AssociationCriteria) {
 
-                if(!allowJoins) {
+                if (!allowJoins) {
                     throw new InvalidDataAccessResourceUsageException("Joins cannot be used in a DELETE or UPDATE operation");
                 }
                 AssociationCriteria ac = (AssociationCriteria) criterion;
@@ -766,5 +770,4 @@ public class JpaQueryBuilder {
 
         return position;
     }
-
 }

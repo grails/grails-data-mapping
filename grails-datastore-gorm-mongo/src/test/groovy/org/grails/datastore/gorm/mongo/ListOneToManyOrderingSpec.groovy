@@ -1,12 +1,11 @@
 package org.grails.datastore.gorm.mongo
 
-import spock.lang.Issue
-import grails.persistence.Entity
 import grails.gorm.tests.GormDatastoreSpec
+import grails.persistence.Entity
 
-/**
- */
-class ListOneToManyOrderingSpec extends GormDatastoreSpec{
+import spock.lang.Issue
+
+class ListOneToManyOrderingSpec extends GormDatastoreSpec {
 
     @Issue('GPMONGODB-162')
     void "Test that one-to-many associations of type list retain ordering"() {
@@ -59,8 +58,6 @@ class ListOneToManyOrderingSpec extends GormDatastoreSpec{
     List getDomainClasses() {
         [Judge, Juror]
     }
-
-
 }
 
 @Entity
@@ -70,6 +67,7 @@ class Judge {
     List jury = []
     static hasMany = [jury:Juror]
 }
+
 @Entity
 class Juror {
     Long id

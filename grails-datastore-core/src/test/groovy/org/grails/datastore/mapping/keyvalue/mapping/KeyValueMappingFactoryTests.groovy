@@ -1,10 +1,10 @@
 package org.grails.datastore.mapping.keyvalue.mapping
 
+import org.grails.datastore.mapping.keyvalue.mapping.config.Family
+import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValue
+import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
+import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValuePersistentEntity
 import org.junit.Test
-import org.grails.datastore.mapping.keyvalue.mapping.config.Family;
-import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValue;
-import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
-import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValuePersistentEntity;
 
 /**
  * @author Graeme Rocher

@@ -65,7 +65,7 @@ public class SimpleMapSession extends AbstractSession<Map> {
     }
 
     private class MockTransaction implements Transaction {
-        public MockTransaction(@SuppressWarnings("unused") SimpleMapSession simpleMapSession) {
+        public MockTransaction(SimpleMapSession simpleMapSession) {
         }
 
         public void commit() {

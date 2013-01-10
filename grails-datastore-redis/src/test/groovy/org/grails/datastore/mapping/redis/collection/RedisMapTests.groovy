@@ -1,38 +1,32 @@
 package org.grails.datastore.mapping.redis.collection
 
+import org.grails.datastore.mapping.redis.util.JedisTemplate
 import org.junit.Before
 import org.junit.Test
-import org.grails.datastore.mapping.redis.util.JedisTemplate
+
 import redis.clients.jedis.Jedis
 
-/**
- */
 class RedisMapTests {
 
-  def template
-  @Before
-  void setupRedis() {
-    template = createTemplate()
-    template.flushdb()
-  }
+    private JedisTemplate template
 
-  @Test
-  void testSize() {
+    @Before
+    void setupRedis() {
+        template = new JedisTemplate(new Jedis("localhost"))
+        template.flushdb()
+    }
 
-    def map = new RedisMap(template, "test.map")
+    @Test
+    void testSize() {
 
-    assert 0 == map.size()
-    assert map.isEmpty()
-    map["foo"] = "bar"
+        def map = new RedisMap(template, "test.map")
 
-    assert 1 == map.size()
-    assert !map.isEmpty()
-    assert map["foo"] == "bar"
+        assert 0 == map.size()
+        assert map.isEmpty()
+        map["foo"] = "bar"
 
-
-  }
-  private def createTemplate() {
-    return new JedisTemplate(new Jedis("localhost"))
-  }
-
+        assert 1 == map.size()
+        assert !map.isEmpty()
+        assert map["foo"] == "bar"
+    }
 }

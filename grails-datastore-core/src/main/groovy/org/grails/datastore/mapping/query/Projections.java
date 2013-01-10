@@ -51,7 +51,6 @@ public class Projections {
         return new Query.PropertyProjection(name);
     }
 
-
     /**
      * Computes the sum of a property
      *
@@ -98,7 +97,7 @@ public class Projections {
      * @return Distinct projection
      */
     public static Query.DistinctProjection distinct() {
-    	return new Query.DistinctProjection();
+        return new Query.DistinctProjection();
     }
 
     /**
@@ -108,7 +107,7 @@ public class Projections {
      * @return Distinct projection
      */
     public static Query.DistinctPropertyProjection distinct(String property) {
-    	return new Query.DistinctPropertyProjection(property);
+        return new Query.DistinctPropertyProjection(property);
     }
 
     /**
@@ -118,7 +117,6 @@ public class Projections {
      * @return Distinct projection
      */
     public static Query.CountDistinctProjection countDistinct(String property) {
-    	return new Query.CountDistinctProjection(property);
+        return new Query.CountDistinctProjection(property);
     }
-
 }

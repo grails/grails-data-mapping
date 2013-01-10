@@ -19,12 +19,19 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import org.grails.datastore.mapping.engine.event.*;
-import org.springframework.context.ApplicationEventPublisher;
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.engine.event.PostDeleteEvent;
+import org.grails.datastore.mapping.engine.event.PostInsertEvent;
+import org.grails.datastore.mapping.engine.event.PostLoadEvent;
+import org.grails.datastore.mapping.engine.event.PostUpdateEvent;
+import org.grails.datastore.mapping.engine.event.PreDeleteEvent;
+import org.grails.datastore.mapping.engine.event.PreInsertEvent;
+import org.grails.datastore.mapping.engine.event.PreLoadEvent;
+import org.grails.datastore.mapping.engine.event.PreUpdateEvent;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
+import org.springframework.context.ApplicationEventPublisher;
 
 /**
  * A {@link org.grails.datastore.mapping.engine.Persister} specifically for persisting PersistentEntity instances.
@@ -88,7 +95,7 @@ public abstract class EntityPersister implements Persister {
      * @return The identifier or null if it doesn't have one
      */
     public Serializable getObjectIdentifier(Object obj) {
-        if(obj == null) return null;
+        if (obj == null) return null;
         final ProxyFactory pf = getProxyFactory();
         if (pf.isProxy(obj)) {
             return pf.getIdentifier(obj);
@@ -196,11 +203,11 @@ public abstract class EntityPersister implements Persister {
 
     protected abstract void deleteEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objects);
 
-    protected EntityAccess createEntityAccess(@SuppressWarnings("unused") PersistentEntity pe, Object obj) {
+    protected EntityAccess createEntityAccess(PersistentEntity pe, Object obj) {
         return new EntityAccess(persistentEntity, obj);
     }
 
-    protected Object newEntityInstance(@SuppressWarnings("hiding") PersistentEntity persistentEntity) {
+    protected Object newEntityInstance(PersistentEntity persistentEntity) {
         Object o = persistentEntity.newInstance();
         publisher.publishEvent(new PreLoadEvent(session.getDatastore(), getPersistentEntity(),
                 new EntityAccess(persistentEntity, o)));
@@ -213,15 +220,13 @@ public abstract class EntityPersister implements Persister {
     * @param entityAccess The entity access
     * @return true if the operation should be cancelled
     */
-    public boolean cancelInsert(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
-           final EntityAccess entityAccess) {
+    public boolean cancelInsert(final PersistentEntity persistentEntity, final EntityAccess entityAccess) {
        PreInsertEvent event = new PreInsertEvent(session.getDatastore(), persistentEntity, entityAccess);
        publisher.publishEvent(event);
        return event.isCancelled();
    }
 
-    public void firePostInsertEvent(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
-            final EntityAccess entityAccess) {
+    public void firePostInsertEvent(final PersistentEntity persistentEntity, final EntityAccess entityAccess) {
         publisher.publishEvent(new PostInsertEvent(
                 session.getDatastore(), persistentEntity, entityAccess));
     }
@@ -232,8 +237,7 @@ public abstract class EntityPersister implements Persister {
     * @param entityAccess The entity access
     * @return true if the operation should be cancelled
     */
-    public boolean cancelUpdate(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
-           final EntityAccess entityAccess) {
+    public boolean cancelUpdate(final PersistentEntity persistentEntity, final EntityAccess entityAccess) {
        PreUpdateEvent event = new PreUpdateEvent(session.getDatastore(), persistentEntity, entityAccess);
        publisher.publishEvent(event);
        return event.isCancelled();
@@ -245,33 +249,28 @@ public abstract class EntityPersister implements Persister {
      * @param entityAccess The entity access
      * @return true if the operation should be cancelled
      */
-    public boolean cancelDelete( final PersistentEntity persistentEntity,
-                                 final EntityAccess entityAccess) {
+    public boolean cancelDelete( final PersistentEntity persistentEntity, final EntityAccess entityAccess) {
         PreDeleteEvent event = new PreDeleteEvent(session.getDatastore(), persistentEntity, entityAccess);
         publisher.publishEvent(event);
         return event.isCancelled();
     }
 
-    public void firePostUpdateEvent(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
-            final EntityAccess entityAccess) {
+    public void firePostUpdateEvent(final PersistentEntity persistentEntity, final EntityAccess entityAccess) {
         publisher.publishEvent(new PostUpdateEvent(
                 session.getDatastore(), persistentEntity, entityAccess));
     }
 
-    public void firePostDeleteEvent(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
-            final EntityAccess entityAccess) {
+    public void firePostDeleteEvent(final PersistentEntity persistentEntity, final EntityAccess entityAccess) {
         publisher.publishEvent(new PostDeleteEvent(
                 session.getDatastore(), persistentEntity, entityAccess));
     }
 
-    public void firePreLoadEvent(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
-            final EntityAccess entityAccess) {
+    public void firePreLoadEvent(final PersistentEntity persistentEntity, final EntityAccess entityAccess) {
         publisher.publishEvent(new PreLoadEvent(
                 session.getDatastore(), persistentEntity, entityAccess));
     }
 
-    public void firePostLoadEvent(@SuppressWarnings("hiding") final PersistentEntity persistentEntity,
-            final EntityAccess entityAccess) {
+    public void firePostLoadEvent(final PersistentEntity persistentEntity, final EntityAccess entityAccess) {
         publisher.publishEvent(new PostLoadEvent(
                 session.getDatastore(), persistentEntity, entityAccess));
     }
@@ -289,7 +288,7 @@ public abstract class EntityPersister implements Persister {
     protected void incrementVersion(final EntityAccess ea) {
         if (Number.class.isAssignableFrom(ea.getPropertyType("version"))) {
             Number currentVersion = (Number) ea.getProperty("version");
-            if(currentVersion == null) {
+            if (currentVersion == null) {
                 currentVersion = 0L;
             }
             ea.setProperty("version", currentVersion.longValue() + 1);

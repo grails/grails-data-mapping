@@ -15,7 +15,12 @@
 
 package org.grails.datastore.mapping.document.config;
 
-import org.grails.datastore.mapping.model.*;
+import org.grails.datastore.mapping.model.AbstractClassMapping;
+import org.grails.datastore.mapping.model.AbstractPersistentEntity;
+import org.grails.datastore.mapping.model.ClassMapping;
+import org.grails.datastore.mapping.model.IdentityMapping;
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
 
 public class DocumentPersistentEntity extends AbstractPersistentEntity<Collection> {
 
@@ -47,7 +52,7 @@ public class DocumentPersistentEntity extends AbstractPersistentEntity<Collectio
 
         @Override
         public IdentityMapping getIdentifier() {
-            if(identityMapping == null) {
+            if (identityMapping == null) {
                 identityMapping = context.getMappingFactory().createIdentityMapping(this);
             }
             return identityMapping;

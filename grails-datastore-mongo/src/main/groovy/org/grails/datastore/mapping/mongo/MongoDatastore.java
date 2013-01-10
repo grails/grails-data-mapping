@@ -24,12 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bson.types.Binary;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.authentication.UserCredentials;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
@@ -41,6 +35,16 @@ import org.grails.datastore.mapping.model.PropertyMapping;
 import org.grails.datastore.mapping.mongo.config.MongoAttribute;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.authentication.UserCredentials;
+import org.springframework.data.mongodb.core.DbCallback;
+import org.springframework.data.mongodb.core.MongoFactoryBean;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -51,10 +55,6 @@ import com.mongodb.MongoException;
 import com.mongodb.MongoOptions;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
-import org.springframework.data.mongodb.core.DbCallback;
-import org.springframework.data.mongodb.core.MongoFactoryBean;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 
 /**
  * A Datastore implementation for the Mongo document store.
@@ -178,7 +178,6 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         return mongoCollections.get(entity);
     }
 
-
     @Override
     protected Session createSession(Map<String, String> connDetails) {
         return new MongoSession(this, getMappingContext(), getApplicationEventPublisher());
@@ -200,7 +199,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 
         for (PersistentEntity entity : mappingContext.getPersistentEntities()) {
             // Only create Mongo templates for entities that are mapped with Mongo
-            if(!entity.isExternal()) {
+            if (!entity.isExternal()) {
                 createMongoTemplate(entity, mongo);
             }
         }
@@ -292,7 +291,7 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
                         DBObject options = new BasicDBObject();
                         if (mongoAttributeMapping != null) {
                             Map attributes = mongoAttributeMapping.getIndexAttributes();
-                            if (attributes != null){
+                            if (attributes != null) {
                                 attributes = new HashMap(attributes);
                                 if (attributes.containsKey(MongoAttribute.INDEX_TYPE)) {
                                     dbObject.put(fieldName, attributes.remove(MongoAttribute.INDEX_TYPE));
@@ -332,8 +331,9 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
 
     public void destroy() throws Exception {
         super.destroy();
-        if(mongo != null)
+        if (mongo != null) {
             mongo.close();
+        }
     }
 
     @Override

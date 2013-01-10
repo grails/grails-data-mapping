@@ -3,19 +3,12 @@ package org.grails.datastore.gorm
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
-/**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 10/10/11
- * Time: 10:07 AM
- * To change this template use File | Settings | File Templates.
- */
 class CustomStringIdentifierSpec extends GormDatastoreSpec {
+
     @Override
     List getDomainClasses() {
         [Product, Description]
     }
-
 
     void "test basic crud operations with string id"() {
         when: "A product is saved with an assigned id"

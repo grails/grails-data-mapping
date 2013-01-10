@@ -14,16 +14,13 @@
  */
 package org.grails.datastore.gorm.jpa.support;
 
+import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
+
 import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
 import org.grails.datastore.mapping.jpa.JpaDatastore;
 import org.grails.datastore.mapping.jpa.JpaSession;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
-import org.springframework.orm.jpa.JpaCallback;
-import org.springframework.orm.jpa.JpaTemplate;
-
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceException;
 
 /**
  * @author Graeme Rocher
@@ -38,51 +35,42 @@ public class JpaPersistenceContextInterceptor implements PersistenceContextInter
         this.jpaDatastore= datastore;
     }
 
-    @Override
     public void init() {
         entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(jpaDatastore.getEntityManagerFactory());
     }
 
-    @Override
     public void destroy() {
         entityManager = null;
     }
 
-    @Override
     public void disconnect() {
-        if(entityManager != null) {
+        if (entityManager != null) {
             EntityManagerFactoryUtils.closeEntityManager(entityManager);
         }
-
     }
 
-    @Override
     public void reconnect() {
         entityManager = EntityManagerFactoryUtils.getTransactionalEntityManager(jpaDatastore.getEntityManagerFactory());
     }
 
-    @Override
     public void flush() {
-        if(JpaSession.hasTransaction())
+        if (JpaSession.hasTransaction()) {
             entityManager.flush();
+        }
     }
 
-    @Override
     public void clear() {
         entityManager.clear();
     }
 
-    @Override
     public void setReadOnly() {
         entityManager.setFlushMode(FlushModeType.COMMIT);
     }
 
-    @Override
     public void setReadWrite() {
         entityManager.setFlushMode(FlushModeType.AUTO);
     }
 
-    @Override
     public boolean isOpen() {
         return entityManager != null && entityManager.isOpen();
     }

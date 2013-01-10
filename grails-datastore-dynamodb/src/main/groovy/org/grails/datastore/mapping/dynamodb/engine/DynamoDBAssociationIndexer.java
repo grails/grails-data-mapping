@@ -14,17 +14,24 @@
  */
 package org.grails.datastore.mapping.dynamodb.engine;
 
-import com.amazonaws.services.dynamodb.model.*;
-import com.amazonaws.services.simpledb.model.Item;
-import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
-import org.grails.datastore.mapping.engine.AssociationIndexer;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.types.Association;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.grails.datastore.mapping.dynamodb.DynamoDBDatastore;
 import org.grails.datastore.mapping.dynamodb.DynamoDBSession;
 import org.grails.datastore.mapping.dynamodb.util.DynamoDBUtil;
+import org.grails.datastore.mapping.engine.AssociationIndexer;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.types.Association;
 
-import java.util.*;
+import com.amazonaws.services.dynamodb.model.AttributeAction;
+import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.amazonaws.services.dynamodb.model.AttributeValueUpdate;
+import com.amazonaws.services.dynamodb.model.ComparisonOperator;
+import com.amazonaws.services.dynamodb.model.Condition;
 
 /**
  * An {@link org.grails.datastore.mapping.engine.AssociationIndexer} implementation for the DynamoDB store.
@@ -39,8 +46,7 @@ public class DynamoDBAssociationIndexer implements AssociationIndexer {
     private Association association;
     private DynamoDBSession session;
 
-    public DynamoDBAssociationIndexer(@SuppressWarnings("unused") DynamoDBNativeItem nativeEntry,
-                                      Association association, DynamoDBSession session) {
+    public DynamoDBAssociationIndexer(DynamoDBNativeItem nativeEntry, Association association, DynamoDBSession session) {
         this.association = association;
         this.session = session;
     }

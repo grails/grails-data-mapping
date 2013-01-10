@@ -14,29 +14,35 @@
  */
 package org.grails.datastore.mapping.dynamodb;
 
-import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
-import org.grails.datastore.mapping.core.AbstractDatastore;
-import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.dynamodb.engine.*;
-import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.model.types.Association;
-import org.grails.datastore.mapping.model.types.OneToMany;
-import org.grails.datastore.mapping.dynamodb.config.DynamoDBMappingContext;
-import org.grails.datastore.mapping.dynamodb.model.types.DynamoDBTypeConverterRegistrar;
-import org.grails.datastore.mapping.dynamodb.util.DelayAfterWriteDynamoDBTemplateDecorator;
-import org.grails.datastore.mapping.dynamodb.util.DynamoDBTemplate;
-import org.grails.datastore.mapping.dynamodb.util.DynamoDBTemplateImpl;
-import org.grails.datastore.mapping.dynamodb.util.DynamoDBUtil;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.convert.converter.ConverterRegistry;
+import static org.grails.datastore.mapping.config.utils.ConfigUtils.read;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.grails.datastore.mapping.config.utils.ConfigUtils.read;
+import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
+import org.grails.datastore.mapping.core.AbstractDatastore;
+import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.dynamodb.config.DynamoDBMappingContext;
+import org.grails.datastore.mapping.dynamodb.engine.AssociationKey;
+import org.grails.datastore.mapping.dynamodb.engine.DynamoDBAssociationInfo;
+import org.grails.datastore.mapping.dynamodb.engine.DynamoDBIdGenerator;
+import org.grails.datastore.mapping.dynamodb.engine.DynamoDBIdGeneratorFactory;
+import org.grails.datastore.mapping.dynamodb.engine.DynamoDBNativeItem;
+import org.grails.datastore.mapping.dynamodb.engine.DynamoDBTableResolver;
+import org.grails.datastore.mapping.dynamodb.engine.DynamoDBTableResolverFactory;
+import org.grails.datastore.mapping.dynamodb.model.types.DynamoDBTypeConverterRegistrar;
+import org.grails.datastore.mapping.dynamodb.util.DelayAfterWriteDynamoDBTemplateDecorator;
+import org.grails.datastore.mapping.dynamodb.util.DynamoDBTemplate;
+import org.grails.datastore.mapping.dynamodb.util.DynamoDBTemplateImpl;
+import org.grails.datastore.mapping.dynamodb.util.DynamoDBUtil;
+import org.grails.datastore.mapping.model.MappingContext;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.OneToMany;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.convert.converter.ConverterRegistry;
 
 /**
  * A Datastore implementation for the AWS DynamoDB document store.
@@ -96,7 +102,7 @@ public class DynamoDBDatastore extends AbstractDatastore implements Initializing
         this(mappingContext, Collections.<String, String>emptyMap(), null, null);
     }
 
-    public DynamoDBTemplate getDynamoDBTemplate(@SuppressWarnings("unused") PersistentEntity entity) {
+    public DynamoDBTemplate getDynamoDBTemplate(PersistentEntity entity) {
 //        return dynamoDBTemplates.get(entity);
         return dynamoDBTemplate;
     }
@@ -204,7 +210,7 @@ public class DynamoDBDatastore extends AbstractDatastore implements Initializing
     }
 
     @Override
-    protected void initializeConverters(@SuppressWarnings("hiding") MappingContext mappingContext) {
+    protected void initializeConverters(MappingContext mappingContext) {
         final ConverterRegistry conversionService = mappingContext.getConverterRegistry();
         new DynamoDBTypeConverterRegistrar().register(conversionService);
     }

@@ -8,7 +8,6 @@ import grails.persistence.Entity
  * @author Roman Stepanenko
  * @since 0.1
  */
-
 @Entity
 class Person implements Serializable {
     String id
@@ -20,13 +19,7 @@ class Person implements Serializable {
     Set pets = [] as Set
     static hasMany = [pets: Pet]
 
-
-    public String toString() {
-        return "Person{" +
-                "firstName='" + firstName + '\'' +
-                ", id='" + id + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", pets=" + pets +
-                '}';
+    String toString() {
+        "Person{firstName='$firstName', id='$id', lastName='$lastName', pets=$pets}"
     }
 }

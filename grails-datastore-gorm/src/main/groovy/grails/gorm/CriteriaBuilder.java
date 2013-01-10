@@ -91,17 +91,16 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
    public void setUniqueResult(boolean uniqueResult) {
         this.uniqueResult = uniqueResult;
    }
-    
+
    public Criteria cache(boolean cache) {
        query.cache(cache);
        return this;
    }
-    
+
    public Criteria join(String property) {
        query.join(property);
        return this;
    }
-
 
    public Query.ProjectionList id() {
        if (projectionList != null) {
@@ -344,7 +343,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
                 Query associationQuery = null;
                 try {
                     associationQuery = query.createQuery(property.getName());
-                    if(associationQuery instanceof AssociationQuery) {
+                    if (associationQuery instanceof AssociationQuery) {
                         previousQuery.add((Query.Criterion) associationQuery);
                     }
                     query = associationQuery;
@@ -392,12 +391,10 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         return this;
     }
 
-
     public Criteria idEquals(Object value) {
         addToCriteria(Restrictions.idEq(value));
         return this;
     }
-
 
     public Criteria isEmpty(String propertyName) {
         validatePropertyName(propertyName, "isEmpty");
@@ -437,7 +434,6 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         return this;
     }
 
-
     /**
      * Creates a subquery criterion that ensures the given property is equal to all the given returned values
      *
@@ -450,6 +446,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         return eqAll(propertyName, buildQueryableCriteria(propertyValue));
     }
 
+    @SuppressWarnings("unchecked")
     private QueryableCriteria buildQueryableCriteria(Closure queryClosure) {
         return new DetachedCriteria(targetClass).build(queryClosure);
     }
@@ -465,7 +462,6 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     public Criteria gtAll(String propertyName, Closure propertyValue) {
         return gtAll(propertyName, buildQueryableCriteria(propertyValue));
     }
-
 
     /**
      * Creates a subquery criterion that ensures the given property is less than all the given returned values
@@ -491,7 +487,6 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         return geAll(propertyName, buildQueryableCriteria(propertyValue));
     }
 
-
     /**
      * Creates a subquery criterion that ensures the given property is less than all the given returned values
      *
@@ -503,7 +498,6 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     public Criteria leAll(String propertyName, Closure propertyValue) {
         return leAll(propertyName, buildQueryableCriteria(propertyValue));
     }
-
 
     /**
      * Creates a subquery criterion that ensures the given property is equal to all the given returned values
@@ -533,7 +527,6 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         return this;
     }
 
-
     /**
      * Creates a subquery criterion that ensures the given property is less than all the given returned values
      *
@@ -561,7 +554,6 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         addToCriteria(new Query.GreaterThanEqualsAll(propertyName, propertyValue));
         return this;
     }
-
 
     /**
      * Creates a subquery criterion that ensures the given property is less than all the given returned values
@@ -686,7 +678,6 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         addToCriteria(Restrictions.lt(property, value));
         return this;
     }
-
 
     /**
      * Creates an like Criterion based on the specified property name and value.
@@ -878,7 +869,6 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         validatePropertyName(otherPropertyName, "geProperty");
         addToCriteria(Restrictions.geProperty(propertyName, otherPropertyName));
         return this;
-
     }
 
     /**
@@ -893,7 +883,6 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         validatePropertyName(otherPropertyName, "ltProperty");
         addToCriteria(Restrictions.ltProperty(propertyName, otherPropertyName));
         return this;
-
     }
 
     /**
@@ -908,7 +897,6 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
         validatePropertyName(otherPropertyName, "leProperty");
         addToCriteria(Restrictions.leProperty(propertyName, otherPropertyName));
         return this;
-
     }
 
     /**
@@ -954,7 +942,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     }
 
     protected void validatePropertyName(String propertyName, String methodName) {
-        if(persistentEntity == null) return;
+        if (persistentEntity == null) return;
         if (propertyName == null) {
             throw new IllegalArgumentException("Cannot use [" + methodName +
                     "] restriction with null property name");
@@ -982,8 +970,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     }
 
     private void invokeClosureNode(Object args) {
-        if(args instanceof Closure) {
-
+        if (args instanceof Closure) {
             Closure callable = (Closure)args;
             callable.setDelegate(this);
             callable.setResolveStrategy(Closure.DELEGATE_FIRST);
@@ -994,7 +981,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     private void handleJunction(Query.Junction junction, Closure callable) {
         logicalExpressionStack.add(junction);
         try {
-            if(callable != null) {
+            if (callable != null) {
                 invokeClosureNode(callable);
             }
         } finally {
@@ -1009,11 +996,11 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
     * LogicalExpression.
     */
     protected Query.Criterion addToCriteria(Query.Criterion c) {
-        if(c instanceof Query.PropertyCriterion) {
+        if (c instanceof Query.PropertyCriterion) {
             Query.PropertyCriterion pc = (Query.PropertyCriterion) c;
 
             Object value = pc.getValue();
-            if(value instanceof Closure) {
+            if (value instanceof Closure) {
                 pc.setValue(buildQueryableCriteria((Closure) value));
             }
         }
@@ -1021,7 +1008,7 @@ public class CriteriaBuilder extends GroovyObjectSupport implements Criteria, Pr
             logicalExpressionStack.get(logicalExpressionStack.size() - 1).add(c);
         }
         else {
-            if(query == null) {
+            if (query == null) {
                 initializeQuery();
             }
             query.add(c);

@@ -15,11 +15,10 @@
 package org.grails.datastore.gorm.simpledb.plugin.support
 
 import org.grails.datastore.gorm.plugin.support.SpringConfigurer
-
 import org.grails.datastore.gorm.simpledb.bean.factory.SimpleDBDatastoreFactoryBean
 import org.grails.datastore.gorm.simpledb.bean.factory.SimpleDBMappingContextFactoryBean
-import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.grails.datastore.mapping.cache.impl.TPCacheAdapterRepositoryImpl
+import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 
 /**
  * SimpleDB specific configuration logic for Spring
@@ -28,6 +27,7 @@ import org.grails.datastore.mapping.cache.impl.TPCacheAdapterRepositoryImpl
  * @since 1.0
  */
 class SimpleDBSpringConfigurer extends SpringConfigurer {
+
     @Override
     String getDatastoreType() {
         return "SimpleDB"
@@ -43,7 +43,6 @@ class SimpleDBSpringConfigurer extends SpringConfigurer {
             cacheAdapters?.each { clazz, adapter ->
                 theCacheAdapterRepository.setTPCacheAdapter(clazz, adapter)
             }
-
 
             simpledbTransactionManager(DatastoreTransactionManager) {
                 datastore = ref("simpledbDatastore")

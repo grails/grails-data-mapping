@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
+
 import spock.lang.Issue
 import spock.lang.Shared
 
@@ -11,13 +12,13 @@ class CustomTypeMarshallingSpec extends GormDatastoreSpec {
     }
 
     @Shared Date now = new Date()
-    
+
     def setup() {
         def p = new Person(name:"Fred", birthday: new Birthday(now))
         p.save(flush:true)
         session.clear()
     }
-    
+
     def cleanup() {
         Person.list()*.delete(flush: true)
         session.clear()
@@ -56,9 +57,9 @@ class CustomTypeMarshallingSpec extends GormDatastoreSpec {
         given:
             def p = Person.findByName("Fred")
 
-		when: "we can re-save an existing instance without modifications"
+        when: "we can re-save an existing instance without modifications"
             p.birthday = new Birthday(now)
-			boolean saveResult = p.save(flush: true)
+            boolean saveResult = p.save(flush: true)
 
         then: 'the save is successful'
             saveResult

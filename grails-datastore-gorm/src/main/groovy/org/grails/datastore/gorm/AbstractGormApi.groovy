@@ -19,8 +19,6 @@ import java.lang.reflect.Modifier
 
 import org.grails.datastore.gorm.utils.ReflectionUtils
 import org.grails.datastore.mapping.core.Datastore
-import org.grails.datastore.mapping.core.DatastoreUtils
-import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.PersistentEntity
 
 /**
@@ -57,7 +55,7 @@ abstract class AbstractGormApi<D> extends AbstractDatastoreApi {
 
     AbstractGormApi(Class<D> persistentClass, Datastore datastore) {
         super(datastore)
-        this.persistentClass = persistentClass;
+        this.persistentClass = persistentClass
         this.persistentEntity = datastore.getMappingContext().getPersistentEntity(persistentClass.name)
 
         final clazz = getClass()

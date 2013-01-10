@@ -19,13 +19,12 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.grails.datastore.mapping.model.DatastoreConfigurationException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.grails.datastore.mapping.model.DatastoreConfigurationException;
 import org.springframework.util.Assert;
 
 import com.gmongo.GMongo;
-import com.mongodb.Mongo;
 import com.mongodb.MongoOptions;
 import com.mongodb.ServerAddress;
 

@@ -115,7 +115,7 @@ class DerivedTeacher extends Teacher2 {
 }
 
 enum Subject {
-	HISTORY, MATH, ENGLISH, HOME_EC;
+    HISTORY, MATH, ENGLISH, HOME_EC
 
     @Override
     String toString() {

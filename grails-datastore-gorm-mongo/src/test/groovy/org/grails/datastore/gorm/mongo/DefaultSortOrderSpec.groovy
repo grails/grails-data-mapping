@@ -1,13 +1,12 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
-import spock.lang.Issue
 import grails.persistence.Entity
 
-/**
- */
-class DefaultSortOrderSpec extends GormDatastoreSpec{
-    
+import spock.lang.Issue
+
+class DefaultSortOrderSpec extends GormDatastoreSpec {
+
     @Issue('GPMONGODB-181')
     void 'Test that default sort order works correctly'() {
          given:"A domain model with default sort order"
@@ -28,8 +27,6 @@ class DefaultSortOrderSpec extends GormDatastoreSpec{
     List getDomainClasses() {
         [SOBook]
     }
-
-
 }
 
 @Entity

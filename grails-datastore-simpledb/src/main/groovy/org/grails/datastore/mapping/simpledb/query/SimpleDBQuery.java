@@ -14,21 +14,27 @@
  */
 package org.grails.datastore.mapping.simpledb.query;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValue;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.query.Query;
-import org.grails.datastore.mapping.simpledb.engine.SimpleDBNativeItem;
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver;
 import org.grails.datastore.mapping.simpledb.engine.SimpleDBEntityPersister;
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBNativeItem;
 import org.grails.datastore.mapping.simpledb.util.SimpleDBConverterUtil;
 import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate;
+import org.grails.datastore.mapping.simpledb.util.SimpleDBUtil;
 
 import com.amazonaws.services.simpledb.model.Item;
-import org.grails.datastore.mapping.simpledb.util.SimpleDBUtil;
 
 /**
  * A {@link org.grails.datastore.mapping.query.Query} implementation for the SimpleDB store
@@ -149,7 +155,7 @@ public class SimpleDBQuery extends Query {
     }
 
     @Override
-    protected List executeQuery(@SuppressWarnings("hiding") PersistentEntity entity, @SuppressWarnings("hiding") Junction criteria) {
+    protected List executeQuery(PersistentEntity entity, Junction criteria) {
         // TODO - in case of sharding we should iterate over all domains for this PersistentEntity (ideally in parallel)
         String domain = domainResolver.getAllDomainsForEntity().get(0);
 
@@ -185,7 +191,7 @@ public class SimpleDBQuery extends Query {
             if (orderBys.size() > 1) {
                 throw new UnsupportedOperationException("Only single 'order by' clause is supported. You have: " + orderBys.size());
             }
-            @SuppressWarnings("hiding") Order orderBy = orderBys.get(0);
+            Order orderBy = orderBys.get(0);
             String orderByPropertyName = orderBy.getProperty();
             String key = extractPropertyKey(orderByPropertyName, entity);
             //AWS SimpleDB rule: if you use ORDER BY then you have to have a condition on that attribute in the where clause, otherwise it will throw an error
@@ -270,14 +276,12 @@ public class SimpleDBQuery extends Query {
         //to be explicitly coded later...
         boolean hasCountProjection = false;
         for (Projection projection : projections) {
-            if (! (PropertyProjection.class.equals(projection.getClass()) ||
-                    IdProjection.class.equals(projection.getClass()) ||
-                    CountProjection.class.equals(projection.getClass())
-            ) ) {
+            if (!(PropertyProjection.class.equals(projection.getClass()) ||
+                  IdProjection.class.equals(projection.getClass()) ||
+                  CountProjection.class.equals(projection.getClass()))) {
                 throw new UnsupportedOperationException("Currently projections of type " +
-                  projection.getClass().getSimpleName() + " are not supported by this implementation");
+                        projection.getClass().getSimpleName() + " are not supported by this implementation");
             }
-
 
             if (CountProjection.class.equals(projection.getClass())) {
                 hasCountProjection = true;
@@ -290,8 +294,7 @@ public class SimpleDBQuery extends Query {
     }
 
     @SuppressWarnings("unchecked")
-    private String buildCompositeClause(@SuppressWarnings("hiding") Junction criteria,
-            String booleanOperator, Set<String> usedPropertyNames) {
+    private String buildCompositeClause(Junction criteria, String booleanOperator, Set<String> usedPropertyNames) {
         StringBuilder clause = new StringBuilder();
         boolean first = true;
         for (Criterion criterion : criteria.getCriteria()) {
@@ -332,7 +335,7 @@ public class SimpleDBQuery extends Query {
         return clause.toString();
     }
 
-    private void addToMainClause(@SuppressWarnings("hiding") Junction criteria, StringBuilder clause, String innerClause) {
+    private void addToMainClause(Junction criteria, StringBuilder clause, String innerClause) {
         boolean useParenthesis = criteria.getCriteria().size() > 1; //use parenthesis only when needed
         if (useParenthesis) {
             clause.append("(");

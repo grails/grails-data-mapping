@@ -14,8 +14,8 @@
  */
 package org.grails.datastore.mapping.config.groovy
 
-import org.springframework.beans.MutablePropertyValues
 import org.grails.datastore.mapping.reflect.NameUtils
+import org.springframework.beans.MutablePropertyValues
 import org.springframework.validation.DataBinder
 
 /**
@@ -46,8 +46,6 @@ class MappingConfigurationBuilder {
             return
         }
 
-
-
         def setterName = NameUtils.getSetterName(name)
         if (target.respondsTo(setterName)) {
             target[name] = args.size() == 1 ? args[0] : args
@@ -56,7 +54,7 @@ class MappingConfigurationBuilder {
             if (args[0] instanceof Map) {
 
                 def instance
-                if(properties['*']) {
+                if (properties['*']) {
                     instance = properties['*'].clone()
                 }
                 else {

@@ -1,16 +1,8 @@
 package org.grails.datastore.gorm
 
-import spock.lang.Specification
 import grails.gorm.tests.GormDatastoreSpec
 import grails.gorm.tests.Person
 
-/**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 11/2/11
- * Time: 12:05 PM
- * To change this template use File | Settings | File Templates.
- */
 class DistinctProjectionSpec extends GormDatastoreSpec{
 
     def "Test that using the distinct projection returns distinct results"()  {

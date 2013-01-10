@@ -1,10 +1,11 @@
 package grails.gorm.tests
 
-import org.springframework.validation.Validator
-import org.springframework.validation.Errors
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import grails.persistence.Entity
+
 import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
+import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.springframework.validation.Errors
+import org.springframework.validation.Validator
 
 /**
  * Tests the unique constraint
@@ -42,12 +43,9 @@ class UniqueConstraintSpec extends GormDatastoreSpec{
             two != null
             three.hasErrors()
             GroupWithin.count() == 2
-
-
-
     }
 
-    protected def setupValidator() {
+    protected void setupValidator() {
 
         def groupValidator = [supports: {Class cls -> true},
                 validate: {Object target, Errors errors ->
@@ -56,7 +54,6 @@ class UniqueConstraintSpec extends GormDatastoreSpec{
                         cp.validate(target, target[cp.propertyName], errors)
                     }
                 }] as Validator
-
 
        def groupWithinValidator = [supports: {Class cls -> true},
                validate: {Object target, Errors errors ->
@@ -77,9 +74,8 @@ class UniqueConstraintSpec extends GormDatastoreSpec{
     List getDomainClasses() {
         [UniqueGroup, GroupWithin]
     }
-
-
 }
+
 @Entity
 class UniqueGroup implements Serializable{
     Long id
@@ -99,4 +95,3 @@ class GroupWithin implements Serializable{
         org index:true
     }
 }
-

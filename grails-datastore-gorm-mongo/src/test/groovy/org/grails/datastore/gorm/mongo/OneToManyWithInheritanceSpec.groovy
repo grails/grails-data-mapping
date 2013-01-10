@@ -3,10 +3,7 @@ package org.grails.datastore.gorm.mongo
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
-/**
- */
-class OneToManyWithInheritanceSpec extends GormDatastoreSpec{
-
+class OneToManyWithInheritanceSpec extends GormDatastoreSpec {
 
     void "Test that a one-to-many with inheritances behaves correctly"() {
         given:"A one-to-many association inherited from a parent"
@@ -25,8 +22,6 @@ class OneToManyWithInheritanceSpec extends GormDatastoreSpec{
         then:"The association is correctly loaded"
             animal.carrots.size() == 2
             donkey.carrots.size() == 2
-
-
     }
 
     @Override
@@ -36,8 +31,7 @@ class OneToManyWithInheritanceSpec extends GormDatastoreSpec{
 }
 
 @Entity
-class Donkey extends Animal{
-
+class Donkey extends Animal {
     String name
 }
 
@@ -54,6 +48,4 @@ class Carrot {
     Integer leaves
     Animal animal
     static belongsTo = [animal:Animal]
-    
-
 }

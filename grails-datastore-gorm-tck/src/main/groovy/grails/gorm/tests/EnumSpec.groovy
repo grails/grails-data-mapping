@@ -114,7 +114,6 @@ class EnumSpec extends GormDatastoreSpec {
             v12Instances.size() == 3
     }
 
-
     void "Test countBy()"() {
         given:
 

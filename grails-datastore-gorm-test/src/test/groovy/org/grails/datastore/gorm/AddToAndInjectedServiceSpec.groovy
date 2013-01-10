@@ -1,12 +1,10 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
-import org.junit.Test
 import grails.persistence.Entity
+
 import spock.lang.Issue
 
-/**
- */
 class AddToAndInjectedServiceSpec extends GormDatastoreSpec {
 
     @Issue('GRAILS-9119')
@@ -25,8 +23,6 @@ class AddToAndInjectedServiceSpec extends GormDatastoreSpec {
     List getDomainClasses() {
         [Pirate, Ship]
     }
-
-
 }
 
 @Entity
@@ -36,11 +32,9 @@ class Pirate {
     def pirateShipService
 }
 
-
 @Entity
 class Ship {
     Long id
     Set pirates
     static hasMany = [pirates: Pirate]
 }
-

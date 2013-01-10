@@ -3,14 +3,9 @@ package org.grails.datastore.gorm
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
-/**
- */
-class AddToMethodWithEmbeddedCollectionSpec extends GormDatastoreSpec{
+class AddToMethodWithEmbeddedCollectionSpec extends GormDatastoreSpec {
 
-    def service
-    def setup() {
-        service = new LibraryService()
-    }
+    private service = new LibraryService()
 
     void testAddBooks() {
         when:
@@ -21,6 +16,7 @@ class AddToMethodWithEmbeddedCollectionSpec extends GormDatastoreSpec{
         library
         library.books.size()==1
     }
+
     void testAddBooksInTest() {
         when:
         LibraryBook book = new LibraryBook(title:"title", author:"me")
@@ -36,18 +32,13 @@ class AddToMethodWithEmbeddedCollectionSpec extends GormDatastoreSpec{
     List getDomainClasses() {
         [Library, LibraryBook]
     }
-
-
 }
-
 
 @Entity
 class Library {
-    static constraints = {
-    }
 
     static embedded = [
-            'books'
+        'books'
     ]
 
     Set books

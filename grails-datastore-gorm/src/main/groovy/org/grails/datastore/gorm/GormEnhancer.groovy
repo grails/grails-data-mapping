@@ -16,28 +16,28 @@ package org.grails.datastore.gorm
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+
+import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.codehaus.groovy.runtime.metaclass.ClosureStaticMetaMethod
 import org.grails.datastore.gorm.finders.CountByFinder
-import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FindAllByBooleanFinder
 import org.grails.datastore.gorm.finders.FindAllByFinder
 import org.grails.datastore.gorm.finders.FindByBooleanFinder
 import org.grails.datastore.gorm.finders.FindByFinder
-import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.finders.FindOrCreateByFinder
 import org.grails.datastore.gorm.finders.FindOrSaveByFinder
+import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.finders.ListOrderByFinder
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
+import org.grails.datastore.gorm.validation.constraints.UniqueConstraintFactory
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.types.Basic
+import org.grails.datastore.mapping.model.types.EmbeddedCollection
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.model.types.OneToMany
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.transaction.PlatformTransactionManager
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
-import org.grails.datastore.gorm.validation.constraints.UniqueConstraintFactory
-import org.grails.datastore.mapping.model.types.Basic
-import org.grails.datastore.mapping.model.types.EmbeddedCollection
 
 /**
  * Enhances a class with GORM behavior
@@ -223,16 +223,14 @@ class GormEnhancer {
     }
 
     protected List<FinderMethod> getAllDynamicFinders() {
-        List<FinderMethod> finders = new ArrayList<FinderMethod>();
-        finders.add(new FindOrCreateByFinder(datastore));
-        finders.add(new FindOrSaveByFinder(datastore));
-        finders.add(new FindByFinder(datastore));
-        finders.add(new FindAllByFinder(datastore));
-        finders.add(new FindAllByBooleanFinder(datastore));
-        finders.add(new FindByBooleanFinder(datastore));
-        finders.add(new CountByFinder(datastore));
-        finders.add(new ListOrderByFinder(datastore));
-        return finders;
+        [new FindOrCreateByFinder(datastore),
+         new FindOrSaveByFinder(datastore),
+         new FindByFinder(datastore),
+         new FindAllByFinder(datastore),
+         new FindAllByBooleanFinder(datastore),
+         new FindByBooleanFinder(datastore),
+         new CountByFinder(datastore),
+         new ListOrderByFinder(datastore)]
     }
 
     private List initialiseFinders() {

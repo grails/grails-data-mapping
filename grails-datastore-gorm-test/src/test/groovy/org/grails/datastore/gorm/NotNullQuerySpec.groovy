@@ -3,8 +3,7 @@ package org.grails.datastore.gorm
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
-class NotNullQuerySpec extends GormDatastoreSpec{
-
+class NotNullQuerySpec extends GormDatastoreSpec {
 
     void "Test query of null value with dynamic finder"() {
         given:
@@ -46,7 +45,6 @@ class NotNullQuerySpec extends GormDatastoreSpec{
             results[0].name == "Bob"
     }
 
-
     void "Test query of null value with dynamic finder on association"() {
         given:
             new NullMe(name:"Bob", other: new NullOther(name: 'stuff').save()).save()
@@ -72,7 +70,6 @@ class NotNullQuerySpec extends GormDatastoreSpec{
             new NullMe(name:"Bob", other: new NullOther(name: 'stuff').save()).save()
             new NullMe(name:"Fred").save()
 
-
         when:
             def results = NullMe.withCriteria { isNull "other" }
 
@@ -92,8 +89,6 @@ class NotNullQuerySpec extends GormDatastoreSpec{
     List getDomainClasses() {
         [NullMe, NullOther]
     }
-
-
 }
 
 @Entity

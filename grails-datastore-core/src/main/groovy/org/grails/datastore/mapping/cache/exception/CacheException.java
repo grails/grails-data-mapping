@@ -5,6 +5,8 @@ package org.grails.datastore.mapping.cache.exception;
  * @author Roman Stepanenko
  */
 public class CacheException extends RuntimeException{
+    private static final long serialVersionUID = 1;
+
     public CacheException() {
     }
 

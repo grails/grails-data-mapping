@@ -3,15 +3,12 @@ package org.grails.datastore.gorm.mongo
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
-/**
- *
- */
-class EmbeddedStringListInsideEmbeddedCollectionSpec extends GormDatastoreSpec{
+class EmbeddedStringListInsideEmbeddedCollectionSpec extends GormDatastoreSpec {
+
     @Override
     List getDomainClasses() {
         [ESLIECPerson]
     }
-
 
     void "Test that an embedded primitive string can be used inside an embedded collection"() {
         when:"A embedded collection is persisted which has an embedded string"
@@ -38,31 +35,23 @@ class EmbeddedStringListInsideEmbeddedCollectionSpec extends GormDatastoreSpec{
             p.cameras.size() == 1
             p.cameras[0].name == "Canon 50D"
             p.cameras[0].lenses == ["Wide", "Long", "Other"]
-
     }
-
 }
 
 @Entity
 class ESLIECPerson {
 
     String id
-	String name
-	List<Camera> cameras   = []
+    String name
+    List<Camera> cameras   = []
 
-	static embedded = ['cameras']
-
-    static constraints = {
-    }
+    static embedded = ['cameras']
 }
 
 class Camera {
 
-	String name
-	List<String> lenses = []
+    String name
+    List<String> lenses = []
 
-	static embedded =['lenses']
-
-    static constraints = {
-    }
+    static embedded = ['lenses']
 }

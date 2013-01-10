@@ -122,7 +122,7 @@ public class ClassPropertyFetcher {
         for (PropertyDescriptor desc : propertyDescriptors) {
             propertyDescriptorsByName.put(desc.getName(),desc);
             final Class<?> propertyType = desc.getPropertyType();
-            if(propertyType == null) continue;
+            if (propertyType == null) continue;
             List<PropertyDescriptor> pds = typeToPropertyMap.get(propertyType);
             if (pds == null) {
                 pds = new ArrayList<PropertyDescriptor>();

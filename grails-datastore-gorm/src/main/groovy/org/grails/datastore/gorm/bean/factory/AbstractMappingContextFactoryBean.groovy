@@ -14,19 +14,19 @@
  */
 package org.grails.datastore.gorm.bean.factory
 
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
+import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
+import org.grails.datastore.mapping.model.MappingContext
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.springframework.beans.factory.FactoryBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
-import org.grails.datastore.mapping.model.MappingContext
-import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 
 /**
  * An abstract factory bean for constructing MappingContext instances
@@ -45,7 +45,7 @@ abstract class AbstractMappingContextFactoryBean implements FactoryBean<MappingC
     boolean defaultExternal
 
     MappingContext getObject() {
-        def mappingContext = createMappingContext();
+        def mappingContext = createMappingContext()
         mappingContext.proxyFactory = new GroovyProxyFactory()
 
         registerCustomTypeMarshallers(mappingContext)

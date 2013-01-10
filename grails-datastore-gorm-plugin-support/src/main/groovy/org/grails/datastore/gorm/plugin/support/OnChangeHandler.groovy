@@ -16,18 +16,16 @@ package org.grails.datastore.gorm.plugin.support
 
 import java.lang.reflect.Method
 
+import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsServiceClass
 import org.codehaus.groovy.grails.commons.ServiceArtefactHandler
 import org.codehaus.groovy.grails.commons.spring.TypeSpecifyableTransactionProxyFactoryBean
 import org.codehaus.groovy.grails.orm.support.GroovyAwareNamedTransactionAttributeSource
-import org.codehaus.groovy.grails.plugins.GrailsPlugin
-import org.springframework.core.annotation.AnnotationUtils
-import org.springframework.transaction.annotation.Transactional
 import org.grails.datastore.mapping.core.Datastore
-import org.springframework.transaction.PlatformTransactionManager
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.context.ApplicationContext
+import org.springframework.core.annotation.AnnotationUtils
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.validation.Validator
 
 /**
@@ -51,17 +49,17 @@ abstract class OnChangeHandler extends DynamicMethodsConfigurer{
         }
 
         def application = event.application
-        if(application.isArtefactOfType(DomainClassArtefactHandler.TYPE, source)) {
+        if (application.isArtefactOfType(DomainClassArtefactHandler.TYPE, source)) {
             final mappingContext = datastore.mappingContext
             final entity = mappingContext.addPersistentEntity(source, true)
             final domainClass = application.addArtefact(DomainClassArtefactHandler.TYPE, source)
             ApplicationContext ctx = event.ctx
-            if(ctx.containsBean("${domainClass}Validator")) {
+            if (ctx.containsBean("${domainClass}Validator")) {
                 mappingContext.addEntityValidator(entity, ctx.getBean("${domainClass}Validator", Validator))
             }
             configure()
         }
-        else if(application.isArtefactOfType(ServiceArtefactHandler.TYPE, source)) {
+        else if (application.isArtefactOfType(ServiceArtefactHandler.TYPE, source)) {
 
             def serviceClass = application.addArtefact(ServiceArtefactHandler.TYPE, source)
             if (!shouldCreateTransactionalProxy(serviceClass)) {

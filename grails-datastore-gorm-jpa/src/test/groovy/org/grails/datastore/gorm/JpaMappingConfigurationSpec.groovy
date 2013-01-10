@@ -1,11 +1,13 @@
 package org.grails.datastore.gorm
 
 import grails.gorm.JpaEntity
+
 import javax.persistence.OneToMany
 import javax.persistence.OneToOne
-import org.grails.datastore.mapping.jpa.config.JpaMappingConfigurationStrategy;
-import org.grails.datastore.mapping.jpa.config.JpaMappingContext;
-import org.grails.datastore.mapping.jpa.config.JpaMappingFactory;
+
+import org.grails.datastore.mapping.jpa.config.JpaMappingConfigurationStrategy
+import org.grails.datastore.mapping.jpa.config.JpaMappingContext
+import org.grails.datastore.mapping.jpa.config.JpaMappingFactory
 
 import spock.lang.Specification
 
@@ -38,8 +40,8 @@ class JpaMappingConfigurationSpec extends Specification {
             properties[2].name == "other"
             properties[2] instanceof org.grails.datastore.mapping.model.types.OneToOne
     }
-
 }
+
 @JpaEntity
 class JpaDomain {
     Long id

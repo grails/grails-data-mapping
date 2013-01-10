@@ -67,7 +67,7 @@ abstract class SpringConfigurer {
 
             def currentSpringConfig = getSpringConfig()
 
-            if(!currentSpringConfig.containsBean("transactionManager") && !manager?.hasGrailsPlugin('hibernate')) {
+            if (!currentSpringConfig.containsBean("transactionManager") && !manager?.hasGrailsPlugin('hibernate')) {
                 currentSpringConfig.addAlias('transactionManager', "${typeLower}TransactionManager")
             }
 
@@ -110,7 +110,7 @@ abstract class SpringConfigurer {
             // make sure validators for domain classes are regular GrailsDomainClassValidator
             def isHibernateInstalled = manager.hasGrailsPlugin("hibernate")
 
-            if(!isHibernateInstalled) {
+            if (!isHibernateInstalled) {
                 currentSpringConfig.addAlias  "persistenceInterceptor", "${typeLower}PersistenceInterceptor"
             }
             for (dc in application.domainClasses) {
@@ -122,7 +122,7 @@ abstract class SpringConfigurer {
                     AbstractBeanDefinition beandef = springConfig.getBeanConfig(validatorBeanName)?.beanDefinition ?:
                                                         springConfig.getBeanDefinition(validatorBeanName)
 
-                    if(beandef != null) {
+                    if (beandef != null) {
                         // remove the session factory attribute if present
                         beandef.getPropertyValues().removePropertyValue("sessionFactory")
                         beandef.beanClassName = GrailsDomainClassValidator.name

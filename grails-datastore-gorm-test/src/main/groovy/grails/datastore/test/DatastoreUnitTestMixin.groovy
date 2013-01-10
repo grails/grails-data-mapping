@@ -22,18 +22,18 @@ import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import org.codehaus.groovy.grails.plugins.PluginManagerHolder
 import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.grails.datastore.gorm.GormEnhancer
-import org.springframework.context.ConfigurableApplicationContext
-import org.springframework.context.support.GenericApplicationContext
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
-import org.springframework.transaction.PlatformTransactionManager
-import org.springframework.util.ClassUtils
-import org.grails.datastore.gorm.events.DomainEventListener
-import org.grails.datastore.gorm.events.AutoTimestampEventListener
-import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.grails.datastore.mapping.transactions.SessionHolder
+import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.context.support.GenericApplicationContext
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.support.TransactionSynchronizationManager
+import org.springframework.util.ClassUtils
 
 /**
  * <p>A Groovy mixin used for testing datastore interactions. Test cases should include the mixin using
@@ -63,7 +63,7 @@ class DatastoreUnitTestMixin {
         ctx.addApplicationListener(new DomainEventListener(datastore))
         ctx.addApplicationListener(new AutoTimestampEventListener(datastore))
     }
- 
+
     Session session
     PlatformTransactionManager transactionManager = new DatastoreTransactionManager(datastore:datastore)
 
@@ -77,19 +77,19 @@ class DatastoreUnitTestMixin {
     Session connect() {
         session = datastore.connect()
         def resource = TransactionSynchronizationManager.getResource(datastore)
-        if(resource == null)
+        if (resource == null) {
             DatastoreUtils.bindSession session
+        }
         return session
     }
 
     def mockDomain(Class domainClass, List instances = []) {
         if (session == null) {
             datastore.clearData()
-            session = DatastoreUtils.getSession(datastore, true);
+            session = DatastoreUtils.getSession(datastore, true)
             if (!hasSessionBound()) {
-                DatastoreUtils.bindSession(session);
+                DatastoreUtils.bindSession(session)
             }
-
         }
 
         if (!(PluginManagerHolder.pluginManager instanceof DefaultGrailsPluginManager)) {
@@ -110,25 +110,23 @@ class DatastoreUnitTestMixin {
     }
 
     protected boolean hasSessionBound() {
-        return TransactionSynchronizationManager.getResource(getDatastore()) != null;
+        return TransactionSynchronizationManager.getResource(getDatastore()) != null
     }
-
 
     def disconnect() {
         session?.disconnect()
-        if(PluginManagerHolder.pluginManager?.is(mockPluginManager)) {
+        if (PluginManagerHolder.pluginManager?.is(mockPluginManager)) {
             PluginManagerHolder.pluginManager = null
         }
 
         datastore.clearData()
         if (!hasSessionBound()) {
-            return;
+            return
         }
 
         // single session mode
-        SessionHolder sessionHolder =
-                (SessionHolder) TransactionSynchronizationManager.unbindResource(getDatastore());
-        DatastoreUtils.closeSession(sessionHolder.getSession());
+        SessionHolder sessionHolder = TransactionSynchronizationManager.unbindResource(getDatastore())
+        DatastoreUtils.closeSession(sessionHolder.getSession())
 
     }
 }

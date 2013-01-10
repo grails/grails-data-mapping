@@ -1,16 +1,17 @@
 package org.grails.datastore.mapping.dynamodb.engine;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import org.grails.datastore.mapping.core.OptimisticLockingException;
-import org.grails.datastore.mapping.dynamodb.DynamoDBDatastore;
-import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.dynamodb.util.DynamoDBConst;
-import org.grails.datastore.mapping.dynamodb.util.DynamoDBUtil;
-import org.springframework.dao.DataAccessException;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.grails.datastore.mapping.core.OptimisticLockingException;
+import org.grails.datastore.mapping.dynamodb.DynamoDBDatastore;
+import org.grails.datastore.mapping.dynamodb.util.DynamoDBConst;
+import org.grails.datastore.mapping.dynamodb.util.DynamoDBUtil;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.springframework.dao.DataAccessException;
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.services.dynamodb.model.AttributeValue;
 
 /**
  * Implementation of HiLo generator for DynamoDB.
@@ -88,7 +89,7 @@ public class DynamoDBHiLoIdGenerator implements DynamoDBIdGenerator {
      */
     private void initialize(PersistentEntity persistentEntity) {
         try {
-            Map<String,AttributeValue> item = datastore.getDynamoDBTemplate().getConsistent(table, DynamoDBUtil.createIdKey(id));
+            /*Map<String,AttributeValue> item =*/ datastore.getDynamoDBTemplate().getConsistent(table, DynamoDBUtil.createIdKey(id));
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         } catch (Exception e) {
@@ -132,7 +133,6 @@ public class DynamoDBHiLoIdGenerator implements DynamoDBIdGenerator {
             datastore.getDynamoDBTemplate().putItemVersioned(table, DynamoDBUtil.createIdKey(id), item, String.valueOf(expectedVersion), persistentEntity);
         }
     }
-
 
     private String id;
     private long current;

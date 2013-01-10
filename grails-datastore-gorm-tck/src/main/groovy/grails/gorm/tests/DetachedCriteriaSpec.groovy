@@ -2,15 +2,7 @@ package grails.gorm.tests
 
 import grails.gorm.DetachedCriteria
 
-/**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 9/6/11
- * Time: 12:09 PM
- * To change this template use File | Settings | File Templates.
- */
-class DetachedCriteriaSpec extends GormDatastoreSpec{
-
+class DetachedCriteriaSpec extends GormDatastoreSpec {
 
     void "Test list method with property projection"() {
         given:"A bunch of people"
@@ -236,8 +228,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
 //            results.every { it.lastName == 'Simpson'}
 //    }
 
-
-    protected def createPeople() {
+    protected void createPeople() {
         new Person(firstName: "Homer", lastName: "Simpson").save()
         new Person(firstName: "Marge", lastName: "Simpson").save()
         new Person(firstName: "Bart", lastName: "Simpson").save()
@@ -245,5 +236,4 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
         new Person(firstName: "Barney", lastName: "Rubble").save()
         new Person(firstName: "Fred", lastName: "Flinstone").save()
     }
-
 }

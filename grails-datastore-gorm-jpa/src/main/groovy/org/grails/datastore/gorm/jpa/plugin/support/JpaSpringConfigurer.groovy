@@ -14,21 +14,20 @@
  */
 package org.grails.datastore.gorm.jpa.plugin.support
 
-import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.datastore.gorm.jpa.bean.factory.JpaDatastoreFactoryBean
-import org.grails.datastore.mapping.jpa.config.JpaMappingContext
 import org.grails.datastore.gorm.jpa.bean.factory.JpaMappingContextFactoryBean
 import org.grails.datastore.gorm.jpa.support.JpaPersistenceContextInterceptor
-import org.grails.datastore.mapping.web.support.OpenSessionInViewInterceptor
+import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewInterceptor
 
 /**
- * Configures JPA. Assumes an entityManagerFactory bean has been configured by the application
+ * Configures JPA. Assumes an entityManagerFactory bean has been configured by the application.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-class JpaSpringConfigurer extends SpringConfigurer{
+class JpaSpringConfigurer extends SpringConfigurer {
+
     @Override
     String getDatastoreType() { "jpa" }
 
@@ -60,13 +59,10 @@ class JpaSpringConfigurer extends SpringConfigurer{
                 }
             }
         }
-
     }
 
     @Override
     Closure getSpringCustomizer() {
         return null  // do nothing, handled by configureSpring
     }
-
-
 }

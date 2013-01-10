@@ -179,7 +179,7 @@ public class JpaMappingConfigurationStrategy implements MappingConfigurationStra
                                 manyToOneProperty
                         );
                     }
-                    else if (field.getAnnotation(Transient.class) == null){
+                    else if (field.getAnnotation(Transient.class) == null) {
                         persistentProperties.add(
                                 propertyFactory.createSimple(owner, context, propertyDescriptor)
                         );

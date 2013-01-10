@@ -14,11 +14,8 @@ class ChildEntity implements Serializable {
     Long version
     String name
 
-    public String toString() {
-        return "ChildEntity{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                '}';
+    String toString() {
+        "ChildEntity{id='$id', name='$name'}"
     }
 
     static belongsTo = [TestEntity]

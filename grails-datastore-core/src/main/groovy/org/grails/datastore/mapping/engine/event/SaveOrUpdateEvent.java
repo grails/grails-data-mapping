@@ -20,7 +20,6 @@ public class SaveOrUpdateEvent extends AbstractPersistenceEvent {
         super(source, entity);
     }
 
-
     @Override
     public EventType getEventType() {
         return EventType.SaveOrUpdate;

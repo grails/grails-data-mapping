@@ -14,17 +14,17 @@
  */
 package org.grails.datastore.mapping.query.api;
 
-
 import java.util.Collection;
-import java.util.List;
 
 /**
- * Interface for the implementations that construct of criteria queries
+ * Interface for the implementations that construct of criteria queries.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public interface Criteria  {
+
     /**
      * Creates a criterion that restricts the id to the given value
      * @param value The value
@@ -47,9 +47,10 @@ public interface Criteria  {
      * @return The criteria
      */
     Criteria isNotEmpty(String propertyName);
+
     /**
      * Creates a criterion that asserts the given property is null
-     * 
+     *
      * @param propertyName The property name
      * @return The criteria
      */

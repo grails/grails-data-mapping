@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import grails.persistence.Entity
+
 import spock.lang.Ignore
 
 @Ignore
@@ -15,10 +16,10 @@ class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
         then:
         result == null
-            
+
         when:
         result = SimpleWidget.last()
-            
+
         then:
         result == null
     }
@@ -35,14 +36,14 @@ class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
         then:
         result?.name == 'one'
-            
+
         when:
         result = SimpleWidget.last()
-            
+
         then:
         result?.name == 'three'
     }
-    
+
     void "Test first and last method with one entity"() {
         given:
         assert new SimpleWidget(name: 'one', spanishName: 'uno').save()
@@ -53,14 +54,14 @@ class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
         then:
         result?.name == 'one'
-            
+
         when:
         result = SimpleWidget.last()
-            
+
         then:
         result?.name == 'one'
     }
-    
+
     void "Test first and last method with sort parameter"() {
         given:
         assert new SimpleWidget(name: 'one', spanishName: 'uno').save()
@@ -73,10 +74,10 @@ class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
         then:
         result?.name == 'one'
-            
+
         when:
         result = SimpleWidget.last(sort: 'name')
-            
+
         then:
         result?.name == 'two'
 
@@ -85,10 +86,10 @@ class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
         then:
         result?.name == 'one'
-            
+
         when:
         result = SimpleWidget.last('name')
-            
+
         then:
         result?.name == 'two'
 
@@ -97,10 +98,10 @@ class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
         then:
         result?.spanishName == 'dos'
-            
+
         when:
         result = SimpleWidget.last(sort: 'spanishName')
-            
+
         then:
         result?.spanishName == 'uno'
 
@@ -109,14 +110,14 @@ class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
         then:
         result?.spanishName == 'dos'
-            
+
         when:
         result = SimpleWidget.last('spanishName')
-            
+
         then:
         result?.spanishName == 'uno'
     }
-    
+
     void "Test first and last method with non standard identifier"() {
         given:
         ['one', 'two', 'three'].each { name ->
@@ -129,14 +130,14 @@ class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
         then:
         result?.name == 'one'
-            
+
         when:
         result = SimpleWidgetWithNonStandardId.last()
-            
+
         then:
         result?.name == 'three'
     }
-    
+
     void "Test first and last method with composite key"() {
         given:
         assert new PersonWithCompositeKey(firstName: 'Steve', lastName: 'Harris', age: 56).save()
@@ -150,10 +151,10 @@ class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
         then:
         result?.firstName == 'Steve'
-            
+
         when:
         result = PersonWithCompositeKey.last()
-            
+
         then:
         result?.firstName == 'Bruce'
 
@@ -162,22 +163,22 @@ class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
         then:
         result?.firstName == 'Adrian'
-            
+
         when:
         result = PersonWithCompositeKey.last('firstName')
-            
+
         then:
         result?.firstName == 'Steve'
-        
+
         when:
         result = PersonWithCompositeKey.first(sort: 'firstName')
 
         then:
         result?.firstName == 'Adrian'
-            
+
         when:
         result = PersonWithCompositeKey.last(sort: 'firstName')
-            
+
         then:
         result?.firstName == 'Steve'
 
@@ -186,26 +187,26 @@ class FirstAndLastMethodSpec extends GormDatastoreSpec {
 
         then:
         result?.firstName == 'Bruce'
-            
+
         when:
         result = PersonWithCompositeKey.last('age')
-            
+
         then:
         result?.firstName == 'Steve'
-        
+
         when:
         result = PersonWithCompositeKey.first(sort: 'age')
 
         then:
         result?.firstName == 'Bruce'
-            
+
         when:
         result = PersonWithCompositeKey.last(sort: 'age')
-            
+
         then:
         result?.firstName == 'Steve'
     }
-    
+
     @Override
     List getDomainClasses() {
         [SimpleWidget, PersonWithCompositeKey, SimpleWidgetWithNonStandardId]

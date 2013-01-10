@@ -1,8 +1,8 @@
 package org.grails.datastore.mapping.simpledb.engine;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.simpledb.model.Item;
-import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.simpledb.util.SimpleDBConst;
@@ -10,8 +10,9 @@ import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate;
 import org.grails.datastore.mapping.simpledb.util.SimpleDBUtil;
 import org.springframework.dao.DataAccessException;
 
-import java.util.LinkedList;
-import java.util.List;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.services.simpledb.model.Item;
+import com.amazonaws.services.simpledb.model.ReplaceableAttribute;
 
 /**
  * Implementation of HiLo generator for SimpleDB.
@@ -90,7 +91,7 @@ public class SimpleDBHiLoIdGenerator implements SimpleDBIdGenerator {
      */
     private void initialize(PersistentEntity persistentEntity) {
         try {
-            Item item = template.getConsistent(domain, id);
+            /*Item item =*/ template.getConsistent(domain, id);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         } catch (Exception e) {
@@ -126,7 +127,6 @@ public class SimpleDBHiLoIdGenerator implements SimpleDBIdGenerator {
             template.putAttributesVersioned(domain, id, newValues, String.valueOf(expectedVersion), persistentEntity);
         }
     }
-
 
     private String id;
     private long current;

@@ -15,19 +15,28 @@
 package org.grails.datastore.mapping.mongo.query;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.core.SessionImplementor;
-import org.grails.datastore.mapping.document.config.Attribute;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.model.types.*;
+import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.Custom;
+import org.grails.datastore.mapping.model.types.Embedded;
+import org.grails.datastore.mapping.model.types.EmbeddedCollection;
+import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.mongo.MongoSession;
 import org.grails.datastore.mapping.mongo.config.MongoAttribute;
 import org.grails.datastore.mapping.mongo.config.MongoCollection;
@@ -98,21 +107,20 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             public void handle(PersistentEntity entity, AssociationQuery criterion, DBObject query) {
                 Association<?> association = criterion.getAssociation();
                 PersistentEntity associatedEntity = association.getAssociatedEntity();
-                if(association instanceof EmbeddedCollection) {
+                if (association instanceof EmbeddedCollection) {
                     BasicDBObject associationCollectionQuery = new BasicDBObject();
                     populateMongoQuery(associatedEntity, associationCollectionQuery, criterion.getCriteria());
                     BasicDBObject collectionQuery = new BasicDBObject("$elemMatch", associationCollectionQuery);
                     String propertyKey = getPropertyName(entity, association.getName());
                     query.put(propertyKey, collectionQuery);
                 }
-                else if(associatedEntity instanceof EmbeddedPersistentEntity || association instanceof Embedded ) {
+                else if (associatedEntity instanceof EmbeddedPersistentEntity || association instanceof Embedded ) {
                     BasicDBObject associatedEntityQuery = new BasicDBObject();
                     populateMongoQuery(associatedEntity, associatedEntityQuery, criterion.getCriteria());
                     for (String property : associatedEntityQuery.keySet()) {
                         String propertyKey = getPropertyName(entity, association.getName());
                         query.put(propertyKey + '.' + property, associatedEntityQuery.get(property));
                     }
-
                 }
                 else {
                     throw new UnsupportedOperationException("Join queries are not supported by MongoDB");
@@ -129,11 +137,13 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(IsNull.class, new QueryHandler<IsNull>() {
+            @SuppressWarnings("unchecked")
             public void handle(PersistentEntity entity, IsNull criterion, DBObject query) {
                 queryHandlers.get(Equals.class).handle(entity, new Equals(criterion.getProperty(), null), query);
             }
         });
         queryHandlers.put(IsNotNull.class, new QueryHandler<IsNotNull>() {
+            @SuppressWarnings("unchecked")
             public void handle(PersistentEntity entity, IsNotNull criterion, DBObject query) {
                 queryHandlers.get(NotEquals.class).handle(entity, new NotEquals(criterion.getProperty(), null), query);
             }
@@ -181,7 +191,6 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             }
         });
 
-
         queryHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
             public void handle(PersistentEntity entity, NotEquals criterion, DBObject query) {
                 String propertyName = getPropertyName(entity, criterion);
@@ -216,7 +225,6 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         });
 
         queryHandlers.put(In.class, new QueryHandler<In>() {
-            @SuppressWarnings("unchecked")
             public void handle(PersistentEntity entity, In in, DBObject query) {
                 DBObject inQuery = new BasicDBObject();
                 List values = getInListQueryValues(entity, in);
@@ -410,12 +418,11 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     private static DBObject getOrCreatePropertyQuery(DBObject query, String propertyName) {
         Object existing = query.get(propertyName);
         DBObject queryObject = existing instanceof DBObject ? (DBObject) existing : null;
-        if(queryObject == null) {
+        if (queryObject == null) {
             queryObject = new BasicDBObject();
         }
         return queryObject;
     }
-
 
     private static void addWherePropertyComparison(DBObject query, String propertyName, String otherPropertyName, String operator) {
         query.put(MONGO_WHERE_OPERATOR, new StringBuilder(MONGO_THIS_PREFIX).append(propertyName).append(operator).append(MONGO_THIS_PREFIX).append(otherPropertyName).toString());
@@ -494,7 +501,6 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         return query;
     }
 
-    @SuppressWarnings("hiding")
     @Override
     protected List executeQuery(final PersistentEntity entity, final Junction criteria) {
         final MongoTemplate template = mongoSession.getMongoTemplate(entity);
@@ -535,29 +541,33 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     if (projection instanceof CountProjection) {
                         // For some reason the below doesn't return the expected result whilst executing the query and returning the cursor does
                         //projectedResults.add(collection.getCount(query));
-                        if(cursor == null)
+                        if (cursor == null) {
                             cursor = executeQuery(entity, criteria, collection, query);
+                        }
                         projectedResults.add(cursor.size());
                     }
                     else if (projection instanceof MinProjection) {
-                        if(cursor == null)
+                        if (cursor == null) {
                             cursor = executeQuery(entity, criteria, collection, query);
+                        }
                         MinProjection mp = (MinProjection) projection;
 
                         MongoResultList results = new MongoResultList(cursor, mongoEntityPersister);
                         projectedResults.add(manualProjections.min((Collection) results.clone(), getPropertyName(entity, mp.getPropertyName())));
                     }
                     else if (projection instanceof MaxProjection) {
-                        if(cursor == null)
+                        if (cursor == null) {
                             cursor = executeQuery(entity, criteria, collection, query);
+                        }
                         MaxProjection mp = (MaxProjection) projection;
 
                         MongoResultList results = new MongoResultList(cursor, mongoEntityPersister);
                         projectedResults.add(manualProjections.max((Collection) results.clone(), getPropertyName(entity, mp.getPropertyName())));
                     }
-                    else if(projection instanceof CountDistinctProjection) {
-                        if(cursor == null)
+                    else if (projection instanceof CountDistinctProjection) {
+                        if (cursor == null) {
                             cursor = executeQuery(entity, criteria, collection, query);
+                        }
                         CountDistinctProjection mp = (CountDistinctProjection) projection;
 
                         MongoResultList results = new MongoResultList(cursor, mongoEntityPersister);
@@ -580,22 +590,19 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         if (persistentProperty != null) {
                             populateMongoQuery(entity, query, criteria);
 
-
                             List propertyResults = null;
-                            if(max > -1) {
+                            if (max > -1) {
                                 // if there is a limit then we have to do a manual projection since the MongoDB driver doesn't support limits and distinct together
                                 cursor = executeQueryAndApplyPagination(collection, query);
-                                if(distinct) {
-
+                                if (distinct) {
                                     propertyResults = new ArrayList(manualProjections.distinct(new MongoResultList(cursor, mongoEntityPersister), propertyName));
                                 }
                                 else {
                                     propertyResults = manualProjections.property(new MongoResultList(cursor, mongoEntityPersister), propertyName);
-
                                 }
                             }
                             else {
-                                if(distinct || (projection instanceof IdProjection)) {
+                                if (distinct || (projection instanceof IdProjection)) {
                                     propertyResults = collection.distinct(propertyName, query);
                                 }
                                 else {
@@ -610,7 +617,6 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                                     propertyResults = projectedProperties;
                                 }
                             }
-
 
                             if (persistentProperty instanceof ToOne) {
                                 Association a = (Association) persistentProperty;
@@ -634,8 +640,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             }
 
             protected DBCursor executeQuery(final PersistentEntity entity,
-                    final Junction criteria, final DBCollection collection,
-                    DBObject query) {
+                    final Junction criteria, final DBCollection collection, DBObject query) {
                 final DBCursor cursor;
                 if (criteria.isEmpty()) {
                     cursor = executeQueryAndApplyPagination(collection, query);
@@ -645,23 +650,21 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     cursor = executeQueryAndApplyPagination(collection, query);
                 }
 
-                if(queryArguments != null) {
-                    if(queryArguments.containsKey(HINT_ARGUMENT)) {
+                if (queryArguments != null) {
+                    if (queryArguments.containsKey(HINT_ARGUMENT)) {
                         Object hint = queryArguments.get(HINT_ARGUMENT);
-                        if(hint instanceof Map) {
+                        if (hint instanceof Map) {
                             cursor.hint(new BasicDBObject((Map)hint));
                         }
-                        else if (hint != null){
+                        else if (hint != null) {
                             cursor.hint(hint.toString());
                         }
-
                     }
                 }
                 return cursor;
             }
 
-            protected DBCursor executeQueryAndApplyPagination(
-                    final DBCollection collection, DBObject query) {
+            protected DBCursor executeQueryAndApplyPagination(final DBCollection collection, DBObject query) {
                 final DBCursor cursor;
                 cursor = collection.find(query);
                 if (offset > 0) {
@@ -682,7 +685,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 }
                 else {
                     MongoCollection coll = (MongoCollection) entity.getMapping().getMappedForm();
-                    if(coll != null && coll.getSort() != null) {
+                    if (coll != null && coll.getSort() != null) {
                         DBObject orderObject = new BasicDBObject();
                         Order order = coll.getSort();
                         String property = order.getProperty();
@@ -690,7 +693,6 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         orderObject.put(property, order.getDirection() == Order.Direction.DESC ? -1 : 1);
                         cursor.sort(orderObject);
                     }
-                    
                 }
 
                 return cursor;
@@ -743,8 +745,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         }
     }
 
-    protected static String getPropertyName(PersistentEntity entity,
-            PropertyNameCriterion criterion) {
+    protected static String getPropertyName(PersistentEntity entity, PropertyNameCriterion criterion) {
         String propertyName = criterion.getProperty();
         return getPropertyName(entity, propertyName);
     }
@@ -757,12 +758,13 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             PersistentProperty property = entity.getPropertyByName(propertyName);
             if (property != null) {
                 propertyName = MappingUtils.getTargetKey(property);
-                if(property instanceof ToOne && !(property instanceof Embedded)) {
+                if (property instanceof ToOne && !(property instanceof Embedded)) {
                     ToOne association = (ToOne) property;
                     MongoAttribute attr = (MongoAttribute) association.getMapping().getMappedForm();
                     boolean isReference = attr == null || attr.isReference();
-                    if(isReference)
+                    if (isReference) {
                         propertyName = propertyName + MONGO_ID_REFERENCE_SUFFIX;
+                    }
                 }
             }
         }
@@ -928,12 +930,11 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         public Iterator iterator() {
             final ListIterator iterator = super.listIterator();
             return new Iterator() {
-                @Override
                 public boolean hasNext() {
                     return iterator.hasNext();
                 }
 
-                @Override
+                @SuppressWarnings("unchecked")
                 public Object next() {
                     Object object = iterator.next();
                     if (object instanceof DBObject) {
@@ -943,7 +944,6 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                     return object;
                 }
 
-                @Override
                 public void remove() {
                     iterator.remove();
                 }
@@ -975,5 +975,4 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
             return arrayList;
         }
     }
-
 }

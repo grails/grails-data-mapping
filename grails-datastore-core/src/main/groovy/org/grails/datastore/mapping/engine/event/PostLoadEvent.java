@@ -34,7 +34,6 @@ public class PostLoadEvent extends AbstractPersistenceEvent {
         super(source, entity);
     }
 
-
     @Override
     public EventType getEventType() {
         return EventType.PostLoad;

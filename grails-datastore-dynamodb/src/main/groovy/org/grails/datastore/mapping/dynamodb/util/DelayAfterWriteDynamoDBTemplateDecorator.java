@@ -14,12 +14,19 @@
  */
 package org.grails.datastore.mapping.dynamodb.util;
 
-import com.amazonaws.services.dynamodb.model.*;
+import java.util.List;
+import java.util.Map;
+
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.dao.DataAccessException;
 
-import java.util.List;
-import java.util.Map;
+import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.amazonaws.services.dynamodb.model.AttributeValueUpdate;
+import com.amazonaws.services.dynamodb.model.Condition;
+import com.amazonaws.services.dynamodb.model.Key;
+import com.amazonaws.services.dynamodb.model.KeySchema;
+import com.amazonaws.services.dynamodb.model.ProvisionedThroughput;
+import com.amazonaws.services.dynamodb.model.TableDescription;
 
 /**
  * Simple decorator used in testing to fight eventual consistency of DynamoDB.
@@ -42,12 +49,10 @@ public class DelayAfterWriteDynamoDBTemplateDecorator implements DynamoDBTemplat
         return result;
     }
 
-    @Override
     public List<Map<String, AttributeValue>> scan(String tableName, Map<String, Condition> filter, int max) throws DataAccessException {
         return template.scan(tableName, filter, max);
     }
 
-    @Override
     public int scanCount(String tableName, Map<String, Condition> filter) {
         return template.scanCount(tableName, filter);
     }
@@ -65,31 +70,26 @@ public class DelayAfterWriteDynamoDBTemplateDecorator implements DynamoDBTemplat
         return template.getConsistent(domainName, id);
     }
 
-    @Override
     public void putItem(String tableName, Map<String, AttributeValue> attributes) throws DataAccessException {
         template.putItem(tableName, attributes);
 //        pause();      //for tests we use DelayAfterWriteDynamoDBSession which pauses after flush
     }
 
-    @Override
     public void putItemVersioned(String tableName, Key key, Map<String, AttributeValue> attributes, String expectedVersion, PersistentEntity persistentEntity) throws DataAccessException {
         template.putItemVersioned(tableName, key, attributes, expectedVersion, persistentEntity);
 //        pause();      //for tests we use DelayAfterWriteDynamoDBSession which pauses after flush
     }
 
-    @Override
     public void updateItem(String tableName, Key key, Map<String, AttributeValueUpdate> attributes) throws DataAccessException {
         template.updateItem(tableName, key, attributes);
 //        pause();      //for tests we use DelayAfterWriteDynamoDBSession which pauses after flush
     }
 
-    @Override
     public void updateItemVersioned(String tableName, Key key, Map<String, AttributeValueUpdate> attributes, String expectedVersion, PersistentEntity persistentEntity) throws DataAccessException {
         template.updateItemVersioned(tableName, key, attributes, expectedVersion, persistentEntity);
 //        pause();      //for tests we use DelayAfterWriteDynamoDBSession which pauses after flush
     }
 
-    @Override
     public void deleteItem(String tableName, Key key) throws DataAccessException {
         template.deleteItem(tableName, key);
 //        pause();      //for tests we use DelayAfterWriteDynamoDBSession which pauses after flush
@@ -99,18 +99,16 @@ public class DelayAfterWriteDynamoDBTemplateDecorator implements DynamoDBTemplat
         return template.listTables();
     }
 
-    @Override
     public void createTable(String tableName, KeySchema ks, ProvisionedThroughput provisionedThroughput) throws DataAccessException {
         template.createTable(tableName, ks, provisionedThroughput);
         pause();
     }
 
-    @Override
     public TableDescription describeTable(String tableName) throws DataAccessException {
         return template.describeTable(tableName);
     }
 
-    private void pause(){
+    private void pause() {
         try { Thread.sleep(delayMillis); } catch (InterruptedException e) { /* ignored */ }
     }
 }

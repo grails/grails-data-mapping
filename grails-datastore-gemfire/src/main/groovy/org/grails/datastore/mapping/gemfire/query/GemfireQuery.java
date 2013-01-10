@@ -22,18 +22,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.grails.datastore.mapping.gemfire.engine.GemfireEntityPersister;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
-import org.springframework.data.gemfire.GemfireCallback;
-import org.springframework.data.gemfire.GemfireTemplate;
 import org.grails.datastore.mapping.gemfire.GemfireDatastore;
 import org.grails.datastore.mapping.gemfire.GemfireSession;
+import org.grails.datastore.mapping.gemfire.engine.GemfireEntityPersister;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.order.ManualEntityOrdering;
 import org.grails.datastore.mapping.query.projections.ManualProjections;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.data.gemfire.GemfireCallback;
+import org.springframework.data.gemfire.GemfireTemplate;
 
 import com.gemstone.gemfire.GemFireCheckedException;
 import com.gemstone.gemfire.GemFireException;
@@ -51,7 +51,7 @@ import com.gemstone.gemfire.cache.query.SelectResults;
  * @author Graeme Rocher
  * @since 1.0
  */
-@SuppressWarnings({"hiding", "rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class GemfireQuery extends Query {
     public static final String SELECT_CLAUSE = "SELECT ";
     public static final String SELECT_DISTINCT = " DISTINCT ";
@@ -149,15 +149,14 @@ public class GemfireQuery extends Query {
             }
         });
         queryHandlers.put(IsNull.class, new QueryHandler() {
-        	public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, List params, int index) {
-        		IsNull eq = (IsNull) criterion;
-        		final String name = eq.getProperty();
-        		validateProperty(entity, name, IsNull.class);
-        		q.append(calculateName(entity, name))
-        		.append(" = NULL ");
-        		
-        		return index;
-        	}
+            public int handle(PersistentEntity entity, Criterion criterion, StringBuilder q, List params, int index) {
+                IsNull eq = (IsNull) criterion;
+                final String name = eq.getProperty();
+                validateProperty(entity, name, IsNull.class);
+                q.append(calculateName(entity, name)).append(" = NULL ");
+
+                return index;
+            }
         });
         queryHandlers.put(Disjunction.class, new QueryHandler() {
             public int handle(PersistentEntity entity, Criterion criterion, StringBuilder query, List params, int index) {
@@ -239,7 +238,6 @@ public class GemfireQuery extends Query {
                 return appendOrEmbedValue(q, params, index, eq.getValue(), LESS_THAN);
             }
         });
-
     }
 
     private static int appendOrEmbedValue(StringBuilder q, List params, int index, Object value, String operator) {
@@ -352,7 +350,7 @@ public class GemfireQuery extends Query {
                             else if (projection instanceof IdProjection) {
                                 results.add(region.keySet());
                             }
-                            else if(projection instanceof CountDistinctProjection) {
+                            else if (projection instanceof CountDistinctProjection) {
                                 if (values == null) {
                                     values = region.values();
                                 }
@@ -370,7 +368,6 @@ public class GemfireQuery extends Query {
                                     results.add(propertyProjectionResults);
                                 }
                             }
-
                         }
                         finalResults = results;
                     }
@@ -412,7 +409,6 @@ public class GemfireQuery extends Query {
                     else {
                         finalResults = wrapResultInList(result);
                     }
-
                 }
 
                 finalResults = ordering.applyOrder(finalResults, getOrderBy());
@@ -443,7 +439,7 @@ public class GemfireQuery extends Query {
     private void handleAfterLoad(List finalResults) {
         for (Object o : finalResults) {
             GemfireEntityPersister persister = (GemfireEntityPersister) getSession().getPersister(o);
-            if(persister != null) {
+            if (persister != null) {
                 persister.handleDatastoreLoad(getEntity(), o);
             }
         }
@@ -462,7 +458,6 @@ public class GemfireQuery extends Query {
         String select = SELECT_CLAUSE;
         String from = FROM_CLAUSE + regionName;
         String where = WHERE_CLAUSE;
-
 
         final StringBuilder q = new StringBuilder();
         q.append(select);

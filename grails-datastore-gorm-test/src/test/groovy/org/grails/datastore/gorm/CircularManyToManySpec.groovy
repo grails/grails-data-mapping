@@ -3,8 +3,6 @@ package org.grails.datastore.gorm
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
-/**
- */
 class CircularManyToManySpec extends GormDatastoreSpec {
 
     void "Test that a circular one-to-many persists correctly"() {
@@ -43,8 +41,6 @@ class CircularManyToManySpec extends GormDatastoreSpec {
     List getDomainClasses() {
         [CircularPerson]
     }
-
-
 }
 
 @Entity
@@ -62,8 +58,5 @@ class CircularPerson {
     static mapping = {
         friends joinTable: "person_friends"
         enemies joinTable: "person_enemies"
-    }
-
-    static constraints = {
     }
 }

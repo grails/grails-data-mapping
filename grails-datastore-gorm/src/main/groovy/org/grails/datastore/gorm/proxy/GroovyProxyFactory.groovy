@@ -14,11 +14,9 @@
  */
 package org.grails.datastore.gorm.proxy
 
-import org.grails.datastore.mapping.proxy.ProxyFactory
 import org.grails.datastore.mapping.core.Session
-
 import org.grails.datastore.mapping.engine.EntityPersister
-import org.springframework.dao.DataRetrievalFailureException
+import org.grails.datastore.mapping.proxy.ProxyFactory
 import org.springframework.dao.DataIntegrityViolationException
 
 /**
@@ -75,7 +73,7 @@ class GroovyProxyFactory implements ProxyFactory {
             default:
                 if (target == null) target = session.retrieve(type, key)
 
-                if(target == null) {
+                if (target == null) {
                     throw new DataIntegrityViolationException("Error loading association [$key] of type [$type]. Associated instance no longer exists.")
                 }
                 return target[name]
@@ -84,26 +82,26 @@ class GroovyProxyFactory implements ProxyFactory {
 
         proxy.metaClass.setProperty = { String name, value ->
             if (target == null) target = session.retrieve(type, key)
-            if(target == null) {
+            if (target == null) {
                 throw new DataIntegrityViolationException("Error loading association [$key] of type [$type]. Associated instance no longer exists.")
             }
 
             target[name] = value
         }
-        return proxy;
+        return proxy
     }
 
     @Override
     boolean isInitialized(Object object) {
-        if(isProxy(object)) {
+        if (isProxy(object)) {
             return object.initialized
         }
-        return true;
+        return true
     }
 
     @Override
     Object unwrap(Object object) {
-        if(isProxy(object)) {
+        if (isProxy(object)) {
             return object.target
         }
         return object

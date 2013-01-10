@@ -14,23 +14,31 @@
  */
 package org.grails.datastore.mapping.dynamodb.query;
 
-import com.amazonaws.services.dynamodb.model.AttributeValue;
-import com.amazonaws.services.dynamodb.model.ComparisonOperator;
-import com.amazonaws.services.dynamodb.model.Condition;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.dynamodb.engine.DynamoDBEntityPersister;
+import org.grails.datastore.mapping.dynamodb.engine.DynamoDBNativeItem;
+import org.grails.datastore.mapping.dynamodb.engine.DynamoDBTableResolver;
+import org.grails.datastore.mapping.dynamodb.util.DynamoDBConverterUtil;
+import org.grails.datastore.mapping.dynamodb.util.DynamoDBTemplate;
+import org.grails.datastore.mapping.dynamodb.util.DynamoDBUtil;
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValue;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.query.Query;
-import org.grails.datastore.mapping.dynamodb.engine.DynamoDBTableResolver;
-import org.grails.datastore.mapping.dynamodb.engine.DynamoDBEntityPersister;
-import org.grails.datastore.mapping.dynamodb.engine.DynamoDBNativeItem;
-import org.grails.datastore.mapping.dynamodb.util.DynamoDBConverterUtil;
-import org.grails.datastore.mapping.dynamodb.util.DynamoDBTemplate;
-import org.grails.datastore.mapping.dynamodb.util.DynamoDBUtil;
 import org.grails.datastore.mapping.query.order.ManualEntityOrdering;
 
-import java.util.*;
+import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.amazonaws.services.dynamodb.model.ComparisonOperator;
+import com.amazonaws.services.dynamodb.model.Condition;
 
 /**
  * A {@link org.grails.datastore.mapping.query.Query} implementation for the DynamoDB store
@@ -38,7 +46,7 @@ import java.util.*;
  * @author Roman Stepanenko
  * @since 0.1
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class DynamoDBQuery extends Query {
 
     protected DynamoDBTableResolver tableResolver;
@@ -65,7 +73,6 @@ public class DynamoDBQuery extends Query {
 
                     DynamoDBUtil.addSimpleComparison(filter, key, ComparisonOperator.EQ.toString(), stringValue, isNumber);
                 }
-
             }
         });
         queryHandlers.put(NotEquals.class, new QueryHandler<NotEquals>() {
@@ -98,9 +105,7 @@ public class DynamoDBQuery extends Query {
                 String stringValue = DynamoDBConverterUtil.convertToString(criterion.getValue(), entity.getMappingContext());
                 boolean isNumber = DynamoDBConverterUtil.isNumber(criterion.getValue());
 
-
                 //dynamo db has only 'contains' and 'begins_with' operators, so we have to take out '%' and figure out which one to use
-
 
                 String searchToken = stringValue;
 
@@ -232,7 +237,7 @@ public class DynamoDBQuery extends Query {
     }
 
     @Override
-    protected List executeQuery(@SuppressWarnings("hiding") PersistentEntity entity, @SuppressWarnings("hiding") Junction criteria) {
+    protected List executeQuery(PersistentEntity entity, Junction criteria) {
         String table = tableResolver.getAllTablesForEntity().get(0);
 
         final List<Projection> projectionList = projections().getProjectionList();
@@ -379,7 +384,6 @@ public class DynamoDBQuery extends Query {
                         projection.getClass().getSimpleName() + " are not supported by this implementation");
             }
 
-
             if (CountProjection.class.equals(projection.getClass())) {
                 hasCountProjection = true;
             }
@@ -406,8 +410,7 @@ public class DynamoDBQuery extends Query {
      * @param criteria
      * @return
      */
-    @SuppressWarnings("unchecked")
-    private List<List<PropertyCriterion>> flattenAndReplaceDisjunction(@SuppressWarnings("hiding") Junction criteria) {
+    private List<List<PropertyCriterion>> flattenAndReplaceDisjunction(Junction criteria) {
         List<List<PropertyCriterion>> result = new ArrayList<List<PropertyCriterion>>();
 
         if (criteria instanceof Conjunction) {
@@ -525,7 +528,6 @@ public class DynamoDBQuery extends Query {
         String key = kv.getKey();
         return key;
     }
-
 
     /**
      * Returns mapped key

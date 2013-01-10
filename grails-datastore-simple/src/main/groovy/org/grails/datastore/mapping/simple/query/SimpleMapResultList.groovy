@@ -22,7 +22,6 @@ class SimpleMapResultList{
     SimpleMapQuery query
     List results = []
 
-
     SimpleMapResultList(SimpleMapQuery query) {
         this.query = query
     }

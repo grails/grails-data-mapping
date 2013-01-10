@@ -158,7 +158,7 @@ class GormEnhancerSpec extends GormDatastoreSpec {
             results.find { it.name == "Frank" } != null
     }
 
-	@Ignore
+    @Ignore
     void "Test ilike query"() {
         given:
             def age = 40

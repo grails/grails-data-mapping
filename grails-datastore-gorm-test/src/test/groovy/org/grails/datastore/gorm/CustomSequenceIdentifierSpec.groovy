@@ -2,10 +2,7 @@ package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
 
-/**
- *
- */
-class CustomSequenceIdentifierSpec extends GormDatastoreSpec{
+class CustomSequenceIdentifierSpec extends GormDatastoreSpec {
 
     void "Test sequence identifiers"() {
         when:"when a book with a sequence id is saved"
@@ -15,15 +12,12 @@ class CustomSequenceIdentifierSpec extends GormDatastoreSpec{
         then:"It can be retrieved"
             b != null
             b.id != null
-
     }
 
     @Override
     List getDomainClasses() {
         [Book]
     }
-
-
 }
 
 class Book {
@@ -33,6 +27,5 @@ class Book {
 
     static mapping = {
         id generator:'sequence', params:[sequence:'book_seq']
-	}
+    }
 }
-

@@ -28,6 +28,7 @@ import org.grails.datastore.mapping.query.Query;
  *
  * @author Burt Beckwith
  */
+@SuppressWarnings("rawtypes")
 public abstract class AbstractFinder implements FinderMethod {
 
     protected Datastore datastore;
@@ -44,13 +45,12 @@ public abstract class AbstractFinder implements FinderMethod {
         DatastoreUtils.execute(datastore, callback);
     }
 
-	protected void applyAdditionalCriteria(Query query, Closure additionalCriteria) {
-	    if (additionalCriteria == null) {
-	        return;
-	    }
-	
-	    CriteriaBuilder builder = new CriteriaBuilder(query.getEntity().getJavaClass(),
-	              query.getSession(), query);
-	    builder.build(additionalCriteria);
-	}
+    protected void applyAdditionalCriteria(Query query, Closure additionalCriteria) {
+        if (additionalCriteria == null) {
+            return;
+        }
+
+        CriteriaBuilder builder = new CriteriaBuilder(query.getEntity().getJavaClass(), query.getSession(), query);
+        builder.build(additionalCriteria);
+    }
 }

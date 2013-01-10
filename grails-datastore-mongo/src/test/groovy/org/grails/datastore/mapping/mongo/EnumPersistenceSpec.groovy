@@ -25,10 +25,10 @@ class EnumPersistenceSpec extends AbstractMongoTest {
         te = session.retrieve(TestEnumEntity, te.id)
 
         assert te != null
-		assert te instanceof TestEnumEntity
+        assert te instanceof TestEnumEntity
         assert te.name == "Bob"
-		assert te.type instanceof TestType
-		assert te.type == TestType.T1
+        assert te.type instanceof TestType
+        assert te.type == TestType.T1
 
         te.type = TestType.T2
         session.persist(te)
@@ -37,16 +37,16 @@ class EnumPersistenceSpec extends AbstractMongoTest {
 
         te = session.retrieve(TestEnumEntity, te.id)
         assert te != null
-		assert te.type == TestType.T2
+        assert te.type == TestType.T2
     }
 }
 
 class TestEnumEntity {
     Long id
     String name
-	TestType type
+    TestType type
 }
 
 enum TestType {
-	T1, T2, T3;
+    T1, T2, T3
 }

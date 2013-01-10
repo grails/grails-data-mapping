@@ -17,11 +17,11 @@ package org.grails.datastore.mapping.simple;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.context.ConfigurableApplicationContext;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.grails.datastore.mapping.model.MappingContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * A simple implementation of the {@link org.grails.datastore.mapping.core.Datastore} interface that backs onto an in-memory map.
@@ -70,7 +70,7 @@ public class SimpleMapDatastore extends AbstractDatastore {
     }
 
     @Override
-    protected Session createSession(@SuppressWarnings("hiding") Map<String, String> connectionDetails) {
+    protected Session createSession(Map<String, String> connectionDetails) {
         return new SimpleMapSession(this, getMappingContext(), getApplicationEventPublisher());
     }
 

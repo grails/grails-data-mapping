@@ -33,6 +33,7 @@ import org.springframework.context.ApplicationEventPublisher;
  * @author Roman Stepanenko based on Graeme Rocher code for MongoDb and Redis
  * @since 0.1
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class DynamoDBSession extends AbstractSession {
 
     DynamoDBDatastore dynamoDBDatastore;
@@ -43,7 +44,7 @@ public class DynamoDBSession extends AbstractSession {
     }
 
     @Override
-    public DynamoDBQuery createQuery(@SuppressWarnings("rawtypes") Class type) {
+    public DynamoDBQuery createQuery(Class type) {
         return (DynamoDBQuery) super.createQuery(type);
     }
 
@@ -65,7 +66,7 @@ public class DynamoDBSession extends AbstractSession {
     }
 
     @Override
-    protected Persister createPersister(@SuppressWarnings("rawtypes") Class cls, MappingContext mappingContext) {
+    protected Persister createPersister(Class cls, MappingContext mappingContext) {
         final PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
         return entity == null ? null : new DynamoDBEntityPersister(mappingContext, entity, this, publisher, cacheAdapterRepository);
     }

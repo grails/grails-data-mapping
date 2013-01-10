@@ -2,19 +2,15 @@ package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
-import com.mongodb.DBRef
+
 import com.mongodb.DBObject
 
-/**
- *
- */
-class EmbeddedWithNonEmbeddedAssociationsSpec extends GormDatastoreSpec{
+class EmbeddedWithNonEmbeddedAssociationsSpec extends GormDatastoreSpec {
+
     @Override
     List getDomainClasses() {
         [Boat, Sailor, Captain]
     }
-
-
 
     void "Test that embedded collections can have non-embedded associations"() {
         given:"A domain model with embedded associations that have non-embedded associations"
@@ -30,6 +26,7 @@ class EmbeddedWithNonEmbeddedAssociationsSpec extends GormDatastoreSpec{
         when:"The domain model is queried"
             boat =  Boat.get(boat.id)
             Sailor jeff = Sailor.findByName("Jeff")
+
         then:"The right results are returned"
             boat != null
             boat.name == "The Float"
@@ -45,7 +42,6 @@ class EmbeddedWithNonEmbeddedAssociationsSpec extends GormDatastoreSpec{
             Sailor.count() == 1
             Boat.count() == 1
 
-
         when:"The underlying Mongo document is queried"
             def boatDbo = Boat.collection.findOne()
 
@@ -58,9 +54,6 @@ class EmbeddedWithNonEmbeddedAssociationsSpec extends GormDatastoreSpec{
             boatDbo.crew[0].name == "Fred"
             boatDbo.crew[1].name == "Joe"
             boatDbo.crew[0].captain == boatDbo.captain
-
-
-
     }
 }
 

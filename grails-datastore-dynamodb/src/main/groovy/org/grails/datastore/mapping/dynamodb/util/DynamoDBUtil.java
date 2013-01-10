@@ -14,16 +14,24 @@
  */
 package org.grails.datastore.mapping.dynamodb.util;
 
-import com.amazonaws.services.dynamodb.model.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.grails.datastore.mapping.dynamodb.DynamoDBDatastore;
-import org.grails.datastore.mapping.dynamodb.engine.DynamoDBHiLoIdGenerator;
-import org.grails.datastore.mapping.dynamodb.engine.DynamoDBIdGenerator;
-import org.grails.datastore.mapping.dynamodb.engine.DynamoDBUUIDIdGenerator;
+import org.grails.datastore.mapping.dynamodb.config.DynamoDBDomainClassMappedForm;
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.PersistentEntity;
-import org.grails.datastore.mapping.dynamodb.config.DynamoDBDomainClassMappedForm;
 
-import java.util.*;
+import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.amazonaws.services.dynamodb.model.Condition;
+import com.amazonaws.services.dynamodb.model.Key;
+import com.amazonaws.services.dynamodb.model.KeySchema;
+import com.amazonaws.services.dynamodb.model.KeySchemaElement;
+import com.amazonaws.services.dynamodb.model.ProvisionedThroughput;
 
 /**
  * Simple util class for DynamoDB.
@@ -92,7 +100,6 @@ public class DynamoDBUtil {
         if (throughput == null || throughput.isEmpty()) {
             return DynamoDBUtil.createDefaultProvisionedThroughput(datastore);
         }
-
 
         Number read = (Number) throughput.get(DynamoDBConst.THROUGHPUT_READ_ATTRIBUTE_NAME);
         if (read == null) {
@@ -255,7 +262,6 @@ public class DynamoDBUtil {
             return result;
         }
     }
-
 
     /**
      * @param filter

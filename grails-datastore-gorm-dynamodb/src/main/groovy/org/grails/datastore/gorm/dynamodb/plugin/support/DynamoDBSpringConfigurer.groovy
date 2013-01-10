@@ -16,7 +16,6 @@ package org.grails.datastore.gorm.dynamodb.plugin.support
 
 import org.grails.datastore.gorm.dynamodb.bean.factory.DynamoDBDatastoreFactoryBean
 import org.grails.datastore.gorm.dynamodb.bean.factory.DynamoDBMappingContextFactoryBean
-
 import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.datastore.mapping.cache.impl.TPCacheAdapterRepositoryImpl
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
@@ -28,6 +27,7 @@ import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
  * @since 1.0
  */
 class DynamoDBSpringConfigurer extends SpringConfigurer {
+
     @Override
     String getDatastoreType() {
         return "DynamoDB"
@@ -43,7 +43,6 @@ class DynamoDBSpringConfigurer extends SpringConfigurer {
             cacheAdapters?.each { clazz, adapter ->
                 theCacheAdapterRepository.setTPCacheAdapter(clazz, adapter)
             }
-
 
             dynamodbTransactionManager(DatastoreTransactionManager) {
                 datastore = ref("dynamodbDatastore")

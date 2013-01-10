@@ -16,8 +16,9 @@
 package org.grails.datastore.gorm.query.criteria
 
 import grails.gorm.DetachedCriteria
-import org.grails.datastore.mapping.query.Query.Criterion
+
 import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.query.Query.Criterion
 import org.grails.datastore.mapping.query.api.AssociationCriteria
 
 /**
@@ -26,9 +27,9 @@ import org.grails.datastore.mapping.query.api.AssociationCriteria
  * @author Graeme Rocher
  * @since 1.0
  */
-class DetachedAssociationCriteria<T> extends DetachedCriteria<T> implements Criterion, AssociationCriteria{
+class DetachedAssociationCriteria<T> extends DetachedCriteria<T> implements Criterion, AssociationCriteria {
 
-    Association association;
+    Association association
 
     DetachedAssociationCriteria(Class<T> targetClass, Association association) {
         super(targetClass)

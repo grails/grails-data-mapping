@@ -1,7 +1,7 @@
 package org.grails.datastore.gorm.dynamodb.bean.factory
 
-import org.grails.datastore.mapping.dynamodb.config.DynamoDBMappingContext
 import org.grails.datastore.gorm.bean.factory.AbstractMappingContextFactoryBean
+import org.grails.datastore.mapping.dynamodb.config.DynamoDBMappingContext
 import org.grails.datastore.mapping.model.MappingContext
 
 /**
@@ -13,6 +13,6 @@ import org.grails.datastore.mapping.model.MappingContext
 class DynamoDBMappingContextFactoryBean extends AbstractMappingContextFactoryBean {
     @Override
     protected MappingContext createMappingContext() {
-        return new DynamoDBMappingContext();
+        return new DynamoDBMappingContext()
     }
 }

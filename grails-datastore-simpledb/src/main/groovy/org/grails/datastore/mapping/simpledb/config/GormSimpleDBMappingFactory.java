@@ -29,13 +29,13 @@ import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
  * @author Roman Stepanenko
  * @since 0.l
  */
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class GormSimpleDBMappingFactory extends GormKeyValueMappingFactory {
 
     public GormSimpleDBMappingFactory() {
         super(null);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Family createMappedForm(PersistentEntity entity) {
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());

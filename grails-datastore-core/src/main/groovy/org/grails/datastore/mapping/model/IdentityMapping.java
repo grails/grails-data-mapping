@@ -22,11 +22,11 @@ package org.grails.datastore.mapping.model;
 public interface IdentityMapping extends PropertyMapping {
 
     /**
-     * The identifier property name(s) as an array. Usually there is just one identifier
+     * The identifier property name(s). Usually there is just one identifier
      * name, however in the case of a composite or natural identifier there
-     * may be serveral names
-     * 
-     * @return A String[] of identifier names that make up the key
+     * may be serveral.
+     *
+     * @return identifier names that make up the key
      */
     String[] getIdentifierName();
 }

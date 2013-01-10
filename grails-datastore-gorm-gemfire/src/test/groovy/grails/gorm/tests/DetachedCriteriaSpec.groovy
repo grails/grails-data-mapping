@@ -1,16 +1,10 @@
 package grails.gorm.tests
 
 import grails.gorm.DetachedCriteria
+
 import spock.lang.Ignore
 
-/**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 9/6/11
- * Time: 12:09 PM
- * To change this template use File | Settings | File Templates.
- */
-class DetachedCriteriaSpec extends GormDatastoreSpec{
+class DetachedCriteriaSpec extends GormDatastoreSpec {
 
     void "Test updateAll method"() {
         given:"A bunch of people"
@@ -21,7 +15,6 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
                 eq 'lastName', 'Simpson'
             }
             int total = criteria.updateAll(lastName:"Bloggs")
-
 
         then:"The number of deletions is correct"
             total == 4
@@ -39,7 +32,6 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
                 eq 'lastName', 'Simpson'
             }
             int total = criteria.deleteAll()
-
 
         then:"The number of deletions is correct"
             total == 4
@@ -65,7 +57,6 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
     void "Test dynamic finder on detached criteria"() {
         given:"A bunch of people"
             createPeople()
-
 
         when:"A detached criteria instance is created matching the last name"
             def criteria = new DetachedCriteria(Person)
@@ -102,7 +93,6 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
         given:"A bunch of people"
             createPeople()
 
-
         when:"A detached criteria instance is created matching the last name"
             def criteria = new DetachedCriteria(Person)
             criteria.with {
@@ -128,7 +118,6 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
         given:"A bunch of people"
             createPeople()
 
-
         when:"A detached criteria instance is created matching the last name and count is called with additional criteria"
             def criteria = new DetachedCriteria(Person)
             criteria.with {
@@ -147,7 +136,6 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
         given:"A bunch of people"
             createPeople()
 
-
         when:"A detached criteria instance is created matching the last name"
             def criteria = new DetachedCriteria(Person)
             criteria.with {
@@ -162,7 +150,6 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
     void "Test list method on detached criteria"() {
         given:"A bunch of people"
             createPeople()
-
 
         when:"A detached criteria instance is created matching the last name"
             def criteria = new DetachedCriteria(Person)
@@ -193,8 +180,7 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
             results.every { it.lastName == 'Simpson'}
     }
 
-
-    protected def createPeople() {
+    protected void createPeople() {
         new Person(firstName: "Homer", lastName: "Simpson").save()
         new Person(firstName: "Marge", lastName: "Simpson").save()
         new Person(firstName: "Bart", lastName: "Simpson").save()
@@ -202,5 +188,4 @@ class DetachedCriteriaSpec extends GormDatastoreSpec{
         new Person(firstName: "Barney", lastName: "Rubble").save()
         new Person(firstName: "Fred", lastName: "Flinstone").save()
     }
-
 }

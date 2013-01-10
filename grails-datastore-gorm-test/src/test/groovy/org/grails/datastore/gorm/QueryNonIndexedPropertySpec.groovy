@@ -4,11 +4,11 @@ import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
 class QueryNonIndexedPropertySpec extends GormDatastoreSpec {
+
     @Override
     List getDomainClasses() {
         [Company, CompanyAddress]
     }
-
 
     def "Test that we can query a property that has no indices specified"() {
 

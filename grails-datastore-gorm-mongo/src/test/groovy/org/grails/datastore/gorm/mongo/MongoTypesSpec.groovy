@@ -2,15 +2,15 @@ package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
-import org.bson.types.ObjectId
-import com.mongodb.DBObject
-import org.bson.types.Binary
-import com.mongodb.BasicDBObject
 
-/**
- */
-class MongoTypesSpec extends GormDatastoreSpec{
-    
+import org.bson.types.Binary
+import org.bson.types.ObjectId
+
+import com.mongodb.BasicDBObject
+import com.mongodb.DBObject
+
+class MongoTypesSpec extends GormDatastoreSpec {
+
     void "Test that an entity can save and load native mongo types"() {
         when:"A domain class with mongodb types is saved and read"
             def mt = new MongoTypes()
@@ -33,8 +33,6 @@ class MongoTypesSpec extends GormDatastoreSpec{
     List getDomainClasses() {
         [MongoTypes]
     }
-
-
 }
 
 @Entity

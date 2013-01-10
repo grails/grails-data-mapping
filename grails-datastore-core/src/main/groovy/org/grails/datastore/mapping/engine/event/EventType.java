@@ -18,14 +18,14 @@ package org.grails.datastore.mapping.engine.event;
  * @author Burt Beckwith
  */
 public enum EventType {
-	PreDelete,
-	PreInsert,
-	PreLoad,
-	PreUpdate,
-	PostDelete,
-	PostInsert,
-	PostLoad,
-	PostUpdate,
-	SaveOrUpdate,
-	Validation
+    PreDelete,
+    PreInsert,
+    PreLoad,
+    PreUpdate,
+    PostDelete,
+    PostInsert,
+    PostLoad,
+    PostUpdate,
+    SaveOrUpdate,
+    Validation
 }

@@ -3,13 +3,6 @@ package org.grails.datastore.gorm
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
-/**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 11/2/11
- * Time: 10:30 AM
- * To change this template use File | Settings | File Templates.
- */
 class EmbeddedNonEntityAssociationSpec extends GormDatastoreSpec {
 
     static {
@@ -45,7 +38,6 @@ class Being {
         name index:true
     }
 }
-
 
 class ResidentialAddress {
     String postCode

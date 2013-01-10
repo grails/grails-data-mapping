@@ -21,22 +21,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
-import org.grails.datastore.mapping.model.types.Association;
-import org.grails.datastore.mapping.model.types.OneToMany;
-import org.grails.datastore.mapping.simpledb.engine.*;
-import org.grails.datastore.mapping.simpledb.util.SimpleDBUtil;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.convert.converter.ConverterRegistry;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.model.types.OneToMany;
 import org.grails.datastore.mapping.simpledb.config.SimpleDBMappingContext;
+import org.grails.datastore.mapping.simpledb.engine.AssociationKey;
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBAssociationInfo;
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver;
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolverFactory;
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBIdGenerator;
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBIdGeneratorFactory;
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBNativeItem;
 import org.grails.datastore.mapping.simpledb.model.types.SimpleDBTypeConverterRegistrar;
 import org.grails.datastore.mapping.simpledb.util.DelayAfterWriteSimpleDBTemplateDecorator;
 import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate;
 import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplateImpl;
+import org.grails.datastore.mapping.simpledb.util.SimpleDBUtil;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.convert.converter.ConverterRegistry;
 
 /**
  * A Datastore implementation for the AWS SimpleDB document store.
@@ -90,7 +96,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         this(mappingContext, Collections.<String, String>emptyMap(), null, null);
     }
 
-    public SimpleDBTemplate getSimpleDBTemplate(@SuppressWarnings("unused") PersistentEntity entity) {
+    public SimpleDBTemplate getSimpleDBTemplate(PersistentEntity entity) {
 //        return simpleDBTemplates.get(entity);
         return simpleDBTemplate;
     }
@@ -118,7 +124,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         }
     }
 
-    protected void createSimpleDBTemplate(@SuppressWarnings("unused") PersistentEntity entity) {
+    protected void createSimpleDBTemplate(PersistentEntity entity) {
         if (simpleDBTemplate != null) {
             return;
         }
@@ -189,7 +195,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
     }
 
     @Override
-    protected void initializeConverters(@SuppressWarnings("hiding") MappingContext mappingContext) {
+    protected void initializeConverters(MappingContext mappingContext) {
         final ConverterRegistry conversionService = mappingContext.getConverterRegistry();
         new SimpleDBTypeConverterRegistrar().register(conversionService);
     }

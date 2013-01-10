@@ -33,6 +33,7 @@ import org.grails.datastore.mapping.transactions.Transaction;
  * @author Roman Stepanenko based on Graeme Rocher code for MongoDb and Redis
  * @since 0.1
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class SimpleDBSession extends AbstractSession {
 
     SimpleDBDatastore simpleDBDatastore;
@@ -43,7 +44,7 @@ public class SimpleDBSession extends AbstractSession {
     }
 
     @Override
-    public SimpleDBQuery createQuery(@SuppressWarnings("rawtypes") Class type) {
+    public SimpleDBQuery createQuery(Class type) {
         return (SimpleDBQuery) super.createQuery(type);
     }
 
@@ -65,7 +66,7 @@ public class SimpleDBSession extends AbstractSession {
     }
 
     @Override
-    protected Persister createPersister(@SuppressWarnings("rawtypes") Class cls, MappingContext mappingContext) {
+    protected Persister createPersister(Class cls, MappingContext mappingContext) {
         final PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
         return entity == null ? null : new SimpleDBEntityPersister(mappingContext, entity, this, publisher, cacheAdapterRepository);
     }

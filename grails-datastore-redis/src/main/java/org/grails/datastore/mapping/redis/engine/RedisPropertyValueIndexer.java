@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.dao.DataAccessException;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.PropertyValueIndexer;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -30,6 +29,7 @@ import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.redis.collection.RedisSet;
 import org.grails.datastore.mapping.redis.query.RedisQueryUtils;
 import org.grails.datastore.mapping.redis.util.RedisTemplate;
+import org.springframework.dao.DataAccessException;
 
 import redis.clients.jedis.exceptions.JedisDataException;
 

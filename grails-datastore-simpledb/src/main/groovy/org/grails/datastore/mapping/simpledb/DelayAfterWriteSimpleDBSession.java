@@ -25,7 +25,8 @@ public class DelayAfterWriteSimpleDBSession extends SimpleDBSession {
 
     private long delayMillis;
 
-    public DelayAfterWriteSimpleDBSession(SimpleDBDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, long delayMillis, TPCacheAdapterRepository cacheAdapterRepository) {
+    public DelayAfterWriteSimpleDBSession(SimpleDBDatastore datastore, MappingContext mappingContext,
+            ApplicationEventPublisher publisher, long delayMillis, TPCacheAdapterRepository<?> cacheAdapterRepository) {
         super(datastore, mappingContext, publisher, cacheAdapterRepository);
         this.delayMillis = delayMillis;
     }
@@ -37,7 +38,7 @@ public class DelayAfterWriteSimpleDBSession extends SimpleDBSession {
         }
     }
 
-    private void pause(){
+    private void pause() {
         try { Thread.sleep(delayMillis); } catch (InterruptedException e) { /* ignored */ }
     }
 }

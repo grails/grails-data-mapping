@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.persistence.FetchType;
+
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.finders.MethodExpression.Between;
 import org.grails.datastore.gorm.finders.MethodExpression.Equal;
@@ -52,9 +54,6 @@ import org.grails.datastore.mapping.query.api.QueryArgumentsAware;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.util.StringUtils;
-
-import javax.persistence.FetchType;
-import static javax.persistence.FetchType.*;
 /**
  * Abstract base class for dynamic finders.
  */
@@ -155,7 +154,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
 
     public Object invoke(final Class clazz, String methodName, DetachedCriteria detachedCriteria, Object[] arguments) {
         DynamicFinderInvocation invocation = createFinderInvocation(clazz, methodName, null, arguments);
-        if(detachedCriteria != null ) {
+        if (detachedCriteria != null ) {
             invocation.setDetachedCriteria(detachedCriteria);
         }
         return doInvokeInternal(invocation);
@@ -212,7 +211,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                     operatorInUse = operators[i];
 
                     queryParameters = querySequence.split(operatorInUse);
-                    
+
                     // loop through query parameters and create expressions
                     // calculating the number of arguments required for the expression
                     int argumentCursor = 0;
@@ -230,7 +229,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                         }
                         currentExpression = getInitializedExpression(currentExpression, currentArguments);
                         PersistentEntity persistentEntity = datastore.getMappingContext().getPersistentEntity(clazz.getName());
-                        
+
                         try {
                             currentExpression.convertArguments(persistentEntity);
                         } catch (ConversionException e) {
@@ -255,14 +254,14 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
             }
 
             totalRequiredArguments += requiredArguments;
-        	Object[] soloArgs = new Object[requiredArguments];
-        	System.arraycopy(arguments, 0, soloArgs, 0, requiredArguments);
-        	solo = getInitializedExpression(solo, arguments);
+            Object[] soloArgs = new Object[requiredArguments];
+            System.arraycopy(arguments, 0, soloArgs, 0, requiredArguments);
+            solo = getInitializedExpression(solo, arguments);
             PersistentEntity persistentEntity = datastore.getMappingContext().getPersistentEntity(clazz.getName());
             try {
                 solo.convertArguments(persistentEntity);
             } catch (ConversionException e) {
-                if(!(persistentEntity.getPropertyByName(solo.propertyName) instanceof Basic)) {
+                if (!(persistentEntity.getPropertyByName(solo.propertyName) instanceof Basic)) {
                     throw new MissingMethodException(methodName, clazz, arguments);
                 }
             }
@@ -291,20 +290,19 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
      * Initializes the arguments of the specified expression with the specified arguments.  If the
      * expression is an Equal expression and the argument is null then a new expression is created
      * and returned of type IsNull.
-     * 
+     *
      * @param expression expression to initialize
      * @param arguments arguments to the expression
      * @return the initialized expression
      */
-	private MethodExpression getInitializedExpression(MethodExpression expression, Object[] arguments) {
-		if(expression instanceof Equal && arguments.length == 1 && arguments[0] == null) {
-			expression = new IsNull(expression.targetClass, expression.propertyName);
-		} else {
-			expression.setArguments(arguments);
-			
-		}
-		return expression;
-	}
+    private MethodExpression getInitializedExpression(MethodExpression expression, Object[] arguments) {
+        if (expression instanceof Equal && arguments.length == 1 && arguments[0] == null) {
+            expression = new IsNull(expression.targetClass, expression.propertyName);
+        } else {
+            expression.setArguments(arguments);
+        }
+        return expression;
+    }
 
     protected MethodExpression findMethodExpression(Class clazz, String expression) {
         MethodExpression me = null;
@@ -319,10 +317,10 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                 // ignore
             }
         }
-        if(me == null) {
+        if (me == null) {
             me = new Equal(clazz, calcPropertyName(expression, Equal.class.getSimpleName()));
         }
-        
+
         return me;
     }
 
@@ -354,8 +352,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
         return invoke(clazz, methodName, (Closure)null, arguments);
     }
 
-    public static void populateArgumentsForCriteria(@SuppressWarnings("unused") Class<?> targetClass,
-             Query q, Map argMap) {
+    public static void populateArgumentsForCriteria(Class<?> targetClass, Query q, Map argMap) {
         if (argMap == null) {
             return;
         }
@@ -405,7 +402,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                 q.order(Query.Order.asc(sort));
             }
         }
-        if(q instanceof QueryArgumentsAware) {
+        if (q instanceof QueryArgumentsAware) {
             ((QueryArgumentsAware)q).setArguments(argMap);
         }
     }
@@ -437,7 +434,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
     }
 
     public static void applyDetachedCriteria(Query q, DetachedCriteria detachedCriteria) {
-        if(detachedCriteria != null) {
+        if (detachedCriteria != null) {
             List<Query.Criterion> criteria = detachedCriteria.getCriteria();
             for (Query.Criterion criterion : criteria) {
                 q.add(criterion);
@@ -458,11 +455,8 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
                         q.join(entry.getKey()); break;
                     case LAZY:
                         q.select(entry.getKey());
-
                 }
-
             }
         }
     }
-
 }

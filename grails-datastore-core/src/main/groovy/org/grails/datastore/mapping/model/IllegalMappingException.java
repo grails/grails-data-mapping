@@ -15,8 +15,8 @@
 package org.grails.datastore.mapping.model;
 
 /**
- * Thrown when an error occurs reading the mapping between object and datastore
- * 
+ * Thrown when an error occurs reading the mapping between object and datastore.
+ *
  * @author Graeme Rocher
  * @since 1.0
  */

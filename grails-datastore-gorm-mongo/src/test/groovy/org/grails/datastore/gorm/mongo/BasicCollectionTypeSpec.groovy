@@ -4,11 +4,11 @@ import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
 
 class BasicCollectionTypeSpec extends GormDatastoreSpec {
+
     @Override
     List getDomainClasses() {
         [MyCollections]
     }
-
 
     def "Test persist basic collection types"() {
         given:"An entity persisted with basic collection types"
@@ -55,8 +55,6 @@ class BasicCollectionTypeSpec extends GormDatastoreSpec {
             mc.pets != null
             mc.pets.size() == 3
             mc.pets.chuck == "Dog"
-
-
     }
 }
 

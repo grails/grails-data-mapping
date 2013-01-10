@@ -14,22 +14,22 @@
  */
 package org.grails.datastore.gorm.jpa.plugin.support
 
-import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
-import org.grails.datastore.mapping.core.Datastore
-import org.springframework.transaction.PlatformTransactionManager
+import org.grails.datastore.gorm.GormEnhancer
+import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
-import org.grails.datastore.gorm.GormInstanceApi
-import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.jpa.JpaGormEnhancer
 import org.grails.datastore.gorm.jpa.JpaInstanceApi
 import org.grails.datastore.gorm.jpa.JpaStaticApi
+import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
+import org.grails.datastore.mapping.core.Datastore
+import org.springframework.transaction.PlatformTransactionManager
 
 /**
  * @author Graeme Rocher
  * @since 1.0
  */
-class JpaMethodsConfigurer extends DynamicMethodsConfigurer{
+class JpaMethodsConfigurer extends DynamicMethodsConfigurer {
 
     JpaMethodsConfigurer(Datastore datastore, PlatformTransactionManager transactionManager) {
         super(datastore, transactionManager)
@@ -58,6 +58,4 @@ class JpaMethodsConfigurer extends DynamicMethodsConfigurer{
         ge.failOnError = failOnError
         ge
     }
-
-
 }

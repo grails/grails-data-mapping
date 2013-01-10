@@ -56,7 +56,6 @@ public class BasicTypeConverterRegistrar {
              }
          });
 
-
         registry.addConverter(new Converter<Integer, Double>() {
             public Double convert(Integer integer) {
                 return integer.doubleValue();

@@ -40,7 +40,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
  * @author Graeme Rocher
  * @since 1.0
  */
-@SuppressWarnings({"hiding", "unchecked"})
+@SuppressWarnings("unchecked")
 public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
 
     public static final String QUEUED = "QUEUED";
@@ -288,7 +288,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
 
     public void del(final String redisKey) {
         execute(new RedisCallback<Jedis>() {
-
             public Object doInRedis(Jedis redis) {
                 if (transaction != null) {
                     transaction.del(redisKey);
@@ -300,7 +299,6 @@ public class JedisTemplate implements RedisTemplate<Jedis, SortingParams> {
                     else {
                         redis.del(redisKey);
                     }
-
                 }
                 return null;
             }

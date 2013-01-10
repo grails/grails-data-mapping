@@ -14,15 +14,14 @@
  */
 package org.grails.datastore.mapping.simpledb.engine;
 
+import java.util.Map;
+
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.simpledb.SimpleDBDatastore;
 import org.grails.datastore.mapping.simpledb.config.SimpleDBDomainClassMappedForm;
 import org.grails.datastore.mapping.simpledb.util.SimpleDBConst;
 import org.grails.datastore.mapping.simpledb.util.SimpleDBUtil;
-import org.springframework.beans.propertyeditors.UUIDEditor;
-
-import java.util.Map;
 
 /**
  * Encapsulates logic of building appropriately configured SimpleDBIdGenerator instance.
@@ -49,16 +48,18 @@ public class SimpleDBIdGeneratorFactory {
         String generatorType = (String) generatorInfo.get(SimpleDBConst.PROP_ID_GENERATOR_TYPE);
         if (SimpleDBConst.PROP_ID_GENERATOR_TYPE_UUID.equals(generatorType)) {
             return new SimpleDBUUIDIdGenerator();
-        } else if ((SimpleDBConst.PROP_ID_GENERATOR_TYPE_HILO.equals(generatorType))) {
+        }
+
+        if ((SimpleDBConst.PROP_ID_GENERATOR_TYPE_HILO.equals(generatorType))) {
             Integer lowSize = (Integer) generatorInfo.get(SimpleDBConst.PROP_ID_GENERATOR_MAX_LO);
             if (lowSize == null) {
                 lowSize = SimpleDBConst.PROP_ID_GENERATOR_MAX_LO_DEFAULT_VALUE; // default value
             }
             String hiloDomainName = SimpleDBUtil.getPrefixedDomainName(simpleDBDatastore.getDomainNamePrefix(), SimpleDBConst.ID_GENERATOR_HI_LO_DOMAIN_NAME);
             return new SimpleDBHiLoIdGenerator(hiloDomainName, entityFamily, lowSize, simpleDBDatastore.getSimpleDBTemplate());
-        } else {
-            throw new IllegalArgumentException("unknown id generator type for simpledb: " + generatorType + ". Current implementation supports only " +
-                    SimpleDBConst.PROP_ID_GENERATOR_TYPE_UUID + " and " + SimpleDBConst.PROP_ID_GENERATOR_TYPE_HILO);
         }
+
+        throw new IllegalArgumentException("unknown id generator type for simpledb: " + generatorType + ". Current implementation supports only " +
+                SimpleDBConst.PROP_ID_GENERATOR_TYPE_UUID + " and " + SimpleDBConst.PROP_ID_GENERATOR_TYPE_HILO);
     }
 }

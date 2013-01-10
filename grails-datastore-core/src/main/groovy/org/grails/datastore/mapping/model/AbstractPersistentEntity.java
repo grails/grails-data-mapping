@@ -25,13 +25,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.BeanUtils;
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.grails.datastore.mapping.core.EntityCreationException;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.model.types.OneToMany;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
+import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
 
 /**
@@ -105,7 +105,6 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
         }
 
         getMapping().getMappedForm(); // initialize mapping
-
 
         if (mappingProperties.isVersioned()) {
             version = propertiesByName.get("version");

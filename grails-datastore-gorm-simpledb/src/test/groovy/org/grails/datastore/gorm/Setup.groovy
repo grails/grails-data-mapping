@@ -1,25 +1,26 @@
 package org.grails.datastore.gorm
 
+import grails.gorm.tests.PlantNumericIdValue
+
 import java.util.concurrent.CountDownLatch
 
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
-import org.springframework.context.support.GenericApplicationContext
+import org.grails.datastore.gorm.simpledb.SimpleDBGormEnhancer
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.simpledb.SimpleDBDatastore
+import org.grails.datastore.mapping.simpledb.config.SimpleDBMappingContext
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBAssociationInfo
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolverFactory
+import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
+import org.springframework.context.support.GenericApplicationContext
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
-import org.grails.datastore.mapping.simpledb.SimpleDBDatastore
-import org.grails.datastore.gorm.simpledb.SimpleDBGormEnhancer
-import org.grails.datastore.mapping.simpledb.config.SimpleDBMappingContext
-import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate
-import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver
-import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolverFactory
-import org.grails.datastore.mapping.simpledb.engine.SimpleDBAssociationInfo
-import grails.gorm.tests.PlantNumericIdValue
 
 /**
  * In order to run AWS SimpleDB tests you have to define two system variables: AWS_ACCESS_KEY and AWS_SECRET_KEY with
@@ -48,7 +49,7 @@ class Setup {
         final userHome = System.getProperty("user.home")
         def settingsFile = new File(userHome, "aws.properties")
         def connectionDetails = [:]
-        if(settingsFile.exists()) {
+        if (settingsFile.exists()) {
             def props = new Properties()
             settingsFile.withReader { reader ->
                 props.load(reader)
@@ -56,7 +57,6 @@ class Setup {
             connectionDetails.put(SimpleDBDatastore.ACCESS_KEY, props['AWS_ACCESS_KEY'])
             connectionDetails.put(SimpleDBDatastore.SECRET_KEY, props['AWS_SECRET_KEY'])
         }
-
 
         connectionDetails.put(SimpleDBDatastore.DOMAIN_PREFIX_KEY, "TEST_")
         connectionDetails.put(SimpleDBDatastore.DELAY_AFTER_WRITES_MS, "7000") //this flag will cause pausing for that many MS after each write - to fight eventual consistency
@@ -108,7 +108,7 @@ class Setup {
     static void cleanOrCreateDomainsIfNeeded(def domainClasses, mappingContext, simpleDBDatastore) {
         SimpleDBTemplate template = simpleDBDatastore.getSimpleDBTemplate()
         List<String> existingDomains = template.listDomains()
-        SimpleDBDomainResolverFactory resolverFactory = new SimpleDBDomainResolverFactory();
+        SimpleDBDomainResolverFactory resolverFactory = new SimpleDBDomainResolverFactory()
         CountDownLatch latch = new CountDownLatch(domainClasses.size())
         for (dc in domainClasses) {
             def domainClass = dc //explicitly declare local variable which we will be using from the thread
@@ -123,7 +123,7 @@ class Setup {
                         //create domains for associations
                         entity.getAssociations().each{ association ->
                             SimpleDBAssociationInfo associationInfo = simpleDBDatastore.getAssociationInfo(association)
-                            if (associationInfo){
+                            if (associationInfo) {
                                 clearOrCreateDomain(template, existingDomains, associationInfo.getDomainName())
                             }
                         }
@@ -136,7 +136,7 @@ class Setup {
         latch.await()
     }
 
-    static clearOrCreateDomain(template, existingDomains, domainName){
+    static clearOrCreateDomain(template, existingDomains, domainName) {
         if (existingDomains.contains(domainName)) {
             template.deleteAllItems(domainName) //delete all items there
         } else {

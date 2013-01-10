@@ -18,13 +18,8 @@ class TestEntity implements Serializable {
 
     ChildEntity child
 
-    public String toString() {
-        return "TestEntity(AWS){" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", age=" + age +
-                ", child=" + child +
-                '}';
+    String toString() {
+        "TestEntity(AWS){id='$id', name='$name', age=$age, child=$child}"
     }
 
     static constraints = {

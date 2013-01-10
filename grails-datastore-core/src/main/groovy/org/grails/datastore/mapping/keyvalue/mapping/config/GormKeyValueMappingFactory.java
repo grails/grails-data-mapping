@@ -24,6 +24,7 @@ import org.grails.datastore.mapping.model.PersistentProperty;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings("rawtypes")
 public class GormKeyValueMappingFactory extends AbstractGormMappingFactory<Family, KeyValue> {
 
     private String keyspace;
@@ -45,7 +46,7 @@ public class GormKeyValueMappingFactory extends AbstractGormMappingFactory<Famil
     }
 
     @Override
-    public KeyValue createMappedForm(@SuppressWarnings("rawtypes") PersistentProperty mpp) {
+    public KeyValue createMappedForm(PersistentProperty mpp) {
         KeyValue kv = super.createMappedForm(mpp);
         if (kv.getKey() == null) {
             kv.setKey(mpp.getName());
@@ -65,9 +66,9 @@ public class GormKeyValueMappingFactory extends AbstractGormMappingFactory<Famil
 
     @Override
     protected IdentityMapping getIdentityMappedForm(final ClassMapping classMapping, KeyValue property) {
-        if(property != null) {
+        if (property != null) {
             final String name = property.getName();
-            if(name != null) {
+            if (name != null) {
                 final PersistentProperty idProperty = classMapping.getEntity().getPropertyByName(name);
                 return new IdentityMapping() {
                     public String[] getIdentifierName() {

@@ -5,8 +5,8 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import javassist.util.proxy.ProxyObject;
 
-import org.junit.Test;
 import org.grails.datastore.mapping.proxy.EntityProxy;
+import org.junit.Test;
 
 public class LazyLoadedOneToOneTests extends AbstractRedisTest {
 

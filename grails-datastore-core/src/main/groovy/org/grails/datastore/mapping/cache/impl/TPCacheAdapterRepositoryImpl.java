@@ -24,7 +24,7 @@ public class TPCacheAdapterRepositoryImpl<T> implements TPCacheAdapterRepository
         setTPCacheAdapter(entity.getJavaClass(), cacheAdapter);
     }
 
-    public void setTPCacheAdapter(Class entityJavaClass, TPCacheAdapter<T> cacheAdapter) {
+    public void setTPCacheAdapter(@SuppressWarnings("rawtypes") Class entityJavaClass, TPCacheAdapter<T> cacheAdapter) {
         setTPCacheAdapter(entityJavaClass.getName(), cacheAdapter);
     }
 

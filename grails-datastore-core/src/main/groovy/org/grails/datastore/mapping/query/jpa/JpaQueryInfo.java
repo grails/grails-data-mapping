@@ -2,13 +2,7 @@ package org.grails.datastore.mapping.query.jpa;
 
 import java.util.List;
 
-/**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 9/13/11
- * Time: 4:44 PM
- * To change this template use File | Settings | File Templates.
- */
+@SuppressWarnings("rawtypes")
 public class JpaQueryInfo {
 
     String query;

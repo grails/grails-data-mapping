@@ -1,12 +1,11 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
-import spock.lang.Issue
 import grails.persistence.Entity
 
-/**
- */
-class IsNullSpec extends GormDatastoreSpec{
+import spock.lang.Issue
+
+class IsNullSpec extends GormDatastoreSpec {
 
     @Issue('GPMONGODB-164')
     void "Test isNull works in a criteria query"() {
@@ -60,8 +59,6 @@ class IsNullSpec extends GormDatastoreSpec{
     List getDomainClasses() {
         [Elephant, Trunk]
     }
-
-
 }
 
 @Entity

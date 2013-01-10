@@ -14,7 +14,9 @@
  */
 package org.grails.datastore.gorm.query.transform;
 
-import org.codehaus.groovy.ast.*;
+import org.codehaus.groovy.ast.ASTNode;
+import org.codehaus.groovy.ast.AnnotatedNode;
+import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.ASTTransformation;
@@ -39,14 +41,8 @@ public class DetachedCriteriaASTTransformation implements ASTTransformation{
      */
     public void visit(ASTNode[] nodes, SourceUnit source) {
         DetachedCriteriaTransformer transformer = new DetachedCriteriaTransformer(source);
-
         AnnotatedNode parent = (AnnotatedNode) nodes[1];
-        AnnotationNode node = (AnnotationNode) nodes[0];
-
         ClassNode cNode = (ClassNode) parent;
         transformer.visitClass(cNode);
     }
-
-
-
 }

@@ -35,7 +35,7 @@ public interface FinderMethod {
      * @return The return value
      */
     Object invoke(Class clazz, String methodName, Object[] arguments);
-    
+
     /**
      * Invokes the method
      * @param clazz The class

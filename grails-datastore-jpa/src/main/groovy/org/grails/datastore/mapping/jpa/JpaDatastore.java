@@ -18,10 +18,10 @@ import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 
-import org.springframework.context.ConfigurableApplicationContext;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.model.MappingContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.orm.jpa.JpaTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 
@@ -60,7 +60,6 @@ public class JpaDatastore extends AbstractDatastore {
     public JpaTransactionManager getTransactionManager() {
         return transactionManager;
     }
-
 
     public JpaTemplate getJpaTemplate() {
         return jpaTemplate;

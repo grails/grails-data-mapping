@@ -15,33 +15,39 @@
 package org.grails.datastore.mapping.query;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 import javax.persistence.FetchType;
 import javax.persistence.FlushModeType;
 
-import org.grails.datastore.mapping.core.ConnectionNotFoundException;
-import org.grails.datastore.mapping.model.MappingContext;
-import org.grails.datastore.mapping.query.api.AssociationCriteria;
-import org.grails.datastore.mapping.query.api.QueryableCriteria;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.grails.datastore.mapping.core.AbstractDatastore;
+import org.grails.datastore.mapping.core.ConnectionNotFoundException;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.EntityPersister;
+import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.query.api.AssociationCriteria;
+import org.grails.datastore.mapping.query.api.QueryableCriteria;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.util.Assert;
 
 /**
- * Models a query that can be executed against a data store
+ * Models a query that can be executed against a data store.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-@SuppressWarnings({"hiding", "rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class Query {
 
     protected PersistentEntity entity;
@@ -59,14 +65,13 @@ public abstract class Query {
         this.entity = entity;
         this.session = session;
     }
-    
+
     /**
      * @return The criteria defined by this query
      */
     public Junction getCriteria() {
         return criteria;
     }
-
 
     /**
      * Specifies whether a join query should be used (if join queries are supported by the underlying datastore)
@@ -89,7 +94,6 @@ public abstract class Query {
         fetchStrategies.put(property, FetchType.LAZY);
         return this;
     }
-
 
     /**
      * Specifies whether the query results should be cached (if supported by the underlying datastore)
@@ -116,7 +120,6 @@ public abstract class Query {
         addToJunction(currentJunction, criterion);
     }
 
-    
     /**
      * @return The session that created the query
      */
@@ -554,14 +557,11 @@ public abstract class Query {
     protected Object resolveIdIfEntity(Object value) {
         // use the object id as the value if its a persistent entity
         MappingContext mappingContext = session.getMappingContext();
-        if(mappingContext.getProxyFactory().isProxy(value)) {
+        if (mappingContext.getProxyFactory().isProxy(value)) {
             return mappingContext.getProxyFactory().getIdentifier(value);
         }
-        else {
-            return mappingContext.isPersistentEntity(value) ? findInstanceId(value) : value;
-        }
+        return mappingContext.isPersistentEntity(value) ? findInstanceId(value) : value;
     }
-
 
     private Serializable findInstanceId(Object value) {
         EntityPersister ep = (EntityPersister) session.getPersister(value);
@@ -607,7 +607,7 @@ public abstract class Query {
             Object value = resolveIdIfEntity(pc.getValue());
             pc.setValue(value);
         }
-        if(criterion instanceof AssociationCriteria) {
+        if (criterion instanceof AssociationCriteria) {
             AssociationCriteria ac = (AssociationCriteria) criterion;
             AssociationQuery associationQuery = createQuery(ac.getAssociation().getName());
             for (Criterion associationCriterion : ac.getCriteria()) {
@@ -615,12 +615,12 @@ public abstract class Query {
             }
             currentJunction.add(associationQuery);
         }
-        else if(criterion instanceof Junction) {
+        else if (criterion instanceof Junction) {
             Junction j = (Junction) criterion;
             Junction newj;
-            if(j instanceof Disjunction) {
+            if (j instanceof Disjunction) {
                 newj= disjunction(currentJunction);
-            } else if(j instanceof Negation) {
+            } else if (j instanceof Negation) {
                 newj= negation(currentJunction);
             }
             else {
@@ -635,10 +635,7 @@ public abstract class Query {
         }
     }
 
-
-    public static interface Criterion {
-
-    }
+    public static interface Criterion {}
 
     /**
      * The ordering of results.
@@ -676,7 +673,7 @@ public abstract class Query {
             ASC, DESC
         }
     }
-    
+
     /**
      * Restricts a property to be null
      */
@@ -896,7 +893,6 @@ public abstract class Query {
             super(name, value);
         }
     }
-
 
     /**
      * A criterion that restricts the results based on the equality of the identifier
@@ -1148,9 +1144,8 @@ public abstract class Query {
      * Used to count the results of a query
      */
     public static class CountProjection extends Projection {}
-    
+
     public static class DistinctProjection extends Projection {}
-    
 
     /**
      * A projection that obtains the value of a property of an entity
@@ -1249,9 +1244,9 @@ public abstract class Query {
         public boolean isEmpty() {
             return projections.isEmpty();
         }
-        
+
         public ProjectionList distinct() {
-        	return this;
+            return this;
         }
 
         public org.grails.datastore.mapping.query.api.ProjectionList distinct(String property) {
@@ -1317,5 +1312,4 @@ public abstract class Query {
             return this;
         }
     }
-
 }

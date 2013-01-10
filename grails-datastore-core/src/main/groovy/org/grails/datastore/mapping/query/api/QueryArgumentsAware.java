@@ -18,18 +18,16 @@ package org.grails.datastore.mapping.query.api;
 import java.util.Map;
 
 /**
- *
- * Interface for classes that are interested in additional query arguments defined as a map for things like the limit, offset and join information
+ * Interface for classes that are interested in additional query arguments
+ * defined as a map for things like the limit, offset and join information
  *
  * @author Graeme Rocher
  * @since 1.0
  */
 public interface QueryArgumentsAware {
 
-
     /**
-     *
      * @param arguments The query arguments
      */
-    void setArguments(Map arguments);
+    void setArguments(@SuppressWarnings("rawtypes") Map arguments);
 }

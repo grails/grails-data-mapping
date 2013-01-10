@@ -2,14 +2,14 @@ package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
-import spock.lang.Issue
-import org.springframework.validation.Errors
+
 import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 
-/**
- */
+import spock.lang.Issue
+
 class UniqueConstraintGroupSpec extends GormDatastoreSpec{
 
     @Issue('GRAILS-8656')
@@ -30,13 +30,11 @@ class UniqueConstraintGroupSpec extends GormDatastoreSpec{
             errors[0].field == "userId"
             errors[0].code == "unique"
 
-
         when: "another user with same userId, and different (not null) dateDeleted is saved"
             user2.dateDeleted  = new Date()
 
         then:"validation passes"
             user2.validate()
-
 
         when: "Now check the same when user1 has not null dateDeleted"
             user1.dateDeleted = user2.dateDeleted
@@ -66,7 +64,6 @@ class UniqueConstraintGroupSpec extends GormDatastoreSpec{
         [UserClass]
     }
 
-
     void setup() {
 
         def groupValidator = [supports: {Class cls -> true},
@@ -77,11 +74,11 @@ class UniqueConstraintGroupSpec extends GormDatastoreSpec{
                     }
                 }] as Validator
 
-
         final context = session.datastore.mappingContext
         final entity = context.getPersistentEntity(UserClass.name)
         context.addEntityValidator(entity, groupValidator)
     }
+
     private createTestUser(Integer suffix) {
         def val = new UserClass()
         val.dateDeleted = null
@@ -89,7 +86,6 @@ class UniqueConstraintGroupSpec extends GormDatastoreSpec{
         val
     }
 }
-
 
 @Entity
 class UserClass {
@@ -102,6 +98,4 @@ class UserClass {
         userId blank: false, unique: 'dateDeleted'
         dateDeleted nullable: true
     }
-
 }
-

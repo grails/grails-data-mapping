@@ -34,8 +34,8 @@ class NamedQueriesBuilder {
     boolean initialized = false
 
     NamedQueriesBuilder(PersistentEntity entity, List<FinderMethod> finders) {
-        this.entity = entity;
-        this.finders = finders;
+        this.entity = entity
+        this.finders = finders
     }
 
     def evaluate(Closure namedQueriesClosure) {

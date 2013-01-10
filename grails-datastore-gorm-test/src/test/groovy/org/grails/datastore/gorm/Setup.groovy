@@ -2,21 +2,21 @@ package org.grails.datastore.gorm
 
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
-import org.springframework.context.support.GenericApplicationContext
 import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.query.Query.Between
+import org.grails.datastore.mapping.query.Query.PropertyCriterion
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
+import org.grails.datastore.mapping.simple.query.SimpleMapQuery
+import org.grails.datastore.mapping.simple.query.SimpleMapResultList
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
+import org.springframework.context.support.GenericApplicationContext
 import org.springframework.util.StringUtils
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
-import org.grails.datastore.mapping.model.PersistentProperty
-import org.grails.datastore.mapping.engine.types.AbstractMappingAwareCustomTypeMarshaller
-import org.grails.datastore.mapping.query.Query.PropertyCriterion
-import org.grails.datastore.mapping.query.Query.Between
-import org.grails.datastore.mapping.simple.query.SimpleMapQuery
-import org.grails.datastore.mapping.simple.query.SimpleMapResultList
 
 /**
  * @author graemerocher
@@ -37,11 +37,11 @@ class Setup {
                 if (value == null) {
                     nativeTarget.remove(key)
                     return null
-                } else {
-                    final converted = value.date.time
-                    nativeTarget.put(key, converted)
-                    return converted
                 }
+
+                final converted = value.date.time
+                nativeTarget.put(key, converted)
+                return converted
             }
 
             @Override
@@ -49,7 +49,7 @@ class Setup {
                 SimpleMapQuery query = nativeQuery.query
                 def handler = query.handlers[criterion.getClass()]
 
-                if(criterion instanceof Between) {
+                if (criterion instanceof Between) {
                     criterion.from = criterion.from.date.time
                     criterion.to = criterion.to.date.time
                     nativeQuery.results << handler?.call(criterion, property) ?: []
@@ -63,7 +63,7 @@ class Setup {
             @Override
             protected Birthday readInternal(PersistentProperty property, String key, Map nativeSource) {
                 final num = nativeSource.get(key)
-                if(num instanceof Long) {
+                if (num instanceof Long) {
                     return new Birthday(new Date(num))
                 }
                 return null

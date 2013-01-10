@@ -75,7 +75,6 @@ public class Restrictions {
         return new Query.ILike(property, expression);
     }
 
-
     /**
      * Restricts the property match the given regular expressions.
      *

@@ -13,8 +13,7 @@ class QueryByNullSpec extends GormDatastoreSpec {
         when:
             people - Person.findAllByLastName(null)
 
-       then: 
+       then:
             !people
     }
 }
-

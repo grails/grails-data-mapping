@@ -14,18 +14,17 @@
 */
 package org.grails.datastore.gorm.mongo.config
 
-import org.grails.datastore.mapping.mongo.MongoDatastore
-import org.springframework.context.support.GenericApplicationContext
-import org.grails.datastore.mapping.mongo.config.MongoMappingContext
-import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
-import org.grails.datastore.gorm.mongo.MongoGormEnhancer
-import org.grails.datastore.gorm.events.AutoTimestampEventListener
-import org.grails.datastore.gorm.events.DomainEventListener
-import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ConfigurableApplicationContext
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
+import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
+import org.grails.datastore.gorm.mongo.MongoGormEnhancer
+import org.grails.datastore.mapping.mongo.MongoDatastore
+import org.grails.datastore.mapping.mongo.config.MongoMappingContext
+import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
+import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.context.support.GenericApplicationContext
 
 /**
  * Support class for easing configuration of MongoDB
@@ -40,7 +39,6 @@ class MongoDatastoreConfigurer {
      * @param configuration The configuration
      * @return The MongoDatastore instance
      */
-
     static MongoDatastore configure(String databaseName, Class... classes, Map configuration = Collections.emptyMap() ) {
         ExpandoMetaClass.enableGlobally()
 
@@ -70,10 +68,6 @@ class MongoDatastoreConfigurer {
         mongoDatastore.applicationContext.addApplicationListener new DomainEventListener(mongoDatastore)
         mongoDatastore.applicationContext.addApplicationListener new AutoTimestampEventListener(mongoDatastore)
 
-
-
         return mongoDatastore
     }
-
-
 }

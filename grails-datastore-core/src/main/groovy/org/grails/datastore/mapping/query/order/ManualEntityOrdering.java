@@ -24,11 +24,11 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.query.Query;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -82,7 +82,7 @@ public class ManualEntityOrdering {
     public List applyOrder(List results, Query.Order order) {
        final String name = order.getProperty();
 
-        @SuppressWarnings("hiding") final PersistentEntity entity = getEntity();
+        final PersistentEntity entity = getEntity();
         PersistentProperty property = entity.getPropertyByName(name);
         if (property == null) {
             final PersistentProperty identity = entity.getIdentity();
@@ -93,7 +93,7 @@ public class ManualEntityOrdering {
 
         if (property != null) {
             final PersistentProperty finalProperty = property;
-            Collections.sort(results, new Comparator(){
+            Collections.sort(results, new Comparator() {
 
                 public int compare(Object o1, Object o2) {
 

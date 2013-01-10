@@ -16,17 +16,12 @@ package org.grails.datastore.mapping.redis.engine;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.dao.CannotAcquireLockException;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
@@ -46,6 +41,9 @@ import org.grails.datastore.mapping.redis.collection.RedisSet;
 import org.grails.datastore.mapping.redis.query.RedisQuery;
 import org.grails.datastore.mapping.redis.util.RedisCallback;
 import org.grails.datastore.mapping.redis.util.RedisTemplate;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.dao.CannotAcquireLockException;
 
 import redis.clients.jedis.exceptions.JedisDataException;
 
@@ -99,8 +97,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPersister<Map, L
     }
 
     @Override
-    protected void lockEntry(PersistentEntity persistentEntity, @SuppressWarnings("hiding") String entityFamily,
-            Serializable id, int timeout) {
+    protected void lockEntry(PersistentEntity persistentEntity, String entityFamily, Serializable id, int timeout) {
         String redisKey = getRedisKey(entityFamily, id);
         final TimeUnit milliUnit = TimeUnit.MILLISECONDS;
         final long waitTime = TimeUnit.SECONDS.toMillis(timeout);
@@ -136,8 +133,7 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPersister<Map, L
     }
 
     @Override
-    protected void unlockEntry(PersistentEntity persistentEntity,
-            @SuppressWarnings("hiding") String entityFamily, Serializable id) {
+    protected void unlockEntry(PersistentEntity persistentEntity, String entityFamily, Serializable id) {
         String redisKey = getRedisKey(entityFamily, id);
         redisTemplate.del(lockName(redisKey));
     }
@@ -228,21 +224,6 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPersister<Map, L
             entityResults.add(entity);
         }
         return entityResults;
-    }
-
-    private String convertByteArrayToString(Object byteArray) {
-        String value;
-        if(byteArray instanceof byte[]) {
-            try {
-                value = new String((byte[])byteArray, UTF_8);
-            } catch (UnsupportedEncodingException e) {
-                throw new DataRetrievalFailureException("Cannot decode byte[] value: " + e.getMessage(),e);
-            }
-        }
-        else {
-            value = byteArray.toString();
-        }
-        return value;
     }
 
     private String getRedisKey(String family, Serializable key) {

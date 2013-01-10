@@ -1,23 +1,24 @@
 package org.grails.datastore.gorm.simpledb.plugin.support
 
-import org.grails.datastore.gorm.plugin.support.ApplicationContextConfigurer
-import org.springframework.context.ConfigurableApplicationContext
-import org.grails.datastore.mapping.simpledb.engine.SimpleDBAssociationInfo
-import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate
-import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolverFactory
-import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver
-import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
-import org.grails.datastore.mapping.simpledb.util.SimpleDBConst
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.plugins.GrailsPluginManager
-import java.util.concurrent.Executors
-import java.util.concurrent.Executor
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
+
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
+import org.codehaus.groovy.grails.plugins.GrailsPluginManager
+import org.grails.datastore.gorm.plugin.support.ApplicationContextConfigurer
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.grails.datastore.mapping.simpledb.SimpleDBDatastore
 import org.grails.datastore.mapping.simpledb.config.SimpleDBMappingContext
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBAssociationInfo
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolver
+import org.grails.datastore.mapping.simpledb.engine.SimpleDBDomainResolverFactory
+import org.grails.datastore.mapping.simpledb.util.SimpleDBConst
+import org.grails.datastore.mapping.simpledb.util.SimpleDBTemplate
 import org.grails.datastore.mapping.simpledb.util.SimpleDBUtil
+import org.springframework.context.ConfigurableApplicationContext
 
 class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer {
 
@@ -26,11 +27,11 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
     }
 
     @Override
-    public void configure(ConfigurableApplicationContext ctx) {
-        super.configure(ctx);
+    void configure(ConfigurableApplicationContext ctx) {
+        super.configure(ctx)
 
-        GrailsPluginManager pluginManager = (GrailsPluginManager) ctx.getBean("pluginManager");
-        GrailsApplication application = (GrailsApplication) ctx.getBean("grailsApplication");
+        GrailsPluginManager pluginManager = ctx.pluginManager
+        GrailsApplication application = ctx.grailsApplication
 
         def simpleDBDomainClasses = []
         simpleDBDomainClassProcessor(application, pluginManager, { dc ->
@@ -38,10 +39,10 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
         })
 
         //explicitly register simpledb domain classes with datastore
-        SimpleDBDatastore simpleDBDatastore = (SimpleDBDatastore) ctx.getBean("simpledbDatastore")
-        SimpleDBMappingContext mappingContext = (SimpleDBMappingContext) ctx.getBean("simpledbMappingContext")
+        SimpleDBDatastore simpleDBDatastore = ctx.simpledbDatastore
+        SimpleDBMappingContext mappingContext = ctx.simpledbMappingContext
 
-        simpleDBDomainClasses.each{ domainClass ->
+        simpleDBDomainClasses.each { domainClass ->
             PersistentEntity entity = mappingContext.getPersistentEntity(domainClass.clazz.getName())
             simpleDBDatastore.persistentEntityAdded(entity)
         }
@@ -53,7 +54,7 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
                 simpleDBDomainClasses,
                 mappingContext,
                 simpleDBDatastore
-        ); //similar to JDBC datastore, do 'create' or 'drop-create'
+        ) //similar to JDBC datastore, do 'create' or 'drop-create'
     }
 
     /**
@@ -86,8 +87,9 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
 
         //protection against accidental drop
         boolean disableDrop = simpleDBConfig.disableDrop
-        if (disableDrop && drop){
-            throw new IllegalArgumentException("Value of disableDrop is "+disableDrop+" while dbCreate is "+dbCreate+". Throwing an exception to prevent accidental drop of the data");
+        if (disableDrop && drop) {
+            throw new IllegalArgumentException("Value of disableDrop is " + disableDrop + " while dbCreate is " +
+                dbCreate + ". Throwing an exception to prevent accidental drop of the data")
         }
 
         def numOfThreads = 30 //how many parallel threads are used to create dbCreate functionality in parallel
@@ -96,7 +98,7 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
 
         SimpleDBTemplate template = simpleDBDatastore.getSimpleDBTemplate()
         List<String> existingDomains = template.listDomains()
-        SimpleDBDomainResolverFactory resolverFactory = new SimpleDBDomainResolverFactory();
+        SimpleDBDomainResolverFactory resolverFactory = new SimpleDBDomainResolverFactory()
         CountDownLatch latch = new CountDownLatch(simpleDBDomainClasses.size())
 
         for (dc in simpleDBDomainClasses) {
@@ -162,5 +164,3 @@ class SimpleDBApplicationContextConfigurer extends ApplicationContextConfigurer 
         }
     }
 }
-
-

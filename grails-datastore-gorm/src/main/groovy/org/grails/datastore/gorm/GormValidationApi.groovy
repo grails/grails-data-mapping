@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm
 
+import org.codehaus.groovy.grails.validation.CascadingValidator
 import org.grails.datastore.gorm.support.BeforeValidateHelper
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.MappingContext
@@ -22,7 +23,6 @@ import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 import org.springframework.validation.Validator
-import org.codehaus.groovy.grails.validation.CascadingValidator
 
 /**
  * Methods used for validating GORM instances.
@@ -49,8 +49,9 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
 
         if (!validator) {
             validator = datastore.mappingContext.getEntityValidator(persistentEntity)
-            if(!validator)
+            if (!validator) {
                 return true
+            }
         }
 
         def localErrors = new ValidationErrors(instance)
@@ -67,9 +68,9 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
             localErrors = filterErrors(localErrors, fields as Set, instance)
         }
 
-        for(error in errors.allErrors) {
-            if(error instanceof FieldError) {
-                if(error.bindingFailure) {
+        for (error in errors.allErrors) {
+            if (error instanceof FieldError) {
+                if (error.bindingFailure) {
                     localErrors.addError error
                 }
             } else {

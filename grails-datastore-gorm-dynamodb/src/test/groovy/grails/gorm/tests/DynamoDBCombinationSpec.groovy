@@ -1,7 +1,8 @@
 package grails.gorm.tests
 
-import spock.lang.Specification
 import org.grails.datastore.mapping.dynamodb.util.DynamoDBUtil
+
+import spock.lang.Specification
 
 /**
  * Tests combination method in dymanodb util.
@@ -14,7 +15,7 @@ class DynamoDBCombinationSpec extends Specification {
             ]
 
         when:
-            def result = DynamoDBUtil.combinate(input);
+            def result = DynamoDBUtil.combinate(input)
 
         then:
             result == [ ['a', 'b'] ]
@@ -26,7 +27,7 @@ class DynamoDBCombinationSpec extends Specification {
         ]
 
         when:
-            def result = DynamoDBUtil.combinate(input);
+            def result = DynamoDBUtil.combinate(input)
 
         then:
             result == [ ['a'], ['b'] ]
@@ -39,7 +40,7 @@ class DynamoDBCombinationSpec extends Specification {
         ]
 
         when:
-            def result = DynamoDBUtil.combinate(input);
+            def result = DynamoDBUtil.combinate(input)
 
         then:
             result == [ ['c', 'a'], ['d', 'a'], ['c', 'b'], ['d', 'b']]
@@ -53,7 +54,7 @@ class DynamoDBCombinationSpec extends Specification {
         ]
 
         when:
-            def result = DynamoDBUtil.combinate(input);
+            def result = DynamoDBUtil.combinate(input)
 
         then:
             result == [['e', 'c', 'a'], ['e', 'd', 'a'], ['e', 'c', 'b'], ['e', 'd', 'b']]

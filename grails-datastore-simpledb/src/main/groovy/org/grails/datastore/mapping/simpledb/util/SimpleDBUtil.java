@@ -51,7 +51,7 @@ public class SimpleDBUtil {
      * @param value
      * @return
      */
-    public static String quoteValue(String value){
+    public static String quoteValue(String value) {
         return SimpleDBUtils.quoteValue(value);
     }
 
@@ -60,7 +60,7 @@ public class SimpleDBUtil {
      * @param values
      * @return
      */
-    public static String quoteValues(Collection<String> values){
+    public static String quoteValues(Collection<String> values) {
         return SimpleDBUtils.quoteValues(values);
     }
 
@@ -70,7 +70,7 @@ public class SimpleDBUtil {
      * @param domainNamePrefix
      * @return
      */
-    public static String getPrefixedDomainName(String domainNamePrefix, String domainName){
+    public static String getPrefixedDomainName(String domainNamePrefix, String domainName) {
         if (domainNamePrefix != null) {
             return domainNamePrefix + domainName;
         }
@@ -82,7 +82,7 @@ public class SimpleDBUtil {
      * @param entity
      * @return
      */
-    public static String getMappedDomainName(PersistentEntity entity){
+    public static String getMappedDomainName(PersistentEntity entity) {
         @SuppressWarnings("unchecked")
         ClassMapping<SimpleDBDomainClassMappedForm> classMapping = entity.getMapping();
         SimpleDBDomainClassMappedForm mappedForm = classMapping.getMappedForm();
@@ -125,7 +125,7 @@ public class SimpleDBUtil {
      * Used in case we need to re-submit request to AWS when it throws 'AWS Error Code: ServiceUnavailable, AWS Error Message: Service AmazonSimpleDB is currently unavailable. Please try again '
      * @param attemptNumber
      */
-    public static void sleepBeforeRetry(int attemptNumber){
+    public static void sleepBeforeRetry(int attemptNumber) {
         long sleepMS;
         if (attemptNumber < 5) {
             sleepMS = 100;

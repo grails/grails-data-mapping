@@ -25,7 +25,7 @@ import org.springframework.context.ApplicationContextAware
  * Creates the RedisDatastore bean
  */
 class RedisDatastoreFactoryBean implements FactoryBean<RedisDatastore>, ApplicationContextAware {
-        
+
     Map<String, String> config
     MappingContext mappingContext
     GrailsPluginManager pluginManager

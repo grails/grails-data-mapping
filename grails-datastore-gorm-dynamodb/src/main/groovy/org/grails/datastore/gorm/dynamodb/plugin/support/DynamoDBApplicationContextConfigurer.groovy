@@ -1,27 +1,27 @@
 package org.grails.datastore.gorm.dynamodb.plugin.support
 
-import org.grails.datastore.mapping.dynamodb.engine.DynamoDBAssociationInfo
-import org.grails.datastore.mapping.dynamodb.util.DynamoDBTemplate
-
-import org.grails.datastore.mapping.dynamodb.util.DynamoDBConst
-
-import org.grails.datastore.mapping.dynamodb.DynamoDBDatastore
-import org.grails.datastore.mapping.dynamodb.config.DynamoDBMappingContext
-import org.grails.datastore.mapping.dynamodb.util.DynamoDBUtil
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager
 import org.grails.datastore.gorm.plugin.support.ApplicationContextConfigurer
+import org.grails.datastore.mapping.dynamodb.DynamoDBDatastore
+import org.grails.datastore.mapping.dynamodb.config.DynamoDBMappingContext
+import org.grails.datastore.mapping.dynamodb.engine.DynamoDBAssociationInfo
+import org.grails.datastore.mapping.dynamodb.engine.DynamoDBTableResolver
+import org.grails.datastore.mapping.dynamodb.engine.DynamoDBTableResolverFactory
+import org.grails.datastore.mapping.dynamodb.util.DynamoDBConst
+import org.grails.datastore.mapping.dynamodb.util.DynamoDBTemplate
+import org.grails.datastore.mapping.dynamodb.util.DynamoDBUtil
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.context.ConfigurableApplicationContext
-import org.grails.datastore.mapping.dynamodb.engine.DynamoDBTableResolverFactory
-import org.grails.datastore.mapping.dynamodb.engine.DynamoDBTableResolver
-import com.amazonaws.services.dynamodb.model.ProvisionedThroughput
+
 import com.amazonaws.services.dynamodb.model.KeySchema
+import com.amazonaws.services.dynamodb.model.ProvisionedThroughput
 import com.amazonaws.services.dynamodb.model.TableDescription
 
 class DynamoDBApplicationContextConfigurer extends ApplicationContextConfigurer {
@@ -31,11 +31,11 @@ class DynamoDBApplicationContextConfigurer extends ApplicationContextConfigurer 
     }
 
     @Override
-    public void configure(ConfigurableApplicationContext ctx) {
-        super.configure(ctx);
+    void configure(ConfigurableApplicationContext ctx) {
+        super.configure(ctx)
 
-        GrailsPluginManager pluginManager = (GrailsPluginManager) ctx.getBean("pluginManager");
-        GrailsApplication application = (GrailsApplication) ctx.getBean("grailsApplication");
+        GrailsPluginManager pluginManager = ctx.pluginManager
+        GrailsApplication application = ctx.grailsApplication
 
         def dynamoDBDomainClasses = []
         dynamoDBDomainClassProcessor(application, pluginManager, { dc ->
@@ -43,8 +43,8 @@ class DynamoDBApplicationContextConfigurer extends ApplicationContextConfigurer 
         })
 
         //explicitly register dynamodb domain classes with datastore
-        DynamoDBDatastore dynamoDBDatastore = (DynamoDBDatastore) ctx.getBean("dynamodbDatastore")
-        DynamoDBMappingContext mappingContext = (DynamoDBMappingContext) ctx.getBean("dynamodbMappingContext")
+        DynamoDBDatastore dynamoDBDatastore = ctx.dynamodbDatastore
+        DynamoDBMappingContext mappingContext = ctx.dynamodbMappingContext
 
         dynamoDBDomainClasses.each { domainClass ->
             PersistentEntity entity = mappingContext.getPersistentEntity(domainClass.clazz.getName())
@@ -58,7 +58,7 @@ class DynamoDBApplicationContextConfigurer extends ApplicationContextConfigurer 
                 dynamoDBDomainClasses,
                 mappingContext,
                 dynamoDBDatastore
-        ); //similar to JDBC datastore, do 'create' or 'drop-create'
+        ) //similar to JDBC datastore, do 'create' or 'drop-create'
     }
 
     /**
@@ -92,7 +92,8 @@ class DynamoDBApplicationContextConfigurer extends ApplicationContextConfigurer 
         //protection against accidental drop
         boolean disableDrop = dynamoDBConfig.disableDrop
         if (disableDrop && drop) {
-            throw new IllegalArgumentException("Value of disableDrop is " + disableDrop + " while dbCreate is " + dbCreate + ". Throwing an exception to prevent accidental drop of the data");
+            throw new IllegalArgumentException("Value of disableDrop is " + disableDrop + " while dbCreate is " +
+                dbCreate + ". Throwing an exception to prevent accidental drop of the data")
         }
 
         def numOfThreads = 10 //how many parallel threads are used to create dbCreate functionality in parallel, dynamo DB has a max of 10 concurrent threads
@@ -101,7 +102,7 @@ class DynamoDBApplicationContextConfigurer extends ApplicationContextConfigurer 
 
         DynamoDBTemplate template = dynamoDBDatastore.getDynamoDBTemplate()
         List<String> existingTables = template.listTables()
-        DynamoDBTableResolverFactory resolverFactory = new DynamoDBTableResolverFactory();
+        DynamoDBTableResolverFactory resolverFactory = new DynamoDBTableResolverFactory()
         CountDownLatch latch = new CountDownLatch(dynamoDBDomainClasses.size())
 
         for (dc in dynamoDBDomainClasses) {
@@ -182,5 +183,3 @@ class DynamoDBApplicationContextConfigurer extends ApplicationContextConfigurer 
         }
     }
 }
-
-

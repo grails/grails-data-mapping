@@ -217,7 +217,6 @@ public class SimpleDBTypeConverterRegistrar extends BasicTypeConverterRegistrar 
         }
     };
 
-
     @Override
     public void register(ConverterRegistry registry) {
         //we use most of the standard's converters

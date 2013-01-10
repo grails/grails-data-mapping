@@ -68,7 +68,7 @@ class InheritanceSpec extends GormDatastoreSpec {
     }
 
     def clearSession() {
-        City.withSession { session -> session.flush(); }
+        City.withSession { session -> session.flush() }
     }
 }
 

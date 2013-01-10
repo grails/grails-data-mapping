@@ -5,7 +5,7 @@ import spock.lang.Specification
 /**
  * Tests for querying the size of collections etc.
  */
-class SizeQuerySpec extends GormDatastoreSpec{
+class SizeQuerySpec extends GormDatastoreSpec {
 
     void "Test sizeLe criterion"() {
         given: "A country with only 1 resident"
@@ -24,7 +24,6 @@ class SizeQuerySpec extends GormDatastoreSpec{
                         .addToResidents(firstName:"Dexter", lastName:"Morgan")
                         .addToResidents(firstName:"Debra", lastName:"Morgan")
                         .save(flush:true)
-
 
             session.clear()
 
@@ -51,7 +50,6 @@ class SizeQuerySpec extends GormDatastoreSpec{
              results.size() == 2
              results[0].name == 'Dinoville'
              results[1].name == 'Miami'
-
 
         when:"We query for countries with 2 residents"
             results = Country.withCriteria {
@@ -80,7 +78,6 @@ class SizeQuerySpec extends GormDatastoreSpec{
                         .addToResidents(firstName:"Debra", lastName:"Morgan")
                         .save(flush:true)
 
-
             session.clear()
 
         when:"We query for countries with 1 resident"
@@ -104,7 +101,6 @@ class SizeQuerySpec extends GormDatastoreSpec{
              results != null
              results.size() == 1
              results[0].name == 'Dinoville'
-
 
         when:"We query for countries with 2 residents"
             results = Country.withCriteria {
@@ -133,7 +129,6 @@ class SizeQuerySpec extends GormDatastoreSpec{
                         .addToResidents(firstName:"Debra", lastName:"Morgan")
                         .save(flush:true)
 
-
             session.clear()
 
         when:"We query for countries with 1 resident"
@@ -157,7 +152,6 @@ class SizeQuerySpec extends GormDatastoreSpec{
              results != null
              results.size() == 1
              results[0].name == 'Springfield'
-
 
         when:"We query for countries with 2 residents"
             results = Country.withCriteria {
@@ -186,7 +180,6 @@ class SizeQuerySpec extends GormDatastoreSpec{
                         .addToResidents(firstName:"Debra", lastName:"Morgan")
                         .save(flush:true)
 
-
             session.clear()
 
         when:"We query for countries with 1 resident"
@@ -213,7 +206,6 @@ class SizeQuerySpec extends GormDatastoreSpec{
              results.size() == 2
              results[0].name == 'Miami'
              results[1].name == 'Springfield'
-
 
         when:"We query for countries with 2 residents"
             results = Country.withCriteria {
@@ -259,7 +251,6 @@ class SizeQuerySpec extends GormDatastoreSpec{
              results.size() == 1
              results[0].name == 'Springfield'
 
-
         when:"We query for countries with 2 residents"
             results = Country.withCriteria {
                 sizeEq "residents", 2
@@ -267,9 +258,7 @@ class SizeQuerySpec extends GormDatastoreSpec{
 
         then:"we get no results back"
             results.size() == 0
-
     }
-
 
     void "Test sizeNe criterion"() {
         given: "A country with only 1 resident"
@@ -306,18 +295,15 @@ class SizeQuerySpec extends GormDatastoreSpec{
              results.size() == 1
              results[0].name == 'Dinoville'
 
-
         when:"We query for countries with 2 residents"
             results = Country.withCriteria {
                 and {
                     sizeNe "residents", 1
                     sizeNe "residents", 3
                 }
-
             }
 
         then:"we get no results back"
             results.size() == 0
-
     }
 }

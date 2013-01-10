@@ -1,6 +1,5 @@
 package grails.gorm.tests
 
-import grails.persistence.Entity
 import spock.lang.Ignore
 
 /**
@@ -29,7 +28,6 @@ class InheritanceSpec extends GormDatastoreSpec {
             "London" == cities[0].name
             "United Kingdom" == countries[0].name
     }
-
 
     @Ignore
     void "Test querying with inheritance"() {
@@ -70,6 +68,6 @@ class InheritanceSpec extends GormDatastoreSpec {
     }
 
     def clearSession() {
-        City.withSession { session -> session.flush(); }
+        City.withSession { session -> session.flush() }
     }
 }

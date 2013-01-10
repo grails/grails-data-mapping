@@ -1,20 +1,11 @@
 package org.grails.datastore.gorm.mongo
 
-import grails.gorm.tests.Nose
 import grails.gorm.tests.Face
-import grails.gorm.tests.Pet
 import grails.gorm.tests.GormDatastoreSpec
-
+import grails.gorm.tests.Nose
 import grails.gorm.tests.Person
-import com.mongodb.DBRef
+import grails.gorm.tests.Pet
 
-/**
- * Created by IntelliJ IDEA.
- * User: graemerocher
- * Date: 8/16/11
- * Time: 5:07 PM
- * To change this template use File | Settings | File Templates.
- */
 class OneToOneIntegritySpec extends GormDatastoreSpec {
 
     static {
@@ -41,10 +32,10 @@ class OneToOneIntegritySpec extends GormDatastoreSpec {
         when:"The low level API is accessed"
             def petDbo = Pet.collection.findOne(name:"Dino")
             def ownerRef =petDbo.owner
+
         then:"check the state is valid"
             petDbo != null
             ownerRef == person.id
-
     }
 
     def "Test persist and retrieve one-to-one with inverse key"() {
@@ -81,7 +72,5 @@ class OneToOneIntegritySpec extends GormDatastoreSpec {
             noseDbo != null
             noseDbo.hasFreckles == true
             faceRef == face.id
-
-
     }
 }

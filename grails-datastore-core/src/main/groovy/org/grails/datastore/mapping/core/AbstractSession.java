@@ -28,12 +28,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.persistence.FlushModeType;
 
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
-import org.grails.datastore.mapping.query.api.QueryableCriteria;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.grails.datastore.mapping.collection.PersistentCollection;
 import org.grails.datastore.mapping.core.impl.PendingInsert;
 import org.grails.datastore.mapping.core.impl.PendingOperation;
@@ -46,7 +40,13 @@ import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.query.Query;
+import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.transactions.Transaction;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.transaction.NoTransactionException;
 import org.springframework.util.Assert;
 
@@ -172,8 +172,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         cacheEntry(key, entry, getEntryCache(entity.getJavaClass(), false), false);
     }
 
-    protected void cacheEntry(Serializable key, Object entry, Map<Serializable, Object> entryCache,
-            @SuppressWarnings("unused") boolean forDirtyCheck) {
+    protected void cacheEntry(Serializable key, Object entry, Map<Serializable, Object> entryCache, boolean forDirtyCheck) {
         entryCache.put(key, entry);
     }
 
@@ -333,7 +332,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         return !pendingInserts.isEmpty() || !pendingUpdates.isEmpty() || !pendingDeletes.isEmpty();
     }
 
-    protected void postFlush(@SuppressWarnings("unused") boolean hasUpdates) {
+    protected void postFlush(boolean hasUpdates) {
         // do nothing
     }
 
@@ -391,7 +390,6 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         return p;
     }
 
-    @SuppressWarnings("hiding")
     protected abstract Persister createPersister(Class cls, MappingContext mappingContext);
 
     public boolean contains(Object o) {

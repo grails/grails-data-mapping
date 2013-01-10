@@ -40,7 +40,7 @@ class SaveAllSpec extends GormDatastoreSpec {
             def fred = new Person(firstName:"Fred", lastName:"Flintstone")
             def joe = new Person(firstName:"Joe", lastName:"Doe")
 
-            Vector<Person> personVector = new Vector<Person>();
+            Vector<Person> personVector = new Vector<Person>()
             personVector.add(bob)
             personVector.add(fred)
             personVector.add(joe)

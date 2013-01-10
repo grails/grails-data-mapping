@@ -25,8 +25,6 @@ class QueryAssociationSpec extends GormDatastoreSpec {
             results.size() == 1
             results[0].name == "Fred"
 
-
-
         when: "A like criterion is executed on the child association"
             results = TestEntity.withCriteria {
                 child {

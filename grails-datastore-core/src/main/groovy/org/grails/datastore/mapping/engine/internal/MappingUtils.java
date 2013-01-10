@@ -14,15 +14,22 @@
  */
 package org.grails.datastore.mapping.engine.internal;
 
-import org.grails.datastore.mapping.config.Property;
-import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.model.PropertyMapping;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Queue;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.grails.datastore.mapping.config.Property;
+import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.PropertyMapping;
 
 /**
  * Utility methods for mapping logic.
@@ -30,10 +37,10 @@ import java.util.*;
  * @author Graeme Rocher
  * @since 1.0
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class MappingUtils {
 
-    public static String getTargetKey(@SuppressWarnings("rawtypes") PersistentProperty property) {
-        @SuppressWarnings("unchecked")
+    public static String getTargetKey(PersistentProperty property) {
         PropertyMapping<Property> mapping = property.getMapping();
         String targetName;
 
@@ -52,7 +59,6 @@ public class MappingUtils {
      * @param interfaceType The interface
      * @return ArrayList for List, TreeSet for SortedSet, LinkedHashSet for Set etc.
      */
-    @SuppressWarnings("rawtypes")
     public static Collection createConcreteCollection(Class interfaceType) {
         Collection elements;
         if (interfaceType.equals(List.class)) {
@@ -94,9 +100,9 @@ public class MappingUtils {
 
         Field declaredField = getDeclaredField(javaClass, propertyName);
         Type genericType = declaredField != null ? declaredField.getGenericType() : null;
-        if(genericType instanceof ParameterizedType) {
+        if (genericType instanceof ParameterizedType) {
             Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
-            if(typeArguments.length>0) {
+            if (typeArguments.length>0) {
                 genericClass = (Class) typeArguments[0];
             }
         }
@@ -108,9 +114,9 @@ public class MappingUtils {
 
         Field declaredField = getDeclaredField(javaClass, propertyName);
         Type genericType = declaredField != null ? declaredField.getGenericType() : null;
-        if(genericType instanceof ParameterizedType) {
+        if (genericType instanceof ParameterizedType) {
             Type[] typeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
-            if(typeArguments.length>0) {
+            if (typeArguments.length>0) {
                 genericClass = (Class) typeArguments[isKeyType ? 0 : 1];
             }
         }
@@ -120,9 +126,9 @@ public class MappingUtils {
     public static Class getGenericType(Class propertyType) {
         Class genericType = null;
         TypeVariable[] typeParameters = propertyType.getTypeParameters();
-        if(typeParameters != null && typeParameters.length>0) {
+        if (typeParameters != null && typeParameters.length>0) {
             Type[] bounds = typeParameters[0].getBounds();
-            if(bounds != null && bounds.length>0 && (bounds[0] instanceof Class)) {
+            if (bounds != null && bounds.length>0 && (bounds[0] instanceof Class)) {
                 genericType = (Class) bounds[0];
             }
         }

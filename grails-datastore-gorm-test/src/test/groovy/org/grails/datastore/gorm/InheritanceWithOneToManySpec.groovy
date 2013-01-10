@@ -1,11 +1,10 @@
 package org.grails.datastore.gorm
 
-import grails.persistence.Entity
 import grails.gorm.tests.GormDatastoreSpec
+import grails.persistence.Entity
+
 import spock.lang.Issue
 
-/**
- */
 class InheritanceWithOneToManySpec extends GormDatastoreSpec{
 
     @Issue('GRAILS-9010')
@@ -33,21 +32,17 @@ class Group {
     Long id
     String name
     static hasMany = [members:Member]
-    static constraints = {
-    }
     Collection members
 }
 
 @Entity
 class Member   {
-
     Long id
     String name
     String externalId
 }
+
 @Entity
 class SubMember extends Member {
-
-
     String extraName
 }

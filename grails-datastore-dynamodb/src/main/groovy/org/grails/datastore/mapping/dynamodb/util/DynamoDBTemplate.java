@@ -14,12 +14,19 @@
  */
 package org.grails.datastore.mapping.dynamodb.util;
 
-import com.amazonaws.services.dynamodb.model.*;
+import java.util.List;
+import java.util.Map;
+
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.springframework.dao.DataAccessException;
 
-import java.util.List;
-import java.util.Map;
+import com.amazonaws.services.dynamodb.model.AttributeValue;
+import com.amazonaws.services.dynamodb.model.AttributeValueUpdate;
+import com.amazonaws.services.dynamodb.model.Condition;
+import com.amazonaws.services.dynamodb.model.Key;
+import com.amazonaws.services.dynamodb.model.KeySchema;
+import com.amazonaws.services.dynamodb.model.ProvisionedThroughput;
+import com.amazonaws.services.dynamodb.model.TableDescription;
 
 /**
  * AWS DynamoDB template. This is a low-level way of accessing DynamoDB,
@@ -32,7 +39,7 @@ public interface DynamoDBTemplate {
     /**
      * Returns null if not found
      * @param tableName complete name of the table in DynamoDB, will be used as-is
-     * @param key the key for which to retrieve the data 
+     * @param key the key for which to retrieve the data
      * @return null if the item is not found
      * @throws DataAccessException
      */
@@ -41,7 +48,7 @@ public interface DynamoDBTemplate {
     /**
      * Same as get but with consistent read flag.
      * @param tableName complete name of the table in DynamoDB, will be used as-is
-     * @param key the key for which to retrieve the data 
+     * @param key the key for which to retrieve the data
      * @return
      * @throws org.springframework.dao.DataAccessException
      */

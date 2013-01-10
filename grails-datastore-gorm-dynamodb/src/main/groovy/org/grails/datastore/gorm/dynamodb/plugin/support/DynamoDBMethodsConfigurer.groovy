@@ -14,20 +14,19 @@
  */
 package org.grails.datastore.gorm.dynamodb.plugin.support
 
-import org.grails.datastore.gorm.dynamodb.DynamoDBGormStaticApi
-import org.grails.datastore.gorm.dynamodb.DynamoDBGormInstanceApi
-import org.grails.datastore.gorm.dynamodb.DynamoDBGormEnhancer
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
+import org.grails.datastore.gorm.dynamodb.DynamoDBGormEnhancer
+import org.grails.datastore.gorm.dynamodb.DynamoDBGormInstanceApi
+import org.grails.datastore.gorm.dynamodb.DynamoDBGormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
 import org.grails.datastore.mapping.core.Datastore
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
- *
- * DynamoDB specific dynamic methods configurer
+ * DynamoDB specific dynamic methods configurer.
  *
  * @author Roman Stepanenko based on Graeme Rocher
  * @since 0.1
@@ -58,13 +57,13 @@ class DynamoDBMethodsConfigurer extends DynamicMethodsConfigurer{
     @Override
     protected GormEnhancer createEnhancer() {
         def ge
-        if(transactionManager != null)
-            ge = new DynamoDBGormEnhancer(datastore, transactionManager)
-        else
+        if (transactionManager == null) {
             ge = new DynamoDBGormEnhancer(datastore)
+        }
+        else {
+            ge = new DynamoDBGormEnhancer(datastore, transactionManager)
+        }
         ge.failOnError = failOnError
         ge
     }
-
-
 }

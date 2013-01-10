@@ -8,14 +8,14 @@ package grails.gorm.tests
 class LexComparisonSpec extends GormDatastoreSpec {
     void "Test byte comparison"() {
         given:
-            create("Alex"){ it.setB(Byte.MAX_VALUE) }.save()
-            create("Bob"){ it.setB(Byte.MIN_VALUE) }.save()
-            create("Sam"){ it.setB(-102 as byte) }.save()
-            create("Carl"){ it.setB(-15 as byte) }.save()
-            create("Don"){ it.setB(-13 as byte) }.save()
-            create("Earl"){ it.setB(0 as byte) }.save()
-            create("Roman"){ it.setB(15 as byte) }.save()
-            create("Glen"){ it.setB(125 as byte) }.save()
+            create("Alex") { it.setB(Byte.MAX_VALUE) }.save()
+            create("Bob") { it.setB(Byte.MIN_VALUE) }.save()
+            create("Sam") { it.setB(-102 as byte) }.save()
+            create("Carl") { it.setB(-15 as byte) }.save()
+            create("Don") { it.setB(-13 as byte) }.save()
+            create("Earl") { it.setB(0 as byte) }.save()
+            create("Roman") { it.setB(15 as byte) }.save()
+            create("Glen") { it.setB(125 as byte) }.save()
             session.flush()
             session.clear()
 
@@ -92,14 +92,14 @@ class LexComparisonSpec extends GormDatastoreSpec {
 
     void "Test short comparison"() {
         given:
-            create("Alex"){ it.setS(Short.MAX_VALUE) }.save()
-            create("Bob"){ it.setS(Short.MIN_VALUE) }.save()
-            create("Sam"){ it.setS(-102 as short) }.save()
-            create("Carl"){ it.setS(-15 as short) }.save()
-            create("Don"){ it.setS(-13 as short) }.save()
-            create("Earl"){ it.setS(0 as short) }.save()
-            create("Roman"){ it.setS(15 as short) }.save()
-            create("Glen"){ it.setS(125 as short) }.save()
+            create("Alex") { it.setS(Short.MAX_VALUE) }.save()
+            create("Bob") { it.setS(Short.MIN_VALUE) }.save()
+            create("Sam") { it.setS(-102 as short) }.save()
+            create("Carl") { it.setS(-15 as short) }.save()
+            create("Don") { it.setS(-13 as short) }.save()
+            create("Earl") { it.setS(0 as short) }.save()
+            create("Roman") { it.setS(15 as short) }.save()
+            create("Glen") { it.setS(125 as short) }.save()
             session.flush()
             session.clear()
 
@@ -174,17 +174,16 @@ class LexComparisonSpec extends GormDatastoreSpec {
             results.collect {it.name} == ["Earl", "Don", "Carl", "Sam", "Bob"]
     }
 
-
     void "Test integer comparison"() {
         given:
-            create("Alex"){ it.setI(Integer.MAX_VALUE) }.save()
-            create("Bob"){ it.setI(Integer.MIN_VALUE) }.save()
-            create("Sam"){ it.setI(-102 as int) }.save()
-            create("Carl"){ it.setI(-15 as int) }.save()
-            create("Don"){ it.setI(-13 as int) }.save()
-            create("Earl"){ it.setI(0 as int) }.save()
-            create("Roman"){ it.setI(15 as int) }.save()
-            create("Glen"){ it.setI(125 as int) }.save()
+            create("Alex") { it.setI(Integer.MAX_VALUE) }.save()
+            create("Bob") { it.setI(Integer.MIN_VALUE) }.save()
+            create("Sam") { it.setI(-102 as int) }.save()
+            create("Carl") { it.setI(-15 as int) }.save()
+            create("Don") { it.setI(-13 as int) }.save()
+            create("Earl") { it.setI(0 as int) }.save()
+            create("Roman") { it.setI(15 as int) }.save()
+            create("Glen") { it.setI(125 as int) }.save()
             session.flush()
             session.clear()
 
@@ -261,14 +260,14 @@ class LexComparisonSpec extends GormDatastoreSpec {
 
     void "Test long comparison"() {
         given:
-            create("Alex"){ it.setL(Long.MAX_VALUE) }.save()
-            create("Bob"){ it.setL(Long.MIN_VALUE) }.save()
-            create("Sam"){ it.setL(-102 as long) }.save()
-            create("Carl"){ it.setL(-15 as long) }.save()
-            create("Don"){ it.setL(-13 as long) }.save()
-            create("Earl"){ it.setL(0 as long) }.save()
-            create("Roman"){ it.setL(15 as long) }.save()
-            create("Glen"){ it.setL(125 as long) }.save()
+            create("Alex") { it.setL(Long.MAX_VALUE) }.save()
+            create("Bob") { it.setL(Long.MIN_VALUE) }.save()
+            create("Sam") { it.setL(-102 as long) }.save()
+            create("Carl") { it.setL(-15 as long) }.save()
+            create("Don") { it.setL(-13 as long) }.save()
+            create("Earl") { it.setL(0 as long) }.save()
+            create("Roman") { it.setL(15 as long) }.save()
+            create("Glen") { it.setL(125 as long) }.save()
             session.flush()
             session.clear()
 
@@ -343,7 +342,7 @@ class LexComparisonSpec extends GormDatastoreSpec {
             results.collect {it.name} == ["Earl", "Don", "Carl", "Sam", "Bob"]
     }
 
-    private CommonTypes create(def name, def modifier){
+    private CommonTypes create(name, modifier) {
         def now = new Date()
         def cal = new GregorianCalendar()
         def ct = new CommonTypes(

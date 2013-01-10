@@ -15,29 +15,29 @@
 
 package grails.gorm
 
-import org.grails.datastore.mapping.query.api.Criteria
-import org.grails.datastore.mapping.query.api.ProjectionList
-
-import org.grails.datastore.mapping.query.Query.Criterion
-import org.grails.datastore.mapping.query.Restrictions
-import org.grails.datastore.mapping.query.Query.Order
-import org.grails.datastore.mapping.query.Query.Projection
-import org.grails.datastore.mapping.query.Projections
-import org.grails.datastore.mapping.core.Session
-import org.grails.datastore.mapping.query.Query
-import org.grails.datastore.gorm.finders.DynamicFinder
-import org.grails.datastore.gorm.finders.FinderMethod
-import org.grails.datastore.mapping.query.Query.Junction
-import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.model.types.Association
-import org.grails.datastore.gorm.query.criteria.DetachedAssociationCriteria
-import org.grails.datastore.mapping.query.Query.Order.Direction
-import org.grails.datastore.mapping.query.api.QueryableCriteria
-import org.grails.datastore.mapping.query.Query.PropertyCriterion
 import javax.persistence.FetchType
 
+import org.grails.datastore.gorm.finders.DynamicFinder
+import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.gorm.query.criteria.DetachedAssociationCriteria
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.types.Association
+import org.grails.datastore.mapping.query.Projections
+import org.grails.datastore.mapping.query.Query
+import org.grails.datastore.mapping.query.Restrictions
+import org.grails.datastore.mapping.query.Query.Criterion
+import org.grails.datastore.mapping.query.Query.Junction
+import org.grails.datastore.mapping.query.Query.Order
+import org.grails.datastore.mapping.query.Query.Projection
+import org.grails.datastore.mapping.query.Query.PropertyCriterion
+import org.grails.datastore.mapping.query.Query.Order.Direction
+import org.grails.datastore.mapping.query.api.Criteria
+import org.grails.datastore.mapping.query.api.ProjectionList
+import org.grails.datastore.mapping.query.api.QueryableCriteria
+
 /**
- * Represents criteria that is not bound to the current connection and can be built up and re-used at a later date
+ * Represents criteria that is not bound to the current connection and can be built up and re-used at a later date.
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -54,7 +54,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
 
     protected List<Junction> junctions = []
     protected PersistentEntity persistentEntity
-    protected Map<String, FetchType> fetchStrategies = new HashMap<String,FetchType>();
+    protected Map<String, FetchType> fetchStrategies = [:]
     protected Closure lazyQuery
 
     ProjectionList projectionList = new DetachedProjections(projections)
@@ -94,29 +94,31 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     PersistentEntity getPersistentEntity() {
-        if(persistentEntity == null) initialiseIfNecessary(targetClass)
+        if (persistentEntity == null) initialiseIfNecessary(targetClass)
         return persistentEntity
     }
 
-    protected def initialiseIfNecessary(Class<T> targetClass) {
-        if(dynamicFinders == null) {
-            try {
-                dynamicFinders = targetClass.gormDynamicFinders
-                persistentEntity = targetClass.gormPersistentEntity
-            } catch (MissingPropertyException mpe) {
-                throw new IllegalArgumentException("Class [$targetClass.name] is not a domain class")
-            }
+    protected initialiseIfNecessary(Class<T> targetClass) {
+        if (dynamicFinders != null) {
+            return
+        }
+
+        try {
+            dynamicFinders = targetClass.gormDynamicFinders
+            persistentEntity = targetClass.gormPersistentEntity
+        } catch (MissingPropertyException mpe) {
+            throw new IllegalArgumentException("Class [$targetClass.name] is not a domain class")
         }
     }
 
-    public void add(Criterion criterion) {
+    void add(Criterion criterion) {
         applyLazyCriteria()
-        if(criterion instanceof PropertyCriterion) {
-            if(criterion.value instanceof Closure) {
+        if (criterion instanceof PropertyCriterion) {
+            if (criterion.value instanceof Closure) {
                 criterion.value = buildQueryableCriteria(criterion.value)
             }
         }
-        if(junctions)  {
+        if (junctions)  {
             junctions[-1].add criterion
         }
         else {
@@ -124,11 +126,11 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         }
     }
 
-    public List<Criterion> getCriteria() { criteria }
+    List<Criterion> getCriteria() { criteria }
 
-    public List<Projection> getProjections() { projections }
+    List<Projection> getProjections() { projections }
 
-    public List<Order> getOrders() { orders }
+    List<Order> getOrders() { orders }
 
     /**
      * Evaluate projections within the context of the given closure
@@ -152,7 +154,6 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         handleJunction(callable)
         return this
     }
-
 
     /**
      * Handles a disjunction
@@ -326,7 +327,6 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         return this
     }
 
-
     /**
      * @see Criteria
      */
@@ -466,7 +466,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     private QueryableCriteria buildQueryableCriteria(Closure queryClosure) {
-        return (QueryableCriteria) new DetachedCriteria(targetClass).build(queryClosure);
+        return new DetachedCriteria(targetClass).build(queryClosure)
     }
 
     Criteria gtAll(String propertyName, Closure propertyValue) {
@@ -520,7 +520,6 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     class DetachedProjections implements ProjectionList {
 
         List<Projection> projections
-
 
         DetachedProjections(List<Projection> projections) {
             this.projections = projections
@@ -612,7 +611,6 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
             projections << Projections.id()
             return this
         }
-
     }
 
     /**
@@ -693,7 +691,6 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         }
     }
 
-
     /**
      * Counts the number of records returned by the query
      *
@@ -754,7 +751,6 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         newCriteria.with callable
         return newCriteria
     }
-
 
     /**
      * Enable the builder syntax for contructing Criteria
@@ -833,12 +829,10 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     def propertyMissing(String name) {
         final entity = getPersistentEntity()
         final p = entity.getPropertyByName(name)
-        if(p != null) {
-            return property(name)
-        }
-        else {
+        if (p == null) {
             throw new MissingPropertyException(name, DetachedCriteria)
         }
+        return property(name)
     }
 
     /**
@@ -863,12 +857,12 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     def methodMissing(String methodName, args) {
         initialiseIfNecessary(targetClass)
         def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
-        if(method != null) {
+        if (method != null) {
             return method.invoke(targetClass, methodName,this, args)
         }
-        else if(args && args.size() == 1 && (args[-1] instanceof Closure)) {
+        if (args && args.size() == 1 && (args[-1] instanceof Closure)) {
             final prop = persistentEntity.getPropertyByName(methodName)
-            if(prop instanceof Association) {
+            if (prop instanceof Association) {
                 def associationCriteria = new DetachedAssociationCriteria(prop.associatedEntity.javaClass, prop)
                 add associationCriteria
                 final callable = args[-1]
@@ -918,15 +912,15 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         targetClass.withDatastoreSession { Session session ->
             applyLazyCriteria()
             Query query = session.createQuery(targetClass)
-            if(defaultMax != null) {
+            if (defaultMax != null) {
                 query.max(defaultMax)
             }
-            if(defaultOffset != null) {
+            if (defaultOffset != null) {
                 query.offset(defaultOffset)
             }
             DynamicFinder.applyDetachedCriteria(query, this)
 
-            if(additionalCriteria != null) {
+            if (additionalCriteria != null) {
                 def additionalDetached = new DetachedCriteria(targetClass).build( additionalCriteria )
                 DynamicFinder.applyDetachedCriteria(query, additionalDetached)
             }
@@ -938,11 +932,12 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     private void applyLazyCriteria() {
-        if (lazyQuery != null) {
-            def criteria = lazyQuery
-            lazyQuery = null
-            this.with criteria
+        if (lazyQuery == null) {
+            return
         }
-    }
 
+        def criteria = lazyQuery
+        lazyQuery = null
+        this.with criteria
+    }
 }

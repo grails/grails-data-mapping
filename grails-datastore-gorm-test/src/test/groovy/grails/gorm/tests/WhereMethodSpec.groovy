@@ -1,11 +1,12 @@
 package grails.gorm.tests
 
-import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 import grails.gorm.DetachedCriteria
-import org.grails.datastore.gorm.GormEnhancer
-import spock.lang.Ignore
-import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import grails.persistence.Entity
+
+import org.codehaus.groovy.control.MultipleCompilationErrorsException
+import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
+
+import spock.lang.Ignore
 import spock.lang.Issue
 
 /**
@@ -15,14 +16,14 @@ import spock.lang.Issue
 @Ignore
 class WhereMethodSpec extends GormDatastoreSpec {
 
-	def gcl
-	
+    def gcl
+
     @Override
     List getDomainClasses() {
         def list = [Continent, Group, Proposal, Advisor]
-		
-		gcl= new GroovyClassLoader()
-		list << gcl.parseClass('''
+
+        gcl= new GroovyClassLoader()
+        list << gcl.parseClass('''
 import grails.gorm.tests.*
 import grails.gorm.*
 import grails.persistence.*
@@ -30,12 +31,12 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 
 @ApplyDetachedCriteriaTransform
 @Entity
-class Todo { 
-		Long id
-		String title
-		static doStuff() {
-			where { title == 'blah' }
-		}
+class Todo {
+    Long id
+    String title
+    static doStuff() {
+        where { title == 'blah' }
+    }
 }
 ''')
 
@@ -48,20 +49,18 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
 @ApplyDetachedCriteriaTransform
 @Entity
 class Project {
-		Long id
-		String name
-		static hasMany =[todos:Todo]
-        Set todos
+    Long id
+    String name
+    static hasMany =[todos:Todo]
+    Set todos
 
-        static todosThatStartWithA = where {
-            todos.title ==~ "A%"
-        }
+    static todosThatStartWithA = where {
+        todos.title ==~ "A%"
+    }
 }
 ''')
-		return list
+        return list
     }
-
-    
 
 //   TODO: Fix RHS function calls
 //    @Ignore
@@ -77,7 +76,6 @@ class Project {
 //        then:"The correct results are returned"
 //            results.size() > 0
 //    }
-
 
     def closureProperty = {
         Person.where { lastName == "Simpson" }.list()
@@ -191,8 +189,6 @@ class Project {
         e.message.contains 'Cannot query property "firstN" - no such property on class grails.gorm.tests.Person exists.'
     }
 
-
-
     @Issue('GRAILS-9425')
     def "Test that static definition of where query works with associations"() {
          given:"given a project and some todos"
@@ -225,9 +221,7 @@ class Project {
 
         then:"The results are correct"
             results.size() == 3
-
     }
-
 
     def "Test a static method that calls where"() {
 
@@ -243,7 +237,6 @@ class Project {
             query.count() == 1
             query.find().title == 'blah'
     }
-
 
     private getSomePets(args) {
         Pet.where {
@@ -275,8 +268,8 @@ class Project {
         then:"The correct results are returned and type conversion happens as expected"
             results.size() == 3
             results[0].id == 3
-
     }
+
     def "Test where query inside closure property declaration"() {
         given:"some people"
             createPeople()
@@ -284,12 +277,10 @@ class Project {
         when:"A query is created in a closure property"
             def results = closureProperty.call()
 
-
         then:"The correct results are returned"
             results.size() == 4
             results.every { it.lastName == "Simpson" }
     }
-
 
     def "Test captured detached criteria instance" () {
         given:"people and pets"
@@ -304,10 +295,10 @@ class Project {
                 pets.size() == 2
             }
 
-
         then:"The results are valid"
             owners.count() == 2
     }
+
     def "Test whereAny method"() {
         given:"some people"
             createPeople()
@@ -323,6 +314,7 @@ class Project {
             people[0].firstName == "Bart"
             people[1].firstName == "Homer"
     }
+
     def "Test where query that uses a captured variable inside an association query"() {
         given:"people and pets"
             createPeopleWithPets()
@@ -335,7 +327,6 @@ class Project {
 
         then:"The correct result is returned"
             pets.size() == 2
-
     }
 
     def "Test where with multiple property projections using chaining"() {
@@ -365,8 +356,6 @@ class Project {
             results == [["Simpson", "Homer"], ["Simpson", "Marge"], ["Simpson", "Bart"], ["Simpson", "Lisa"]]
     }
 
-
-
     def "Test parameterized where query"() {
         given:"A bunch of people"
               createPeople()
@@ -374,7 +363,6 @@ class Project {
         when:"parameters are used instead of literals"
             def fn = "Bart"
             def ln = "Simpson"
-
 
             def query = Person.where { firstName != fn && lastName == ln }.sort("firstName", "desc")
             def people = query.list()
@@ -410,7 +398,6 @@ class Project {
      then:"The expected result is returned"
         results.size() == 1
         results[0].firstName == "Homer"
-
   }
 
   def "Test function execution"() {
@@ -418,7 +405,6 @@ class Project {
             createPeopleWithPets()
             def p = new Person(firstName: "Old", lastName: "Person").save()
             new Pet(owner:p, birthDate: new GregorianCalendar(2009,1, 1).time, name:"Old Dog").save()
-
 
       when:"A function is used on the property"
         def query = Pet.where {
@@ -563,7 +549,7 @@ class Project {
              int total = 0
              while(total < list.size()) {
                  def name = list[total++]
-                 if(name == "Bart")
+                 if (name == "Bart")
                     firstName == name
                  else
                     lastName == "Simpson"
@@ -581,8 +567,8 @@ class Project {
 
       when:"We use a for loop in a query"
         def query = Person.where {
-             for(name in ["Bart", "Simpson"]) {
-                 if(name == "Bart")
+             for (name in ["Bart", "Simpson"]) {
+                 if (name == "Bart")
                     firstName == name
                  else
                     lastName == "Simpson"
@@ -611,7 +597,7 @@ class Project {
 //        given:"people and pets"
 //            createPeopleWithPets()
 //
-//        when:"We query a property against the property of a single-ended association"            
+//        when:"We query a property against the property of a single-ended association"
 //            def query = Pet.where {
 //                name == owner.firstName
 //            }
@@ -717,7 +703,7 @@ class Project {
         when: "A where query is used with if statement"
             def useBart = true
             def query = Person.where {
-               if(useBart)
+               if (useBart)
                     firstName == "Bart"
                else
                     firstName == "Homer"
@@ -729,11 +715,10 @@ class Project {
             result != null
             result.firstName == "Bart"
 
-
         when: "A where query is used with else statement"
              useBart = false
              query = Person.where {
-               if(useBart)
+               if (useBart)
                     firstName == "Bart"
                else
                     firstName == "Marge"
@@ -745,14 +730,13 @@ class Project {
             result != null
             result.firstName == "Marge"
 
-
         when: "A where query is used with else statement"
              useBart = false
              int count = 1
              query = Person.where {
-               if(useBart)
+               if (useBart)
                   firstName == "Bart"
-               else if(count == 1) {
+               else if (count == 1) {
                   firstName == "Lisa"
                }
                else
@@ -850,7 +834,6 @@ class Project {
             results[3].firstName == "Marge"
    }
 
-
    def "Test error when using negating a non-binary expression"() {
        when:"A an unknown domain class property is referenced"
           queryUsingInvalidNegation()
@@ -906,7 +889,6 @@ class Project {
              MultipleCompilationErrorsException e = thrown()
              e.message.contains 'Cannot use aggregate function avg on expressions "owner.age"'
     }
-
 
    String nameBart() { "Bart" }
    def "Test where method with value obtained via method call"() {
@@ -967,8 +949,6 @@ class Project {
             count == 2
             results[0].firstName == "Ed"
             results[1].firstName == "Joe"
-
-
    }
 
    def "Test query association with or"() {
@@ -1115,10 +1095,7 @@ class Project {
             results[0].firstName == "Bart"
             results[1].firstName == "Lisa"
             results[2].firstName == "Marge"
-
-
    }
-
 
    def "Test query association with logical or"() {
        given:"People with a few pets"
@@ -1364,12 +1341,9 @@ class Project {
             def result = query.get()
 
         then:"The correct result is returned"
-
             result != null
             result.firstName == "Bart"
-
     }
-
 
     def "Test basic single criterion where call"() {
         given:"A bunch of people"
@@ -1401,7 +1375,6 @@ class Project {
             query.count() == 1
 
     }
-
 
     def "Test where query with overlapping parameter and property names with association query"() {
         given:"some people"
@@ -1438,11 +1411,11 @@ class Project {
             results.find { it.firstName == 'Ed'}
             results.find { it.firstName == 'Fred'}
     }
-    
+
     def "Test where query on sorted set"() {
         given:"Some people and groups"
             createPeopleAndGroups()
-        
+
         when:"A where query is executed on a sorted set"
             def query = Group.where {
                 people.lastName == "Simpson"
@@ -1475,7 +1448,7 @@ class Project {
         s.people.addAll(simpsons)
         s.save flush: true
         session.clear()
-        
+
         assert Group.findByName("Simpsons").people.size() == 4
     }
 
@@ -1492,7 +1465,6 @@ class Project {
         s = new Group(name: "3 Pets")
         s.people.addAll(peopleWith3Pets)
         s.save flush: true
-
 
         session.clear()
 
@@ -1637,7 +1609,6 @@ class CallMe {
 ''')
     }
 
-
     def queryReferencingNonExistentProperty() {
         def gcl = new GroovyClassLoader(getClass().classLoader)
         gcl.parseClass('''
@@ -1701,21 +1672,17 @@ class CallMe {
     String name
     def myDetachedCriteria = { firstName == "Bart" } as DetachedCriteria<Person>
     def declaredQuery() {
-            Person.where(myDetachedCriteria)
+        Person.where(myDetachedCriteria)
     }
 
-	static doStuff() {
-			Person.where {
-
-			}
-	}
-
-	def doQuery() {
-            def session = [user: [username:"Fred"]]
-            def results = Proposal.findAll { advisor.username == session.user.username && approvalDate != null }
-
+    static doStuff() {
+        Person.where {}
     }
 
+    def doQuery() {
+        def session = [user: [username:"Fred"]]
+        def results = Proposal.findAll { advisor.username == session.user.username && approvalDate != null }
+    }
 }
 ''', "Test").newInstance()
     }
@@ -1765,4 +1732,3 @@ class Advisor {
 
     static hasMany = [proposals: Proposal]
 }
-

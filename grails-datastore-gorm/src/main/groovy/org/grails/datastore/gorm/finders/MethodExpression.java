@@ -64,7 +64,7 @@ public abstract class MethodExpression {
             Class<?> type = prop.getType();
             for (int i = 0; i < argumentsRequired; i++) {
                 Object arg = arguments[i];
-                if(arg != null && !type.isAssignableFrom(arg.getClass())) {
+                if (arg != null && !type.isAssignableFrom(arg.getClass())) {
                         arguments[i] = conversionService.convert(arg, type);
                 }
             }
@@ -135,25 +135,25 @@ public abstract class MethodExpression {
     }
 
     public static class Ilike extends MethodExpression {
-    	public Ilike(Class<?> targetClass, String propertyName) {
-    		super(targetClass, propertyName);
-    	}
+        public Ilike(Class<?> targetClass, String propertyName) {
+            super(targetClass, propertyName);
+        }
 
-    	@Override
-    	public Query.Criterion createCriterion() {
-    		return Restrictions.ilike(propertyName, arguments[0].toString());
-    	}
+        @Override
+        public Query.Criterion createCriterion() {
+            return Restrictions.ilike(propertyName, arguments[0].toString());
+        }
     }
 
     public static class Rlike extends MethodExpression {
-    	public Rlike(Class<?> targetClass, String propertyName) {
-    		super(targetClass, propertyName);
-    	}
+        public Rlike(Class<?> targetClass, String propertyName) {
+            super(targetClass, propertyName);
+        }
 
-    	@Override
-    	public Query.Criterion createCriterion() {
-    		return Restrictions.rlike(propertyName, arguments[0].toString());
-    	}
+        @Override
+        public Query.Criterion createCriterion() {
+            return Restrictions.rlike(propertyName, arguments[0].toString());
+        }
     }
 
     public static class InList extends MethodExpression {
@@ -187,10 +187,10 @@ public abstract class MethodExpression {
             }
             if (prop != null) {
                 Class<?> type = prop.getType();
-                Collection collection = (Collection) arguments[0];
+                Collection<?> collection = (Collection<?>) arguments[0];
                 List<Object> converted = new ArrayList<Object>(collection.size());
                 for (Object o : collection) {
-                    if(o != null && !type.isAssignableFrom(o.getClass())) {
+                    if (o != null && !type.isAssignableFrom(o.getClass())) {
                         o = conversionService.convert(o, type);
                     }
                     converted.add(o);
@@ -198,7 +198,6 @@ public abstract class MethodExpression {
                 arguments[0] = converted;
             }
         }
-
     }
 
     public static class Between extends MethodExpression {

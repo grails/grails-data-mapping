@@ -31,13 +31,11 @@ class EmbeddedAssociationSpec extends GormDatastoreSpec {
             session.clear()
             i = Individual.get(i.id)
 
-
         then:"The embedded association is correctly updated"
             i != null
             i.name == 'Bob'
             i.address != null
             i.address.postCode == '28749'
-
 
         when:"An embedded association is queried"
             session.clear()
@@ -46,7 +44,6 @@ class EmbeddedAssociationSpec extends GormDatastoreSpec {
                     eq 'postCode', '28749'
                 }
             }
-
 
         then:"The correct results are returned"
             i != null
@@ -84,7 +81,6 @@ class EmbeddedAssociationSpec extends GormDatastoreSpec {
             i.otherAddresses.size() == 2
             i.otherAddresses[0].postCode == '12345'
             i.otherAddresses[1].postCode == '23456'
-
 
         when:"The embedded collection association is queried"
             def i2 = new Individual2(name:"Fred", address: new Address(postCode:"345334"))
@@ -134,7 +130,6 @@ class EmbeddedAssociationSpec extends GormDatastoreSpec {
             i.name == 'Oliver'
             i.address instanceof LongAddress
             i.address.firstLine == '2 High Street'
-
 
         when:"An embedded association is queried"
             session.clear()

@@ -20,30 +20,34 @@ import groovy.lang.Closure;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.grails.datastore.mapping.model.*;
-import org.springframework.beans.BeanUtils;
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
+import org.grails.datastore.mapping.model.ClassMapping;
+import org.grails.datastore.mapping.model.IdentityMapping;
+import org.grails.datastore.mapping.model.MappingFactory;
+import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.config.GormProperties;
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
+import org.springframework.beans.BeanUtils;
 
 /**
  * Abstract GORM implementation that uses the GORM MappingConfigurationBuilder to configure entity mappings.
  *
  * @author Graeme Rocher
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R, T> {
 
     protected Map<PersistentEntity, Map<String, T>> entityToPropertyMap = new HashMap<PersistentEntity, Map<String, T>>();
     private Closure defaultMapping;
 
-    @SuppressWarnings("unchecked")
     @Override
     public R createMappedForm(PersistentEntity entity) {
         ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
         R family = BeanUtils.instantiate(getEntityMappedFormType());
         MappingConfigurationBuilder builder = new MappingConfigurationBuilder(family, getPropertyMappedFormType());
 
-        if(defaultMapping != null) {
+        if (defaultMapping != null) {
             builder.evaluate(defaultMapping);
         }
         Closure value = cpf.getStaticPropertyValue(GormProperties.MAPPING, Closure.class);
@@ -58,7 +62,6 @@ public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R,
         return family;
     }
 
-
     public void setDefaultMapping(Closure defaultMapping) {
         this.defaultMapping = defaultMapping;
     }
@@ -70,10 +73,10 @@ public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R,
     @Override
     public IdentityMapping createIdentityMapping(ClassMapping classMapping) {
         Map<String, T> props = entityToPropertyMap.get(classMapping.getEntity());
-        if(props != null) {
+        if (props != null) {
             T property  = props.get(IDENTITY_PROPERTY);
             IdentityMapping customIdentityMapping = getIdentityMappedForm(classMapping,property);
-            if(customIdentityMapping != null) {
+            if (customIdentityMapping != null) {
                 return customIdentityMapping;
             }
         }
@@ -85,20 +88,20 @@ public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R,
     }
 
     @Override
-    public T createMappedForm(@SuppressWarnings("rawtypes") PersistentProperty mpp) {
+    public T createMappedForm(PersistentProperty mpp) {
         Map<String, T> properties = entityToPropertyMap.get(mpp.getOwner());
         if (properties != null && properties.containsKey(mpp.getName())) {
             return properties.get(mpp.getName());
         }
-        else if(properties != null) {
+        else if (properties != null) {
             Property property  = (Property) properties.get(IDENTITY_PROPERTY);
-            if(property != null && mpp.getName().equals(property.getName())) {
+            if (property != null && mpp.getName().equals(property.getName())) {
                 return (T) property;
             }
         }
 
         T defaultMapping = properties != null ? properties.get("*") : null;
-        if(defaultMapping != null) {
+        if (defaultMapping != null) {
             try {
                 return (T)((Property)defaultMapping).clone();
             } catch (CloneNotSupportedException e) {

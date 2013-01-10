@@ -22,10 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.mongodb.*;
-import org.grails.datastore.mapping.mongo.config.MongoCollection;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.dao.DataAccessException;
 import org.grails.datastore.mapping.core.AbstractSession;
 import org.grails.datastore.mapping.core.impl.PendingInsert;
 import org.grails.datastore.mapping.core.impl.PendingOperation;
@@ -33,14 +29,24 @@ import org.grails.datastore.mapping.document.config.DocumentMappingContext;
 import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.mongo.config.MongoCollection;
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.transactions.SessionOnlyTransaction;
 import org.grails.datastore.mapping.transactions.Transaction;
-
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mongodb.core.DbCallback;
 import org.springframework.data.mongodb.core.MongoTemplate;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.MongoException;
+import com.mongodb.WriteConcern;
+import com.mongodb.WriteResult;
 
 /**
  * A {@link org.grails.datastore.mapping.core.Session} implementation for the Mongo document store.
@@ -93,14 +99,15 @@ public class MongoSession extends AbstractSession<DB> {
      *
      * @param writeConcern The WriteConcern to use
      */
-    public void flush(@SuppressWarnings("hiding") WriteConcern writeConcern) {
+    public void flush(WriteConcern writeConcern) {
         WriteConcern current = this.writeConcern;
 
         this.writeConcern = writeConcern;
 
         try {
-            if(!errorOccured)
+            if (!errorOccured) {
                 super.flush();
+            }
         }
         finally {
             this.writeConcern = current;
@@ -109,8 +116,9 @@ public class MongoSession extends AbstractSession<DB> {
 
     @Override
     public void flush() {
-        if(!errorOccured)
+        if (!errorOccured) {
             super.flush();
+        }
     }
 
     @Override
@@ -148,10 +156,9 @@ public class MongoSession extends AbstractSession<DB> {
                         pendingInsert.run();
                     }
 
-
                     WriteResult writeResult = writeConcernToUse != null ? collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]), writeConcernToUse )
                                                                             : collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]));
-                    if(writeResult.getError() != null) {
+                    if (writeResult.getError() != null) {
                         errorOccured = true;
                         throw new DataIntegrityViolationException(writeResult.getError());
                     }
@@ -170,18 +177,19 @@ public class MongoSession extends AbstractSession<DB> {
 
     private WriteConcern getDeclaredWriteConcern(WriteConcern defaultConcern, PersistentEntity entity) {
         WriteConcern writeConcern = declaredWriteConcerns.get(entity);
-        if(writeConcern == null) {
+        if (writeConcern == null) {
             Object mappedForm = entity.getMapping().getMappedForm();
-            if(mappedForm instanceof MongoCollection) {
+            if (mappedForm instanceof MongoCollection) {
                 MongoCollection mc = (MongoCollection) mappedForm;
                 writeConcern = mc.getWriteConcern();
-                if(writeConcern == null) {
+                if (writeConcern == null) {
                     writeConcern = defaultConcern;
                 }
             }
 
-            if(writeConcern != null)
+            if (writeConcern != null) {
                 declaredWriteConcerns.put(entity, writeConcern);
+            }
         }
         return writeConcern;
     }
