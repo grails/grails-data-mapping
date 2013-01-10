@@ -418,7 +418,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
     public Object getCachedInstance(Class type, Serializable key) {
         if (type == null || key == null) {
-            return false;
+            return null;
         }
 
         return getInstanceCache(type).get(key);
