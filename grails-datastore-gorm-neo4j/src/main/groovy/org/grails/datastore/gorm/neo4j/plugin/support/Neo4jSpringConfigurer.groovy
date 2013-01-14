@@ -114,20 +114,6 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
                 datastore = ref("neo4jDatastore")
             }
 
-            // RestGraphDatabase doesn't play nicely with SpringTransactionManager
-            if (AbstractGraphDatabase.class.isAssignableFrom(neo4jGraphDatabaseClass)) {
-
-                neo4jTransactionManagerService(SpringTransactionManager, graphDatabaseService)
-
-                neo4jUserTransactionService(UserTransactionImpl, graphDatabaseService)
-
-//                neo4jTransactionManager(JtaTransactionManager) {
-                transactionManager(JtaTransactionManager) {
-                    transactionManager = neo4jTransactionManagerService
-                    userTransaction = neo4jUserTransactionService
-                }
-            }
-
 //        if (manager?.hasGrailsPlugin("controllers")) {
 //            neo4jOpenSessionInViewInterceptor(Neo4jOpenSessionInViewInterceptor) {
 //                datastore = ref("neo4jDatastore")
