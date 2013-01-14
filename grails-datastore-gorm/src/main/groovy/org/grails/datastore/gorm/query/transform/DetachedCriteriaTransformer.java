@@ -108,7 +108,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             "lower", "upper", "trim", "length", "second",
             "hour", "minute", "day", "month", "year");
 
-    private static final Map<String, String> OPERATOR_TO_CRITERIA_METHOD_MAP = newMap(
+    private static final Map<String, String> OPERATOR_TO_CRITERIA_METHOD_MAP = (Map<String, String>)newMap(
         "==", "eq",
         "!=", "ne",
         ">", "gt",
@@ -119,7 +119,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         "=~", "ilike",
         "in", "inList");
 
-    private static final Map<String, ClassNode> OPERATOR_TO_CRITERION_METHOD_MAP = newMap(
+    private static final Map<String, ClassNode> OPERATOR_TO_CRITERION_METHOD_MAP = (Map<String, ClassNode>)newMap(
         "==", new ClassNode(Query.Equals.class),
         "!=", new ClassNode(Query.NotEquals.class),
         ">", new ClassNode(Query.GreaterThan.class),
@@ -130,7 +130,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         "=~", new ClassNode(Query.ILike.class),
         "in", new ClassNode(Query.In.class));
 
-    private static final Map<String, String> PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP = newMap(
+    private static final Map<String, String> PROPERTY_COMPARISON_OPERATOR_TO_CRITERIA_METHOD_MAP = (Map<String, String>)newMap(
         "==", "eqProperty",
         "!=", "neProperty",
         ">", "gtProperty",
@@ -138,7 +138,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         ">=", "geProperty",
         "<=", "leProperty");
 
-    private static final Map<String, String> SIZE_OPERATOR_TO_CRITERIA_METHOD_MAP = newMap(
+    private static final Map<String, String> SIZE_OPERATOR_TO_CRITERIA_METHOD_MAP = (Map<String, String>)newMap(
         "==", "sizeEq",
         "!=", "sizeNe",
         ">", "sizeGt",
@@ -146,7 +146,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         ">=", "sizeGe",
         "<=", "sizeLe");
 
-    private static final Map<String, String> AGGREGATE_FUNCTIONS = newMap(
+    private static final Map<String, String> AGGREGATE_FUNCTIONS = (Map<String, String>)newMap(
         "avg", "avg",
         "max", "max",
         "min", "min",
