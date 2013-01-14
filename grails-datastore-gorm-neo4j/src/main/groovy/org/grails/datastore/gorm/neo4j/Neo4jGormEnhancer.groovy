@@ -34,11 +34,7 @@ import org.springframework.util.ClassUtils
  */
 class Neo4jGormEnhancer extends GormEnhancer {
 
-    Neo4jGormEnhancer(Datastore datastore) {
-        super(datastore, null)
-    }
-
-    Neo4jGormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
+    Neo4jGormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager = null) {
         super(datastore, transactionManager)
     }
 

@@ -54,12 +54,7 @@ class Neo4jMethodsConfigurer extends DynamicMethodsConfigurer {
 
     @Override
     protected GormEnhancer createEnhancer() {
-        def ge
-        if (transactionManager) {
-            ge = new Neo4jGormEnhancer(datastore, transactionManager)
-        } else {
-            ge = new Neo4jGormEnhancer(datastore)
-        }
+        def ge = new Neo4jGormEnhancer(datastore, transactionManager)
         ge.failOnError = failOnError
         ge
     }
