@@ -23,6 +23,7 @@ import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 import org.springframework.validation.Validator
+import org.grails.datastore.mapping.engine.event.ValidationEvent
 
 /**
  * Methods used for validating GORM instances.
@@ -46,6 +47,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
 
     private boolean doValidate(D instance, Map arguments, List fields) {
         beforeValidateHelper.invokeBeforeValidate instance, fields
+        fireEvent(instance, fields)
 
         if (!validator) {
             validator = datastore.mappingContext.getEntityValidator(persistentEntity)
@@ -120,6 +122,17 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
         }
 
         return result
+    }
+
+    /**
+     * Fire the validation event.
+     * @param target The target instance.
+     * @param fields The list of fields being validated, or null.
+     */
+    private void fireEvent(target, List fields) {
+        ValidationEvent event = new ValidationEvent(datastore, target);
+        event.validatedFields = fields;
+        datastore.applicationEventPublisher.publishEvent(event);
     }
 
     /**
