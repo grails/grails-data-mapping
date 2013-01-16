@@ -41,7 +41,7 @@ public abstract class AbstractPersistenceEvent extends ApplicationEvent {
         super(source);
         this.entity = entity;
         this.entityAccess = entityAccess;
-        this.entityObject = null;
+        this.entityObject = entityAccess.getEntity();
     }
 
     protected AbstractPersistenceEvent(final Datastore source, final Object entity) {
