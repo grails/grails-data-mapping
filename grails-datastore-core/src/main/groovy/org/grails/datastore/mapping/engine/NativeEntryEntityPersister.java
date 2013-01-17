@@ -432,8 +432,8 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                         Object embeddedInstance =
                                 createObjectFromEmbeddedNativeEntry(embedded.getAssociatedEntity(), embeddedEntry);
                         ea.setProperty(propKey, embeddedInstance);
-                        if (embedded.isBidirectional()) {
-                            Association inverseSide = embedded.getInverseSide();
+                        Association inverseSide = embedded.getInverseSide();
+                        if (embedded.isBidirectional() && inverseSide != null) {
                             // fix up the owner link
                             EntityAccess embeddedEa =
                                     createEntityAccess(embedded.getAssociatedEntity(), embeddedInstance);
@@ -491,8 +491,24 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 }
             }
             else if (prop instanceof EmbeddedCollection) {
-                    final Object embeddedInstances = getEntryValue(nativeEntry, propKey);
-                    loadEmbeddedCollection((EmbeddedCollection)prop, ea, embeddedInstances, propKey);
+                final Object embeddedInstances = getEntryValue(nativeEntry, propKey);
+                EmbeddedCollection embeddedCollection = (EmbeddedCollection) prop;
+                loadEmbeddedCollection(embeddedCollection, ea, embeddedInstances, propKey);
+                Association inverseSide = embeddedCollection.getInverseSide();
+                if (embeddedCollection.isBidirectional() && inverseSide != null) {
+                    // fix up the inverse link
+                    Object loadedInstances = ea.getProperty(embeddedCollection.getName());
+                    if (loadedInstances instanceof Collection) {
+                        Collection embeddedInstancesCollection = (Collection) loadedInstances;
+                        for (Object embeddedInstance : embeddedInstancesCollection) {
+                            if (embeddedInstance != null) {
+                                EntityAccess embeddedEa =
+                                        createEntityAccess(embeddedCollection.getAssociatedEntity(), embeddedInstance);
+                                embeddedEa.setProperty(inverseSide.getName(), obj);
+                            }
+                        }
+                    }
+                }
             }
             else if (prop instanceof OneToMany) {
                 Association association = (Association) prop;
@@ -1142,10 +1158,16 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     }
                 }
                 else if (persistentProperty instanceof Association) {
-                    if (persistentProperty instanceof Embedded) {
+                    Association inverseSide = ((Association) persistentProperty).getInverseSide();
+                    if (inverseSide instanceof Embedded ||
+                            inverseSide instanceof EmbeddedCollection) {
+                        // these are the back links to the parents we might be embedded in, and don't need to be saved.
+                        // they are recreated during a refresh.
+                    }
+                    else if (persistentProperty instanceof Embedded) {
                         Association toOne = (Association) persistentProperty;
 
-                        handleEmbeddedToOne(toOne,getPropertyKey(persistentProperty) , embeddedEntityAccess, embeddedEntry);
+                        handleEmbeddedToOne(toOne, getPropertyKey(persistentProperty), embeddedEntityAccess, embeddedEntry);
                     }
                     else if (persistentProperty instanceof ToOne) {
                         Association toOne = (Association) persistentProperty;
