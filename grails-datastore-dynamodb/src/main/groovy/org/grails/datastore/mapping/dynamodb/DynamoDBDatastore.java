@@ -90,8 +90,8 @@ public class DynamoDBDatastore extends AbstractDatastore implements Initializing
         initializeConverters(mappingContext);
 
         tableNamePrefix = read(String.class, TABLE_NAME_PREFIX_KEY, connectionDetails, null);
-        defaultReadCapacityUnits = read(Long.class, DEFAULT_READ_CAPACITY_UNITS, connectionDetails, (long)3); //minimum for the account in us-east-1 is 3
-        defaultWriteCapacityUnits = read(Long.class, DEFAULT_WRITE_CAPACITY_UNITS, connectionDetails, (long)5); //minimum for the account in us-east-1 is 5
+        defaultReadCapacityUnits = read(Long.class, DEFAULT_READ_CAPACITY_UNITS, connectionDetails, (long)1); //minimum for the account in us-east-1 is 1
+        defaultWriteCapacityUnits = read(Long.class, DEFAULT_WRITE_CAPACITY_UNITS, connectionDetails, (long)1); //minimum for the account in us-east-1 is 1
     }
 
     public DynamoDBDatastore(MappingContext mappingContext, Map<String, String> connectionDetails) {
