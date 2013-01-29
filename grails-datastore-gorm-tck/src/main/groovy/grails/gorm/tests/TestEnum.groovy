@@ -5,8 +5,4 @@ enum TestEnum {
     V2,
     V3
 
-    @Override
-    String toString() {
-        return "Surprise!"
-    }
 }
