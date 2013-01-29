@@ -26,7 +26,10 @@ import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 
 /**
- * In order to run AWS DynamoDB tests you have to define two system variables: AWS_ACCESS_KEY and AWS_SECRET_KEY with
+ * In order to run AWS DynamoDB tests you have to define a file called 'aws.properties' in your home dir
+ * with the following properties:
+ * AWS_ACCESS_KEY and AWS_SECRET_KEY
+ *
  * your aws credentials and then invoke this command from main directory:
  * gradlew grails-datastore-gorm-dynamodb:test
  *
