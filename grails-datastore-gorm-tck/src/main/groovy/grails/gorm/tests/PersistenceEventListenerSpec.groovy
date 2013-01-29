@@ -250,7 +250,7 @@ class SpecPersistenceListener extends AbstractPersistenceEventListener {
 }
 
 @Entity
-class Simples {
+class Simples implements Serializable{
     Long id
     String name
 }
