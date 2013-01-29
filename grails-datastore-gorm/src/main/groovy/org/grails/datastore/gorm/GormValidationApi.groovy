@@ -132,7 +132,7 @@ class GormValidationApi<D> extends AbstractGormApi<D> {
     private void fireEvent(target, List fields) {
         ValidationEvent event = new ValidationEvent(datastore, target);
         event.validatedFields = fields;
-        datastore.applicationEventPublisher.publishEvent(event);
+        datastore.applicationEventPublisher?.publishEvent(event);
     }
 
     /**
