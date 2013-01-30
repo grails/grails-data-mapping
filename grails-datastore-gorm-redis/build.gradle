@@ -8,6 +8,7 @@ dependencies {
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")
     testRuntime "org.grails:grails-gorm:$grailsVersion"
+    testRuntime "org.springframework:spring-expression:$springVersion"
 }
 
 /*
