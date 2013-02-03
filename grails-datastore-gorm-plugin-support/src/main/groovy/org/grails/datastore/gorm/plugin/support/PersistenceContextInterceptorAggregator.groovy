@@ -36,6 +36,7 @@ class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryP
     private boolean mongo
     private boolean redis
     private boolean aggregate
+    private boolean neo4j
     private List<PersistenceContextInterceptor> interceptors = []
 
     protected Log log = LogFactory.getLog(PersistenceContextInterceptorAggregator)
@@ -59,6 +60,10 @@ class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryP
             count++
             redis = true
         }
+        if (registry.containsBeanDefinition('neo4jPersistenceInterceptor')) {
+            count++
+            neo4j = true
+        }
 
         if (count < 2) {
             log.info "Not processing, there are $count interceptors"
@@ -77,6 +82,10 @@ class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryP
 
         if (registry.containsBeanDefinition('redisDatastorePersistenceInterceptor')) {
             registry.removeBeanDefinition 'redisDatastorePersistenceInterceptor'
+        }
+
+        if (registry.containsBeanDefinition('neo4jPersistenceInterceptor')) {
+            registry.removeBeanDefinition 'neo4jPersistenceInterceptor'
         }
     }
 
@@ -102,6 +111,10 @@ class PersistenceContextInterceptorAggregator implements BeanDefinitionRegistryP
 
         if (redis) {
             interceptors << new DatastorePersistenceContextInterceptor(beanFactory.getBean('redisDatastore'))
+        }
+
+        if (neo4j) {
+            interceptors << new DatastorePersistenceContextInterceptor(beanFactory.getBean('neo4jDatastore'))
         }
 
         beanFactory.registerSingleton('persistenceInterceptor',
