@@ -16,6 +16,7 @@ grails.project.dependency.resolution = {
         grailsCentral()
 
         mavenCentral()
+        mavenRepo 'http://m2.neo4j.org/releases'
         mavenRepo "http://repo.grails.org/grails/repo"
     }
 
@@ -32,7 +33,7 @@ grails.project.dependency.resolution = {
             transitive = false
         }
 
-        def datastoreVersion = "1.1.1.RELEASE"
+        def datastoreVersion = "1.1.4.BUILD-SNAPSHOT"
         def neo4jDatastoreVersion = "1.0.0.BUILD-SNAPSHOT"
         //def neo4jDatastoreVersion = "1.0.0.M15"
 
