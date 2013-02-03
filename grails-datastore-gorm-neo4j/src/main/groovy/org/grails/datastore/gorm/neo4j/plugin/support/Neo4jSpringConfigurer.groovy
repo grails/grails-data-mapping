@@ -110,27 +110,23 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
 
             }
 
+        if (manager?.hasGrailsPlugin("controllers")) {
             neo4jOpenSessionInViewInterceptor(Neo4jOpenSessionInViewInterceptor) {
                 datastore = ref("neo4jDatastore")
             }
+            /*if (getSpringConfig().containsBean("controllerHandlerMappings")) {
+                controllerHandlerMappings.interceptors << neo4jOpenSessionInViewInterceptor
+            }
+            if (getSpringConfig().containsBean("annotationHandlerMapping")) {
+                if (annotationHandlerMapping.interceptors) {
+                    annotationHandlerMapping.interceptors << neo4jOpenSessionInViewInterceptor
+                }
+                else {
+                    annotationHandlerMapping.interceptors = [neo4jOpenSessionInViewInterceptor]
+                }
+            } */
+        }
 
-//        if (manager?.hasGrailsPlugin("controllers")) {
-//            neo4jOpenSessionInViewInterceptor(Neo4jOpenSessionInViewInterceptor) {
-//                datastore = ref("neo4jDatastore")
-//            }
-//            if (getSpringConfig().containsBean("controllerHandlerMappings")) {
-//                controllerHandlerMappings.interceptors << neo4jOpenSessionInViewInterceptor
-//            }
-//            if (getSpringConfig().containsBean("annotationHandlerMapping")) {
-//                if (annotationHandlerMapping.interceptors) {
-//                    annotationHandlerMapping.interceptors << neo4jOpenSessionInViewInterceptor
-//                }
-//                else {
-//                    annotationHandlerMapping.interceptors = [neo4jOpenSessionInViewInterceptor]
-//                }
-//            }
-//        }
-//
         }
     }
 }
