@@ -8,7 +8,7 @@ grails.project.dependency.resolution = {
 
     log "warn"
 
-    String simpledbVersion = "0.5"
+    String simpledbVersion = "0.6.BUILD-SNAPSHOT"
     //for local development and testing of the plugin:
     // 1) change version in grails-data-mapping/build.gradle to an appropriate snapshot
     // 2) grails-data-mapping/gradle install
