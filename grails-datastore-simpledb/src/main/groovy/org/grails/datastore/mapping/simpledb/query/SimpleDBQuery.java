@@ -71,6 +71,14 @@ public class SimpleDBQuery extends Query {
                 addSimpleComparison(clause, key, "!=", stringValue);
             }
         });
+        queryHandlers.put(IsNull.class, new QueryHandler<IsNull>() {
+            public void handle(PersistentEntity entity, IsNull criterion, StringBuilder clause) {
+                String propertyName = criterion.getProperty();
+                String key = getSmartQuotedKey(entity, propertyName);
+
+                clause.append(key).append(" ").append("IS NULL").append(" ");
+            }
+        });
         queryHandlers.put(IdEquals.class, new QueryHandler<IdEquals>() {
             public void handle(PersistentEntity entity, IdEquals criterion, StringBuilder clause) {
                 String stringValue = SimpleDBConverterUtil.convertToString(criterion.getValue(), entity.getMappingContext());
@@ -305,8 +313,8 @@ public class SimpleDBQuery extends Query {
                 clause.append(" ").append(booleanOperator).append(" "); //prepend with operator
             }
 
-            if (criterion instanceof PropertyCriterion) {
-                PropertyCriterion propertyCriterion = (PropertyCriterion) criterion;
+            if (criterion instanceof PropertyNameCriterion) {
+                PropertyNameCriterion propertyCriterion = (PropertyNameCriterion) criterion;
                 String propertyName = propertyCriterion.getProperty();
 
                 usedPropertyNames.add(propertyName); //register the fact that the property did have some condition - it is needed if we use order by clause
