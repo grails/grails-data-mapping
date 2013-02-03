@@ -30,14 +30,15 @@ class Setup {
     static PORT = 7473
     protected final Logger log = LoggerFactory.getLogger(getClass())
 
-    static session
     static datastore
     static transaction
     static server
+    static graphDb
 
     static destroy() {
-        transaction.rollback()
-        session.nativeInterface.shutdown()
+        transaction.failure()
+        transaction.finish()
+        graphDb.shutdown()
         server?.stop()
     }
 
@@ -46,7 +47,6 @@ class Setup {
         def ctx = new GenericApplicationContext()
         ctx.refresh()
 
-        def graphDb;
         if (System.properties.get("gorm_neo4j_test_use_rest")) {
             System.setProperty(Config.CONFIG_BATCH_TRANSACTION,"false") // TODO: remove when support for batch has been finished
             //System.setProperty(Config.CONFIG_LOG_REQUESTS,"true") // enable for verbose request/response logging
@@ -118,8 +118,7 @@ class Setup {
         datastore.applicationContext.addApplicationListener new DomainEventListener(datastore)
         datastore.applicationContext.addApplicationListener new AutoTimestampEventListener(datastore)
 
-        session = datastore.connect()
-        transaction = session.beginTransaction()
-        session
+        transaction = graphDb.beginTx()
+        datastore.connect()
     }
 }
