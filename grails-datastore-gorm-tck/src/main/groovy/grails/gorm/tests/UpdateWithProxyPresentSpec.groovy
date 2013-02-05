@@ -87,6 +87,10 @@ class Person implements Serializable, Comparable<Person> {
 //        pets.age > 9
 //    }
 
+    static Person getByFirstNameAndLastNameAndAge(String firstName, String lastName, int age) {
+        find( new Person(firstName: firstName, lastName: lastName, age: age) )
+    }
+
     static mapping = {
         firstName index:true
         lastName index:true

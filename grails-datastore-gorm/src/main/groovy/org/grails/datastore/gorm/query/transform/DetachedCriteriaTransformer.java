@@ -413,7 +413,26 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     }
 
     private boolean isCandidateMethod(String methodName, Expression arguments, Set<String> candidateMethods) {
-        return (candidateMethods.contains(methodName)) && (arguments instanceof ArgumentListExpression);
+        if(candidateMethods.contains(methodName)) {
+            if(arguments instanceof ArgumentListExpression) {
+                ArgumentListExpression ale = (ArgumentListExpression) arguments;
+                List<Expression> expressions = ale.getExpressions();
+                if(expressions.size()>0) {
+                    Expression expression = expressions.get(expressions.size()-1);
+                    if(expression instanceof ClosureExpression) {
+                        return true;
+                    }
+                    else if(expression instanceof VariableExpression) {
+                        VariableExpression ve = (VariableExpression) expression;
+                        if(detachedCriteriaVariables.containsKey(ve.getName()) || DETACHED_CRITERIA_CLASS_NODE.getName().equals(ve.getType().getName())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     @Override

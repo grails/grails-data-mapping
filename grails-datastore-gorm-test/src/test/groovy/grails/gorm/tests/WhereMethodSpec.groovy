@@ -81,6 +81,18 @@ class Project {
         Person.where { lastName == "Simpson" }.list()
     }
 
+    @Issue('GRAILS-9696')
+    def "Test that a call to a static find method from within the class resolves correctly"() {
+        given:"Some people"
+            createPeople()
+
+        when:"A method is called that calls the find method from within the class"
+            def bart = Person.getByFirstNameAndLastNameAndAge("Bart", "Simpson", 9)
+
+        then:"The data returned is correct"
+            bart != null
+            bart.firstName == "Bart"
+    }
     @Issue('GRAILS-8256')
     def "Test query with 3 level deep domain association"() {
         given:"create people and faces"
