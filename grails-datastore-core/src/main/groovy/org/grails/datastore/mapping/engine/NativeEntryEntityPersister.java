@@ -1551,7 +1551,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             super.setProperty(name, value);
             if (nativeEntry != null) {
                 PersistentProperty property = persistentEntity.getPropertyByName(name);
-                if (property != null && (property instanceof Simple)) {
+                if (property != null && (property instanceof Simple || property instanceof Basic)) {
                     setEntryValue(nativeEntry, name, value);
                 }
 
