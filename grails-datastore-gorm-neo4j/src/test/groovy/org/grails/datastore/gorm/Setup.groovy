@@ -9,6 +9,7 @@ import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
 import org.grails.datastore.gorm.neo4j.constraints.UniqueConstraint
+import org.grails.datastore.gorm.proxy.GroovyProxyFactory
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -58,6 +59,7 @@ class Setup {
         }
 
         datastore = new Neo4jDatastore(graphDatabaseService: graphDb, applicationContext: ctx)
+        datastore.mappingContext.proxyFactory = new GroovyProxyFactory()
 
         /*Neo4jSession.metaClass.invokeMethod = { String name, args ->
             def metaMethod = Neo4jSession.metaClass.getMetaMethod(name, args)
