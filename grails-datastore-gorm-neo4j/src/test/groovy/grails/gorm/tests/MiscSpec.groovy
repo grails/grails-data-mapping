@@ -339,10 +339,38 @@ class MiscSpec extends GormDatastoreSpec {
         team.club.name == deserializedTeam.club.name
     }
 
+    def "operations on deserialized instance with hasMany works"() {
+        setup:
+        Tournament tournament = new Tournament(name: "tournament",
+                teams: [new Team(name: 'team1'), new Team(name: 'team2')]
+        ).save(flush: true)
+        session.clear()
+        tournament = Tournament.get(tournament.id)
+
+        def bos = new ByteArrayOutputStream()
+        bos.withObjectOutputStream {
+            it.writeObject(tournament)
+        }
+        Tournament deserializedTournament = new ByteArrayInputStream(bos.toByteArray()).withObjectInputStream {
+            it.readObject()
+        }
+
+        when:
+        def firstTeam = deserializedTournament.teams[0]
+        deserializedTournament.teams.remove(firstTeam)
+        session.flush()
+
+        tournament = Tournament.get(tournament.id)
+
+        then:
+        deserializedTournament.teams.size()==1
+        tournament.teams.size()==1
+
+    }
 }
 
 @Entity
-class Tournament {
+class Tournament implements Serializable {
     Long id
     Long version
     String name

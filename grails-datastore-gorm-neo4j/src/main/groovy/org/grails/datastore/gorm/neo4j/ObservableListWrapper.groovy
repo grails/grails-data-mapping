@@ -18,12 +18,12 @@ class ObservableListWrapper implements List, Externalizable {
     @Delegate List wrapped
     def entity
     PropertyChangeListener propertyChangeListener
-    Class clazz
+    String propertyName
 
-    ObservableListWrapper(def entity, Collection keys, Class clazz, Session session) {
+    ObservableListWrapper(def entity, String propertyName, Collection keys, Class clazz, Session session) {
         this.entity = entity
         this.propertyChangeListener = session
-        this.clazz = clazz
+        this.propertyName = propertyName
         wrapped = new PersistentList(keys, clazz, session)
     }
 
@@ -85,15 +85,20 @@ class ObservableListWrapper implements List, Externalizable {
     }
 
     void writeExternal(java.io.ObjectOutput objectOutput) throws java.io.IOException {
-         objectOutput.writeObject()
-         def collection = new ArrayList(wrapped)
-         objectOutput.writeObject(collection)
+         objectOutput.writeObject(entity.class)
+         objectOutput.writeLong(entity.id)
+         objectOutput.writeObject(propertyName)
      }
 
      void readExternal(java.io.ObjectInput objectInput) throws java.io.IOException, java.lang.ClassNotFoundException {
-         clazz = objectInput.readObject()
-         List collection = objectInput.readObject()
-         wrapped = new PersistentList(clazz, null, collection)
+         def entityClazz = objectInput.readObject()
+         def entityId = objectInput.readLong()
+         entity = entityClazz.get(entityId)
+         propertyName = objectInput.readObject();
+         wrapped = entity."${propertyName}".wrapped
+         entityClazz.withSession { session ->
+             propertyChangeListener = session
+         }
 
      }
 
