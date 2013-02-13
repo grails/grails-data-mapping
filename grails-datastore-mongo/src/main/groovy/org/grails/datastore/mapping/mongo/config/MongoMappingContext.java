@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.mapping.mongo.config;
 
+import com.mongodb.DBObject;
 import groovy.lang.Closure;
 
 import java.util.Arrays;
@@ -24,6 +25,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import org.bson.BSONObject;
 import org.bson.types.BSONTimestamp;
 import org.bson.types.Code;
 import org.bson.types.CodeWScope;
@@ -51,7 +53,7 @@ public class MongoMappingContext extends DocumentMappingContext {
     /**
      * Java types supported as mongo property types.
      */
-    public static final Set<String> MONGO_NATIVE_TYPES = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+    private static final Set<String> MONGO_NATIVE_TYPES = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
             Double.class.getName(),
             String.class.getName(),
             com.mongodb.DBObject.class.getName(),
@@ -67,10 +69,19 @@ public class MongoMappingContext extends DocumentMappingContext {
             Code.class.getName(),
             CodeWScope.class.getName(),
             Long.class.getName(),
-            UUID.class.getName()
+            UUID.class.getName(),
+            byte[].class.getName()
     )));
 
-    public static final Set<String> MONGO_SIMPLE_TYPES = MONGO_NATIVE_TYPES;
+    /**
+     * Check whether a type is a native mongo type that can be stored by the mongo driver without conversion.
+     * @param clazz The class to check.
+     * @return true if no conversion is required and the type can be stored natively.
+     */
+    public static boolean isMongoNativeType(Class clazz) {
+        return MongoMappingContext.MONGO_NATIVE_TYPES.contains(clazz.getName()) ||
+                DBObject.class.isAssignableFrom(clazz.getClass());
+    }
 
     private final class MongoDocumentMappingFactory extends
             AbstractGormMappingFactory<MongoCollection, MongoAttribute> {
@@ -114,8 +125,7 @@ public class MongoMappingContext extends DocumentMappingContext {
             if (propType.isArray()) {
                 return isSimpleType(propType.getComponentType()) || super.isSimpleType(propType);
             }
-            final String typeName = propType.getName();
-            return MONGO_SIMPLE_TYPES.contains(typeName) || super.isSimpleType(propType);
+            return isMongoNativeType(propType) || super.isSimpleType(propType);
         }
     }
 

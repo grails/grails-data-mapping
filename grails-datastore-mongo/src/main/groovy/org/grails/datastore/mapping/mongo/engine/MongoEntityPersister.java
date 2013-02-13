@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.BSONObject;
 import org.bson.types.ObjectId;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.core.SessionImplementor;
@@ -456,6 +457,18 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
         if (value == null || mappingContext.isPersistentEntity(value)) {
             nativeValue = null;
+        } else if (MongoMappingContext.isMongoNativeType(value.getClass())) {
+            // easy case, no conversion required.
+            // Checked first in case any of these types (such as BasicDBObject) are instances of collections
+            // or arrays, etc.!
+            nativeValue = value;
+        } else if (value.getClass().isArray()) {
+            Object[] array = (Object[]) value;
+            List<Object> nativeColl = new ArrayList<Object>(array.length);
+            for (Object item : array) {
+                nativeColl.add(getSimpleNativePropertyValue(item, mappingContext));
+            }
+            nativeValue = nativeColl;
         } else if (value instanceof Collection) {
             Collection existingColl = (Collection)value;
             List<Object> nativeColl = new ArrayList<Object>(existingColl.size());
@@ -470,36 +483,29 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 newMap.put(entry.getKey(), getSimpleNativePropertyValue(entry.getValue(), mappingContext));
             }
             nativeValue = newMap;
-        } else if(value.getClass().isArray()) {
-            nativeValue = value;
         } else {
-            nativeValue = toNativeSimplePropertyValue(value, mappingContext);
+            nativeValue = convertPrimitiveToNative(value, mappingContext);
         }
         return nativeValue;
     }
 
-    private static Object toNativeSimplePropertyValue(Object item, MappingContext mappingContext) {
-        Object toAdd;
+    private static Object convertPrimitiveToNative(Object item, MappingContext mappingContext) {
+        Object nativeValue;
         if (item != null) {
-            if (MongoMappingContext.MONGO_NATIVE_TYPES.contains(item.getClass().getName())) {
-                // easy case, no conversion required.
-                toAdd = item;
+            ConversionService conversionService = mappingContext.getConversionService();
+            // go for toInteger or toString.
+            if (conversionService.canConvert(item.getClass(), Integer.class)) {
+                nativeValue = conversionService.convert(item, Integer.class);
+            } else if (conversionService.canConvert(item.getClass(), String.class)) {
+                nativeValue = conversionService.convert(item, String.class);
             } else {
-                ConversionService conversionService = mappingContext.getConversionService();
-                // go for toInteger or toString.
-                if (conversionService.canConvert(item.getClass(), Integer.class)) {
-                    toAdd = conversionService.convert(item, Integer.class);
-                } else if (conversionService.canConvert(item.getClass(), String.class)) {
-                    toAdd = conversionService.convert(item, String.class);
-                } else {
-                    // fall back if no explicit converter is registered, good for URL, Locale, etc.
-                    toAdd = item.toString();
-                }
+                // fall back if no explicit converter is registered, good for URL, Locale, etc.
+                nativeValue = item.toString();
             }
         } else {
-            toAdd = null;
+            nativeValue = null;
         }
-        return toAdd;
+        return nativeValue;
     }
 
     @Override

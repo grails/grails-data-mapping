@@ -24,7 +24,8 @@ class CommonTypesPersistenceSpec extends GormDatastoreSpec {
                 f: 1.0 as Float,
                 tz: TimeZone.getTimeZone("GMT"),
                 loc: Locale.UK,
-                cur: Currency.getInstance("USD")
+                cur: Currency.getInstance("USD"),
+                ba: 'hello'.bytes
             )
 
         when:
@@ -49,6 +50,7 @@ class CommonTypesPersistenceSpec extends GormDatastoreSpec {
             TimeZone.getTimeZone("GMT") == ct.tz
             Locale.UK == ct.loc
             Currency.getInstance("USD") == ct.cur
+            'hello'.bytes == ct.ba
     }
 }
 
@@ -70,4 +72,5 @@ class CommonTypes implements Serializable {
     TimeZone tz
     Locale loc
     Currency cur
+    byte[] ba
 }
