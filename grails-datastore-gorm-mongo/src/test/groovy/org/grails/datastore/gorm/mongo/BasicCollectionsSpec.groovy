@@ -1,11 +1,12 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
+import grails.persistence.Entity
 
 class BasicCollectionsSpec extends GormDatastoreSpec{
     @Override
     List getDomainClasses() {
-        [Linguist]
+        [Linguist, Increment]
     }
 
     void "Test that a Locale can be used inside a collection"() {
@@ -51,8 +52,30 @@ class BasicCollectionsSpec extends GormDatastoreSpec{
         ]
     }
 
+    void "Test beforeInsert() and beforeUpdate() methods for collections"() {
+        when:"An entity is persisted"
+        def p = new Increment()
+        p.save(flush:true)
+        session.clear()
+        p = Increment.get(p.id)
+
+        then:"The collection is updated"
+        p.counter == 1
+        p.history == [0]
+
+        when:"The entity is updated"
+        p.counter = 10
+        p.save(flush:true)
+        session.clear()
+        p = Increment.get(p.id)
+
+        then:"The collection is updated too"
+        p.counter == 11
+        p.history == [0, 10]
+    }
 }
 
+@Entity
 class Linguist {
     String id
     String name
@@ -60,5 +83,24 @@ class Linguist {
     Map<String, Currency> currencies = [:]
 
     static constraints = {
+    }
+}
+
+@Entity
+class Increment {
+    String id
+    Integer counter = 0
+    List<Integer> history = []
+
+    def beforeInsert() {
+        inc()
+    }
+
+    def beforeUpdate() {
+        inc()
+    }
+
+    def inc() {
+        history << counter++
     }
 }
