@@ -583,8 +583,8 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         def keys = node.getRelationships(relationshipType, direction).iterator().collect { it.getOtherNode(node).id }
 
         def collection = List.class.isAssignableFrom(association.type) ?
-            new ObservableListWrapper(entityAccess.entity, keys, association.associatedEntity.javaClass, this) :
-            new ObservableSetWrapper(entityAccess.entity, keys, association.associatedEntity.javaClass, this)
+            new ObservableListWrapper(entityAccess.entity, association.name, keys, association.associatedEntity.javaClass, this) :
+            new ObservableSetWrapper(entityAccess.entity, association.name, keys, association.associatedEntity.javaClass, this)
         entityAccess.setPropertyNoConversion(association.name, collection)
     }
 

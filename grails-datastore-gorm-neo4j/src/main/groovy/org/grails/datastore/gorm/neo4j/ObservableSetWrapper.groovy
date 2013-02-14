@@ -17,12 +17,12 @@ class ObservableSetWrapper implements Set, Externalizable {
     @Delegate PersistentSet wrapped
     def entity
     PropertyChangeListener propertyChangeListener
-    Class clazz
+    String propertyName
 
-    ObservableSetWrapper(def entity, Collection keys, Class clazz, Session session) {
+    ObservableSetWrapper(def entity, String propertyName, Collection keys, Class clazz, Session session) {
         this.entity = entity
         this.propertyChangeListener = session
-        this.clazz = clazz
+        this.propertyName = propertyName
         wrapped = new PersistentSet(keys, clazz, session)
     }
 
@@ -63,15 +63,20 @@ class ObservableSetWrapper implements Set, Externalizable {
     }
 
     void writeExternal(java.io.ObjectOutput objectOutput) throws java.io.IOException {
-        objectOutput.writeObject()
-        def collection = new HashSet(wrapped)
-        objectOutput.writeObject(collection)
+        objectOutput.writeObject(entity.class)
+        objectOutput.writeLong(entity.id)
+        objectOutput.writeObject(propertyName)
     }
 
     void readExternal(java.io.ObjectInput objectInput) throws java.io.IOException, java.lang.ClassNotFoundException {
-        clazz = objectInput.readObject()
-        Set collection = objectInput.readObject()
-        wrapped = new PersistentSet(clazz, null, collection)
+        def entityClazz = objectInput.readObject()
+        def entityId = objectInput.readLong()
+        entity = entityClazz.get(entityId)
+        propertyName = objectInput.readObject()
+        wrapped = entity."${propertyName}".wrapped
+        entityClazz.withSession { session ->
+            propertyChangeListener = session
+        }
 
     }
 

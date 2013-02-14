@@ -313,20 +313,77 @@ class MiscSpec extends GormDatastoreSpec {
             session.memoizePropertyChangeListener[Team.class] == true
     }
 
+    def "serialization should work with proxies"() {
+        setup:
+        Team team = new Team(name: "team",
+                club: new Club(name: 'club')
+        ).save(flush: true)
+        session.clear()
+        team = Team.get(team.id)
+
+        def bos = new ByteArrayOutputStream()
+
+        bos.withObjectOutputStream {
+            it.writeObject(team)
+        }
+
+        when:
+        Team deserializedTeam = new ByteArrayInputStream(bos.toByteArray()).withObjectInputStream {
+            it.readObject()
+        }
+
+        then:
+        deserializedTeam instanceof Team
+//        team.club.metaClass.getMetaMethod("isProxy", null) != null
+        team.name == deserializedTeam.name
+        team.club.name == deserializedTeam.club.name
+    }
+
+    def "operations on deserialized instance with hasMany works"() {
+        setup:
+        Tournament tournament = new Tournament(name: "tournament",
+                teams: [new Team(name: 'team1'), new Team(name: 'team2')]
+        ).save(flush: true)
+        session.clear()
+        tournament = Tournament.get(tournament.id)
+
+        def bos = new ByteArrayOutputStream()
+        bos.withObjectOutputStream {
+            it.writeObject(tournament)
+        }
+        Tournament deserializedTournament = new ByteArrayInputStream(bos.toByteArray()).withObjectInputStream {
+            it.readObject()
+        }
+
+        when:
+        def firstTeam = deserializedTournament.teams[0]
+        deserializedTournament.teams.remove(firstTeam)
+        session.flush()
+
+        tournament = Tournament.get(tournament.id)
+
+        then:
+        deserializedTournament.teams.size()==1
+        tournament.teams.size()==1
+
+    }
 }
 
 @Entity
-class Tournament {
+class Tournament implements Serializable {
     Long id
     Long version
     String name
     List teams
     static hasMany = [teams: Team ]
+    static mapping = {
+        teams(lazy: true)
+    }
 }
 
 @Bindable
 @Entity
-class Team {
+class Team implements Serializable {
     Long id
     Long version
     String name
@@ -335,11 +392,16 @@ class Team {
 }
 
 @Entity
-class Club {
+class Club implements Serializable {
     Long id
     Long version
     String name
     List teams
     static hasMany = [teams: Team ]
-}
 
+    // TODO: maybe refactor this into a AST
+    protected Object writeReplace()
+                           throws ObjectStreamException {
+        return get(id)
+    }
+}
