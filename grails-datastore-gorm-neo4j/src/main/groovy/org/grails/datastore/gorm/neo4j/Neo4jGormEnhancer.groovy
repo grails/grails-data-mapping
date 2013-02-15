@@ -43,7 +43,9 @@ class Neo4jGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
-        return new Neo4jGormInstanceApi<D>(cls, datastore)
+        final api = new Neo4jGormInstanceApi<D>(cls, datastore)
+        api.failOnError = failOnError
+        return api
     }
 }
 

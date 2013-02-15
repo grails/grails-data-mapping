@@ -42,7 +42,9 @@ class RedisGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
-        return new RedisGormInstanceApi<D>(cls, datastore)
+        final api = new RedisGormInstanceApi<D>(cls, datastore)
+        api.failOnError = failOnError
+        return api
     }
 }
 
