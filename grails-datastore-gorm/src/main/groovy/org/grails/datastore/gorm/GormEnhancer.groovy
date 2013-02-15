@@ -132,20 +132,21 @@ class GormEnhancer {
             def isBasic = prop instanceof Basic
             if ((prop instanceof OneToMany) || (prop instanceof ManyToMany) || isBasic || (prop instanceof EmbeddedCollection)) {
                 def associatedEntity = prop.associatedEntity
+                def javaClass = associatedEntity?.javaClass ?: prop.type
                 mc."addTo${prop.capitilizedName}" = { arg ->
                     def obj
                     if (delegate[prop.name] == null) {
                         delegate[prop.name] = [].asType(prop.type)
                     }
                     if (arg instanceof Map) {
-                        obj = associatedEntity.javaClass.newInstance(arg)
+                        obj = javaClass.newInstance(arg)
                         delegate[prop.name].add(obj)
                     }
                     else if (isBasic) {
                         delegate[prop.name].add(arg)
                         return delegate
                     }
-                    else if (associatedEntity.javaClass.isInstance(arg)) {
+                    else if (javaClass.isInstance(arg)) {
                         obj = arg
                         delegate[prop.name].add(obj)
                     }
@@ -168,7 +169,7 @@ class GormEnhancer {
                     delegate
                 }
                 mc."removeFrom${prop.capitilizedName}" = { arg ->
-                    if (associatedEntity.javaClass.isInstance(arg)) {
+                    if (javaClass.isInstance(arg)) {
                         delegate[prop.name]?.remove(arg)
                         if (prop.bidirectional) {
                             def otherSide = prop.inverseSide
