@@ -71,6 +71,13 @@ public interface MappingContext {
     PersistentEntity getChildEntityByDiscriminator(PersistentEntity root, String discriminator);
 
     /**
+     * Adds several PersistentEntity instances
+     *
+     * @param javaClasses The Java class representing the entity
+     * @return The PersistentEntity instance
+     */
+    Collection<PersistentEntity> addPersistentEntities(Class...javaClasses);
+    /**
      * Adds a PersistentEntity instance
      *
      * @param javaClass The Java class representing the entity

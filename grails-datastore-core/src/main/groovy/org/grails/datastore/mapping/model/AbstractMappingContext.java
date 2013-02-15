@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.mapping.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -166,6 +167,31 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
         return addPersistentEntity(javaClass);
     }
 
+    @Override
+    public Collection<PersistentEntity> addPersistentEntities(Class... javaClasses) {
+        Collection<PersistentEntity> entities = new ArrayList<PersistentEntity>();
+
+        for (Class javaClass : javaClasses) {
+            PersistentEntity entity = createPersistentEntity(javaClass);
+            if(entity == null) continue;
+
+            registerEntityWithContext(entity);
+            entities.add(entity);
+
+        }
+        if(canInitializeEntities) {
+            for (PersistentEntity entity : entities) {
+                initializePersistentEntity(entity);
+            }
+        }
+        for (Listener eventListener : eventListeners) {
+            for (PersistentEntity entity : entities) {
+                eventListener.persistentEntityAdded(entity);
+            }
+        }
+        return entities;
+    }
+
     /**
      * Adds a PersistentEntity instance
      *
@@ -191,8 +217,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
         }
         entity.setExternal(isExternal);
 
-        persistentEntities.remove(entity); persistentEntities.add(entity);
-        persistentEntitiesByName.put(entity.getName(), entity);
+        registerEntityWithContext(entity);
 
         if(isInitialize) {
             initializePersistentEntity(entity);
@@ -202,6 +227,12 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
             eventListener.persistentEntityAdded(entity);
         }
         return entity;
+    }
+
+    private void registerEntityWithContext(PersistentEntity entity) {
+        persistentEntities.remove(entity);
+        persistentEntities.add(entity);
+        persistentEntitiesByName.put(entity.getName(), entity);
     }
 
     @Override
