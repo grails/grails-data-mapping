@@ -6,4 +6,5 @@ dependencies {
     compile('redis.clients:jedis:2.0.0') {
         transitive = false
     }
+    testRuntime "org.springframework:spring-expression:$springVersion"
 }
