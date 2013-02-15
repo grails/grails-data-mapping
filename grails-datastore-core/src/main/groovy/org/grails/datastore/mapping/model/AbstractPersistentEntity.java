@@ -76,40 +76,50 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
         return context;
     }
 
+    @Override
+    public boolean isInitialized() {
+        return this.initialized;
+    }
+
     public void initialize() {
-        initializeMappingProperties();
-        owners = context.getMappingSyntaxStrategy().getOwningEntities(javaClass, context);
-        persistentProperties = context.getMappingSyntaxStrategy().getPersistentProperties(this, context, getMapping());
-        identity = resolveIdentifier();
-        persistentPropertyNames = new ArrayList<String>();
-        associations = new ArrayList();
+        if(!initialized) {
 
-        for (PersistentProperty persistentProperty : persistentProperties) {
+            initialized = true;
 
-            if (!(persistentProperty instanceof OneToMany)) {
-                persistentPropertyNames.add(persistentProperty.getName());
+            initializeMappingProperties();
+            owners = context.getMappingSyntaxStrategy().getOwningEntities(javaClass, context);
+            persistentProperties = context.getMappingSyntaxStrategy().getPersistentProperties(this, context, getMapping());
+            identity = resolveIdentifier();
+            persistentPropertyNames = new ArrayList<String>();
+            associations = new ArrayList();
+
+            for (PersistentProperty persistentProperty : persistentProperties) {
+
+                if (!(persistentProperty instanceof OneToMany)) {
+                    persistentPropertyNames.add(persistentProperty.getName());
+                }
+
+                if (persistentProperty instanceof Association) {
+                    associations.add((Association) persistentProperty);
+                }
+
+                propertiesByName.put(persistentProperty.getName(), persistentProperty);
             }
 
-            if (persistentProperty instanceof Association) {
-                associations.add((Association) persistentProperty);
+            Class superClass = javaClass.getSuperclass();
+            if (superClass != null &&
+                    !superClass.equals(Object.class) &&
+                    !Modifier.isAbstract(superClass.getModifiers())) {
+                parentEntity = context.addPersistentEntity(superClass);
             }
 
-            propertiesByName.put(persistentProperty.getName(), persistentProperty);
+            getMapping().getMappedForm(); // initialize mapping
+
+            if (mappingProperties.isVersioned()) {
+                version = propertiesByName.get("version");
+            }
         }
 
-        Class superClass = javaClass.getSuperclass();
-        if (superClass != null &&
-                !superClass.equals(Object.class) &&
-                !Modifier.isAbstract(superClass.getModifiers())) {
-            parentEntity = context.addPersistentEntity(superClass);
-        }
-
-        getMapping().getMappedForm(); // initialize mapping
-
-        if (mappingProperties.isVersioned()) {
-            version = propertiesByName.get("version");
-        }
-        initialized = true;
     }
 
     protected PersistentProperty resolveIdentifier() {

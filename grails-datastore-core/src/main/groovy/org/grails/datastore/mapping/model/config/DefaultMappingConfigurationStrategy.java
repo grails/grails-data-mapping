@@ -129,6 +129,11 @@ public class DefaultMappingConfigurationStrategy implements MappingConfiguration
         return getDefaultIdentityMapping(classMapping);
     }
 
+    @Override
+    public void setCanExpandMappingContext(boolean canExpandMappingContext) {
+        // noop
+    }
+
     public IdentityMapping getDefaultIdentityMapping(final ClassMapping classMapping) {
 
         final PersistentEntity e = classMapping.getEntity();

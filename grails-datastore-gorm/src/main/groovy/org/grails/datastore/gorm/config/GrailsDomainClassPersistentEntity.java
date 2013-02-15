@@ -50,6 +50,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
     private Map<String, PersistentProperty> propertiesByName = new HashMap<String, PersistentProperty>();
     private List<PersistentProperty> properties = new ArrayList<PersistentProperty>();
     private List<Association> associations = new ArrayList<Association>();
+    private boolean initialized;
 
     public GrailsDomainClassPersistentEntity(GrailsDomainClass domainClass,
             GrailsDomainClassMappingContext mappingContext) {
@@ -62,6 +63,11 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
      */
     public GrailsDomainClass getDomainClass() {
         return domainClass;
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return this.initialized;
     }
 
     public void initialize() {
@@ -102,6 +108,7 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
             propertiesByName.put(grailsDomainClassProperty.getName(), persistentProperty);
             properties.add(persistentProperty);
         }
+        initialized = true;
     }
 
     public String getName() {

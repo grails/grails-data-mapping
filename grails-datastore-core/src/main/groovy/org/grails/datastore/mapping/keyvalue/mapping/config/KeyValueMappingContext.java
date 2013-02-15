@@ -35,6 +35,12 @@ public class KeyValueMappingContext extends AbstractMappingContext {
     private String keyspace;
     public static final String GROOVY_OBJECT_CLASS = "groovy.lang.GroovyObject";
 
+    @Override
+    public void setCanInitializeEntities(boolean canInitializeEntities) {
+        super.setCanInitializeEntities(canInitializeEntities);
+        syntaxStrategy.setCanExpandMappingContext(false);
+    }
+
     /**
      * Constructs a context using the given keyspace
      *

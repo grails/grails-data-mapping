@@ -81,4 +81,9 @@ public interface MappingConfigurationStrategy {
      * @return The identity mapping
      */
     IdentityMapping getIdentityMapping(ClassMapping classMapping);
+
+    /**
+     * Whether the strategy can add new entities to the mapping context
+     */
+    void setCanExpandMappingContext(boolean canExpandMappingContext);
 }

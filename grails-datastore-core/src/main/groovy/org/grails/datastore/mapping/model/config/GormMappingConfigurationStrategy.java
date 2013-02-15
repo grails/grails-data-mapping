@@ -84,9 +84,18 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
     private static final String VERSION_PROPERTY = "version";
     private MappingFactory propertyFactory;
     private static final Set EXCLUDED_PROPERTIES = new HashSet(Arrays.asList("class", "metaClass"));
+    private boolean canExpandMappingContext = true;
 
     public GormMappingConfigurationStrategy(MappingFactory propertyFactory) {
         this.propertyFactory = propertyFactory;
+    }
+
+    /**
+     * Whether the strategy can add new entities to the mapping context
+     */
+    @Override
+    public void setCanExpandMappingContext(boolean canExpandMappingContext) {
+        this.canExpandMappingContext = canExpandMappingContext;
     }
 
     /**
@@ -231,21 +240,27 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
     }
 
     private void configureOwningSide(Association association) {
-        if (association.isBidirectional()) {
-            if (association.getAssociatedEntity().isOwningEntity(association.getOwner())) {
-                association.setOwningSide(true);
-            }
+        PersistentEntity associatedEntity = association.getAssociatedEntity();
+        if(associatedEntity == null) {
+            association.setOwningSide(true);
         }
         else {
-            if (association instanceof OneToOne) {
-                if (association.getAssociatedEntity().isOwningEntity(association.getOwner()))
-                    association.setOwningSide(true);
-            } else if (!(association instanceof Basic)) {
-                if (association.getAssociatedEntity().isOwningEntity(association.getOwner())) {
+            if (association.isBidirectional()) {
+                if (associatedEntity.isOwningEntity(association.getOwner())) {
                     association.setOwningSide(true);
                 }
-                else {
-                    association.setOwningSide(false);
+            }
+            else {
+                if (association instanceof OneToOne) {
+                    if (associatedEntity.isOwningEntity(association.getOwner()))
+                        association.setOwningSide(true);
+                } else if (!(association instanceof Basic)) {
+                    if (associatedEntity.isOwningEntity(association.getOwner())) {
+                        association.setOwningSide(true);
+                    }
+                    else {
+                        association.setOwningSide(false);
+                    }
                 }
             }
         }
@@ -627,20 +642,43 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         return mappedBy.containsKey(property.getName()) && (mappedBy.get(property.getName())==null);
     }
 
-    private PersistentEntity getOrCreateAssociatedEntity(PersistentEntity entity, MappingContext context, Class propType) {
+    /**
+     * Tries to obtain or create an associated entity. Note that if #canExpandMappingContext is set to false then this method may return null
+     *
+     * @param entity The main entity
+     * @param context The context
+     * @param propType The associated property type
+     * @return The associated entity or null
+     */
+    protected PersistentEntity getOrCreateAssociatedEntity(PersistentEntity entity, MappingContext context, Class propType) {
         PersistentEntity associatedEntity = context.getPersistentEntity(propType.getName());
         if (associatedEntity == null) {
-            if (entity.isExternal()) {
-                associatedEntity = context.addExternalPersistentEntity(propType);
+            if(canExpandMappingContext) {
+                if (entity.isExternal()) {
+                    associatedEntity = context.addExternalPersistentEntity(propType);
+                }
+                else {
+                    associatedEntity = context.addPersistentEntity(propType);
+                }
             }
-            else {
-                associatedEntity = context.addPersistentEntity(propType);
+        }
+        else {
+            if(!associatedEntity.isInitialized()) {
+                associatedEntity.initialize();
             }
         }
         return associatedEntity;
     }
 
-    private PersistentEntity getOrCreateEmbeddedEntity(PersistentEntity entity, MappingContext context, Class type) {
+    /**
+     * Tries to obtain or create an embedded entity. Note that if #canExpandMappingContext is set to false then this method may return null
+     *
+     * @param entity The main entity
+     * @param context The context
+     * @param type The associated property type
+     * @return The associated entity or null
+     */
+    protected PersistentEntity getOrCreateEmbeddedEntity(PersistentEntity entity, MappingContext context, Class type) {
         PersistentEntity associatedEntity = context.getPersistentEntity(type.getName());
         if (associatedEntity == null) {
             try {
@@ -654,6 +692,11 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 PersistentEntity embeddedEntity = context.createEmbeddedEntity(type);
                 embeddedEntity.initialize();
                 return embeddedEntity;
+            }
+        }
+        else {
+            if(!associatedEntity.isInitialized()) {
+                associatedEntity.initialize();
             }
         }
         return associatedEntity;

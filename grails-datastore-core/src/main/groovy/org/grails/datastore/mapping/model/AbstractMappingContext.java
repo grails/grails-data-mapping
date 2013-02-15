@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.grails.datastore.mapping.model.lifecycle.Initializable;
 import org.grails.datastore.mapping.model.types.conversion.DefaultConversionService;
 import org.grails.datastore.mapping.proxy.JavassistProxyFactory;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
@@ -38,7 +39,7 @@ import org.springframework.validation.Validator;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractMappingContext implements MappingContext {
+public abstract class AbstractMappingContext implements MappingContext, Initializable {
 
     public static final String GROOVY_PROXY_FACTORY_NAME = "org.grails.datastore.gorm.proxy.GroovyProxyFactory";
     public static final String JAVASIST_PROXY_FACTORY = "javassist.util.proxy.ProxyFactory";
@@ -49,6 +50,8 @@ public abstract class AbstractMappingContext implements MappingContext {
     protected Collection<Listener> eventListeners = new ConcurrentLinkedQueue<Listener>();
     protected GenericConversionService conversionService = new DefaultConversionService();
     protected ProxyFactory proxyFactory;
+    private boolean canInitializeEntities = true;
+    private boolean initialized;
 
     public ConversionService getConversionService() {
         return conversionService;
@@ -56,6 +59,10 @@ public abstract class AbstractMappingContext implements MappingContext {
 
     public ConverterRegistry getConverterRegistry() {
         return conversionService;
+    }
+
+    public void setCanInitializeEntities(boolean canInitializeEntities) {
+        this.canInitializeEntities = canInitializeEntities;
     }
 
     public abstract MappingFactory getMappingFactory();
@@ -101,6 +108,12 @@ public abstract class AbstractMappingContext implements MappingContext {
         conversionService.addConverter(converter);
     }
 
+    /**
+     * Retrieves a validator for an entity
+     *
+     * @param entity The entity The entity
+     * @return The validator or null if there is none
+     */
     public Validator getEntityValidator(PersistentEntity entity) {
         if (entity != null) {
             return entityValidators.get(entity);
@@ -108,19 +121,31 @@ public abstract class AbstractMappingContext implements MappingContext {
         return null;
     }
 
+    /**
+     * Adds a validator for an entity
+     *
+     * @param entity The PersistentEntity The entity
+     * @param validator The validator The validator
+     */
     public void addEntityValidator(PersistentEntity entity, Validator validator) {
         if (entity != null && validator != null) {
             entityValidators.put(entity, validator);
         }
     }
 
+    /**
+     * Adds an external PersistentEntity instance, one that is not managed and persisted by this context
+     *
+     * @param javaClass The Java class representing the entity
+     * @return The PersistentEntity instance
+     */
     public PersistentEntity addExternalPersistentEntity(Class javaClass) {
         Assert.notNull(javaClass, "PersistentEntity class cannot be null");
 
         PersistentEntity entity = persistentEntitiesByName.get(javaClass.getName());
 
         if (entity == null) {
-            entity = addPersistentEntityInternal(javaClass, true);
+            entity = addPersistentEntityInternal(javaClass, true, canInitializeEntities);
         }
 
         return entity;
@@ -136,24 +161,30 @@ public abstract class AbstractMappingContext implements MappingContext {
     public PersistentEntity addPersistentEntity(Class javaClass, boolean override) {
         Assert.notNull(javaClass, "PersistentEntity class cannot be null");
         if (override) {
-            return addPersistentEntityInternal(javaClass, false);
+            return addPersistentEntityInternal(javaClass, false, canInitializeEntities);
         }
         return addPersistentEntity(javaClass);
     }
 
-    public final PersistentEntity addPersistentEntity(Class javaClass) {
+    /**
+     * Adds a PersistentEntity instance
+     *
+     * @param javaClass The Java class representing the entity
+     * @return The PersistentEntity instance
+     */
+    public PersistentEntity addPersistentEntity(Class javaClass) {
         Assert.notNull(javaClass, "PersistentEntity class cannot be null");
 
         PersistentEntity entity = persistentEntitiesByName.get(javaClass.getName());
 
         if (entity == null) {
-            entity = addPersistentEntityInternal(javaClass, false);
+            entity = addPersistentEntityInternal(javaClass, false, canInitializeEntities);
         }
 
         return entity;
     }
 
-    private PersistentEntity addPersistentEntityInternal(Class javaClass, boolean isExternal) {
+    private PersistentEntity addPersistentEntityInternal(Class javaClass, boolean isExternal, boolean isInitialize) {
         PersistentEntity entity = createPersistentEntity(javaClass);
         if (entity == null) {
             return null;
@@ -163,6 +194,30 @@ public abstract class AbstractMappingContext implements MappingContext {
         persistentEntities.remove(entity); persistentEntities.add(entity);
         persistentEntitiesByName.put(entity.getName(), entity);
 
+        if(isInitialize) {
+            initializePersistentEntity(entity);
+        }
+
+        for (Listener eventListener : eventListeners) {
+            eventListener.persistentEntityAdded(entity);
+        }
+        return entity;
+    }
+
+    @Override
+    public void initialize() {
+        for(PersistentEntity entity : persistentEntities) {
+            initializePersistentEntity(entity);
+        }
+        this.initialized = true;
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    private void initializePersistentEntity(PersistentEntity entity) {
         try {
             entity.initialize();
         }
@@ -181,10 +236,6 @@ public abstract class AbstractMappingContext implements MappingContext {
             }
             children.put(entity.getDiscriminator(), entity);
         }
-        for (Listener eventListener : eventListeners) {
-            eventListener.persistentEntityAdded(entity);
-        }
-        return entity;
     }
 
     /**
