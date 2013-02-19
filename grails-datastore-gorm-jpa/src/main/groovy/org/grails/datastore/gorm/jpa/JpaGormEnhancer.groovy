@@ -51,7 +51,9 @@ class JpaGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
-        return new JpaInstanceApi<D>(cls, datastore)
+        final api = new JpaInstanceApi<D>(cls, datastore)
+        api.failOnError = failOnError
+        return api
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {

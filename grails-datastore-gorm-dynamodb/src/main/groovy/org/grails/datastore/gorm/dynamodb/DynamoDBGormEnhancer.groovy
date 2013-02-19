@@ -47,7 +47,9 @@ class DynamoDBGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
-        return new DynamoDBGormInstanceApi<D>(cls, datastore)
+        final api = new DynamoDBGormInstanceApi<D>(cls, datastore)
+        api.failOnError = failOnError
+        return api
     }
 }
 

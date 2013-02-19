@@ -53,7 +53,9 @@ class MongoGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
-        return new MongoGormInstanceApi<D>(cls, datastore)
+        final api = new MongoGormInstanceApi<D>(cls, datastore)
+        api.failOnError = failOnError
+        return api
     }
 }
 

@@ -48,7 +48,9 @@ class SimpleDBGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
-        return new SimpleDBGormInstanceApi<D>(cls, datastore)
+        final api = new SimpleDBGormInstanceApi<D>(cls, datastore)
+        api.failOnError = true
+        return api
     }
 }
 
