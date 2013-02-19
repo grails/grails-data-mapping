@@ -1570,11 +1570,13 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                             ToOne association = (ToOne) property;
                             if (!association.isForeignKeyInChild()) {
                                 NativeEntryEntityPersister associationPersister = (NativeEntryEntityPersister) session.getPersister(value);
-                                if (value == null) {
-                                    toIndex.put(property, null);
-                                }
-                                else {
-                                    toIndex.put(property, associationPersister.getObjectIdentifier(value));
+                                if(associationPersister != null) {
+                                    if (value == null) {
+                                        toIndex.put(property, null);
+                                    }
+                                    else {
+                                        toIndex.put(property, associationPersister.getObjectIdentifier(value));
+                                    }
                                 }
                             }
                         }
