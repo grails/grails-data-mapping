@@ -80,7 +80,7 @@ public abstract class Query {
      * @return The query
      */
     public Query join(String property) {
-        fetchStrategies.put(property, FetchType.EAGER);
+        fetchStrategies.put(property, FetchType.JOIN);
         return this;
     }
 
@@ -91,7 +91,7 @@ public abstract class Query {
      * @return The query
      */
     public Query select(String property) {
-        fetchStrategies.put(property, FetchType.LAZY);
+        fetchStrategies.put(property, FetchType.SELECT);
         return this;
     }
 
