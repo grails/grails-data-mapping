@@ -203,7 +203,8 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
     }
 
     public boolean isVersioned() {
-        return (!initialized || version != null) && mappingProperties.isVersioned();
+        initializeMappingProperties();
+        return mappingProperties.isVersioned();
     }
 
     public Class getJavaClass() {
@@ -227,23 +228,36 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
     }
 
     private void initializeMappingProperties() {
-        MappingConfigurationBuilder builder = new MappingConfigurationBuilder(
-              mappingProperties, MappingProperties.class);
+        if(!mappingProperties.isIntialized()) {
+            mappingProperties.setIntialized(true);
 
-        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(getJavaClass());
-        Closure value = cpf.getStaticPropertyValue(GormProperties.MAPPING, Closure.class);
-        if (value != null) {
-            builder.evaluate(value);
-        }
+            MappingConfigurationBuilder builder = new MappingConfigurationBuilder(
+                    mappingProperties, MappingProperties.class);
 
-        Object mappingVersion = builder.getProperties().get(MappingConfigurationBuilder.VERSION_KEY);
-        if (mappingVersion instanceof Boolean) {
-            mappingProperties.setVersion((Boolean)mappingVersion);
+            ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(getJavaClass());
+            Closure value = cpf.getStaticPropertyValue(GormProperties.MAPPING, Closure.class);
+            if (value != null) {
+                builder.evaluate(value);
+            }
+
+            Object mappingVersion = builder.getProperties().get(MappingConfigurationBuilder.VERSION_KEY);
+            if (mappingVersion instanceof Boolean) {
+                mappingProperties.setVersion((Boolean)mappingVersion);
+            }
         }
     }
 
     private static class MappingProperties {
         private Boolean version = true;
+        private boolean intialized = false;
+
+        public boolean isIntialized() {
+            return intialized;
+        }
+
+        public void setIntialized(boolean intialized) {
+            this.intialized = intialized;
+        }
 
         public void setVersion(final boolean version) {
             this.version = version;
