@@ -117,6 +117,9 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
 
             if (mappingProperties.isVersioned()) {
                 version = propertiesByName.get("version");
+                if(version == null) {
+                    mappingProperties.setVersion(false);
+                }
             }
         }
 
