@@ -150,6 +150,9 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
         PersistentEntity root = this;
         PersistentEntity parent = getParentEntity();
         while (parent != null) {
+            if(!parent.isInitialized()) {
+                parent.initialize();
+            }
             root = parent;
             parent = parent.getParentEntity();
         }

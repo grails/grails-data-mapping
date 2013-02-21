@@ -132,60 +132,63 @@ class GormEnhancer {
             def isBasic = prop instanceof Basic
             if ((prop instanceof OneToMany) || (prop instanceof ManyToMany) || isBasic || (prop instanceof EmbeddedCollection)) {
                 def associatedEntity = prop.associatedEntity
-                def javaClass = associatedEntity?.javaClass ?: prop.type
-                mc."addTo${prop.capitilizedName}" = { arg ->
-                    def obj
-                    if (delegate[prop.name] == null) {
-                        delegate[prop.name] = [].asType(prop.type)
-                    }
-                    if (arg instanceof Map) {
-                        obj = javaClass.newInstance(arg)
-                        delegate[prop.name].add(obj)
-                    }
-                    else if (isBasic) {
-                        delegate[prop.name].add(arg)
-                        return delegate
-                    }
-                    else if (javaClass.isInstance(arg)) {
-                        obj = arg
-                        delegate[prop.name].add(obj)
-                    }
-                    else {
-                        throw new MissingMethodException("addTo${prop.capitilizedName}", e.javaClass, [arg] as Object[])
-                    }
-                    if (prop.bidirectional && prop.inverseSide) {
-                        def otherSide = prop.inverseSide
-                        String name = otherSide.name
-                        if (otherSide instanceof OneToMany || otherSide instanceof ManyToMany) {
-                            if (obj[name] == null) {
-                                obj[name] = [].asType(otherSide.type)
-                            }
-                            obj[name].add(delegate)
+                def javaClass = associatedEntity?.javaClass
+                if(javaClass) {
+                    mc."addTo${prop.capitilizedName}" = { arg ->
+                        def obj
+                        if (delegate[prop.name] == null) {
+                            delegate[prop.name] = [].asType(prop.type)
+                        }
+                        if (arg instanceof Map) {
+                            obj = javaClass.newInstance(arg)
+                            delegate[prop.name].add(obj)
+                        }
+                        else if (isBasic) {
+                            delegate[prop.name].add(arg)
+                            return delegate
+                        }
+                        else if (javaClass.isInstance(arg)) {
+                            obj = arg
+                            delegate[prop.name].add(obj)
                         }
                         else {
-                            obj[name] = delegate
+                            throw new MissingMethodException("addTo${prop.capitilizedName}", e.javaClass, [arg] as Object[])
                         }
-                    }
-                    delegate
-                }
-                mc."removeFrom${prop.capitilizedName}" = { arg ->
-                    if (javaClass.isInstance(arg)) {
-                        delegate[prop.name]?.remove(arg)
-                        if (prop.bidirectional) {
+                        if (prop.bidirectional && prop.inverseSide) {
                             def otherSide = prop.inverseSide
-                            if (otherSide instanceof ManyToMany) {
-                                String name = otherSide.name
-                                arg[name]?.remove(delegate)
+                            String name = otherSide.name
+                            if (otherSide instanceof OneToMany || otherSide instanceof ManyToMany) {
+                                if (obj[name] == null) {
+                                    obj[name] = [].asType(otherSide.type)
+                                }
+                                obj[name].add(delegate)
                             }
                             else {
-                                arg[otherSide.name] = null
+                                obj[name] = delegate
                             }
                         }
+                        delegate
                     }
-                    else {
-                        throw new MissingMethodException("removeFrom${prop.capitilizedName}", e.javaClass, [arg] as Object[])
+                    mc."removeFrom${prop.capitilizedName}" = { arg ->
+                        if (javaClass.isInstance(arg)) {
+                            delegate[prop.name]?.remove(arg)
+                            if (prop.bidirectional) {
+                                def otherSide = prop.inverseSide
+                                if (otherSide instanceof ManyToMany) {
+                                    String name = otherSide.name
+                                    arg[name]?.remove(delegate)
+                                }
+                                else {
+                                    arg[otherSide.name] = null
+                                }
+                            }
+                        }
+                        else {
+                            throw new MissingMethodException("removeFrom${prop.capitilizedName}", e.javaClass, [arg] as Object[])
+                        }
+                        delegate
                     }
-                    delegate
+
                 }
             }
         }

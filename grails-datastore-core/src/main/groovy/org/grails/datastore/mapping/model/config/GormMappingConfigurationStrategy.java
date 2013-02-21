@@ -684,9 +684,11 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             try {
                 if (entity.isExternal()) {
                     associatedEntity = context.addExternalPersistentEntity(type);
+                    associatedEntity.initialize();
                 }
                 else {
                     associatedEntity = context.addPersistentEntity(type);
+                    associatedEntity.initialize();
                 }
             } catch (IllegalMappingException e) {
                 PersistentEntity embeddedEntity = context.createEmbeddedEntity(type);
