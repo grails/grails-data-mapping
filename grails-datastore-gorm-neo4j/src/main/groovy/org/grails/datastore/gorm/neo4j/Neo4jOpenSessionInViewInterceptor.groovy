@@ -14,19 +14,14 @@
  */
 package org.grails.datastore.gorm.neo4j
 
+import org.neo4j.graphdb.Transaction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.grails.datastore.mapping.core.DatastoreUtils
-import org.grails.datastore.mapping.transactions.Transaction
 import org.grails.datastore.mapping.web.support.OpenSessionInViewInterceptor
 import org.springframework.web.context.request.WebRequest
 
 /**
  * provide a transaction context for each request
- * since the interceptor might be called multiple times for the same request (by e.g. using <g:include>)
- * all previous transactions must be kept for releasing them later. For this a Stack is used.
- *
- * NOTE: this class is deprecated now since Neo4jSession spawns the transaction itself
  */
 class Neo4jOpenSessionInViewInterceptor extends OpenSessionInViewInterceptor {
 
@@ -41,15 +36,17 @@ class Neo4jOpenSessionInViewInterceptor extends OpenSessionInViewInterceptor {
         }
         super.preHandle(request)
         assert transactionThreadLocal.get() == null
-        transactionThreadLocal.set(DatastoreUtils.getSession(datastore, true).beginTransaction())
+        transactionThreadLocal.set(datastore.graphDatabaseService.beginTx())
     }
 
     @Override
     void afterCompletion(WebRequest request, Exception ex) {
         super.afterCompletion(request, ex)
         Transaction transaction = transactionThreadLocal.get()
+        assert transaction
         transactionThreadLocal.set(null)
-        ex ? transaction.rollback() : transaction.commit()
+        ex ? transaction.failure() : transaction.success()
+        transaction.finish()
         if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
             log.debug "afterCompletion ${request.getDescription(true)}"
         }
