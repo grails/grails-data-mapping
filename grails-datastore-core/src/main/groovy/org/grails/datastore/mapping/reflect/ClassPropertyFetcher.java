@@ -21,12 +21,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +37,9 @@ public class ClassPropertyFetcher {
     private static final Logger LOG = LoggerFactory.getLogger(ClassPropertyFetcher.class);
 
     private final Class clazz;
-    final Map<String, PropertyFetcher> staticFetchers = new HashMap<String, PropertyFetcher>();
+    // static fetchers for this class, but also for all super classes with the property.
+    // first item in each list is most derived version of static property.
+    final Map<String, List<PropertyFetcher>> staticFetchers = new HashMap<String, List<PropertyFetcher>>();
     final Map<String, PropertyFetcher> instanceFetchers = new HashMap<String, PropertyFetcher>();
     private final ReferenceInstanceCallback callback;
     private PropertyDescriptor[] propertyDescriptors;
@@ -134,11 +131,15 @@ public class ClassPropertyFetcher {
             if (readMethod != null) {
                 boolean staticReadMethod = Modifier.isStatic(readMethod.getModifiers());
                 if (staticReadMethod) {
-                    staticFetchers.put(desc.getName(),
-                            new GetterPropertyFetcher(readMethod, staticReadMethod));
+                    List<PropertyFetcher> propertyFetchers = staticFetchers.get(desc.getName());
+                    if (propertyFetchers == null) {
+                        staticFetchers.put(desc.getName(), propertyFetchers = new ArrayList<PropertyFetcher>());
+                    }
+                    propertyFetchers.add(
+                            new GetterPropertyFetcher(readMethod, true));
                 } else {
                     instanceFetchers.put(desc.getName(),
-                            new GetterPropertyFetcher(readMethod, staticReadMethod));
+                            new GetterPropertyFetcher(readMethod, false));
                 }
             }
         }
@@ -167,8 +168,19 @@ public class ClassPropertyFetcher {
                         name = name.substring(2);
                     }
                     PropertyFetcher fetcher = new GetterPropertyFetcher(method, true);
-                    staticFetchers.put(name, fetcher);
-                    staticFetchers.put(Introspector.decapitalize(name), fetcher);
+                    List<PropertyFetcher> propertyFetchers = staticFetchers.get(name);
+                    if (propertyFetchers == null) {
+                        staticFetchers.put(name, propertyFetchers = new ArrayList<PropertyFetcher>());
+                    }
+                    propertyFetchers.add(fetcher);
+                    String decapitalized = Introspector.decapitalize(name);
+                    if (!decapitalized.equals(name)) {
+                        propertyFetchers = staticFetchers.get(decapitalized);
+                        if (propertyFetchers == null) {
+                            staticFetchers.put(decapitalized, propertyFetchers = new ArrayList<PropertyFetcher>());
+                        }
+                        propertyFetchers.add(fetcher);
+                    }
                 }
             }
         }
@@ -189,7 +201,11 @@ public class ClassPropertyFetcher {
             if (name.indexOf('$') == -1) {
                 boolean staticField = Modifier.isStatic(modifiers);
                 if (staticField) {
-                    staticFetchers.put(name, new FieldReaderFetcher(field, staticField));
+                    List<PropertyFetcher> propertyFetchers = staticFetchers.get(name);
+                    if (propertyFetchers == null) {
+                        staticFetchers.put(name, propertyFetchers = new ArrayList<PropertyFetcher>());
+                    }
+                    propertyFetchers.add(new FieldReaderFetcher(field, staticField));
                 } else {
                     instanceFetchers.put(name, new FieldReaderFetcher(field, staticField));
                 }
@@ -230,13 +246,40 @@ public class ClassPropertyFetcher {
     }
 
     public <T> T getStaticPropertyValue(String name, Class<T> c) {
-        PropertyFetcher fetcher = staticFetchers.get(name);
-        if (fetcher == null) {
+        List<PropertyFetcher> propertyFetchers = staticFetchers.get(name);
+        if (propertyFetchers == null) {
             return null;
         }
+        PropertyFetcher fetcher = propertyFetchers.get(0);
 
         Object v = getPropertyValueWithFetcher(name, fetcher);
         return returnOnlyIfInstanceOf(v, c);
+    }
+
+    /**
+     * Get the list of property values for this static property from the whole inheritance hierarchy, starting
+     * from the most derived version of the property ending with the base class. There are entries for each extant
+     * version of the property in turn, so if you have a 10-deep inheritance hierarchy, you may get 0+ values returned,
+     * one per class in the hierarchy that has the property declared (and of the correct type).
+     * @param name Name of the property.
+     * @param c Required type of the property (including derived types)
+     * @param <T> Required type of the property.
+     * @return The list, with 0+ values (never null). Do not modify the returned list.
+     */
+    public <T> List<T> getStaticPropertyValuesFromInheritanceHierarchy(String name, Class<T> c) {
+        List<PropertyFetcher> propertyFetchers = staticFetchers.get(name);
+        if (propertyFetchers == null) {
+            return Collections.emptyList();
+        }
+        List<T> values = new ArrayList<T>(propertyFetchers.size());
+        for (PropertyFetcher fetcher : propertyFetchers) {
+            Object v = getPropertyValueWithFetcher(name, fetcher);
+            T t = returnOnlyIfInstanceOf(v, c);
+            if (t != null) {
+                values.add(t);
+            }
+        }
+        return values;
     }
 
     public <T> T getPropertyValue(String name, Class<T> c) {
@@ -254,7 +297,8 @@ public class ClassPropertyFetcher {
     private PropertyFetcher resolveFetcher(String name, boolean onlyInstanceProperties) {
         PropertyFetcher fetcher = null;
         if (!onlyInstanceProperties) {
-            fetcher = staticFetchers.get(name);
+            List<PropertyFetcher> f = staticFetchers.get(name);
+            fetcher = f == null ? null : f.get(0);
         }
         if (fetcher == null) {
             fetcher = instanceFetchers.get(name);

@@ -1,16 +1,21 @@
 package org.grails.datastore.mapping.model
 
+import org.grails.datastore.mapping.config.AbstractGormMappingFactory
+import org.grails.datastore.mapping.config.Property
+
 /**
  * @author Graeme Rocher
  * @since 1.1
  */
-class TestMappedPropertyFactory extends MappingFactory {
+class TestMappedPropertyFactory extends AbstractGormMappingFactory {
 
-    def createMappedForm(PersistentProperty mpp) {
-        return "${mpp.name}_mapped"
+    @Override
+    protected Class getPropertyMappedFormType() {
+        Property
     }
 
-    def createMappedForm(PersistentEntity entity) {
-        return "${entity.name}_mapped"
+    @Override
+    protected Class getEntityMappedFormType() {
+        String
     }
 }

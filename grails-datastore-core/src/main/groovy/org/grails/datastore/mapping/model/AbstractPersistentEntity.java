@@ -19,11 +19,7 @@ import groovy.lang.Closure;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.grails.datastore.mapping.core.EntityCreationException;
@@ -241,8 +237,10 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
                     mappingProperties, MappingProperties.class);
 
             ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(getJavaClass());
-            Closure value = cpf.getStaticPropertyValue(GormProperties.MAPPING, Closure.class);
-            if (value != null) {
+            List<Closure> values =
+                    cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.MAPPING, Closure.class);
+            for (int i = values.size(); i > 0; i--) {
+                Closure value = values.get(i - 1);
                 builder.evaluate(value);
             }
 

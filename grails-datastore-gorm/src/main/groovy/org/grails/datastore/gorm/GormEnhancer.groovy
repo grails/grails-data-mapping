@@ -91,9 +91,10 @@ class GormEnhancer {
         def instanceMethods = [getInstanceApi(cls), getValidationApi(cls)]
         def tm = transactionManager
 
-        final namedQueries = cpf.getStaticPropertyValue('namedQueries', Closure)
-        if (namedQueries instanceof Closure) {
-            registerNamedQueries(e, namedQueries)
+        List<Closure> namedQueries = cpf.getStaticPropertyValuesFromInheritanceHierarchy('namedQueries', Closure)
+        for (int i = namedQueries.size(); i > 0; i--) {
+            Closure closure = namedQueries.get(i - 1);
+            registerNamedQueries(e, closure)
         }
 
         ExpandoMetaClass mc = org.codehaus.groovy.grails.commons.GrailsMetaClassUtils.getExpandoMetaClass(cls)

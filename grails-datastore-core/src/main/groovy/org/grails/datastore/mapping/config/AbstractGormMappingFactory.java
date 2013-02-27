@@ -17,7 +17,9 @@ package org.grails.datastore.mapping.config;
 
 import groovy.lang.Closure;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
@@ -50,12 +52,14 @@ public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R,
         if (defaultMapping != null) {
             builder.evaluate(defaultMapping);
         }
-        Closure value = cpf.getStaticPropertyValue(GormProperties.MAPPING, Closure.class);
-        if (value != null) {
+        List<Closure> values = cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.MAPPING, Closure.class);
+        for (int i = values.size(); i > 0; i--) {
+            Closure value = values.get(i - 1);
             builder.evaluate(value);
         }
-        value = cpf.getStaticPropertyValue(GormProperties.CONSTRAINTS, Closure.class);
-        if (value != null) {
+        values = cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.CONSTRAINTS, Closure.class);
+        for (int i = values.size(); i > 0; i--) {
+            Closure value = values.get(i - 1);
             builder.evaluate(value);
         }
         entityToPropertyMap.put(entity, builder.getProperties());
