@@ -678,7 +678,9 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
     protected PersistentEntity getOrCreateEmbeddedEntity(PersistentEntity entity, MappingContext context, Class type) {
         PersistentEntity associatedEntity = context.getPersistentEntity(type.getName());
         if (associatedEntity == null) {
-            try {
+            // If this is a persistent entity, add and initialize, otherwise
+            // assume it's embedded
+            if( isPersistentEntity(type) ) {
                 if (entity.isExternal()) {
                     associatedEntity = context.addExternalPersistentEntity(type);
                     associatedEntity.initialize();
@@ -687,7 +689,8 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                     associatedEntity = context.addPersistentEntity(type);
                     associatedEntity.initialize();
                 }
-            } catch (IllegalMappingException e) {
+            }
+            else {
                 PersistentEntity embeddedEntity = context.createEmbeddedEntity(type);
                 embeddedEntity.initialize();
                 return embeddedEntity;
