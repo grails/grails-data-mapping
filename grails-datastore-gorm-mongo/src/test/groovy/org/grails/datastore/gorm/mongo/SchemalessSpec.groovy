@@ -62,7 +62,20 @@ class SchemalessSpec extends GormDatastoreSpec{
                 eq 'color', 'Yellow'
             }
 
-        then:"The dynamic finder works"
+        then:"The criteria query works"
             plant.name == "Pineapple"
+
+        when:"A dynamic property is accessed via a getter"
+            def color = plant.color
+
+        then:"The getter works"
+            color == 'Yellow'
+
+        when:"A dynamic property is set via a setter"
+            plant.color = "Red"
+
+        then:"The setter works"
+            plant.color == 'Red'
+
     }
 }
