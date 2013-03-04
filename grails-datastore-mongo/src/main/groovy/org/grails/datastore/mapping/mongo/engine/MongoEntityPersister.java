@@ -470,6 +470,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 newMap.put(entry.getKey(), getSimpleNativePropertyValue(entry.getValue(), mappingContext));
             }
             nativeValue = newMap;
+        } else if(value.getClass().isArray()) {
+            nativeValue = value;
         } else {
             nativeValue = toNativeSimplePropertyValue(value, mappingContext);
         }
