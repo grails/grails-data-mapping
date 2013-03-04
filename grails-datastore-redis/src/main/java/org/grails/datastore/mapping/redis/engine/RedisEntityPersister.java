@@ -46,6 +46,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.CannotAcquireLockException;
 
 import redis.clients.jedis.exceptions.JedisDataException;
+import redis.clients.util.SafeEncoder;
 
 /**
  * An {@link org.grails.datastore.mapping.engine.EntityPersister} for the Redis NoSQL datastore.
@@ -88,8 +89,15 @@ public class RedisEntityPersister extends AbstractKeyValueEntityPersister<Map, L
             return;
         }
 
-        final ConversionService conversionService = getMappingContext().getConversionService();
-        nativeEntry.put(key, conversionService.convert(value, String.class));
+        Class type = value.getClass();
+        if(value != null && type.isArray() && byte.class.isAssignableFrom(type.getComponentType())) {
+            nativeEntry.put(key, SafeEncoder.encode((byte[])value));
+        }
+        else {
+
+            final ConversionService conversionService = getMappingContext().getConversionService();
+            nativeEntry.put(key, conversionService.convert(value, String.class));
+        }
     }
 
     private boolean shouldConvert(Object value) {
