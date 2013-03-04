@@ -30,6 +30,7 @@ class CommonTypes implements Serializable {
     TimeZone tz
     Locale loc
     Currency cur
+    byte[] ba
 
     String toString() {
         "CommonTypes{$id='$id', version=$version, name='$name', l=$l, b=$b, s=$s, bool=$bool, i=$i, url=$url, date=$date, c=$c, bd=$bd, bi=$bi, d=$d, f=$f, tz=$tz, loc=$loc, cur=$cur}"

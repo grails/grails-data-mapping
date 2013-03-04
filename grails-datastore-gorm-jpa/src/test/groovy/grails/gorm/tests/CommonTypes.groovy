@@ -19,4 +19,5 @@ class CommonTypes implements Serializable {
     TimeZone tz
     Locale loc
     Currency cur
+    byte[] ba
 }
