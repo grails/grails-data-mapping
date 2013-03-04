@@ -3,6 +3,7 @@ package grails.gorm.tests
 import grails.persistence.Entity
 
 import org.grails.datastore.mapping.core.Session
+import spock.lang.Issue
 
 class EnumSpec extends GormDatastoreSpec {
 
@@ -27,6 +28,33 @@ class EnumSpec extends GormDatastoreSpec {
             TestEnum.V1 == t.en
     }
 
+
+    @Issue('GPMONGODB-248')
+    void "Test findByInList()"() {
+        given:
+
+        new EnumThing(name: 'e1', en: TestEnum.V1).save(failOnError: true)
+        new EnumThing(name: 'e2', en: TestEnum.V1).save(failOnError: true)
+        new EnumThing(name: 'e3', en: TestEnum.V2).save(failOnError: true)
+
+        EnumThing instance1
+        EnumThing instance2
+        EnumThing instance3
+
+        when:
+        instance1 = EnumThing.findByEnInList([TestEnum.V1])
+        instance2 = EnumThing.findByEnInList([TestEnum.V2])
+        instance3 = EnumThing.findByEnInList([TestEnum.V3])
+
+        then:
+        instance1 != null
+        instance1.en == TestEnum.V1
+
+        instance2 != null
+        instance2.en == TestEnum.V2
+
+        instance3 == null
+    }
     void "Test findBy()"() {
         given:
 
