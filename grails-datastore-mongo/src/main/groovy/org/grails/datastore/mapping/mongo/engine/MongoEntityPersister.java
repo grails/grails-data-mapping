@@ -231,6 +231,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
         Query query = session.createQuery(persistentEntity.getJavaClass());
 
+        PersistentProperty identity = persistentEntity.getIdentity();
         if (keys instanceof List) {
             List actualKeys = new ArrayList();
             Iterator iterator = keys.iterator();
@@ -240,14 +241,14 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 actualKeys.add(id);
 
             }
-            query.in(persistentEntity.getIdentity().getName(), actualKeys);
+            query.in(identity.getName(), actualKeys);
         }
         else {
             List<Serializable> keyList = new ArrayList<Serializable>();
             for (Serializable key : keys) {
                 keyList.add(key);
             }
-            query.in(persistentEntity.getIdentity().getName(), keyList);
+            query.in(identity.getName(), keyList);
         }
 
         List<Object> entityResults = new ArrayList<Object>();
@@ -262,6 +263,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         }
         while (keyIterator.hasNext()) {
             Object key = getIdentifierForKey(keyIterator.next());
+            ConversionService conversionService = getMappingContext().getConversionService();
+            key = conversionService.convert(key, identity.getType());
             Object o = resultMap.get(key);
             if (o != null) {
                 entityResults.add(o);
