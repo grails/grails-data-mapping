@@ -134,7 +134,7 @@ class GormEnhancer {
             if ((prop instanceof OneToMany) || (prop instanceof ManyToMany) || isBasic || (prop instanceof EmbeddedCollection)) {
                 def associatedEntity = prop.associatedEntity
                 def javaClass = associatedEntity?.javaClass
-                if(javaClass) {
+                if(javaClass || isBasic) {
                     mc."addTo${prop.capitilizedName}" = { arg ->
                         def obj
                         if (delegate[prop.name] == null) {
