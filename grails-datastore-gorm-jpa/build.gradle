@@ -20,10 +20,9 @@ dependencies {
     testCompile 'org.hibernate:hibernate-entitymanager:3.4.0.GA',
                 'hsqldb:hsqldb:1.8.0.10'
 
-    testRuntime( "org.grails:grails-gorm:1.3.7" ) {
+    testRuntime "org.grails:grails-hibernate:$grailsVersion", {
         transitive = false
     }
-
     testCompile project(":grails-datastore-gorm-tck")
 }
 

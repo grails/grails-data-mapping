@@ -41,8 +41,8 @@ dependencies {
             [group: "org.neo4j", name: "neo4j-rest-graphdb", version: '1.8'],
             [group: "org.neo4j", name: "neo4j-rest-graphdb", version: '1.8', classifier: 'tests'],
             "org.neo4j:neo4j-graphviz:$neo4jVersion"
+    testRuntime "org.grails:grails-hibernate:$grailsVersion"
     testRuntime "javax.servlet:servlet-api:2.5",
-            "org.grails:grails-gorm:$grailsVersion",
             "org.grails:grails-web:$grailsVersion",
             'com.sun.jersey:jersey-server:1.9',
             'com.sun.jersey:jersey-core:1.9',
