@@ -17,7 +17,7 @@ package org.grails.datastore.gorm
 import grails.gorm.CriteriaBuilder
 import grails.gorm.DetachedCriteria
 import grails.gorm.PagedResultList
-
+import org.grails.datastore.gorm.async.GormAsyncStaticApi
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.core.AbstractDatastore
@@ -270,6 +270,13 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         execute ({ Session session ->
            session.retrieveAll(persistentClass, ids.flatten())
         } as SessionCallback)
+    }
+
+    /**
+     * @return The async version of the GORM static API
+     */
+    GormAsyncStaticApi<D> getAsync() {
+        return new GormAsyncStaticApi<D>(this)
     }
 
     /**

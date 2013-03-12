@@ -14,6 +14,9 @@
  */
 package org.grails.datastore.gorm
 
+import org.grails.datastore.gorm.internal.InstanceMethodInvokingClosure
+import org.grails.datastore.gorm.internal.StaticMethodInvokingClosure
+
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
@@ -243,55 +246,3 @@ class GormEnhancer {
     }
 }
 
-@SuppressWarnings("rawtypes")
-class InstanceMethodInvokingClosure extends Closure {
-    private String methodName
-    private apiDelegate
-    private Class[] parameterTypes
-
-    InstanceMethodInvokingClosure(apiDelegate, String methodName, Class[] parameterTypes) {
-        super(apiDelegate, apiDelegate)
-        this.apiDelegate = apiDelegate
-        this.methodName = methodName
-        this.parameterTypes = parameterTypes
-    }
-
-    @Override
-    Object call(Object[] args) {
-        apiDelegate."$methodName"(delegate, *args)
-    }
-
-    Object doCall(Object[] args) {
-        apiDelegate."$methodName"(delegate, *args)
-    }
-
-    @Override
-    Class[] getParameterTypes() { parameterTypes }
-}
-
-@SuppressWarnings("rawtypes")
-class StaticMethodInvokingClosure extends Closure {
-
-    private String methodName
-    private Object apiDelegate
-    private Class[] parameterTypes
-
-    StaticMethodInvokingClosure(apiDelegate, String methodName, Class[] parameterTypes) {
-        super(apiDelegate, apiDelegate)
-        this.apiDelegate = apiDelegate
-        this.methodName = methodName
-        this.parameterTypes = parameterTypes
-    }
-
-    @Override
-    Object call(Object[] args) {
-        apiDelegate."$methodName"(*args)
-    }
-
-    Object doCall(Object[] args) {
-        apiDelegate."$methodName"(*args)
-    }
-
-    @Override
-    Class[] getParameterTypes() { parameterTypes }
-}
