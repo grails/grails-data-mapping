@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm
 
 import grails.async.Promise
+import grails.async.Promises
 import grails.gorm.tests.GormDatastoreSpec
 import grails.gorm.tests.Person
 
@@ -27,5 +28,25 @@ class AsyncReadMethodsSpec extends GormDatastoreSpec{
         then:"They are correct"
             results.size() == 3
 
+    }
+
+    def "Test multiples GORM promises using get method"() {
+        given:"Some people"
+            final p1 = new Person(firstName: "Homer", lastName: "Simpson").save()
+            final p2 = new Person(firstName: "Bart", lastName: "Simpson").save()
+            final p3 = new Person(firstName: "Barney", lastName: "Rubble").save(flush: true)
+            session.clear()
+
+        when:"We obtain multiple promises and await the response"
+            def prom1 = Person.async.get(p1.id)
+            def prom2 = Person.async.get(p2.id)
+            def prom3 = Person.async.get(p3.id)
+            def results = Promises.waitAll(prom1, prom2, prom3)
+
+        then:"The results are correct"
+            results.size() == 3
+            results[0].firstName == "Homer"
+            results[1].firstName == "Bart"
+            results[2].firstName == "Barney"
     }
 }
