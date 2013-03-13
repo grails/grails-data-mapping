@@ -67,6 +67,15 @@ class AsyncReadMethodsSpec extends GormDatastoreSpec{
             results[0].firstName == "Homer"
             results[1].firstName == "Bart"
             results[2].firstName == "Barney"
+
+        when:"We obtain the results with the getAll method async"
+            results = Person.async.getAll(p1.id, p2.id, p3.id).get()
+
+        then:"The results are correct"
+            results.size() == 3
+            results[0].firstName == "Homer"
+            results[1].firstName == "Bart"
+            results[2].firstName == "Barney"
     }
 
     def "Test multiples GORM promises using dynamic finder method"() {
