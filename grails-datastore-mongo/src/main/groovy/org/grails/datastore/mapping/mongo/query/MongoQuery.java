@@ -773,8 +773,17 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     }
 
     private Object createObjectFromDBObject(DBObject dbObject) {
+        // we always use the session cached version where available.
         final Object id = dbObject.get(MongoEntityPersister.MONGO_ID_FIELD);
-        return mongoEntityPersister.createObjectFromNativeEntry(getEntity(), (Serializable) id, dbObject);
+        Class type = mongoEntityPersister.getPersistentEntity().getJavaClass();
+        Object instance = mongoSession.getCachedInstance(type, (Serializable) id);
+        if (instance == null) {
+            instance = mongoEntityPersister.createObjectFromNativeEntry(
+                    mongoEntityPersister.getPersistentEntity(), (Serializable) id, dbObject);
+            mongoSession.cacheInstance(type, (Serializable) id, instance);
+        }
+        // note cached instances may be stale, but user can call 'refresh' to fix that.
+        return instance;
     }
 
     @SuppressWarnings("unchecked")
@@ -953,11 +962,13 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         protected Object convertDBObject(Object object) {
             final DBObject dbObject = (DBObject) object;
             Object id = dbObject.get(MongoEntityPersister.MONGO_ID_FIELD);
-            Object instance = ((SessionImplementor)mongoEntityPersister.getSession()).getCachedInstance(
-                    mongoEntityPersister.getPersistentEntity().getJavaClass(), (Serializable)id);
+            SessionImplementor session = (SessionImplementor) mongoEntityPersister.getSession();
+            Class type = mongoEntityPersister.getPersistentEntity().getJavaClass();
+            Object instance = session.getCachedInstance(type, (Serializable) id);
             if (instance == null) {
                 instance = mongoEntityPersister.createObjectFromNativeEntry(
                     mongoEntityPersister.getPersistentEntity(), (Serializable) id, dbObject);
+                session.cacheInstance(type, (Serializable) id, instance);
             }
             return instance;
         }

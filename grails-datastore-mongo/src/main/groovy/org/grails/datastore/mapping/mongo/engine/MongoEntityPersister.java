@@ -267,9 +267,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             ConversionService conversionService = getMappingContext().getConversionService();
             key = conversionService.convert(key, identity.getType());
             Object o = resultMap.get(key);
-            if (o != null) {
-                entityResults.add(o);
-            }
+            entityResults.add(o); // may add null, so entityResults list size matches input list size.
         }
 
         return entityResults;
