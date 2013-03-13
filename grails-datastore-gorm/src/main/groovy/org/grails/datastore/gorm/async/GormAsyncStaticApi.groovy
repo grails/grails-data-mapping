@@ -14,6 +14,9 @@
  */
 package org.grails.datastore.gorm.async
 
+import grails.async.Promise
+import grails.async.Promises
+import groovy.transform.CompileStatic
 import org.grails.async.decorator.PromiseDecorator
 import org.grails.async.decorator.PromiseDecoratorProvider
 import org.grails.datastore.gorm.GormStaticApi
@@ -39,7 +42,19 @@ class GormAsyncStaticApi<D> implements PromiseDecoratorProvider{
     }
 
     @Override
+    @CompileStatic
     List<PromiseDecorator> getDecorators() {
         this.decorators
+    }
+
+    /**
+     * Used to perform a sequence of operations asynchronously
+     * @param callable The callable
+     * @return The promise
+     */
+    @CompileStatic
+    public <T> Promise<T> task(Closure<T> callable) {
+        callable.delegate = staticApi.gormPersistentEntity.javaClass
+        (Promise<T>)Promises.createPromise(callable, decorators)
     }
 }

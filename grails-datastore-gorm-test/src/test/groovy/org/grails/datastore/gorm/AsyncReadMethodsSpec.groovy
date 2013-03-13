@@ -9,6 +9,25 @@ import grails.gorm.tests.Person
  */
 class AsyncReadMethodsSpec extends GormDatastoreSpec{
 
+    def "Test that normal GORM methods can be used within the doAsync method"() {
+        given:"Some people"
+            final p1 = new Person(firstName: "Homer", lastName: "Simpson").save()
+            final p2 = new Person(firstName: "Bart", lastName: "Simpson").save()
+            final p3 = new Person(firstName: "Barney", lastName: "Rubble").save(flush: true)
+            session.clear()
+
+        when:"We obtain a promise via the exec method"
+            def promise = Person.async.task {
+                list()
+            }
+
+            def results = promise.get()
+        then:"The results are correct"
+            results.size() == 3
+            results[0].firstName == "Homer"
+            results[1].firstName == "Bart"
+            results[2].firstName == "Barney"
+    }
     def "Test that the list method works async"()  {
         given:"Some people"
             new Person(firstName: "Homer", lastName: "Simpson").save()
