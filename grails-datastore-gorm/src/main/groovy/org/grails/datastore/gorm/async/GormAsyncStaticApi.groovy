@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.gorm.async
 
+import org.grails.async.decorator.PromiseDecorator
+import org.grails.async.decorator.PromiseDecoratorProvider
 import org.grails.datastore.gorm.GormStaticApi
 
 /**
@@ -22,10 +24,22 @@ import org.grails.datastore.gorm.GormStaticApi
  * @author Graeme Rocher
  * @since 2.3
  */
-class GormAsyncStaticApi<D> {
+class GormAsyncStaticApi<D> implements PromiseDecoratorProvider{
     @grails.async.DelegateAsync GormStaticApi<D> staticApi
+
+    /**
+     * Wraps each promise in a new persistence session
+     */
+    private List<PromiseDecorator> decorators = [ { Closure callable ->
+        return { args -> staticApi.withNewSession{ callable.call(*args) } }
+    } as PromiseDecorator ]
 
     GormAsyncStaticApi(GormStaticApi<D> staticApi) {
         this.staticApi = staticApi
+    }
+
+    @Override
+    List<PromiseDecorator> getDecorators() {
+        this.decorators
     }
 }
