@@ -839,7 +839,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
         unsupported("findAll")
     }
 
-    void unsupported(method) {
+    protected void unsupported(method) {
         throw new UnsupportedOperationException("String-based queries like [$method] are currently not supported in this implementation of GORM. Use criteria instead.")
     }
 }
