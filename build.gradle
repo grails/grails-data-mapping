@@ -55,8 +55,8 @@ task wrapper(type: Wrapper) {
 
 subprojects {
     ext {
-        releaseType = "RELEASE"
-//       releaseType = "BUILD-SNAPSHOT"
+//        releaseType = "RELEASE"
+       releaseType = "BUILD-SNAPSHOT"
         //releaseType = "RC3"
         isCiBuild = project.hasProperty("isCiBuild")
         isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"

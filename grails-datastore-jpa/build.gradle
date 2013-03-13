@@ -5,7 +5,19 @@ configurations {
 }
 
 dependencies {
-    compile "org.springframework:spring-orm:$springVersion"
+    compile "org.springframework:spring-orm:$springVersion", {
+        exclude group:'org.springframework', module:'spring-jdbc'
+        exclude group:'org.springframework', module:'spring-core'
+    }
+    compile "org.springframework:spring-jdbc:$springVersion", {
+        exclude group:'org.springframework', module:'spring-tx'
+        exclude group:'org.springframework', module:'spring-core'
+        exclude group:'org.springframework', module:'spring-beans'
+    }
+    compile "org.springframework:spring-tx:$springVersion", {
+        exclude group:'org.springframework', module:'spring-core'
+        exclude group:'org.springframework', module:'spring-beans'
+    }
     compile project(":grails-datastore-core")
     grails("org.grails:grails-core:$grailsVersion")
     grails("org.grails:grails-bootstrap:$grailsVersion") {

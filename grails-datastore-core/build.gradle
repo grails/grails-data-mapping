@@ -1,23 +1,26 @@
 dependencies {
     compile "com.googlecode.concurrentlinkedhashmap:concurrentlinkedhashmap-lru:1.3.1"
     compile "org.springframework:spring-core:$springVersion" , {
-        exclude module:'commons-logging'
+        exclude group:'commons-logging',module:'commons-logging'
     }
     compile "org.springframework:spring-beans:$springVersion", {
-        exclude module:'spring-core'
+        exclude group:'org.springframework', module:'spring-core'
+        exclude group:'commons-logging',module:'commons-logging'
     }
     compile "org.springframework:spring-tx:$springVersion", {
-        exclude module:'spring-context'
-        exclude module:'spring-core'
-        exclude module:'spring-beans'
-        exclude module:'spring-aop'
+        exclude group:'commons-logging',module:'commons-logging'
+        exclude group:'org.springframework', module:'spring-context'
+        exclude group:'org.springframework', module:'spring-core'
+        exclude group:'org.springframework', module:'spring-beans'
+        exclude group:'org.springframework', module:'spring-aop'
     }
     compile "org.springframework:spring-context:$springVersion", {
-        exclude module:'spring-core'
-        exclude module:'spring-expression'
-        exclude module:'spring-aop'
-        exclude module:'spring-beans'
-        exclude module:'spring-asm'
+        exclude group:'commons-logging',module:'commons-logging'
+        exclude group:'org.springframework', module:'spring-core'
+        exclude group:'org.springframework', module:'spring-expression'
+        exclude group:'org.springframework', module:'spring-aop'
+        exclude group:'org.springframework', module:'spring-beans'
+        exclude group:'org.springframework', module:'spring-asm'
     }
     compile 'javax.persistence:persistence-api:1.0'
     compile 'org.javassist:javassist:3.16.1-GA'
