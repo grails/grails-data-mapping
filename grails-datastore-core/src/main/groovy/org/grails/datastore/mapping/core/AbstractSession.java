@@ -15,13 +15,7 @@
 package org.grails.datastore.mapping.core;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -412,7 +406,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         if (type == null || key == null || instance == null) {
             return;
         }
-
+        objectToKey.put(instance, key);
         getInstanceCache(type).put(key, instance);
     }
 
@@ -461,9 +455,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         if (identifier == null || o == null) {
             return;
         }
-
-        objectToKey.put(o, identifier);
-        getInstanceCache(o.getClass()).put(identifier, o);
+        cacheInstance(o.getClass(), identifier, o);
     }
 
     public Serializable persist(Object o) {
@@ -661,7 +653,31 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
                     "]. The class [" + type.getName() + "] is not a known persistent type.");
         }
 
-        return p.retrieveAll(keys);
+        List list = new ArrayList();
+        List<Serializable> toRetrieve = new ArrayList<Serializable>();
+        final Map<Serializable, Object> cache = getInstanceCache(type);
+        for (Object key : keys) {
+            Serializable serializable = (Serializable) key;
+            Object cached = cache.get(serializable);
+            list.add(cached);
+            if (cached == null) {
+                toRetrieve.add(serializable);
+            }
+        }
+        List<Object> retrieved = p.retrieveAll(toRetrieve);
+        Iterator<Serializable> keyIterator = toRetrieve.iterator();
+        Iterator retrievedIterator = retrieved.iterator();
+        // now fill in the null entries (possibly with more nulls)
+        for (int i = 0; i < list.size(); i++) {
+            Object o = list.get(i);
+            if (o == null) {
+                Object next = retrievedIterator.next();
+                Serializable key = keyIterator.next();
+                list.set(i, next);
+                cacheInstance(type, key, next);
+            }
+        }
+        return list;
     }
 
     public List retrieveAll(Class type, Serializable... keys) {
@@ -670,22 +686,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             throw new NonPersistentTypeException("Cannot retrieve objects with keys [" + keys +
                     "]. The class [" + type.getName() + "] is not a known persistent type.");
         }
-
-        List retrieved = new ArrayList(keys.length);
-        final Map<Serializable, Object> cache = getInstanceCache(type);
-        for (int i = 0; i < keys.length; i++) {
-            Serializable key = keys[i];
-            Object cached = cache.get(key);
-            if (cached != null) {
-                retrieved.add(i, cached);
-            }
-            else {
-                Object loaded = retrieve(type, key);
-                retrieved.add(i, loaded);
-                cache.put(key, loaded);
-            }
-        }
-        return retrieved;
+        return retrieveAll(type, Arrays.asList(keys));
     }
 
     public Query createQuery(Class type) {
