@@ -15,6 +15,13 @@
 
 package grails.gorm
 
+import grails.async.DelegateAsync
+import grails.async.Promise
+import grails.async.Promises
+import org.codehaus.groovy.runtime.typehandling.GroovyCastException
+import org.grails.datastore.gorm.async.AsyncQuery
+import org.grails.datastore.gorm.query.GormOperations
+
 import javax.persistence.FetchType
 
 import org.grails.datastore.gorm.finders.DynamicFinder
@@ -36,13 +43,15 @@ import org.grails.datastore.mapping.query.api.Criteria
 import org.grails.datastore.mapping.query.api.ProjectionList
 import org.grails.datastore.mapping.query.api.QueryableCriteria
 
+import java.lang.reflect.TypeVariable
+
 /**
  * Represents criteria that is not bound to the current connection and can be built up and re-used at a later date.
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T> {
+class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T>, GormOperations<T> {
 
     protected List<Criterion> criteria = []
     protected List<Order> orders = []
@@ -66,6 +75,24 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     DetachedCriteria(Class<T> targetClass) {
         this.targetClass = targetClass
     }
+
+    /**
+     * Allow casting to a Promise
+     * @param c The type to cast to
+     * @return The cast type
+     */
+    public <N> N asType(Class<N> c) {
+        if (c == Promise) {
+            return (N)Promises.createPromise {
+                list()
+            }
+        }
+        else {
+            throw new GroovyCastException(this, c)
+        }
+
+    }
+
 
     Map<String, FetchType> getFetchStrategies() {
         return fetchStrategies
@@ -91,6 +118,11 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     Criteria select(String property) {
         fetchStrategies[property] = FetchType.LAZY
         return this
+    }
+
+    @Override
+    T getPersistentClass() {
+        getPersistentEntity().getJavaClass()
     }
 
     PersistentEntity getPersistentEntity() {
@@ -639,9 +671,9 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     /**
-     * Lists all records matching the criterion contained within this DetachedCriteria instance
+     * Returns a single result matching the criterion contained within this DetachedCriteria instance
      *
-     * @return A list of matching instances
+     * @return A single entity
      */
     T get( Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
         (T)withPopulatedQuery(args, additionalCriteria) { Query query ->
@@ -650,16 +682,16 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     /**
-     * Lists all records matching the criterion contained within this DetachedCriteria instance
+     * Returns a single result matching the criterion contained within this DetachedCriteria instance
      *
-     * @return A list of matching instances
+     * @return A single entity
      */
     T get( Closure additionalCriteria) {
         get(Collections.emptyMap(), additionalCriteria)
     }
 
     /**
-     * Lists all records matching the criterion contained within this DetachedCriteria instance
+     * Returns a single result matching the criterion contained within this DetachedCriteria instance
      *
      * @return A list of matching instances
      */
@@ -710,7 +742,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @param args The arguments
      * @return The count
      */
-    boolean exists(Closure additionalCriteria ) {
+    boolean exists(Closure additionalCriteria = null) {
         (Boolean)withPopulatedQuery(Collections.emptyMap(), additionalCriteria) { Query query ->
             query.projections().count()
             query.singleResult() > 0
@@ -848,6 +880,14 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     }
 
     /**
+     * @return The async version of the DetachedCriteria API
+     */
+    AsyncQuery<T> getAsync() {
+        return new AsyncQuery<T>(this)
+    }
+
+
+    /**
      * Method missing handler that deals with the invocation of dynamic finders
      *
      * @param methodName The method name
@@ -940,4 +980,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         lazyQuery = null
         this.with criteria
     }
+
+
+
 }

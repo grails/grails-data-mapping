@@ -26,11 +26,16 @@ apply plugin: 'idea'
 apply plugin: 'project-report'
 
 
+ext {
+    isCiBuild = project.hasProperty("isCiBuild")
+}
 allprojects {
     repositories {
+        if(!isCiBuild) {
+            mavenLocal()
+        }
         mavenCentral()
         maven { url "http://repo.grails.org/grails/core" }
-//        mavenLocal()
     }
 
     configurations {
