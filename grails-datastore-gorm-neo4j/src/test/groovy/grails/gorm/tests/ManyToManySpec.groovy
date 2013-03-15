@@ -6,7 +6,7 @@ class ManyToManySpec extends GormDatastoreSpec {
     
     @Override
     List getDomainClasses() {
-        [Role, User]
+        [Role, User, MBook, MBookworm]
     }
 
     /*def setupSpec() {
@@ -162,6 +162,24 @@ class ManyToManySpec extends GormDatastoreSpec {
 
     }
 
+    def "should two one-to-one relationships be independent"() {
+
+        setup:
+        def randy = new MBookworm(name: 'Randy', favoriteBook: null)
+        randy.save(failOnError: true)
+        def encyclopedia = new MBook(name: 'Encyclopedia Volume 1', checkedOutBy: randy)
+        encyclopedia.save(failOnError: true)
+        session.flush()
+        session.clear()
+
+        when:
+        randy = MBookworm.findByName('Randy')
+
+        then:
+        randy.favoriteBook==null
+
+    }
+
 }
 
 @Entity
@@ -216,5 +234,42 @@ class Role {
 
     static constraints = {
         role(blank: false, unique: true)
+    }
+}
+
+@Entity
+class MBook implements Serializable {
+    Long id
+    Long version
+
+    String name
+    MBookworm checkedOutBy
+
+    static constraints = {
+        name(nullable: false)
+        checkedOutBy(nullable: false)
+    }
+
+    public String toString() {
+        return "Book [name: ${this.name}, checkedOutBy: ${this.checkedOutBy?.name}]"
+    }
+
+}
+
+@Entity
+class MBookworm implements Serializable {
+    Long id
+    Long version
+
+    String name
+    MBook favoriteBook
+
+    static constraints = {
+        name(nullable: false, blank: false)
+        favoriteBook(nullable: true)
+    }
+
+    public String toString() {
+        return "Bookworm: [name: ${this.name}, favoriteBook: ${this.favoriteBook?.name}]"
     }
 }
