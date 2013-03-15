@@ -243,11 +243,11 @@ class FindByMethodSpec extends GormDatastoreSpec {
 
     void "Test findOrSaveBy For A Record That Does Not Exist In The Database"() {
         when:
-            def book = Book.findOrSaveByAuthor('Some New Author')
+            def book = Book.findOrSaveByAuthorAndTitle('Some New Author', 'Some New Title')
 
         then:
             'Some New Author' == book.author
-            null == book.title
+            'Some New Title' == book.title
             book.id != null
     }
 

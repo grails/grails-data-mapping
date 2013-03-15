@@ -31,6 +31,7 @@ import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar;
 import org.grails.datastore.mapping.transactions.SessionHolder;
 import org.grails.datastore.mapping.validation.ValidatingEventListener;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 
 /**
@@ -75,10 +76,12 @@ public abstract class AbstractDatastore implements Datastore, DisposableBean {
         VALIDATE_MAP.remove();
     }
 
-    public void setApplicationContext(ConfigurableApplicationContext ctx) {
+    public void setApplicationContext(ApplicationContext ctx) {
         applicationContext = ctx;
         if (ctx != null && registerValidationListener()) {
-            ctx.addApplicationListener(new ValidatingEventListener(this));
+            Assert.isInstanceOf(ConfigurableApplicationContext.class, applicationContext,
+                    "ApplicationContext must be an instanceof ConfigurableApplicationContext");
+            ((ConfigurableApplicationContext)ctx).addApplicationListener(new ValidatingEventListener(this));
         }
     }
 
@@ -145,7 +148,7 @@ public abstract class AbstractDatastore implements Datastore, DisposableBean {
         }
 
         if (session == null) {
-            throw new ConnectionNotFoundException("Not datastore session found. Call Datastore.connect(..) before calling Datastore.getCurrentSession()");
+            throw new ConnectionNotFoundException("No datastore session found. Call Datastore.connect(..) before calling Datastore.getCurrentSession()");
         }
         return session;
     }

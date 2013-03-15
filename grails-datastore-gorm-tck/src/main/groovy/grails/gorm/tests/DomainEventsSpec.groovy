@@ -1,7 +1,8 @@
 package grails.gorm.tests
 
-import org.grails.datastore.mapping.core.Session
 import grails.gorm.DetachedCriteria
+
+import org.grails.datastore.mapping.core.Session
 
 /**
  * @author graemerocher
@@ -213,6 +214,7 @@ class DomainEventsSpec extends GormDatastoreSpec {
             session.datastore.applicationContext.beanFactory.registerSingleton 'personService', personService
 
             def p = new PersonEvent()
+            def saved = p
             p.name = "Fred"
             p.save(flush:true)
             session.clear()
@@ -222,7 +224,11 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
         then:
             "Fred" == p.name
-            personService.is p.personService
+            personService.is saved.personService // test Groovy constructor
+            if (!session.datastore.getClass().name.contains('Hibernate')) {
+                // autowiring is added to the real constructor by an AST, so can't test this for Hibernate
+                personService.is p.personService // test constructor called by the datastore
+            }
     }
 
     def cleanup() {
@@ -243,7 +249,7 @@ class PersonEvent implements Serializable {
         beforeDelete: 0, afterDelete: 0,
         beforeUpdate: 0, afterUpdate: 0,
         beforeInsert: 0, afterInsert: 0,
-        beforeLoad: 0, afterLoad: 0]
+        beforeLoad:   0, afterLoad:   0]
 
     static STORE = [:] + STORE_INITIAL
 

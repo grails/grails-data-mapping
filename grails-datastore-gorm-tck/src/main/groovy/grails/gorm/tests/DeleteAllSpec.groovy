@@ -1,12 +1,14 @@
 package grails.gorm.tests
 
 class DeleteAllSpec extends GormDatastoreSpec {
+
     def "Test that many objects can be deleted at once using multiple arguments"() {
         given:
             def bob = new Person(firstName:"Bob", lastName:"Builder").save(flush: true)
             def fred = new Person(firstName:"Fred", lastName:"Flintstone").save(flush: true)
             def joe = new Person(firstName:"Joe", lastName:"Doe").save(flush: true)
             Person.deleteAll(bob, fred, joe)
+            session.flush()
 
         when:
             def total = Person.count()
@@ -25,6 +27,7 @@ class DeleteAllSpec extends GormDatastoreSpec {
             people.add(joe)
 
             Person.deleteAll(people)
+            session.flush()
 
         when:
             def total = Person.count()

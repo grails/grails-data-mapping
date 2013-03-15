@@ -41,7 +41,7 @@ class CommonTypesPersistenceSpec extends GormDatastoreSpec {
             true == ct.bool
             10 == ct.i
             new URL("http://google.com") == ct.url
-            now == ct.date
+            now.time == ct.date.time
             cal == ct.c
             1.0 == ct.bd
             10 as BigInteger == ct.bi

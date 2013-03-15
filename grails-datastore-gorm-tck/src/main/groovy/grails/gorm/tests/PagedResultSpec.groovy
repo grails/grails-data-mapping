@@ -1,7 +1,5 @@
 package grails.gorm.tests
 
-import grails.gorm.PagedResultList
-
 class PagedResultSpec extends GormDatastoreSpec {
 
     void "Test that a paged result list is returned from the list() method with pagination params"() {
@@ -12,7 +10,7 @@ class PagedResultSpec extends GormDatastoreSpec {
             def results = Person.list(offset:2, max:2)
 
         then:"You get a paged result list back"
-            results instanceof PagedResultList
+            results.getClass().simpleName == 'PagedResultList' // Grails/Hibernate has a custom class in different package
             results.size() == 2
             results[0].firstName == "Bart"
             results[1].firstName == "Lisa"
@@ -29,7 +27,7 @@ class PagedResultSpec extends GormDatastoreSpec {
             }
 
         then:"You get a paged result list back"
-            results instanceof PagedResultList
+            results.getClass().simpleName == 'PagedResultList' // Grails/Hibernate has a custom class in different package
             results.size() == 2
             results[0].firstName == "Marge"
             results[1].firstName == "Bart"
