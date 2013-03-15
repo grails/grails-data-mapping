@@ -4,6 +4,8 @@ import grails.gorm.DetachedCriteria
 
 import org.grails.datastore.mapping.core.Session
 
+import spock.lang.Ignore
+
 /**
  * @author graemerocher
  */
@@ -208,6 +210,7 @@ class DomainEventsSpec extends GormDatastoreSpec {
             3 == PersonEvent.STORE.afterLoad
     }
 
+    @Ignore
     void "Test bean autowiring"() {
         given:
             def personService = new Object()
