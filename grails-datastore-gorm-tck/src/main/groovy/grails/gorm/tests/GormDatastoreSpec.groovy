@@ -3,7 +3,8 @@ package grails.gorm.tests
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.grails.datastore.mapping.core.Session
 
-import spock.lang.*
+import spock.lang.Shared
+import spock.lang.Specification
 
 /**
  * A Spec base class that manages a Session for each feature as well as
@@ -21,11 +22,10 @@ abstract class GormDatastoreSpec extends Specification {
 
     static final SETUP_CLASS_NAME = 'org.grails.datastore.gorm.Setup'
     static final TEST_CLASSES = [
-         Task, Person, ModifyPerson, Pet, PetType, PersonEvent, Book, Highway,
-         TestEntity, ChildEntity, CommonTypes, Location, City, Country, Plant,
-         PlantCategory, Publication, OptLockVersioned, OptLockNotVersioned,
-         ClassWithNoArgBeforeValidate, ClassWithListArgBeforeValidate,
-         ClassWithOverloadedBeforeValidate, EnumThing]
+         Book, ChildEntity, City, ClassWithListArgBeforeValidate, ClassWithNoArgBeforeValidate,
+         ClassWithOverloadedBeforeValidate, CommonTypes, Country, EnumThing, Face, Highway,
+         Location, ModifyPerson, Nose, OptLockNotVersioned, OptLockVersioned, Person, PersonEvent,
+         Pet, PetType, Plant, PlantCategory, Publication, Task, TestEntity]
 
     @Shared Class setupClass
 
@@ -47,8 +47,10 @@ abstract class GormDatastoreSpec extends Specification {
     }
 
     def cleanup() {
-        session?.disconnect()
-        DatastoreUtils.unbindSession(session)
+        if (session) {
+            session.disconnect()
+            DatastoreUtils.unbindSession session
+        }
         try {
             setupClass.destroy()
         } catch(e) {

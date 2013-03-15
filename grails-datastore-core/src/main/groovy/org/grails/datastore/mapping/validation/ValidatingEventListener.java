@@ -14,11 +14,14 @@
  */
 package org.grails.datastore.mapping.validation;
 
+import javax.persistence.FlushModeType;
+
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener;
+import org.grails.datastore.mapping.engine.event.PersistenceEventListener;
 import org.grails.datastore.mapping.engine.event.PreInsertEvent;
 import org.grails.datastore.mapping.engine.event.PreUpdateEvent;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -26,10 +29,8 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import javax.persistence.FlushModeType;
-
 /**
- * An {@link org.grails.datastore.mapping.engine.EntityInterceptor} that uses
+ * A {@link PersistenceEventListener} that uses
  * Spring's validation mechanism to evict objects if an error occurs
  *
  * @author Graeme Rocher

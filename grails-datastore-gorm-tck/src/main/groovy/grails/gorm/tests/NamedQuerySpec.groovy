@@ -1,5 +1,7 @@
 package grails.gorm.tests
 
+import grails.persistence.Entity
+
 import spock.lang.Ignore
 
 /**
@@ -285,7 +287,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             'Some Recent Book' == publications[2].title
     }
 
-    @spock.lang.Ignore  // queries on associations not yet supported
+    @Ignore  // queries on associations not yet supported
     void "Test named query with relationships in criteria"() {
 
         given:
@@ -328,7 +330,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             'groovy' == results[0].name
     }
 
-    @spock.lang.Ignore  // queries on associations not yet supported
+    @Ignore  // queries on associations not yet supported
     void "Test list distinct entities"() {
 
         given:
@@ -360,7 +362,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
             true == 'orange' in names
     }
 
-    @spock.lang.Ignore  // queries on associations not yet supported
+    @Ignore  // queries on associations not yet supported
     void "Another test on listing distinct entities"() {
         given:
             new PlantCategory(name:"leafy")
@@ -1016,6 +1018,7 @@ class NamedQuerySpec extends GormDatastoreSpec {
     }
 }
 
+@Entity
 class PlantCategory implements Serializable {
     Long id
     Long version
@@ -1042,6 +1045,7 @@ class PlantCategory implements Serializable {
     }
 }
 
+@Entity
 class Plant implements Serializable {
     Long id
     Long version
@@ -1054,6 +1058,7 @@ class Plant implements Serializable {
     }
 }
 
+@Entity
 class Publication implements Serializable {
     Long id
     Long version

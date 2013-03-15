@@ -49,8 +49,9 @@ import org.springframework.validation.Errors
  */
 class GormStaticApi<D> extends AbstractGormApi<D> {
 
-    private List<FinderMethod> dynamicFinders
-    private PlatformTransactionManager transactionManager
+    List<FinderMethod> gormDynamicFinders
+
+    PlatformTransactionManager transactionManager
 
     GormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
         this(persistentClass, datastore, finders, null)
@@ -58,29 +59,15 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
 
     GormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
         super(persistentClass, datastore)
-        this.dynamicFinders = finders
+        gormDynamicFinders = finders
         this.transactionManager = transactionManager
-    }
-
-    /**
-     * Sets the {@link PlatformTransactionManager} to use
-     */
-    void setTransactionManager(PlatformTransactionManager transactionManager) {
-        this.transactionManager = transactionManager
-    }
-
-    /**
-     * @return The FinderMethods for this class
-     */
-    List<FinderMethod> getGormDynamicFinders() {
-        this.dynamicFinders
     }
 
     /**
      * @return The PersistentEntity for this class
      */
     PersistentEntity getGormPersistentEntity() {
-        this.persistentEntity
+        persistentEntity
     }
 
     /**
@@ -91,7 +78,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The result of the method call
      */
     def methodMissing(String methodName, args) {
-        def method = dynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
+        def method = gormDynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
         def cls = persistentClass
         if (!method) {
             throw new MissingMethodException(methodName, cls, args)
@@ -755,7 +742,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return the map
      */
     Map<D, Boolean> getValidationSkipMap() {
-        AbstractDatastore.getValidationErrorsMap()
+        AbstractDatastore.getValidationSkipMap()
     }
 
     // TODO: In the first version no support will exist for String-based queries

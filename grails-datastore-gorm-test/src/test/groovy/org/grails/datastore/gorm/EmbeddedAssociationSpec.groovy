@@ -2,13 +2,10 @@ package org.grails.datastore.gorm
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+
 import spock.lang.Shared
 
 class EmbeddedAssociationSpec extends GormDatastoreSpec {
-
-    static {
-        GormDatastoreSpec.TEST_CLASSES << Individual << Address
-    }
 
     @Shared Date now = new Date()
 
@@ -28,6 +25,11 @@ class EmbeddedAssociationSpec extends GormDatastoreSpec {
             i.address != null
             i.address.postCode == '30483'
             i.bio.birthday.date == now
+    }
+
+    @Override
+    List getDomainClasses() {
+        [Individual, Address]
     }
 }
 

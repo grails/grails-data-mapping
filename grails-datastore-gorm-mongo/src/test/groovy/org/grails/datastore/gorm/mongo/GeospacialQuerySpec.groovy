@@ -5,10 +5,6 @@ import grails.persistence.Entity
 
 class GeospacialQuerySpec extends GormDatastoreSpec {
 
-    static {
-        GormDatastoreSpec.TEST_CLASSES << Hotel
-    }
-
     void "Test geolocation with BigDecimal values"() {
         given:"Some entities stored with BigDecimal locations"
             new Hotel(name:"Hilton", location:[50.34d, 50.12d]).save()
@@ -122,6 +118,11 @@ class GeospacialQuerySpec extends GormDatastoreSpec {
         then:
             h != null
             h.name == "Raddison"
+    }
+
+    @Override
+    List getDomainClasses() {
+        [Hotel]
     }
 }
 

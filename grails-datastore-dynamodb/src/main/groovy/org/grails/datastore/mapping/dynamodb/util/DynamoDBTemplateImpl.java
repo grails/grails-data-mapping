@@ -128,13 +128,6 @@ public class DynamoDBTemplateImpl implements DynamoDBTemplate {
         }
     }
 
-    /**
-     * Executes 'put' Dynamo DB command, replacing all existing attributes if they exist.
-     *
-     * @param tableName  complete name of the table in DynamoDB, will be used as-is
-     * @param attributes
-     * @throws DataAccessException
-     */
     public void putItem(String tableName, Map<String, AttributeValue> attributes) throws DataAccessException {
         putItemInternal(tableName, attributes, 1);
     }
@@ -157,18 +150,6 @@ public class DynamoDBTemplateImpl implements DynamoDBTemplate {
         }
     }
 
-    /**
-     * Executes 'put' Dynamo DB command, replacing all existing attributes if they exist.
-     * Put is conditioned on the specified version - used for optimistic
-     * locking. If the specified expectedVersion does not match what is in
-     * dynamoDB, exception is thrown and no changes are made to the dynamoDB
-     *
-     * @param tableName       complete name of the table in DynamoDB, will be used as-is
-     * @param key
-     * @param attributes
-     * @param expectedVersion
-     * @throws DataAccessException
-     */
     public void putItemVersioned(String tableName, Key key, Map<String, AttributeValue> attributes, String expectedVersion, PersistentEntity persistentEntity) throws DataAccessException {
         putItemVersionedInternal(tableName, key, attributes, expectedVersion, persistentEntity, 1);
     }
@@ -193,14 +174,6 @@ public class DynamoDBTemplateImpl implements DynamoDBTemplate {
         }
     }
 
-    /**
-     * Executes 'update' Dynamo DB command, which can be used to add/replace/delete specified attributes.
-     *
-     * @param tableName  complete name of the table in DynamoDB, will be used as-is
-     * @param key
-     * @param attributes
-     * @throws DataAccessException
-     */
     public void updateItem(String tableName, Key key, Map<String, AttributeValueUpdate> attributes) throws DataAccessException {
         updateItemInternal(tableName, key, attributes, 1);
     }
@@ -223,17 +196,6 @@ public class DynamoDBTemplateImpl implements DynamoDBTemplate {
         }
     }
 
-    /**
-     * Executes 'update' Dynamo DB command, which can be used to add/replace/delete specified attributes.
-     * Update is conditioned on the specified version - used for optimistic
-     * locking. If the specified expectedVersion does not match what is in
-     * dynamoDB, exception is thrown and no changes are made to the dynamoDB
-     *
-     * @param tableName  complete name of the table in DynamoDB, will be used as-is
-     * @param key
-     * @param attributes
-     * @throws DataAccessException
-     */
     public void updateItemVersioned(String tableName, Key key, Map<String, AttributeValueUpdate> attributes, String expectedVersion, PersistentEntity persistentEntity) throws DataAccessException {
         updateItemVersionedInternal(tableName, key, attributes, expectedVersion, persistentEntity, 1);
     }
@@ -415,12 +377,6 @@ public class DynamoDBTemplateImpl implements DynamoDBTemplate {
         }
     }
 
-    /**
-     * Returns table description object containing throughput and key scheme information
-     * @param tableName
-     * @return
-     * @throws DataAccessException
-     */
     public TableDescription describeTable(String tableName) throws DataAccessException{
         TableDescription tableDescription = ddb.describeTable(new DescribeTableRequest().withTableName(tableName)).getTable();
         return tableDescription;

@@ -1,13 +1,10 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
+
 import org.bson.types.ObjectId
 
 class EmbeddedHasManyWithBeforeUpdateSpec extends GormDatastoreSpec {
-
-    static {
-        TEST_CLASSES << User << UserAddress
-    }
 
     void "Test embedded hasMany with beforeUpdate event"() {
         given:
@@ -38,6 +35,11 @@ class EmbeddedHasManyWithBeforeUpdateSpec extends GormDatastoreSpec {
             user != null
             user.addresses.size() == 1
             user.addresses[0].type == 'home'
+    }
+
+    @Override
+    List getDomainClasses() {
+        [User, UserAddress]
     }
 }
 

@@ -65,9 +65,8 @@ public class GrailsDomainClassPersistentEntity implements PersistentEntity {
         return domainClass;
     }
 
-    @Override
     public boolean isInitialized() {
-        return this.initialized;
+        return initialized;
     }
 
     public void initialize() {

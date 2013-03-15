@@ -1,10 +1,8 @@
 package grails.gorm.tests
 
-class ConstraintsSpec extends GormDatastoreSpec {
+import grails.persistence.Entity
 
-    static {
-        TEST_CLASSES <<  ConstrainedEntity
-    }
+class ConstraintsSpec extends GormDatastoreSpec {
 
     void "Test constraints with static default values"() {
          given: "A Test class with static constraint values"
@@ -16,11 +14,17 @@ class ConstraintsSpec extends GormDatastoreSpec {
          then:
             ce.hasErrors() == false
     }
+
+    @Override
+    List getDomainClasses() {
+        [ConstrainedEntity]
+    }
 }
 
+@Entity
 class ConstrainedEntity implements Serializable {
 
-    static final MAX_VALUE = 1000
+    static final int MAX_VALUE = 1000
     static final List<String> ALLOWABLE_VALUES = ['ABC','DEF','GHI']
 
     Long id

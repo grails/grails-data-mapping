@@ -4,12 +4,10 @@ import grails.persistence.Entity
 
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
-import grails.gorm.DetachedCriteria
 
 /**
  * @author graemerocher
  */
-@ApplyDetachedCriteriaTransform
 class UpdateWithProxyPresentSpec extends GormDatastoreSpec {
 
     void "Test update entity with association proxies"() {
@@ -38,6 +36,11 @@ class UpdateWithProxyPresentSpec extends GormDatastoreSpec {
             personPet.type.name == 'snake'
             personPet.type.id == petType.id
     }
+
+    @Override
+    List getDomainClasses() {
+        [Pet, Person, PetType]
+    }
 }
 
 @Entity
@@ -58,7 +61,7 @@ class Pet implements Serializable {
     static constraints = {
         owner nullable:true
         age nullable: true
-        face nulable:true
+        face nullable:true
     }
 }
 

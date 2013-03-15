@@ -5,10 +5,6 @@ import grails.gorm.tests.GormDatastoreSpec
  */
 class BidirectionalOneToManyWithInheritanceSpec extends GormDatastoreSpec {
 
-    static {
-        GormDatastoreSpec.TEST_CLASSES << ConfigurationItem << Documentation <<  ChangeRequest
-    }
-
     void "Test a bidirectional one-to-many association with inheritance"() {
 
         given:
@@ -24,6 +20,11 @@ class BidirectionalOneToManyWithInheritanceSpec extends GormDatastoreSpec {
 
         then:
             2 == doc.configurationItems.size()
+    }
+
+    @Override
+    List getDomainClasses() {
+        [ConfigurationItem, Documentation, ChangeRequest]
     }
 }
 

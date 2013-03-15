@@ -6,10 +6,6 @@ import org.bson.types.ObjectId
 
 class DirtyCheckEmbeddedCollectionSpec extends GormDatastoreSpec {
 
-    static {
-        TEST_CLASSES << Foo << Bar
-    }
-
     def "Test that changes to basic collections are detected"() {
         given:"A valid bar instance"
             def bar = createBar()
@@ -69,6 +65,11 @@ class DirtyCheckEmbeddedCollectionSpec extends GormDatastoreSpec {
         def foo = new Foo(testProperty:"test")
         foo.bars.add(bar)
         foo.save(flush:true)
+    }
+
+    @Override
+    List getDomainClasses() {
+        [Foo, Bar]
     }
 }
 
