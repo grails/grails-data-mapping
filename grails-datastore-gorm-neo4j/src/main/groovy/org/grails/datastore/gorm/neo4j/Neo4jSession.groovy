@@ -107,7 +107,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
     FlushModeType flushMode = FlushModeType.AUTO;
 
     protected Map<Serializable, Object> objectToKey = new ConcurrentHashMap<Serializable, Object>();
-    protected inserts = new ConcurrentLinkedQueue()
+    protected inserts = Collections.synchronizedSet(new HashSet())
     protected Map<Class, Persister> persisters = new ConcurrentHashMap<Class, Persister>();
     protected dirtyObjects = Collections.synchronizedSet(new HashSet())
     protected nonMonitorableObjects = Collections.synchronizedSet(new HashSet())
@@ -152,18 +152,19 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                 def value = entityAccess.getProperty(association.name)
                 switch (association) {
                     case ToOne:
-                        if (value && !value.id) {
-                            persist(value)
-                        }
-
-                        if ((value != null) && association.bidirectional) {
-                            EntityAccess reverseEntityAccess = new EntityAccess(association.associatedEntity, value)
-                            addObjectToReverseSide(reverseEntityAccess, association, o)
+                        if (value!=null) {
+                            if (!value.id) {
+                                persist(value)
+                            }
+                            if ((association instanceof ManyToOne) && association.bidirectional) {
+                                EntityAccess reverseEntityAccess = new EntityAccess(association.associatedEntity, value)
+                                addObjectToReverseSide(reverseEntityAccess, association, o)
+                            }
                         }
                         break
                     case ManyToMany:
                     case OneToMany:
-                        if (value) {
+                        if (value!=null) {
                             value.findAll { !it.id }.each {
                                 persist(it)
                                 if (association.bidirectional) {
@@ -222,10 +223,12 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
     @Override
     void flush() {
         // do not iterate directly since we might add some entities to objects collection during iteration
-        def objects = [] as ConcurrentLinkedQueue
-        objects.addAll(nonMonitorableObjects)
-        objects.addAll(dirtyObjects)
-        objects.addAll(inserts)
+        def startingSet = new HashSet(nonMonitorableObjects.size() + dirtyObjects.size() + inserts.size())
+        startingSet.addAll(nonMonitorableObjects)
+        startingSet.addAll(dirtyObjects)
+        startingSet.addAll(inserts)
+
+        def objects = new ConcurrentLinkedQueue(startingSet)
 
         if (log.infoEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
             log.info "pre flush counting: nonMonitorable: ${nonMonitorableObjects.size()}, dirty: ${dirtyObjects.size()}, inserts: ${inserts.size()}, total: ${objects.size()}"
@@ -419,7 +422,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                 def referencePropertyAccess = new EntityAccess(association.associatedEntity, value)
                 switch (association) {
                     case OneToOne:
-                        referencePropertyAccess.setProperty(association.referencedPropertyName, obj)
+                        //referencePropertyAccess.setProperty(association.referencedPropertyName, obj)
                         //value."${prop.referencedPropertyName}" = obj
                         break
                     case ManyToOne:

@@ -55,8 +55,7 @@ class AclObjectIdentity {
 
     @Override
     String toString() {
-        "AclObjectIdentity id $id, aclClass $aclClass.className, " +
-                "objectId $objectId, entriesInheriting $entriesInheriting"
+        "AclObjectIdentity id $id, aclClass $aclClass.className, objectId $objectId"
     }
 }
 
