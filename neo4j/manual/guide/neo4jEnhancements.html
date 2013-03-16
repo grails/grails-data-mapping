@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>3 Mapping domain classes to Neo4j node space 1.0.0.M1</title>
+    <title>4 Enhancements to Neo4j core API 1.0.0.M1</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -62,18 +62,18 @@ function addJsClass() {
             <div id="main" class="corner-all">
 
                 
-                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                    <div class="toc-item prev-left"><a href="../guide/mapping.html">&lt;&lt; <strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a></div>
                 
 
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
                 
-                    <div class="toc-item next-right"><a href="../guide/neo4jEnhancements.html"><strong>4</strong><span>Enhancements to Neo4j core API</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../guide/sampleApp.html"><strong>5</strong><span>Sample Application</span> >></a></div>
                 
 
 
                 <div class="project">
-                    <h1>3 Mapping domain classes to Neo4j node space - Reference Documentation</h1>
+                    <h1>4 Enhancements to Neo4j core API - Reference Documentation</h1>
 
                     <p><strong>Authors:</strong> Stefan Armbruster</p>
 
@@ -86,26 +86,25 @@ function addJsClass() {
 
                 
 
-<h1 id="mapping">3 Mapping domain classes to Neo4j node space</h1>
-Since the nodespace in Neo4j has no schema as opposed to SQL, there must be some structure applied to map a given
-set of domain classes.<p class="paragraph"/>Starting with <a href="http://api.neo4j.org/current/org/neo4j/graphdb/GraphDatabaseService.html#getReferenceNode()," target="blank">Neo4j's reference node</a>
-each domain class itself is represented by a subreference node. The subreference node has a relationship to the reference node,
-type "SUBREFERENCE". Each instance of this domain class is represented by a node connected to the respective subreference
-node by a relationship of type "INSTANCE".<p class="paragraph"/>All simple properties of a domain instance are mapped to the node's properties. Since a node can only store primitives,
-Strings and arrays of both, properties of any other type must be converted before persisting. The conversion uses Spring's
-ConversionService, <a href="../ref/Httpsgithubcom Spring Sourcegrailsdatamappingblobmastergrailsdatastoregormneo4jsrcmaingroovyorggrailsdatastoregormneo4j Neo4j Mapping Contextgroovy/Neo4jMappingContext.html" class="https://github.com/SpringSource/grails-data-mapping/blob/master/grails-datastore-gorm-neo4j/src/main/groovy/org/grails/datastore/gorm/neo4j/Neo4jMappingContext.groovy">Neo4jMappingContext</a>
-adds a couple of converters to it. References to other domain classes are mapped by relationships.<p class="paragraph"/><blockquote class="note">
-Type conversion is not 100% complete for now. If you experience conversion problems, please file a ticket in Github's
-issue tracker.
-</blockquote><p class="paragraph"/>The described mapping of domain classes to the node space is best illustrated with an picture:<p class="paragraph"/><img border="0" class="center" src="../img/mapping.png"></img>
-<img border="0" class="center" src="https://github.com/SpringSource/grails-data-mapping/raw/master/grails-documentation-neo4j/resources/img/mapping.png"></img>
+<h1 id="neo4jEnhancements">4 Enhancements to Neo4j core API</h1>
+Inspired by a <a href="../ref/Httpsgithubcom Spring Sourcegrailsdatamappingissues66/Github issue ticket.html" class="https://github.com/SpringSource/grails-data-mapping/issues/66">Github issue ticket</a> the Neo4j Grails contains some
+enhancements to the Neo4j core API. These enhancements are implemented using Groovy's ExpandoMetaClass.<p class="paragraph"/><h4>setting properties on nodes/relationships</h4><p class="paragraph"/>Assigning an arbitrary property onto a Neo4j node or relationship can be simply done by using Groovy's property
+mechanism:
+<div class="code"><pre>def node = graphDatabaseService.createNode()
+node.myProperty = myValue</pre></div><p class="paragraph"/>The same words for getting properties:<p class="paragraph"/><div class="code"><pre>def node = &#8230;
+def value = node.myProperty</pre></div><p class="paragraph"/><blockquote class="note">
+There is a important convention: when the property ends with "Date" then a date type is assumed. The node property then
+helds respective millis.
+</blockquote><p class="paragraph"/><h4>JSON marshalling</h4>
+Neo4j nodes and relationships can be easily marshalled to JSON, e.g. in a controller using:<p class="paragraph"/><div class="code"><pre>def node = graphDatabaseService.getNodeById(myid)
+render node as JSON</pre></div>
 
 
                 <div style="clear:both;margin-top:15px;"></div>
                 
-                    <div class="toc-item prev-left"><a href="../guide/gettingStarted.html">&lt;&lt; <strong>2</strong><span>Getting Started</span></a></div>
+                    <div class="toc-item prev-left"><a href="../guide/mapping.html">&lt;&lt; <strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a></div>
                 
-                    <div class="toc-item next-right"><a href="../guide/neo4jEnhancements.html"><strong>4</strong><span>Enhancements to Neo4j core API</span> >></a></div>
+                    <div class="toc-item next-right"><a href="../guide/sampleApp.html"><strong>5</strong><span>Sample Application</span> >></a></div>
                 
                 <div style="clear:both"></div>
             </div>

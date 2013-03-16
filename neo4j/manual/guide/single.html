@@ -29,7 +29,9 @@ function addJsClass(el) {
                             
                             <div class="toc-item" style="margin-left:0"><a href="#mapping"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0"><a href="#sampleApp"><strong>4</strong><span>Sample Application</span></a></div>
+                            <div class="toc-item" style="margin-left:0"><a href="#neo4jEnhancements"><strong>4</strong><span>Enhancements to Neo4j core API</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0"><a href="#sampleApp"><strong>5</strong><span>Sample Application</span></a></div>
                             
                         </div>
                     </div>
@@ -82,7 +84,9 @@ function addJsClass(el) {
                             
                             <div class="toc-item" style="margin-left:0px"><a href="#mapping"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a></div>
                             
-                            <div class="toc-item" style="margin-left:0px"><a href="#sampleApp"><strong>4</strong><span>Sample Application</span></a></div>
+                            <div class="toc-item" style="margin-left:0px"><a href="#neo4jEnhancements"><strong>4</strong><span>Enhancements to Neo4j core API</span></a></div>
+                            
+                            <div class="toc-item" style="margin-left:0px"><a href="#sampleApp"><strong>5</strong><span>Sample Application</span></a></div>
                             
                             <div style="clear:both" ></div>
                         </div>
@@ -193,7 +197,10 @@ For Neo4j HA either a commercial license is <a href="http://neo4j.org/licensing-
                 'ha.coordinators': 'localhost:2181,localhost:2182,localhost:2183'
         &#93;
     &#125;
-&#125;</pre></div><p class="paragraph"/>Additionally you must add another dependency to your application's <code>grails-app/conf/BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>compile('org.neo4j:neo4j&#45;enterprise:1.6')</pre></div><p class="paragraph"/><h4>custom graph database</h4>
+&#125;</pre></div><p class="paragraph"/>Additionally you must add another dependency to your application's <code>grails-app/conf/BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>compile('org.neo4j:neo4j&#45;enterprise:1.8.RC1')</pre></div><p class="paragraph"/><h4>type = "impermanent"</h4>
+Uses <a href="../ref/Httpsgithubcomneo4jcommunityblobmasterkernelsrctestjavaorgneo4jtest Impermanent Graph Databasejava/ImpermanentGraphDatabase.html" class="https://github.com/neo4j/community/blob/master/kernel/src/test/java/org/neo4j/test/ImpermanentGraphDatabase.java">ImpermanentGraphDatabase</a>.
+This option required a dependency to artifact group: "org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:'tests' in BuildConfig.groovy.
+ImpermanentGraphDatabase is intended to be used for testing.<p class="paragraph"/><h4>custom graph database</h4>
 If you use a custom implementation of GraphDatabaseService, you can use
 <div class="code"><pre>grails &#123;
     neo4j &#123;
@@ -220,7 +227,21 @@ issue tracker.
 <img border="0" class="center" src="https://github.com/SpringSource/grails-data-mapping/raw/master/grails-documentation-neo4j/resources/img/mapping.png"></img>
 
 
-<h1 id="sampleApp">4 Sample Application</h1>
+<h1 id="neo4jEnhancements">4 Enhancements to Neo4j core API</h1>
+Inspired by a <a href="../ref/Httpsgithubcom Spring Sourcegrailsdatamappingissues66/Github issue ticket.html" class="https://github.com/SpringSource/grails-data-mapping/issues/66">Github issue ticket</a> the Neo4j Grails contains some
+enhancements to the Neo4j core API. These enhancements are implemented using Groovy's ExpandoMetaClass.<p class="paragraph"/><h4>setting properties on nodes/relationships</h4><p class="paragraph"/>Assigning an arbitrary property onto a Neo4j node or relationship can be simply done by using Groovy's property
+mechanism:
+<div class="code"><pre>def node = graphDatabaseService.createNode()
+node.myProperty = myValue</pre></div><p class="paragraph"/>The same words for getting properties:<p class="paragraph"/><div class="code"><pre>def node = &#8230;
+def value = node.myProperty</pre></div><p class="paragraph"/><blockquote class="note">
+There is a important convention: when the property ends with "Date" then a date type is assumed. The node property then
+helds respective millis.
+</blockquote><p class="paragraph"/><h4>JSON marshalling</h4>
+Neo4j nodes and relationships can be easily marshalled to JSON, e.g. in a controller using:<p class="paragraph"/><div class="code"><pre>def node = graphDatabaseService.getNodeById(myid)
+render node as JSON</pre></div>
+
+
+<h1 id="sampleApp">5 Sample Application</h1>
 There is a demo application available at <a href="https://github.com/sarmbruster/neo4jsample" target="blank">https://github.com/sarmbruster/neo4jsample</a>
 As of now this application contains just a small set of domain classes with scaffolding controllers.<p class="paragraph"/>The demo app uses by default a REST datasource. If you want to use a local embedded instance you need to change
 <code>grails-app/conf/Datasource.groovy</code> to fit your needs.<p class="paragraph"/>&#8230; more to come here&#8230;

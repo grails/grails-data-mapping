@@ -34,7 +34,10 @@ function addJsClass(el) {
                     <div class="toc-item" style="margin-left:0"><a href="../../guide/mapping.html"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../../guide/sampleApp.html"><strong>4</strong><span>Sample Application</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/neo4jEnhancements.html"><strong>4</strong><span>Enhancements to Neo4j core API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/sampleApp.html"><strong>5</strong><span>Sample Application</span></a>
                     </div>
                     
                 </div>
@@ -61,15 +64,16 @@ function addJsClass(el) {
 
                 <span id='toggle-col1' class="toggle">(<a href="#" onclick="localToggle(); return false;">Quick Reference</a>)</span>
 
-                <h1>schemaless attributes</h1><p class="paragraph"/><h2>Purpose</h2><p class="paragraph"/>For domain classes mapped by Neo4j you can put and get arbitrary attributes on a instances by using map semantics on the
-domain instance.<p class="paragraph"/><blockquote class="note">
+                <h1>schemaless attributes</h1><p class="paragraph"/><h2>Purpose</h2><p class="paragraph"/>For domain classes mapped by Neo4j you can put and get arbitrary attributes on a instances by using the dot operator or
+map semantics on the domain instance.<p class="paragraph"/><blockquote class="note">
 Setting arbitrary attribute in only allowed when the domain instance is persisted (aka <code>save</code> has been called)!
 </blockquote><p class="paragraph"/><h2>Example</h2><p class="paragraph"/>A simple domain class:
 <div class="code"><pre>class Person <span class="java&#45;keyword">implements</span> Serializable &#123;
     <span class="java&#45;object">String</span> firstName
     <span class="java&#45;object">String</span> lastName
     <span class="java&#45;object">Integer</span> age = 0
-&#125;</pre></div><p class="paragraph"/><div class="code"><pre>when:
+&#125;</pre></div><p class="paragraph"/><h3>using map semantics</h3>
+<div class="code"><pre>when:
 def person = <span class="java&#45;keyword">new</span> Person(lastName:'person1').save()
 person&#91;'notDeclaredProperty'&#93; = 'someValue'   // n.b. the 'dot' notation is not valid <span class="java&#45;keyword">for</span> undeclared properties
 person&#91;'emptyArray'&#93; = &#91;&#93;
@@ -83,7 +87,25 @@ person&#91;'notDeclaredProperty'&#93; == 'someValue'
 person&#91;'lastName'&#93; == 'person1'  // declared properties are also available via map semantics
 person&#91;'someIntArray'&#93; == &#91;1,2,3&#93;
 person&#91;'someStringArray'&#93; == &#91;'a', 'b', 'c'&#93;
-person&#91;'someDoubleArray'&#93; == &#91;0.9, 1.0, 1.1&#93;</pre></div><p class="paragraph"/><h2>Description</h2><p class="paragraph"/>The non declared attribtes are stored a regular properties on the domain instance's node. The values of the schemaless
+person&#91;'someDoubleArray'&#93; == &#91;0.9, 1.0, 1.1&#93;</pre></div><p class="paragraph"/><h3>using dot operator</h3>
+<div class="code"><pre>when:
+def person = <span class="java&#45;keyword">new</span> Person(lastName:'person1').save(flush:<span class="java&#45;keyword">true</span>)
+session.clear()
+person = Person.load(person.id)
+person.notDeclaredProperty = 'someValue'   // n.b. the 'dot' notation is not valid <span class="java&#45;keyword">for</span> undeclared properties
+person.emptyArray = &#91;&#93;
+person.someIntArray = &#91;1,2,3&#93;
+person.someStringArray = &#91;'a', 'b', 'c'&#93;
+person.someDoubleArray= &#91;0.9, 1.0, 1.1&#93;
+session.flush()
+session.clear()
+person = Person.get(person.id)<p class="paragraph"/>then:
+person.notDeclaredProperty == 'someValue'
+person.lastName == 'person1'  // declared properties are also available via map semantics
+person.someIntArray == &#91;1,2,3&#93;
+person.someStringArray == &#91;'a', 'b', 'c'&#93;
+person.emptyArray == &#91;&#93;
+person.someDoubleArray == &#91;0.9, 1.0, 1.1&#93;</pre></div><p class="paragraph"/><h2>Description</h2><p class="paragraph"/>The non declared attribtes are stored a regular properties on the domain instance's node. The values of the schemaless
 attributes must be a valid type for Neo4j property (String, primitives and arrays of the former two).<p class="paragraph"/>
 
             </div>

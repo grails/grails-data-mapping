@@ -33,7 +33,10 @@ function addJsClass() {
                     <div class="toc-item" style="margin-left:0"><a href="../../guide/mapping.html"><strong>3</strong><span>Mapping domain classes to Neo4j node space</span></a>
                     </div>
                     
-                    <div class="toc-item" style="margin-left:0"><a href="../../guide/sampleApp.html"><strong>4</strong><span>Sample Application</span></a>
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/neo4jEnhancements.html"><strong>4</strong><span>Enhancements to Neo4j core API</span></a>
+                    </div>
+                    
+                    <div class="toc-item" style="margin-left:0"><a href="../../guide/sampleApp.html"><strong>5</strong><span>Sample Application</span></a>
                     </div>
                     
                 </div>
@@ -119,7 +122,10 @@ For Neo4j HA either a commercial license is <a href="http://neo4j.org/licensing-
                 'ha.coordinators': 'localhost:2181,localhost:2182,localhost:2183'
         &#93;
     &#125;
-&#125;</pre></div><p class="paragraph"/>Additionally you must add another dependency to your application's <code>grails-app/conf/BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>compile('org.neo4j:neo4j&#45;enterprise:1.6')</pre></div><p class="paragraph"/><h4>custom graph database</h4>
+&#125;</pre></div><p class="paragraph"/>Additionally you must add another dependency to your application's <code>grails-app/conf/BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>compile('org.neo4j:neo4j&#45;enterprise:1.8.RC1')</pre></div><p class="paragraph"/><h4>type = "impermanent"</h4>
+Uses <a href="../ref/Httpsgithubcomneo4jcommunityblobmasterkernelsrctestjavaorgneo4jtest Impermanent Graph Databasejava/ImpermanentGraphDatabase.html" class="https://github.com/neo4j/community/blob/master/kernel/src/test/java/org/neo4j/test/ImpermanentGraphDatabase.java">ImpermanentGraphDatabase</a>.
+This option required a dependency to artifact group: "org.neo4j", name:"neo4j-kernel", version:neo4jVersion, classifier:'tests' in BuildConfig.groovy.
+ImpermanentGraphDatabase is intended to be used for testing.<p class="paragraph"/><h4>custom graph database</h4>
 If you use a custom implementation of GraphDatabaseService, you can use
 <div class="code"><pre>grails &#123;
     neo4j &#123;
