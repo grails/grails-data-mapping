@@ -18,6 +18,9 @@ class CascadeDeleteSpec extends GormDatastoreSpec {
 
             u.save(flush:true)
 
+        expect:
+            CascadeUserSettings.findAll().isEmpty()
+
         when:"The owner is queried"
             def found1 = CascadeUser.findByName("user2")
             def found1a = CascadeUserSettings.findByUser(found1)
@@ -29,11 +32,11 @@ class CascadeDeleteSpec extends GormDatastoreSpec {
         when:"The owner is deleted"
             found1.delete(flush:true)
             def found2 = CascadeUser.findByName("user2")
-            def found1b = CascadeUserSettings.findByUser(found1)
+            def allUserSettings = CascadeUserSettings.findAll()
 
         then:"So is the child"
             found2 == null
-            found1b == null
+            allUserSettings.isEmpty()
     }
 
     @Override
