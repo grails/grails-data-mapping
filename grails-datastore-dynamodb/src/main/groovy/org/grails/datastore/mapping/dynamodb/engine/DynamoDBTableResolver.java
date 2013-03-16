@@ -33,8 +33,8 @@ public interface DynamoDBTableResolver {
     /**
      * Returns domain name for the specified primary key value.
      *
-     * @param id the id
-     * @return the domain name
+     * @param id
+     * @return
      */
     String resolveTable(String id);
 
@@ -42,7 +42,7 @@ public interface DynamoDBTableResolver {
      * Returns all domain names for this type of entity. Without sharding this
      * list contains always one element.
      *
-     * @return the names
+     * @return
      */
     List<String> getAllTablesForEntity();
 }

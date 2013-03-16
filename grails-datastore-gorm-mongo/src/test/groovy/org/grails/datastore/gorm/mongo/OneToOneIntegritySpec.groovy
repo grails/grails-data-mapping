@@ -8,6 +8,10 @@ import grails.gorm.tests.Pet
 
 class OneToOneIntegritySpec extends GormDatastoreSpec {
 
+    static {
+        TEST_CLASSES  << Face << Nose
+    }
+
     def "Test persist and retrieve unidirectional many-to-one"() {
         given:"A domain model with a many-to-one"
             def person = new Person(firstName:"Fred", lastName: "Flintstone")

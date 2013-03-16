@@ -49,4 +49,6 @@ class OrderBySpec extends GormDatastoreSpec {
         then:
         45 == results[0].age
     }
+
 }
+

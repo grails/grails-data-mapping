@@ -72,8 +72,9 @@ public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
         return context;
     }
 
+    @Override
     public boolean isInitialized() {
-        return initialized;
+        return this.initialized;
     }
 
     public void initialize() {

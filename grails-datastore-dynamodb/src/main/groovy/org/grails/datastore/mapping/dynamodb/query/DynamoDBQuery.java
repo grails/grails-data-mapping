@@ -408,7 +408,7 @@ public class DynamoDBQuery extends Query {
      * (a and b) or c = dis(con(a,b), c) ==> [ [a,b], [c] ] //2 queries
      *
      * @param criteria
-     * @return the results
+     * @return
      */
     private List<List<PropertyCriterion>> flattenAndReplaceDisjunction(Junction criteria) {
         List<List<PropertyCriterion>> result = new ArrayList<List<PropertyCriterion>>();
@@ -534,7 +534,7 @@ public class DynamoDBQuery extends Query {
      *
      * @param entity
      * @param propertyName
-     * @return the key
+     * @return
      */
     protected static String getKey(PersistentEntity entity, String propertyName) {
         return extractPropertyKey(propertyName, entity);

@@ -180,7 +180,7 @@ public class DynamoDBDatastore extends AbstractDatastore implements Initializing
     /**
      * Returns table resolver for the specified entity.
      * @param entity
-     * @return the resolver
+     * @return
      */
     public DynamoDBTableResolver getEntityDomainResolver(PersistentEntity entity) {
         return entityDomainResolverMap.get(entity);
@@ -189,7 +189,7 @@ public class DynamoDBDatastore extends AbstractDatastore implements Initializing
     /**
      * Returns id generator for the specified entity.
      * @param entity
-     * @return the generator
+     * @return
      */
     public DynamoDBIdGenerator getEntityIdGenerator(PersistentEntity entity) {
         return entityIdGeneratorMap.get(entity);

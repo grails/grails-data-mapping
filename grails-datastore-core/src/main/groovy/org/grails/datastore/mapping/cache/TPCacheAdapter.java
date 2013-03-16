@@ -30,16 +30,16 @@ public interface TPCacheAdapter<T> {
      * In cases when there is no transaction or no transactional support by the implementation, if there are any problems
      * storing the entry the caller is notified about it via exception in the calling thread; also, if this method returns
      * successfully it means that the logistics of putting the specified value in the cache are fully done.
-     * @param key the entry key
-     * @param entry the entry
+     * @param key
+     * @param entry
      * @throws CacheException runtime exception indicating any cache-related problems
      */
     void cacheEntry(Serializable key, T entry) throws CacheException;
 
     /**
      * Returns the stored value for the specified key.
-     * @param key the entry key
-     * @return the entry
+     * @param key
+     * @return
      * @throws CacheException runtime exception indicating any cache-related problems
      */
     T getCachedEntry(Serializable key) throws CacheException;

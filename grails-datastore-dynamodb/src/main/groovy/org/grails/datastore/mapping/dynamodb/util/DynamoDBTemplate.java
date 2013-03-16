@@ -49,7 +49,7 @@ public interface DynamoDBTemplate {
      * Same as get but with consistent read flag.
      * @param tableName complete name of the table in DynamoDB, will be used as-is
      * @param key the key for which to retrieve the data
-     * @return null if the item is not found
+     * @return
      * @throws org.springframework.dao.DataAccessException
      */
     Map<String,AttributeValue> getConsistent(String tableName, Key key) throws DataAccessException;
@@ -74,9 +74,9 @@ public interface DynamoDBTemplate {
      * http://docs.amazonwebservices.com/amazondynamodb/latest/developerguide/LowLevelJavaItemCRUD.html#PutLowLevelAPIJava
      * @param tableName complete name of the table in DynamoDB, will be used as-is
      * @param key
-     * @param attributes
+     *@param attributes
      * @param expectedVersion
-     * @throws org.springframework.dao.DataAccessException
+ *   @throws org.springframework.dao.DataAccessException
      */
     void putItemVersioned(String tableName, Key key, Map<String, AttributeValue> attributes, String expectedVersion, PersistentEntity persistentEntity) throws DataAccessException;
 
@@ -116,7 +116,7 @@ public interface DynamoDBTemplate {
     /**
      * Returns true if any item was deleted, in other words if domain was empty it returns false.
      * @param tableName complete name of the table in DynamoDB, will be used as-is
-     * @return true if any item was deleted
+     * @return
      * @throws org.springframework.dao.DataAccessException
      */
     boolean deleteAllItems(String tableName) throws DataAccessException;
@@ -124,7 +124,7 @@ public interface DynamoDBTemplate {
     /**
      * Executes scan Dynamo DB operation (note this operation does not scale well with the growth of the table).
      * @param max maximum amount of items to return (inclusive)
-     * @return the scan results
+     * @return
      * @throws org.springframework.dao.DataAccessException
      */
     List<Map<String, AttributeValue>> scan(String tableName, Map<String, Condition> filter, int max) throws DataAccessException;
@@ -132,9 +132,9 @@ public interface DynamoDBTemplate {
     /**
      * Executes scan Dynamo DB operation and returns the count of matched items
      * (note this operation does not scale well with the growth of the table)
-     * @param tableName the table name
-     * @param filter filters
-     * @return the count of matched items
+     * @param tableName
+     * @param filter
+     * @return
      */
     int scanCount(String tableName, Map<String, Condition> filter);
 
@@ -148,17 +148,17 @@ public interface DynamoDBTemplate {
 
     /**
      * Blocking call - internally will wait until the table is successfully created and is in ACTIVE state.
-     * @param tableName the table name
-     * @param ks the schema
-     * @param provisionedThroughput the throughput
+     * @param tableName
+     * @param ks
+     * @param provisionedThroughput
      * @throws DataAccessException
      */
     void createTable(String tableName, KeySchema ks, ProvisionedThroughput provisionedThroughput) throws DataAccessException;
 
     /**
      * Returns table description object containing throughput and key scheme information
-     * @param tableName the table name
-     * @return the description
+     * @param tableName
+     * @return
      * @throws org.springframework.dao.DataAccessException
      */
     TableDescription describeTable(String tableName) throws DataAccessException;

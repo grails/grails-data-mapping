@@ -2,15 +2,14 @@ package grails.gorm.tests
 
 import grails.gorm.DetachedCriteria
 import grails.persistence.Entity
-
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener
-import org.grails.datastore.mapping.engine.event.EventType
-import org.grails.datastore.mapping.engine.event.PostDeleteEvent
-import org.grails.datastore.mapping.engine.event.PreDeleteEvent
-import org.grails.datastore.mapping.engine.event.ValidationEvent
 import org.springframework.context.ApplicationEvent
+import org.grails.datastore.mapping.engine.event.EventType
+import org.grails.datastore.mapping.engine.event.ValidationEvent
+import org.grails.datastore.mapping.engine.event.PreDeleteEvent
+import org.grails.datastore.mapping.engine.event.PostDeleteEvent
 
 /**
  * @author Tom Widmer
@@ -39,15 +38,15 @@ class PersistenceEventListenerSpec extends GormDatastoreSpec {
         p = Simples.get(p.id)
 
         then:
-        0 == listener.PreDeleteCount
-        0 == listener.PostDeleteCount
+        0 == listener.PreDelete
+        0 == listener.PostDelete
 
         when:
         p.delete(flush: true)
 
         then:
-        1 == listener.PreDeleteCount
-        1 == listener.PostDeleteCount
+        1 == listener.PreDelete
+        1 == listener.PostDelete
         0 < listener.events.size()
         p == listener.events[-1].entityObject
         listener.events[-1].eventType == EventType.PostDelete
@@ -68,8 +67,8 @@ class PersistenceEventListenerSpec extends GormDatastoreSpec {
 
         then:
         3 == freds.size()
-        0 == listener.PreDeleteCount
-        0 == listener.PostDeleteCount
+        0 == listener.PreDelete
+        0 == listener.PostDelete
 
         when:
         new DetachedCriteria(Simples).build {
@@ -83,8 +82,8 @@ class PersistenceEventListenerSpec extends GormDatastoreSpec {
 
         // conditional assertions because in the case of batch DML statements neither Hibernate nor JPA triggers delete events for individual entities
         if (!session.getClass().simpleName in ['JpaSession', 'HibernateSession']) {
-            3 == listener.PreDeleteCount
-            3 == listener.PostDeleteCount
+            3 == listener.PreDelete
+            3 == listener.PostDelete
         }
     }
 
@@ -101,8 +100,8 @@ class PersistenceEventListenerSpec extends GormDatastoreSpec {
 
         then:
         "Fred" == p.name
-        0 == listener.PreUpdateCount
-        0 == listener.PostUpdateCount
+        0 == listener.PreUpdate
+        0 == listener.PostUpdate
 
         when:
         p.name = "Bob"
@@ -112,8 +111,8 @@ class PersistenceEventListenerSpec extends GormDatastoreSpec {
 
         then:
         "Bob" == p.name
-        1 == listener.PreUpdateCount
-        1 == listener.PostUpdateCount
+        1 == listener.PreUpdate
+        1 == listener.PostUpdate
     }
 
     void "Test insert events"() {
@@ -129,10 +128,10 @@ class PersistenceEventListenerSpec extends GormDatastoreSpec {
 
         then:
         "Fred" == p.name
-        0 == listener.PreUpdateCount
-        1 == listener.PreInsertCount
-        0 == listener.PostUpdateCount
-        1 == listener.PostInsertCount
+        0 == listener.PreUpdate
+        1 == listener.PreInsert
+        0 == listener.PostUpdate
+        1 == listener.PostInsert
 
         when:
         p.name = "Bob"
@@ -142,10 +141,10 @@ class PersistenceEventListenerSpec extends GormDatastoreSpec {
 
         then:
         "Bob" == p.name
-        1 == listener.PreUpdateCount
-        1 == listener.PreInsertCount
-        1 == listener.PostUpdateCount
-        1 == listener.PostInsertCount
+        1 == listener.PreUpdate
+        1 == listener.PreInsert
+        1 == listener.PostUpdate
+        1 == listener.PostInsert
     }
 
     void "Test load events"() {
@@ -163,9 +162,9 @@ class PersistenceEventListenerSpec extends GormDatastoreSpec {
         "Fred" == p.name
         if (!'JpaSession'.equals(session.getClass().simpleName)) {
             // JPA doesn't seem to support a pre-load event
-            1 == listener.PreLoadCount
+            1 == listener.PreLoad
         }
-        1 == listener.PostLoadCount
+        1 == listener.PostLoad
     }
 
     void "Test multi-load events"() {
@@ -182,39 +181,41 @@ class PersistenceEventListenerSpec extends GormDatastoreSpec {
         3 == freds.size()
         if (!'JpaSession'.equals(session.getClass().simpleName)) {
             // JPA doesn't seem to support a pre-load event
-            3 == listener.PreLoadCount
+            3 == listener.PreLoad
         }
-        3 == listener.PostLoadCount
+        3 == listener.PostLoad
     }
 
     void "Test validation events"() {
         given:
-            def p = new Simples()
+        def p = new Simples()
 
-            p.name = "Fred"
-
-        when:
-            p.validate()
-
-        then:
-           1 == listener.ValidationCount
-           listener.events.size() == 1
-           p == listener.events[0].entityObject
-           listener.events[0] instanceof ValidationEvent
-           null == listener.events[0].validatedFields
+        p.name = "Fred"
 
         when:
-           p.name = null
-           p.validate(['name'])
+        p.validate()
 
         then:
-           2 == listener.ValidationCount
-           listener.events.size() == 2
-           p == listener.events[1].entityObject
-           listener.events[1] instanceof ValidationEvent
-           ['name'] == listener.events[1].validatedFields
+        1 == listener.Validation
+        listener.events.size() == 1
+        p == listener.events[0].entityObject
+        listener.events[0] instanceof ValidationEvent
+        null == listener.events[0].validatedFields
+
+        when:
+        p.name = null
+        p.validate(['name'])
+
+        then:
+        2 == listener.Validation
+        listener.events.size() == 2
+        p == listener.events[1].entityObject
+        listener.events[1] instanceof ValidationEvent
+        ['name'] == listener.events[1].validatedFields
+
     }
 }
+
 
 class SpecPersistenceListener extends AbstractPersistenceEventListener {
 
@@ -224,29 +225,32 @@ class SpecPersistenceListener extends AbstractPersistenceEventListener {
 
     List<AbstractPersistenceEvent> events = []
 
-    int PreDeleteCount,
-        PreInsertCount,
-        PreUpdateCount,
-        PostUpdateCount,
-        PostDeleteCount,
-        PostInsertCount,
-        PreLoadCount,
-        PostLoadCount,
-        SaveOrUpdateCount,
-        ValidationCount
+    int PreDelete,
+        PreInsert,
+        PreUpdate,
+        PostUpdate,
+        PostDelete,
+        PostInsert,
+        PreLoad,
+        PostLoad,
+        SaveOrUpdate,
+        Validation
 
     @Override
     protected void onPersistenceEvent(AbstractPersistenceEvent event) {
-        String typeName = event.eventType.name()
-        this."${typeName}Count"++
+        def typeName = event.eventType.name()
+        this."$typeName"++
         events << event
     }
 
-    boolean supportsEventType(Class<? extends ApplicationEvent> eventType) { true }
+    @Override
+    boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
+        return true
+    }
 }
 
 @Entity
-class Simples implements Serializable {
+class Simples implements Serializable{
     Long id
     String name
 }

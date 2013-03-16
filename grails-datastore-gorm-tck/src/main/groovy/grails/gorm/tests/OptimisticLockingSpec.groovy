@@ -1,7 +1,5 @@
 package grails.gorm.tests
 
-import grails.persistence.Entity
-
 import org.grails.datastore.mapping.core.OptimisticLockingException
 import org.grails.datastore.mapping.core.Session
 
@@ -51,7 +49,6 @@ class OptimisticLockingSpec extends GormDatastoreSpec {
             Thread.start {
                 OptLockVersioned.withNewSession { s ->
                     def reloaded = OptLockVersioned.get(o.id)
-                    assert reloaded
                     reloaded.name += ' in new session'
                     reloaded.save(flush: true)
                 }
@@ -73,7 +70,7 @@ class OptimisticLockingSpec extends GormDatastoreSpec {
 
         then:
             ex instanceof OptimisticLockingException
-            o.version == 1
+         o.version == 1
             o.name == 'locked in new session'
     }
 
@@ -114,7 +111,6 @@ class OptimisticLockingSpec extends GormDatastoreSpec {
     }
 }
 
-@Entity
 class OptLockVersioned implements Serializable {
     Long id
     Long version
@@ -122,7 +118,6 @@ class OptLockVersioned implements Serializable {
     String name
 }
 
-@Entity
 class OptLockNotVersioned implements Serializable {
     Long id
 

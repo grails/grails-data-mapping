@@ -167,6 +167,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
         return addPersistentEntity(javaClass);
     }
 
+    @Override
     public Collection<PersistentEntity> addPersistentEntities(Class... javaClasses) {
         Collection<PersistentEntity> entities = new ArrayList<PersistentEntity>();
 
@@ -234,6 +235,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
         persistentEntitiesByName.put(entity.getName(), entity);
     }
 
+    @Override
     public void initialize() {
         for(PersistentEntity entity : persistentEntities) {
             initializePersistentEntity(entity);
@@ -241,6 +243,7 @@ public abstract class AbstractMappingContext implements MappingContext, Initiali
         this.initialized = true;
     }
 
+    @Override
     public boolean isInitialized() {
         return initialized;
     }

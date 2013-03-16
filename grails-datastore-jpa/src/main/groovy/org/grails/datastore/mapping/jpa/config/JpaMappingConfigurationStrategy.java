@@ -212,6 +212,7 @@ public class JpaMappingConfigurationStrategy implements MappingConfigurationStra
         return getDefaultIdentityMapping(classMapping);
     }
 
+    @Override
     public void setCanExpandMappingContext(boolean canExpandMappingContext) {
         // noop
     }

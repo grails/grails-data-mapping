@@ -88,6 +88,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
     /**
      * Whether the strategy can add new entities to the mapping context
      */
+    @Override
     public void setCanExpandMappingContext(boolean canExpandMappingContext) {
         this.canExpandMappingContext = canExpandMappingContext;
     }
@@ -632,7 +633,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
      * check if mappedBy is set explicitly to null for the given property.
      * @param property
      * @param mappedBy
-     * @return true if mappedBy is set explicitly to null
+     * @return
      */
     private boolean forceUnidirectional(PropertyDescriptor property, Map mappedBy) {
         return mappedBy.containsKey(property.getName()) && (mappedBy.get(property.getName())==null);

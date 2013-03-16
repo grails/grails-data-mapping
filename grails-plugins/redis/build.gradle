@@ -38,6 +38,6 @@ dependencies {
     runtime "org.slf4j:slf4j-simple:1.5.8",
             "hsqldb:hsqldb:1.8.0.5",
             "net.sf.ehcache:ehcache-core:1.7.1"
-    compile "org.grails:grails-crud:$grailsVersion",
-            "org.grails:grails-gorm:$grailsVersion"
+    compile "org.grails:grails-crud:1.3.4",
+            "org.grails:grails-gorm:1.3.4"
 }

@@ -7,6 +7,10 @@ import grails.gorm.tests.GormDatastoreSpec
  */
 class DeindexingSpec extends GormDatastoreSpec {
 
+    static {
+        TEST_CLASSES << AuthorWithPseudonym
+    }
+
     def 'Null is de-indexed'() {
         def author = new AuthorWithPseudonym(name: 'Samuel Clemens').save(failOnError: true)
         author.pseudonym = 'Mark Twain'
@@ -14,11 +18,6 @@ class DeindexingSpec extends GormDatastoreSpec {
 
         expect:
         !AuthorWithPseudonym.findByPseudonymIsNull()
-    }
-
-    @Override
-    List getDomainClasses() {
-        [AuthorWithPseudonym]
     }
 }
 

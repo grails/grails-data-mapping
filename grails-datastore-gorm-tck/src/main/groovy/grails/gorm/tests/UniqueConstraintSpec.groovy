@@ -4,15 +4,13 @@ import grails.persistence.Entity
 
 import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
-import org.grails.datastore.mapping.model.MappingContext
-import org.grails.datastore.mapping.model.PersistentEntity
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
 
 /**
  * Tests the unique constraint
  */
-class UniqueConstraintSpec extends GormDatastoreSpec {
+class UniqueConstraintSpec extends GormDatastoreSpec{
 
     void "Test simple unique constraint"() {
         given:"A validator that uses the unique constraint"
@@ -50,23 +48,23 @@ class UniqueConstraintSpec extends GormDatastoreSpec {
     protected void setupValidator() {
 
         def groupValidator = [supports: {Class cls -> true},
-            validate: {Object target, Errors errors ->
-                def constrainedProperties = GrailsDomainConfigurationUtil.evaluateConstraints(UniqueGroup)
-                for (ConstrainedProperty cp in constrainedProperties.values()) {
-                    cp.validate(target, target[cp.propertyName], errors)
-                }
-            }] as Validator
+                validate: {Object target, Errors errors ->
+                    def constrainedProperties = GrailsDomainConfigurationUtil.evaluateConstraints(UniqueGroup)
+                    for (ConstrainedProperty cp in constrainedProperties.values()) {
+                        cp.validate(target, target[cp.propertyName], errors)
+                    }
+                }] as Validator
 
-        def groupWithinValidator = [supports: {Class cls -> true},
-            validate: {Object target, Errors errors ->
-                def constrainedProperties = GrailsDomainConfigurationUtil.evaluateConstraints(GroupWithin)
-                for (ConstrainedProperty cp in constrainedProperties.values()) {
-                    cp.validate(target, target[cp.propertyName], errors)
-                }
-            }] as Validator
+       def groupWithinValidator = [supports: {Class cls -> true},
+               validate: {Object target, Errors errors ->
+                   def constrainedProperties = GrailsDomainConfigurationUtil.evaluateConstraints(GroupWithin)
+                   for (ConstrainedProperty cp in constrainedProperties.values()) {
+                       cp.validate(target, target[cp.propertyName], errors)
+                   }
+               }] as Validator
 
-        final MappingContext context = session.datastore.mappingContext
-        final PersistentEntity entity = context.getPersistentEntity(UniqueGroup.name)
+        final context = session.datastore.mappingContext
+        final entity = context.getPersistentEntity(UniqueGroup.name)
         context.addEntityValidator(entity, groupValidator)
         entity = context.getPersistentEntity(GroupWithin.name)
         context.addEntityValidator(entity, groupWithinValidator)
@@ -79,7 +77,7 @@ class UniqueConstraintSpec extends GormDatastoreSpec {
 }
 
 @Entity
-class UniqueGroup implements Serializable {
+class UniqueGroup implements Serializable{
     Long id
     String name
     static constraints = {
@@ -88,7 +86,7 @@ class UniqueGroup implements Serializable {
 }
 
 @Entity
-class GroupWithin implements Serializable {
+class GroupWithin implements Serializable{
     Long id
     String name
     String org

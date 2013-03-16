@@ -18,8 +18,8 @@ class ValidationSpec extends GormDatastoreSpec {
 
         when:
             t.errors.reject 'foo'
-            boolean isValid = t.validate()
-            int errorCount = t.errors.errorCount
+            def isValid = t.validate()
+            def errorCount = t.errors.errorCount
 
         then:
             !isValid
@@ -36,7 +36,7 @@ class ValidationSpec extends GormDatastoreSpec {
 
         when:
             t = new TestEntity(name:"", child:new ChildEntity(name:"child"))
-            boolean validationResult = t.validate()
+            def validationResult = t.validate()
             def errors = t.errors
 
         then:
@@ -60,7 +60,7 @@ class ValidationSpec extends GormDatastoreSpec {
 
         when:
             t = new TestEntity(name:"")
-            boolean validationResult = t.validate()
+            def validationResult = t.validate()
             def errors = t.errors
 
         then:

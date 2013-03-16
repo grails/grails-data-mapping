@@ -5,7 +5,11 @@ import grails.persistence.Entity
 /**
  * Tests for criteria queries that compare two properties
  */
-class PropertyComparisonQuerySpec extends GormDatastoreSpec {
+class PropertyComparisonQuerySpec extends GormDatastoreSpec{
+
+    static {
+        TEST_CLASSES << Dog
+    }
 
     void "Test geProperty query"() {
         given:"Some dead and alive dogs"
@@ -119,11 +123,6 @@ class PropertyComparisonQuerySpec extends GormDatastoreSpec {
             Dog.count() == 3
             results.size() == 1
             results[0].name == "Fred"
-    }
-
-    @Override
-    List getDomainClasses() {
-        [Dog]
     }
 }
 

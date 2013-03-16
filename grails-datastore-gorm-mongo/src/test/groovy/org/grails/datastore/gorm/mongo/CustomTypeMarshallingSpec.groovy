@@ -1,11 +1,14 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
+import org.bson.types.ObjectId
 import grails.persistence.Entity
 
-import org.bson.types.ObjectId
-
 class CustomTypeMarshallingSpec extends GormDatastoreSpec {
+
+    static {
+        TEST_CLASSES << Person
+    }
 
     void "Test basic crud with custom types"() {
         given: "A custom type registered for the Birthday class"
@@ -36,11 +39,6 @@ class CustomTypeMarshallingSpec extends GormDatastoreSpec {
         then:
             p != null
             p2 == null
-    }
-
-    @Override
-    List getDomainClasses() {
-        [Person]
     }
 }
 
