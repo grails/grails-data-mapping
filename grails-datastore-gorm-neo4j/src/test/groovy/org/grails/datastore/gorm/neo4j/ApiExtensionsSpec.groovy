@@ -160,6 +160,30 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
         person['someDoubleArray'] == [0.9, 1.0, 1.1]
     }
 
+    def "test handling of non-declared properties using dot notation"() {
+        when:
+        def person = new Person(lastName:'person1').save(flush:true)
+        session.clear()
+        person = Person.load(person.id)
+        person.notDeclaredProperty = 'someValue'   // n.b. the 'dot' notation is not valid for undeclared properties
+        person.emptyArray = []
+        person.someIntArray = [1,2,3]
+        person.someStringArray = ['a', 'b', 'c']
+        person.someDoubleArray= [0.9, 1.0, 1.1]
+        session.flush()
+        session.clear()
+        person = Person.get(person.id)
+
+        then:
+        person.notDeclaredProperty == 'someValue'
+        person.lastName == 'person1'  // declared properties are also available via map semantics
+        person.someIntArray == [1,2,3]
+        person.someStringArray == ['a', 'b', 'c']
+        person.emptyArray == []
+        person.someDoubleArray == [0.9, 1.0, 1.1]
+    }
+
+
     def "test handling of non-declared properties on transient instance"() {
         when:
         def person = new Person(lastName:'person1')
