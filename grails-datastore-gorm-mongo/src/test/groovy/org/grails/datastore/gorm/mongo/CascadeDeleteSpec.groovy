@@ -9,19 +9,19 @@ import spock.lang.Issue
 
 class CascadeDeleteSpec extends GormDatastoreSpec {
 
-    @Issue('GPMONGODB-187')
+    @Issue(['GPMONGODB-187', 'GPMONGODB-285'])
     void "Test that a delete cascade from owner to child"() {
-        given:"An owner with a child object "
+        expect:"No existing user settings"
+            CascadeUserSettings.findAll().isEmpty()
+
+        when:"An owner with a child object is saved"
             def u = new CascadeUser(name:"user2")
             def s = new CascadeUserSettings()
             u.settings = [s] as Set
 
             u.save(flush:true)
 
-        expect:
-            CascadeUserSettings.findAll().isEmpty()
-
-        when:"The owner is queried"
+        and:"The owner is queried"
             def found1 = CascadeUser.findByName("user2")
             def found1a = CascadeUserSettings.findByUser(found1)
 
