@@ -172,6 +172,7 @@ class Author {
     Long id
     String name
     Set books
+    def shouldBeIgnored
     static hasMany = [books:Book]
 }
 

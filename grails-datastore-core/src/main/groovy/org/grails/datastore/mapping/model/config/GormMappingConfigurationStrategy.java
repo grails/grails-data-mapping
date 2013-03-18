@@ -348,8 +348,8 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
         String mappingProperty = (String)mappedByMap.get(property.getName());
         if (StringUtils.hasText(mappingProperty)) {
             // First find the specified property on the related class, if it exists.
-            PropertyDescriptor pd = findProperty(referencedCpf.getPropertiesAssignableFromType(
-                    entity.getJavaClass()), mappingProperty);
+            PropertyDescriptor pd = findProperty(getPropertiesAssignableFromType(entity.getJavaClass(), referencedCpf),
+                    mappingProperty);
 
             // If a property of the required type does not exist, search
             // for any collection properties on the related class.
@@ -404,7 +404,7 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
                 // otherwise figure out if there is a one-to-many relationship by retrieving any properties that are of the related type
                 // if there is more than one property then (for the moment) ignore the relationship
                 if (relatedClassPropertyType == null || Collection.class.isAssignableFrom(relatedClassPropertyType)) {
-                    List<PropertyDescriptor> descriptors = referencedCpf.getPropertiesAssignableFromType(entity.getJavaClass());
+                    List<PropertyDescriptor> descriptors = getPropertiesAssignableFromType(entity.getJavaClass(), referencedCpf);
 
                     if (descriptors.size() == 1) {
                         final PropertyDescriptor pd = descriptors.get(0);
@@ -470,6 +470,18 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
             }
         }
         return association;
+    }
+
+    private List<PropertyDescriptor> getPropertiesAssignableFromType(Class type, ClassPropertyFetcher propertyFetcher) {
+        List<PropertyDescriptor> props = propertyFetcher.getPropertiesAssignableFromType(type);
+        // exclude properties of type object!
+        List<PropertyDescriptor> valid = new ArrayList<PropertyDescriptor>(props.size());
+        for (PropertyDescriptor prop : props) {
+            if (prop.getPropertyType() != null && !prop.getPropertyType().equals(Object.class)) {
+                valid.add(prop);
+            }
+        }
+        return valid;
     }
 
     private String findManyRelatedClassPropertyName(String propertyName,
@@ -589,12 +601,12 @@ public class GormMappingConfigurationStrategy implements MappingConfigurationStr
 
             // otherwise retrieve all the properties of the type from the associated class
             if (relatedClassPropertyType == null) {
-                PropertyDescriptor[] descriptors = ReflectionUtils.getPropertiesOfType(propType, entity.getJavaClass());
+                List<PropertyDescriptor> descriptors = getPropertiesAssignableFromType(entity.getJavaClass(), cpf);
 
                 // if there is only one then the association is established
-                if (descriptors.length == 1) {
-                    relatedClassPropertyType = descriptors[0].getPropertyType();
-                    relatedClassPropertyName = descriptors[0].getName();
+                if (descriptors.size() == 1) {
+                    relatedClassPropertyType = descriptors.get(0).getPropertyType();
+                    relatedClassPropertyName = descriptors.get(0).getName();
                 }
             }
         }
