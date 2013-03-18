@@ -101,6 +101,27 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
     }
 
     /**
+     * Allows accessing to dynamic properties with the dot operator
+     *
+     * @param instance The instance
+     * @param name The property name
+     * @return The property value
+     */
+    def propertyMissing(D instance, String name) {
+        getAt(instance, name)
+    }
+
+    /**
+     * Allows setting a dynamic property via the dot operator
+     * @param instance The instance
+     * @param name The property name
+     * @param val The value
+     */
+    def propertyMissing(D instance, String name, val) {
+        putAt(instance, name, val)
+    }
+
+    /**
      * Allows subscript access to schemaless attributes.
      *
      * @param instance The instance

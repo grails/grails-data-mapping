@@ -2,8 +2,8 @@ h1. schemaless attributes
 
 h2. Purpose
 
-For domain classes mapped by Neo4j you can put and get arbitrary attributes on a instances by using map semantics on the
-domain instance.
+For domain classes mapped by Neo4j you can put and get arbitrary attributes on a instances by using the dot operator or
+map semantics on the domain instance.
 
 {note}
 Setting arbitrary attribute in only allowed when the domain instance is persisted (aka @save@ has been called)!
@@ -20,6 +20,7 @@ class Person implements Serializable {
 }
 {code}
 
+h3. using map semantics
 {code}
 when:
 def person = new Person(lastName:'person1').save()
@@ -38,6 +39,30 @@ person['lastName'] == 'person1'  // declared properties are also available via m
 person['someIntArray'] == [1,2,3]
 person['someStringArray'] == ['a', 'b', 'c']
 person['someDoubleArray'] == [0.9, 1.0, 1.1]
+{code}
+
+h3. using dot operator
+{code}
+when:
+def person = new Person(lastName:'person1').save(flush:true)
+session.clear()
+person = Person.load(person.id)
+person.notDeclaredProperty = 'someValue'   // n.b. the 'dot' notation is not valid for undeclared properties
+person.emptyArray = []
+person.someIntArray = [1,2,3]
+person.someStringArray = ['a', 'b', 'c']
+person.someDoubleArray= [0.9, 1.0, 1.1]
+session.flush()
+session.clear()
+person = Person.get(person.id)
+
+then:
+person.notDeclaredProperty == 'someValue'
+person.lastName == 'person1'  // declared properties are also available via map semantics
+person.someIntArray == [1,2,3]
+person.someStringArray == ['a', 'b', 'c']
+person.emptyArray == []
+person.someDoubleArray == [0.9, 1.0, 1.1]
 {code}
 
 h2. Description
