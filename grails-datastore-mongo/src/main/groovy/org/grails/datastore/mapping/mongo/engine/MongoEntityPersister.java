@@ -33,6 +33,7 @@ import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.NativeEntryEntityPersister;
+import org.grails.datastore.mapping.engine.Persister;
 import org.grails.datastore.mapping.engine.PropertyValueIndexer;
 import org.grails.datastore.mapping.model.EmbeddedPersistentEntity;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -718,6 +719,19 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 return null;
             }
         });
+    }
+
+    @Override
+    protected void cascadeDeleteCollection(Collection collection) {
+        Persister persister = null;
+        for (Iterator iter = collection.iterator(); iter.hasNext(); ) {
+            Object child = iter.next();
+            if(persister == null) {
+                persister = session.getPersister(child);
+            }
+            persister.delete(child);
+            iter.remove();
+        }
     }
 
     protected DBObject createDBObjectWithKey(Object key) {
