@@ -3,7 +3,7 @@ package org.grails.datastore.gorm
 import grails.gorm.tests.GormDatastoreSpec
 import grails.gorm.tests.Person
 
-class DistinctProjectionSpec extends GormDatastoreSpec{
+class DistinctProjectionSpec extends GormDatastoreSpec {
 
     def "Test that using the distinct projection returns distinct results"()  {
         given:"Some people with the same last names"
@@ -20,6 +20,5 @@ class DistinctProjectionSpec extends GormDatastoreSpec{
 
         then:"The correct results are returned"
             results == ['Rubble', 'Simpson']
-
     }
 }

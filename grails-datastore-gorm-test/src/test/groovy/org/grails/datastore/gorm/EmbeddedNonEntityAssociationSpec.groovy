@@ -5,10 +5,6 @@ import grails.persistence.Entity
 
 class EmbeddedNonEntityAssociationSpec extends GormDatastoreSpec {
 
-    static {
-        GormDatastoreSpec.TEST_CLASSES << Being
-    }
-
     void "Test persistence of embedded entities"() {
         given:
             def i = new Being(name:"Bob", address: new ResidentialAddress(postCode:"30483"))
@@ -24,6 +20,11 @@ class EmbeddedNonEntityAssociationSpec extends GormDatastoreSpec {
             i.name == 'Bob'
             i.address != null
             i.address.postCode == '30483'
+    }
+
+    @Override
+    List getDomainClasses() {
+        [Being]
     }
 }
 

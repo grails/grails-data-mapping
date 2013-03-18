@@ -28,7 +28,7 @@ class RangeQuerySpec extends GormDatastoreSpec {
 
     void "Test between query"() {
         given:
-            def age = 40
+            int age = 40
             ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each { new TestEntity(name:it, age: age--, child:new ChildEntity(name:"$it Child")).save() }
 
         when:
@@ -43,9 +43,9 @@ class RangeQuerySpec extends GormDatastoreSpec {
         then:
             3 == results.size()
 
-            results.find{ it.name == "Bob" } != null
-            results.find{ it.name == "Fred" } != null
-            results.find{ it.name == "Barney" } != null
+            results.find { it.name == "Bob" } != null
+            results.find { it.name == "Fred" } != null
+            results.find { it.name == "Barney" } != null
 
         when:
             results = TestEntity.findAllByAgeBetweenOrName(38, 40, "Ernie")
@@ -57,7 +57,7 @@ class RangeQuerySpec extends GormDatastoreSpec {
     void "Test greater than or equal to and less than or equal to queries"() {
         given:
 
-            def age = 40
+            int age = 40
             ["Bob", "Fred", "Barney", "Frank", "Joe", "Ernie"].each { new TestEntity(name:it, age: age--, child:new ChildEntity(name:"$it Child")).save() }
 
         when:
@@ -88,33 +88,33 @@ class RangeQuerySpec extends GormDatastoreSpec {
             new Person(firstName: 'Zack', lastName: 'Galifianakis', age: 41).save()
 
         when:
-            def cnt = Person.countByAgeInRange(14..41)
+            int count = Person.countByAgeInRange(14..41)
 
         then:
-            3 == cnt
+            3 == count
 
         when:
-            cnt = Person.countByAgeInRange(41..14)
+            count = Person.countByAgeInRange(41..14)
 
         then:
-            3 == cnt
+            3 == count
 
         when:
-            cnt = Person.countByAgeInRange(14..<30)
+            count = Person.countByAgeInRange(14..<30)
 
         then:
-            1 == cnt
+            1 == count
 
         when:
-            cnt = Person.countByAgeInRange(14..<42)
+            count = Person.countByAgeInRange(14..<42)
 
         then:
-            3 == cnt
+            3 == count
 
         when:
-            cnt = Person.countByAgeInRange(15..40)
+            count = Person.countByAgeInRange(15..40)
 
         then:
-            0 == cnt
+            0 == count
     }
 }

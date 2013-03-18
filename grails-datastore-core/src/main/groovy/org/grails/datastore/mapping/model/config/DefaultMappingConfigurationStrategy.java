@@ -129,7 +129,6 @@ public class DefaultMappingConfigurationStrategy implements MappingConfiguration
         return getDefaultIdentityMapping(classMapping);
     }
 
-    @Override
     public void setCanExpandMappingContext(boolean canExpandMappingContext) {
         // noop
     }

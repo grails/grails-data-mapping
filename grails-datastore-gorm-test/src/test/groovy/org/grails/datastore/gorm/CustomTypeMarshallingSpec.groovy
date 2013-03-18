@@ -7,10 +7,6 @@ import spock.lang.Shared
 
 class CustomTypeMarshallingSpec extends GormDatastoreSpec {
 
-    static {
-        TEST_CLASSES << Person
-    }
-
     @Shared Date now = new Date()
 
     def setup() {
@@ -107,6 +103,11 @@ class CustomTypeMarshallingSpec extends GormDatastoreSpec {
             session.clear()
             Person.countByBirthdayIsNull() == 1
     }
+
+    @Override
+    List getDomainClasses() {
+        [Person]
+    }
 }
 
 class Person {
@@ -133,7 +134,6 @@ class Birthday implements Comparable {
         obj instanceof Birthday && date == obj.date
     }
 
-    @Override
     int compareTo(t) {
         date.compareTo(t.date)
     }

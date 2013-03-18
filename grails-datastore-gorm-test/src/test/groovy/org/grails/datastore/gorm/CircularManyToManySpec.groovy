@@ -26,6 +26,7 @@ class CircularManyToManySpec extends GormDatastoreSpec {
 
             p1 = CircularPerson.findByName("Fred")
             p2 = CircularPerson.findByName("Bob")
+
         then:"The persisted model is correct"
             p1.name == "Fred"
             p1.friends.size() == 2
@@ -51,8 +52,8 @@ class CircularPerson {
     List<CircularPerson> friends = []
 
     static hasMany = [
-            friends: CircularPerson,
-            enemies: CircularPerson
+        friends: CircularPerson,
+        enemies: CircularPerson
     ]
 
     static mapping = {

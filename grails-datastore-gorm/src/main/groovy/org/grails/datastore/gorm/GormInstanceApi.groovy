@@ -14,14 +14,13 @@
  */
 package org.grails.datastore.gorm
 
-import static org.grails.datastore.mapping.validation.ValidatingEventListener.*
+import grails.validation.ValidationException
 
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.core.VoidSessionCallback
 import org.grails.datastore.mapping.proxy.EntityProxy
-import grails.validation.ValidationException
 
 /**
  * Instance methods of the GORM API.
@@ -38,16 +37,12 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
         super(persistentClass, datastore)
     }
 
-    protected Class<Exception> getValidationException() {
-        this.validationException
-    }
-
     /**
      * Proxy aware instanceOf implementation.
      */
     boolean instanceOf(o, Class cls) {
         if (o instanceof EntityProxy) {
-            return cls.isInstance(o.getTarget())
+            o = o.getTarget()
         }
         return cls.isInstance(o)
     }
@@ -58,8 +53,8 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      */
     D lock(instance) {
         execute({ Session session ->
-                session.lock(instance)
-                return instance
+            session.lock(instance)
+            return instance
         } as SessionCallback)
     }
 
@@ -71,13 +66,13 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      */
     def mutex(instance, Closure callable) {
         execute({ Session session ->
-                try {
-                    session.lock(instance)
-                    callable?.call()
-                }
-                finally {
-                    session.unlock(instance)
-                }
+            try {
+                session.lock(instance)
+                callable?.call()
+            }
+            finally {
+                session.unlock(instance)
+            }
         } as SessionCallback)
     }
 
@@ -88,8 +83,8 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      */
     D refresh(instance) {
         execute({ Session session ->
-                session.refresh instance
-                return instance
+            session.refresh instance
+            return instance
         } as SessionCallback)
     }
 
@@ -140,7 +135,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      */
     D save(instance, Map params) {
         execute({ Session session ->
-                doSave instance, params, session
+            doSave instance, params, session
         } as SessionCallback)
     }
 

@@ -1,9 +1,11 @@
 package grails.gorm.tests
 
+import grails.persistence.Entity
+
 /**
  * @author graemerocher
  */
-@grails.persistence.Entity
+@Entity
 class TestEntity implements Serializable {
     Long id
     Long version

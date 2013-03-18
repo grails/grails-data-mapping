@@ -49,7 +49,7 @@ public class DynamoDBUtil {
      *
      * @param tableName
      * @param tableNamePrefix
-     * @return
+     * @return prefixed table name
      */
     public static String getPrefixedTableName(String tableNamePrefix, String tableName) {
         if (tableNamePrefix != null) {
@@ -62,7 +62,7 @@ public class DynamoDBUtil {
      * Returns mapped table name (*unprefixed*) for the specified @{link PersistentEntity}.
      *
      * @param entity
-     * @return
+     * @return mapped table name
      */
     public static String getMappedTableName(PersistentEntity entity) {
         @SuppressWarnings("unchecked")
@@ -88,7 +88,7 @@ public class DynamoDBUtil {
      *
      * @param entity
      * @param datastore
-     * @return
+     * @return ProvisionedThroughput
      */
     public static ProvisionedThroughput getProvisionedThroughput(PersistentEntity entity, DynamoDBDatastore datastore) {
         @SuppressWarnings("unchecked")
@@ -122,7 +122,7 @@ public class DynamoDBUtil {
      *
      * @param entity
      * @param datastore
-     * @return
+     * @return KeySchema
      */
     public static KeySchema getKeySchema(PersistentEntity entity, DynamoDBDatastore datastore) {
         return DynamoDBUtil.createIdKeySchema(); //current implementation does not handle composite keys //TODO
