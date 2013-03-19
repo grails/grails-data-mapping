@@ -1393,7 +1393,7 @@ public final class GrailsDomainBinder {
             PropertyConfig propConf = mapping.getPropertyConfig(property.getName());
 
             if (propConf != null && propConf.getCascade() != null) {
-// TODO hib4                property.setExplicitSaveUpdateCascade(isSaveUpdateCascade(propConf.getCascade()));
+                property.setExplicitSaveUpdateCascade(isSaveUpdateCascade(propConf.getCascade()));
             }
         }
     }
