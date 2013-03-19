@@ -10,7 +10,6 @@ dependencies {
         exclude group:"org.grails",module: "grails-plugin-converters"
         exclude group:"org.grails",module: "grails-logging"
         exclude group:"org.grails",module: "grails-test"
-        exclude group:"org.grails",module: "grails-hibernate"
         exclude group:"org.grails",module: "grails-datastore-gorm"
         exclude group:"org.grails",module: "grails-datastore-core"
         exclude group:"org.grails",module: "grails-datastore-simple"

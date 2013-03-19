@@ -45,6 +45,12 @@ dependencies {
             'com.sun.jersey:jersey-server:1.9',
             'com.sun.jersey:jersey-core:1.9',
             'com.sun.jersey:jersey-client:1.9'
+    testRuntime("org.grails:grails-plugin-domain-class:$grailsVersion") {
+        exclude group: 'org.grails', module:'grails-plugin-testing'
+        exclude group: 'org.grails', module:'grails-datastore-core'
+        exclude group: 'org.grails', module:'grails-datastore-gorm'
+        exclude group: 'org.grails', module:'grails-datastore-simple'
+    }
 }
 
 /*
