@@ -14,12 +14,10 @@
  */
 package org.grails.datastore.gorm
 
-import org.grails.datastore.gorm.internal.InstanceMethodInvokingClosure
-import org.grails.datastore.gorm.internal.StaticMethodInvokingClosure
-
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
+import org.codehaus.groovy.grails.commons.GrailsMetaClassUtils
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.codehaus.groovy.runtime.metaclass.ClosureStaticMetaMethod
 import org.grails.datastore.gorm.finders.CountByFinder
@@ -31,6 +29,8 @@ import org.grails.datastore.gorm.finders.FindOrCreateByFinder
 import org.grails.datastore.gorm.finders.FindOrSaveByFinder
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.gorm.finders.ListOrderByFinder
+import org.grails.datastore.gorm.internal.InstanceMethodInvokingClosure
+import org.grails.datastore.gorm.internal.StaticMethodInvokingClosure
 import org.grails.datastore.gorm.query.NamedQueriesBuilder
 import org.grails.datastore.gorm.validation.constraints.UniqueConstraintFactory
 import org.grails.datastore.mapping.core.Datastore
@@ -76,7 +76,7 @@ class GormEnhancer {
      */
     void enhance(boolean onlyExtendedMethods = false) {
         for (PersistentEntity e in datastore.mappingContext.persistentEntities) {
-            enhance e
+            enhance e, onlyExtendedMethods
         }
     }
 
@@ -100,7 +100,7 @@ class GormEnhancer {
             registerNamedQueries(e, closure)
         }
 
-        ExpandoMetaClass mc = org.codehaus.groovy.grails.commons.GrailsMetaClassUtils.getExpandoMetaClass(cls)
+        ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
         for (currentInstanceMethods in instanceMethods) {
             def apiProvider = currentInstanceMethods
             if (GormInstanceApi.isInstance(apiProvider)) {
@@ -192,7 +192,6 @@ class GormEnhancer {
                         }
                         delegate
                     }
-
                 }
             }
         }
@@ -245,4 +244,3 @@ class GormEnhancer {
         this.finders = Collections.unmodifiableList(getAllDynamicFinders())
     }
 }
-
