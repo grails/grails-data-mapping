@@ -45,8 +45,7 @@ class Neo4jTransaction implements Transaction {
         }
         nativeTransaction.success()
         nativeTransaction.finish()
-        //nativeTransaction = graphDatabaseService.beginTx()
-//        active = false
+        active = false
     }
 
     void rollback() {
@@ -55,8 +54,7 @@ class Neo4jTransaction implements Transaction {
         }
         nativeTransaction.failure()
         nativeTransaction.finish()
-        //nativeTransaction = graphDatabaseService.beginTx()
-//        active = false
+        active = false
     }
 
     Object getNativeTransaction() {

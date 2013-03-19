@@ -10,13 +10,15 @@ grails.project.dependency.resolution = {
     log "warn"
 
     repositories {
+        inherits true
+
         grailsPlugins()
         grailsHome()
         mavenLocal()   // for picking up self-built snapshots before fetching from grailsCentral
         grailsCentral()
-
         mavenCentral()
-        mavenRepo 'http://m2.neo4j.org/releases'
+
+        //mavenRepo 'http://m2.neo4j.org/releases'
         mavenRepo "http://repo.grails.org/grails/repo"
     }
 
@@ -33,9 +35,10 @@ grails.project.dependency.resolution = {
             transitive = false
         }
 
-        def datastoreVersion = "1.1.4.BUILD-SNAPSHOT"
-        def neo4jDatastoreVersion = "1.0.0.BUILD-SNAPSHOT"
-        //def neo4jDatastoreVersion = "1.0.0.M15"
+        //def datastoreVersion = "1.1.4.BUILD-SNAPSHOT"
+        def datastoreVersion = "1.1.6.RELEASE"
+        //def neo4jDatastoreVersion = "1.0.0.BUILD-SNAPSHOT"
+        def neo4jDatastoreVersion = "1.0.0.RC1"
 
         compile("org.grails:grails-datastore-gorm-neo4j:$neo4jDatastoreVersion",
                 "org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
@@ -46,7 +49,7 @@ grails.project.dependency.resolution = {
         test("org.grails:grails-datastore-gorm-test:$datastoreVersion",
              "org.grails:grails-datastore-simple:$datastoreVersion", exlcudes)
 
-        compile('org.neo4j:neo4j-community:1.8')
+        compile('org.neo4j:neo4j-community:1.8.2')
     }
 
     plugins {
@@ -59,11 +62,11 @@ grails.project.dependency.resolution = {
         runtime ":tomcat:$grailsVersion", {
             export = false
         }
-        build ":release:2.0.4", {
+        build ":release:2.2.1", {
             export = false
         }
         //runtime ":svn:1.0.2"
-        test ":spock:0.6", {
+        test ":spock:0.7", {
             export = false
         }
     }

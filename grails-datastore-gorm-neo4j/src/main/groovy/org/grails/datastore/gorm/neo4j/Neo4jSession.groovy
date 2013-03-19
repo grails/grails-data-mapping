@@ -114,7 +114,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
     @Override
     Transaction beginTransaction() {
-        if (!transaction) {
+        if ((!transaction) || (!transaction.active)) {
             transaction = new Neo4jTransaction(nativeInterface)
         }
         transaction

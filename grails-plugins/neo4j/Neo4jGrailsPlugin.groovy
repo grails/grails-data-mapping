@@ -20,11 +20,9 @@ class Neo4jGrailsPlugin {
     def issueManagement = [ system: "JIRA", url: "https://github.com/SpringSource/grails-data-mapping/issues" ]
     def scm = [ url: "https://github.com/sarmbruster/grails-data-mapping" ]
 
-    //def version = "1.0.0.M6"
-    def version = "1.0.0.SNAPSHOT"
+    def version = "1.0.0.RC1"
+    //def version = "1.0.0.SNAPSHOT"
     def grailsVersion = "1.2 > *"
-    //def observe = ['services']
-    //def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry']
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry', 'converters']
     def observe = ['services', 'domainClass']
         
@@ -56,11 +54,6 @@ class Neo4jGrailsPlugin {
 
         setupGetOrSet()
 
-//        NodeProxy.metaClass.propertyMissing = getOrSet
-//        RelationshipProxy.metaClass.propertyMissing = getOrSet
-        //RestNode.metaClass.propertyMissing = getOrSet
-        //Relationship.metaClass.propertyMissing = getOrSet
-
         setupJsonMarshallers(ctx)
     }
 
@@ -74,7 +67,7 @@ class Neo4jGrailsPlugin {
         })
 
 
-        JSON.registerObjectMarshaller(NodeProxy, 1000) { n ->
+        JSON.registerObjectMarshaller(NodeProxy) { n ->
             def m = [:]
             m.id = n.id
             n.propertyKeys.each { k ->
@@ -84,7 +77,7 @@ class Neo4jGrailsPlugin {
             m
         }
 
-        JSON.registerObjectMarshaller(RelationshipProxy.class) { r ->
+        JSON.registerObjectMarshaller(RelationshipProxy) { r ->
             def m = [:]
             m.id = r.id
             m.type = r.type.name()

@@ -1,9 +1,8 @@
-version = "1.0.0.BUILD-SNAPSHOT"
-//version = "1.0.0.M16"
+//version = "1.0.0.BUILD-SNAPSHOT"
+version = "1.0.0.RC1"
 
-ext.neo4jVersion = "1.8"
-ext.gdmVersion = "1.1.1.RELEASE"
-ext.gdmTestVersion = "1.1.0.RELEASE"
+ext.neo4jVersion = "1.8.2"
+ext.gdmVersion = "1.1.6.RELEASE"
 
 repositories {
     //mavenLocal()
@@ -11,7 +10,7 @@ repositories {
 
     // some artifacts used are not available on mavenCentral
     maven { url "http://m2.neo4j.org/content/repositories/releases/" }
-    maven { url "http://m2.neo4j.org/content/repositories/snapshots/" }
+//    maven { url "http://m2.neo4j.org/content/repositories/snapshots/" }
 //    maven { url "http://repo.grails.org/grails/core" }
 }
 
