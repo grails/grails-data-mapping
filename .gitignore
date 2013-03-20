@@ -21,3 +21,5 @@ stacktrace.log
 .idea/*
 classes/*
 bin/
+
+grails-plugins/mongodb/grails-mongodb-1.0.0.RC5.zip.sha1

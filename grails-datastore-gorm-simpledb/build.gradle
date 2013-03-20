@@ -18,7 +18,6 @@ dependencies {
 
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")
-    testRuntime "org.grails:grails-hibernate:$grailsVersion"
 }
 
 configurations {

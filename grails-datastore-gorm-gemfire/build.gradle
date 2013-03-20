@@ -10,7 +10,6 @@ dependencies {
             project(":grails-datastore-gemfire"),
             project(":grails-datastore-core")
 
-    testRuntime "org.grails:grails-hibernate:$grailsVersion"
     testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")
 }

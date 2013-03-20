@@ -2,15 +2,15 @@ dependencies {
 
     compile project(":grails-datastore-gorm")
     compile project(":grails-datastore-web")
-    compile "org.grails:grails-test:$grailsVersion"
-    compile "org.grails:grails-core:$grailsVersion"
+    compile "org.grails:grails-core:$grailsVersion", {
+        transitive = false
+    }
     compile("org.grails:grails-bootstrap:$grailsVersion") {
         transitive = false
     }
 
-    testRuntime "org.grails:grails-web:$grailsVersion"
+    //testRuntime "org.grails:grails-web:$grailsVersion"
     testRuntime 'javax.servlet:javax.servlet-api:3.0.1'
-    testRuntime "org.grails:grails-hibernate:$grailsVersion"
 
     testCompile project(":grails-datastore-gorm-test")
 }

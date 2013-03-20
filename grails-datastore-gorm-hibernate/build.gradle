@@ -17,6 +17,7 @@ dependencies {
     compile(project(":grails-datastore-gorm")) {
         exclude group: 'org.grails', module:'grails-bootstrap'
         exclude group: 'org.grails', module:'grails-core'
+        exclude group: 'org.grails', module:'grails-async'
         exclude group: 'org.grails', module:'grails-plugin-testing'
         exclude group: 'org.slf4j', module:'jcl-over-slf4j'
         exclude group: 'org.slf4j', module:'jul-to-slf4j'
@@ -94,12 +95,17 @@ dependencies {
     testCompile("org.grails:grails-core:$grailsVersion")
     testCompile("org.grails:grails-bootstrap:$grailsVersion")
     testCompile("org.grails:grails-plugin-domain-class:$grailsVersion") {
+        transitive = false
         exclude group: 'org.grails', module:'grails-plugin-testing'
         exclude group: 'org.grails', module:'grails-datastore-core'
         exclude group: 'org.grails', module:'grails-datastore-gorm'
     }
     testCompile("org.grails:grails-web:$grailsVersion")
-    testCompile("org.grails:grails-plugin-controllers:$grailsVersion")
+    testCompile("org.grails:grails-plugin-controllers:$grailsVersion") {
+        transitive = false
+        exclude group: 'org.grails', module:'grails-plugin-domain-class'
+        exclude group: 'org.grails', module:'grails-web'
+    }
 
     testRuntime "javax.servlet:servlet-api:2.5"
 }

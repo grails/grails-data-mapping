@@ -1,5 +1,5 @@
-//version = "1.0.0.BUILD-SNAPSHOT"
-version = "1.0.0.RC1"
+version = "1.0.0.BUILD-SNAPSHOT"
+//version = "1.0.0.RC1"
 
 ext.neo4jVersion = "1.8.2"
 ext.gdmVersion = "1.1.6.RELEASE"
@@ -40,7 +40,6 @@ dependencies {
             [group: "org.neo4j", name: "neo4j-rest-graphdb", version: '1.8'],
             [group: "org.neo4j", name: "neo4j-rest-graphdb", version: '1.8', classifier: 'tests'],
             "org.neo4j:neo4j-graphviz:$neo4jVersion"
-    testRuntime "org.grails:grails-hibernate:$grailsVersion"
     testRuntime "javax.servlet:servlet-api:2.5",
             "org.grails:grails-web:$grailsVersion",
             'com.sun.jersey:jersey-server:1.9',

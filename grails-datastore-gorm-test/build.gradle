@@ -1,8 +1,5 @@
 dependencies {
-    compile "org.grails:grails-test:$grailsVersion", {
-        exclude group:"org.grails",module: "grails-datastore-gorm"
-    }
-    compile "org.grails:grails-plugin-testing:$grailsVersion", {
+    def excludes = {
         exclude group:"org.grails",module: "grails-plugin-url-mappings"
         exclude group:"org.grails",module: "grails-plugin-servlets"
         exclude group:"org.grails",module: "grails-plugin-controllers"
@@ -20,19 +17,19 @@ dependencies {
         exclude group:"org.grails",module: "grails-datastore-gorm"
     }
 
+    compile "org.grails:grails-test:$grailsVersion", excludes   
+    compile "org.grails:grails-plugin-testing:$grailsVersion", excludes
+
     compile project(":grails-datastore-gorm"),
             project(":grails-datastore-simple"),
             project(":grails-datastore-core")
 
-    compile "org.grails:grails-test:$grailsVersion"
-    compile "org.grails:grails-core:$grailsVersion"
-    compile("org.grails:grails-bootstrap:$grailsVersion") {
-        transitive = false
-    }
+    compile "org.grails:grails-test:$grailsVersion",excludes
+    compile "org.grails:grails-core:$grailsVersion",excludes
+    compile("org.grails:grails-bootstrap:$grailsVersion",excludes)
 
     testCompile project(":grails-datastore-gorm-tck")
     testRuntime "javax.servlet:servlet-api:2.5"
-    testRuntime "org.grails:grails-web:$grailsVersion"
+    testRuntime "org.grails:grails-web:$grailsVersion",excludes
     testRuntime "log4j:log4j:1.2.16"
-    testRuntime "org.grails:grails-hibernate:$grailsVersion"
 }
