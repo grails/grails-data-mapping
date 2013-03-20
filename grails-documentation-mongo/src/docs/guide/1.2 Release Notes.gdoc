@@ -1,5 +1,11 @@
 Below are the details of the changes across releases:
 
+h4. 1.2 
+	
+{warning}
+MongoDB plugin 1.2 and above requires Grails 2.1.5 or 2.2.1 as a minimum Grails version, if you are using older versions of Grails you will need to stay with 1.1
+{warning}
+
 h4. 1.1 GA
 
 * DBRefs no longer used by default for associations
