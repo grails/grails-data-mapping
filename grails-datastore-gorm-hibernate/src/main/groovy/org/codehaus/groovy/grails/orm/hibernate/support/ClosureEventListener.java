@@ -38,7 +38,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.Mapping;
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.AbstractDynamicPersistentMethod;
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.AbstractSavePersistentMethod;
-import org.codehaus.groovy.grails.orm.hibernate.metaclass.BeforeValidateHelper;
+import org.grails.datastore.gorm.support.BeforeValidateHelper;
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ValidatePersistentMethod;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
