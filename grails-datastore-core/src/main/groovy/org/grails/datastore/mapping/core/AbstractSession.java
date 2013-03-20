@@ -86,8 +86,6 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
     protected TPCacheAdapterRepository cacheAdapterRepository;
 
-    protected Map<Object, Serializable> objectToKey = new ConcurrentHashMap<Object, Serializable>();
-
     private Map<PersistentEntity, Collection<PendingInsert>> pendingInserts =
         new Builder<PersistentEntity, Collection<PendingInsert>>()
            .listener(EXCEPTION_THROWING_INSERT_LISTENER)
@@ -351,7 +349,6 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         pendingUpdates.clear();
         pendingDeletes.clear();
         attributes.clear();
-        objectToKey.clear();
         exceptionOccurred = false;
     }
 
@@ -406,7 +403,6 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         if (type == null || key == null || instance == null) {
             return;
         }
-        objectToKey.put(instance, key);
         getInstanceCache(type).put(key, instance);
     }
 
@@ -425,10 +421,10 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
         final Map<Serializable, Object> cache = firstLevelCache.get(o.getClass());
         if (cache != null) {
-            Serializable key = objectToKey.get(o);
+            Persister persister = getPersister(o);
+            Serializable key = persister.getObjectIdentifier(o);
             if (key != null) {
                 cache.remove(key);
-                objectToKey.remove(o);
             }
         }
 
