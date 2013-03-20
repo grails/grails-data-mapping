@@ -427,8 +427,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
                 cache.remove(key);
             }
         }
-
-        attributes.remove(o);
+        removeAttributesForEntity(o);
     }
 
     public void attach(Object o) {

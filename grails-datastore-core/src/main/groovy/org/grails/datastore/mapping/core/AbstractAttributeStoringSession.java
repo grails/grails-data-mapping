@@ -56,6 +56,13 @@ public abstract class AbstractAttributeStoringSession implements Session {
         return attrs.get(attributeName);
     }
 
+    protected void removeAttributesForEntity(Object entity) {
+        if (entity == null) {
+            return;
+        }
+        attributes.remove(System.identityHashCode(entity));
+    }
+
     /**
      * Performs clear up. Subclasses should always call into this super
      * implementation.
