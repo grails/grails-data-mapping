@@ -483,13 +483,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                 boolean isLazy = isLazyAssociation(associationPropertyMapping);
 
                                 final Class propType = prop.getType();
-                                if (isLazy) {
-                                    Object proxy = getProxyFactory().createProxy(session, propType, associationKey);
-                                    ea.setProperty(prop.getName(), proxy);
-                                }
-                                else {
-                                    ea.setProperty(prop.getName(), session.retrieve(propType, associationKey));
-                                }
+                                Object value = isLazy ?
+                                        session.proxy(propType, associationKey) :
+                                        session.retrieve(propType, associationKey);
+                                ea.setProperty(prop.getName(), value);
                             }
                         }
                     }

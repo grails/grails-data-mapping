@@ -516,7 +516,13 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
                     "]. The class [" + type.getName() + "] is not a known persistent type.");
         }
 
-        return persister.proxy(key);
+        // only return proxy if real instance is not available.
+        Object o = getInstanceCache(type).get(key);
+        if (o == null) {
+            o = persister.proxy(key);
+        }
+
+        return o;
     }
 
     public void lock(Object o) {
