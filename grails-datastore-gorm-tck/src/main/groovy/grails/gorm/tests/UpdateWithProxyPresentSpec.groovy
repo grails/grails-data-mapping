@@ -10,6 +10,11 @@ import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
  */
 class UpdateWithProxyPresentSpec extends GormDatastoreSpec {
 
+    @Override
+    List getDomainClasses() {
+        [Pet, Person, PetType, Parent, Child]
+    }
+
     void "Test update entity with association proxies"() {
         given:
             session.mappingContext.setProxyFactory(new GroovyProxyFactory())
@@ -37,9 +42,30 @@ class UpdateWithProxyPresentSpec extends GormDatastoreSpec {
             personPet.type.id == petType.id
     }
 
-    @Override
-    List getDomainClasses() {
-        [Pet, Person, PetType]
+    void "Test update unidirectional oneToMany with proxy"() {
+        given:
+        session.mappingContext.setProxyFactory(new GroovyProxyFactory())
+        def parent = new Parent(name: "Bob").save(flush: true)
+        def child = new Child(name: "Bill").save(flush: true)
+        session.clear()
+
+        when:
+        parent = Parent.get(parent.id)
+        child = Child.load(child.id) // make sure we've got a proxy.
+        parent.addToChildren(child)
+        parent.save(flush: true)
+        session.clear()
+        parent = Parent.get(parent.id)
+
+        then:
+        parent.name == 'Bob'
+        parent.children.size() == 1
+
+        when:
+        child = parent.children.first()
+
+        then:
+        child.name == "Bill"
     }
 }
 
@@ -118,3 +144,18 @@ class PetType implements Serializable {
 
     static belongsTo = Pet
 }
+
+@Entity
+class Parent {
+    Long id
+    String name
+    Set<Child> children = []
+    static hasMany = [children: Child]
+}
+
+@Entity
+class Child {
+    Long id
+    String name
+}
+

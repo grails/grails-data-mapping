@@ -110,4 +110,11 @@ public interface Persister {
      * @return The objects id
      */
     Serializable refresh(Object o);
+
+    /**
+     * Get the identifier for the given object, if it has one.
+     * @param o The object.
+     * @return The object's id.
+     */
+    Serializable getObjectIdentifier(Object o);
 }

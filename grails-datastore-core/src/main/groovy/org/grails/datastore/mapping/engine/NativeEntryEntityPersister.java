@@ -483,13 +483,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                                 boolean isLazy = isLazyAssociation(associationPropertyMapping);
 
                                 final Class propType = prop.getType();
-                                if (isLazy) {
-                                    Object proxy = getProxyFactory().createProxy(session, propType, associationKey);
-                                    ea.setProperty(prop.getName(), proxy);
-                                }
-                                else {
-                                    ea.setProperty(prop.getName(), session.retrieve(propType, associationKey));
-                                }
+                                Object value = isLazy ?
+                                        session.proxy(propType, associationKey) :
+                                        session.retrieve(propType, associationKey);
+                                ea.setProperty(prop.getName(), value);
                             }
                         }
                     }
@@ -781,6 +778,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     @Override
     protected final Serializable persistEntity(final PersistentEntity persistentEntity, Object obj) {
         T tmp = null;
+        ProxyFactory proxyFactory = getProxyFactory();
+        // if called internally, obj can potentially be a proxy, which won't work.
+        obj = proxyFactory.unwrap(obj);
         final NativeEntryModifyingEntityAccess entityAccess = (NativeEntryModifyingEntityAccess) createEntityAccess(persistentEntity, obj, tmp);
 
         K k = readObjectIdentifier(entityAccess, persistentEntity.getMapping());
@@ -937,7 +937,6 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     if (associatedObject != null) {
                         Serializable associationId;
                         NativeEntryEntityPersister associationPersister = (NativeEntryEntityPersister) session.getPersister(associatedObject);
-                        ProxyFactory proxyFactory = getProxyFactory();
                         if (proxyFactory.isInitialized(associatedObject) && !session.contains(associatedObject)) {
                             Serializable tempId = associationPersister.getObjectIdentifier(associatedObject);
                             if (tempId == null) {
