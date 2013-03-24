@@ -135,7 +135,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             return;
         }
 
-        nativeEntry.put(key, embeddedEntries.toArray());
+        nativeEntry.put(key, embeddedEntries);
     }
 
     /**
@@ -198,8 +198,8 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             instances = new HashSet<Object>();
         }
 
-        if (embeddedInstances instanceof BasicDBList) {
-            BasicDBList list = (BasicDBList)embeddedInstances;
+        if (embeddedInstances instanceof List) {
+            List list = (List)embeddedInstances;
             for (Object dbo : list) {
                 if (dbo instanceof BasicDBObject) {
                     BasicDBObject nativeEntry = (BasicDBObject)dbo;
