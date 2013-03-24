@@ -78,6 +78,41 @@ class DBObjectConversionSpec extends GormDatastoreSpec {
             Boat.count() == 1
     }
 
+    void "Test that an entity can be round-tripped to dbo and back"() {
+        given:"A domain model with embedded associations that have non-embedded associations"
+        createCrew()
+
+        when:"The model is converted to a dbo and back"
+        Boat boat = Boat.findAll().get(0).dbo as Boat
+
+        then:"The copy matches the original"
+        boat != null
+        boat.name == "The Float"
+        boat.captain != null
+        boat.captain.name == 'Bob'
+        boat.crew.size() == 2
+        boat.crew[0].name == 'Fred'
+        boat.crew[0].captain != null
+        boat.crew[0].captain.name == 'Bob'
+        boat.captain.shipmates.size() == 1
+
+        when:"The association is updated"
+        boat.crew.pop()
+        boat.save(flush: true)
+        boat = boat.dbo as Boat
+
+        then:"The model is correct"
+        boat != null
+        boat.name == "The Float"
+        boat.captain != null
+        boat.captain.name == 'Bob'
+        boat.crew.size() == 1
+        boat.crew[0].name == 'Fred'
+        boat.crew[0].captain != null
+        boat.crew[0].captain.name == 'Bob'
+        boat.captain.shipmates.size() == 1
+    }
+
     private createCrew() {
         final captain = new Captain(name: "Bob").save()
         final firstMate = new Sailor(name: "Jim", captain: captain)
