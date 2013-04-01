@@ -367,6 +367,14 @@ class MiscSpec extends GormDatastoreSpec {
         tournament.teams.size()==1
 
     }
+
+    def "null values on complex properties work on save"() {
+        when:
+        def c = new CommonTypes()
+
+        then:
+        c.save(flush: true)
+    }
 }
 
 @Entity
