@@ -265,7 +265,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                 def value = entityAccess.getProperty(prop.name)
                 switch (prop) {
                     case Simple:
-                        if (!ALLOWED_CLASSES_NEO4J_PROPERTIES.contains(prop.type)) {
+                        if ((value!=null) && (!ALLOWED_CLASSES_NEO4J_PROPERTIES.contains(prop.type))) {
                             try {
                                 value = mappingContext.conversionService.convert(value, Long.TYPE)
                             } catch (ConverterNotFoundException e) {
