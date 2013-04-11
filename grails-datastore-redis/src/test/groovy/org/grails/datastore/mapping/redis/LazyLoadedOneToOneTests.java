@@ -52,6 +52,8 @@ public class LazyLoadedOneToOneTests extends AbstractRedisTest {
         a.setPostCode("308420");
         p.setAddress(a);
         session.persist(p);
+        session.flush();
+        session.clear();
 
         Person personProxy = session.proxy(Person.class, p.getId());
 
