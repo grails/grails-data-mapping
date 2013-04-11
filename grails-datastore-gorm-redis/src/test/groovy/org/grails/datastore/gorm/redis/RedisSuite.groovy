@@ -1,5 +1,6 @@
 package org.grails.datastore.gorm.redis
 
+import grails.gorm.tests.EnumSpec
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 import org.junit.runners.Suite.SuiteClasses
@@ -31,7 +32,7 @@ import grails.gorm.tests.DeleteAllSpec
  */
 @RunWith(Suite)
 @SuiteClasses([
-    DomainEventsSpec,
+//    DomainEventsSpec,
 //    ProxyLoadingSpec,
 //    QueryAfterPropertyChangeSpec,
 //    CircularOneToManySpec,
@@ -39,7 +40,7 @@ import grails.gorm.tests.DeleteAllSpec
 //    FindByMethodSpec,
 //    ListOrderBySpec,
 //    GroovyProxySpec,
-//    CommonTypesPersistenceSpec,
+    CommonTypesPersistenceSpec,
 //    GormEnhancerSpec,
 //    CriteriaBuilderSpec,
 //    NegationSpec,
@@ -51,8 +52,10 @@ import grails.gorm.tests.DeleteAllSpec
 //    AttachMethodSpec,
 //    WithTransactionSpec,
 //    CrudOperationsSpec
-SaveAllSpec,
-DeleteAllSpec
+//SaveAllSpec,
+//DeleteAllSpec
+//    DomainEventsSpec
+//    EnumSpec
 ])
 class RedisSuite {
 }

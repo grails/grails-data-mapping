@@ -30,7 +30,6 @@ import org.grails.datastore.mapping.core.AbstractAttributeStoringSession
 import javax.persistence.FlushModeType
 import org.grails.datastore.mapping.query.Query
 import java.util.concurrent.ConcurrentHashMap
-import org.apache.commons.lang.NotImplementedException
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Simple
 import org.codehaus.groovy.runtime.NullObject
@@ -175,7 +174,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                         }
                         break
                     default:
-                        throw new NotImplementedException()
+                        throw new UnsupportedOperationException()
                 }
             }
         }
@@ -206,7 +205,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
     @Override
     void refresh(Object o) {
-        throw new NotImplementedException()
+        throw new UnsupportedOperationException()
     }
 
     @Override
@@ -307,7 +306,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                         break
 
                     default:
-                        throw new NotImplementedException("don't know how to store $prop ${prop.getClass().superclass}")
+                        throw new UnsupportedOperationException("don't know how to store $prop ${prop.getClass().superclass}")
 
                 }
             }
@@ -429,7 +428,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                         addObjectToReverseSide(referencePropertyAccess, association, obj)
                         break
                     default:
-                        throw new NotImplementedException("setting inverse side of bidi, ${association.getClass().superclass}")
+                        throw new UnsupportedOperationException("setting inverse side of bidi, ${association.getClass().superclass}")
                 }
             }
         }
@@ -543,7 +542,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                             }
 
                             default:
-                            throw new NotImplementedException("don't know how to read $prop ${prop.getClass().superclass}")
+                                throw new UnsupportedOperationException("don't know how to read $prop ${prop.getClass().superclass}")
                     }
                 }
                 applicationEventPublisher.publishEvent(new PostLoadEvent(datastore, pe, entityAccess))
@@ -614,7 +613,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
     @Override
     def <T> T lock(Class<T> type, Serializable key) {
-        throw new NotImplementedException()
+        throw new UnsupportedOperationException()
     }
 
     @Override
@@ -692,7 +691,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
 
     @Override
     boolean isDirty(Object instance) {
-        throw new NotImplementedException()
+        throw new UnsupportedOperationException()
     }
 
     private def addObjectToReverseSide(EntityAccess reverseEntityAccess, Association association, objectToSet) {
@@ -712,7 +711,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                 reverseEntityAccess.setProperty(association.referencedPropertyName, objectToSet)
                 break
             default:
-                throw new NotImplementedException()
+                throw new UnsupportedOperationException()
         }
         if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
             log.debug "addObjectToReverseSide: property value $propertyValue"

@@ -14,7 +14,6 @@
  */
 package org.grails.datastore.gorm.neo4j
 
-import org.apache.commons.lang.NotImplementedException
 import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.Query
@@ -38,47 +37,47 @@ class DummyEntityPersister extends EntityPersister {
 
     @Override
     protected List<Object> retrieveAllEntities(PersistentEntity pe, Serializable[] keys) {
-        throw new NotImplementedException()
+        throw new UnsupportedOperationException()
     }
 
     @Override
     protected List<Object> retrieveAllEntities(PersistentEntity pe, Iterable<Serializable> keys) {
-        throw new NotImplementedException()
+        throw new UnsupportedOperationException()
     }
 
     @Override
     protected List<Serializable> persistEntities(PersistentEntity pe, Iterable objs) {
-        throw new NotImplementedException()
+        throw new UnsupportedOperationException()
     }
 
     @Override
     protected Object retrieveEntity(PersistentEntity pe, Serializable key) {
-        throw new NotImplementedException()
+        throw new UnsupportedOperationException()
     }
 
     @Override
     protected Serializable persistEntity(PersistentEntity pe, Object obj) {
-        throw new NotImplementedException()
+        throw new UnsupportedOperationException()
     }
 
     @Override
     protected void deleteEntity(PersistentEntity pe, Object obj) {
-        throw new NotImplementedException()
+        throw new UnsupportedOperationException()
     }
 
     @Override
     protected void deleteEntities(PersistentEntity pe, Iterable objects) {
-        throw new NotImplementedException()
+        throw new UnsupportedOperationException()
     }
 
     @Override
     Query createQuery() {
-        throw new NotImplementedException()
+        throw new UnsupportedOperationException()
     }
 
     @Override
     Serializable refresh(Object o) {
-        throw new NotImplementedException()
+        throw new UnsupportedOperationException()
     }
 
 }

@@ -34,7 +34,6 @@ import org.grails.datastore.mapping.model.types.Association
 import org.neo4j.graphdb.index.IndexManager
 import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.BooleanClause
-import org.apache.commons.lang.NotImplementedException
 import org.apache.lucene.search.TermQuery
 import org.apache.lucene.index.Term
 import org.slf4j.LoggerFactory
@@ -66,7 +65,7 @@ class Neo4jQuery extends Query {
                 executeQueryViaIndex(entity, criteria)
             } catch (UnsupportedOperationException e) {
                 executeQueryViaRelationships(entity, criteria)
-            } catch (NotImplementedException e) {
+            } catch (UnsupportedOperationException e) {
                 executeQueryViaRelationships(entity, criteria)
             }
         } else {
@@ -137,7 +136,7 @@ class Neo4jQuery extends Query {
                 break
             // TODO: amend other cases
             default:
-                throw new NotImplementedException("criterion $criterion for index queries".toString())
+                throw new UnsupportedOperationException("criterion $criterion for index queries".toString())
         }
     }
 

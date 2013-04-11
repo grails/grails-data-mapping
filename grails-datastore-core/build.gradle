@@ -22,10 +22,9 @@ dependencies {
         exclude group:'org.springframework', module:'spring-beans'
         exclude group:'org.springframework', module:'spring-asm'
     }
-    compile 'javax.persistence:persistence-api:1.0'
-    compile 'org.javassist:javassist:3.16.1-GA'
+    compile 'org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final'
+    compile 'org.javassist:javassist:3.17.1-GA'
     compile 'javax.transaction:jta:1.1'
-    compile 'commons-collections:commons-collections:3.2'
 
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     compile "org.slf4j:jcl-over-slf4j:$slf4jVersion"

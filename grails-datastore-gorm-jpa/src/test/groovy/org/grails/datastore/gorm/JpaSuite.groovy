@@ -15,6 +15,7 @@ import grails.gorm.tests.NamedQuerySpec
 import grails.gorm.tests.NegationSpec
 import grails.gorm.tests.OneToManySpec
 import grails.gorm.tests.OrderBySpec
+import grails.gorm.tests.PersistenceEventListenerSpec
 import grails.gorm.tests.ProxyLoadingSpec
 import grails.gorm.tests.QueryAfterPropertyChangeSpec
 import grails.gorm.tests.RangeQuerySpec
@@ -36,7 +37,7 @@ import grails.gorm.tests.DeleteAllSpec
 //  OneToManySpec,
 //  SaveAllSpec,
 //  GormEnhancerSpec,
-//  DomainEventsSpec,
+//  DomainEventsSpec
 //  ProxyLoadingSpec,
 //  QueryAfterPropertyChangeSpec,
 //  CircularOneToManySpec,
@@ -56,9 +57,11 @@ import grails.gorm.tests.DeleteAllSpec
 //  WithTransactionSpec,
 //  CrudOperationsSpec
    // WhereMethodSpec
-UniqueConstraintSpec,
-SaveAllSpec,
-DeleteAllSpec
+//UniqueConstraintSpec,
+//SaveAllSpec,
+//DeleteAllSpec
+//    PersistenceEventListenerSpec
+UpdateWithProxyPresentSpec
 ])
 class JpaSuite {
 

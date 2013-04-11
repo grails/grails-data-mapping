@@ -12,14 +12,15 @@ import org.junit.runner.RunWith
 @SuiteClasses([
 //  RangeQuerySpec,
 //  NamedQuerySpec,
-OneToOneSpec,
+//OneToOneSpec,
 //  CriteriaBuilderSpec,
 //  OrderBySpec,
 //  CommonTypesPersistenceSpec,
 //  QueryAfterPropertyChangeSpec,
 //  QueryByAssociationSpec,
 //  UpdateWithProxyPresentSpec,
-//  DomainEventsSpec,
+//  DomainEventsSpec
+    PersistenceEventListenerSpec
 //  ProxyLoadingSpec,
 //  QueryAfterPropertyChangeSpec,
 //  CircularOneToManySpec,

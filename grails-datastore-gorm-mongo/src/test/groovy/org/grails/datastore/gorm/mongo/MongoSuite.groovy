@@ -7,6 +7,8 @@ import org.junit.runners.Suite
 import org.junit.runners.Suite.SuiteClasses
 import grails.gorm.tests.PagedResultSpec
 import grails.gorm.tests.EnumSpec
+import grails.gorm.tests.OrderBySpec
+import grails.gorm.tests.OneToManySpec
 
 /**
  * @author graemerocher
@@ -34,6 +36,9 @@ import grails.gorm.tests.EnumSpec
 //  WithTransactionSpec,
 //  CrudOperationsSpec
 //    PagedResultSpec
+//    EnumSpec
+//    OrderBySpec
+//    OneToManySpec
     EnumSpec
 ])
 class MongoSuite {

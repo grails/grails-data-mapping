@@ -7,7 +7,7 @@ import org.neo4j.graphdb.DynamicRelationshipType
 import org.grails.datastore.mapping.model.types.Association
 import org.slf4j.LoggerFactory
 import org.grails.datastore.mapping.model.types.ManyToOne
-import org.apache.commons.lang.ClassUtils
+import org.springframework.util.ClassUtils
 
 /**
  * Collection of static util methods regarding Neo4j
@@ -60,7 +60,7 @@ abstract class Neo4jUtils {
      */
     static boolean doesNodeMatchType(Node node, Class clazz) {
         try {
-            def nodeClass = ClassUtils.getClass(node.getProperty(Neo4jSession.TYPE_PROPERTY_NAME, null))
+            def nodeClass = ClassUtils.forName(node.getProperty(Neo4jSession.TYPE_PROPERTY_NAME, null))
             clazz.isAssignableFrom(nodeClass)
         } catch (ClassNotFoundException e) {
             false

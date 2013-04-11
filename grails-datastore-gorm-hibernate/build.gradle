@@ -4,7 +4,9 @@ configurations {
 
 dependencies {
 
-    compile("org.grails:grails-core:$grailsVersion")
+    compile("org.grails:grails-core:$grailsVersion") {
+        exclude group:'commons-logging',module:'commons-logging'
+    }
     compile("org.grails:grails-bootstrap:$grailsVersion")
     compile("org.grails:grails-plugin-domain-class:$grailsVersion") {
         exclude group: 'org.grails', module:'grails-plugin-testing'
