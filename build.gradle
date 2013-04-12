@@ -163,7 +163,10 @@ subprojects {
                 null
             }
         }
-
+        
+        test {
+            maxHeapSize = '1024m'
+        }        
         test.doFirst {
             def tckClassesDir = project(":grails-datastore-gorm-tck").sourceSets.main.output.classesDir
             def thisProjectsTests = // surely there is a less hardcoded way to do this
