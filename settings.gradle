@@ -15,7 +15,7 @@ include "grails-datastore-core",
 */
 
         // Documentation
-        'grails-documentation-core',        
+        'grails-documentation-core',
         'grails-documentation-mongo',
         'grails-documentation-redis',
 /*        'grails-documentation-riak',*/
@@ -44,7 +44,8 @@ include "grails-datastore-core",
         'grails-datastore-gorm-gemfire',
         'grails-datastore-gorm-simpledb',
         'grails-datastore-gorm-dynamodb',
-        'grails-datastore-gorm-hibernate'
+        'grails-datastore-gorm-hibernate',
+        'grails-datastore-gorm-hibernate4'
 /*
         'grails-datastore-gorm-jcr',
         'grails-datastore-gorm-simpledb'

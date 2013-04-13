@@ -67,7 +67,7 @@ abstract class SpringConfigurer {
 
             def currentSpringConfig = getSpringConfig()
 
-            if (!currentSpringConfig.containsBean("transactionManager") && !manager?.hasGrailsPlugin('hibernate')) {
+            if (!currentSpringConfig.containsBean("transactionManager") && !manager?.hasGrailsPlugin('hibernate') && !manager?.hasGrailsPlugin('hibernate4')) {
                 currentSpringConfig.addAlias('transactionManager', "${typeLower}TransactionManager")
             }
 
@@ -108,7 +108,7 @@ abstract class SpringConfigurer {
             }
 
             // make sure validators for domain classes are regular GrailsDomainClassValidator
-            def isHibernateInstalled = manager.hasGrailsPlugin("hibernate")
+            def isHibernateInstalled = manager.hasGrailsPlugin("hibernate") || manager.hasGrailsPlugin("hibernate4")
 
             if (!isHibernateInstalled) {
                 currentSpringConfig.addAlias  "persistenceInterceptor", "${typeLower}PersistenceInterceptor"
