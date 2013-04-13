@@ -47,9 +47,9 @@ class HibernateUtils {
      * Overrides a getter on a property that is a Hibernate proxy in order to make sure the initialized object is returned hence avoiding Hibernate proxy hell.
      */
     static void handleLazyProxy(GrailsDomainClass domainClass, GrailsDomainClassProperty property) {
-        String propertyName = property.getName();
-        String getterName = GrailsClassUtils.getGetterName(propertyName);
-        String setterName = GrailsClassUtils.getSetterName(propertyName);
+        String propertyName = property.name
+        String getterName = GrailsClassUtils.getGetterName(propertyName)
+        String setterName = GrailsClassUtils.getSetterName(propertyName)
         domainClass.metaClass."${getterName}" = LAZY_PROPERTY_HANDLER.clone().curry(propertyName)
         domainClass.metaClass."${setterName}" = { PropertyUtils.setProperty(delegate, propertyName, it) }
 

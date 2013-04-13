@@ -14,8 +14,9 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg;
 
-import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import groovy.lang.ExpandoMetaClass;
+
+import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
 /**
  * A Spring namespace handler for the <gorm:*> namespace tags
@@ -23,7 +24,8 @@ import groovy.lang.ExpandoMetaClass;
  * @author Graeme Rocher
  * @since 1.1
  */
-public class GORMNamespaceHandler extends NamespaceHandlerSupport{
+public class GORMNamespaceHandler extends NamespaceHandlerSupport {
+
     public void init() {
         ExpandoMetaClass.enableGlobally();
         registerBeanDefinitionParser("sessionFactory", new GORMSessionFactoryDefinitionParser());

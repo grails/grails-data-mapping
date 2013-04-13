@@ -15,12 +15,11 @@ import org.codehaus.groovy.grails.orm.hibernate.validation.PersistentConstraintF
 import org.codehaus.groovy.grails.orm.hibernate.validation.UniqueConstraint
 import org.codehaus.groovy.grails.plugins.web.api.ControllersDomainBindingApi
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
-import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
-import org.grails.datastore.mapping.validation.ValidatingEventListener;
 import org.h2.Driver
 import org.hibernate.SessionFactory
+import org.hibernate.cfg.Environment
 import org.hibernate.dialect.H2Dialect
 import org.springframework.beans.BeanUtils
 import org.springframework.beans.BeanWrapper
@@ -29,7 +28,6 @@ import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.beans.factory.support.AbstractBeanDefinition
 import org.springframework.beans.factory.support.GenericBeanDefinition
 import org.springframework.context.ApplicationContext
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.orm.hibernate3.SessionFactoryUtils
 import org.springframework.orm.hibernate3.SpringSessionContext
@@ -75,15 +73,15 @@ class Setup {
         ctx.refresh()
 
         def config = new Properties()
-        config.setProperty "hibernate.dialect", H2Dialect.name
-        config.setProperty "hibernate.connection.driver_class", Driver.name
-        config.setProperty "hibernate.connection.url", "jdbc:h2:mem:devDB;MVCC=true"
-        config.setProperty "hibernate.connection.username", "sa"
-        config.setProperty "hibernate.connection.password", ""
-        config.setProperty "hibernate.hbm2ddl.auto", "create-drop"
-        config.setProperty "hibernate.show_sql", "true"
-        config.setProperty "hibernate.format_sql", "true"
-        config.setProperty "hibernate.current_session_context_class", SpringSessionContext.name
+        config.setProperty Environment.DIALECT, H2Dialect.name
+        config.setProperty Environment.DRIVER, Driver.name
+        config.setProperty Environment.URL, "jdbc:h2:mem:devDB;MVCC=true"
+        config.setProperty Environment.USER, "sa"
+        config.setProperty Environment.PASS, ""
+        config.setProperty Environment.HBM2DDL_AUTO, "create-drop"
+        config.setProperty Environment.SHOW_SQL, "true"
+        config.setProperty Environment.FORMAT_SQL, "true"
+        config.setProperty Environment.CURRENT_SESSION_CONTEXT_CLASS, SpringSessionContext.name
 
         GrailsAnnotationConfiguration hibernateConfig = new GrailsAnnotationConfiguration()
         hibernateConfig.setProperties config

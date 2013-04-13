@@ -302,7 +302,6 @@ public abstract class AbstractSavePersistentMethod extends AbstractDynamicPersis
                     if (propertyValue != null) {
                         setObjectToReadOnly(propertyValue);
                     }
-
                 }
             }
         }

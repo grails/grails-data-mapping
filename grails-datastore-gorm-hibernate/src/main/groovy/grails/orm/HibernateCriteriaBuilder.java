@@ -1792,8 +1792,7 @@ public class HibernateCriteriaBuilder extends GroovyObjectSupport implements org
             aliasCount++;
             newAlias = associationName + ALIAS + aliasCount;
             aliasMap.put(associationPath, newAlias);
-            aliasInstanceStack.add(criteria.createAlias(associationPath, newAlias,
-                    joinType));
+            aliasInstanceStack.add(criteria.createAlias(associationPath, newAlias, joinType));
         }
         aliasStack.add(newAlias);
     }

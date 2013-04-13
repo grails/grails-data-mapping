@@ -223,7 +223,8 @@ public class HibernateQuery extends Query {
     }
 
     org.hibernate.criterion.Criterion getRestrictionForFunctionCall(FunctionCallingCriterion criterion, PersistentEntity entity) {
-        org.hibernate.criterion.Criterion sqlRestriction;HibernateTemplate hibernateSession = (HibernateTemplate)session.getNativeInterface();
+        org.hibernate.criterion.Criterion sqlRestriction;
+        HibernateTemplate hibernateSession = (HibernateTemplate)session.getNativeInterface();
 
         SessionFactory sessionFactory = hibernateSession.getSessionFactory();
         String property = criterion.getProperty();

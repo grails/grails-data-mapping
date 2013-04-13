@@ -16,6 +16,7 @@
 package org.codehaus.groovy.grails.orm.hibernate.support;
 
 import grails.validation.DeferredBindingActions;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.lifecycle.ShutdownOperations;
@@ -64,8 +65,7 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
             SessionHolder holder = (SessionHolder)TransactionSynchronizationManager.unbindResource(getSessionFactory());
             LOG.debug("Closing single Hibernate session in GrailsDispatcherServlet");
             try {
-                Session session = holder.getSession();
-                SessionFactoryUtils.closeSession(session);
+                SessionFactoryUtils.closeSession(holder.getSession());
             }
             catch (RuntimeException ex) {
                 LOG.error("Unexpected exception on closing Hibernate Session", ex);
@@ -167,7 +167,7 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
 
     private int decNestingCount() {
         Integer current = nestingCount.get();
-        int value = (current != null) ? current - 1 : 0;
+        int value = current == null ? 0 : current - 1;
         if (value < 0) {
             value = 0;
         }
@@ -181,6 +181,6 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
 
     private boolean getParticipate() {
         Boolean ret = participate.get();
-        return (ret != null) ? ret : false;
+        return ret == null ? false : ret;
     }
 }

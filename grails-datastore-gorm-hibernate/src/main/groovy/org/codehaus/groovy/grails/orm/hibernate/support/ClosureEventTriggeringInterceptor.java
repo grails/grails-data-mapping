@@ -312,9 +312,8 @@ public class ClosureEventTriggeringInterceptor extends SaveOrUpdateEventListener
 
     @SuppressWarnings("serial")
     private static class NullabilityCheckerPreInsertEventListener implements PreInsertEventListener {
-        @SuppressWarnings("deprecation")
         public boolean onPreInsert(PreInsertEvent event) {
-            new Nullability(event.getSource()).checkNullability(event.getState(), event.getPersister(), false);
+            new Nullability(event.getSession()).checkNullability(event.getState(), event.getPersister(), false);
             return false;
         }
     }

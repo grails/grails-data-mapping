@@ -65,7 +65,7 @@ public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer im
     private Class<?>[] interfaces;
     private boolean constructed = false;
 
-    private GroovyAwareJavassistLazyInitializer(
+    protected GroovyAwareJavassistLazyInitializer(
             final String entityName,
             final Class<?> persistentClass,
             final Class<?>[] interfaces,
@@ -148,9 +148,7 @@ public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer im
         return proxy;
     }
 
-    public static Class<?> getProxyFactory(
-            Class<?> persistentClass,
-            Class<?>[] interfaces) throws HibernateException {
+    public static Class<?> getProxyFactory(Class<?> persistentClass, Class<?>[] interfaces) throws HibernateException {
         // note: interfaces is assumed to already contain HibernateProxy.class
 
         try {
