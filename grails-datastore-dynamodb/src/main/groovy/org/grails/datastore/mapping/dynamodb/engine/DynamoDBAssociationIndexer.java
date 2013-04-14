@@ -71,12 +71,18 @@ public class DynamoDBAssociationIndexer implements AssociationIndexer {
         for (Object foreignKey : foreignKeys) {
             fks.add(foreignKey.toString());
         }
+
+        if (fks.isEmpty()) {
+            //we can't create dynamodb entry without any attributes, so we must kill it
+            session.getDynamoDBTemplate().deleteItem(associationInfo.getTableName(), DynamoDBUtil.createIdKey(primaryKey.toString()));
+        } else {
             updateItems.put(FOREIGN_KEY_ATTRIBUTE_NAME,
                     new AttributeValueUpdate()
                             .withAction(AttributeAction.PUT)
                             .withValue(new AttributeValue().withSS(fks)));
+            session.getDynamoDBTemplate().updateItem(associationInfo.getTableName(), DynamoDBUtil.createIdKey(primaryKey.toString()), updateItems);
+        }
 
-        session.getDynamoDBTemplate().updateItem(associationInfo.getTableName(), DynamoDBUtil.createIdKey(primaryKey.toString()), updateItems);
     }
 
     public List query(Object primaryKey) {
