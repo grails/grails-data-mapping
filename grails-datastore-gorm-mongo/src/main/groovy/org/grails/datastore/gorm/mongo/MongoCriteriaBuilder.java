@@ -23,6 +23,7 @@ import java.util.Map;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.mongo.query.MongoQuery.Near;
 import org.grails.datastore.mapping.mongo.query.MongoQuery.WithinBox;
+import org.grails.datastore.mapping.mongo.query.MongoQuery.WithinPolygon;
 import org.grails.datastore.mapping.mongo.query.MongoQuery.WithinCircle;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.Criteria;
@@ -70,6 +71,21 @@ public class MongoCriteriaBuilder extends CriteriaBuilder {
     public Criteria withinBox(String property, List<?> value) {
         validatePropertyName(property, "withinBox");
         addToCriteria(new WithinBox(property, value));
+        return this;
+    }
+
+    /**
+     * Geospacial query for values within a given polygon. A polygon is defined as a multi-dimensional list in the form
+     *
+     * [[0, 0], [3, 6], [6, 0]]
+     *
+     * @param property The property
+     * @param value A multi-dimensional list of values
+     * @return this Criterion
+     */
+    public Criteria withinPolygon(String property, List<?> value) {
+        validatePropertyName(property, "withinPolygon");
+        addToCriteria(new WithinPolygon(property, value));
         return this;
     }
 
