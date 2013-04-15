@@ -68,6 +68,36 @@ class GeospacialQuerySpec extends GormDatastoreSpec {
             h == null
     }
 
+    void "Test that we can query within a polygon with criteria"() {
+        given:
+            new Hotel(name:"Hilton", location:[50, 50]).save()
+            new Hotel(name:"Raddison", location:[150, 130]).save(flush:true)
+            session.clear()
+
+        when:
+            def h = Hotel.findByLocation([50, 50])
+
+        then:
+            h != null
+
+        when:
+            h = Hotel.createCriteria().get {
+                withinPolygon("location", [[40, 30], [40, 70], [60, 70], [60, 30]])
+            }
+
+        then:
+            h != null
+            h.name == "Hilton"
+
+        when:
+            h = Hotel.createCriteria().get {
+                withinPolygon("location", [[20, 10], [20, 30], [40, 30], [40, 10]])
+            }
+
+        then:
+            h == null
+    }
+
     void "Test that we can query for nearby location"() {
         given:
             new Hotel(name:"Hilton", location:[50, 50]).save()
