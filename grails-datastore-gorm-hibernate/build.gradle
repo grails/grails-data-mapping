@@ -39,7 +39,9 @@ dependencies {
     compile "org.springframework:spring-orm:$springVersion"
     compile "org.springframework:spring-tx:$springVersion"
     compile "org.springframework:spring-web:$springVersion"
-    compile 'org.hibernate:hibernate-entitymanager:3.4.0.GA'
+    compile 'org.hibernate:hibernate-entitymanager:3.6.10.Final', {
+        exclude group: 'javassist', module: 'javassist'
+    }
 
     // Specs
     compile 'javax.transaction:jta:1.1'
@@ -52,7 +54,7 @@ dependencies {
         exclude group:'dom4j', module:'dom4j'
         exclude group:'antlr', module: 'antlr'
     }
-    compile 'org.javassist:javassist:3.16.1-GA'
+    compile 'org.javassist:javassist:3.17.1-GA'
     compile 'javax.transaction:jta:1.1'
     runtime('dom4j:dom4j:1.6.1') {
         exclude group: 'xml-apis', module:'xml-apis'
