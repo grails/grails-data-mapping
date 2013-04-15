@@ -114,6 +114,7 @@ dependencies {
         exclude group: 'org.grails', module:'grails-plugin-domain-class'
         exclude group: 'org.grails', module:'grails-web'
     }
+    testCompile("org.grails:grails-plugin-validation:$grailsVersion")
 
     testRuntime "javax.servlet:servlet-api:2.5"
 }
