@@ -15,6 +15,8 @@
 package org.grails.datastore.mapping.dynamodb.model.types;
 
 import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.converter.ConverterRegistry;
 
 /**
  * A registrar that registers type converters used for DynamoDB.
@@ -23,4 +25,38 @@ import org.grails.datastore.mapping.model.types.BasicTypeConverterRegistrar;
  * @since 0.1
  */
 public class DynamoDBTypeConverterRegistrar extends BasicTypeConverterRegistrar {
+
+    public void register(ConverterRegistry registry) {
+        //use most of the standard converters
+        super.register(registry);
+
+        registry.addConverter(new Converter<byte[],String>() {
+            public String convert(byte[] bytes) {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i< bytes.length;i++){
+                    sb.append(bytes[i]);
+                    if (i < bytes.length-1) {
+                        sb.append(",");
+                    }
+
+                }
+                return sb.toString();
+            }
+        });
+        registry.addConverter(new Converter<String,byte[]>() {
+            public byte[] convert(String s) {
+                if (s == null || s.isEmpty()) {
+                    return EMPTY_BYTES;
+                }
+                String[] tokens = s.split(",");
+                byte[] bytes = new byte[tokens.length];
+                for (int i = 0; i< tokens.length; i++){
+                    bytes[i] = Byte.parseByte(tokens[i]);
+                }
+                return bytes;
+            }
+        });
+
+    }
+    private static final byte[] EMPTY_BYTES = new byte[0];
 }
