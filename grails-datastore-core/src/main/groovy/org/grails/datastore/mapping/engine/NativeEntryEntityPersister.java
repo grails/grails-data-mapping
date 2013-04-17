@@ -562,50 +562,54 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 boolean isLazy = isLazyAssociation(associationPropertyMapping);
                 nativeKey = (Serializable) getMappingContext().getConversionService().convert(
                         nativeKey, getPersistentEntity().getIdentity().getType());
-                Class childType = manyToMany.getAssociatedEntity().getJavaClass();
-                Collection cached = ((SessionImplementor)session).getCachedCollection(
-                        persistentEntity, nativeKey, manyToMany.getName());
-                if (cached == null) {
-                    Collection collection;
-                    if (isLazy) {
-                        Collection keys = getManyToManyKeys(persistentEntity, obj, nativeKey,
-                                nativeEntry, manyToMany);
-                        if (List.class.isAssignableFrom(manyToMany.getType())) {
-                            collection = new PersistentList(keys, childType, session);
-                            ea.setPropertyNoConversion(manyToMany.getName(), collection);
-                        }
-                        else if (Set.class.isAssignableFrom(manyToMany.getType())) {
-                            collection = new PersistentSet(keys, childType, session);
-                            ea.setPropertyNoConversion(manyToMany.getName(), collection);
-                        }
-                        else {
-                            collection = Collections.emptyList();
-                        }
-                    }
-                    else {
-                        AssociationIndexer indexer = getAssociationIndexer(nativeEntry, manyToMany);
-                        if (indexer == null) {
+                PersistentEntity associatedEntity = manyToMany.getAssociatedEntity();
+                if(associatedEntity != null) {
+
+                    Class childType = associatedEntity.getJavaClass();
+                    Collection cached = ((SessionImplementor)session).getCachedCollection(
+                            persistentEntity, nativeKey, manyToMany.getName());
+                    if (cached == null) {
+                        Collection collection;
+                        if (isLazy) {
+                            Collection keys = getManyToManyKeys(persistentEntity, obj, nativeKey,
+                                    nativeEntry, manyToMany);
                             if (List.class.isAssignableFrom(manyToMany.getType())) {
-                                collection = Collections.emptyList();
+                                collection = new PersistentList(keys, childType, session);
+                                ea.setPropertyNoConversion(manyToMany.getName(), collection);
                             }
                             else if (Set.class.isAssignableFrom(manyToMany.getType())) {
-                                collection = Collections.emptySet();
+                                collection = new PersistentSet(keys, childType, session);
+                                ea.setPropertyNoConversion(manyToMany.getName(), collection);
                             }
                             else {
                                 collection = Collections.emptyList();
                             }
                         }
                         else {
-                            List keys = indexer.query(nativeKey);
-                            collection = session.retrieveAll(childType, keys);
-                            ea.setProperty(manyToMany.getName(), collection);
+                            AssociationIndexer indexer = getAssociationIndexer(nativeEntry, manyToMany);
+                            if (indexer == null) {
+                                if (List.class.isAssignableFrom(manyToMany.getType())) {
+                                    collection = Collections.emptyList();
+                                }
+                                else if (Set.class.isAssignableFrom(manyToMany.getType())) {
+                                    collection = Collections.emptySet();
+                                }
+                                else {
+                                    collection = Collections.emptyList();
+                                }
+                            }
+                            else {
+                                List keys = indexer.query(nativeKey);
+                                collection = session.retrieveAll(childType, keys);
+                                ea.setProperty(manyToMany.getName(), collection);
+                            }
                         }
+                        ((SessionImplementor)session).cacheCollection(
+                                persistentEntity, nativeKey, collection, manyToMany.getName());
                     }
-                    ((SessionImplementor)session).cacheCollection(
-                            persistentEntity, nativeKey, collection, manyToMany.getName());
-                }
-                else {
-                    ea.setProperty(manyToMany.getName(), cached);
+                    else {
+                        ea.setProperty(manyToMany.getName(), cached);
+                    }
                 }
             }
         }
