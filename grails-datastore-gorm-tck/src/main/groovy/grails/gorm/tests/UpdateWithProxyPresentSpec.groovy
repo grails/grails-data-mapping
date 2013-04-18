@@ -138,6 +138,7 @@ class Person implements Serializable, Comparable<Person> {
 
 @Entity
 class PetType implements Serializable {
+    private static final long serialVersionUID = 1
     Long id
     Long version
     String name
@@ -146,7 +147,8 @@ class PetType implements Serializable {
 }
 
 @Entity
-class Parent {
+class Parent implements Serializable {
+    private static final long serialVersionUID = 1
     Long id
     String name
     Set<Child> children = []
@@ -154,7 +156,8 @@ class Parent {
 }
 
 @Entity
-class Child {
+class Child implements Serializable {
+    private static final long serialVersionUID = 1
     Long id
     String name
 }
