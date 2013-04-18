@@ -13,8 +13,7 @@ class ValidationSpec extends GormDatastoreSpec {
             def t
 
         when:
-            t = new TestEntity()
-            t.name = ''
+            t = new TestEntity(name:"")
             boolean validationResult = t.validate()
             def errors = t.errors
 
@@ -37,8 +36,7 @@ class ValidationSpec extends GormDatastoreSpec {
             def t
 
         when:
-            t = new TestEntity()
-            t.name = ''
+            t = new TestEntity(name:"")
 
         then:
             t.save() == null
@@ -132,8 +130,7 @@ class ValidationSpec extends GormDatastoreSpec {
                 TransactionSynchronizationManager.unbindResource(session.datastore)
             }
 
-            t = new TestEntity()
-            t.name = ''
+            t = new TestEntity(name:"")
 
         then:
             !session.datastore.hasCurrentSession()
