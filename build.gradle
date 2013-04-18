@@ -165,7 +165,7 @@ subprojects {
         }
         
         test {
-            maxHeapSize = '1024m'
+            maxHeapSize = '2048m'
         }        
         test.doFirst {
             def tckClassesDir = project(":grails-datastore-gorm-tck").sourceSets.main.output.classesDir
