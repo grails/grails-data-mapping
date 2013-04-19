@@ -41,6 +41,7 @@ class MongoGormEnhancer extends GormEnhancer {
 
         DynamicFinder.registerNewMethodExpression(Near)
         DynamicFinder.registerNewMethodExpression(WithinBox)
+        DynamicFinder.registerNewMethodExpression(WithinPolygon)
         DynamicFinder.registerNewMethodExpression(WithinCircle)
     }
 

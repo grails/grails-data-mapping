@@ -92,6 +92,8 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     public static final String BOX_OPERATOR = "$box";
 
+    public static final String POLYGON_OPERATOR = "$polygon";
+
     public static final String WITHIN_OPERATOR = "$within";
 
     public static final String CENTER_OPERATOR = "$center";
@@ -250,6 +252,17 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 MongoEntityPersister.setDBObjectValue(box, BOX_OPERATOR, withinBox.getValues(), entity.getMappingContext());
                 nearQuery.put(WITHIN_OPERATOR, box);
                 String propertyName = getPropertyName(entity, withinBox);
+                query.put(propertyName, nearQuery);
+            }
+        });
+
+        queryHandlers.put(WithinPolygon.class, new QueryHandler<WithinPolygon>() {
+            public void handle(PersistentEntity entity, WithinPolygon withinPolygon, DBObject query) {
+                DBObject nearQuery = new BasicDBObject();
+                DBObject box = new BasicDBObject();
+                MongoEntityPersister.setDBObjectValue(box, POLYGON_OPERATOR, withinPolygon.getValues(), entity.getMappingContext());
+                nearQuery.put(WITHIN_OPERATOR, box);
+                String propertyName = getPropertyName(entity, withinPolygon);
                 query.put(propertyName, nearQuery);
             }
         });
@@ -820,6 +833,20 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     }
 
     /**
+     * Geospacial query for values within a given polygon. A polygon is defined as a multi-dimensional list in the form
+     *
+     * [[0, 0], [3, 6], [6, 0]]
+     *
+     * @param property The property
+     * @param value A multi-dimensional list of values
+     * @return This query
+     */
+    public Query withinPolygon(String property, List value) {
+        add(new WithinPolygon(property, value));
+        return this;
+    }
+
+    /**
      * Geospacial query for values within a given circle. A circle is defined as a multi-dimensial list containing the position of the center and the radius:
      *
      * [[50, 50], 10]
@@ -879,6 +906,24 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
         public void setValue(List matrix) {
             this.value = matrix;
+        }
+    }
+
+    /**
+     * Used for Geospacial querying of polygons
+     */
+    public static class WithinPolygon extends PropertyCriterion {
+
+        public WithinPolygon(String name, List value) {
+            super(name, value);
+        }
+
+        public List getValues() {
+            return (List) getValue();
+        }
+
+        public void setValue(List value) {
+            this.value = value;
         }
     }
 
