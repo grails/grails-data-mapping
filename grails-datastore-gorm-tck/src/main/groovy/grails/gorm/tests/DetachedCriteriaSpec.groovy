@@ -1,8 +1,40 @@
 package grails.gorm.tests
 
 import grails.gorm.DetachedCriteria
+import grails.gorm.PagedResultList
 
 class DetachedCriteriaSpec extends GormDatastoreSpec {
+
+    void "Test the list method returns a PagedResultList with pagination arguments"() {
+        given:"A bunch of people"
+            createPeople()
+
+        when:"A detached criteria instance is created and the list method used with the max parameter"
+            def criteria = new DetachedCriteria(Person)
+            criteria.with {
+                eq 'lastName', 'Simpson'
+            }
+            def results = criteria.list(max:2)
+
+        then:"The results are a PagedResultList"
+            results instanceof PagedResultList
+            results.totalCount == 4
+            results.size() == 2
+            results.every { it.lastName == "Simpson" }
+
+        when:"A detached criteria instance is created and the list method used with the max parameter"
+            criteria = new DetachedCriteria(Person)
+            criteria.with {
+                eq 'lastName', 'Simpson'
+            }
+            results = criteria.list(offset:2, max:4)
+
+        then:"The results are a PagedResultList"
+            results instanceof PagedResultList
+            results.totalCount == 4
+            results.size() == 2
+            results.every { it.lastName == "Simpson" }
+    }
 
     void "Test list method with property projection"() {
         given:"A bunch of people"

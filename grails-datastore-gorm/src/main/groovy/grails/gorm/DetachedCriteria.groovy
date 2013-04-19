@@ -665,7 +665,11 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      */
     List<T> list( Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
         (List)withPopulatedQuery(args, additionalCriteria) { Query query ->
-            query.list()
+            if (args?.max) {
+                return new PagedResultList(query)
+            } else {
+                return query.list()
+            }
         }
     }
 
