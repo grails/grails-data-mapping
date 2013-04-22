@@ -36,7 +36,7 @@ class SpringConfigurerSpec extends Specification {
 
 class SimpleSpringConfigurer extends SpringConfigurer {
 
-    Map manager = [hasGrailsPlugin:{ String name -> name != 'hibernate' }]
+    Map manager = [hasGrailsPlugin:{ String name -> name != 'hibernate' && name != 'hibernate4' }]
     Map application = [:]
 
     @Override
