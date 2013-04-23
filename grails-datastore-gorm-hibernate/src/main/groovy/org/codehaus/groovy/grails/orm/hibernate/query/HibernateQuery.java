@@ -19,6 +19,7 @@ import grails.orm.HibernateCriteriaBuilder;
 import grails.orm.RlikeExpression;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,9 +38,7 @@ import org.grails.datastore.mapping.query.AssociationQuery;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion;
-import org.hibernate.Criteria;
-import org.hibernate.FetchMode;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
@@ -48,6 +47,7 @@ import org.hibernate.criterion.SimpleExpression;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.function.SQLFunction;
 import org.hibernate.engine.SessionFactoryImplementor;
+import org.hibernate.impl.CriteriaImpl;
 import org.hibernate.persister.entity.PropertyMapping;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.TypeResolver;
@@ -55,6 +55,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.ReflectionUtils;
 
@@ -92,6 +93,32 @@ public class HibernateQuery extends Query {
     public HibernateQuery(Criteria subCriteria, HibernateSession session, PersistentEntity associatedEntity, String newAlias) {
         this(subCriteria, session, associatedEntity);
         alias = newAlias;
+    }
+
+    @Override
+    public Object clone() {
+        final CriteriaImpl impl = (CriteriaImpl) criteria;
+        final HibernateSession hibernateSession = (HibernateSession) getSession();
+        final HibernateTemplate hibernateTemplate = hibernateSession.getNativeInterface();
+        return hibernateTemplate.execute(new HibernateCallback<HibernateQuery>() {
+            @Override
+            public HibernateQuery doInHibernate(Session session) throws HibernateException, SQLException {
+                Criteria newCriteria = session.createCriteria(impl.getEntityOrClassName());
+
+                Iterator iterator = impl.iterateExpressionEntries();
+                while (iterator.hasNext()) {
+                    CriteriaImpl.CriterionEntry entry = (CriteriaImpl.CriterionEntry) iterator.next();
+                    newCriteria.add(entry.getCriterion());
+                }
+                Iterator subcriteriaIterator = impl.iterateSubcriteria();
+                while (subcriteriaIterator.hasNext()) {
+                    CriteriaImpl.Subcriteria sub = (CriteriaImpl.Subcriteria) subcriteriaIterator.next();
+                    newCriteria.createAlias(sub.getPath(), sub.getAlias(), sub.getJoinType(), sub.getWithClause());
+                }
+                return new HibernateQuery(newCriteria, hibernateSession, entity);
+            }
+        });
+
     }
 
     @Override

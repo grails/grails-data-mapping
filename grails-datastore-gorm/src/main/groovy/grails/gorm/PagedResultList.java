@@ -43,10 +43,10 @@ public class PagedResultList extends AbstractList {
     public int getTotalCount() {
         initialize();
         if (totalCount == Integer.MIN_VALUE) {
-            query.offset(0);
-            query.max(-1);
-            query.projections().count();
-            totalCount = ((Number)query.singleResult()).intValue();
+            Query newQuery = (Query)query.clone();
+            newQuery.projections().count();
+            Number result = (Number) newQuery.singleResult();
+            totalCount = result == null ? 0 : result.intValue();
         }
 
         return totalCount;

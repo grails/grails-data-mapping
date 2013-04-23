@@ -48,7 +48,7 @@ import org.springframework.util.Assert;
  * @since 1.0
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class Query {
+public abstract class Query implements Cloneable{
 
     protected PersistentEntity entity;
     protected Junction criteria = new Conjunction();
@@ -64,6 +64,16 @@ public abstract class Query {
     protected Query(Session session, PersistentEntity entity) {
         this.entity = entity;
         this.session = session;
+    }
+
+
+    @Override
+    public Object clone() {
+        Query newQuery = getSession().createQuery(entity.getJavaClass());
+        for (Criterion criterion : criteria.getCriteria()) {
+            newQuery.add(criterion);
+        }
+        return newQuery;
     }
 
     /**
@@ -1209,6 +1219,7 @@ public abstract class Query {
             super(propertyName);
         }
     }
+
 
     /**
      * A list of projections
