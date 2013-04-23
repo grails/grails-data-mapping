@@ -12,6 +12,7 @@ dependencies {
         exclude group: 'org.grails', module:'grails-plugin-testing'
         exclude group: 'org.grails', module:'grails-datastore-core'
         exclude group: 'org.grails', module:'grails-datastore-gorm'
+        exclude group: 'org.grails', module:'grails-datastore-simple'
     }
     compile("org.grails:grails-web:$grailsVersion")
     provided 'javax.servlet:servlet-api:2.5'
@@ -103,6 +104,7 @@ dependencies {
         exclude group: 'org.grails', module:'grails-plugin-testing'
         exclude group: 'org.grails', module:'grails-datastore-core'
         exclude group: 'org.grails', module:'grails-datastore-gorm'
+        exclude group: 'org.grails', module:'grails-datastore-simple'
     }
     testCompile("org.grails:grails-web:$grailsVersion")
     testCompile("org.grails:grails-plugin-controllers:$grailsVersion") {
@@ -110,7 +112,9 @@ dependencies {
         exclude group: 'org.grails', module:'grails-plugin-domain-class'
         exclude group: 'org.grails', module:'grails-web'
     }
-    testCompile("org.grails:grails-plugin-validation:$grailsVersion")
+    testCompile("org.grails:grails-plugin-validation:$grailsVersion") {
+        exclude group: 'org.grails', module:'grails-plugin-domain-class'
+    }
 
     testRuntime "javax.servlet:servlet-api:2.5"
 }
