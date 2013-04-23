@@ -32,7 +32,7 @@ ext {
 allprojects {
     repositories {
         if(!isCiBuild) {
-            mavenLocal()
+            // mavenLocal()
         }
         mavenCentral()
         maven { url "http://repo.grails.org/grails/core" }
@@ -56,8 +56,8 @@ task wrapper(type: Wrapper) {
 subprojects {
     ext {
 //        releaseType = "RELEASE"
-       // releaseType = "BUILD-SNAPSHOT"
-        releaseType = "M1"
+        releaseType = "BUILD-SNAPSHOT"
+//        releaseType = "M1"
         isCiBuild = project.hasProperty("isCiBuild")
         isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
     }
