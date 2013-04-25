@@ -30,7 +30,7 @@ import org.junit.runners.Suite.SuiteClasses
 
 @RunWith(Suite)
 @SuiteClasses([
-  ValidationSpec,
+//  ValidationSpec,
 //  GroovyProxySpec,
 //  CommonTypesPersistenceSpec,
 //  OneToManySpec,
@@ -51,9 +51,9 @@ import org.junit.runners.Suite.SuiteClasses
 //  UpdateWithProxyPresentSpec,
 //  AttachMethodSpec,
 //  WithTransactionSpec,
-  CrudOperationsSpec,
-  SaveAllSpec,
-  DeleteAllSpec
+//  CrudOperationsSpec,
+//  SaveAllSpec,
+//  DeleteAllSpec
 ])
 class HibernateSuite {
 

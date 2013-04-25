@@ -40,7 +40,7 @@ import grails.gorm.tests.DeleteAllSpec
 //    FindByMethodSpec,
 //    ListOrderBySpec,
 //    GroovyProxySpec,
-    CommonTypesPersistenceSpec,
+//    CommonTypesPersistenceSpec,
 //    GormEnhancerSpec,
 //    CriteriaBuilderSpec,
 //    NegationSpec,
