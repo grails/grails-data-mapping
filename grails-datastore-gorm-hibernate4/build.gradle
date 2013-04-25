@@ -4,6 +4,8 @@ configurations {
 
 dependencies {
 
+    String hibernateVersion = '4.1.11.Final'
+
     compile("org.grails:grails-core:$grailsVersion") {
         exclude group:'commons-logging',module:'commons-logging'
     }
@@ -40,12 +42,12 @@ dependencies {
     compile "org.springframework:spring-orm:$springVersion"
     compile "org.springframework:spring-tx:$springVersion"
     compile "org.springframework:spring-web:$springVersion"
-    compile 'org.hibernate:hibernate-entitymanager:4.1.9.Final'
+    compile "org.hibernate:hibernate-entitymanager:$hibernateVersion"
 
     // Specs
     compile 'javax.transaction:jta:1.1'
 
-    compile('org.hibernate:hibernate-core:4.1.9.Final') {
+    compile("org.hibernate:hibernate-core:$hibernateVersion") {
         exclude group: 'antlr', module: 'antlr'
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'dom4j', module:'dom4j'
@@ -74,7 +76,7 @@ dependencies {
         exclude group:'commons-collections', module:'commons-collections'
         exclude group:'org.slf4j', module:'slf4j-api'
     }
-    runtime('org.hibernate:hibernate-ehcache:4.1.9.Final') {
+    runtime("org.hibernate:hibernate-ehcache:$hibernateVersion") {
         exclude group:'commons-collections', module:'commons-collections'
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'com.h2database', module:'h2'
