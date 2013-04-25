@@ -286,6 +286,24 @@ protected boolean checkWriteOperations = true;
         }, true);
     }
 
+    public void refresh(final Object entity) throws DataAccessException {
+        refresh(entity, null);
+    }
+
+    public void refresh(final Object entity, final LockMode lockMode) throws DataAccessException {
+        doExecute(new HibernateCallback<Object>() {
+            public Object doInHibernate(Session session) throws HibernateException {
+                if (lockMode == null) {
+                    session.refresh(entity);
+                }
+                else {
+                    session.refresh(entity, new LockOptions(lockMode));
+                }
+                return null;
+            }
+        }, true);
+    }
+
     public void setExposeNativeSession(boolean exposeNativeSession) {
         this.exposeNativeSession = exposeNativeSession;
     }
