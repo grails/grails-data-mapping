@@ -32,7 +32,6 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.engine.spi.SessionImplementor;
@@ -88,7 +87,7 @@ public class IdentityEnumType implements UserType, ParameterizedType, Serializab
     @SuppressWarnings("unchecked")
     public static boolean supports(@SuppressWarnings("rawtypes") Class enumClass) {
         if (!isEnabled()) return false;
-        if (GrailsClassUtils.isJdk5Enum(enumClass)) {
+        if (enumClass.isEnum()) {
             try {
                 Method idAccessor = enumClass.getMethod(ENUM_ID_ACCESSOR);
                 int mods = idAccessor.getModifiers();
@@ -141,7 +140,7 @@ public class IdentityEnumType implements UserType, ParameterizedType, Serializab
     }
 
     public Object nullSafeGet(ResultSet resultSet, String[] names, SessionImplementor session, Object owner) throws SQLException {
-        Object id = type.nullSafeGet(resultSet, names[0], null);
+        Object id = type.nullSafeGet(resultSet, names[0], session);
         if ((!resultSet.wasNull()) && id != null) {
             return bidiMap.getEnumValue(id);
         }
@@ -153,7 +152,7 @@ public class IdentityEnumType implements UserType, ParameterizedType, Serializab
             pstmt.setNull(idx, sqlTypes[0]);
         }
         else {
-            type.nullSafeSet(pstmt, bidiMap.getKey(value), idx, null);
+            type.nullSafeSet(pstmt, bidiMap.getKey(value), idx, session);
         }
     }
 

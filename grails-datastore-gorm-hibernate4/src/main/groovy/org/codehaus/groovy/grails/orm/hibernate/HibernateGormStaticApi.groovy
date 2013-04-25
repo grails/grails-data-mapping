@@ -218,7 +218,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
     @Override
     D lock(Serializable id) {
         id = convertIdentifier(id)
-        hibernateTemplate.get(persistentClass, id, LockMode.UPGRADE)
+        hibernateTemplate.lock(persistentClass, id, LockMode.PESSIMISTIC_WRITE)
     }
 
     @Override

@@ -84,7 +84,7 @@ class HibernateGormInstanceApi extends GormInstanceApi {
             return false
         }
 
-        Object[] values = entry.persister.getPropertyValues(instance, session.entityMode)
+        Object[] values = entry.persister.getPropertyValues(instance)
         int[] dirtyProperties = entry.persister.findDirty(values, entry.loadedState, instance, session)
         int fieldIndex = entry.persister.propertyNames.findIndexOf { fieldName == it }
         return fieldIndex in dirtyProperties
@@ -103,7 +103,7 @@ class HibernateGormInstanceApi extends GormInstanceApi {
             return false
         }
 
-        Object[] values = entry.persister.getPropertyValues(instance, session.entityMode)
+        Object[] values = entry.persister.getPropertyValues(instance)
         def dirtyProperties = entry.persister.findDirty(values, entry.loadedState, instance, session)
         return dirtyProperties != null
     }
@@ -121,7 +121,7 @@ class HibernateGormInstanceApi extends GormInstanceApi {
             return []
         }
 
-        Object[] values = entry.persister.getPropertyValues(instance, session.entityMode)
+        Object[] values = entry.persister.getPropertyValues(instance)
         int[] dirtyProperties = entry.persister.findDirty(values, entry.loadedState, instance, session)
         def names = []
         for (index in dirtyProperties) {

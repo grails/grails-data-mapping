@@ -67,6 +67,7 @@ public class GrailsSessionContext implements CurrentSessionContext {
      */
     public GrailsSessionContext(SessionFactoryImplementor sessionFactory) {
         this.sessionFactory = sessionFactory;
+        lookupConstructors();
     }
 
     public void initJta() {
@@ -238,7 +239,9 @@ public class GrailsSessionContext implements CurrentSessionContext {
     protected Constructor<?> lookupConstructor(String className, Class<?>... argTypes) {
         try {
             Class<?> clazz = ReflectHelper.classForName(className);
-            return clazz.getConstructor(argTypes);
+            Constructor<?> constructor = clazz.getConstructor(argTypes);
+            constructor.setAccessible(true);
+            return constructor;
         }
         catch (ClassNotFoundException e) {
             ReflectionUtils.handleReflectionException(e);

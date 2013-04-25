@@ -19,7 +19,6 @@ import groovy.lang.GroovySystem;
 import groovy.lang.MetaClassRegistry;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Properties;
@@ -380,7 +379,7 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
         return eventListeners;
     }
 
-    public void afterPropertiesSet() throws IOException {
+    public void afterPropertiesSet() throws Exception {
         Thread thread = Thread.currentThread();
         ClassLoader cl = thread.getContextClassLoader();
         try {
@@ -392,7 +391,7 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
         }
     }
 
-    protected void buildSessionFactory() throws IOException {
+    protected void buildSessionFactory() throws Exception {
 
         configuration = newConfiguration();
 
@@ -557,7 +556,7 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
         }
     }
 
-    protected GrailsAnnotationConfiguration newConfiguration() {
+    protected GrailsAnnotationConfiguration newConfiguration() throws Exception {
         if (configClass == null) {
             configClass = GrailsAnnotationConfiguration.class;
         }
@@ -569,6 +568,7 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
         if (currentSessionContextClass != null) {
             config.setProperty(Environment.CURRENT_SESSION_CONTEXT_CLASS, currentSessionContextClass.getName());
         }
+        config.afterPropertiesSet();
 
         return config;
     }

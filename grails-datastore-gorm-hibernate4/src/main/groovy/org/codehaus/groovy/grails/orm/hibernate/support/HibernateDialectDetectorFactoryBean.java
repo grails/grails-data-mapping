@@ -27,7 +27,9 @@ import org.codehaus.groovy.grails.orm.hibernate.exceptions.CouldNotDetermineHibe
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware;
 import org.hibernate.HibernateException;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.service.ServiceRegistry;
+import org.hibernate.service.classloading.internal.ClassLoaderServiceImpl;
+import org.hibernate.service.jdbc.dialect.internal.DialectFactoryImpl;
+import org.hibernate.service.jdbc.dialect.internal.StandardDialectResolver;
 import org.hibernate.service.jdbc.dialect.spi.DialectFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -47,7 +49,6 @@ public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>,
     private String hibernateDialectClassName;
     private Dialect hibernateDialect;
     private GrailsApplication grailsApplication;
-    private ServiceRegistry serviceRegistry;
 
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -81,9 +82,9 @@ public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>,
             connection = DataSourceUtils.getConnection(dataSource);
 
             try {
-                ConfigObject config = grailsApplication != null ? grailsApplication.getConfig() : null;
-                Properties properties = config != null ? config.toProperties() : new Properties();
-                final DialectFactory dialectFactory = serviceRegistry.getService( DialectFactory.class );
+                ConfigObject config = grailsApplication == null ? null : grailsApplication.getConfig();
+                Properties properties = config == null ? new Properties() : config.toProperties();
+                final DialectFactory dialectFactory = createDialectFactory();
                 hibernateDialect = dialectFactory.buildDialect(properties, connection);
                 hibernateDialectClassName = hibernateDialect.getClass().getName();
             } catch (HibernateException e) {
@@ -99,11 +100,15 @@ public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>,
         }
     }
 
-    public void setGrailsApplication(GrailsApplication grailsApplication) {
-        this.grailsApplication = grailsApplication;
+    // should be using the ServiceRegistry, but getting it from the SessionFactory at startup fails in Spring
+    protected DialectFactory createDialectFactory() {
+        DialectFactoryImpl factory = new DialectFactoryImpl();
+        factory.setDialectResolver(new StandardDialectResolver());
+        factory.setClassLoaderService(new ClassLoaderServiceImpl(Thread.currentThread().getContextClassLoader()));
+        return factory;
     }
 
-    public void setServiceRegistry(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
+    public void setGrailsApplication(GrailsApplication grailsApplication) {
+        this.grailsApplication = grailsApplication;
     }
 }
