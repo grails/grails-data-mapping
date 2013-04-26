@@ -34,7 +34,7 @@ class ClearCollectionSpec extends GormDatastoreSpec{
 
     @Override
     List getDomainClasses() {
-        [Building, Room]
+        [Building, Room, RoomCompany]
     }
 }
 
@@ -59,8 +59,23 @@ class Building {
 class Room {
     ObjectId id
     String roomNo
+    RoomCompany refCompany
 
     static mapWith = "mongo"
     static constraints = {
+    }
+}
+
+@Entity
+class RoomCompany {
+    ObjectId id
+    String companyName
+
+    static mapWith = "mongo"
+    static constraints = {
+    }
+    static mapping = {
+        collection "company"
+        version false
     }
 }
