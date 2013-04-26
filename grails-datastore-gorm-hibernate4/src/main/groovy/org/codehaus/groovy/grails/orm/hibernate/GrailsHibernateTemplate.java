@@ -491,7 +491,7 @@ protected boolean checkWriteOperations = true;
      * @see org.hibernate.Session#setFlushMode
      */
     protected FlushMode applyFlushMode(Session session, boolean existingTransaction) {
-        if (flushMode == FLUSH_NEVER) {
+        if (getFlushMode() == FLUSH_NEVER) {
             if (existingTransaction) {
                 FlushMode previousFlushMode = session.getFlushMode();
                 if (!previousFlushMode.lessThan(FlushMode.COMMIT)) {
@@ -503,7 +503,7 @@ protected boolean checkWriteOperations = true;
                 session.setFlushMode(FlushMode.MANUAL);
             }
         }
-        else if (flushMode == FLUSH_EAGER) {
+        else if (getFlushMode() == FLUSH_EAGER) {
             if (existingTransaction) {
                 FlushMode previousFlushMode = session.getFlushMode();
                 if (!previousFlushMode.equals(FlushMode.AUTO)) {
@@ -515,7 +515,7 @@ protected boolean checkWriteOperations = true;
                 // rely on default FlushMode.AUTO
             }
         }
-        else if (flushMode == FLUSH_COMMIT) {
+        else if (getFlushMode() == FLUSH_COMMIT) {
             if (existingTransaction) {
                 FlushMode previousFlushMode = session.getFlushMode();
                 if (previousFlushMode.equals(FlushMode.AUTO) || previousFlushMode.equals(FlushMode.ALWAYS)) {
@@ -527,7 +527,7 @@ protected boolean checkWriteOperations = true;
                 session.setFlushMode(FlushMode.COMMIT);
             }
         }
-        else if (flushMode == FLUSH_ALWAYS) {
+        else if (getFlushMode() == FLUSH_ALWAYS) {
             if (existingTransaction) {
                 FlushMode previousFlushMode = session.getFlushMode();
                 if (!previousFlushMode.equals(FlushMode.ALWAYS)) {
@@ -543,7 +543,7 @@ protected boolean checkWriteOperations = true;
     }
 
     protected void flushIfNecessary(Session session, boolean existingTransaction) throws HibernateException {
-        if (flushMode == FLUSH_EAGER || (!existingTransaction && flushMode != FLUSH_NEVER)) {
+        if (getFlushMode() == FLUSH_EAGER || (!existingTransaction && getFlushMode() != FLUSH_NEVER)) {
             logger.debug("Eagerly flushing Hibernate session");
             session.flush();
         }
