@@ -18,6 +18,7 @@ package org.codehaus.groovy.grails.orm.hibernate.support;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.AbstractSavePersistentMethod;
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsWebRequest;
@@ -41,7 +42,9 @@ import org.springframework.web.context.request.WebRequest;
  * @since 0.5
  */
 public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterceptor {
-    private static final String IS_FLOW_REQUEST_ATTRIBUTE = "org.codehaus.groovy.grails.webflow.flow_request";
+    protected static final String IS_FLOW_REQUEST_ATTRIBUTE = "org.codehaus.groovy.grails.webflow.flow_request";
+
+    protected int flushMode = GrailsHibernateTemplate.FLUSH_AUTO;
 
     @Override
     public void preHandle(WebRequest request) throws DataAccessException {
@@ -70,7 +73,7 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
         Session session = sessionHolder.getSession();
         try {
             super.postHandle(request, model);
-            if (session != null && !FlushMode.isManualFlushMode(session.getFlushMode())) {
+            if (session != null && getFlushMode() != GrailsHibernateTemplate.FLUSH_NEVER && !FlushMode.isManualFlushMode(session.getFlushMode())) {
                 logger.debug("Eagerly flushing Hibernate session");
                 session.flush();
             }
@@ -120,12 +123,13 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
             catch (IllegalStateException e) {
                 super.afterCompletion(request, ex);
             }
-        } finally {
+        }
+        finally {
             AbstractSavePersistentMethod.clearDisabledValidations();
         }
     }
 
-    private GrailsContentBufferingResponse getContentBufferingResponse(HttpServletResponse response) {
+    protected GrailsContentBufferingResponse getContentBufferingResponse(HttpServletResponse response) {
         while (response instanceof HttpServletResponseWrapper) {
             if (response instanceof GrailsContentBufferingResponse) {
                 return (GrailsContentBufferingResponse) response;
@@ -133,5 +137,12 @@ public class GrailsOpenSessionInViewInterceptor extends OpenSessionInViewInterce
             response = (HttpServletResponse) ((HttpServletResponseWrapper) response).getResponse();
         }
         return null;
+    }
+
+    public void setFlushMode(int flushMode) {
+        this.flushMode = flushMode;
+    }
+    public int getFlushMode() {
+        return flushMode;
     }
 }
