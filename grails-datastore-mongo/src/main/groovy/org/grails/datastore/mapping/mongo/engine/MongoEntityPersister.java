@@ -321,7 +321,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     protected Object generateIdentifier(final PersistentEntity persistentEntity, final DBObject nativeEntry) {
         return mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
-
+                
                 String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
                 DBCollection dbCollection = con.getCollection(collectionName + NEXT_ID_SUFFIX);
@@ -329,7 +329,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 // If there is a numeric identifier then we need to rely on optimistic concurrency controls to obtain a unique identifer
                 // sequence. If the identifier is not numeric then we assume BSON ObjectIds.
                 if (hasNumericalIdentifier) {
-                    while (true) {
+                    /*while (true) {
                         DBCursor result = dbCollection.find().sort(new BasicDBObject(MONGO_ID_FIELD, -1)).limit(1);
 
                         long nextId;
@@ -355,7 +355,25 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                             continue;
                         }
                         break;
-                    }
+                    }*/
+					
+                    try
+                    {
+                        // start the request by locking the connection to this thread
+                        con.requestStart();
+						while (true) {
+                            DBObject result = dbCollection.findAndModify(new BasicDBObject(MONGO_ID_FIELD, collectionName), null, null, false, new BasicDBObject("$inc", new BasicDBObject("next_id", 1)), true, true);
+							// result should never be null and we shouldn't come back with an error ,but you never know. We should just retry if this happens...
+                            if (result != null && con.getLastError().ok()) {
+                                long nextId = getMappingContext().getConversionService().convert(result.get("next_id"), Long.class);
+                                nativeEntry.put(MONGO_ID_FIELD, nextId);
+                                break;
+                            }
+                        }
+					} finally {
+						// Give this connection up when done.....
+                        con.requestDone();
+					}
 
                     return nativeEntry.get(MONGO_ID_FIELD);
                 }
