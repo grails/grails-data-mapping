@@ -16,10 +16,12 @@ import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindAllPersistentMetho
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ListPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
+import org.codehaus.groovy.runtime.StringGroovyMethods
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.api.Criteria as GrailsCriteria
+import org.hibernate.Criteria
 import org.hibernate.LockMode
 import org.hibernate.Session
 import org.hibernate.SessionFactory
@@ -107,10 +109,10 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
         if (identityType != null && id != null && !(id in identityType)) {
             try {
-                if (id instanceof Number && Long.equals(identityType)) {
+                if (id instanceof Number && identityType==Long) {
                     id = ((Number)id).toLong()
-                } else if (identityType in Number) {
-                    id = (Serializable)id.asType(identityType)
+                } else if (id instanceof String && identityType in Number) {
+                    id = (Serializable)StringGroovyMethods.asType((String)id, identityType)
                 } else {
                     id = (Serializable)new SimpleTypeConverter().convertIfNecessary(id, identityType)
                 }
@@ -141,7 +143,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
     D load(Serializable id) {
         id = convertIdentifier(id)
         if (id != null) {
-            return hibernateTemplate.load(persistentClass, id)
+            return hibernateTemplate.load((Class)persistentClass, id)
         }
     }
 
@@ -159,15 +161,15 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     List<D> getAll(Long... ids) {
-        getAllInternal(ids)
+        getAllInternal(ids as List)
     }
 
     @Override
     List<D> getAll(Serializable... ids) {
-        getAllInternal(ids)
+        getAllInternal(ids as List)
     }
 
-    private List getAllInternal(ids) {
+    private List getAllInternal(List ids) {
         if (!ids) return []
 
         (List)hibernateTemplate.execute({Session session ->
