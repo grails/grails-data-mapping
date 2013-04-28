@@ -17,6 +17,10 @@ package org.grails.datastore.gorm
 import grails.gorm.CriteriaBuilder
 import grails.gorm.DetachedCriteria
 import grails.gorm.PagedResultList
+import groovy.transform.CompileStatic
+import groovy.transform.TypeCheckingMode
+
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.datastore.gorm.async.GormAsyncStaticApi
 import org.grails.datastore.gorm.finders.DynamicFinder
 import org.grails.datastore.gorm.finders.FinderMethod
@@ -47,6 +51,7 @@ import org.springframework.validation.Errors
  * @author Graeme Rocher
  * @param <D> the entity/domain class
  */
+@CompileStatic
 class GormStaticApi<D> extends AbstractGormApi<D> {
 
     List<FinderMethod> gormDynamicFinders
@@ -78,22 +83,22 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The result of the method call
      */
     def methodMissing(String methodName, args) {
-        def method = gormDynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
+        FinderMethod method = gormDynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
         def cls = persistentClass
         if (!method) {
             throw new MissingMethodException(methodName, cls, args)
         }
 
-        def mc = cls.metaClass
+        GroovyObject mc = (GroovyObject)cls.metaClass
 
         // register the method invocation for next time
         synchronized(this) {
-            mc.static."$methodName" = { Object[] varArgs ->
+            ((GroovyObject)mc.getProperty('static')).setProperty(methodName, { Object[] varArgs ->
                 // FYI... This is relevant to http://jira.grails.org/browse/GRAILS-3463 and may
                 // become problematic if http://jira.codehaus.org/browse/GROOVY-5876 is addressed...
-                def argumentsForMethod = varArgs?.length == 1 && varArgs[0].getClass().isArray() ? varArgs[0] : varArgs
-                method.invoke(delegate, methodName, argumentsForMethod)
-            }
+                def argumentsForMethod = varArgs?.length == 1 && varArgs[0] instanceof Object[] ? varArgs[0] : varArgs
+                method.invoke(cls, methodName, argumentsForMethod)
+            })
         }
         return method.invoke(cls, methodName, args)
     }
@@ -104,7 +109,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The DetachedCriteria instance
      */
     DetachedCriteria<D> where(Closure callable) {
-        new DetachedCriteria(persistentClass).build(callable)
+        new DetachedCriteria<D>(persistentClass).build(callable)
     }
 
     /**
@@ -113,7 +118,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The DetachedCriteria instance that is lazily initialized
      */
     DetachedCriteria<D> whereLazy(Closure callable) {
-        new DetachedCriteria(persistentClass).buildLazy(callable)
+        new DetachedCriteria<D>(persistentClass).buildLazy(callable)
     }
     /**
      *
@@ -121,7 +126,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The DetachedCriteria instance
      */
     DetachedCriteria<D> whereAny(Closure callable) {
-        new DetachedCriteria(persistentClass).or(callable)
+        (DetachedCriteria<D>)new DetachedCriteria<D>(persistentClass).or(callable)
     }
 
     /**
@@ -131,7 +136,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A List of entities
      */
     List<D> findAll(Closure callable) {
-        def criteria = new DetachedCriteria(persistentClass).build(callable)
+        def criteria = new DetachedCriteria<D>(persistentClass).build(callable)
         return criteria.list()
     }
 
@@ -143,7 +148,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A List of entities
      */
     List<D> findAll(Map args, Closure callable) {
-        def criteria = new DetachedCriteria(persistentClass).build(callable)
+        def criteria = new DetachedCriteria<D>(persistentClass).build(callable)
         return criteria.list(args)
     }
 
@@ -154,7 +159,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A single entity
      */
     D find(Closure callable) {
-        def criteria = new DetachedCriteria(persistentClass).build(callable)
+        def criteria = new DetachedCriteria<D>(persistentClass).build(callable)
         return criteria.find()
     }
 
@@ -164,7 +169,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A list of object identifiers
      */
     List<Serializable> saveAll(Object... objectsToSave) {
-        execute({ Session session ->
+        (List<Serializable>)execute({ Session session ->
            session.persist Arrays.asList(objectsToSave)
         } as SessionCallback)
     }
@@ -175,7 +180,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A list of object identifiers
      */
     List<Serializable> saveAll(Iterable<?> objectsToSave) {
-        execute({ Session session ->
+        (List<Serializable>)execute({ Session session ->
             session.persist objectsToSave
         } as SessionCallback)
     }
@@ -204,6 +209,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * Creates an instance of this class
      * @return The created instance
      */
+    @CompileStatic(TypeCheckingMode.SKIP)
     D create() {
         D d = persistentClass.newInstance()
         datastore.applicationContext.autowireCapableBeanFactory.autowireBeanProperties(
@@ -215,8 +221,8 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * Retrieves and object from the datastore. eg. Book.get(1)
      */
     D get(Serializable id) {
-        execute({ Session session ->
-           session.retrieve(persistentClass, id)
+        (D)execute({ Session session ->
+           session.retrieve((Class)persistentClass, id)
         } as SessionCallback)
     }
 
@@ -227,8 +233,8 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * just delegates to {@link #get(Serializable)}
      */
     D read(Serializable id) {
-        execute ({ Session session ->
-           session.retrieve(persistentClass, id)
+        (D)execute ({ Session session ->
+           session.retrieve((Class)persistentClass, id)
         } as SessionCallback)
     }
 
@@ -236,8 +242,8 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * Retrieves and object from the datastore as a proxy. eg. Book.load(1)
      */
     D load(Serializable id) {
-        execute ({ Session session ->
-           session.proxy(persistentClass, id)
+        (D)execute ({ Session session ->
+           session.proxy((Class)persistentClass, id)
         } as SessionCallback)
     }
 
@@ -254,7 +260,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A list of identifiers
      */
     List<D> getAll(Serializable... ids) {
-        execute ({ Session session ->
+        (List<D>)execute ({ Session session ->
            session.retrieveAll(persistentClass, ids.flatten())
         } as SessionCallback)
     }
@@ -284,7 +290,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * Creates a criteria builder instance
      */
     def withCriteria(Closure callable) {
-        return createCriteria().call(callable)
+        return ((CriteriaBuilder)createCriteria()).invokeMethod('call', callable)
     }
 
     /**
@@ -293,9 +299,10 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     def withCriteria(Map builderArgs, Closure callable) {
         def criteriaBuilder = createCriteria()
         def builderBean = PropertyAccessorFactory.forBeanPropertyAccess(criteriaBuilder)
-        for (entry in builderArgs) {
-            if (builderBean.isWritableProperty(entry.key)) {
-                builderBean.setPropertyValue(entry.key, entry.value)
+        for (entry in builderArgs.entrySet()) {
+            String propertyName = entry.key.toString()
+            if (builderBean.isWritableProperty(propertyName)) {
+                builderBean.setPropertyValue(propertyName, entry.value)
             }
         }
 
@@ -308,8 +315,8 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The instance
      */
     D lock(Serializable id) {
-        execute ({ Session session ->
-                session.lock(persistentClass, id)
+        (D)execute ({ Session session ->
+                session.lock((Class)persistentClass, id)
         } as SessionCallback)
     }
 
@@ -330,7 +337,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The number of persisted entities
      */
     Integer count() {
-        execute ({ Session session ->
+        (Integer)execute ({ Session session ->
 
             def q = session.createQuery(persistentClass)
             q.projections().count()
@@ -368,7 +375,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return A list of results
      */
     List<D> list(Map params) {
-        execute ({ Session session ->
+        (List<D>)execute ({ Session session ->
             Query q = session.createQuery(persistentClass)
             DynamicFinder.populateArgumentsForCriteria(persistentClass, q, params)
             if (params?.max) {
@@ -384,7 +391,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @return The list of all entities
      */
     List<D> list() {
-        execute ({ Session session ->
+        (List<D>)execute ({ Session session ->
             session.createQuery(persistentClass).list()
         } as SessionCallback)
     }
@@ -634,7 +641,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
             def persistentMetaClass = GroovySystem.metaClassRegistry.getMetaClass(persistentClass)
             result = persistentMetaClass.invokeConstructor(queryMap)
             if (shouldSave) {
-                result.save()
+                InvokerHelper.invokeMethod(result, "save", null)
             }
         }
         result
