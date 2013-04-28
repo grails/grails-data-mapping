@@ -82,25 +82,24 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * @param args The arguments
      * @return The result of the method call
      */
-    def methodMissing(String methodName, args) {
+    @CompileStatic(TypeCheckingMode.SKIP)
+    def methodMissing(String methodName, Object args) {
         FinderMethod method = gormDynamicFinders.find { FinderMethod f -> f.isMethodMatch(methodName) }
-        def cls = persistentClass
         if (!method) {
-            throw new MissingMethodException(methodName, cls, args)
+            throw new MissingMethodException(methodName, persistentClass, args)
         }
 
-        GroovyObject mc = (GroovyObject)cls.metaClass
+        def mc = persistentClass.getMetaClass()
 
         // register the method invocation for next time
-        synchronized(this) {
-            ((GroovyObject)mc.getProperty('static')).setProperty(methodName, { Object[] varArgs ->
-                // FYI... This is relevant to http://jira.grails.org/browse/GRAILS-3463 and may
-                // become problematic if http://jira.codehaus.org/browse/GROOVY-5876 is addressed...
-                def argumentsForMethod = varArgs?.length == 1 && varArgs[0] instanceof Object[] ? varArgs[0] : varArgs
-                method.invoke(cls, methodName, argumentsForMethod)
-            })
+        mc.static."$methodName" = { Object[] varArgs ->
+            // FYI... This is relevant to http://jira.grails.org/browse/GRAILS-3463 and may
+            // become problematic if http://jira.codehaus.org/browse/GROOVY-5876 is addressed...
+            def argumentsForMethod = varArgs?.length == 1 && varArgs[0].getClass().isArray() ? varArgs[0] : varArgs
+            method.invoke(delegate, methodName, argumentsForMethod)
         }
-        return method.invoke(cls, methodName, args)
+
+        return method.invoke(persistentClass, methodName, args)
     }
 
     /**
@@ -290,7 +289,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * Creates a criteria builder instance
      */
     def withCriteria(Closure callable) {
-        return ((CriteriaBuilder)createCriteria()).invokeMethod('call', callable)
+        return InvokerHelper.invokeMethod(createCriteria(), 'call', callable)
     }
 
     /**
