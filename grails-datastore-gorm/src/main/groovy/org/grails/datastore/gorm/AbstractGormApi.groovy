@@ -14,6 +14,10 @@
  */
 package org.grails.datastore.gorm
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
+
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
@@ -28,6 +32,7 @@ import org.grails.datastore.mapping.model.PersistentEntity
  * @param <D> the entity/domain class
  * @since 1.0
  */
+@CompileStatic
 abstract class AbstractGormApi<D> extends AbstractDatastoreApi {
 
     static final List<String> EXCLUDES = [
@@ -59,6 +64,11 @@ abstract class AbstractGormApi<D> extends AbstractDatastoreApi {
         this.persistentEntity = datastore.getMappingContext().getPersistentEntity(persistentClass.name)
 
         final clazz = getClass()
+        clazz = initializeMethods(clazz)
+    }
+
+    @CompileStatic(TypeCheckingMode.SKIP)
+    protected initializeMethods(clazz) {
         while (clazz != Object) {
             final methodsToAdd = clazz.declaredMethods.findAll { Method m ->
                 def mods = m.getModifiers()
@@ -66,12 +76,13 @@ abstract class AbstractGormApi<D> extends AbstractDatastoreApi {
                         !AbstractGormApi.EXCLUDES.contains(m.name)
             }
             methods.addAll methodsToAdd
-            if (clazz != GormStaticApi && clazz != GormInstanceApi && clazz != GormValidationApi && clazz != AbstractGormApi) {
-                def extendedMethodsToAdd = methodsToAdd.findAll { !ReflectionUtils.isMethodOverriddenFromParent(it)}
+            if (clazz != GormStaticApi.class && clazz != GormInstanceApi && clazz != GormValidationApi && clazz != AbstractGormApi) {
+                def extendedMethodsToAdd = methodsToAdd.findAll { Method m -> !ReflectionUtils.isMethodOverriddenFromParent(m)}
                 extendedMethods.addAll extendedMethodsToAdd
             }
             clazz = clazz.getSuperclass()
         }
+        return clazz
     }
 
     List<Method> getMethods() { methods }
