@@ -18,16 +18,15 @@ package org.codehaus.groovy.grails.orm.hibernate;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.hibernate.Criteria;
-import org.hibernate.FlushMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 public class GrailsHibernateTemplate extends HibernateTemplate {
-
+    private boolean osivReadOnly;
+    
     public GrailsHibernateTemplate() {
         initialize(null);
     }
@@ -51,6 +50,7 @@ public class GrailsHibernateTemplate extends HibernateTemplate {
         setExposeNativeSession(true);
         if (application != null) {
             setCacheQueries(GrailsHibernateUtil.isCacheQueriesByDefault(application));
+            this.osivReadOnly = GrailsHibernateUtil.isOsivReadonly(application);
         }
     }
 
@@ -77,7 +77,15 @@ public class GrailsHibernateTemplate extends HibernateTemplate {
     }
 
     protected boolean isCurrentTransactionReadOnly() {
-        return TransactionSynchronizationManager.hasResource(getSessionFactory()) && TransactionSynchronizationManager.isCurrentTransactionReadOnly();
+        if(TransactionSynchronizationManager.hasResource(getSessionFactory())) {
+            if(TransactionSynchronizationManager.isActualTransactionActive()) {
+                return TransactionSynchronizationManager.isCurrentTransactionReadOnly();
+            } else {
+                return osivReadOnly;
+            }
+        } else {
+            return false;
+        }
     }
 
     public void applySettings(Criteria criteria) {
@@ -92,5 +100,13 @@ public class GrailsHibernateTemplate extends HibernateTemplate {
             session.setDefaultReadOnly(true);
         }
         super.enableFilters(session);
+    }
+
+    public boolean isOsivReadOnly() {
+        return osivReadOnly;
+    }
+
+    public void setOsivReadOnly(boolean osivReadOnly) {
+        this.osivReadOnly = osivReadOnly;
     }
 }
