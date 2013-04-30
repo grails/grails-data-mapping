@@ -2,8 +2,11 @@ package org.codehaus.groovy.grails.orm.hibernate.cfg
 
 import grails.artefact.Enhanced
 import grails.util.GrailsNameUtils
+import groovy.transform.CompileStatic
+import groovy.transform.TypeCheckingMode
 
 import org.apache.commons.beanutils.PropertyUtils
+import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsClassUtils
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
@@ -13,7 +16,9 @@ import org.codehaus.groovy.grails.orm.hibernate.HibernateGormEnhancer
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormInstanceApi
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormStaticApi
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormValidationApi
+import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -31,12 +36,13 @@ import org.springframework.orm.hibernate3.HibernateCallback
 import org.springframework.orm.hibernate3.HibernateTemplate
 import org.springframework.transaction.PlatformTransactionManager
 
+@CompileStatic
 class HibernateUtils {
 
-    static final Logger LOG = LoggerFactory.getLogger(this)
+    static final Logger LOG = LoggerFactory.getLogger(HibernateUtils)
 
-    static final LAZY_PROPERTY_HANDLER = { String propertyName ->
-        def propertyValue = PropertyUtils.getProperty(delegate, propertyName)
+    static final Closure LAZY_PROPERTY_HANDLER = { String propertyName ->
+        def propertyValue = PropertyUtils.getProperty(getDelegate(), propertyName)
         if (propertyValue instanceof HibernateProxy) {
             propertyValue = GrailsHibernateUtil.unwrapProxy(propertyValue)
         }
@@ -50,26 +56,29 @@ class HibernateUtils {
         String propertyName = property.name
         String getterName = GrailsClassUtils.getGetterName(propertyName)
         String setterName = GrailsClassUtils.getSetterName(propertyName)
-        domainClass.metaClass."${getterName}" = LAZY_PROPERTY_HANDLER.clone().curry(propertyName)
-        domainClass.metaClass."${setterName}" = { PropertyUtils.setProperty(delegate, propertyName, it) }
+        
+        GroovyObject mc = (GroovyObject)domainClass.metaClass
+        
+        mc.setProperty(getterName, ((Closure)LAZY_PROPERTY_HANDLER.clone()).curry(propertyName))
+        mc.setProperty(setterName, { PropertyUtils.setProperty(getDelegate(), propertyName, it) })
 
         for (GrailsDomainClass sub in domainClass.subClasses) {
             handleLazyProxy(sub, sub.getPropertyByName(property.name))
         }
     }
 
-    static void enhanceSessionFactories(ApplicationContext ctx, GrailsApplication grailsApplication, source = null) {
+    static void enhanceSessionFactories(ApplicationContext ctx, GrailsApplication grailsApplication, Object source = null) {
 
         Map<SessionFactory, HibernateDatastore> datastores = [:]
 
-        for (entry in ctx.getBeansOfType(SessionFactory)) {
+        for (entry in ctx.getBeansOfType(SessionFactory).entrySet()) {
             SessionFactory sessionFactory = entry.value
             String beanName = entry.key
             String suffix = beanName - 'sessionFactory'
             enhanceSessionFactory sessionFactory, grailsApplication, ctx, suffix, datastores, source
         }
 
-        ctx.eventTriggeringInterceptor.datastores = datastores
+        ctx.getBean("eventTriggeringInterceptor", ClosureEventTriggeringInterceptor).datastores = datastores
     }
 
     static enhanceSessionFactory(SessionFactory sessionFactory, GrailsApplication application, ApplicationContext ctx) {
@@ -77,18 +86,18 @@ class HibernateUtils {
     }
 
     static enhanceSessionFactory(SessionFactory sessionFactory, GrailsApplication application,
-            ApplicationContext ctx, String suffix, Map<SessionFactory, HibernateDatastore> datastores, source = null) {
+            ApplicationContext ctx, String suffix, Map<SessionFactory, HibernateDatastore> datastores, Object source = null) {
 
         MappingContext mappingContext = ctx.getBean("grailsDomainClassMappingContext", MappingContext)
         PlatformTransactionManager transactionManager = ctx.getBean("transactionManager$suffix", PlatformTransactionManager)
-        final datastore = ctx.getBean("hibernateDatastore$suffix", Datastore)
+        HibernateDatastore datastore = (HibernateDatastore)ctx.getBean("hibernateDatastore$suffix", Datastore)
         datastores[sessionFactory] = datastore
         String datasourceName = suffix ? suffix[1..-1] : GrailsDomainClassProperty.DEFAULT_DATA_SOURCE
 
         HibernateGormEnhancer enhancer = new HibernateGormEnhancer(datastore, transactionManager, application)
 
         def enhanceEntity = { PersistentEntity entity ->
-            GrailsDomainClass dc = application.getDomainClass(entity.javaClass.name)
+            GrailsDomainClass dc = (GrailsDomainClass)application.getArtefact(DomainClassArtefactHandler.TYPE, entity.javaClass.name)
             if (!GrailsHibernateUtil.isMappedWithHibernate(dc) || !GrailsHibernateUtil.usesDatasource(dc, datasourceName)) {
                 return
             }
@@ -107,14 +116,14 @@ class HibernateUtils {
                     enhancer.enhance entity, true
                 }
 
-                DomainClassGrailsPlugin.addRelationshipManagementMethods(application.getDomainClass(entity.javaClass.name), ctx)
+                DomainClassGrailsPlugin.addRelationshipManagementMethods(dc, ctx)
             }
         }
 
         // If we are reloading via an onChange event, the source indicates the specific
         // entity that needs to be reloaded. Otherwise, just reload all of them.
         if (source) {
-            PersistentEntity entity = mappingContext.getPersistentEntity(source.name)
+            PersistentEntity entity = getPersistentEntity(mappingContext, InvokerHelper.getPropertySafe(source, 'name')?.toString())
             if (entity) {
                 enhanceEntity(entity)
             }
@@ -125,10 +134,16 @@ class HibernateUtils {
             }
         }
     }
+    
+    // workaround CS bug
+    @CompileStatic(TypeCheckingMode.SKIP)
+    private static PersistentEntity getPersistentEntity(mappingContext, String name) {
+        mappingContext.getPersistentEntity(name)
+    }
 
     static Map filterQueryArgumentMap(Map query) {
         def queryArgs = [:]
-        for (entry in query) {
+        for (entry in query.entrySet()) {
             if (entry.value instanceof CharSequence) {
                 queryArgs[entry.key] = entry.value.toString()
             }
@@ -151,6 +166,7 @@ class HibernateUtils {
         nullNames
     }
 
+    @CompileStatic(TypeCheckingMode.SKIP)
     static void enhanceProxyClass(Class proxyClass) {
         def mc = proxyClass.metaClass
         if (mc.pickMethod('grailsEnhanced', GrailsHibernateUtil.EMPTY_CLASS_ARRAY)) {
@@ -218,7 +234,7 @@ class HibernateUtils {
             GrailsApplication application) {
 
         String getter = GrailsNameUtils.getGetterName(datasourceName)
-        if (dc.metaClass.methods.any { it.name == getter && it.parameterTypes.size() == 0 }) {
+        if (dc.metaClass.methods.any { MetaMethod it -> it.name == getter && it.parameterTypes.size() == 0 }) {
             LOG.warn "The $dc.clazz.name domain class has a method '$getter' - unable to add namespaced methods for datasource '$datasourceName'"
             return
         }
@@ -227,11 +243,11 @@ class HibernateUtils {
 
         def finders = HibernateGormEnhancer.createPersistentMethods(application, classLoader, datastore)
         def staticApi = new HibernateGormStaticApi(dc.clazz, datastore, finders, classLoader, transactionManager)
-        dc.metaClass.static."$getter" = { -> staticApi }
+        ((GroovyObject)((GroovyObject)dc.metaClass).getProperty('static')).setProperty(getter, { -> staticApi })
 
         def validateApi = new HibernateGormValidationApi(dc.clazz, datastore, classLoader)
         def instanceApi = new HibernateGormInstanceApi(dc.clazz, datastore, classLoader)
-        dc.metaClass."$getter" = { -> new InstanceProxy(delegate, instanceApi, validateApi) }
+        ((GroovyObject)dc.metaClass).setProperty(getter, { -> new InstanceProxy(getDelegate(), instanceApi, validateApi) })
     }
 
     /**
@@ -268,11 +284,11 @@ class HibernateUtils {
      * @return the idValue parameter converted to the type that grailsDomainClass expects
      * its identifiers to be
      */
-    static convertValueToIdentifierType(grailsDomainClass, idValue) {
+    static convertValueToIdentifierType(GrailsDomainClass grailsDomainClass, idValue) {
         convertToType(idValue, grailsDomainClass.identifier.type)
     }
 
-    private static convertToType(value, targetType) {
+    private static convertToType(value, Class targetType) {
         SimpleTypeConverter typeConverter = new SimpleTypeConverter()
 
         if (value != null && !targetType.isAssignableFrom(value.getClass())) {
