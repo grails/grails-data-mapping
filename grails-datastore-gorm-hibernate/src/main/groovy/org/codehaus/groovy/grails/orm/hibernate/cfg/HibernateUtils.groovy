@@ -19,6 +19,7 @@ import org.codehaus.groovy.grails.orm.hibernate.HibernateGormValidationApi
 import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.codehaus.groovy.runtime.StringGroovyMethods;
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -284,23 +285,41 @@ class HibernateUtils {
      * @return the idValue parameter converted to the type that grailsDomainClass expects
      * its identifiers to be
      */
-    static convertValueToIdentifierType(GrailsDomainClass grailsDomainClass, idValue) {
-        convertToType(idValue, grailsDomainClass.identifier.type)
+    static Object convertValueToIdentifierType(GrailsDomainClass grailsDomainClass, Object idValue) {
+        convertValueToType(idValue, grailsDomainClass.identifier.type)
     }
-
-    private static convertToType(value, Class targetType) {
-        SimpleTypeConverter typeConverter = new SimpleTypeConverter()
-
-        if (value != null && !targetType.isAssignableFrom(value.getClass())) {
-            if (value instanceof Number && Long.equals(targetType)) {
-                value = value.toLong()
-            }
-            else {
-                try {
-                    value = typeConverter.convertIfNecessary(value, targetType)
-                } catch (TypeMismatchException e) {
-                    // ignore
+    
+    static Object convertValueToType(Object passedValue, Class targetType) {
+        // workaround for GROOVY-6127, do not assign directly in parameters before it's fixed
+        Object value = passedValue
+        if(targetType != null && value != null && !(value in targetType)) {
+            if (value instanceof CharSequence) {
+                value = value.toString()
+                if(value in targetType) {
+                    return value
                 }
+            }
+            try {
+                if (value instanceof Number && (targetType==Long || targetType==Integer)) {
+                    if(targetType == Long) {
+                        value = ((Number)value).toLong()
+                    } else {
+                        value = ((Number)value).toInteger()
+                    }
+                } else if (value instanceof String && targetType in Number) {
+                    String strValue = value.trim()
+                    if(targetType == Long) {
+                        value = Long.parseLong(strValue)
+                    } else if (targetType == Integer) {
+                        value = Integer.parseInt(strValue)
+                    } else {
+                        value = StringGroovyMethods.asType(strValue, targetType)
+                    }
+                } else {
+                    value = new SimpleTypeConverter().convertIfNecessary(value, targetType)
+                }
+            } catch (e) {
+                // ignore
             }
         }
         return value

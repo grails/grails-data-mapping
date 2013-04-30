@@ -10,13 +10,13 @@ import org.codehaus.groovy.grails.domain.GrailsDomainClassMappingContext
 import org.codehaus.groovy.grails.orm.hibernate.cfg.CompositeIdentity
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.codehaus.groovy.grails.orm.hibernate.cfg.HibernateUtils
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ExecuteQueryPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ExecuteUpdatePersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindAllPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ListPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
-import org.codehaus.groovy.runtime.StringGroovyMethods
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -28,7 +28,6 @@ import org.hibernate.SessionFactory
 import org.hibernate.criterion.Projections
 import org.hibernate.criterion.Restrictions
 import org.hibernate.transform.DistinctRootEntityResultTransformer
-import org.springframework.beans.SimpleTypeConverter
 import org.springframework.core.convert.ConversionService
 import org.springframework.orm.hibernate3.HibernateCallback
 import org.springframework.orm.hibernate3.HibernateTemplate
@@ -103,25 +102,8 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
     }
 
-    private convertIdentifier(Serializable id) {
-        if (id instanceof CharSequence) {
-            id = id.toString()
-        }
-        if (identityType != null && id != null && !(id in identityType)) {
-            try {
-                if (id instanceof Number && identityType==Long) {
-                    id = ((Number)id).toLong()
-                } else if (id instanceof String && identityType in Number) {
-                    id = (Serializable)StringGroovyMethods.asType((String)id, identityType)
-                } else {
-                    id = (Serializable)new SimpleTypeConverter().convertIfNecessary(id, identityType)
-                }
-            } catch (e) {
-                // ignore
-            }
-        }
-
-        return id
+    private Serializable convertIdentifier(Serializable id) {
+        (Serializable)HibernateUtils.convertValueToType(id, identityType)
     }
 
     @Override
