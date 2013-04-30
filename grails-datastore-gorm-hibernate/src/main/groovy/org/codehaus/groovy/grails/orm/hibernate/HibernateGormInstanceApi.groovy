@@ -1,6 +1,9 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
+import groovy.transform.CompileStatic
+
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
+import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.domain.GrailsDomainClassMappingContext
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
@@ -23,7 +26,8 @@ import org.springframework.orm.hibernate3.HibernateTemplate
  * @author Graeme Rocher
  * @since 1.0
  */
-class HibernateGormInstanceApi extends GormInstanceApi {
+@CompileStatic
+class HibernateGormInstanceApi<D> extends GormInstanceApi<D> {
     private static final EMPTY_ARRAY = [] as Object[]
 
     private SavePersistentMethod saveMethod
@@ -33,9 +37,9 @@ class HibernateGormInstanceApi extends GormInstanceApi {
     private ClassLoader classLoader
     private boolean cacheQueriesByDefault = false
 
-    private config = Collections.emptyMap()
+    Map config = Collections.emptyMap()
 
-    HibernateGormInstanceApi(Class persistentClass, HibernateDatastore datastore, ClassLoader classLoader) {
+    HibernateGormInstanceApi(Class<D> persistentClass, HibernateDatastore datastore, ClassLoader classLoader) {
         super(persistentClass, datastore)
 
         this.classLoader = classLoader
@@ -43,10 +47,10 @@ class HibernateGormInstanceApi extends GormInstanceApi {
 
         def mappingContext = datastore.mappingContext
         if (mappingContext instanceof GrailsDomainClassMappingContext) {
-            GrailsDomainClassMappingContext domainClassMappingContext = mappingContext
+            GrailsDomainClassMappingContext domainClassMappingContext = (GrailsDomainClassMappingContext)mappingContext
             def grailsApplication = domainClassMappingContext.getGrailsApplication()
-            def domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, persistentClass.name)
-            config = grailsApplication.config?.grails?.gorm
+            GrailsDomainClass domainClass = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, persistentClass.name)
+            config = (Map)grailsApplication.getFlatConfig().get('grails.gorm')
             saveMethod = new SavePersistentMethod(sessionFactory, classLoader, grailsApplication, domainClass, datastore)
             mergeMethod = new MergePersistentMethod(sessionFactory, classLoader, grailsApplication, domainClass, datastore)
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication)
@@ -64,8 +68,8 @@ class HibernateGormInstanceApi extends GormInstanceApi {
      *
      * @return true if the field is dirty
      */
-    boolean isDirty(instance, String fieldName) {
-        def session = sessionFactory.currentSession
+    boolean isDirty(D instance, String fieldName) {
+        SessionImplementor session = (SessionImplementor)sessionFactory.currentSession
         def entry = findEntityEntry(instance, session)
         if (!entry || !entry.loadedState) {
             return false
@@ -83,8 +87,8 @@ class HibernateGormInstanceApi extends GormInstanceApi {
      * @param instance The instance
      * @return true if it is dirty
      */
-    boolean isDirty(instance) {
-        def session = sessionFactory.currentSession
+    boolean isDirty(D instance) {
+        SessionImplementor session = (SessionImplementor)sessionFactory.currentSession
         def entry = findEntityEntry(instance, session)
         if (!entry || !entry.loadedState) {
             return false
@@ -101,8 +105,8 @@ class HibernateGormInstanceApi extends GormInstanceApi {
      * @param instance The instance
      * @return A list of property names that are dirty
      */
-    List getDirtyPropertyNames(instance) {
-        def session = sessionFactory.currentSession
+    List getDirtyPropertyNames(D instance) {
+        SessionImplementor session = (SessionImplementor)sessionFactory.currentSession
         def entry = findEntityEntry(instance, session)
         if (!entry || !entry.loadedState) {
             return []
@@ -123,8 +127,8 @@ class HibernateGormInstanceApi extends GormInstanceApi {
      * @param fieldName The field name
      * @return The original persisted value
      */
-    Object getPersistentValue(instance, String fieldName) {
-        def session = sessionFactory.currentSession
+    D getPersistentValue(D instance, String fieldName) {
+        SessionImplementor session = (SessionImplementor)sessionFactory.currentSession
         def entry = findEntityEntry(instance, session, false)
         if (!entry || !entry.loadedState) {
             return null
@@ -135,25 +139,25 @@ class HibernateGormInstanceApi extends GormInstanceApi {
     }
 
     @Override
-    Object lock(instance) {
+    D lock(D instance) {
         hibernateTemplate.lock(instance, LockMode.UPGRADE)
     }
 
     @Override
-    Object refresh(instance) {
+    D refresh(D instance) {
         hibernateTemplate.refresh(instance)
         return instance
     }
 
     @Override
-    Object save(instance) {
+    D save(D instance) {
         if (saveMethod) {
             return saveMethod.invoke(instance, "save", EMPTY_ARRAY)
         }
         return super.save(instance)
     }
 
-    Object save(instance, boolean validate) {
+    D save(D instance, boolean validate) {
         if (saveMethod) {
             return saveMethod.invoke(instance, "save", [validate] as Object[])
         }
@@ -161,7 +165,7 @@ class HibernateGormInstanceApi extends GormInstanceApi {
     }
 
     @Override
-    Object merge(instance) {
+    D merge(D instance) {
         if (mergeMethod) {
             mergeMethod.invoke(instance, "merge", EMPTY_ARRAY)
         }
@@ -171,7 +175,7 @@ class HibernateGormInstanceApi extends GormInstanceApi {
     }
 
     @Override
-    Object merge(instance, Map params) {
+    D merge(D instance, Map params) {
         if (mergeMethod) {
             mergeMethod.invoke(instance, "merge", [params] as Object[])
         }
@@ -181,7 +185,7 @@ class HibernateGormInstanceApi extends GormInstanceApi {
     }
 
     @Override
-    Object save(instance, Map params) {
+    D save(D instance, Map params) {
         if (saveMethod) {
             return saveMethod.invoke(instance, "save", [params] as Object[])
         }
@@ -189,18 +193,18 @@ class HibernateGormInstanceApi extends GormInstanceApi {
     }
 
     @Override
-    Object attach(instance) {
+    D attach(D instance) {
         hibernateTemplate.lock(instance, LockMode.NONE)
         return instance
     }
 
     @Override
-    void discard(instance) {
+    void discard(D instance) {
         hibernateTemplate.evict instance
     }
 
     @Override
-    void delete(instance) {
+    void delete(D instance) {
         def obj = instance
         try {
             hibernateTemplate.execute({Session session ->
@@ -216,7 +220,7 @@ class HibernateGormInstanceApi extends GormInstanceApi {
     }
 
     @Override
-    void delete(instance, Map params) {
+    void delete(D instance, Map params) {
         def obj = instance
         hibernateTemplate.delete obj
         if (shouldFlush(params)) {
@@ -230,19 +234,19 @@ class HibernateGormInstanceApi extends GormInstanceApi {
     }
 
     @Override
-    boolean instanceOf(instance, Class cls) {
+    boolean instanceOf(D instance, Class cls) {
         if (instance instanceof HibernateProxy) {
-            return cls.isInstance(GrailsHibernateUtil.unwrapProxy(instance))
+            return GrailsHibernateUtil.unwrapProxy(instance) in cls
         }
-        return cls.isInstance(instance)
+        return instance in cls
     }
 
     @Override
-    boolean isAttached(instance) {
+    boolean isAttached(D instance) {
         hibernateTemplate.contains instance
     }
 
-    private EntityEntry findEntityEntry(instance, SessionImplementor session, boolean forDirtyCheck = true) {
+    private EntityEntry findEntityEntry(D instance, SessionImplementor session, boolean forDirtyCheck = true) {
         def entry = session.persistenceContext.getEntry(instance)
         if (!entry) {
             return null
