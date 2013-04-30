@@ -19,14 +19,13 @@ import org.codehaus.groovy.grails.orm.hibernate.HibernateGormValidationApi
 import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
 import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.codehaus.groovy.runtime.StringGroovyMethods;
+import org.codehaus.groovy.runtime.StringGroovyMethods
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.hibernate.FlushMode
 import org.hibernate.Session
 import org.hibernate.SessionFactory
-import org.hibernate.TypeMismatchException
 import org.hibernate.proxy.HibernateProxy
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -42,30 +41,12 @@ class HibernateUtils {
 
     static final Logger LOG = LoggerFactory.getLogger(HibernateUtils)
 
-    static final Closure LAZY_PROPERTY_HANDLER = { String propertyName ->
-        def propertyValue = PropertyUtils.getProperty(getDelegate(), propertyName)
-        if (propertyValue instanceof HibernateProxy) {
-            propertyValue = GrailsHibernateUtil.unwrapProxy(propertyValue)
-        }
-        return propertyValue
-    }
-
     /**
      * Overrides a getter on a property that is a Hibernate proxy in order to make sure the initialized object is returned hence avoiding Hibernate proxy hell.
      */
     static void handleLazyProxy(GrailsDomainClass domainClass, GrailsDomainClassProperty property) {
-        String propertyName = property.name
-        String getterName = GrailsClassUtils.getGetterName(propertyName)
-        String setterName = GrailsClassUtils.getSetterName(propertyName)
-        
-        GroovyObject mc = (GroovyObject)domainClass.metaClass
-        
-        mc.setProperty(getterName, ((Closure)LAZY_PROPERTY_HANDLER.clone()).curry(propertyName))
-        mc.setProperty(setterName, { PropertyUtils.setProperty(getDelegate(), propertyName, it) })
-
-        for (GrailsDomainClass sub in domainClass.subClasses) {
-            handleLazyProxy(sub, sub.getPropertyByName(property.name))
-        }
+        // don't do anything
+        // return lazy proxies
     }
 
     static void enhanceSessionFactories(ApplicationContext ctx, GrailsApplication grailsApplication, Object source = null) {
@@ -167,67 +148,12 @@ class HibernateUtils {
         nullNames
     }
 
-    @CompileStatic(TypeCheckingMode.SKIP)
     static void enhanceProxyClass(Class proxyClass) {
-        def mc = proxyClass.metaClass
-        if (mc.pickMethod('grailsEnhanced', GrailsHibernateUtil.EMPTY_CLASS_ARRAY)) {
-            return
-        }
-
-        // hasProperty
-        def originalHasProperty = mc.getMetaMethod("hasProperty", String)
-        mc.hasProperty = { String name ->
-            if (delegate instanceof HibernateProxy) {
-                return GrailsHibernateUtil.unwrapProxy(delegate).hasProperty(name)
-            }
-            return originalHasProperty.invoke(delegate, name)
-        }
-        // respondsTo
-        def originalRespondsTo = mc.getMetaMethod("respondsTo", String)
-        mc.respondsTo = { String name ->
-            if (delegate instanceof HibernateProxy) {
-                return GrailsHibernateUtil.unwrapProxy(delegate).respondsTo(name)
-            }
-            return originalRespondsTo.invoke(delegate, name)
-        }
-        def originalRespondsToTwoArgs = mc.getMetaMethod("respondsTo", String, Object[])
-        mc.respondsTo = { String name, Object[] args ->
-            if (delegate instanceof HibernateProxy) {
-                return GrailsHibernateUtil.unwrapProxy(delegate).respondsTo(name, args)
-            }
-            return originalRespondsToTwoArgs.invoke(delegate, name, args)
-        }
-        // getter
-        mc.propertyMissing = { String name ->
-            if (delegate instanceof HibernateProxy) {
-                return GrailsHibernateUtil.unwrapProxy(delegate)."$name"
-            }
-            throw new MissingPropertyException(name, delegate.getClass())
-        }
-
-        // setter
-        mc.propertyMissing = { String name, val ->
-            if (delegate instanceof HibernateProxy) {
-                GrailsHibernateUtil.unwrapProxy(delegate)."$name" = val
-            }
-            else {
-                throw new MissingPropertyException(name, delegate.getClass())
-            }
-        }
-
-        mc.methodMissing = { String name, args ->
-            if (delegate instanceof HibernateProxy) {
-                def obj = GrailsHibernateUtil.unwrapProxy(delegate)
-                return obj."$name"(*args)
-            }
-            throw new MissingPropertyException(name, delegate.getClass())
-        }
-
-        mc.grailsEnhanced = { true }
+        // don't do anything
     }
-
+    
     static void enhanceProxy(HibernateProxy proxy) {
-        proxy.metaClass = GroovySystem.metaClassRegistry.getMetaClass(proxy.getClass())
+        // don't do anything
     }
 
     private static void registerNamespaceMethods(GrailsDomainClass dc, HibernateDatastore datastore,
