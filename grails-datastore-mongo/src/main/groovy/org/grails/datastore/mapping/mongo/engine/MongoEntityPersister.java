@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.bson.BSONObject;
 import org.bson.types.ObjectId;
+import org.grails.datastore.mapping.core.IdentityGenerationException;
 import org.grails.datastore.mapping.core.OptimisticLockingException;
 import org.grails.datastore.mapping.core.SessionImplementor;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
@@ -321,7 +322,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     protected Object generateIdentifier(final PersistentEntity persistentEntity, final DBObject nativeEntry) {
         return mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
-
+                
                 String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
                 DBCollection dbCollection = con.getCollection(collectionName + NEXT_ID_SUFFIX);
@@ -329,32 +330,22 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 // If there is a numeric identifier then we need to rely on optimistic concurrency controls to obtain a unique identifer
                 // sequence. If the identifier is not numeric then we assume BSON ObjectIds.
                 if (hasNumericalIdentifier) {
+
+                    int attempts = 0;
                     while (true) {
-                        DBCursor result = dbCollection.find().sort(new BasicDBObject(MONGO_ID_FIELD, -1)).limit(1);
-
-                        long nextId;
-                        if (result.hasNext()) {
-                            final Long current = getMappingContext().getConversionService().convert(
-                                   result.next().get(MONGO_ID_FIELD), Long.class);
-                            nextId = current + 1;
-                        }
-                        else {
-                            nextId = 1;
-                        }
-
-                        nativeEntry.put(MONGO_ID_FIELD, nextId);
-                        final WriteResult writeResult = dbCollection.insert(nativeEntry);
-                        final CommandResult lastError = writeResult.getLastError();
-                        if (lastError.ok()) {
+                        DBObject result = dbCollection.findAndModify(new BasicDBObject(MONGO_ID_FIELD, collectionName), null, null, false, new BasicDBObject("$inc", new BasicDBObject("next_id", 1)), true, true);
+                        // result should never be null and we shouldn't come back with an error ,but you never know. We should just retry if this happens...
+                        if (result != null && con.getLastError().ok()) {
+                            long nextId = getMappingContext().getConversionService().convert(result.get("next_id"), Long.class);
+                            nativeEntry.put(MONGO_ID_FIELD, nextId);
                             break;
                         }
-
-                        final Object code = lastError.get("code");
-                        // duplicate key error try again
-                        if (code != null && code.equals(11000)) {
-                            continue;
+                        else {
+                            attempts++;
+                            if(attempts > 3) {
+                                throw new IdentityGenerationException("Unable to generate identity using findAndModify after 3 attempts: " + con.getLastError().getErrorMessage());
+                            }
                         }
-                        break;
                     }
 
                     return nativeEntry.get(MONGO_ID_FIELD);

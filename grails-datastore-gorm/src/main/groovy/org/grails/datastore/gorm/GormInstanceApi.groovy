@@ -152,8 +152,9 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
         }
 
         if (hasErrors) {
-            if (params?.failOnError || failOnError) {
-                throw validationException.newInstance( "Validation error occured during call to save()", instance.errors)
+            boolean failOnErrorEnabled = params?.containsKey("failOnError") ? params.failOnError : failOnError
+            if (failOnErrorEnabled) {
+                throw validationException.newInstance("Validation error occurred during call to save()", instance.errors)
             }
             return null
         }
