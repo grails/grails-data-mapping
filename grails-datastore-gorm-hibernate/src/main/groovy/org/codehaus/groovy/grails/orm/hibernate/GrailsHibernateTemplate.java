@@ -18,9 +18,13 @@ package org.codehaus.groovy.grails.orm.hibernate;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.hibernate.Criteria;
+import org.hibernate.FlushMode;
 import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.orm.hibernate3.SessionFactoryUtils;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 public class GrailsHibernateTemplate extends HibernateTemplate {
 
@@ -50,15 +54,43 @@ public class GrailsHibernateTemplate extends HibernateTemplate {
         }
     }
 
+    @Override
+    protected void prepareQuery(Query queryObject) {
+        super.prepareQuery(queryObject);
+        if(isCurrentTransactionReadOnly()) {
+            queryObject.setReadOnly(true);
+        }
+    }
+
     public void applySettings(Query queryObject) {
         if (isExposeNativeSession()) {
-            super.prepareQuery(queryObject);
+            prepareQuery(queryObject);
         }
+    }
+    
+    @Override
+    protected void prepareCriteria(Criteria criteria) {
+        super.prepareCriteria(criteria);
+        if(isCurrentTransactionReadOnly()) {
+            criteria.setReadOnly(true);
+        }
+    }
+
+    protected boolean isCurrentTransactionReadOnly() {
+        return TransactionSynchronizationManager.hasResource(getSessionFactory()) && TransactionSynchronizationManager.isCurrentTransactionReadOnly();
     }
 
     public void applySettings(Criteria criteria) {
         if (isExposeNativeSession()) {
-            super.prepareCriteria(criteria);
+            prepareCriteria(criteria);
         }
+    }
+    
+    @Override
+    protected void enableFilters(Session session) {
+        if(isCurrentTransactionReadOnly()) {
+            session.setDefaultReadOnly(true);
+        }
+        super.enableFilters(session);
     }
 }
