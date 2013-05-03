@@ -44,12 +44,12 @@ public class GroovyObjectMethodHandler implements MethodHandler {
         if("metaClass".equals(property)) {
             return getThisMetaClass();
         }
-        beforeUsing(self);
-        return InvokerHelper.getMetaClass(self).getProperty(self, property);
+        Object delegate = resolveDelegate(self);
+        return InvokerHelper.getMetaClass(delegate).getProperty(delegate, property);
     }
 
-    protected void beforeUsing(Object self) {
-        
+    protected Object resolveDelegate(Object self) {
+        return self;
     }
 
     public void setProperty(Object self, String property, Object newValue) {
@@ -57,13 +57,13 @@ public class GroovyObjectMethodHandler implements MethodHandler {
             setThisMetaClass((MetaClass)newValue);
             return;
         }
-        beforeUsing(self);
-        InvokerHelper.getMetaClass(self).setProperty(self, property, newValue);
+        Object delegate = resolveDelegate(self);
+        InvokerHelper.getMetaClass(delegate).setProperty(delegate, property, newValue);
     }
 
     public Object invokeThisMethod(Object self, String name, Object args) {
-        beforeUsing(self);
-        return InvokerHelper.getMetaClass(self).invokeMethod(self, name, args);
+        Object delegate = resolveDelegate(self);
+        return InvokerHelper.getMetaClass(delegate).invokeMethod(delegate, name, args);
     }
 
     public MetaClass getThisMetaClass() {
