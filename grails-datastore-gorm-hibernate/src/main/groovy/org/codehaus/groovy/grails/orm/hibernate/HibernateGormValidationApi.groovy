@@ -1,16 +1,19 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
+import groovy.transform.CompileStatic;
+
 import org.codehaus.groovy.grails.domain.GrailsDomainClassMappingContext
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ValidatePersistentMethod
 import org.grails.datastore.gorm.GormValidationApi
 
-class HibernateGormValidationApi extends GormValidationApi {
+@CompileStatic
+class HibernateGormValidationApi<D> extends GormValidationApi<D> {
 
     private ClassLoader classLoader
 
     ValidatePersistentMethod validateMethod
 
-    HibernateGormValidationApi(Class persistentClass, HibernateDatastore datastore, ClassLoader classLoader) {
+    HibernateGormValidationApi(Class<D> persistentClass, HibernateDatastore datastore, ClassLoader classLoader) {
         super(persistentClass, datastore)
 
         this.classLoader = classLoader
@@ -19,7 +22,7 @@ class HibernateGormValidationApi extends GormValidationApi {
 
         def mappingContext = datastore.mappingContext
         if (mappingContext instanceof GrailsDomainClassMappingContext) {
-            GrailsDomainClassMappingContext domainClassMappingContext = mappingContext
+            GrailsDomainClassMappingContext domainClassMappingContext = (GrailsDomainClassMappingContext)mappingContext
             def grailsApplication = domainClassMappingContext.getGrailsApplication()
             def validator = mappingContext.getEntityValidator(
                 mappingContext.getPersistentEntity(persistentClass.name))
@@ -29,7 +32,7 @@ class HibernateGormValidationApi extends GormValidationApi {
     }
 
     @Override
-    boolean validate(instance) {
+    boolean validate(D instance) {
         if (validateMethod) {
             return validateMethod.invoke(instance, "validate", [] as Object[])
         }
@@ -37,7 +40,7 @@ class HibernateGormValidationApi extends GormValidationApi {
     }
 
     @Override
-    boolean validate(instance, boolean evict) {
+    boolean validate(D instance, boolean evict) {
         if (validateMethod) {
             return validateMethod.invoke(instance, "validate", [evict] as Object[])
         }
@@ -45,7 +48,7 @@ class HibernateGormValidationApi extends GormValidationApi {
     }
 
     @Override
-    boolean validate(instance, Map arguments) {
+    boolean validate(D instance, Map arguments) {
         if (validateMethod) {
             return validateMethod.invoke(instance, "validate", [arguments] as Object[])
         }
@@ -53,10 +56,10 @@ class HibernateGormValidationApi extends GormValidationApi {
     }
 
     @Override
-    boolean validate(instance, List fields) {
+    boolean validate(D instance, List fields) {
         if (validateMethod) {
             return validateMethod.invoke(instance, "validate", [fields] as Object[])
         }
-        return super.validate(instance, arguments)
+        return super.validate(instance, fields)
     }
 }

@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.gorm
 
+import groovy.transform.CompileStatic;
+
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.DatastoreUtils
 import org.grails.datastore.mapping.core.SessionCallback
@@ -22,6 +24,7 @@ import org.grails.datastore.mapping.core.VoidSessionCallback
 /**
  * @author Burt Beckwith
  */
+@CompileStatic
 abstract class AbstractDatastoreApi {
 
     protected Datastore datastore

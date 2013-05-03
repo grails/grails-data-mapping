@@ -15,9 +15,11 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate
 
+import groovy.transform.CompileStatic
+
 import org.hibernate.FlushMode
-import org.hibernate.Session
 import org.springframework.orm.hibernate3.HibernateTransactionManager
+import org.springframework.orm.hibernate3.HibernateTransactionManager.HibernateTransactionObject
 import org.springframework.transaction.TransactionDefinition
 
 /**
@@ -32,8 +34,13 @@ class GrailsHibernateTransactionManager extends HibernateTransactionManager {
         super.doBegin transaction, definition
 
         if (definition.isReadOnly()) {
-            // always set to manual; the base class doesn't because the OSIVI has already registered a session
-            transaction.sessionHolder.session.flushMode = FlushMode.MANUAL
+            // transaction is HibernateTransactionManager.HibernateTransactionObject private class instance
+            transaction.sessionHolder?.session?.with {
+                // always set to manual; the base class doesn't because the OSIVI has already registered a session
+                flushMode = FlushMode.MANUAL
+                // set session to load entities in read-only mode
+                defaultReadOnly = true
+            }
         }
     }
 }

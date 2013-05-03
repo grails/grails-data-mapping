@@ -14,11 +14,14 @@
  */
 package org.grails.datastore.mapping.proxy;
 
+import groovy.lang.GroovyObject;
+
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javassist.util.proxy.MethodFilter;
@@ -40,14 +43,7 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
 
     private static final Map<Class, Class > PROXY_FACTORIES = new ConcurrentHashMap<Class, Class >();
 
-    private static final List EXCLUDES = Arrays.asList(
-            "getMetaClass",
-            "metaClass",
-            "setMetaClass",
-            "invokeMethod",
-            "getProperty",
-            "setProperty",
-            "$getStaticMetaClass");
+    private static final Set<String> EXCLUDES = new HashSet(Arrays.asList("$getStaticMetaClass"));
 
     public boolean isProxy(Object object) {
         return object instanceof EntityProxy;
@@ -86,8 +82,14 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
     }
 
     protected Object createProxiedInstance(final Session session, final Class cls, Class proxyClass, final Serializable id) {
-        MethodHandler mi = new MethodHandler() {
+        MethodHandler mi = new GroovyObjectMethodHandler(proxyClass) {
             private Object target;
+            
+            @Override
+            protected Object resolveDelegate(Object self) {
+                return target;
+            }
+            
             public Object invoke(Object proxy, Method method, Method proceed, Object[] args) throws Throwable {
                 if (args.length == 0) {
                     final String methodName = method.getName();
@@ -107,7 +109,12 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
                     }
                 }
                 if (target == null) initialize();
-                return org.springframework.util.ReflectionUtils.invokeMethod(method, target, args);
+                Object result = handleInvocation(target, method, args);
+                if(!wasHandled(result)) {
+                    return org.springframework.util.ReflectionUtils.invokeMethod(method, target, args);
+                } else {
+                    return result;
+                }
             }
 
             public void initialize() {
@@ -130,7 +137,7 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
         if (proxyClass == null) {
             javassist.util.proxy.ProxyFactory pf = new ProxyFactory();
             pf.setSuperclass(type);
-            pf.setInterfaces(new Class[]{ EntityProxy.class });
+            pf.setInterfaces(new Class[]{ EntityProxy.class, GroovyObject.class });
             pf.setFilter(new MethodFilter() {
                 public boolean isHandled(Method method) {
                     final String methodName = method.getName();
