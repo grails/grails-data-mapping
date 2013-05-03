@@ -230,7 +230,7 @@ class HibernateUtils {
     
 
     static void enhanceProxy(HibernateProxy proxy) {
-        proxy.metaClass = GroovySystem.metaClassRegistry.getMetaClass(proxy.getClass())
+        // no need to do anything here
     }
 
     private static void registerNamespaceMethods(GrailsDomainClass dc, HibernateDatastore datastore,
