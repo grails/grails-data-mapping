@@ -20,13 +20,16 @@ class MongoDynamicPropertyOnEmbeddedSpec extends GormDatastoreSpec{
             Container.count() == 1
             Container.first().contents.size() == 10
             Container.first().contents.first().name ==~ /Item \d/
-            Container.collection.DB.getCollectionNames().sort() == ['container','system.indexes']
+            Container.collection.DB.getCollectionNames().contains "container"
+            !Container.collection.DB.getCollectionNames().contains( "item" )
             session.clear()
 
         when:"An embedded dynamic property is accessed"
             Container.first().contents.first().nonexistentProperty == null
         then:"The a collection is not created for the embedded property"
-            Container.collection.DB.getCollectionNames().sort() == ['container','system.indexes']
+            Container.collection.DB.getCollectionNames().contains "container"
+            !Container.collection.DB.getCollectionNames().contains( "item" )
+
     }
 
     @Override
