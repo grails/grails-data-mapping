@@ -277,6 +277,6 @@ class HibernateGormInstanceApi<D> extends GormInstanceApi<D> {
        if (map?.containsKey('flush')) {
            return Boolean.TRUE == map.flush
        }
-       return config.autoFlush instanceof Boolean ? config.autoFlush : false
+       return config?.autoFlush instanceof Boolean ? config.autoFlush : false
    }
 }
