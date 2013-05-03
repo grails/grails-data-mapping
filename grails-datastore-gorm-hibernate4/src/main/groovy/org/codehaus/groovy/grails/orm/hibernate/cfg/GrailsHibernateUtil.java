@@ -39,6 +39,7 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateDomainClass;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.GroovyAwareJavassistProxyFactory;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.HibernateProxyHandler;
+import org.codehaus.groovy.grails.web.context.GrailsConfigUtils;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.FlushMode;
@@ -88,6 +89,7 @@ public class GrailsHibernateUtil {
     public static final String ARGUMENT_CACHE = "cache";
     public static final String ARGUMENT_LOCK = "lock";
     public static final String CONFIG_PROPERTY_CACHE_QUERIES="grails.hibernate.cache.queries";
+    public static final String CONFIG_PROPERTY_OSIV_READONLY="grails.hibernate.osiv.readonly";
     public static final Class<?>[] EMPTY_CLASS_ARRAY=new Class<?>[0];
 
     private static HibernateProxyHandler proxyHandler = new HibernateProxyHandler();
@@ -450,8 +452,11 @@ public class GrailsHibernateUtil {
     }
 
     public static boolean isCacheQueriesByDefault(GrailsApplication grailsApplication) {
-        Object o = grailsApplication.getFlatConfig().get(CONFIG_PROPERTY_CACHE_QUERIES);
-        return o != null && o instanceof Boolean ? (Boolean)o : false;
+        return GrailsConfigUtils.isConfigTrue(grailsApplication, CONFIG_PROPERTY_CACHE_QUERIES);
+    }
+    
+    public static boolean isOsivReadonly(GrailsApplication grailsApplication) {
+        return GrailsConfigUtils.isConfigTrue(grailsApplication, CONFIG_PROPERTY_OSIV_READONLY);
     }
 
     public static GroovyAwareJavassistProxyFactory buildProxyFactory(PersistentClass persistentClass) {

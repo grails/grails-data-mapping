@@ -15,9 +15,12 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg
 
+import groovy.transform.CompileStatic;
+
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormInstanceApi
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormValidationApi
 
+@CompileStatic
 class InstanceProxy {
     private instance
     private HibernateGormValidationApi validateApi
@@ -29,7 +32,7 @@ class InstanceProxy {
         this.instance = instance
         this.instanceApi = instanceApi
         this.validateApi = validateApi
-        validateMethods = validateApi.methods*.name
+        validateMethods = validateApi.methods*.name as Set<String>
         validateMethods.remove 'getValidator'
         validateMethods.remove 'setValidator'
         validateMethods.remove 'getBeforeValidateHelper'
@@ -40,26 +43,26 @@ class InstanceProxy {
 
     def invokeMethod(String name, args) {
         if (validateMethods.contains(name)) {
-            validateApi."$name"(instance, *args)
+            validateApi.invokeMethod(name, [instance, *args])
         }
         else {
-            instanceApi."$name"(instance, *args)
+            instanceApi.invokeMethod(name, [instance, *args])
         }
     }
 
     void setProperty(String name, val) {
-        instanceApi."$name" = val
+        instanceApi.setProperty("$name", val)
     }
 
     def getProperty(String name) {
-        instanceApi."$name"
+        instanceApi.getProperty(name)
     }
 
     void putAt(String name, val) {
-        instanceApi."$name" = val
+        instanceApi.setProperty(name, val)
     }
 
     def getAt(String name) {
-        instanceApi."$name"
+        instanceApi.getProperty(name)
     }
 }

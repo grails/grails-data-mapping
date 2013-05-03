@@ -55,6 +55,7 @@ public class GrailsHibernateTemplate {
 
     protected final Log logger = LogFactory.getLog(getClass());
 
+    private boolean osivReadOnly;
     protected boolean exposeNativeSession = true;
     protected boolean cacheQueries = false;
 
@@ -72,6 +73,10 @@ protected boolean checkWriteOperations = true;
     protected GrailsHibernateTemplate() {
         // for testing
     }
+    
+    public GrailsHibernateTemplate(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
     public GrailsHibernateTemplate(SessionFactory sessionFactory, GrailsApplication application) {
         Assert.notNull(sessionFactory, "Property 'sessionFactory' is required");
@@ -81,6 +86,7 @@ protected boolean checkWriteOperations = true;
         jdbcExceptionTranslator = new SQLErrorCodeSQLExceptionTranslator(ds);
 
         cacheQueries = GrailsHibernateUtil.isCacheQueriesByDefault(application);
+        this.osivReadOnly = GrailsHibernateUtil.isOsivReadonly(application);
     }
 
     public void applySettings(Query query) {
@@ -114,6 +120,26 @@ protected boolean checkWriteOperations = true;
         return (List<?>)result;
     }
 
+    protected boolean isCurrentTransactionReadOnly() {
+        if(TransactionSynchronizationManager.hasResource(sessionFactory)) {
+            if(TransactionSynchronizationManager.isActualTransactionActive()) {
+                return TransactionSynchronizationManager.isCurrentTransactionReadOnly();
+            } else {
+                return osivReadOnly;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isOsivReadOnly() {
+        return osivReadOnly;
+    }
+
+    public void setOsivReadOnly(boolean osivReadOnly) {
+        this.osivReadOnly = osivReadOnly;
+    }
+
     /**
      * Execute the action specified by the given action object within a Session.
      *
@@ -135,6 +161,9 @@ protected boolean checkWriteOperations = true;
         FlushMode previousFlushMode = null;
         try {
             previousFlushMode = applyFlushMode(session, existingTransaction);
+			if(isCurrentTransactionReadOnly()) {
+            	session.setDefaultReadOnly(true);
+	        }
             Session sessionToExpose = (enforceNativeSession || exposeNativeSession ? session : createSessionProxy(session));
             T result = action.doInHibernate(sessionToExpose);
             flushIfNecessary(session, existingTransaction);
@@ -322,7 +351,9 @@ protected boolean checkWriteOperations = true;
         if (cacheQueries) {
             query.setCacheable(true);
         }
-
+        if(isCurrentTransactionReadOnly()) {
+            query.setReadOnly(true);
+        }
         SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(sessionFactory);
         if (sessionHolder != null && sessionHolder.hasTimeout()) {
             query.setTimeout(sessionHolder.getTimeToLiveInSeconds());
@@ -340,7 +371,9 @@ protected boolean checkWriteOperations = true;
         if (cacheQueries) {
             criteria.setCacheable(true);
         }
-
+        if(isCurrentTransactionReadOnly()) {
+            criteria.setReadOnly(true);
+        }
         SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(sessionFactory);
         if (sessionHolder != null && sessionHolder.hasTimeout()) {
             criteria.setTimeout(sessionHolder.getTimeToLiveInSeconds());
