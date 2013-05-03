@@ -100,13 +100,19 @@ public abstract class AbstractDynamicPersistentMethod extends AbstractDynamicMet
     protected Errors setupErrorsProperty(Object target) {
         MetaClass mc = GroovySystem.getMetaClassRegistry().getMetaClass(target.getClass());
 
-        Errors errors = new ValidationErrors(target);
+        ValidationErrors errors = new ValidationErrors(target);
 
         Errors originalErrors = (Errors) mc.getProperty(target, ERRORS_PROPERTY);
         for (Object o : originalErrors.getFieldErrors()) {
             FieldError fe = (FieldError)o;
             if (fe.isBindingFailure()) {
-                errors.rejectValue(fe.getField(), fe.getCode(), fe.getArguments(), fe.getDefaultMessage());
+                errors.addError(new FieldError(fe.getObjectName(),
+                                               fe.getField(),
+                                               fe.getRejectedValue(),
+                                               fe.isBindingFailure(),
+                                               fe.getCodes(),
+                                               fe.getArguments(),
+                                               fe.getDefaultMessage()));
             }
         }
 

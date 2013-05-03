@@ -15,11 +15,12 @@
 package org.grails.datastore.gorm
 
 import grails.validation.ValidationException
+import groovy.transform.CompileStatic
 
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
-import org.grails.datastore.mapping.core.VoidSessionCallback
 import org.grails.datastore.mapping.proxy.EntityProxy
 
 /**
@@ -28,9 +29,10 @@ import org.grails.datastore.mapping.proxy.EntityProxy
  * @author Graeme Rocher
  * @param <D> the entity/domain class
  */
+@CompileStatic
 class GormInstanceApi<D> extends AbstractGormApi<D> {
 
-    Class<Exception> validationException = ValidationException
+    Class<? extends Exception> validationException = ValidationException
     boolean failOnError = false
 
     GormInstanceApi(Class<D> persistentClass, Datastore datastore) {
@@ -44,7 +46,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
         if (o instanceof EntityProxy) {
             o = o.getTarget()
         }
-        return cls.isInstance(o)
+        return o in cls
     }
 
     /**
@@ -139,22 +141,22 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
         } as SessionCallback)
     }
 
-    protected D doSave(instance, Map params, Session session) {
+    protected D doSave(D instance, Map params, Session session) {
         boolean hasErrors = false
         boolean validate = params?.containsKey("validate") ? params.validate : true
         if (instance.respondsTo('validate') && validate) {
             session.datastore.setSkipValidation(instance, false)
-            hasErrors = !instance.validate()
+            hasErrors = !InvokerHelper.invokeMethod(instance, "validate", null)
         }
         else {
             session.datastore.setSkipValidation(instance, true)
-            instance.clearErrors()
+            InvokerHelper.invokeMethod(instance, "clearErrors", null)
         }
 
         if (hasErrors) {
             boolean failOnErrorEnabled = params?.containsKey("failOnError") ? params.failOnError : failOnError
             if (failOnErrorEnabled) {
-                throw validationException.newInstance("Validation error occurred during call to save()", instance.errors)
+                throw validationException.newInstance("Validation error occurred during call to save()", InvokerHelper.getProperty(instance, "errors"))
             }
             return null
         }
@@ -170,7 +172,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * Returns the objects identifier
      */
     Serializable ident(instance) {
-        instance[persistentEntity.getIdentity().name]
+        (Serializable)instance[persistentEntity.getIdentity().name]
     }
 
     /**
