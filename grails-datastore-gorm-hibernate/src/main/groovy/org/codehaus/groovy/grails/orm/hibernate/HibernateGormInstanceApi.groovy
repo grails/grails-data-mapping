@@ -77,6 +77,7 @@ class HibernateGormInstanceApi<D> extends GormInstanceApi<D> {
 
         Object[] values = entry.persister.getPropertyValues(instance, session.entityMode)
         int[] dirtyProperties = entry.persister.findDirty(values, entry.loadedState, instance, session)
+        if(!dirtyProperties) return false
         int fieldIndex = entry.persister.propertyNames.findIndexOf { fieldName == it }
         return fieldIndex in dirtyProperties
     }
