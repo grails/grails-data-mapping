@@ -54,6 +54,7 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
 
     public static final String SECRET_KEY = "secretKey";
     public static final String ACCESS_KEY = "accessKey";
+    public static final String ENDPOINT = "endpoint"; //optional, if specified will be used to explicitly set AWS endpoint. See http://docs.aws.amazon.com/general/latest/gr/rande.html#sdb_region
     public static final String DOMAIN_PREFIX_KEY = "domainNamePrefix";
     public static final String DELAY_AFTER_WRITES_MS = "delayAfterWritesMS"; //used for testing - to fight eventual consistency if this flag value is 'true' it will add specified pause after writes
 
@@ -132,8 +133,9 @@ public class SimpleDBDatastore extends AbstractDatastore implements Initializing
         String accessKey = read(String.class, ACCESS_KEY, connectionDetails, null);
         String secretKey = read(String.class, SECRET_KEY, connectionDetails, null);
         String delayAfterWrite = read(String.class, DELAY_AFTER_WRITES_MS, connectionDetails, null);
+        String endpoint = read(String.class, ENDPOINT, connectionDetails, null);
 
-        simpleDBTemplate = new SimpleDBTemplateImpl(accessKey, secretKey);
+        simpleDBTemplate = new SimpleDBTemplateImpl(accessKey, secretKey, endpoint);
         if (delayAfterWrite != null && !"".equals(delayAfterWrite)) {
             simpleDBTemplate = new DelayAfterWriteSimpleDBTemplateDecorator(simpleDBTemplate, Integer.parseInt(delayAfterWrite));
         }

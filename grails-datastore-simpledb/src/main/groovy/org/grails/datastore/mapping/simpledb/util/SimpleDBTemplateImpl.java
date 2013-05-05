@@ -55,11 +55,21 @@ public class SimpleDBTemplateImpl implements SimpleDBTemplate {
         this.sdb = sdb;
     }
 
-    public SimpleDBTemplateImpl(String accessKey, String secretKey) {
+    /**
+     * Constructs instance with the specified credentials and region (via endpoint)
+     * @param accessKey
+     * @param secretKey
+     * @param endpoint if null will use AWS ASD default setting for your account. See http://docs.aws.amazon.com/general/latest/gr/rande.html#sdb_region
+     */
+    public SimpleDBTemplateImpl(String accessKey, String secretKey, String endpoint) {
         Assert.isTrue(StringUtils.hasLength(accessKey) && StringUtils.hasLength(secretKey),
             "Please provide accessKey and secretKey");
 
         sdb = new AmazonSimpleDBClient(new BasicAWSCredentials(accessKey, secretKey));
+
+        if (endpoint != null && !"".equals(endpoint)) {
+            sdb.setEndpoint(endpoint);
+        }
     }
 
     public Item get(String domainName, String id) {
