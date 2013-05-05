@@ -41,11 +41,30 @@ class HibernateUtils {
 
     static final Logger LOG = LoggerFactory.getLogger(HibernateUtils)
 
+    static final Closure LAZY_PROPERTY_HANDLER = { String propertyName ->
+        def propertyValue = PropertyUtils.getProperty(getDelegate(), propertyName)
+        if (propertyValue instanceof HibernateProxy) {
+            propertyValue = GrailsHibernateUtil.unwrapProxy(propertyValue)
+        }
+        return propertyValue
+    }
+
     /**
      * Overrides a getter on a property that is a Hibernate proxy in order to make sure the initialized object is returned hence avoiding Hibernate proxy hell.
      */
     static void handleLazyProxy(GrailsDomainClass domainClass, GrailsDomainClassProperty property) {
-        // return lazy proxies
+        String propertyName = property.name
+        String getterName = GrailsClassUtils.getGetterName(propertyName)
+        String setterName = GrailsClassUtils.getSetterName(propertyName)
+        
+        GroovyObject mc = (GroovyObject)domainClass.metaClass
+        
+        mc.setProperty(getterName, ((Closure)LAZY_PROPERTY_HANDLER.clone()).curry(propertyName))
+        mc.setProperty(setterName, { PropertyUtils.setProperty(getDelegate(), propertyName, it) })
+
+        for (GrailsDomainClass sub in domainClass.subClasses) {
+            handleLazyProxy(sub, sub.getPropertyByName(property.name))
+        }
     }
 
     static void enhanceSessionFactories(ApplicationContext ctx, GrailsApplication grailsApplication, Object source = null) {
