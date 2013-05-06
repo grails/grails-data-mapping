@@ -27,7 +27,12 @@ class Neo4jOpenSessionInViewInterceptor extends OpenSessionInViewInterceptor {
 
     protected final Logger log = LoggerFactory.getLogger(getClass())
 
-    ThreadLocal<Transaction> transactionThreadLocal = new ThreadLocal<Transaction>();
+    ThreadLocal<Stack<Transaction>> transactionThreadLocal = new ThreadLocal<Stack<Transaction>>() {
+        @Override
+        protected Stack<Transaction> initialValue() {
+            new Stack<Transaction>()
+        }
+    };
 
     @Override
     void preHandle(WebRequest request) {
@@ -35,16 +40,15 @@ class Neo4jOpenSessionInViewInterceptor extends OpenSessionInViewInterceptor {
             log.debug "preHandle ${request.getDescription(true)}"
         }
         super.preHandle(request)
-        assert transactionThreadLocal.get() == null
-        transactionThreadLocal.set(datastore.graphDatabaseService.beginTx())
+
+        transactionThreadLocal.get().push(datastore.graphDatabaseService.beginTx())
     }
 
     @Override
     void afterCompletion(WebRequest request, Exception ex) {
         super.afterCompletion(request, ex)
-        Transaction transaction = transactionThreadLocal.get()
+        Transaction transaction = transactionThreadLocal.get().pop()
         assert transaction
-        transactionThreadLocal.set(null)
         ex ? transaction.failure() : transaction.success()
         transaction.finish()
         if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
