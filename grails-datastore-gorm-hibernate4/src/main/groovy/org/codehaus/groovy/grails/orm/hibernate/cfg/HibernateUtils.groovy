@@ -20,8 +20,10 @@ import grails.util.GrailsNameUtils
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 
+import org.apache.commons.beanutils.PropertyUtils
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.GrailsClassUtils
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate
@@ -57,7 +59,24 @@ class HibernateUtils {
      * Overrides a getter on a property that is a Hibernate proxy in order to make sure the initialized object is returned hence avoiding Hibernate proxy hell.
      */
     static void handleLazyProxy(GrailsDomainClass domainClass, GrailsDomainClassProperty property) {
-        // return lazy proxies
+        String propertyName = property.name
+        String getterName = GrailsClassUtils.getGetterName(propertyName)
+        String setterName = GrailsClassUtils.getSetterName(propertyName)
+
+        GroovyObject mc = (GroovyObject)domainClass.metaClass
+        
+        mc.setProperty(getterName, {->
+            def propertyValue = PropertyUtils.getProperty(getDelegate(), propertyName)
+            if (propertyValue instanceof HibernateProxy) {
+                propertyValue = GrailsHibernateUtil.unwrapProxy(propertyValue)
+            }
+            return propertyValue
+        })
+        mc.setProperty(setterName, { PropertyUtils.setProperty(getDelegate(), propertyName, it) })
+
+        for (GrailsDomainClass sub in domainClass.subClasses) {
+            handleLazyProxy(sub, sub.getPropertyByName(property.name))
+        }
     }
 
     static void enhanceSessionFactories(ApplicationContext ctx, GrailsApplication grailsApplication, Object source = null) {
