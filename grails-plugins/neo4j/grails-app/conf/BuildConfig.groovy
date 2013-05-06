@@ -5,7 +5,7 @@ grails.project.test.reports.dir = "target/test-reports"
 grails.project.dependency.resolution = {
 
     inherits("global") {
-        excludes 'xml-apis', 'netty'
+        excludes 'xml-apis', 'netty'//, 'xercesImpl'
     }
     log "warn"
 
@@ -37,8 +37,9 @@ grails.project.dependency.resolution = {
 
         //def datastoreVersion = "1.1.4.BUILD-SNAPSHOT"
         def datastoreVersion = "1.1.6.RELEASE"
-        //def neo4jDatastoreVersion = "1.0.0.BUILD-SNAPSHOT"
-        def neo4jDatastoreVersion = "1.0.0.RC1"
+        def neo4jDatastoreVersion = "1.0.0.SNAPSHOT"
+        def seleniumVersion = "2.31.0"
+//        def neo4jDatastoreVersion = "1.0.0.RC1"
 
         compile("org.grails:grails-datastore-gorm-neo4j:$neo4jDatastoreVersion",
                 "org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
@@ -50,23 +51,30 @@ grails.project.dependency.resolution = {
              "org.grails:grails-datastore-simple:$datastoreVersion", exlcudes)
 
         compile('org.neo4j:neo4j-community:1.8.2')
+
+        test "org.gebish:geb-spock:0.9.0"
+        test "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
+        test( "com.github.detro.ghostdriver:phantomjsdriver:1.0.3" ) {
+           transitive = false
+        }
+        test "org.seleniumhq.selenium:selenium-chrome-driver:$seleniumVersion"
+        test "org.seleniumhq.selenium:selenium-firefox-driver:$seleniumVersion"
+
+        // htmlunit seems to be broken
+/*        test("org.seleniumhq.selenium:selenium-htmlunit-driver:$seleniumVersion") {
+            exclude 'xml-apis'
+        }*/
     }
 
     plugins {
-        runtime ":jquery:1.7.1", {
-            export = false
-        }
-        runtime ":resources:1.1.6", {
-            export = false
-        }
-        runtime ":tomcat:$grailsVersion", {
+        runtime(":jquery:1.7.1", ":resources:1.1.6", ":tomcat:$grailsVersion") {
             export = false
         }
         build ":release:2.2.1", {
             export = false
         }
         //runtime ":svn:1.0.2"
-        test ":spock:0.7", {
+        test(":spock:0.7", ":geb:0.9.0") {
             export = false
         }
     }

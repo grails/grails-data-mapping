@@ -124,7 +124,6 @@ class Neo4jController {
         [  removed: removed ]
     }
 
-
     def domain = {
 
         def filter=["bidirectional", "oneToMany", "manyToOne", "manyToMany", "hasOne", "oneToOne", "owningSide"]
@@ -154,6 +153,10 @@ class Neo4jController {
                 filters:filters
         ]
 	}
+
+    def doforward() {
+        forward action:"node"
+    }
 }
 
 public class TraverseCommand {
