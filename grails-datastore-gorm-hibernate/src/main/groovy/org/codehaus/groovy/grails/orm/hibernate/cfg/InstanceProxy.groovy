@@ -1,6 +1,6 @@
 package org.codehaus.groovy.grails.orm.hibernate.cfg
 
-import groovy.transform.CompileStatic;
+import groovy.transform.CompileStatic
 
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormInstanceApi
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormValidationApi
@@ -28,15 +28,15 @@ class InstanceProxy {
 
     def invokeMethod(String name, args) {
         if (validateMethods.contains(name)) {
-            validateApi.invokeMethod(name, [instance, *args])
+            validateApi.invokeMethod(name, [instance, *args] as Object[])
         }
         else {
-            instanceApi.invokeMethod(name, [instance, *args])
+            instanceApi.invokeMethod(name, [instance, *args] as Object[])
         }
     }
 
     void setProperty(String name, val) {
-        instanceApi.setProperty("$name", val)
+        instanceApi.setProperty(name, val)
     }
 
     def getProperty(String name) {
