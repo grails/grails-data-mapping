@@ -102,7 +102,7 @@ public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer im
             throw new HibernateException("Javassist Enhancement failed: " + proxyClass.getName(), e);
         }
         ((ProxyObject) proxy).setHandler(instance);
-        instance.groovyObjectMethodHandler = new HibernateGroovyObjectMethodHandler(proxyClass, instance);
+        instance.groovyObjectMethodHandler = new HibernateGroovyObjectMethodHandler(proxyClass, proxy);
         HibernateUtils.enhanceProxy(proxy);
         instance.constructed = true;
         return proxy;
