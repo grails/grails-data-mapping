@@ -161,10 +161,11 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
     }
 
     def "test handling of non-declared properties using dot notation"() {
-        when:
+        setup:
         def person = new Person(lastName:'person1').save(flush:true)
         session.clear()
         person = Person.load(person.id)
+        when:
         person.notDeclaredProperty = 'someValue'   // n.b. the 'dot' notation is not valid for undeclared properties
         person.emptyArray = []
         person.someIntArray = [1,2,3]
@@ -181,6 +182,41 @@ class ApiExtensionsSpec extends GormDatastoreSpec {
         person.someStringArray == ['a', 'b', 'c']
         person.emptyArray == []
         person.someDoubleArray == [0.9, 1.0, 1.1]
+    }
+
+    def "test null values on dynamic properties"() {
+        setup:
+        def person = new Person(lastName: 'person1').save(flush: true)
+        session.clear()
+        person = Person.load(person.id)
+        when:
+        person.notDeclaredProperty = null
+        session.flush()
+        session.clear()
+        person = Person.get(person.id)
+
+        then:
+        person.notDeclaredProperty == null
+
+        when:
+        person.notDeclaredProperty = 'abc'
+        session.flush()
+        session.clear()
+        person = Person.get(person.id)
+
+        then:
+        person.notDeclaredProperty == 'abc'
+
+        when:
+        person.notDeclaredProperty = null
+        session.flush()
+        session.clear()
+        person = Person.get(person.id)
+
+        then:
+        person.notDeclaredProperty == null
+
+
     }
 
 

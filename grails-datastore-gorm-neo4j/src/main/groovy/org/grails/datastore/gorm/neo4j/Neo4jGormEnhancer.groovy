@@ -155,7 +155,11 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
                         }
                         value = value.asType(c)
                     }
-                    node.setProperty(name, value)
+                    if (value==null) {
+                        node.removeProperty(name)
+                    } else {
+                        node.setProperty(name, value)
+                    }
                 }
             }
         }
@@ -178,7 +182,7 @@ class Neo4jGormInstanceApi<D> extends GormInstanceApi<D> {
                 Object doInSession(Session session) {
                     session.persist(instance)
                     Node node = instance.node
-                    node.getProperty(name)
+                    node.getProperty(name, null)
                 }
             }
         }
