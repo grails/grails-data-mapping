@@ -100,7 +100,7 @@ class HibernateGormEnhancer extends GormEnhancer {
 
         def domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, entity.name)
         if (domainClass) {
-            new HibernateNamedQueriesBuilder(domainClass, finders).evaluate((Closure)namedQueries)
+            new HibernateNamedQueriesBuilder(domainClass, finders, entity.mappingContext.conversionService).evaluate((Closure)namedQueries)
         }
     }
 }

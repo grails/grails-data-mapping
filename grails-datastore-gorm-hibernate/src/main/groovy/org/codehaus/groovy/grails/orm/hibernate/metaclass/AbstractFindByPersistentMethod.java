@@ -27,7 +27,7 @@ public abstract class AbstractFindByPersistentMethod extends AbstractClausedStat
     public AbstractFindByPersistentMethod(HibernateDatastore datastore, GrailsApplication application,
                                           SessionFactory sessionFactory, ClassLoader classLoader,
                                           Pattern pattern, String[] operators) {
-        super(application, sessionFactory, classLoader, pattern, operators);
+        super(application, sessionFactory, classLoader, pattern, operators, datastore.getMappingContext().getConversionService());
         this.datastore = datastore;
     }
 
@@ -103,7 +103,7 @@ public abstract class AbstractFindByPersistentMethod extends AbstractClausedStat
         if (arguments.length > 0) {
             if (arguments[0] instanceof Map<?, ?>) {
                 Map<?, ?> argMap = (Map<?, ?>)arguments[0];
-                GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, crit, argMap);
+                GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, crit, argMap, conversionService);
                 if (!argMap.containsKey(GrailsHibernateUtil.ARGUMENT_FETCH)) {
                     if (useLimit) {
                         crit.setMaxResults(1);

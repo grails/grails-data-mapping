@@ -63,7 +63,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.type.CompositeType;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
@@ -164,24 +164,23 @@ public class GrailsHibernateUtil {
      * @param argMap The arguments map
      */
     @SuppressWarnings("rawtypes")
-    public static void populateArgumentsForCriteria(GrailsApplication grailsApplication, Class<?> targetClass, Criteria c, Map argMap) {
+    public static void populateArgumentsForCriteria(GrailsApplication grailsApplication, Class<?> targetClass, Criteria c, Map argMap, ConversionService conversionService) {
         Integer maxParam = null;
         Integer offsetParam = null;
-        SimpleTypeConverter converter = new SimpleTypeConverter();
         if (argMap.containsKey(ARGUMENT_MAX)) {
-            maxParam = converter.convertIfNecessary(argMap.get(ARGUMENT_MAX),Integer.class);
+            maxParam = conversionService.convert(argMap.get(ARGUMENT_MAX),Integer.class);
         }
         if (argMap.containsKey(ARGUMENT_OFFSET)) {
-            offsetParam = converter.convertIfNecessary(argMap.get(ARGUMENT_OFFSET),Integer.class);
+            offsetParam = conversionService.convert(argMap.get(ARGUMENT_OFFSET),Integer.class);
         }
         if (argMap.containsKey(ARGUMENT_FETCH_SIZE)) {
-            c.setFetchSize(converter.convertIfNecessary(argMap.get(ARGUMENT_FETCH_SIZE),Integer.class));
+            c.setFetchSize(conversionService.convert(argMap.get(ARGUMENT_FETCH_SIZE),Integer.class));
         }
         if (argMap.containsKey(ARGUMENT_TIMEOUT)) {
-            c.setTimeout(converter.convertIfNecessary(argMap.get(ARGUMENT_TIMEOUT),Integer.class));
+            c.setTimeout(conversionService.convert(argMap.get(ARGUMENT_TIMEOUT),Integer.class));
         }
         if (argMap.containsKey(ARGUMENT_FLUSH_MODE)) {
-            c.setFlushMode(converter.convertIfNecessary(argMap.get(ARGUMENT_FLUSH_MODE),FlushMode.class));
+            c.setFlushMode(convertFlushMode(argMap.get(ARGUMENT_FLUSH_MODE)));
         }
         if (argMap.containsKey(ARGUMENT_READ_ONLY)) {
             c.setReadOnly(GrailsClassUtils.getBooleanFromMap(ARGUMENT_READ_ONLY, argMap));
@@ -232,6 +231,17 @@ public class GrailsHibernateUtil {
             }
         }
     }
+    
+    private static FlushMode convertFlushMode(Object object) {
+        if(object == null) {
+            return null;
+        } else if(object instanceof FlushMode) {
+            return (FlushMode)object;
+        } else {
+            return FlushMode.parse(String.valueOf(object));
+        }
+    }
+
     /**
      * Populates criteria arguments for the given target class and arguments map
      *
@@ -243,8 +253,8 @@ public class GrailsHibernateUtil {
      */
     @Deprecated
     @SuppressWarnings("rawtypes")
-    public static void populateArgumentsForCriteria(Class<?> targetClass, Criteria c, Map argMap) {
-        populateArgumentsForCriteria(null, targetClass, c, argMap);
+    public static void populateArgumentsForCriteria(Class<?> targetClass, Criteria c, Map argMap, ConversionService conversionService) {
+        populateArgumentsForCriteria(null, targetClass, c, argMap, conversionService);
     }
 
     /**
@@ -313,8 +323,8 @@ public class GrailsHibernateUtil {
     }
 
     @SuppressWarnings("rawtypes")
-    public static void populateArgumentsForCriteria(Criteria c, Map argMap) {
-        populateArgumentsForCriteria(null,null, c, argMap);
+    public static void populateArgumentsForCriteria(Criteria c, Map argMap, ConversionService conversionService) {
+        populateArgumentsForCriteria(null,null, c, argMap, conversionService);
     }
 
     /**

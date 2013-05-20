@@ -49,7 +49,7 @@ public class CountByPersistentMethod extends AbstractClausedStaticPersistentMeth
     private HibernateDatastore datastore;
 
     public CountByPersistentMethod(HibernateDatastore datastore, GrailsApplication application, SessionFactory sessionFactory, ClassLoader classLoader) {
-        super(application, sessionFactory, classLoader, METHOD_PATTERN, OPERATORS);
+        super(application, sessionFactory, classLoader, METHOD_PATTERN, OPERATORS, datastore.getMappingContext().getConversionService());
         this.datastore = datastore;
     }
 

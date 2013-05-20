@@ -16,18 +16,18 @@ package org.grails.datastore.mapping.config.utils;
 
 import java.util.Map;
 
-import org.springframework.beans.SimpleTypeConverter;
-import org.springframework.beans.TypeConverter;
+import org.grails.datastore.mapping.model.types.conversion.DefaultConversionService;
+import org.springframework.core.convert.ConversionService;
 
 /**
  * Used to ease reading of configuration.
  */
 public class ConfigUtils {
 
-    private static TypeConverter converter = new SimpleTypeConverter();
+    private static ConversionService conversionService = new DefaultConversionService();
 
     public static <T> T read(Class<T> type, String key, Map<String, String> config, T defaultValue) {
         String value = config.get(key);
-        return value == null ? defaultValue : converter.convertIfNecessary(value, type);
+        return value == null ? defaultValue : conversionService.convert(value, type);
     }
 }

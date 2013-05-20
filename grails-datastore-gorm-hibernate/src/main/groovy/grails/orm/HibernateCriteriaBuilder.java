@@ -70,6 +70,7 @@ import org.hibernate.type.EmbeddedComponentType;
 import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.type.Type;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -166,6 +167,7 @@ public class HibernateCriteriaBuilder extends GroovyObjectSupport implements org
     private boolean paginationEnabledList = false;
     private List<Order> orderEntries;
     private GrailsApplication grailsApplication;
+    private ConversionService conversionService;
 
     @SuppressWarnings("rawtypes")
     public HibernateCriteriaBuilder(Class targetClass, SessionFactory sessionFactory) {
@@ -182,6 +184,10 @@ public class HibernateCriteriaBuilder extends GroovyObjectSupport implements org
 
     public void setGrailsApplication(GrailsApplication grailsApplication) {
         this.grailsApplication = grailsApplication;
+    }
+    
+    public void setConversionService(ConversionService conversionService) {
+        this.conversionService = conversionService; 
     }
 
     /**
@@ -1607,7 +1613,7 @@ public class HibernateCriteriaBuilder extends GroovyObjectSupport implements org
                             argMap = argMap2;
                         }
                     }
-                    GrailsHibernateUtil.populateArgumentsForCriteria(grailsApplication, targetClass, criteria, argMap);
+                    GrailsHibernateUtil.populateArgumentsForCriteria(grailsApplication, targetClass, criteria, argMap, conversionService);
                     GrailsHibernateTemplate ght = new GrailsHibernateTemplate(sessionFactory, grailsApplication);
                     PagedResultList pagedRes = new PagedResultList(ght, criteria);
                     result = pagedRes;

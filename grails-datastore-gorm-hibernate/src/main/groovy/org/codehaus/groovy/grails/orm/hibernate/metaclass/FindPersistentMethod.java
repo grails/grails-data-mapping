@@ -36,7 +36,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Example;
-import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
@@ -70,9 +70,11 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 public class FindPersistentMethod extends AbstractStaticPersistentMethod {
 
     private static final String    METHOD_PATTERN    = "^find$";
+    private final ConversionService conversionService;
 
-    public FindPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application) {
+    public FindPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application, ConversionService conversionService) {
         super(sessionFactory, classLoader, Pattern.compile(METHOD_PATTERN), application);
+        this.conversionService = conversionService;
     }
 
     @SuppressWarnings("rawtypes")
@@ -172,8 +174,7 @@ public class FindPersistentMethod extends AbstractStaticPersistentMethod {
                         String key = GrailsHibernateUtil.ARGUMENT_CACHE;
                         boolean value = false;
                         if ((param instanceof Map) && ((Map)param).containsKey(key)) {
-                            SimpleTypeConverter converter = new SimpleTypeConverter();
-                            value = converter.convertIfNecessary(((Map)param).get(key), Boolean.class);
+                            value = conversionService.convert(((Map)param).get(key), Boolean.class);
                         }
                         useCache = value;
                     }

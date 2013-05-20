@@ -69,8 +69,8 @@ import org.grails.datastore.mapping.model.types.Simple;
 import org.grails.datastore.mapping.model.types.ToOne;
 import org.grails.datastore.mapping.proxy.ProxyFactory;
 import org.grails.datastore.mapping.query.Query;
-import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.dao.CannotAcquireLockException;
 
 /**
@@ -641,13 +641,12 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             Class genericType = MappingUtils.getGenericTypeForMapProperty(persistentEntity.getJavaClass(),
                     prop.getName(), false);
             if (genericType != null) {
-                SimpleTypeConverter converter = new SimpleTypeConverter();
-                converter.setConversionService(getMappingContext().getConversionService());
+                ConversionService conversionService = getMappingContext().getConversionService();
                 for (Object o : nativeMap.entrySet()) {
                     Map.Entry entry = (Map.Entry) o;
                     String key = (String) entry.getKey();
                     Object value = entry.getValue();
-                    value = converter.convertIfNecessary(value, genericType);
+                    value = conversionService.convert(value, genericType);
                     targetMap.put(key, value);
                 }
             } else {
@@ -664,10 +663,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             Class genericType = MappingUtils.getGenericTypeForProperty(persistentEntity.getJavaClass(), prop.getName());
             Collection collectionValue = (Collection) entryValue;
             if (genericType != null) {
-                SimpleTypeConverter converter = new SimpleTypeConverter();
-                converter.setConversionService(getMappingContext().getConversionService());
+                ConversionService conversionService = getMappingContext().getConversionService();
                 for (Object o : collectionValue) {
-                    o = converter.convertIfNecessary(o, genericType);
+                    o = conversionService.convert(o, genericType);
                     collection.add(o);
                 }
             }

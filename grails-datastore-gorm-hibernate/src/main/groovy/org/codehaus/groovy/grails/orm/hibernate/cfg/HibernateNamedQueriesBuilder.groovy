@@ -22,6 +22,7 @@ import java.lang.reflect.Modifier
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.hibernate.criterion.CriteriaSpecification
+import org.springframework.core.convert.ConversionService
 
 /**
  * A builder that implements the ORM named queries DSL.
@@ -33,14 +34,16 @@ class HibernateNamedQueriesBuilder {
     private final domainClass
     private final dynamicMethods
     private boolean initialized = false
+    private final ConversionService conversionService
 
     /**
      * @param domainClass the GrailsDomainClass defining the named queries
      * @param finders dynamic finders
      */
-    HibernateNamedQueriesBuilder(domainClass, List<FinderMethod> finders) {
+    HibernateNamedQueriesBuilder(domainClass, List<FinderMethod> finders, ConversionService conversionService) {
         this.domainClass = domainClass
         dynamicMethods = finders
+        this.conversionService = conversionService
     }
 
     def evaluate(Closure namedQueriesClosure) {
@@ -64,7 +67,7 @@ class HibernateNamedQueriesBuilder {
             clz.metaClass.static."${getterName}" = {->
                 // creating a new proxy each time because the proxy class has
                 // some state that cannot be shared across requests (namedCriteriaParams)
-                new NamedCriteriaProxy(criteriaClosure: args[0], domainClass: clz, dynamicMethods: dynamicMethods)
+                new NamedCriteriaProxy(criteriaClosure: args[0], domainClass: clz, dynamicMethods: dynamicMethods, conversionService: conversionService)
             }
         }
     }
@@ -86,6 +89,7 @@ class NamedCriteriaProxy<T> {
     private previousInChain
     private queryBuilder
     private inCountMethod = false
+    private conversionService
 
     private invokeCriteriaClosure(additionalCriteriaClosure = null) {
         def crit = getPreparedCriteriaClosure(additionalCriteriaClosure)
@@ -157,7 +161,7 @@ class NamedCriteriaProxy<T> {
     }
 
     T get(id) {
-        id = HibernateUtils.convertValueToIdentifierType(domainClass, id)
+        id = HibernateUtils.convertValueToIdentifierType(domainClass, id, conversionService)
         def getClosure = {
             queryBuilder = delegate
             invokeCriteriaClosure()

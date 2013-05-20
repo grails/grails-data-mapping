@@ -17,16 +17,27 @@ package org.codehaus.groovy.grails.orm.hibernate.metaclass;
 import grails.gorm.DetachedCriteria;
 import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.codehaus.groovy.grails.orm.hibernate.exceptions.GrailsQueryException;
-import org.hibernate.*;
-import org.springframework.beans.SimpleTypeConverter;
+import org.hibernate.FlushMode;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.orm.hibernate3.HibernateCallback;
-
-import java.sql.SQLException;
-import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * Allows the executing of arbitrary HQL queries.
@@ -55,9 +66,12 @@ public class ExecuteQueryPersistentMethod extends AbstractStaticPersistentMethod
                 add(GrailsHibernateUtil.ARGUMENT_READ_ONLY);
             }}
     );
+    
+    private final ConversionService conversionService;
 
-    public ExecuteQueryPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application) {
+    public ExecuteQueryPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application, ConversionService conversionService) {
         super(sessionFactory, classLoader, METHOD_PATTERN, application);
+        this.conversionService = conversionService;
     }
 
     @SuppressWarnings("rawtypes")
@@ -80,25 +94,24 @@ public class ExecuteQueryPersistentMethod extends AbstractStaticPersistentMethod
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
                 Query q = session.createQuery(query);
                 getHibernateTemplate().applySettings(q);
-                SimpleTypeConverter converter = new SimpleTypeConverter();
                 // process paginate params
                 if (queryMetaParams.containsKey(GrailsHibernateUtil.ARGUMENT_MAX)) {
-                    Integer maxParam = converter.convertIfNecessary(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_MAX), Integer.class);
+                    Integer maxParam = conversionService.convert(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_MAX), Integer.class);
                     q.setMaxResults(maxParam.intValue());
                 }
                 if (queryMetaParams.containsKey(GrailsHibernateUtil.ARGUMENT_OFFSET)) {
-                    Integer offsetParam = converter.convertIfNecessary(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_OFFSET), Integer.class);
+                    Integer offsetParam = conversionService.convert(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_OFFSET), Integer.class);
                     q.setFirstResult(offsetParam.intValue());
                 }
                 if (queryMetaParams.containsKey(GrailsHibernateUtil.ARGUMENT_CACHE)) {
                     q.setCacheable((Boolean)queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_CACHE));
                 }
                 if (queryMetaParams.containsKey(GrailsHibernateUtil.ARGUMENT_FETCH_SIZE)) {
-                    Integer fetchSizeParam = converter.convertIfNecessary(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_FETCH_SIZE), Integer.class);
+                    Integer fetchSizeParam = conversionService.convert(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_FETCH_SIZE), Integer.class);
                     q.setFetchSize(fetchSizeParam.intValue());
                 }
                 if (queryMetaParams.containsKey(GrailsHibernateUtil.ARGUMENT_TIMEOUT)) {
-                    Integer timeoutParam = converter.convertIfNecessary(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_TIMEOUT), Integer.class);
+                    Integer timeoutParam = conversionService.convert(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_TIMEOUT), Integer.class);
                     q.setTimeout(timeoutParam.intValue());
                 }
                 if (queryMetaParams.containsKey(GrailsHibernateUtil.ARGUMENT_READ_ONLY)) {
