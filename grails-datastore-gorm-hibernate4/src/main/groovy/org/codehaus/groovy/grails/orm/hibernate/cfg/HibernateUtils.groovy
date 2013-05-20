@@ -45,8 +45,8 @@ import org.hibernate.SessionFactory
 import org.hibernate.proxy.HibernateProxy
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.SimpleTypeConverter
 import org.springframework.context.ApplicationContext
+import org.springframework.core.convert.ConversionService
 import org.springframework.dao.DataAccessException
 import org.springframework.transaction.PlatformTransactionManager
 
@@ -321,11 +321,11 @@ class HibernateUtils {
      * @return the idValue parameter converted to the type that grailsDomainClass expects
      * its identifiers to be
      */
-    static Object convertValueToIdentifierType(GrailsDomainClass grailsDomainClass, Object idValue) {
-        convertValueToType(idValue, grailsDomainClass.identifier.type)
+    static Object convertValueToIdentifierType(GrailsDomainClass grailsDomainClass, Object idValue, ConversionService conversionService) {
+        convertValueToType(idValue, grailsDomainClass.identifier.type, conversionService)
     }
     
-    static Object convertValueToType(Object passedValue, Class targetType) {
+    static Object convertValueToType(Object passedValue, Class targetType, ConversionService conversionService) {
         // workaround for GROOVY-6127, do not assign directly in parameters before it's fixed
         Object value = passedValue
         if(targetType != null && value != null && !(value in targetType)) {
@@ -352,7 +352,7 @@ class HibernateUtils {
                         value = StringGroovyMethods.asType(strValue, targetType)
                     }
                 } else {
-                    value = new SimpleTypeConverter().convertIfNecessary(value, targetType)
+                    value = conversionService.convert(value, targetType)
                 }
             } catch (e) {
                 // ignore

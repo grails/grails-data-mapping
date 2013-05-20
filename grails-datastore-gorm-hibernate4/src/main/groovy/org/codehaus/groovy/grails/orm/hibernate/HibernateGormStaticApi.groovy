@@ -95,17 +95,17 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
             identityType = domainClass.identifier?.type
 
             mergeMethod = new MergePersistentMethod(sessionFactory, classLoader, grailsApplication, domainClass, datastore)
-            listMethod = new ListPersistentMethod(grailsApplication, sessionFactory, classLoader)
+            listMethod = new ListPersistentMethod(grailsApplication, sessionFactory, classLoader, mappingContext.conversionService)
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication)
             hibernateTemplate.setCacheQueries(cacheQueriesByDefault)
         } else {
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
         }
 
-        executeQueryMethod = new ExecuteQueryPersistentMethod(sessionFactory, classLoader, grailsApplication)
+        executeQueryMethod = new ExecuteQueryPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService)
         executeUpdateMethod = new ExecuteUpdatePersistentMethod(sessionFactory, classLoader, grailsApplication)
-        findMethod = new FindPersistentMethod(sessionFactory, classLoader, grailsApplication)
-        findAllMethod = new FindAllPersistentMethod(sessionFactory, classLoader, grailsApplication)
+        findMethod = new FindPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService)
+        findAllMethod = new FindAllPersistentMethod(sessionFactory, classLoader, grailsApplication, conversionService)
     }
 
     @Override
@@ -124,7 +124,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     Serializable convertIdentifier(Object id) {
-        (Serializable)HibernateUtils.convertValueToType(id, identityType)
+        (Serializable)HibernateUtils.convertValueToType(id, identityType, conversionService)
     }
 
     @Override
@@ -185,7 +185,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
 
         (List)hibernateTemplate.execute(new GrailsHibernateTemplate.HibernateCallback() {
             def doInHibernate(Session session) {
-                ids = ids.collect { HibernateUtils.convertValueToType((Serializable)it, identityType) }
+                ids = ids.collect { HibernateUtils.convertValueToType((Serializable)it, identityType, conversionService) }
                 def criteria = session.createCriteria(persistentClass)
                 hibernateTemplate.applySettings(criteria)
                 def identityName = persistentEntity.identity.name
@@ -208,6 +208,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
     GrailsCriteria createCriteria() {
         def builder = new HibernateCriteriaBuilder(persistentClass, sessionFactory)
         builder.grailsApplication = grailsApplication
+        builder.conversionService = conversionService
         builder
     }
 

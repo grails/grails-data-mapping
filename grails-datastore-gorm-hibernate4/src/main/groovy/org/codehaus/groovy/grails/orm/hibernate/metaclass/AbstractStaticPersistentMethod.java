@@ -98,6 +98,7 @@ public abstract class AbstractStaticPersistentMethod extends AbstractStaticMetho
         if (additionalCriteria != null) {
             HibernateCriteriaBuilder builder = new HibernateCriteriaBuilder(clazz, session.getSessionFactory());
             builder.setGrailsApplication(appliation);
+            builder.setConversionService(datastore.getMappingContext().getConversionService());
             return builder.buildCriteria(additionalCriteria);
         }
 

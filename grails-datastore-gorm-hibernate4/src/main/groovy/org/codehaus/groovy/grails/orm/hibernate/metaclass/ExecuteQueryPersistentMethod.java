@@ -38,7 +38,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.core.convert.ConversionService;
 
 /**
  * Allows the executing of arbitrary HQL queries.
@@ -67,9 +67,12 @@ public class ExecuteQueryPersistentMethod extends AbstractStaticPersistentMethod
                 add(GrailsHibernateUtil.ARGUMENT_READ_ONLY);
             }}
     );
+    
+    private final ConversionService conversionService;
 
-    public ExecuteQueryPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application) {
+    public ExecuteQueryPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application, ConversionService conversionService) {
         super(sessionFactory, classLoader, METHOD_PATTERN, application);
+        this.conversionService = conversionService;
     }
 
     @SuppressWarnings("rawtypes")
@@ -92,25 +95,24 @@ public class ExecuteQueryPersistentMethod extends AbstractStaticPersistentMethod
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
                 Query q = session.createQuery(query);
                 getHibernateTemplate().applySettings(q);
-                SimpleTypeConverter converter = new SimpleTypeConverter();
                 // process paginate params
                 if (queryMetaParams.containsKey(GrailsHibernateUtil.ARGUMENT_MAX)) {
-                    Integer maxParam = converter.convertIfNecessary(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_MAX), Integer.class);
+                    Integer maxParam = conversionService.convert(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_MAX), Integer.class);
                     q.setMaxResults(maxParam.intValue());
                 }
                 if (queryMetaParams.containsKey(GrailsHibernateUtil.ARGUMENT_OFFSET)) {
-                    Integer offsetParam = converter.convertIfNecessary(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_OFFSET), Integer.class);
+                    Integer offsetParam = conversionService.convert(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_OFFSET), Integer.class);
                     q.setFirstResult(offsetParam.intValue());
                 }
                 if (queryMetaParams.containsKey(GrailsHibernateUtil.ARGUMENT_CACHE)) {
                     q.setCacheable((Boolean)queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_CACHE));
                 }
                 if (queryMetaParams.containsKey(GrailsHibernateUtil.ARGUMENT_FETCH_SIZE)) {
-                    Integer fetchSizeParam = converter.convertIfNecessary(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_FETCH_SIZE), Integer.class);
+                    Integer fetchSizeParam = conversionService.convert(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_FETCH_SIZE), Integer.class);
                     q.setFetchSize(fetchSizeParam.intValue());
                 }
                 if (queryMetaParams.containsKey(GrailsHibernateUtil.ARGUMENT_TIMEOUT)) {
-                    Integer timeoutParam = converter.convertIfNecessary(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_TIMEOUT), Integer.class);
+                    Integer timeoutParam = conversionService.convert(queryMetaParams.get(GrailsHibernateUtil.ARGUMENT_TIMEOUT), Integer.class);
                     q.setTimeout(timeoutParam.intValue());
                 }
                 if (queryMetaParams.containsKey(GrailsHibernateUtil.ARGUMENT_READ_ONLY)) {

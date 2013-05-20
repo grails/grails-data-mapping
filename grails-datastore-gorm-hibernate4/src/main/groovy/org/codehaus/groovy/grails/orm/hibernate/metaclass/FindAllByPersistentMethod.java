@@ -60,7 +60,7 @@ public class FindAllByPersistentMethod extends AbstractClausedStaticPersistentMe
      * @param classLoader
      */
     public FindAllByPersistentMethod(HibernateDatastore datastore,GrailsApplication application, SessionFactory sessionFactory, ClassLoader classLoader) {
-        super(application, sessionFactory, classLoader, Pattern.compile(METHOD_PATTERN), OPERATORS);
+        super(application, sessionFactory, classLoader, Pattern.compile(METHOD_PATTERN), OPERATORS, datastore.getMappingContext().getConversionService());
         this.datastore = datastore;
     }
 
@@ -77,7 +77,7 @@ public class FindAllByPersistentMethod extends AbstractClausedStaticPersistentMe
                 final Criteria c = getCriteria(datastore,application, session,detachedCriteria, additionalCriteria, clazz);
 
                 Map argsMap = (arguments.length > 0 && (arguments[0] instanceof Map)) ? (Map) arguments[0] : Collections.EMPTY_MAP;
-                GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, c, argsMap);
+                GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, c, argsMap, conversionService);
 
                 if (operator.equals(OPERATOR_OR)) {
                     if (firstExpressionIsRequiredBoolean()) {

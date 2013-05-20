@@ -80,7 +80,7 @@ public class ListOrderByPersistentMethod extends AbstractStaticPersistentMethod 
                     if (arguments[0] instanceof Map) {
                         Map argMap = (Map)arguments[0];
                         argMap.put(GrailsHibernateUtil.ARGUMENT_SORT,propertyName);
-                        GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, crit,argMap);
+                        GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, crit, argMap, datastore.getMappingContext().getConversionService());
                     }
                     else {
                         crit.addOrder(Order.asc(propertyName));
