@@ -42,7 +42,10 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
     private static final Log LOG = LogFactory.getLog(HibernatePersistenceContextInterceptor.class);
     private SessionFactory sessionFactory;
 
-    static {
+    private ThreadLocal<Boolean> participate = new ThreadLocal<Boolean>();
+    private ThreadLocal<Integer> nestingCount = new ThreadLocal<Integer>();
+
+    public HibernatePersistenceContextInterceptor() {
         ShutdownOperations.addOperation(new Runnable() {
             public void run() {
                 participate.remove();
@@ -50,9 +53,6 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
             }
         });
     }
-
-    private static ThreadLocal<Boolean> participate = new ThreadLocal<Boolean>();
-    private static ThreadLocal<Integer> nestingCount = new ThreadLocal<Integer>();
 
     /* (non-Javadoc)
      * @see org.codehaus.groovy.grails.support.PersistenceContextInterceptor#destroy()
