@@ -19,18 +19,26 @@ import grails.gorm.DetachedCriteria;
 import grails.util.GrailsNameUtils;
 import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
+
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.codehaus.groovy.grails.orm.hibernate.exceptions.GrailsQueryException;
-import org.hibernate.*;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Example;
-import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.orm.hibernate3.HibernateCallback;
-
-import java.sql.SQLException;
-import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -88,9 +96,11 @@ import java.util.regex.Pattern;
  * @since 0.1
  */
 public class FindAllPersistentMethod extends AbstractStaticPersistentMethod {
-
-    public FindAllPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application) {
+    private final ConversionService conversionService;
+    
+    public FindAllPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application, ConversionService conversionService) {
         super(sessionFactory, classLoader, Pattern.compile("^findAll$"), application);
+        this.conversionService = conversionService;
     }
 
     @SuppressWarnings("rawtypes")
@@ -226,14 +236,14 @@ public class FindAllPersistentMethod extends AbstractStaticPersistentMethod {
                 private boolean retrieveBoolean(Object param, String key) {
                     boolean value = false;
                     if (isMapWithValue(param, key)) {
-                        value = new SimpleTypeConverter().convertIfNecessary(((Map)param).get(key), Boolean.class);
+                        value = conversionService.convert(((Map)param).get(key), Boolean.class);
                     }
                     return value;
                 }
 
                 private int retrieveInt(Object param, String key) {
                     if (isMapWithValue(param, key)) {
-                        return new SimpleTypeConverter().convertIfNecessary(((Map) param).get(key),Integer.class);
+                        return conversionService.convert(((Map) param).get(key),Integer.class);
                     }
                     if (isIntegerOrLong(param)) {
                         return ((Number)param).intValue();
@@ -262,7 +272,7 @@ public class FindAllPersistentMethod extends AbstractStaticPersistentMethod {
                     crit.add(example);
 
                     Map argsMap = (arguments.length > 1 && (arguments[1] instanceof Map)) ? (Map) arguments[1] : Collections.EMPTY_MAP;
-                    GrailsHibernateUtil.populateArgumentsForCriteria(application,clazz, crit, argsMap);
+                    GrailsHibernateUtil.populateArgumentsForCriteria(application,clazz, crit, argsMap, conversionService);
                     return crit.list();
                 }
             });
@@ -273,7 +283,7 @@ public class FindAllPersistentMethod extends AbstractStaticPersistentMethod {
                 public Object doInHibernate(Session session) throws HibernateException, SQLException {
                     Criteria crit = session.createCriteria(clazz);
                     getHibernateTemplate().applySettings(crit);
-                    GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, crit, (Map)arguments[0]);
+                    GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, crit, (Map)arguments[0], conversionService);
                     return crit.list();
                 }
             });

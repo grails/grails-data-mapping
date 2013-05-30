@@ -29,6 +29,7 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
@@ -44,9 +45,11 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 public class ListPersistentMethod extends AbstractStaticPersistentMethod {
 
     private static final String METHOD_PATTERN = "^list$";
+    private final ConversionService conversionService;
 
-    public ListPersistentMethod(GrailsApplication grailsApplication, SessionFactory sessionFactory, ClassLoader classLoader) {
+    public ListPersistentMethod(GrailsApplication grailsApplication, SessionFactory sessionFactory, ClassLoader classLoader, ConversionService conversionService) {
         super(sessionFactory, classLoader, Pattern.compile(METHOD_PATTERN), grailsApplication);
+        this.conversionService = conversionService;
     }
 
     @Override
@@ -61,17 +64,17 @@ public class ListPersistentMethod extends AbstractStaticPersistentMethod {
                     Map argMap = (Map)arguments[0];
                     if (argMap.containsKey(GrailsHibernateUtil.ARGUMENT_MAX)) {
                         c.setMaxResults(Integer.MAX_VALUE);
-                        GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, c,argMap);
+                        GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, c, argMap, conversionService);
                         c.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
                         return new PagedResultList(getHibernateTemplate(), c);
                     }
 
-                    GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, c,argMap);
+                    GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, c, argMap, conversionService);
                     c.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
                     return c.list();
                 }
 
-                GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, c, Collections.EMPTY_MAP);
+                GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, c, Collections.EMPTY_MAP, conversionService);
                 c.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
                 return c.list();
             }

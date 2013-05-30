@@ -41,9 +41,8 @@ import org.hibernate.criterion.CriteriaQuery;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.spi.TypedValue;
-import org.springframework.beans.SimpleTypeConverter;
-import org.springframework.beans.TypeConverter;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.util.Assert;
 
 /**
@@ -81,6 +80,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
         protected String type;
         protected Class<?> targetClass;
         private GrailsApplication application;
+        protected final ConversionService conversionService;
 
         /**
          * Used as an indication that an expression will return no results, so stop processing and return nothing.
@@ -92,19 +92,20 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
         };
 
         GrailsMethodExpression(GrailsApplication application, Class<?> targetClass,
-                String propertyName, String type, int argumentsRequired, boolean negation) {
+                String propertyName, String type, int argumentsRequired, boolean negation, ConversionService conversionService) {
             this.application = application;
             this.targetClass = targetClass;
             this.propertyName = propertyName;
             this.type = type;
             this.argumentsRequired = argumentsRequired;
             this.negation = negation;
+            this.conversionService = conversionService;
         }
 
         GrailsMethodExpression(GrailsApplication application, Class<?> targetClass,
-                String queryParameter, String type, int argumentsRequired) {
+                String queryParameter, String type, int argumentsRequired, ConversionService conversionService) {
             this(application, targetClass, calcPropertyName(queryParameter, type), type,
-                 argumentsRequired, isNegation(queryParameter, type));
+                 argumentsRequired, isNegation(queryParameter, type), conversionService);
         }
 
         public String getPropertyName() {
@@ -157,13 +158,12 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
                     args[i] = args[i].toString();
                 }
                 else if (!prop.getType().isAssignableFrom(args[i].getClass()) && !(GrailsClassUtils.isMatchBetweenPrimativeAndWrapperTypes(prop.getType(), args[i].getClass()))) {
-                    TypeConverter converter = new SimpleTypeConverter();
                     try {
                         if (type.equals(IN_LIST)) {
-                            args[i] = converter.convertIfNecessary(args[i], Collection.class);
+                            args[i] = conversionService.convert(args[i], Collection.class);
                         }
                         else {
-                            args[i] = converter.convertIfNecessary(args[i], prop.getType());
+                            args[i] = conversionService.convert(args[i], prop.getType());
                         }
                     }
                     catch (TypeMismatchException tme) {
@@ -171,7 +171,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
                         // we can try to convert it through its String representation
                         if (Number.class.isAssignableFrom(args[i].getClass())) {
                             try {
-                                args[i] = converter.convertIfNecessary(args[i].toString(), prop.getType());
+                                args[i] = conversionService.convert(args[i].toString(), prop.getType());
                             }
                             catch(TypeMismatchException tme1) {
                                 throw new IllegalArgumentException("Cannot convert value " + args[i] + " of property '"+propertyName+"' to required type " + prop.getType() + ": " + tme1.getMessage());
@@ -195,10 +195,10 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
         }
 
         protected static GrailsMethodExpression create(final GrailsApplication application,
-                Class<?> clazz, String queryParameter) {
+                Class<?> clazz, String queryParameter, ConversionService conversionService) {
 
             if (queryParameter.endsWith(LESS_THAN_OR_EQUAL)) {
-                return new GrailsMethodExpression(application, clazz, queryParameter, LESS_THAN_OR_EQUAL, 1) {
+                return new GrailsMethodExpression(application, clazz, queryParameter, LESS_THAN_OR_EQUAL, 1, conversionService) {
                     @Override
                     Criterion createCriterion() {
                         return Restrictions.le(propertyName, arguments[0]);
@@ -207,7 +207,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
             }
 
             if (queryParameter.endsWith(LESS_THAN)) {
-                return new GrailsMethodExpression(application, clazz, queryParameter, LESS_THAN, 1) {
+                return new GrailsMethodExpression(application, clazz, queryParameter, LESS_THAN, 1, conversionService) {
                     @Override
                     Criterion createCriterion() {
                         if (arguments[0] == null) return Restrictions.isNull(propertyName);
@@ -217,7 +217,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
             }
 
             if (queryParameter.endsWith(GREATER_THAN_OR_EQUAL)) {
-                return new GrailsMethodExpression(application, clazz, queryParameter, GREATER_THAN_OR_EQUAL, 1) {
+                return new GrailsMethodExpression(application, clazz, queryParameter, GREATER_THAN_OR_EQUAL, 1, conversionService) {
                     @Override
                     Criterion createCriterion() {
                         if (arguments[0] == null) return Restrictions.isNull(propertyName);
@@ -227,7 +227,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
             }
 
             if (queryParameter.endsWith(GREATER_THAN)) {
-                return new GrailsMethodExpression(application, clazz, queryParameter, GREATER_THAN, 1) {
+                return new GrailsMethodExpression(application, clazz, queryParameter, GREATER_THAN, 1, conversionService) {
                     @Override
                     Criterion createCriterion() {
                         if (arguments[0] == null) return Restrictions.isNull(propertyName);
@@ -237,7 +237,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
             }
 
             if (queryParameter.endsWith(LIKE)) {
-                return new GrailsMethodExpression(application, clazz, queryParameter, LIKE, 1) {
+                return new GrailsMethodExpression(application, clazz, queryParameter, LIKE, 1, conversionService) {
                     @Override
                     Criterion createCriterion() {
                         if (arguments[0] == null) return Restrictions.isNull(propertyName);
@@ -247,7 +247,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
             }
 
             if (queryParameter.endsWith(ILIKE)) {
-                return new GrailsMethodExpression(application, clazz, queryParameter, ILIKE, 1) {
+                return new GrailsMethodExpression(application, clazz, queryParameter, ILIKE, 1, conversionService) {
                     @Override
                     Criterion createCriterion() {
                         if (arguments[0] == null) return Restrictions.isNull(propertyName);
@@ -257,7 +257,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
             }
 
             if (queryParameter.endsWith(RLIKE)) {
-                return new GrailsMethodExpression(application, clazz, queryParameter, RLIKE, 1) {
+                return new GrailsMethodExpression(application, clazz, queryParameter, RLIKE, 1, conversionService) {
                     @Override
                     Criterion createCriterion() {
                         if (arguments[0] == null) return Restrictions.isNull(propertyName);
@@ -267,7 +267,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
             }
 
             if (queryParameter.endsWith(IS_NOT_NULL)) {
-                return new GrailsMethodExpression(application, clazz, queryParameter, IS_NOT_NULL, 0) {
+                return new GrailsMethodExpression(application, clazz, queryParameter, IS_NOT_NULL, 0, conversionService) {
                     @Override
                     Criterion createCriterion() {
                         return Restrictions.isNotNull(propertyName);
@@ -276,7 +276,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
             }
 
             if (queryParameter.endsWith(IS_NULL)) {
-                return new GrailsMethodExpression(application, clazz, queryParameter, IS_NULL, 0) {
+                return new GrailsMethodExpression(application, clazz, queryParameter, IS_NULL, 0, conversionService) {
                     @Override
                     Criterion createCriterion() {
                         return Restrictions.isNull(propertyName);
@@ -285,7 +285,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
             }
 
             if (queryParameter.endsWith(BETWEEN)) {
-                return new GrailsMethodExpression(application, clazz, queryParameter, BETWEEN, 2) {
+                return new GrailsMethodExpression(application, clazz, queryParameter, BETWEEN, 2, conversionService) {
                     @Override
                     Criterion createCriterion() {
                         return Restrictions.between(propertyName,arguments[0], arguments[1]);
@@ -294,7 +294,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
             }
 
             if (queryParameter.endsWith(IN_LIST)) {
-                return new GrailsMethodExpression(application, clazz, queryParameter, IN_LIST, 1) {
+                return new GrailsMethodExpression(application, clazz, queryParameter, IN_LIST, 1, conversionService) {
                     @SuppressWarnings("rawtypes")
                     @Override
                     Criterion createCriterion() {
@@ -308,7 +308,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
             }
 
             if (queryParameter.endsWith(NOT_EQUAL)) {
-                return new GrailsMethodExpression(application, clazz, queryParameter, NOT_EQUAL, 1) {
+                return new GrailsMethodExpression(application, clazz, queryParameter, NOT_EQUAL, 1, conversionService) {
                     @Override
                     Criterion createCriterion() {
                         if (arguments[0] == null) return Restrictions.isNotNull(propertyName);
@@ -318,7 +318,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
             }
 
             if (queryParameter.endsWith(IN_RANGE)) {
-                return new GrailsMethodExpression(application, clazz, queryParameter, IN_RANGE, 1) {
+                return new GrailsMethodExpression(application, clazz, queryParameter, IN_RANGE, 1, conversionService) {
                     @Override
                     Criterion createCriterion() {
                         return Restrictions.between(propertyName, arguments[0], arguments[1]);
@@ -337,7 +337,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
 
             return new GrailsMethodExpression(application, clazz,
                     calcPropertyName(queryParameter, null),
-                    EQUAL, 1, isNegation(queryParameter, EQUAL)) {
+                    EQUAL, 1, isNegation(queryParameter, EQUAL), conversionService) {
                 @Override
                 Criterion createCriterion() {
                     if (arguments[0] == null) return Restrictions.isNull(propertyName);
@@ -377,6 +377,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
 
     private final String[] operators;
     private final Pattern[] operatorPatterns;
+    protected final ConversionService conversionService;
 
     /**
      * Constructor.
@@ -386,13 +387,14 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
      * @param pattern
      * @param operators
      */
-    public AbstractClausedStaticPersistentMethod(GrailsApplication application, SessionFactory sessionFactory, ClassLoader classLoader, Pattern pattern, String[] operators) {
+    public AbstractClausedStaticPersistentMethod(GrailsApplication application, SessionFactory sessionFactory, ClassLoader classLoader, Pattern pattern, String[] operators, ConversionService conversionService) {
         super(sessionFactory, classLoader, pattern, application);
         this.operators = operators;
         operatorPatterns = new Pattern[operators.length];
         for (int i = 0; i < operators.length; i++) {
             operatorPatterns[i] = Pattern.compile("(\\w+)("+operators[i]+")(\\p{Upper})(\\w+)");
         }
+        this.conversionService = conversionService;
     }
 
     /* (non-Javadoc)
@@ -438,7 +440,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
                 arg = Boolean.FALSE;
             }
             GrailsMethodExpression booleanExpression = GrailsMethodExpression.create(
-                    application, clazz, booleanProperty);
+                    application, clazz, booleanProperty, conversionService);
             booleanExpression.setArguments(new Object[]{arg});
             expressions.add(booleanExpression);
         }
@@ -463,7 +465,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
                     int argumentCursor = 0;
                     for (String queryParameter : queryParameters) {
                         GrailsMethodExpression currentExpression = GrailsMethodExpression.create(
-                                application, clazz, queryParameter);
+                                application, clazz, queryParameter, conversionService);
                         totalRequiredArguments += currentExpression.argumentsRequired;
                         // populate the arguments into the GrailsExpression from the argument list
                         Object[] currentArguments = new Object[currentExpression.argumentsRequired];
@@ -491,7 +493,7 @@ public abstract class AbstractClausedStaticPersistentMethod extends AbstractStat
 
         // otherwise there is only one expression
         if (!containsOperator && querySequence != null) {
-            GrailsMethodExpression solo = GrailsMethodExpression.create(application, clazz, querySequence);
+            GrailsMethodExpression solo = GrailsMethodExpression.create(application, clazz, querySequence, conversionService);
 
             if (solo.argumentsRequired > arguments.length) {
                 throw new MissingMethodException(methodName, clazz, arguments);
