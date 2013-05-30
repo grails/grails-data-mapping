@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,7 +74,6 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
     private GrailsApplication grailsApplication
     private boolean cacheQueriesByDefault = false
 
-
     HibernateGormStaticApi(Class<D> persistentClass, HibernateDatastore datastore, List<FinderMethod> finders,
                 ClassLoader classLoader, PlatformTransactionManager transactionManager) {
         super(persistentClass, datastore, finders)
@@ -112,7 +111,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
     D get(Serializable id) {
         doGetInstance(id)
     }
-            
+
     D doGetInstance(Serializable id) {
         if (id || (id instanceof Number)) {
             id = convertIdentifier(id)
@@ -143,9 +142,8 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
             }
         }
     }
-    
+
     private D doGet() {
-        
     }
 
     @Override

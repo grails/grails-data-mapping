@@ -2,7 +2,9 @@ package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
+
 import org.bson.types.ObjectId
+
 import com.mongodb.DBObject
 
 /**
@@ -53,27 +55,17 @@ class BasicArraySpec extends GormDatastoreSpec{
     }
 }
 
-
 @Entity
 class Data {
 
     ObjectId id
-
     String str
-
     String[] strArray
-
     Locale[] locArray
-
     byte[] byteArray
 
     @Override
-    public String toString() {
-        return "Data{" +
-                "id=" + id +
-                ", str='" + str + '\'' +
-                ", strArray=" + (strArray == null ? null : Arrays.asList(strArray)) +
-                ", locArray=" + (locArray == null ? null : Arrays.asList(locArray)) +
-                '}';
+    String toString() {
+        "Data{id=$id, str='$str', strArray=${(strArray == null ? null : Arrays.asList(strArray))}, locArray=${(locArray == null ? null : Arrays.asList(locArray))}}"
     }
 }

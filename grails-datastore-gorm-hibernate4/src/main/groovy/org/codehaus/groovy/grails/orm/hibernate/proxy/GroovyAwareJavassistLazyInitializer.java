@@ -62,7 +62,7 @@ public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer im
 
     private Class<?>[] interfaces;
     private boolean constructed = false;
-    HibernateGroovyObjectMethodHandler groovyObjectMethodHandler;    
+    HibernateGroovyObjectMethodHandler groovyObjectMethodHandler;
 
     protected GroovyAwareJavassistLazyInitializer(
             final String entityName,
@@ -165,8 +165,8 @@ public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer im
     public Object invoke(final Object proxy, final Method thisMethod, final Method proceed,
             final Object[] args) throws Throwable {
         Object result = groovyObjectMethodHandler.handleInvocation(proxy, thisMethod, args);
-        if(groovyObjectMethodHandler.wasHandled(result)) {
-           return result; 
+        if (groovyObjectMethodHandler.wasHandled(result)) {
+           return result;
         }
 
         if (constructed) {
@@ -221,25 +221,25 @@ public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer im
                 setIdentifierMethod,
                 componentIdType);
     }
-    
+
     private static class HibernateGroovyObjectMethodHandler extends GroovyObjectMethodHandler {
         private Object target;
         private final Object originalSelf;
-        
+
         public HibernateGroovyObjectMethodHandler(Class<?> proxyClass, Object originalSelf) {
             super(proxyClass);
             this.originalSelf = originalSelf;
         }
-        
+
         @Override
         protected Object resolveDelegate(Object self) {
-            if(self != originalSelf) {
+            if (self != originalSelf) {
                 throw new IllegalStateException("self instance has changed.");
             }
-            if(target==null) {
-                target = ((HibernateProxy)self).getHibernateLazyInitializer().getImplementation(); 
+            if (target == null) {
+                target = ((HibernateProxy)self).getHibernateLazyInitializer().getImplementation();
             }
-            return target;            
+            return target;
         }
     }
 }

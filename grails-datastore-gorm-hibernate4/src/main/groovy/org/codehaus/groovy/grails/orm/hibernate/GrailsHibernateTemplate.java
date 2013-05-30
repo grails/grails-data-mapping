@@ -73,7 +73,7 @@ protected boolean checkWriteOperations = true;
     protected GrailsHibernateTemplate() {
         // for testing
     }
-    
+
     public GrailsHibernateTemplate(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }

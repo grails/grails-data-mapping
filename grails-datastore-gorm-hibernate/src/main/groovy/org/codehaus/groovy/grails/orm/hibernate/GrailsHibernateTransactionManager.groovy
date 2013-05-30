@@ -15,8 +15,6 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate
 
-import groovy.transform.CompileStatic
-
 import org.hibernate.FlushMode
 import org.springframework.orm.hibernate3.HibernateTransactionManager
 import org.springframework.orm.hibernate3.HibernateTransactionManager.HibernateTransactionObject

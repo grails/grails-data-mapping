@@ -84,12 +84,12 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
     protected Object createProxiedInstance(final Session session, final Class cls, Class proxyClass, final Serializable id) {
         MethodHandler mi = new GroovyObjectMethodHandler(proxyClass) {
             private Object target;
-            
+
             @Override
             protected Object resolveDelegate(Object self) {
                 return target;
             }
-            
+
             public Object invoke(Object proxy, Method method, Method proceed, Object[] args) throws Throwable {
                 if (args.length == 0) {
                     final String methodName = method.getName();

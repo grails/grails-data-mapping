@@ -185,7 +185,7 @@ public class HibernateCriteriaBuilder extends GroovyObjectSupport implements org
     public void setGrailsApplication(GrailsApplication grailsApplication) {
         this.grailsApplication = grailsApplication;
     }
-    
+
     public void setConversionService(ConversionService conversionService) {
         this.conversionService = conversionService; 
     }

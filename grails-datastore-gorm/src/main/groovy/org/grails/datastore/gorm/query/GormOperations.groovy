@@ -20,24 +20,28 @@ package org.grails.datastore.gorm.query
  * @author Graeme Rocher
  * @since 2.0
  */
-public interface GormOperations<T> {
+interface GormOperations<T> {
 
     /**
      * @return The class these operations apply to
      */
     T getPersistentClass()
+
     /**
      * Synonym for #get
      */
-    T find( Map args , Closure additionalCriteria )
+    T find(Map args , Closure additionalCriteria)
+
     /**
      * Synonym for #get
      */
-    T find( Map args )
+    T find(Map args)
+
     /**
      * Synonym for #get
      */
-    T find( )
+    T find()
+
     /**
      * Returns a single result matching the criterion contained within this DetachedCriteria instance
      *
@@ -45,13 +49,15 @@ public interface GormOperations<T> {
      * @param additionalCriteria Additional criteria
      * @return A single entity
      */
-    T get( Map args, Closure additionalCriteria )
+    T get(Map args, Closure additionalCriteria)
+
     /**
      * Returns a single result matching the criterion contained within this DetachedCriteria instance
      * @param args The arguments
      * @return A single entity
      */
-    T get( Map args )
+    T get(Map args)
+
     /**
      * Returns a single result matching the criterion contained within this DetachedCriteria instance
      *
@@ -65,13 +71,15 @@ public interface GormOperations<T> {
      * @return A list of matching instances
      */
     List<T> list()
+
     /**
      * Lists all records matching the criterion contained within this DetachedCriteria instance
      *
      * @param args The arguments
      * @return A list of matching instances
      */
-    List<T> list( Map args )
+    List<T> list(Map args)
+
     /**
      * Lists all records matching the criterion contained within this DetachedCriteria instance
      *
@@ -79,7 +87,7 @@ public interface GormOperations<T> {
      * @param additionalCriteria The additional criteria
      * @return A list of matching instances
      */
-    List<T> list( Map args , Closure additionalCriteria )
+    List<T> list(Map args , Closure additionalCriteria)
 
     /**
      * Counts the number of records returned by the query
@@ -87,6 +95,7 @@ public interface GormOperations<T> {
      * @return The count
      */
     Number count()
+
     /**
      * Counts the number of records returned by the query
      *
@@ -94,6 +103,7 @@ public interface GormOperations<T> {
      * @return The count
      */
     Number count(Map args)
+
     /**
      * Counts the number of records returned by the query
      *
@@ -109,12 +119,14 @@ public interface GormOperations<T> {
      * @return The total number deleted
      */
     Number deleteAll()
+
     /**
      * Updates all entities matching this criteria
      *
      * @return The total number deleted
      */
     Number updateAll(Map properties)
+
     /**
      * Method missing handler for dynamic finders
      *
@@ -130,7 +142,8 @@ public interface GormOperations<T> {
      * @param additionalCriteria The additional criteria
      * @return Whether the record exists
      */
-    boolean exists(Closure additionalCriteria )
+    boolean exists(Closure additionalCriteria)
+
     /**
      * Returns whether the record exists
      *

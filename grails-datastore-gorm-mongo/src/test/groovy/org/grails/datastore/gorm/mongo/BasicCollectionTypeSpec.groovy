@@ -43,7 +43,7 @@ class BasicCollectionTypeSpec extends GormDatastoreSpec {
             mc.pets.size() == 3
             mc.pets.chuck == "Dog"
 
-        when:"An entity is quered by a basic collection type"
+        when:"An entity is queried by a basic collection type"
             session.clear()
             mc = MyCollections.findByNames("Bob")
 

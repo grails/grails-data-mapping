@@ -16,7 +16,7 @@ dependencies {
         exclude group:"org.grails",module: "grails-datastore-gorm"
     }
 
-    compile "org.grails:grails-test:$grailsVersion", excludes   
+    compile "org.grails:grails-test:$grailsVersion", excludes
     compile "org.grails:grails-plugin-testing:$grailsVersion", excludes
 
     compile project(":grails-datastore-gorm"),

@@ -1,6 +1,6 @@
 package org.codehaus.groovy.grails.orm.hibernate
 
-import groovy.transform.CompileStatic;
+import groovy.transform.CompileStatic
 
 import org.codehaus.groovy.grails.domain.GrailsDomainClassMappingContext
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ValidatePersistentMethod

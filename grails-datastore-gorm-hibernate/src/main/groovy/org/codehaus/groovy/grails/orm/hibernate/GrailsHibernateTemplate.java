@@ -26,7 +26,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 public class GrailsHibernateTemplate extends HibernateTemplate {
     private boolean osivReadOnly;
-    
+
     public GrailsHibernateTemplate() {
         initialize(null);
     }
@@ -67,7 +67,7 @@ public class GrailsHibernateTemplate extends HibernateTemplate {
             prepareQuery(queryObject);
         }
     }
-    
+
     @Override
     protected void prepareCriteria(Criteria criteria) {
         super.prepareCriteria(criteria);
@@ -93,7 +93,7 @@ public class GrailsHibernateTemplate extends HibernateTemplate {
             prepareCriteria(criteria);
         }
     }
-    
+
     @Override
     protected void enableFilters(Session session) {
         if(isCurrentTransactionReadOnly()) {

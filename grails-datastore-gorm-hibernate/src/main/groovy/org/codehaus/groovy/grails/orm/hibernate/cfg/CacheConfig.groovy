@@ -22,8 +22,8 @@ package org.codehaus.groovy.grails.orm.hibernate.cfg
  * @since 1.0
  */
 class CacheConfig {
-    static final USAGE_OPTIONS = ['read-only', 'read-write','nonstrict-read-write','transactional']
-    static final INCLUDE_OPTIONS = ['all', 'non-lazy']
+    static final List USAGE_OPTIONS = ['read-only', 'read-write','nonstrict-read-write','transactional']
+    static final List INCLUDE_OPTIONS = ['all', 'non-lazy']
 
     String usage = "read-write"
     boolean enabled = false

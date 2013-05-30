@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2004-2005 Graeme Rocher
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -464,7 +464,7 @@ public class GrailsHibernateUtil {
     public static boolean isCacheQueriesByDefault(GrailsApplication grailsApplication) {
         return GrailsConfigUtils.isConfigTrue(grailsApplication, CONFIG_PROPERTY_CACHE_QUERIES);
     }
-    
+
     public static boolean isOsivReadonly(GrailsApplication grailsApplication) {
         return GrailsConfigUtils.isConfigTrue(grailsApplication, CONFIG_PROPERTY_OSIV_READONLY);
     }

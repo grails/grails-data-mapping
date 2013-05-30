@@ -50,7 +50,7 @@ class HibernateUtils {
         String setterName = GrailsClassUtils.getSetterName(propertyName)
 
         GroovyObject mc = (GroovyObject)domainClass.metaClass
-        
+
         mc.setProperty(getterName, {->
             def propertyValue = PropertyUtils.getProperty(getDelegate(), propertyName)
             if (propertyValue instanceof HibernateProxy) {
@@ -132,7 +132,7 @@ class HibernateUtils {
             }
         }
     }
-    
+
     // workaround CS bug
     @CompileStatic(TypeCheckingMode.SKIP)
     private static PersistentEntity getPersistentEntity(mappingContext, String name) {
@@ -171,10 +171,10 @@ class HibernateUtils {
         if (grailsEnhancedMetaMethod != null && grailsEnhancedMetaMethod.invoke(proxyClass, null) == proxyClass) {
             return
         }
-        
+
         GroovyObject mc = (GroovyObject)InvokerHelper.getMetaClass(proxyClass)
         MetaClass superMc = InvokerHelper.getMetaClass(proxyClass.getSuperclass())
-        
+
         // hasProperty
         registerMetaMethod(mc, 'hasProperty', { String name ->
             Object obj = getDelegate()
@@ -237,14 +237,13 @@ class HibernateUtils {
                 unwrapped.getMetaClass().invokeMethod(unwrapped, name, argsArray)
             }
         })
-        
+
         ((GroovyObject)mc.getProperty('static')).setProperty("grailsEnhanced", { -> proxyClass })
     }
-    
+
     private static final registerMetaMethod(MetaClass mc, String name, Closure c) {
         ((GroovyObject)mc).setProperty(name, c)
     }
-    
 
     static void enhanceProxy(HibernateProxy proxy) {
         // no need to do anything here
@@ -308,7 +307,7 @@ class HibernateUtils {
     static Object convertValueToIdentifierType(GrailsDomainClass grailsDomainClass, Object idValue, ConversionService conversionService) {
         convertValueToType(idValue, grailsDomainClass.identifier.type, conversionService)
     }
-    
+
     static Object convertValueToType(Object passedValue, Class targetType, ConversionService conversionService) {
         // workaround for GROOVY-6127, do not assign directly in parameters before it's fixed
         Object value = passedValue

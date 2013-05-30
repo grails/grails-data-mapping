@@ -15,7 +15,7 @@
 
 package org.codehaus.groovy.grails.orm.hibernate
 
-import groovy.transform.CompileStatic;
+import groovy.transform.CompileStatic
 
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication

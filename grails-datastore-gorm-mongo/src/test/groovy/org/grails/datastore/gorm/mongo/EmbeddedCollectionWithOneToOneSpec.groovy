@@ -1,12 +1,11 @@
 package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
-import org.bson.types.ObjectId
 
 /**
  * @author Graeme Rocher
  */
-class EmbeddedCollectionWithOneToOneSpec extends GormDatastoreSpec{
+class EmbeddedCollectionWithOneToOneSpec extends GormDatastoreSpec {
 
     void "Test that embedded collections with one to one associations can be persisted correctly"() {
         when:""
@@ -67,7 +66,7 @@ class EmbeddedCollectionWithOneToOneSpec extends GormDatastoreSpec{
 
         when:""
             buildingInstance.buildingName = "WorldTradeCentre 2nd"
-            buildingInstance.save(flush: true);
+            buildingInstance.save(flush: true)
             session.clear()
             buildingInstance = Building.findByBuildingName("WorldTradeCentre 2nd")
 
@@ -81,15 +80,9 @@ class EmbeddedCollectionWithOneToOneSpec extends GormDatastoreSpec{
             buildingInstance.rooms[1].roomNo == "A002"
             buildingInstance.rooms[1].refCompany != null
             buildingInstance.rooms[1].refCompany.companyName == "Sharp"
-
-
-
     }
     @Override
     List getDomainClasses() {
         [Building, Room, RoomCompany]
     }
 }
-
-
-

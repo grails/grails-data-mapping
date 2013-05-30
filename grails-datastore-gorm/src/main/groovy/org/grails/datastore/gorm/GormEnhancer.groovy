@@ -96,7 +96,7 @@ class GormEnhancer {
 
         List<Closure> namedQueries = cpf.getStaticPropertyValuesFromInheritanceHierarchy('namedQueries', Closure)
         for (int i = namedQueries.size(); i > 0; i--) {
-            Closure closure = namedQueries.get(i - 1);
+            Closure closure = namedQueries.get(i - 1)
             registerNamedQueries(e, closure)
         }
 

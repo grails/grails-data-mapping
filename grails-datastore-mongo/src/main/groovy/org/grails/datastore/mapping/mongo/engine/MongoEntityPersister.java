@@ -323,7 +323,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     protected Object generateIdentifier(final PersistentEntity persistentEntity, final DBObject nativeEntry) {
         return mongoTemplate.execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
-                
+
                 String collectionName = getCollectionName(persistentEntity, nativeEntry);
 
                 DBCollection dbCollection = con.getCollection(collectionName + NEXT_ID_SUFFIX);

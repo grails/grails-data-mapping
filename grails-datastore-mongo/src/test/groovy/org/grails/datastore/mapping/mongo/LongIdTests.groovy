@@ -20,10 +20,10 @@ class LongIdTests extends AbstractMongoTest {
         assert te != null
         assert te.id != null
         assert te.id instanceof Long
-		assert te.id == 1
-		
-		long previousId = te.id
-		
+        assert te.id == 1
+
+        long previousId = te.id
+
         session.clear()
         te = session.retrieve(MongoLongIdEntity, te.id)
 
@@ -45,13 +45,13 @@ class LongIdTests extends AbstractMongoTest {
 
         te = session.retrieve(MongoLongIdEntity, te.id)
         assert te == null
-		
-		// check increment
-		te = new MongoLongIdEntity(name:'Bob 2')
-		session.persist te
-		session.flush()
-		
-		assert te.id == 2
+
+        // check increment
+        te = new MongoLongIdEntity(name:'Bob 2')
+        session.persist te
+        session.flush()
+
+        assert te.id == 2
     }
 }
 

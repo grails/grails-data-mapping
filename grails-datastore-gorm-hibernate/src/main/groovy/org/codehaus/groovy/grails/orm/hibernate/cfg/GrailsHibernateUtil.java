@@ -469,7 +469,7 @@ public class GrailsHibernateUtil {
     public static boolean isCacheQueriesByDefault(GrailsApplication grailsApplication) {
         return GrailsConfigUtils.isConfigTrue(grailsApplication, CONFIG_PROPERTY_CACHE_QUERIES);
     }
-    
+
     public static boolean isOsivReadonly(GrailsApplication grailsApplication) {
         return GrailsConfigUtils.isConfigTrue(grailsApplication, CONFIG_PROPERTY_OSIV_READONLY);
     }

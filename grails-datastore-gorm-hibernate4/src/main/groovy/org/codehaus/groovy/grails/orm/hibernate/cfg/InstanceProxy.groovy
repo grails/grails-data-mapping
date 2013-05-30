@@ -15,7 +15,7 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg
 
-import groovy.transform.CompileStatic;
+import groovy.transform.CompileStatic
 
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormInstanceApi
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormValidationApi
