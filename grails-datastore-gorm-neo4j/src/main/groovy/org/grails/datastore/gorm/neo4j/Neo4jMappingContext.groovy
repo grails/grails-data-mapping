@@ -32,21 +32,6 @@ class Neo4jMappingContext extends AbstractMappingContext {
     Neo4jMappingContext() {
         mappingFactory = new GraphGormMappingFactory()
         syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory)
-        //addTypeConverter(new StringToNumberConverterFactory().getConverter(BigDecimal))
-        addTypeConverter(new DateToLongConverter())
-        addTypeConverter(new LongToDateConverter())
-        addTypeConverter(new StringToShortConverter())
-        addTypeConverter(new StringToBigIntegerConverter())
-        addTypeConverter(new StringToBigDecimalConverter())
-        addTypeConverter(new StringToCurrencyConverter())
-        addTypeConverter(new StringToLocaleConverter())
-        addTypeConverter(new StringToTimeZoneConverter())
-        addTypeConverter(new StringToURLConverter())
-        addTypeConverter(new IntArrayToIntegerArrayConverter())
-        addTypeConverter(new LongArrayToLongArrayConverter())
-        addTypeConverter(new IntegerToByteConverter())
-        addTypeConverter(new DoubleToFloatConverter())
-        addTypeConverter(new IntegerToShortConverter())
     }
 
     @Override

@@ -9,6 +9,23 @@ import org.springframework.core.convert.support.GenericConversionService;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class DefaultConversionService extends GenericConversionService {
+    
+    public DefaultConversionService() {
+        addConverter(new DateToLongConverter());
+        addConverter(new LongToDateConverter());
+        addConverter(new StringToShortConverter());
+        addConverter(new StringToBigIntegerConverter());
+        addConverter(new StringToBigDecimalConverter());
+        addConverter(new StringToCurrencyConverter());
+        addConverter(new StringToLocaleConverter());
+        addConverter(new StringToTimeZoneConverter());
+        addConverter(new StringToURLConverter());
+        addConverter(new IntArrayToIntegerArrayConverter());
+        addConverter(new LongArrayToLongArrayConverter());
+        addConverter(new IntegerToByteConverter());
+        addConverter(new DoubleToFloatConverter());
+        addConverter(new IntegerToShortConverter());
+    }
 
     @Override
     public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {

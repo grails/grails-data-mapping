@@ -12,16 +12,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm.neo4j.converters
+package org.grails.datastore.mapping.model.types.conversion
+
+import groovy.transform.CompileStatic
 
 import org.springframework.core.convert.converter.Converter
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
-class StringToBigIntegerConverter implements Converter<String, BigInteger> {
-    BigInteger convert(String source) {
-        new BigInteger(source)
+@CompileStatic
+class StringToCurrencyConverter implements Converter<String, Currency> {
+    Currency convert(String source) {
+        Currency.getInstance(source)
     }
-
 }
