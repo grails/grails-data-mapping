@@ -12,21 +12,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm.neo4j.converters
+package org.grails.datastore.mapping.model.types.conversion
+
+import groovy.transform.CompileStatic
 
 import org.springframework.core.convert.converter.Converter
 
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
-class StringToLocaleConverter implements Converter<String, Locale> {
-    Locale convert(String source) {
-        String[] parts = source.split("_")
-        switch (parts.length) {
-            case 1: return new Locale(parts[0])
-            case 2: return new Locale(parts[0],parts[1])
-            case 3: return new Locale(parts[0],parts[1],parts[2])
-            default: return new Locale(source)
-        }
+@CompileStatic
+class IntegerToByteConverter implements Converter<Integer, Byte> {
+    @Override
+    Byte convert(Integer source) {
+        source as Byte
     }
 }
