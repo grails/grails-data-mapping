@@ -1,18 +1,18 @@
 package org.grails.datastore.mapping.model.types.conversion;
 
 import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.core.convert.support.GenericConversionService;
+import org.springframework.format.datetime.DateFormatterRegistrar;
 
 /**
  * Default conversion service th
  * @author Graeme Rocher
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class DefaultConversionService extends GenericConversionService {
+public class DefaultConversionService extends org.springframework.core.convert.support.DefaultConversionService {
     
     public DefaultConversionService() {
-        addConverter(new DateToLongConverter());
-        addConverter(new LongToDateConverter());
+        DateFormatterRegistrar.addDateConverters(this);
+        
         addConverter(new StringToShortConverter());
         addConverter(new StringToBigIntegerConverter());
         addConverter(new StringToBigDecimalConverter());
