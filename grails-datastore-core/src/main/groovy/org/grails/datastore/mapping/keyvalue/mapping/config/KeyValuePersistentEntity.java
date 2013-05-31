@@ -50,4 +50,14 @@ public class KeyValuePersistentEntity extends AbstractPersistentEntity<Family>{
             return (Family) mappedForm;
         }
     }
+
+    @Override
+    public PersistentEntity getParentEntity() {
+        Class superclass = this.javaClass.getSuperclass();
+        if( superclass != null ) {
+            return context.getPersistentEntity(superclass.getName());
+        }
+
+        return null;
+    }
 }

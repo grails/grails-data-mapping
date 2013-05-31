@@ -4,6 +4,7 @@ import org.grails.datastore.mapping.keyvalue.mapping.config.Family
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValue
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext
 import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValuePersistentEntity
+import org.junit.Before
 import org.junit.Test
 
 /**
@@ -11,14 +12,18 @@ import org.junit.Test
  * @since 1.0
  */
 class KeyValueMappingFactoryTests {
+    def context
+
+    @Before
+    void setUp() {
+        context = new KeyValueMappingContext("myspace")
+        context.addPersistentEntity(TestEntity)
+        context.addPersistentEntity(AbstractTestEntity)
+    }
 
     @Test
     void testCreateMappedForm() {
-        def context = new KeyValueMappingContext("myspace")
-
-        context.addPersistentEntity(TestEntity)
         KeyValuePersistentEntity entity = context.getPersistentEntity(TestEntity.name)
-
         assert entity != null
 
         Family entityMapping = entity.mapping.mappedForm
@@ -31,8 +36,20 @@ class KeyValueMappingFactoryTests {
         assert kv.key == 'id'
     }
 
-    class TestEntity {
+    @Test
+    void testParentEntity() {
+        KeyValuePersistentEntity entity = context.getPersistentEntity(TestEntity.name)
+        assert entity != null
+        assert !entity.root
+        assert entity.parentEntity != null
+        assert entity.rootEntity != null
+    }
+
+    abstract class AbstractTestEntity {
         Long id
+    }
+
+    class TestEntity extends AbstractTestEntity {
         Long version
     }
 }
