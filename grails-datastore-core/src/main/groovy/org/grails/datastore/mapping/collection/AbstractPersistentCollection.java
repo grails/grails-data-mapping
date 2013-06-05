@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
+import org.grails.datastore.mapping.model.PersistentEntity;
 
 /**
  * Abstract base class for persistent collections.
@@ -203,7 +204,14 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
         }
         else {
             List results = indexer.query(associationKey);
-            addAll(session.retrieveAll(indexer.getIndexedEntity().getJavaClass(), results));
+            PersistentEntity entity = indexer.getIndexedEntity();
+
+            // This should really only happen for unit testing since entities are
+            // mocked selectively and may not always be registered in the indexer. In this
+            // case, there can't be any results to be added to the collection.
+            if( entity != null ) {
+                addAll(session.retrieveAll(entity.getJavaClass(), results));
+            }
         }
     }
 

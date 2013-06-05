@@ -106,7 +106,16 @@ public class JavassistProxyFactory implements org.grails.datastore.mapping.proxy
                         return target;
                     }
                 }
-                if (target == null) initialize();
+                if (target == null) {
+                    initialize();
+
+                    // This tends to happen during unit testing if the proxy class is not properly mocked
+                    // and therefore can't be found in the session.
+                    if( target == null ) {
+                        throw new IllegalStateException("Proxy for ["+cls.getName()+":"+id+"] could not be initialized");
+                    }
+                }
+
                 return org.springframework.util.ReflectionUtils.invokeMethod(method, target, args);
             }
 
