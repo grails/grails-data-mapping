@@ -189,7 +189,7 @@ class SimpleMapQuery extends Query {
                 try {
                    return handler.call(allEntities, association,criterion, function)
                 }
-                catch(MissingMethodException e) {
+                catch(MissingMethodException ignored) {
                     throw new InvalidDataAccessResourceUsageException("Unsupported function '$function' used in query")
                 }
             }
@@ -200,83 +200,83 @@ class SimpleMapQuery extends Query {
         (Query.Like): { allEntities, Association association, Query.Like like, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 def regexFormat = like.pattern.replaceAll('%', '.*?')
-                function(it[like.property]) ==~ regexFormat
+                function(resolveIfEmbedded(like.property, it)) ==~ regexFormat
             }
         },
         (Query.RLike): { allEntities, Association association, Query.RLike like, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 def regexFormat = like.pattern
-                function(it[like.property]) ==~ regexFormat
+                function(resolveIfEmbedded(like.property, it)) ==~ regexFormat
             }
         },
         (Query.ILike): { allEntities, Association association, Query.Like like, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 def regexFormat = like.pattern.replaceAll('%', '.*?')
                 def pattern = Pattern.compile(regexFormat, Pattern.CASE_INSENSITIVE)
-                pattern.matcher(function(it[like.property])).find()
+                pattern.matcher(function(resolveIfEmbedded(like.property, it))).find()
             }
         },
         (Query.Equals): { allEntities, Association association, Query.Equals eq, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 final value = subqueryIfNecessary(eq)
-                function(it[eq.property]) == value
+                function(resolveIfEmbedded(eq.property, it)) == value
             }
         },
         (Query.IsNull): { allEntities, Association association, Query.IsNull eq, Closure function = {it} ->
             queryAssociation(allEntities, association) {
-                function(it[eq.property]) == null
+                function(resolveIfEmbedded(eq.property, it)) == null
             }
         },
         (Query.NotEquals): { allEntities, Association association, Query.NotEquals eq , Closure function = {it}->
             queryAssociation(allEntities, association) {
                 final value = subqueryIfNecessary(eq)
-                function(it[eq.property]) != value
+                function(resolveIfEmbedded(eq.property, it)) != value
             }
         },
         (Query.IsNotNull): { allEntities, Association association, Query.IsNotNull eq , Closure function = {it}->
             queryAssociation(allEntities, association) {
-                function(it[eq.property]) != null
+                function(resolveIfEmbedded(eq.property, it)) != null
             }
         },
         (Query.IdEquals): { allEntities, Association association, Query.IdEquals eq , Closure function = {it}->
             queryAssociation(allEntities, association) {
-                function(it[eq.property]) == eq.value
+                function(resolveIfEmbedded(eq.property, it)) == eq.value
             }
         },
         (Query.Between): { allEntities, Association association, Query.Between between, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 def from = between.from
                 def to = between.to
-                function(it[between.property])>= from && function(it[between.property]) <= to
+                function(resolveIfEmbedded(between.property, it)) >= from && function(resolveIfEmbedded(between.property, it)) <= to
             }
         },
         (Query.GreaterThan):{ allEntities, Association association, Query.GreaterThan gt, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 final value = subqueryIfNecessary(gt)
-                function(it[gt.property]) > value
+                function(resolveIfEmbedded(gt.property, it)) > value
             }
         },
         (Query.LessThan):{ allEntities, Association association, Query.LessThan lt, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 final value = subqueryIfNecessary(lt)
-                function(it[lt.property]) < value
+                function(resolveIfEmbedded(lt.property, it)) < value
             }
         },
         (Query.GreaterThanEquals):{ allEntities, Association association, Query.GreaterThanEquals gt, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 final value = subqueryIfNecessary(gt)
-                function(it[gt.property]) >= value
+                function(resolveIfEmbedded(gt.property, it)) >= value
             }
         },
         (Query.LessThanEquals):{ allEntities, Association association, Query.LessThanEquals lt, Closure function = {it} ->
             queryAssociation(allEntities, association) {
                 final value = subqueryIfNecessary(lt)
-                function(it[lt.property]) <= value
+                function(resolveIfEmbedded(lt.property, it)) <= value
             }
         },
         (Query.In):{ allEntities, Association association, Query.In inList, Closure function = {it} ->
             queryAssociation(allEntities, association) {
-                inList.values?.contains function(it[inList.property])
+                inList.values?.contains function(resolveIfEmbedded(inList.property, it))
             }
         }
     ]
@@ -288,7 +288,13 @@ class SimpleMapQuery extends Query {
 
                 def id = it.value[propertyName]
 
-                def associated = session.retrieve(association.associatedEntity.javaClass, id)
+                // If the entity isn't mocked properly this will happen and can cause a NPE.
+                PersistentEntity associatedEntity = association.associatedEntity
+                if( associatedEntity == null ) {
+                    throw new IllegalStateException("No associated entity found for ${association.owner}.${association.name}")
+                }
+
+                def associated = session.retrieve(associatedEntity.javaClass, id)
                 if (associated) {
                     callable.call(associated)
                 }
@@ -367,7 +373,7 @@ class SimpleMapQuery extends Query {
             Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
             def allEntities = datastore[family]
             allEntities.findAll { entry ->
-                values.every { (function != null ? function(entry.value[name]) : function(entry.value[name])) == it  }
+                values.every { (function != null ? function(resolveIfEmbedded(name, entry.value)) : resolveIfEmbedded(name, entry.value)) == it  }
             }
             .collect { it.key }
         },
@@ -377,7 +383,7 @@ class SimpleMapQuery extends Query {
             Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
             def allEntities = datastore[family]
             allEntities.findAll { entry ->
-                values.every { (function != null ? function(entry.value[name]) : function(entry.value[name])) != it  }
+                values.every { (function != null ? function(resolveIfEmbedded(name, entry.value)) : resolveIfEmbedded(name, entry.value)) != it  }
             }
             .collect { it.key }
         },
@@ -387,7 +393,7 @@ class SimpleMapQuery extends Query {
             Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
             def allEntities = datastore[family]
             allEntities.findAll { entry ->
-                values.every { (function != null ? function(entry.value[name]) : entry.value[name]) > it  }
+                values.every { (function != null ? function(resolveIfEmbedded(name, entry.value)) : resolveIfEmbedded(name, entry.value)) > it  }
             }
             .collect { it.key }
         },
@@ -397,7 +403,7 @@ class SimpleMapQuery extends Query {
             Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
             def allEntities = datastore[family]
             allEntities.findAll { entry ->
-                values.every { (function != null ? function(entry.value[name]) : entry.value[name]) < it  }
+                values.every { (function != null ? function(resolveIfEmbedded(name, entry.value)) : resolveIfEmbedded(name, entry.value)) < it  }
             }
             .collect { it.key }
         },
@@ -407,7 +413,7 @@ class SimpleMapQuery extends Query {
             Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
             def allEntities = datastore[family]
             allEntities.findAll { entry ->
-                values.every { (function != null ? function(entry.value[name]) : entry.value[name]) <= it  }
+                values.every { (function != null ? function(resolveIfEmbedded(name, entry.value)) : resolveIfEmbedded(name, entry.value)) <= it  }
             }
             .collect { it.key }
         },
@@ -417,7 +423,7 @@ class SimpleMapQuery extends Query {
             Assert.isTrue(values.every { property.type.isInstance(it) }, "Subquery returned values that are not compatible with the type of property '$name': $values")
             def allEntities = datastore[family]
             allEntities.findAll { entry ->
-                values.every { (function != null ? function(entry.value[name]) : entry.value[name]) >= it  }
+                values.every { (function != null ? function(resolveIfEmbedded(name, entry.value)) : resolveIfEmbedded(name, entry.value)) >= it  }
             }
             .collect { it.key }
         },
@@ -437,13 +443,16 @@ class SimpleMapQuery extends Query {
                     def allEntities = datastore[family]
                     return allEntities.findAll { it.value[property.name] == null }.collect { it.key }
                 }
+                else if (equals.property.contains('.')) {
+                    def allEntities = datastore[family]
+                    return allEntities.findAll { resolveIfEmbedded(equals.property, it.value) == value }.collect { it.key }
+                }
                 else {
                     return indexer.query(value)
                 }
             }
         },
         (Query.IsNull): { Query.IsNull equals, PersistentProperty property, Closure function = null , boolean onValue = false->
-
             handlers[Query.Equals].call(new Query.Equals(equals.property, null), property, function)
         },
         (Query.IdEquals): { Query.IdEquals equals, PersistentProperty property ->
@@ -497,59 +506,61 @@ class SimpleMapQuery extends Query {
             def name = between.property
             def allEntities = datastore[family]
 
-            if (function != null)
-                allEntities.findAll { function(it.value[name]) >= from && function(it.value[name]) <= to }.collect { it.key }
-            else
-                allEntities.findAll { it.value[name] >= from && it.value[name] <= to }.collect { it.key }
+            if (function != null) {
+                allEntities.findAll { function(resolveIfEmbedded(name, it.value)) >= from && function(resolveIfEmbedded(name, it.value)) <= to }.collect { it.key }
+            }
+            else {
+                allEntities.findAll { resolveIfEmbedded(name, it.value) >= from && resolveIfEmbedded(name, it.value) <= to }.collect { it.key }
+            }
         },
         (Query.GreaterThan): { Query.GreaterThan gt, PersistentProperty property, Closure function = null, boolean onValue = false ->
             def name = gt.property
             final value = subqueryIfNecessary(gt)
             def allEntities = datastore[family]
 
-            allEntities.findAll { (function != null ? function(it.value[name]) : it.value[name]) > value }.collect { it.key }
+            allEntities.findAll { (function != null ? function(resolveIfEmbedded(name, it.value)) : resolveIfEmbedded(name, it.value)) > value }.collect { it.key }
         },
         (Query.GreaterThanProperty): { Query.GreaterThanProperty gt, PersistentProperty property, Closure function = null, boolean onValue = false ->
             def name = gt.property
             def other = gt.otherProperty
             def allEntities = datastore[family]
 
-            allEntities.findAll { (function != null ? function(it.value[name]) : it.value[name]) > it.value[other] }.collect { it.key }
+            allEntities.findAll { (function != null ? function(resolveIfEmbedded(name, it.value)) : resolveIfEmbedded(name, it.value)) > it.value[other] }.collect { it.key }
         },
         (Query.GreaterThanEqualsProperty): { Query.GreaterThanEqualsProperty gt, PersistentProperty property, Closure function = null, boolean onValue = false ->
             def name = gt.property
             def other = gt.otherProperty
             def allEntities = datastore[family]
 
-            allEntities.findAll { it.value[name] >= it.value[other] }.collect { it.key }
+            allEntities.findAll { resolveIfEmbedded(name, it.value) >= it.value[other] }.collect { it.key }
         },
         (Query.LessThanProperty): { Query.LessThanProperty gt, PersistentProperty property ->
             def name = gt.property
             def other = gt.otherProperty
             def allEntities = datastore[family]
 
-            allEntities.findAll { it.value[name] < it.value[other] }.collect { it.key }
+            allEntities.findAll { resolveIfEmbedded(name, it.value) < it.value[other] }.collect { it.key }
         },
         (Query.LessThanEqualsProperty): { Query.LessThanEqualsProperty gt, PersistentProperty property ->
             def name = gt.property
             def other = gt.otherProperty
             def allEntities = datastore[family]
 
-            allEntities.findAll { it.value[name] <= it.value[other] }.collect { it.key }
+            allEntities.findAll { resolveIfEmbedded(name, it.value) <= it.value[other] }.collect { it.key }
         },
         (Query.EqualsProperty): { Query.EqualsProperty gt, PersistentProperty property ->
             def name = gt.property
             def other = gt.otherProperty
             def allEntities = datastore[family]
 
-            allEntities.findAll { it.value[name] == it.value[other] }.collect { it.key }
+            allEntities.findAll { resolveIfEmbedded(name, it.value) == it.value[other] }.collect { it.key }
         },
         (Query.NotEqualsProperty): { Query.NotEqualsProperty gt, PersistentProperty property ->
             def name = gt.property
             def other = gt.otherProperty
             def allEntities = datastore[family]
 
-            allEntities.findAll { it.value[name] != it.value[other] }.collect { it.key }
+            allEntities.findAll { resolveIfEmbedded(name, it.value) != it.value[other] }.collect { it.key }
         },
         (Query.SizeEquals): { Query.SizeEquals se, PersistentProperty property ->
             def allEntities = datastore[family]
@@ -586,21 +597,21 @@ class SimpleMapQuery extends Query {
             final value = subqueryIfNecessary(gt)
             def allEntities = datastore[family]
 
-            allEntities.findAll { it.value[name] >= value }.collect { it.key }
+            allEntities.findAll { resolveIfEmbedded(name, it.value) >= value }.collect { it.key }
         },
         (Query.LessThan): { Query.LessThan lt, PersistentProperty property ->
             def name = lt.property
             final value = subqueryIfNecessary(lt)
             def allEntities = datastore[family]
 
-            allEntities.findAll { it.value[name] < value }.collect { it.key }
+            allEntities.findAll { resolveIfEmbedded(name, it.value) < value }.collect { it.key }
         },
         (Query.LessThanEquals): { Query.LessThanEquals lte, PersistentProperty property ->
             def name = lte.property
             final value = subqueryIfNecessary(lte)
             def allEntities = datastore[family]
 
-            allEntities.findAll { it.value[name] <= value }.collect { it.key }
+            allEntities.findAll { resolveIfEmbedded(name, it.value) <= value }.collect { it.key }
         }
     ]
 
@@ -617,6 +628,23 @@ class SimpleMapQuery extends Query {
         }
 
         return value
+    }
+
+    /**
+     * If the property name refers to an embedded property like 'foo.startDate', then we need
+     * resolve the value of startDate by walking through the key list.
+     *
+     * @param propertyName the full property name
+     * @return
+     */
+    protected resolveIfEmbedded(propertyName, obj) {
+        if( propertyName.contains('.') ) {
+            def (embeddedProperty, nestedProperty) = propertyName.tokenize('.')
+            obj?."${embeddedProperty}"?."${nestedProperty}"
+        }
+        else {
+            obj?."${propertyName}"
+        }
     }
 
     protected List executeLikeWithRegex(SimpleMapEntityPersister entityPersister, PersistentProperty property, regexFormat) {

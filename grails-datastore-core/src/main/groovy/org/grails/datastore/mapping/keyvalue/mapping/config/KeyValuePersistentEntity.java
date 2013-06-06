@@ -19,6 +19,8 @@ import org.grails.datastore.mapping.model.AbstractPersistentEntity;
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
+import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.types.Embedded;
 
 /**
  * @author Graeme Rocher
@@ -59,5 +61,24 @@ public class KeyValuePersistentEntity extends AbstractPersistentEntity<Family>{
         }
 
         return null;
+    }
+
+    @Override
+    public PersistentProperty getPropertyByName(String name) {
+        if(name.contains(".")) {
+            String[] props = name.split("\\.");
+
+            // Get the embedded property type
+            PersistentProperty embeddedProp = super.getPropertyByName(props[0]);
+            if( embeddedProp instanceof Embedded) {
+                PersistentEntity embeddedEntity = ((Embedded) embeddedProp).getAssociatedEntity();
+                return embeddedEntity.getPropertyByName(props[1]);
+            }
+
+            return super.getPropertyByName(name);
+        }
+        else {
+            return super.getPropertyByName(name);
+        }
     }
 }
