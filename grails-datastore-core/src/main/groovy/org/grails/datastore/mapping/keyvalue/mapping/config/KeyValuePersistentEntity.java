@@ -65,7 +65,7 @@ public class KeyValuePersistentEntity extends AbstractPersistentEntity<Family>{
 
     @Override
     public PersistentProperty getPropertyByName(String name) {
-        if(name.contains(".")) {
+        if(name != null && name.contains(".")) {
             String[] props = name.split("\\.");
 
             // Get the embedded property type
