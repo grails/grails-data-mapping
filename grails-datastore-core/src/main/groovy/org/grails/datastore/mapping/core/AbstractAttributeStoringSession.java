@@ -24,6 +24,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 public abstract class AbstractAttributeStoringSession implements Session {
 
     protected Map<Integer, Map<String, Object>> attributes = new ConcurrentHashMap<Integer, Map<String, Object>>();
+    protected Map<String, Object> sessionPropertyMap = new ConcurrentHashMap<String, Object>();
     private boolean connected = true;
 
     public void setAttribute(Object entity, String attributeName, Object value) {
@@ -61,6 +62,39 @@ public abstract class AbstractAttributeStoringSession implements Session {
             return;
         }
         attributes.remove(System.identityHashCode(entity));
+    }
+
+    /**
+     * Set a property on this session. Note that properties are not cleared out when a session is cleared.
+     *
+     * @param property The property name.
+     * @param value    The property value.
+     */
+    @Override
+    public Object setSessionProperty(String property, Object value) {
+        return sessionPropertyMap.put(property, value);
+    }
+
+    /**
+     * Get the value of a property of the session.
+     *
+     * @param property The name of the property.
+     * @return The value.
+     */
+    @Override
+    public Object getSessionProperty(String property) {
+        return sessionPropertyMap.get(property);
+    }
+
+    /**
+     * Clear a property in a session.
+     *
+     * @param property The property name.
+     * @return The property value, if there was one (or null).
+     */
+    @Override
+    public Object clearSessionProperty(String property) {
+        return sessionPropertyMap.remove(property);
     }
 
     /**
