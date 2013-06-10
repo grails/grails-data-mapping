@@ -21,4 +21,12 @@ public abstract class AbstractQueryEvent extends ApplicationEvent {
      * @return The type of event.
      */
     public abstract QueryEventType getEventType();
+
+    /**
+     * Get the query from the event.
+     * @return The query.
+     */
+    public Query getQuery() {
+        return query;
+    }
 }
