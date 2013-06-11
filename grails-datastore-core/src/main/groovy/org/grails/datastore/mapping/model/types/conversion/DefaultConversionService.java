@@ -1,5 +1,9 @@
 package org.grails.datastore.mapping.model.types.conversion;
 
+import groovy.lang.GroovyObject;
+
+import java.io.Serializable;
+
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.format.datetime.DateFormatterRegistrar;
 
@@ -29,8 +33,9 @@ public class DefaultConversionService extends org.springframework.core.convert.s
 
     @Override
     public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-        // force converting GStringImpl & StreamCharBuffer to String before conversion if no conversion exists
-        if(source instanceof CharSequence && !super.canConvert(sourceType, targetType)) {
+        // force converting GStringImpl & StreamCharBuffer to String before conversion
+        if(source instanceof CharSequence && source.getClass() != String.class && 
+                targetType != null && targetType.getType() != source.getClass()) {
             source = source.toString();
             sourceType = TypeDescriptor.valueOf(String.class);
         }
@@ -39,6 +44,16 @@ public class DefaultConversionService extends org.springframework.core.convert.s
 
     @Override
     public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+        // fix EnumToString conversions for Enums implemented in Groovy
+        // see org.springframework.core.convert.support.EnumToStringConverter.match method
+        if (targetType != null 
+                && targetType.getType() == String.class
+                && sourceType != null 
+                && (sourceType.getType() == GroovyObject.class || 
+                    sourceType.getType() == Comparable.class || 
+                    sourceType.getType() == Serializable.class)) {
+            return false;
+        }
         boolean reply = super.canConvert(sourceType, targetType);
         if(!reply && sourceType != null && CharSequence.class.isAssignableFrom(sourceType.getType())) {
             reply = super.canConvert(TypeDescriptor.valueOf(String.class), targetType);
