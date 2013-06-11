@@ -18,7 +18,11 @@ import grails.util.CollectionUtils;
 import grails.util.GrailsNameUtils;
 import groovy.lang.Closure;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Modifier;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1977,7 +1981,6 @@ public final class GrailsDomainBinder {
         }
 
         UniqueKey uk = new UniqueKey();
-        uk.setName("_UniqueKey");
         uk.setTable(table);
 
         boolean mutable = naturalId.isMutable();
@@ -1991,7 +1994,38 @@ public final class GrailsDomainBinder {
             uk.addColumns(property.getColumnIterator());
         }
 
+        setUniqueName(uk);
+
         table.addUniqueKey(uk);
+    }
+
+    protected static void setUniqueName(UniqueKey uk) {
+        StringBuilder sb = new StringBuilder(uk.getTable().getName()).append('_');
+        for (Object col : uk.getColumns()) {
+            sb.append(((Column) col).getName()).append('_');
+        }
+
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            md.update(sb.toString().getBytes("UTF-8"));
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+
+        String name = "UK" + new BigInteger(1, md.digest()).toString(16);
+        if (name.length() > 30) {
+            // Oracle has a 30-char limit
+            name = name.substring(0, 30);
+        }
+
+        uk.setName(name);
     }
 
     private static boolean canBindOneToOneWithSingleColumnAndForeignKey(GrailsDomainClassProperty currentGrailsProp) {
