@@ -53,6 +53,7 @@ import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.mongodb.core.DbCallback;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -484,9 +485,10 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         if (item != null) {
             ConversionService conversionService = mappingContext.getConversionService();
             // go for toInteger or toString.
-            if (conversionService.canConvert(item.getClass(), Integer.class)) {
+            TypeDescriptor itemTypeDescriptor = TypeDescriptor.forObject(item);
+            if ((itemTypeDescriptor.getObjectType() == Integer.class || itemTypeDescriptor.getObjectType() == Short.class) && conversionService.canConvert(itemTypeDescriptor, TypeDescriptor.valueOf(Integer.class))) {
                 nativeValue = conversionService.convert(item, Integer.class);
-            } else if (conversionService.canConvert(item.getClass(), String.class)) {
+            } else if (conversionService.canConvert(itemTypeDescriptor, TypeDescriptor.valueOf(String.class))) {
                 nativeValue = conversionService.convert(item, String.class);
             } else {
                 // fall back if no explicit converter is registered, good for URL, Locale, etc.
