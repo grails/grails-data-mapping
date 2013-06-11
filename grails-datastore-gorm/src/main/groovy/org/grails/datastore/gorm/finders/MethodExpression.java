@@ -27,6 +27,7 @@ import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.Query.Criterion;
 import org.grails.datastore.mapping.query.Restrictions;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.util.Assert;
 
 /**
@@ -65,7 +66,12 @@ public abstract class MethodExpression {
             for (int i = 0; i < argumentsRequired; i++) {
                 Object arg = arguments[i];
                 if (arg != null && !type.isAssignableFrom(arg.getClass())) {
-                        arguments[i] = conversionService.convert(arg, type);
+                    TypeDescriptor typeDescriptor = TypeDescriptor.valueOf(type);
+                    if((typeDescriptor.isArray() || typeDescriptor.isCollection()) && (typeDescriptor.getElementTypeDescriptor() == null || typeDescriptor.getElementTypeDescriptor().getType().isAssignableFrom(arg.getClass()))) {
+                        // skip converting argument to collection/array type if argument is correct instance of element type
+                        break;
+                    } 
+                    arguments[i] = conversionService.convert(arg, type);
                 }
             }
         }
