@@ -231,16 +231,6 @@ public class GrailsHibernateUtil {
             }
         }
     }
-    
-    private static FlushMode convertFlushMode(Object object) {
-        if(object == null) {
-            return null;
-        } else if(object instanceof FlushMode) {
-            return (FlushMode)object;
-        } else {
-            return FlushMode.parse(String.valueOf(object));
-        }
-    }
 
     /**
      * Populates criteria arguments for the given target class and arguments map
@@ -255,6 +245,21 @@ public class GrailsHibernateUtil {
     @SuppressWarnings("rawtypes")
     public static void populateArgumentsForCriteria(Class<?> targetClass, Criteria c, Map argMap, ConversionService conversionService) {
         populateArgumentsForCriteria(null, targetClass, c, argMap, conversionService);
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static void populateArgumentsForCriteria(Criteria c, Map argMap, ConversionService conversionService) {
+        populateArgumentsForCriteria(null, null, c, argMap, conversionService);
+    }
+
+    private static FlushMode convertFlushMode(Object object) {
+        if(object == null) {
+            return null;
+        }
+        if (object instanceof FlushMode) {
+            return (FlushMode)object;
+        }
+        return FlushMode.parse(String.valueOf(object));
     }
 
     /**
@@ -320,11 +325,6 @@ public class GrailsHibernateUtil {
 
     public static void cacheCriteriaByMapping(GrailsApplication grailsApplication, Class<?> targetClass, Criteria criteria) {
         cacheCriteriaByMapping(targetClass, criteria);
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static void populateArgumentsForCriteria(Criteria c, Map argMap, ConversionService conversionService) {
-        populateArgumentsForCriteria(null,null, c, argMap, conversionService);
     }
 
     /**

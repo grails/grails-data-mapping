@@ -550,7 +550,7 @@ class HibernateMappingBuilder {
         if ('user-type' == name && args && (args[0] instanceof Map)) {
             hibernateCustomUserType(args[0])
         }
-        else if (args && args[0] instanceof Map) {
+        else if (args && ((args[0] instanceof Map) || (args[0] instanceof Closure))) {
             handleMethodMissing(name, args)
         }
         else {
