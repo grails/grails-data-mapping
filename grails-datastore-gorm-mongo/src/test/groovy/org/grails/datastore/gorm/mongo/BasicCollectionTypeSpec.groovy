@@ -55,6 +55,12 @@ class BasicCollectionTypeSpec extends GormDatastoreSpec {
             mc.pets != null
             mc.pets.size() == 3
             mc.pets.chuck == "Dog"
+            
+        when:"A collection of strings is queried by GString"
+            session.clear()
+            mc = MyCollections.findByNames("${'Bob'}")
+        then:"The correct result is returned"
+            mc != null
     }
 }
 

@@ -33,8 +33,9 @@ public class DefaultConversionService extends org.springframework.core.convert.s
 
     @Override
     public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-        // force converting GStringImpl & StreamCharBuffer to String before conversion if no conversion exists
-        if(source instanceof CharSequence && !super.canConvert(sourceType, targetType)) {
+        // force converting GStringImpl & StreamCharBuffer to String before conversion
+        if(source instanceof CharSequence && source.getClass() != String.class && 
+                targetType != null && targetType.getType() != source.getClass()) {
             source = source.toString();
             sourceType = TypeDescriptor.valueOf(String.class);
         }
