@@ -45,7 +45,6 @@ class OptimisticLockingSpec extends GormDatastoreSpec {
             setupClass.transactionStatus = null
 
         when:
-println '1'
             o = OptLockVersioned.get(o.id)
 
             OptLockVersioned.withNewSession { s ->

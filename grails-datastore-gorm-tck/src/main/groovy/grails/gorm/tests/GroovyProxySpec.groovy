@@ -23,7 +23,7 @@ class GroovyProxySpec extends GormDatastoreSpec {
             false == location.initialized
 
         when:"The proxy is loaded"
-            println location.code
+            location.code
 
         then:"An exception is thrown"
             thrown DataIntegrityViolationException
