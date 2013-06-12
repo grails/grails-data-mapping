@@ -38,6 +38,9 @@ import org.grails.datastore.mapping.model.PersistentProperty;
 import org.grails.datastore.mapping.model.types.Association;
 import org.grails.datastore.mapping.query.api.AssociationCriteria;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
+import org.grails.datastore.mapping.query.event.PostQueryEvent;
+import org.grails.datastore.mapping.query.event.PreQueryEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.util.Assert;
 
@@ -508,7 +511,14 @@ public abstract class Query implements Cloneable{
         uniqueResult = false;
         flushBeforeQuery();
 
+        ApplicationEventPublisher publisher = session.getDatastore().getApplicationEventPublisher();
+        publisher.publishEvent(new PreQueryEvent(this));
+
         List results = executeQuery(entity, criteria);
+
+        PostQueryEvent postQueryEvent = new PostQueryEvent(this, results);
+        publisher.publishEvent(postQueryEvent);
+        results = postQueryEvent.getResults();
 
         if (session instanceof SessionImplementor) {
             SessionImplementor sessionImplementor = (SessionImplementor)session;
