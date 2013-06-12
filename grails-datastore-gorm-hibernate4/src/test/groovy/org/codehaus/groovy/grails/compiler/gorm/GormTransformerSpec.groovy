@@ -12,6 +12,8 @@ import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.springframework.validation.Errors
 
 import spock.lang.Specification
+import grails.spring.BeanBuilder
+import org.springframework.context.ConfigurableApplicationContext
 
 class GormTransformerSpec extends Specification {
 
@@ -159,7 +161,7 @@ class TestEntity {
             obj.errors instanceof Errors
 
         when:
-            def ds = new SimpleMapDatastore()
+            def ds = new SimpleMapDatastore(new BeanBuilder().createApplicationContext() as ConfigurableApplicationContext)
 
             cls.metaClass.static.currentGormValidationApi = {-> new GormValidationApi(cls, ds)}
             obj.clearErrors()

@@ -12,6 +12,9 @@ import org.grails.datastore.mapping.simple.SimpleMapDatastore
 import org.springframework.validation.Errors
 
 import spock.lang.Specification
+import org.codehaus.groovy.grails.commons.spring.GrailsApplicationContext
+import grails.spring.BeanBuilder
+import org.springframework.context.ConfigurableApplicationContext
 
 class GormTransformerSpec extends Specification {
 
@@ -122,7 +125,7 @@ class TestEntity {
             thrown MissingMethodException
 
         when:
-            def ds = new SimpleMapDatastore()
+            def ds = new SimpleMapDatastore(new BeanBuilder().createApplicationContext() as ConfigurableApplicationContext)
             ds.mappingContext.addPersistentEntity(cls)
 
             cls.metaClass.static.currentGormStaticApi = {-> new GormStaticApi(cls, ds, [])}
