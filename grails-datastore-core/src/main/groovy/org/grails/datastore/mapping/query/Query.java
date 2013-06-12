@@ -512,13 +512,17 @@ public abstract class Query implements Cloneable{
         flushBeforeQuery();
 
         ApplicationEventPublisher publisher = session.getDatastore().getApplicationEventPublisher();
-        publisher.publishEvent(new PreQueryEvent(this));
+        if(publisher != null) {
+            publisher.publishEvent(new PreQueryEvent(this));
+        }
 
         List results = executeQuery(entity, criteria);
 
-        PostQueryEvent postQueryEvent = new PostQueryEvent(this, results);
-        publisher.publishEvent(postQueryEvent);
-        results = postQueryEvent.getResults();
+        if(publisher != null) {
+            PostQueryEvent postQueryEvent = new PostQueryEvent(this, results);
+            publisher.publishEvent(postQueryEvent);
+            results = postQueryEvent.getResults();
+        }
 
         if (session instanceof SessionImplementor) {
             SessionImplementor sessionImplementor = (SessionImplementor)session;
