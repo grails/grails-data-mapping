@@ -95,7 +95,9 @@ public abstract class AbstractDatastore implements Datastore, DisposableBean {
     }
 
     public final Session connect(Map<String, String> connDetails) {
-        return createSession(connDetails);
+        Session session = createSession(connDetails);
+        getApplicationEventPublisher().publishEvent(new SessionCreationEvent(session));
+        return session;
     }
 
     /**

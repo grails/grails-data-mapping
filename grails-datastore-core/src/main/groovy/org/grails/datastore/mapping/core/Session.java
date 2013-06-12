@@ -57,6 +57,28 @@ public interface Session {
     Object getAttribute(Object entity, String attributeName);
 
     /**
+     * Set a property on this session. Note that properties are not cleared out when a session is cleared.
+     * @param property The property name.
+     * @param value The property value.
+     * @return The previous property value, if there was one (or null).
+     */
+    Object setSessionProperty(String property, Object value);
+
+    /**
+     * Get the value of a property of the session.
+     * @param property The name of the property.
+     * @return The value.
+     */
+    Object getSessionProperty(String property);
+
+    /**
+     * Clear a property in a session.
+     * @param property The property name.
+     * @return The property value, if there was one (or null).
+     */
+    Object clearSessionProperty(String property);
+
+    /**
      * @return <code>true</code> if connected to the datastore
      */
     boolean isConnected();
