@@ -3,12 +3,11 @@ package grails.gorm.tests
 import org.springframework.context.event.SmartApplicationListener
 import org.springframework.context.ApplicationEvent
 import org.grails.datastore.mapping.core.SessionCreationEvent
-import spock.lang.Ignore
+import org.grails.datastore.mapping.core.Session
 
 /**
  * Test case that session creation events are fired.
  */
-@Ignore
 class SessionCreationEventSpec extends GormDatastoreSpec {
 
     Listener listener
@@ -28,12 +27,14 @@ class SessionCreationEventSpec extends GormDatastoreSpec {
 
         when:"Creating new session"
         def newSession = null
+        def isDatastoreSession = false
         TestEntity.withNewSession { s ->
             newSession = s
+            isDatastoreSession = s instanceof Session
         }
         then:
-        listener.events.size() == 1
-        listener.events[0].session == newSession
+        !isDatastoreSession || listener.events.size() == 1
+        !isDatastoreSession || listener.events[0].session == newSession
     }
 
 
