@@ -20,7 +20,9 @@ import javax.persistence.EntityManagerFactory;
 
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.core.SessionCreationEvent;
 import org.grails.datastore.mapping.model.MappingContext;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.orm.jpa.JpaTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -67,6 +69,11 @@ public class JpaDatastore extends AbstractDatastore {
 
     @Override
     protected Session createSession(Map<String, String> connDetails) {
-        return new JpaSession(this, jpaTemplate, transactionManager);
+        JpaSession session = new JpaSession(this, jpaTemplate, transactionManager);
+        ApplicationEventPublisher applicationEventPublisher = getApplicationEventPublisher();
+        if(applicationEventPublisher != null) {
+            applicationEventPublisher.publishEvent(new SessionCreationEvent(session));
+        }
+        return session;
     }
 }
