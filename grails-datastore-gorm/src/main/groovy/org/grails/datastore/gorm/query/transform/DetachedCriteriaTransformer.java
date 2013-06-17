@@ -337,8 +337,10 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     visitMethodCall(varType, arguments);
                 }
                 else if (THIS_EXPRESSION.getName().equals(varName) && currentClassNode != null && isCandidateWhereMethod(method.getText(), arguments)) {
-                    visitMethodCall(this.currentClassNode, arguments);
-                    call.setMethod(WHERE_LAZY);
+                    if(isDomainClass(currentClassNode)) {
+                        visitMethodCall(this.currentClassNode, arguments);
+                        call.setMethod(WHERE_LAZY);
+                    }
                 }
             }
             else if (objectExpression instanceof PropertyExpression) {
