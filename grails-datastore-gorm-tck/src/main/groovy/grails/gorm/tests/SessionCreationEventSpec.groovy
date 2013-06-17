@@ -4,10 +4,12 @@ import org.springframework.context.event.SmartApplicationListener
 import org.springframework.context.ApplicationEvent
 import org.grails.datastore.mapping.core.SessionCreationEvent
 import org.grails.datastore.mapping.core.Session
+import spock.lang.Ignore
 
 /**
  * Test case that session creation events are fired.
  */
+@Ignore
 class SessionCreationEventSpec extends GormDatastoreSpec {
 
     Listener listener

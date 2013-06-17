@@ -6,10 +6,12 @@ import org.grails.datastore.mapping.query.event.PostQueryEvent
 import org.grails.datastore.mapping.query.event.PreQueryEvent
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.event.SmartApplicationListener
+import spock.lang.Ignore
 
 /**
  * Tests for query events.
  */
+@Ignore
 class QueryEventsSpec extends GormDatastoreSpec {
     SpecQueryEventListener listener
 
