@@ -314,6 +314,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             try {
                 PendingOperationExecution.executePendingOperation(pendingOperation);
             } catch (RuntimeException e) {
+                setFlushMode(FlushModeType.COMMIT);
                 exceptionOccurred = true;
                 throw e;
             }
@@ -334,6 +335,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
                 pending.run();
             }
         } catch (RuntimeException e) {
+            setFlushMode(FlushModeType.COMMIT);
             exceptionOccurred = true;
             throw e;
         }
