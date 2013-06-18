@@ -70,7 +70,8 @@ public class MongoMappingContext extends DocumentMappingContext {
             CodeWScope.class.getName(),
             Long.class.getName(),
             UUID.class.getName(),
-            byte[].class.getName()
+            byte[].class.getName(),
+            Byte.class.getName()
     )));
 
     /**
