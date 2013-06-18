@@ -12,7 +12,7 @@ import spock.lang.Issue
 
 class UniqueConstraintGroupSpec extends GormDatastoreSpec{
 
-    @Issue('GRAILS-8656')
+    @Issue(['GRAILS-8656', 'GRAILS-10178'])
     void "Test null uniqueness handling"() {
 
         given:"Some test users"
@@ -25,10 +25,8 @@ class UniqueConstraintGroupSpec extends GormDatastoreSpec{
             user2.validate()
             def errors = user2.errors.allErrors
 
-        then:"(null) dateDeleted should fail uniqueness test"
-            errors.size() == 1
-            errors[0].field == "userId"
-            errors[0].code == "unique"
+        then:"(null) dateDeleted should pass uniqueness test"
+            errors.size() == 0
 
         when: "another user with same userId, and different (not null) dateDeleted is saved"
             user2.dateDeleted  = new Date()
@@ -42,6 +40,8 @@ class UniqueConstraintGroupSpec extends GormDatastoreSpec{
             user1.save()
 
         when: "user1 and user 2 have same userid / dateDeleted"
+            user2.validate()
+            errors = user2.errors.allErrors
 
         then:"should fail uniqueness"
             errors.size() == 1
