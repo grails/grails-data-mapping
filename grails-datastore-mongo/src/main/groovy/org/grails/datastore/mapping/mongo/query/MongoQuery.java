@@ -74,6 +74,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
 
     public static final String MONGO_IN_OPERATOR = "$in";
     public static final String MONGO_OR_OPERATOR = "$or";
+    public static final String MONGO_AND_OPERATOR = "$and";
     public static final String MONGO_GTE_OPERATOR = "$gte";
     public static final String MONGO_LTE_OPERATOR = "$lte";
     public static final String MONGO_GT_OPERATOR = "$gt";
@@ -339,16 +340,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         queryHandlers.put(Disjunction.class, new QueryHandler<Disjunction>() {
             @SuppressWarnings("unchecked")
             public void handle(PersistentEntity entity, Disjunction criterion, DBObject query) {
-                List orList = new ArrayList();
-                for (Criterion subCriterion : criterion.getCriteria()) {
-                    final QueryHandler queryHandler = queryHandlers.get(subCriterion.getClass());
-                    if (queryHandler != null) {
-                        DBObject dbo = new BasicDBObject();
-                        queryHandler.handle(entity, subCriterion, dbo);
-                        orList.add(dbo);
-                    }
-                }
-                query.put(MONGO_OR_OPERATOR, orList);
+                populateMongoQuery(entity, query, criterion);
             }
         });
 
@@ -714,18 +706,25 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     @SuppressWarnings("unchecked")
     public static void populateMongoQuery(PersistentEntity entity, DBObject query, Junction criteria) {
 
-        List disjunction = null;
-        if (criteria instanceof Disjunction) {
-            disjunction = new ArrayList();
-            query.put(MONGO_OR_OPERATOR, disjunction);
+        List subList = null;
+        // if a query combines more than 1 item, wrap the items in individual $and or $or arguments
+        // so that property names can't clash (e.g. for an $and containing two $ors)
+        if (criteria.getCriteria().size() > 1) {
+            if (criteria instanceof Disjunction) {
+                subList = new ArrayList();
+                query.put(MONGO_OR_OPERATOR, subList);
+            } else if (criteria instanceof Conjunction) {
+                subList = new ArrayList();
+                query.put(MONGO_AND_OPERATOR, subList);
+            }
         }
         for (Criterion criterion : criteria.getCriteria()) {
             final QueryHandler queryHandler = queryHandlers.get(criterion.getClass());
             if (queryHandler != null) {
                 DBObject dbo = query;
-                if (disjunction != null) {
+                if (subList != null) {
                     dbo = new BasicDBObject();
-                    disjunction.add(dbo);
+                    subList.add(dbo);
                 }
 
                 if (criterion instanceof PropertyCriterion) {
