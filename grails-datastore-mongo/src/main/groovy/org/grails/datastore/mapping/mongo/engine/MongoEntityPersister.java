@@ -771,32 +771,27 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             this.isReference = isReference(association);
         }
 
-        public void index(final Object primaryKey, final List foreignKeys) {
+        public void preIndex(final Object primaryKey, final List foreignKeys) {
             // if the association is a unidirectional one-to-many we store the keys
             // embedded in the owning entity, otherwise we use a foreign key
             if (!association.isBidirectional()) {
-                mongoTemplate.execute(new DbCallback<Object>() {
-                    public Object doInDB(DB db) throws MongoException, DataAccessException {
-                        List dbRefs = new ArrayList();
-                        for (Object foreignKey : foreignKeys) {
-                            if (isReference) {
-                                dbRefs.add(new DBRef(db, getCollectionName(association.getAssociatedEntity()), foreignKey));
-                            }
-                            else {
-                                dbRefs.add(foreignKey);
-                            }
-                        }
-                        nativeEntry.put(association.getName(), dbRefs);
-
-                        if (primaryKey != null) {
-                            final DBCollection collection = db.getCollection(getCollectionName(association.getOwner()));
-                            DBObject query = new BasicDBObject(MONGO_ID_FIELD, primaryKey);
-                            collection.update(query, nativeEntry);
-                        }
-                        return null;
+                DB db = session.getNativeInterface();
+                List dbRefs = new ArrayList();
+                for (Object foreignKey : foreignKeys) {
+                    if (isReference) {
+                        dbRefs.add(new DBRef(db, getCollectionName(association.getAssociatedEntity()), foreignKey));
                     }
-                });
+                    else {
+                        dbRefs.add(foreignKey);
+                    }
+                }
+                // update the native entry directly.
+                nativeEntry.put(association.getName(), dbRefs);
             }
+        }
+
+        public void index(final Object primaryKey, final List foreignKeys) {
+            // indexing is handled by putting the data in the native entry before it is persisted, see preIndex above.
         }
 
         public List query(Object primaryKey) {
