@@ -22,13 +22,28 @@ package org.grails.datastore.mapping.config;
  */
 public class Entity {
 
+    private boolean stateless = false;
     private boolean autoTimestamp = true;
 
+    /**
+     * @return Whether automatic time stamps should be applied to 'lastUpdate' and 'dateCreated' properties
+     */
     public boolean isAutoTimestamp() {
         return autoTimestamp;
     }
 
     public void setAutoTimestamp(boolean autoTimestamp) {
         this.autoTimestamp = autoTimestamp;
+    }
+
+    /**
+     * @return Whether the entity state should be held in the session or not
+     */
+    public boolean isStateless() {
+        return stateless;
+    }
+
+    public void setStateless(boolean stateless) {
+        this.stateless = stateless;
     }
 }

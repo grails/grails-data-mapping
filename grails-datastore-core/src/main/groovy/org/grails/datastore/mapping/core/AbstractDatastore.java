@@ -40,7 +40,7 @@ import org.springframework.validation.Errors;
  * @since 1.0
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class AbstractDatastore implements Datastore, DisposableBean {
+public abstract class AbstractDatastore implements Datastore, StatelessDatastore, DisposableBean {
 
     private ApplicationContext applicationContext;
 
@@ -96,12 +96,24 @@ public abstract class AbstractDatastore implements Datastore, DisposableBean {
 
     public final Session connect(Map<String, String> connDetails) {
         Session session = createSession(connDetails);
+        publishSessionCreationEvent(session);
+        return session;
+    }
+
+    private void publishSessionCreationEvent(Session session) {
         ApplicationEventPublisher applicationEventPublisher = getApplicationEventPublisher();
         if(applicationEventPublisher != null) {
             applicationEventPublisher.publishEvent(new SessionCreationEvent(session));
         }
+    }
+
+    @Override
+    public Session connectStateless() {
+        Session session = createStatelessSession(connectionDetails);
+        publishSessionCreationEvent(session);
         return session;
     }
+
 
     /**
      * Creates the native session
@@ -110,6 +122,17 @@ public abstract class AbstractDatastore implements Datastore, DisposableBean {
      * @return The session object
      */
     protected abstract Session createSession(Map<String, String> connectionDetails);
+
+    /**
+     * Creates the native stateless session
+     *
+     * @param connectionDetails The session details
+     * @return The session object
+     */
+    protected Session createStatelessSession(Map<String, String> connectionDetails) {
+        return createSession(connectionDetails);
+    }
+
 
     public Session getCurrentSession() throws ConnectionNotFoundException {
         return DatastoreUtils.doGetSession(this, false);

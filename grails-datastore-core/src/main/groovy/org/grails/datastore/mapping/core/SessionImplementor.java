@@ -31,21 +31,69 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 @SuppressWarnings("rawtypes")
 public interface SessionImplementor<T> {
 
+    /**
+     * @return Whether the session is stateless
+     */
+    boolean isStateless();
+
+    /**
+     * Adds a pending insert operation
+     *
+     * @param insert The pending insert operation
+     */
     void addPendingInsert(PendingInsert insert);
 
+    /**
+     * Adds a pending update operation
+     * @param update The pending update operation
+     */
     void addPendingUpdate(PendingUpdate update);
 
+    /**
+     * @return The pending insert operations
+     */
     Map<PersistentEntity, Collection<PendingInsert>> getPendingInserts();
 
+    /**
+     * @return The pending updates
+     */
     Map<PersistentEntity, Collection<PendingUpdate>> getPendingUpdates();
 
+    /**
+     * @return The pending deletes
+     */
     Collection<Runnable> getPendingDeletes();
 
+    /**
+     * Caches a native entry
+     * @param entity The entity
+     * @param key The key
+     * @param entry The native entry
+     */
     void cacheEntry(PersistentEntity entity, Serializable key, T entry);
 
+    /**
+     * Obtains a cached entry
+     * @param entity The entity
+     * @param key The key
+     * @return The cached entry
+     */
     T getCachedEntry(PersistentEntity entity, Serializable key);
+    /**
+     * Obtains a cached entry
+     * @param entity The entity
+     * @param key The key
+     * @param forDirtyCheck Whether to obtain for purposes for dirty checking
+     * @return The cached entry
+     */
     T getCachedEntry(PersistentEntity entity, Serializable key, boolean forDirtyCheck);
 
+    /**
+     * Caches an instance
+     * @param type The type
+     * @param key The key
+     * @param instance The instance
+     */
     void cacheInstance(Class type, Serializable key, Object instance);
 
     /**
@@ -64,9 +112,29 @@ public interface SessionImplementor<T> {
      */
     boolean isCached(Class type, Serializable key);
 
+    /**
+     * Obtains a cached collection
+     *
+     * @param entity The entity
+     * @param key The key
+     * @param name The name
+     * @return The cached collection or null
+     */
     Collection getCachedCollection(PersistentEntity entity, Serializable key, String name);
 
+    /**
+     * Caches a collection
+     *
+     * @param entity The entity
+     * @param key The key
+     * @param collection The collection
+     * @param name The name of the collection
+     */
     void cacheCollection(PersistentEntity entity, Serializable key, Collection collection, String name);
 
+    /**
+     * Adds an operation to be executed after a flush
+     * @param runnable The runnable
+     */
     void addPostFlushOperation(Runnable runnable);
 }

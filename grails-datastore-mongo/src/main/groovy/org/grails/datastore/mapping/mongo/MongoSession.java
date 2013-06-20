@@ -62,7 +62,10 @@ public class MongoSession extends AbstractSession<DB> {
     private boolean errorOccured = false;
 
     public MongoSession(MongoDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
-        super(datastore, mappingContext, publisher);
+        this(datastore, mappingContext, publisher, false);
+    }
+    public MongoSession(MongoDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher, boolean stateless) {
+        super(datastore, mappingContext, publisher, stateless);
         mongoDatastore = datastore;
         try {
             getNativeInterface().requestStart();

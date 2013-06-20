@@ -23,6 +23,7 @@ import javax.persistence.FlushModeType;
 
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository;
 import org.grails.datastore.mapping.collection.PersistentCollection;
+import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.core.impl.PendingInsert;
 import org.grails.datastore.mapping.core.impl.PendingOperation;
 import org.grails.datastore.mapping.core.impl.PendingOperationExecution;
@@ -101,19 +102,36 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     private boolean exceptionOccurred;
     protected ApplicationEventPublisher publisher;
 
+    protected boolean stateless = false;
+
     public AbstractSession(Datastore datastore, MappingContext mappingContext,
                ApplicationEventPublisher publisher) {
+        this(datastore, mappingContext, publisher, false);
+    }
+
+    public AbstractSession(Datastore datastore, MappingContext mappingContext,
+                           ApplicationEventPublisher publisher, boolean stateless) {
         this.mappingContext = mappingContext;
         this.datastore = datastore;
         this.publisher = publisher;
+        this.stateless = stateless;
     }
 
     public AbstractSession(Datastore datastore, MappingContext mappingContext,
                ApplicationEventPublisher publisher, TPCacheAdapterRepository cacheAdapterRepository) {
-        this.mappingContext = mappingContext;
-        this.datastore = datastore;
-        this.publisher = publisher;
+        this(datastore, mappingContext, publisher, false);
         this.cacheAdapterRepository = cacheAdapterRepository;
+    }
+
+    public AbstractSession(Datastore datastore, MappingContext mappingContext,
+                           ApplicationEventPublisher publisher, TPCacheAdapterRepository cacheAdapterRepository, boolean stateless) {
+        this(datastore, mappingContext, publisher, stateless);
+        this.cacheAdapterRepository = cacheAdapterRepository;
+    }
+
+    @Override
+    public boolean isStateless() {
+        return this.stateless;
     }
 
     public void addPostFlushOperation(Runnable runnable) {
@@ -144,10 +162,12 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public Object getCachedEntry(PersistentEntity entity, Serializable key) {
+        if(isStateless(entity)) return null;
         return getCachedEntry(entity, key, false);
     }
 
     public Object getCachedEntry(PersistentEntity entity, Serializable key, boolean forDirtyCheck) {
+       if(isStateless(entity)) return null;
        if (key == null) {
            return null;
        }
@@ -156,6 +176,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
    }
 
     public void cacheEntry(PersistentEntity entity, Serializable key, Object entry) {
+        if(isStateless(entity)) return;
         if (key == null || entry == null) {
             return;
         }
@@ -164,11 +185,18 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         cacheEntry(key, entry, getEntryCache(entity.getJavaClass(), false), false);
     }
 
+    private boolean isStateless(PersistentEntity entity) {
+        Entity mappedForm = entity != null ? entity.getMapping().getMappedForm() : null;
+        return isStateless() || (mappedForm != null && mappedForm.isStateless());
+    }
+
     protected void cacheEntry(Serializable key, Object entry, Map<Serializable, Object> entryCache, boolean forDirtyCheck) {
+        if(isStateless()) return;
         entryCache.put(key, entry);
     }
 
     public Collection getCachedCollection(PersistentEntity entity, Serializable key, String name) {
+        if(isStateless(entity)) return null;
         if (key == null || name == null) {
             return null;
         }
@@ -178,6 +206,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public void cacheCollection(PersistentEntity entity, Serializable key, Collection collection, String name) {
+        if(isStateless(entity)) return;
         if (key == null || collection == null || name == null) {
             return;
         }
@@ -375,7 +404,9 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         Persister p = persisters.get(cls);
         if (p == null) {
             p = createPersister(cls, getMappingContext());
-            firstLevelCache.put(cls, new ConcurrentHashMap<Serializable, Object>());
+            if(!isStateless(((EntityPersister)p).getPersistentEntity())) {
+                firstLevelCache.put(cls, new ConcurrentHashMap<Serializable, Object>());
+            }
             if (p != null) {
                 persisters.put(cls, p);
             }
@@ -386,7 +417,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     protected abstract Persister createPersister(Class cls, MappingContext mappingContext);
 
     public boolean contains(Object o) {
-        if (o == null) {
+        if (o == null || isStateless()) {
             return false;
         }
 
@@ -394,7 +425,8 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
     }
 
     public boolean isCached(Class type, Serializable key) {
-        if (type == null || key == null) {
+        PersistentEntity entity = getMappingContext().getPersistentEntity(type.getName());
+        if (type == null || key == null || isStateless(entity)) {
             return false;
         }
 
@@ -405,19 +437,21 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         if (type == null || key == null || instance == null) {
             return;
         }
+        if(isStateless(getMappingContext().getPersistentEntity(type.getName()))) return;
         getInstanceCache(type).put(key, instance);
     }
 
     public Object getCachedInstance(Class type, Serializable key) {
+        if(isStateless()) return null;
         if (type == null || key == null) {
             return null;
         }
-
+        if(isStateless(getMappingContext().getPersistentEntity(type.getName()))) return null;
         return getInstanceCache(type).get(key);
     }
 
     public void clear(Object o) {
-        if (o == null) {
+        if (o == null || isStateless()) {
             return;
         }
 
