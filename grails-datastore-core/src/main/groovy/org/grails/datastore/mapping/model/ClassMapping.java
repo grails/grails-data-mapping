@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.mapping.model;
 
+import org.grails.datastore.mapping.config.Entity;
+
 /**
  * A class mapping is a mapping between a class and some external
  * form such as a table, column family, or document (depending on the underlying data store).
@@ -21,7 +23,7 @@ package org.grails.datastore.mapping.model;
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface ClassMapping<T> {
+public interface ClassMapping<T extends Entity> {
 
     /**
      * Obtains the PersistentEntity for this class mapping

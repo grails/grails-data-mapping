@@ -31,6 +31,7 @@ import org.bson.types.Code;
 import org.bson.types.CodeWScope;
 import org.bson.types.Symbol;
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory;
+import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.document.config.Collection;
 import org.grails.datastore.mapping.document.config.DocumentMappingContext;
 import org.grails.datastore.mapping.model.AbstractClassMapping;
@@ -114,7 +115,7 @@ public class MongoMappingContext extends DocumentMappingContext {
                     return classMapping;
                 }
 
-                public Object getMappedForm() {
+                public Property getMappedForm() {
                     return property;
                 }
             };

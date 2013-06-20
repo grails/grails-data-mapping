@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 SpringSource
+/* Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,33 +12,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.grails.datastore.mapping.document.config;
-
-import org.grails.datastore.mapping.config.Entity;
+package org.grails.datastore.mapping.config;
 
 /**
- * Configures how an entity is mapped onto a Document collection
+ * Base class for classes returned from {@link org.grails.datastore.mapping.model.ClassMapping#getMappedForm()}
  *
  * @author Graeme Rocher
+ * @since 1.1.9
  */
-public class Collection extends Entity{
+public class Entity {
 
-    private String name;
+    private boolean autoTimestamp = true;
 
-    /**
-     * The name of the collection
-     * @return The name of the collection
-     */
-    public String getCollection() {
-        return name;
+    public boolean isAutoTimestamp() {
+        return autoTimestamp;
     }
 
-    /**
-     * Sets the name of the collection
-     * @param name The name of the collection
-     */
-    public void setCollection(String name) {
-        this.name = name;
+    public void setAutoTimestamp(boolean autoTimestamp) {
+        this.autoTimestamp = autoTimestamp;
     }
 }

@@ -74,6 +74,9 @@ public class GormGemfireMappingFactory extends GormKeyValueMappingFactory {
         family.setDataPolicy(regionAttributes.getDataPolicy());
         family.setCacheLoader(regionAttributes.getCacheLoader());
         family.setCacheWriter(regionAttributes.getCacheWriter());
+
+        builder = new MappingConfigurationBuilder(family, KeyValue.class);
+        builder.evaluate(value);
         return family;
     }
 }

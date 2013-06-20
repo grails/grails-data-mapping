@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.mapping.keyvalue.mapping.config;
 
+import org.grails.datastore.mapping.config.Entity;
+
 /**
  * <p>A Family is a grouping of KeyValue pairs and is typically composed
  * of a keyspace and the family name.</p>
@@ -26,7 +28,7 @@ package org.grails.datastore.mapping.keyvalue.mapping.config;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class Family {
+public class Family extends Entity{
 
     private String keyspace;
     private String family;

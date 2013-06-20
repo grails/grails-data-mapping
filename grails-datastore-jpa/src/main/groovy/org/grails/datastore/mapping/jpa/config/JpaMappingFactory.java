@@ -16,13 +16,19 @@
 package org.grails.datastore.mapping.jpa.config;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
 
+import groovy.lang.Closure;
+import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.grails.datastore.mapping.model.MappingFactory;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
+import org.grails.datastore.mapping.model.config.GormProperties;
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
+import org.springframework.beans.BeanUtils;
 
 /**
  * MappingFactory for JPA that maps entities to {@link Table} instances and properties
@@ -32,19 +38,34 @@ import org.grails.datastore.mapping.model.PersistentProperty;
  * @since 1.0
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class JpaMappingFactory extends MappingFactory<Table, Column> {
+public class JpaMappingFactory extends MappingFactory<org.grails.datastore.mapping.jpa.config.Table, org.grails.datastore.mapping.jpa.config.Column> {
 
     @Override
-    public Table createMappedForm(PersistentEntity entity) {
-        return (Table)entity.getJavaClass().getAnnotation(Table.class);
+    public org.grails.datastore.mapping.jpa.config.Table createMappedForm(PersistentEntity entity) {
+        org.grails.datastore.mapping.jpa.config.Table mappedForm = new org.grails.datastore.mapping.jpa.config.Table((Table) entity.getJavaClass().getAnnotation(Table.class));
+        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(entity.getJavaClass());
+        MappingConfigurationBuilder builder = new MappingConfigurationBuilder(mappedForm, org.grails.datastore.mapping.jpa.config.Table.class);
+
+        List<Closure> values = cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.MAPPING, Closure.class);
+        for (int i = values.size(); i > 0; i--) {
+            Closure value = values.get(i - 1);
+            builder.evaluate(value);
+        }
+        values = cpf.getStaticPropertyValuesFromInheritanceHierarchy(GormProperties.CONSTRAINTS, Closure.class);
+        for (int i = values.size(); i > 0; i--) {
+            Closure value = values.get(i - 1);
+            builder.evaluate(value);
+        }
+
+        return mappedForm;
     }
 
     @Override
-    public Column createMappedForm(PersistentProperty mpp) {
+    public org.grails.datastore.mapping.jpa.config.Column createMappedForm(PersistentProperty mpp) {
         Field field;
         try {
             field = mpp.getOwner().getJavaClass().getDeclaredField(mpp.getName());
-            return field.getAnnotation(Column.class);
+            return new org.grails.datastore.mapping.jpa.config.Column(field.getAnnotation(Column.class));
         } catch (SecurityException e) {
             return null;
         } catch (NoSuchFieldException e) {

@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 SpringSource
+/* Copyright 2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,33 +12,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.grails.datastore.mapping.document.config;
+package org.grails.datastore.mapping.jpa.config;
 
 import org.grails.datastore.mapping.config.Entity;
 
 /**
- * Configures how an entity is mapped onto a Document collection
- *
  * @author Graeme Rocher
  */
-public class Collection extends Entity{
+public class Table extends Entity{
+    private javax.persistence.Table annotation;
 
-    private String name;
-
-    /**
-     * The name of the collection
-     * @return The name of the collection
-     */
-    public String getCollection() {
-        return name;
+    public javax.persistence.Table getAnnotation() {
+        return annotation;
     }
 
-    /**
-     * Sets the name of the collection
-     * @param name The name of the collection
-     */
-    public void setCollection(String name) {
-        this.name = name;
+    public Table(javax.persistence.Table annotation) {
+        this.annotation = annotation;
     }
 }

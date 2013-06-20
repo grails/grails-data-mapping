@@ -19,7 +19,10 @@ import java.util.List;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
 /**
- * Responsible for creating indices for associations used in queries
+ * Responsible for creating indices for associations used in queries.
+ *
+ * An instance may be specific to a particular association of a particular native instance of an entity (the parent
+ * of the association).
  *
  * @author Graeme Rocher
  * @since 1.0
@@ -27,12 +30,27 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 public interface AssociationIndexer<K, T> {
 
     /**
-     * Creates an index queryable via the primary key
+     * Creates an index queryable via the primary key. This is called *before* the entity that this association
+     * indexer is part of is persisted, but after the native entry has been updated ready to be persisted.
+     * This allows the index to be placed in the native instance itself, e.g. in a document database.
      *
+     * Usually, for a particular association type, only this OR {@link #index(Object, java.util.List)} will be
+     * implemented.
      * @param primaryKey The primary key
      * @param foreignKeys The foreign keys
      */
-    void index( K primaryKey, List<T> foreignKeys);
+    void preIndex(K primaryKey, List<T> foreignKeys);
+
+    /**
+     * Creates an index queryable via the primary key. This is called *after* the entity this association indexer
+     * is part of has been persisted.
+     *
+     * Usually, for a particular association type, only this OR {@link #preIndex(Object, java.util.List)} will be
+     * implemented.
+     * @param primaryKey The primary key
+     * @param foreignKeys The foreign keys
+     */
+    void index(K primaryKey, List<T> foreignKeys);
 
     /**
      * Queries the given primary key and returns the foreign keys

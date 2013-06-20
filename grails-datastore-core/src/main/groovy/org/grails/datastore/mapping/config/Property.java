@@ -16,6 +16,12 @@ package org.grails.datastore.mapping.config;
 
 import javax.persistence.FetchType;
 
+/**
+ * Base class for classes returned from {@link org.grails.datastore.mapping.model.PropertyMapping#getMappedForm()}
+ *
+ * @author Graeme Rocher
+ * @since 1.0
+ */
 public class Property implements Cloneable{
 
     private boolean index = false;

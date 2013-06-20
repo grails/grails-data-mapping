@@ -55,6 +55,10 @@ public class DynamoDBAssociationIndexer implements AssociationIndexer {
         return association.getAssociatedEntity();
     }
 
+    public void preIndex(Object primaryKey, List foreignKeys) {
+       // handled by index below.
+    }
+
     public void index(Object primaryKey, List foreignKeys) {
 //        System.out.println("INDEX: index for id: "+primaryKey+", keys: "+foreignKeys+". entry: "+nativeEntry+", association: "+association);
         if (association.isBidirectional()) { //we use additional table only for unidirectional

@@ -1028,6 +1028,9 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             }
         }
 
+        // perform pre-indexing (updating the native entry, if supported by this persister).
+        updateToManyIndices(e, k, toManyKeys, true);
+
         if (!isUpdate) {
             // if the identifier is null at this point that means that datastore could not generated an identifer
             // and the identifer is generated only upon insert of the entity
@@ -1035,7 +1038,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             final K updateId = k;
             PendingOperation postOperation = new PendingOperationAdapter<T, K>(persistentEntity, k, e) {
                 public void run() {
-                    updateToManyIndices(e, updateId, toManyKeys);
+                    updateToManyIndices(e, updateId, toManyKeys, false);
 
                     if (doesRequirePropertyIndexing()) {
                         toIndex.put(persistentEntity.getIdentity(), updateId);
@@ -1064,7 +1067,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
             PendingOperation postOperation = new PendingOperationAdapter<T, K>(persistentEntity, k, e) {
                 public void run() {
-                    updateToManyIndices(e, updateId, toManyKeys);
+                    updateToManyIndices(e, updateId, toManyKeys, false);
                     if (doesRequirePropertyIndexing()) {
                         updatePropertyIndices(updateId, toIndex, toUnindex);
                     }
@@ -1291,13 +1294,18 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
      */
     protected abstract K generateIdentifier(PersistentEntity persistentEntity, T entry);
 
-    private void updateToManyIndices(T nativeEntry, Object identifier, Map<Association, List<Serializable>> toManyKeys) {
+    private void updateToManyIndices(T nativeEntry, Object identifier, Map<Association, List<Serializable>> toManyKeys, boolean preIndex) {
         // now cascade onto one-to-many associations
         for (Association association : toManyKeys.keySet()) {
             if (association.doesCascade(CascadeType.PERSIST)) {
                 final AssociationIndexer indexer = getAssociationIndexer(nativeEntry, association);
                 if (indexer != null) {
-                    indexer.index(identifier, toManyKeys.get(association));
+                    List<Serializable> foreignKeys = toManyKeys.get(association);
+                    if (preIndex) {
+                        indexer.preIndex(identifier, foreignKeys);
+                    } else {
+                        indexer.index(identifier, foreignKeys);
+                    }
                 }
             }
         }

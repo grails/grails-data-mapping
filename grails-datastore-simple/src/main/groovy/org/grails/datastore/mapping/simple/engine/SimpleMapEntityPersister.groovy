@@ -141,6 +141,11 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
                 "~${association.owner.name}:${association.name}:$primaryKey"
             }
 
+            @Override
+            void preIndex(Object primaryKey, List foreignKeys) {
+                // handled by index below.
+            }
+
             void index(primaryKey, List foreignKeys) {
                 def indexed = getIndex(primaryKey)
 

@@ -1,4 +1,4 @@
-package org.grails.datastore.gorm
+package org.grails.datastore.gorm.mongo
 
 import grails.gorm.tests.GormDatastoreSpec
 import grails.persistence.Entity
@@ -15,21 +15,21 @@ class MongoDynamicPropertyOnEmbeddedSpec extends GormDatastoreSpec{
         when:"An embedded collection is created"
             Container.collection.insert(name:'big box of items',
                     contents:(0..9).collect { [name:"Item $it"]})
+            def collectionNames = Container.collection.DB.getCollectionNames().sort()
 
         then:"The embedded collection is valid"
             Container.count() == 1
             Container.first().contents.size() == 10
             Container.first().contents.first().name ==~ /Item \d/
-            Container.collection.DB.getCollectionNames().contains "container"
-            !Container.collection.DB.getCollectionNames().contains( "item" )
+            collectionNames.any { it =~ /^container\b/ }
+            !collectionNames.any { it =~ /^item\b/ }
             session.clear()
 
         when:"An embedded dynamic property is accessed"
             Container.first().contents.first().nonexistentProperty == null
-        then:"The a collection is not created for the embedded property"
-            Container.collection.DB.getCollectionNames().contains "container"
-            !Container.collection.DB.getCollectionNames().contains( "item" )
-
+        then:"A collection is not created for the embedded property"
+            Container.collection.DB.getCollectionNames().sort() == collectionNames
+            !collectionNames.any { it =~ /^item\b/ }
     }
 
     @Override

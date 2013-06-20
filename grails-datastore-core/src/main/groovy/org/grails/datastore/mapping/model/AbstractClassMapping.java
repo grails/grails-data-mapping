@@ -14,6 +14,8 @@
  */
 package org.grails.datastore.mapping.model;
 
+import org.grails.datastore.mapping.config.Entity;
+
 /**
  * Abstract implementation of the ClassMapping interface.
  *
@@ -21,7 +23,7 @@ package org.grails.datastore.mapping.model;
  * @since 1.0
  */
 @SuppressWarnings("rawtypes")
-public abstract class AbstractClassMapping<T> implements ClassMapping {
+public abstract class AbstractClassMapping<T extends Entity> implements ClassMapping {
     protected PersistentEntity entity;
     protected MappingContext context;
     private IdentityMapping identifierMapping;

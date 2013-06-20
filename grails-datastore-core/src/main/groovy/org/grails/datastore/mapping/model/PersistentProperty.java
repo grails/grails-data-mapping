@@ -1,10 +1,12 @@
 package org.grails.datastore.mapping.model;
 
+import org.grails.datastore.mapping.config.Property;
+
 /**
  * @author Graeme Rocher
  * @since 1.0
  */
-public interface PersistentProperty<T> {
+public interface PersistentProperty<T extends Property> {
 
     /**
      * The name of the property

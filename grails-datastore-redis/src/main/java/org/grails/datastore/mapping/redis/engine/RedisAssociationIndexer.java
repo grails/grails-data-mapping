@@ -45,6 +45,10 @@ public class RedisAssociationIndexer implements AssociationIndexer<Long, Long> {
         this.association = association;
     }
 
+    public void preIndex(Long primaryKey, List<Long> foreignKeys) {
+        // handled by index below.
+    }
+
     public void index(Long primaryKey, final List<Long> foreignKeys) {
         final String redisKey = createRedisKey(primaryKey);
         RedisCollection col = createRedisCollection(redisKey);

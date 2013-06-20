@@ -15,6 +15,7 @@
 package org.grails.datastore.mapping.keyvalue.mapping.config;
 
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory;
+import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.IdentityMapping;
 import org.grails.datastore.mapping.model.PersistentEntity;
@@ -79,7 +80,7 @@ public class GormKeyValueMappingFactory extends AbstractGormMappingFactory<Famil
                         return classMapping;
                     }
 
-                    public Object getMappedForm() {
+                    public Property getMappedForm() {
                         return idProperty.getMapping().getMappedForm();
                     }
                 };

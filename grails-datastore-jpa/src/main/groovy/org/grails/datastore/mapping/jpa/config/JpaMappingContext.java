@@ -14,8 +14,6 @@
  */
 package org.grails.datastore.mapping.jpa.config;
 
-import javax.persistence.Column;
-import javax.persistence.Table;
 
 import org.grails.datastore.mapping.model.AbstractMappingContext;
 import org.grails.datastore.mapping.model.MappingConfigurationStrategy;
@@ -31,7 +29,7 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 @SuppressWarnings("rawtypes")
 public class JpaMappingContext extends AbstractMappingContext{
 
-    private MappingFactory<Table, Column> mappingFactory = new JpaMappingFactory();
+    private MappingFactory<org.grails.datastore.mapping.jpa.config.Table, org.grails.datastore.mapping.jpa.config.Column> mappingFactory = new JpaMappingFactory();
     private MappingConfigurationStrategy jpaMappingSyntaxStrategy = new JpaMappingConfigurationStrategy(mappingFactory);
 
     public MappingConfigurationStrategy getMappingSyntaxStrategy() {
