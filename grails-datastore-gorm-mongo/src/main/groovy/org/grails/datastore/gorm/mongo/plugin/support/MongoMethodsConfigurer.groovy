@@ -51,7 +51,7 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
             MongoEntityPersister p = datastore.currentSession.getPersister(cls)
             if (p != null) {
                 if (delegate instanceof DBCursor) {
-                    def mongoResults = new MongoQuery.MongoResultList(delegate, p)
+                    def mongoResults = new MongoQuery.MongoResultList(delegate,0, p)
                     if (!mongoResults.isEmpty()) {
                         return mongoResults.get(0)
                     }
@@ -75,7 +75,7 @@ class MongoMethodsConfigurer extends DynamicMethodsConfigurer{
         DBCursor.metaClass.toList = { Class cls ->
             MongoEntityPersister p = datastore.currentSession.getPersister(cls)
             if (p)
-                return new MongoQuery.MongoResultList(delegate, p)
+                return new MongoQuery.MongoResultList(delegate,0,p)
             else {
                 throw new IllegalArgumentException("Cannot convert DBCursor [$delegate] to target type $cls. Type is not a persistent entity")
             }

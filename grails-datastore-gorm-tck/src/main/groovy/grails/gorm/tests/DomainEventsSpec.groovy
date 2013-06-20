@@ -252,6 +252,7 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
         when:
             freds = PersonEvent.findAllByIdInList(freds*.id)
+            for(f in freds) {} // just to trigger load
 
         then:
             3 == freds.size()

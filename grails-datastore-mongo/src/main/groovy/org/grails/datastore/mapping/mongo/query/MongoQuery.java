@@ -15,14 +15,7 @@
 package org.grails.datastore.mapping.mongo.query;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import org.grails.datastore.mapping.core.SessionImplementor;
@@ -525,7 +518,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                 final List<Projection> projectionList = projections().getProjectionList();
                 if (projectionList.isEmpty()) {
                     cursor = executeQuery(entity, criteria, collection, query);
-                    return (List)new MongoResultList(cursor, mongoEntityPersister).clone();
+                    return (List)new MongoResultList(cursor,offset, mongoEntityPersister).clone();
                 }
 
                 List projectedResults = new ArrayList();
@@ -544,7 +537,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         }
                         MinProjection mp = (MinProjection) projection;
 
-                        MongoResultList results = new MongoResultList(cursor, mongoEntityPersister);
+                        MongoResultList results = new MongoResultList(cursor,offset, mongoEntityPersister);
                         projectedResults.add(manualProjections.min((Collection) results.clone(), getPropertyName(entity, mp.getPropertyName())));
                     }
                     else if (projection instanceof MaxProjection) {
@@ -553,7 +546,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         }
                         MaxProjection mp = (MaxProjection) projection;
 
-                        MongoResultList results = new MongoResultList(cursor, mongoEntityPersister);
+                        MongoResultList results = new MongoResultList(cursor,offset, mongoEntityPersister);
                         projectedResults.add(manualProjections.max((Collection) results.clone(), getPropertyName(entity, mp.getPropertyName())));
                     }
                     else if (projection instanceof CountDistinctProjection) {
@@ -562,7 +555,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                         }
                         CountDistinctProjection mp = (CountDistinctProjection) projection;
 
-                        MongoResultList results = new MongoResultList(cursor, mongoEntityPersister);
+                        MongoResultList results = new MongoResultList(cursor, offset,mongoEntityPersister);
                         projectedResults.add(manualProjections.countDistinct((Collection) results.clone(), getPropertyName(entity, mp.getPropertyName())));
 
                     }
@@ -587,10 +580,10 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
                                 // if there is a limit then we have to do a manual projection since the MongoDB driver doesn't support limits and distinct together
                                 cursor = executeQueryAndApplyPagination(collection, query);
                                 if (distinct) {
-                                    propertyResults = new ArrayList(manualProjections.distinct(new MongoResultList(cursor, mongoEntityPersister), propertyName));
+                                    propertyResults = new ArrayList(manualProjections.distinct(new MongoResultList(cursor, offset,mongoEntityPersister), propertyName));
                                 }
                                 else {
-                                    propertyResults = manualProjections.property(new MongoResultList(cursor, mongoEntityPersister), propertyName);
+                                    propertyResults = manualProjections.property(new MongoResultList(cursor,offset, mongoEntityPersister), propertyName);
                                 }
                             }
                             else {
@@ -907,27 +900,51 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
     }
 
     @SuppressWarnings("serial")
-    public static class MongoResultList extends ArrayList {
+    public static class MongoResultList extends AbstractList {
 
         private MongoEntityPersister mongoEntityPersister;
+        private DBCursor cursor;
+        private int offset = 0;
+        private int internalIndex;
+        private List initializedObjects = new ArrayList();
+        private Integer size;
 
         @SuppressWarnings("unchecked")
-        public MongoResultList(DBCursor cursor, MongoEntityPersister mongoEntityPersister) {
-            super.addAll(cursor.toArray());
+        public MongoResultList(DBCursor cursor, int offset, MongoEntityPersister mongoEntityPersister) {
+            this.cursor = cursor;
             this.mongoEntityPersister = mongoEntityPersister;
+            this.offset = offset;
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public Object get(int index) {
-            Object object = super.get(index);
-
-            if (object instanceof DBObject) {
-                object = convertDBObject(object);
-                set(index, object);
+            if(initializedObjects.size() > index) {
+                return initializedObjects.get(index);
             }
+            else {
+                while(cursor.hasNext()) {
+                    if(internalIndex > index) throw new ArrayIndexOutOfBoundsException("Cannot retrieve element at index " + index + " for cursor size " + size());
+                    Object o = convertDBObject(cursor.next());
+                    initializedObjects.add(internalIndex,o);
+                    if(index == internalIndex++) {
+                        return o;
+                    }
+                }
+            }
+            throw new ArrayIndexOutOfBoundsException("Cannot retrieve element at index " + index + " for cursor size " + size());
+        }
 
-            return  object;
+        @Override
+        public Object set(int index, Object o) {
+            if(index > (size()-1)) {
+                throw new ArrayIndexOutOfBoundsException("Cannot set element at index " + index + " for cursor size " + size());
+            }
+            else {
+                // initialize
+                get(index);
+                return initializedObjects.set(index, o);
+            }
         }
 
         /**
@@ -936,26 +953,34 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
          */
         @Override
         public Iterator iterator() {
-            final ListIterator iterator = super.listIterator();
+            final DBCursor cursor = this.cursor.copy();
+            cursor.skip(offset);
             return new Iterator() {
                 public boolean hasNext() {
-                    return iterator.hasNext();
+                    return cursor.hasNext();
                 }
 
                 @SuppressWarnings("unchecked")
                 public Object next() {
-                    Object object = iterator.next();
+                    Object object = cursor.next();
                     if (object instanceof DBObject) {
                         object = convertDBObject(object);
-                        iterator.set(object);
                     }
                     return object;
                 }
 
                 public void remove() {
-                    iterator.remove();
+                    throw new UnsupportedOperationException("Method remove() not supported by MongoResultList iterator");
                 }
             };
+        }
+
+        @Override
+        public int size() {
+            if(this.size == null) {
+                this.size = cursor.size();
+            }
+            return size;
         }
 
         protected Object convertDBObject(Object object) {
@@ -975,14 +1000,7 @@ public class MongoQuery extends Query implements QueryArgumentsAware {
         @SuppressWarnings("unchecked")
         @Override
         public Object clone() {
-            List arrayList = new ArrayList();
-            for (Object object : this) {
-                if (object instanceof DBObject) {
-                    object = convertDBObject(object);
-                }
-                arrayList.add(object);
-            }
-            return arrayList;
+            return new MongoResultList(cursor,offset, mongoEntityPersister);
         }
     }
 }

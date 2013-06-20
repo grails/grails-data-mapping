@@ -176,6 +176,7 @@ class PersistenceEventListenerSpec extends GormDatastoreSpec {
 
         when:
         freds = Simples.findAllByIdInList(freds*.id)
+        for(f in freds) {} // just to trigger load
 
         then:
         3 == freds.size()
