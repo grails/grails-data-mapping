@@ -29,6 +29,11 @@ import org.grails.datastore.mapping.model.PersistentEntity;
 public interface PendingOperation<E, K> extends Runnable {
 
     /**
+     * @return Whether the operation has been vetoed
+     */
+    boolean isVetoed();
+
+    /**
      * @return The {@link PersistentEntity} being inserted
      */
     PersistentEntity getEntity();

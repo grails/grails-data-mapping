@@ -2,6 +2,7 @@ package grails.gorm.tests
 
 import org.grails.datastore.mapping.core.Session
 import grails.gorm.DetachedCriteria
+import spock.lang.Issue
 
 /**
  * @author graemerocher
@@ -10,6 +11,55 @@ class DomainEventsSpec extends GormDatastoreSpec {
 
     def setup() {
         PersonEvent.resetStore()
+    }
+    @Issue('GPMONGODB-262')
+    void "Test that returning false from beforeUpdate evicts the event"() {
+        when:"An entity is saved"
+            def p = new PersonEvent(name: "Fred")
+            p.save(flush: true)
+            session.clear()
+            p = PersonEvent.get(p.id)
+        then:"The person is saved"
+            p != null
+
+        when:"The beforeUpdate event returns false"
+            p.name = "Bad"
+            p.save(flush: true)
+            session.clear()
+
+        then:"The person is never updated"
+            PersonEvent.get(p.id).name == "Fred"
+    }
+
+    @Issue('GPMONGODB-262')
+    void "Test that returning false from beforeInsert evicts the event"() {
+        when:"false is returned from a beforeInsert event"
+            def p = new PersonEvent(name: "Bad")
+            p.save(flush: true)
+            session.clear()
+
+        then:"The person is never saved"
+            !PersonEvent.get(p.id)
+    }
+
+    @Issue('GPMONGODB-262')
+    void "Test that returning false from beforeDelete evicts the event"() {
+        when:"a new person is saved"
+            def p = new PersonEvent(name: "DontDelete")
+            p.save(flush: true)
+            session.clear()
+            p = PersonEvent.get(p.id)
+
+
+        then:"The person exists"
+            p != null
+
+        when:"The beforeDelete event returns false"
+            p.delete(flush: true)
+            session.clear()
+
+        then:"The event was cancelled"
+            PersonEvent.get(p.id)
     }
 
     void "Test modify property before save"() {
@@ -225,6 +275,7 @@ class DomainEventsSpec extends GormDatastoreSpec {
             personService.is p.personService
     }
 
+
     def cleanup() {
         session.datastore.applicationContext.beanFactory.destroySingleton 'personService'
     }
@@ -252,6 +303,9 @@ class PersonEvent implements Serializable {
     }
 
     def beforeDelete() {
+        if (name == "DontDelete") {
+            return false
+        }
         STORE.beforeDelete++
     }
 
@@ -260,6 +314,9 @@ class PersonEvent implements Serializable {
     }
 
     def beforeUpdate() {
+        if (name == "Bad") {
+            return false
+        }
         STORE.beforeUpdate++
     }
 
@@ -268,6 +325,9 @@ class PersonEvent implements Serializable {
     }
 
     def beforeInsert() {
+        if (name == "Bad") {
+            return false
+        }
         STORE.beforeInsert++
     }
 

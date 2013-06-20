@@ -71,19 +71,25 @@ public class DomainEventListener extends AbstractPersistenceEventListener
     protected void onPersistenceEvent(final AbstractPersistenceEvent event) {
         switch(event.getEventType()) {
             case PreInsert:
-                beforeInsert(event.getEntity(), event.getEntityAccess());
+                if( !beforeInsert(event.getEntity(), event.getEntityAccess()) ) {
+                    event.cancel();
+                }
                 break;
             case PostInsert:
                 afterInsert(event.getEntity(), event.getEntityAccess());
                 break;
             case PreUpdate:
-                beforeUpdate(event.getEntity(), event.getEntityAccess());
+                if( !beforeUpdate(event.getEntity(), event.getEntityAccess()) ) {
+                    event.cancel();
+                }
                 break;
             case PostUpdate:
                 afterUpdate(event.getEntity(), event.getEntityAccess());
                 break;
             case PreDelete:
-                beforeDelete(event.getEntity(), event.getEntityAccess());
+                if( ! beforeDelete(event.getEntity(), event.getEntityAccess()) ) {
+                    event.cancel();
+                }
                 break;
             case PostDelete:
                 afterDelete(event.getEntity(), event.getEntityAccess());

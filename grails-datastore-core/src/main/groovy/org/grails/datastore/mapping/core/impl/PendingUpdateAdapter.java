@@ -30,9 +30,19 @@ public abstract class PendingUpdateAdapter<E, K> extends PendingOperationAdapter
 
     private EntityAccess entityAccess;
 
+    private boolean vetoed;
+
     public PendingUpdateAdapter(PersistentEntity entity, K nativeKey, E nativeEntry, EntityAccess ea) {
         super(entity, nativeKey, nativeEntry);
         this.entityAccess = ea;
+    }
+
+    public boolean isVetoed() {
+        return vetoed;
+    }
+
+    public void setVetoed(boolean vetoed) {
+        this.vetoed = vetoed;
     }
 
     public EntityAccess getEntityAccess() {

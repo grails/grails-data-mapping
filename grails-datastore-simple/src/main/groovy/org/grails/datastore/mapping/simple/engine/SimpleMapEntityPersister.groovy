@@ -234,7 +234,12 @@ class SimpleMapEntityPersister extends AbstractKeyValueEntityPersister<Map, Obje
     }
 
     protected Map retrieveEntry(PersistentEntity persistentEntity, String family, Serializable key) {
-        datastore[family].get(key)
+        Map entry = datastore[family].get(key)
+        if (entry != null) {
+            // returning a copy is important here so that updates are applied to the copy and not the original
+            return new LinkedHashMap<>(entry)
+        }
+        return null
     }
 
     protected generateIdentifier(PersistentEntity persistentEntity, Map id) {
