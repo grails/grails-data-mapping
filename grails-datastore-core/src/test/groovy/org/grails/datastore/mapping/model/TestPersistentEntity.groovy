@@ -1,5 +1,7 @@
 package org.grails.datastore.mapping.model
 
+import org.grails.datastore.mapping.config.Entity
+
 /**
  * @author Graeme Rocher
  * @since 1.1
@@ -18,8 +20,8 @@ class TestPersistentEntity extends AbstractPersistentEntity {
         return classMapping;
     }
 
-    public class TestClassMapping extends AbstractClassMapping<String> {
-        private String mappedForm;
+    public class TestClassMapping extends AbstractClassMapping<Entity> {
+        private Entity mappedForm;
 
         public TestClassMapping(PersistentEntity entity, MappingContext context) {
             super(entity, context);
@@ -27,7 +29,7 @@ class TestPersistentEntity extends AbstractPersistentEntity {
          }
 
         @Override
-        public String getMappedForm() {
+        public Entity getMappedForm() {
             return mappedForm;
         }
     }
