@@ -38,8 +38,8 @@ class DomainEventsSpec extends GormDatastoreSpec {
     void "Test that returning false from beforeInsert evicts the event"() {
         when:"false is returned from a beforeInsert event"
             def p = new PersonEvent(name: "Bad")
-            p.save()
             try {
+                p.save()
                 session.flush()
             } catch (e) {
                 // ignore hibernate related flush errors
