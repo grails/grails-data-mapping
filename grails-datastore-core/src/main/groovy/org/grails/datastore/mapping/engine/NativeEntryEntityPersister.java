@@ -796,7 +796,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
         PropertyMapping mapping = persistentEntity.getIdentity().getMapping();
         if (mapping != null) {
-            Property p = (Property) mapping.getMappedForm();
+            Property p = mapping.getMappedForm();
             assignedId = p != null && "assigned".equals(p.getGenerator());
             if (assignedId) {
                 if (isUpdate && !session.contains(obj)) {
@@ -817,7 +817,10 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
             pendingOperation = new PendingInsertAdapter<T, K>(persistentEntity, k, tmp, entityAccess) {
                 public void run() {
-                    executeInsert(persistentEntity, entityAccess, getNativeKey(), getNativeEntry());
+                    K insertResult = executeInsert(persistentEntity, entityAccess, getNativeKey(), getNativeEntry());
+                    if(insertResult == null) {
+                        setVetoed(true);
+                    }
                 }
             };
 
@@ -1189,7 +1192,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                         if (persister != null) {
                             Serializable id = persister.persist(obj);
                             if (id != null) {
-                                setEntryValue(embeddedEntry, getPropertyKey(toOne), formulateDatabaseReference(embeddedPersister.getPersistentEntity(), association, id));
+                                setEntryValue(embeddedEntry, getPropertyKey(toOne), formulateDatabaseReference(associatedEntity, toOne, id));
                             }
                         }
                     }

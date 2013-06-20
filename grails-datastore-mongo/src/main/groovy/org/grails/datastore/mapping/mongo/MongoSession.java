@@ -151,9 +151,12 @@ public class MongoSession extends AbstractSession<DB> {
                             preOperation.run();
                         }
 
-                        dbObjects.add((DBObject) pendingInsert.getNativeEntry());
-                        postOperations.addAll(pendingInsert.getCascadeOperations());
+
                         pendingInsert.run();
+                        if(!pendingInsert.isVetoed()) {
+                            dbObjects.add((DBObject) pendingInsert.getNativeEntry());
+                            postOperations.addAll(pendingInsert.getCascadeOperations());
+                        }
                     }
 
                     WriteResult writeResult = writeConcernToUse != null ? collection.insert(dbObjects.toArray(new DBObject[dbObjects.size()]), writeConcernToUse )
