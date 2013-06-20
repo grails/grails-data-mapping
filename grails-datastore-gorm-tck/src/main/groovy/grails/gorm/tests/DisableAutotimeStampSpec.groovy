@@ -45,6 +45,10 @@ class Record {
     Date dateCreated
     Date lastUpdated
 
+    static constraints = {
+        dateCreated nullable:true
+        lastUpdated nullable:true
+    }
     static mapping = {
         autoTimestamp false
     }
