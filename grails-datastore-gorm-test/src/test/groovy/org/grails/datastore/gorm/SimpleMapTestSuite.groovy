@@ -10,29 +10,7 @@ import grails.gorm.tests.*
  */
 @RunWith(Suite)
 @SuiteClasses([
-//  WhereMethodSpec ,
-//  ProxyLoadingSpec,
-//  QueryAfterPropertyChangeSpec,
-//  CircularOneToManySpec,
-//  InheritanceSpec,
-//  FindByMethodSpec,
-//  ListOrderBySpec,
-//  GroovyProxySpec,
-//  DomainEventsSpec,
-//  DetachedCriteriaSpec,
-//  QueryAssociationSpec,
-//  WhereMethodSpec,
-//  CriteriaBuilderSpec,
-//  NegationSpec,
-//  UpdateWithProxyPresentSpec,
-//  AttachMethodSpec,
-//  WithTransactionSpec,
-//  EnumSpec,
-//  DomainEventsSpec,
-//  CustomStringIdentifierSpec,
-//  GormEnhancerSpec,
-//  ValidationSpec
-//OneToOneSpec
+    DomainEventsSpec
 ])
 class SimpleMapTestSuite {
 }

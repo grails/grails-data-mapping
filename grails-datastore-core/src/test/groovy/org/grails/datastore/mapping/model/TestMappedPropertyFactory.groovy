@@ -1,6 +1,7 @@
 package org.grails.datastore.mapping.model
 
 import org.grails.datastore.mapping.config.AbstractGormMappingFactory
+import org.grails.datastore.mapping.config.Entity
 import org.grails.datastore.mapping.config.Property
 
 /**
@@ -16,6 +17,6 @@ class TestMappedPropertyFactory extends AbstractGormMappingFactory {
 
     @Override
     protected Class getEntityMappedFormType() {
-        String
+        Entity
     }
 }

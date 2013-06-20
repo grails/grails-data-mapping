@@ -35,11 +35,20 @@ public abstract class PendingOperationAdapter<E, K> implements PendingOperation<
     protected E nativeEntry;
     private List<PendingOperation<E, K>> pendingOperations = new LinkedList<PendingOperation<E, K>>();
     private List<PendingOperation<E, K>> preOperations = new LinkedList<PendingOperation<E, K>>();
+    private boolean vetoed;
 
     public PendingOperationAdapter(PersistentEntity entity, K nativeKey, E nativeEntry) {
         this.entity = entity;
         this.nativeKey = nativeKey;
         this.nativeEntry = nativeEntry;
+    }
+
+    public boolean isVetoed() {
+        return vetoed;
+    }
+
+    public void setVetoed(boolean vetoed) {
+        this.vetoed = vetoed;
     }
 
     public List<PendingOperation<E, K>> getPreOperations() {
