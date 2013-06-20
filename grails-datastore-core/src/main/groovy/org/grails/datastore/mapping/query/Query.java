@@ -524,25 +524,6 @@ public abstract class Query implements Cloneable{
             results = postQueryEvent.getResults();
         }
 
-        if (session instanceof SessionImplementor) {
-            SessionImplementor sessionImplementor = (SessionImplementor)session;
-            for (ListIterator iter = results.listIterator(); iter.hasNext(); ) {
-                Object instance = iter.next();
-                EntityPersister ep = (EntityPersister) session.getPersister(instance);
-                if (ep == null) {
-                    // not persistent, could be a count() or report query
-                    continue;
-                }
-
-                Serializable id = findInstanceId(instance);
-                if (sessionImplementor.isCached(instance.getClass(), id)) {
-                    iter.set(sessionImplementor.getCachedInstance(instance.getClass(), id));
-                }
-                else {
-                    sessionImplementor.cacheInstance(instance.getClass(), id, instance);
-                }
-            }
-        }
 
         return results;
     }
