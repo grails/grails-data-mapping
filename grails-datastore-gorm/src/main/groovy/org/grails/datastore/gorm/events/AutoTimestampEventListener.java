@@ -18,6 +18,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.grails.datastore.mapping.config.Entity;
+import org.grails.datastore.mapping.model.ClassMapping;
 import org.springframework.context.ApplicationEvent;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.engine.EntityAccess;
@@ -96,11 +98,19 @@ public class AutoTimestampEventListener extends AbstractPersistenceEventListener
     }
 
     private void storeLastUpdatedInfo(PersistentEntity persistentEntity) {
-        entitiesWithLastUpdated.put(persistentEntity, persistentEntity.hasProperty(LAST_UPDATED_PROPERTY, Date.class));
+        ClassMapping classMapping = persistentEntity.getMapping();
+        Entity mappedForm = classMapping.getMappedForm();
+        if(mappedForm == null || mappedForm.isAutoTimestamp()) {
+            entitiesWithLastUpdated.put(persistentEntity, persistentEntity.hasProperty(LAST_UPDATED_PROPERTY, Date.class));
+        }
     }
 
     private void storeDateCreatedInfo(PersistentEntity persistentEntity) {
-        entitiesWithDateCreated.put(persistentEntity, persistentEntity.hasProperty(DATE_CREATED_PROPERTY, Date.class));
+        ClassMapping classMapping = persistentEntity.getMapping();
+        Entity mappedForm = classMapping.getMappedForm();
+        if(mappedForm == null || mappedForm.isAutoTimestamp()) {
+            entitiesWithDateCreated.put(persistentEntity, persistentEntity.hasProperty(DATE_CREATED_PROPERTY, Date.class));
+        }
     }
 
     public void persistentEntityAdded(PersistentEntity entity) {

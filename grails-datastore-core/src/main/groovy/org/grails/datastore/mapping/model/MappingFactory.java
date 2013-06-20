@@ -35,6 +35,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.grails.datastore.mapping.config.Entity;
+import org.grails.datastore.mapping.config.Property;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
 import org.grails.datastore.mapping.model.types.Basic;
 import org.grails.datastore.mapping.model.types.Custom;
@@ -69,7 +71,7 @@ import org.grails.datastore.mapping.model.types.ToOne;
  * @since 1.0
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class MappingFactory<R,T> {
+public abstract class MappingFactory<R extends Entity,T extends Property> {
 
     public static final String IDENTITY_PROPERTY = "id";
     public static final Set<String> SIMPLE_TYPES;
@@ -362,7 +364,7 @@ public abstract class MappingFactory<R,T> {
                 return classMapping;
             }
 
-            public Object getMappedForm() {
+            public Property getMappedForm() {
                 // no custom mapping
                 return null;
             }

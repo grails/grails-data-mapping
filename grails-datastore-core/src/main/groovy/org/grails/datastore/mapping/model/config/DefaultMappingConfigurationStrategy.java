@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.grails.datastore.mapping.config.Property;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.grails.datastore.mapping.annotation.Entity;
 import org.grails.datastore.mapping.annotation.Id;
@@ -148,7 +149,7 @@ public class DefaultMappingConfigurationStrategy implements MappingConfiguration
                 return classMapping;
             }
 
-            public Object getMappedForm() {
+            public Property getMappedForm() {
                 // no custom mapping
                 return null;
             }

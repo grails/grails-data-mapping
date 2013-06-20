@@ -38,7 +38,7 @@ import org.springframework.beans.BeanUtils;
  * @author Graeme Rocher
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R, T> {
+public abstract class AbstractGormMappingFactory<R extends Entity, T extends Property> extends MappingFactory<R, T> {
 
     protected Map<PersistentEntity, Map<String, T>> entityToPropertyMap = new HashMap<PersistentEntity, Map<String, T>>();
     private Closure defaultMapping;
@@ -98,7 +98,7 @@ public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R,
             return properties.get(mpp.getName());
         }
         else if (properties != null) {
-            Property property  = (Property) properties.get(IDENTITY_PROPERTY);
+            Property property  = properties.get(IDENTITY_PROPERTY);
             if (property != null && mpp.getName().equals(property.getName())) {
                 return (T) property;
             }
@@ -107,7 +107,7 @@ public abstract class AbstractGormMappingFactory<R, T> extends MappingFactory<R,
         T defaultMapping = properties != null ? properties.get("*") : null;
         if (defaultMapping != null) {
             try {
-                return (T)((Property)defaultMapping).clone();
+                return (T) defaultMapping.clone();
             } catch (CloneNotSupportedException e) {
                 return BeanUtils.instantiate(getPropertyMappedFormType());
             }

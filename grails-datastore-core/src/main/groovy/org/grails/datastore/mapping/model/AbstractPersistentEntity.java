@@ -21,6 +21,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
+import org.grails.datastore.mapping.config.Entity;
 import org.grails.datastore.mapping.config.groovy.MappingConfigurationBuilder;
 import org.grails.datastore.mapping.core.EntityCreationException;
 import org.grails.datastore.mapping.model.config.GormProperties;
@@ -37,7 +38,7 @@ import org.springframework.util.Assert;
  * @since 1.0
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class AbstractPersistentEntity<T> implements PersistentEntity {
+public abstract class AbstractPersistentEntity<T extends Entity> implements PersistentEntity {
     protected Class javaClass;
     protected List<PersistentProperty> persistentProperties;
     protected List<Association> associations;
