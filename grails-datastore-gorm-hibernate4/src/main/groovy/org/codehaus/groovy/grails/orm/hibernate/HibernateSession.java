@@ -95,6 +95,11 @@ public class HibernateSession extends AbstractAttributeStoringSession {
         return sessionFactory.getCurrentSession().save(o);
     }
 
+    @Override
+    public Serializable insert(Object o) {
+        return sessionFactory.getCurrentSession().save(o);
+    }
+
     public void refresh(Object o) {
         sessionFactory.getCurrentSession().refresh(o);
     }

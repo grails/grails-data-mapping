@@ -93,6 +93,11 @@ public class HibernateSession extends AbstractAttributeStoringSession {
         return hibernateTemplate.save(o);
     }
 
+    @Override
+    public Serializable insert(Object o) {
+        return hibernateTemplate.save(o);
+    }
+
     public void refresh(Object o) {
         hibernateTemplate.refresh(o);
     }
