@@ -8,7 +8,7 @@ class ProxyLoadingSpec extends GormDatastoreSpec {
     void "Test load proxied instance directly"() {
 
         given:
-            def t = new TestEntity(name:"Bob", age: 45, child:new ChildEntity(name:"Test Child")).save()
+            def t = new TestEntity(name:"Bob", age: 45, child:new ChildEntity(name:"Test Child")).save(flush:true)
 
         when:
             def proxy = TestEntity.load(t.id)

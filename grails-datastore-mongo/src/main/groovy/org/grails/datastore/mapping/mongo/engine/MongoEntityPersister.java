@@ -643,7 +643,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 else {
                     result = dbCollection.update(dbo, newEntry, false, false);
                 }
-                if (versioned) {
+                if (versioned && !((SessionImplementor)getSession()).isStateless(persistentEntity)) {
                     // ok, we need to check whether the write worked:
                     // note that this will use the standard write concern unless it wasn't at least ACKNOWLEDGE:
                     CommandResult error = result.getLastError(WriteConcern.ACKNOWLEDGED);

@@ -14,7 +14,10 @@
  */
 package org.grails.datastore.gorm.neo4j
 
+import org.grails.datastore.mapping.config.Entity
+import org.grails.datastore.mapping.model.AbstractClassMapping
 import org.grails.datastore.mapping.model.AbstractPersistentEntity
+import org.grails.datastore.mapping.model.ClassMapping
 import org.grails.datastore.mapping.model.MappingContext
 
 /**
@@ -23,7 +26,20 @@ import org.grails.datastore.mapping.model.MappingContext
 @SuppressWarnings("unchecked")
 class GraphPersistentEntity extends AbstractPersistentEntity {
 
+    Entity mappedForm
+
     GraphPersistentEntity(Class javaClass, MappingContext context) {
         super(javaClass, context)
+        this.mappedForm = context.getMappingFactory().createMappedForm(this);
+    }
+
+    @Override
+    ClassMapping getMapping() {
+        return new AbstractClassMapping<Entity>(this, context) {
+            @Override
+            public Entity getMappedForm() {
+                return GraphPersistentEntity.this.mappedForm;
+            }
+        };
     }
 }

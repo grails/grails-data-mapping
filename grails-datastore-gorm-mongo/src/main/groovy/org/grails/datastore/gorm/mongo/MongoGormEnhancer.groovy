@@ -15,6 +15,7 @@
 package org.grails.datastore.gorm.mongo
 
 import com.gmongo.internal.DBCollectionPatcher
+import com.mongodb.BasicDBObject
 import com.mongodb.DBCollection
 import com.mongodb.DBObject
 import org.grails.datastore.gorm.finders.DynamicFinder
@@ -25,6 +26,7 @@ import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
+import org.grails.datastore.mapping.core.SessionImplementor
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.springframework.transaction.PlatformTransactionManager
@@ -97,7 +99,29 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
             instance.setProperty(name, value)
         }
         else {
-            getDbo(instance)?.put name, value
+            execute (new SessionCallback<DBObject>() {
+                DBObject doInSession(Session session) {
+                    SessionImplementor si = (SessionImplementor)session
+
+                    if (si.isStateless(persistentEntity)) {
+                        MongoDatastore ms = (MongoDatastore)datastore
+                        def template = ms.getMongoTemplate(persistentEntity)
+
+                        def coll = template.getCollection(ms.getCollectionName(persistentEntity))
+                        MongoEntityPersister persister = session.getPersister(instance)
+                        def id = persister.getObjectIdentifier(instance)
+                        final updateObject = new BasicDBObject('$set', new BasicDBObject(name, value))
+                        coll.update(new BasicDBObject(MongoEntityPersister.MONGO_ID_FIELD,id), updateObject)
+                        return updateObject
+                    }
+                    else {
+                        final dbo = getDbo(instance)
+                        dbo?.put name, value
+                        return dbo
+                    }
+                }
+            })
+
         }
     }
 
@@ -137,7 +161,16 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
 
                 MongoEntityPersister persister = session.getPersister(instance)
                 def id = persister.getObjectIdentifier(instance)
-                return session.getCachedEntry(persister.getPersistentEntity(), id)
+                def dbo = session.getCachedEntry(persister.getPersistentEntity(), id)
+                if (dbo == null) {
+                    MongoDatastore ms = (MongoDatastore)datastore
+                    def template = ms.getMongoTemplate(persistentEntity)
+
+                    def coll = template.getCollection(ms.getCollectionName(persistentEntity))
+                    dbo = coll.findOne( id )
+
+                }
+                return dbo
             }
         })
     }

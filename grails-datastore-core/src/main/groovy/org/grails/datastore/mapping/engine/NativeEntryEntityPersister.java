@@ -778,7 +778,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
     }
 
     @Override
-    protected final Serializable persistEntity(final PersistentEntity persistentEntity, Object obj) {
+    protected Serializable persistEntity(final PersistentEntity persistentEntity, Object obj, boolean isInsert) {
         T tmp = null;
         ProxyFactory proxyFactory = getProxyFactory();
         // if called internally, obj can potentially be a proxy, which won't work.
@@ -786,7 +786,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         final NativeEntryModifyingEntityAccess entityAccess = (NativeEntryModifyingEntityAccess) createEntityAccess(persistentEntity, obj, tmp);
 
         K k = readObjectIdentifier(entityAccess, persistentEntity.getMapping());
-        boolean isUpdate = k != null;
+        boolean isUpdate = k != null && !isInsert;
         boolean assignedId = false;
         if (isUpdate && !getSession().isDirty(obj)) {
             return (Serializable) k;
@@ -795,17 +795,16 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         PendingOperation<T, K> pendingOperation;
 
         PropertyMapping mapping = persistentEntity.getIdentity().getMapping();
+        SessionImplementor<Object> si = (SessionImplementor<Object>) session;
         if (mapping != null) {
             Property p = mapping.getMappedForm();
             assignedId = p != null && "assigned".equals(p.getGenerator());
-            if (assignedId) {
-                if (isUpdate && !session.contains(obj)) {
+            if (isNotUpdateForAssignedId(persistentEntity, obj, isUpdate, assignedId, si)) {
                     isUpdate = false;
-                }
             }
         }
         String family = getEntityFamily();
-        SessionImplementor<Object> si = (SessionImplementor<Object>) session;
+
         if (!isUpdate) {
             tmp = createNewEntry(family);
 
@@ -942,7 +941,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                     if (associatedObject != null) {
                         Serializable associationId;
                         NativeEntryEntityPersister associationPersister = (NativeEntryEntityPersister) session.getPersister(associatedObject);
-                        if (proxyFactory.isInitialized(associatedObject) && !session.contains(associatedObject)) {
+                        if (proxyFactory.isInitialized(associatedObject) && !session.contains(associatedObject) ) {
                             Serializable tempId = associationPersister.getObjectIdentifier(associatedObject);
                             if (tempId == null) {
                                 if (association.isOwningSide()) {
@@ -1080,6 +1079,15 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             si.addPendingUpdate((PendingUpdate) pendingOperation);
         }
         return (Serializable) k;
+    }
+
+    private boolean isNotUpdateForAssignedId(PersistentEntity persistentEntity, Object obj, boolean update, boolean assignedId, SessionImplementor<Object> si) {
+        return assignedId && update && !si.isStateless(persistentEntity) &&  !session.contains(obj);
+    }
+
+    @Override
+    protected final Serializable persistEntity(final PersistentEntity persistentEntity, Object obj) {
+        return persistEntity(persistentEntity, obj, false);
     }
 
     private AbstractPersistentCollection getPersistentCollection(Collection associatedObjects, Class associationType) {

@@ -100,6 +100,26 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
     }
 
     /**
+     * Forces an insert of an object to the datastore
+     * @param instance The instance
+     * @return Returns the instance
+     */
+    D insert(instance) {
+        insert(instance, Collections.emptyMap())
+    }
+
+    /**
+     * Forces an insert of an object to the datastore
+     * @param instance The instance
+     * @return Returns the instance
+     */
+    D insert(instance, Map params) {
+        execute({ Session session ->
+            doSave instance, params, session, true
+        } as SessionCallback)
+    }
+
+    /**
      * Saves an object the datastore
      * @param instance The instance
      * @return Returns the instance
@@ -141,7 +161,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
         } as SessionCallback)
     }
 
-    protected D doSave(D instance, Map params, Session session) {
+    protected D doSave(D instance, Map params, Session session, boolean isInsert = false) {
         boolean hasErrors = false
         boolean validate = params?.containsKey("validate") ? params.validate : true
         if (instance.respondsTo('validate') && validate) {
@@ -160,8 +180,12 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
             }
             return null
         }
-
-        session.persist(instance)
+        if (isInsert) {
+            session.insert(instance)
+        }
+        else {
+            session.persist(instance)
+        }
         if (params?.flush) {
             session.flush()
         }

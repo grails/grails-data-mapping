@@ -117,4 +117,11 @@ public interface Persister {
      * @return The object's id.
      */
     Serializable getObjectIdentifier(Object o);
+
+    /**
+     * Forces an insert of an object rather than trying to guess if it is an insert or an update
+     * @param o The object
+     * @return The id
+     */
+    Serializable insert(Object o);
 }

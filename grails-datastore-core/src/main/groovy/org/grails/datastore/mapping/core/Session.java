@@ -110,6 +110,14 @@ public interface Session {
     Serializable persist(Object o);
 
     /**
+     * Forces an insert
+     *
+     * @param o The object
+     * @return The id
+     */
+    Serializable insert(Object o);
+
+    /**
      * Refreshes the given objects state
      * @param o The object to refresh
      */
@@ -289,4 +297,6 @@ public interface Session {
      * @return <code>true</code> if one or more fields have changed
      */
     boolean isDirty(Object instance);
+
+
 }

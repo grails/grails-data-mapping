@@ -736,6 +736,25 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     }
 
     /**
+     * Creates and binds a new session for the scope of the given closure
+     */
+    def withStatelessSession(Closure callable) {
+        if(datastore instanceof org.grails.datastore.mapping.core.StatelessDatastore) {
+            def session = datastore.connectStateless()
+            try {
+                DatastoreUtils.bindNewSession session
+                return callable?.call(session)
+            }
+            finally {
+                DatastoreUtils.unbindSession session
+            }
+        }
+        else {
+            throw new UnsupportedOperationException("Stateless sessions not supported by implementation")
+        }
+    }
+
+    /**
      * Get the thread-local map used to store Errors when validating.
      * @return the map
      */
