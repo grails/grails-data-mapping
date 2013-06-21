@@ -103,6 +103,33 @@ public abstract class EntityPersister implements Persister {
         return (Serializable) new EntityAccess(getPersistentEntity(), obj).getIdentifier();
     }
 
+    @Override
+    public Serializable insert(Object obj) {
+        if (!persistentEntity.isInstance(obj)) {
+            final Persister persister = getSession().getPersister(obj);
+            if (persister == null) {
+                throw new IllegalArgumentException("Object [" + obj +
+                        "] is not an instance supported by the persister for class [" +
+                        getType().getName() + "]");
+            }
+
+            return persister.persist(obj);
+        }
+
+        return persistEntity(getPersistentEntity(), obj, true);
+    }
+
+    /**
+     * Subclasses should override to support explicit inserts
+     * @param entity The entity
+     * @param obj The object
+     * @param isInsert Whether it is an insert
+     * @return The id
+     */
+    protected Serializable persistEntity(PersistentEntity entity, Object obj, boolean isInsert) {
+        return persistEntity(entity, obj);
+    }
+
     /**
      * Obtains an objects identifer
      * @param obj The object

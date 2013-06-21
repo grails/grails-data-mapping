@@ -11,7 +11,7 @@ class CrudOperationsSpec extends GormDatastoreSpec {
         given:
 
             def t = new TestEntity(name:"Bob", child:new ChildEntity(name:"Child"))
-            t.save()
+            t.save(flush:true)
 
         when:
             t = TestEntity.get("${t.id}")
@@ -51,7 +51,7 @@ class CrudOperationsSpec extends GormDatastoreSpec {
 
         given:
             def t = new TestEntity(name:"Bob", child:new ChildEntity(name:"Child"))
-            t.save(param:"one")
+            t.save(param:"one", flush: true)
         when:
             t = TestEntity.get(t.id)
         then:

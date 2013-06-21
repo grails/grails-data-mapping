@@ -184,7 +184,11 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         o.id
     }
 
-    /**
+    @Override
+    Serializable insert(Object o) {
+        return persist(o)
+    }
+/**
      * return a subSubReference node for the current operation.
      * Current strategy is to use current thread's is module 128
      * @param subSubReferenceMap

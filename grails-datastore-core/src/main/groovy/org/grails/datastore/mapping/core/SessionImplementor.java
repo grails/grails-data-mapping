@@ -37,6 +37,11 @@ public interface SessionImplementor<T> {
     boolean isStateless();
 
     /**
+     * @return Whether the session is stateless
+     */
+    boolean isStateless(PersistentEntity entity);
+
+    /**
      * Adds a pending insert operation
      *
      * @param insert The pending insert operation

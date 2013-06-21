@@ -96,6 +96,11 @@ public class JpaSession extends AbstractAttributeStoringSession {
         return (Serializable)new EntityAccess(persistentEntity, o).getIdentifier();
     }
 
+    @Override
+    public Serializable insert(Object o) {
+        return persist(o);
+    }
+
     public Object merge(Object o) {
         if (o == null) {
             throw new InvalidDataAccessApiUsageException("Object to merge cannot be null");

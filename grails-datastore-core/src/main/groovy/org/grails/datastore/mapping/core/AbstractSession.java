@@ -185,7 +185,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         cacheEntry(key, entry, getEntryCache(entity.getJavaClass(), false), false);
     }
 
-    private boolean isStateless(PersistentEntity entity) {
+    public boolean isStateless(PersistentEntity entity) {
         Entity mappedForm = entity != null ? entity.getMapping().getMappedForm() : null;
         return isStateless() || (mappedForm != null && mappedForm.isStateless());
     }
@@ -404,10 +404,10 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         Persister p = persisters.get(cls);
         if (p == null) {
             p = createPersister(cls, getMappingContext());
-            if(!isStateless(((EntityPersister)p).getPersistentEntity())) {
-                firstLevelCache.put(cls, new ConcurrentHashMap<Serializable, Object>());
-            }
             if (p != null) {
+                if(!isStateless(((EntityPersister)p).getPersistentEntity())) {
+                    firstLevelCache.put(cls, new ConcurrentHashMap<Serializable, Object>());
+                }
                 persisters.put(cls, p);
             }
         }
@@ -498,6 +498,20 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         }
 
         final Serializable key = persister.persist(o);
+        cacheObject(key, o);
+        return key;
+    }
+
+    @Override
+    public Serializable insert(Object o) {
+        Assert.notNull(o, "Cannot persist null object");
+        Persister persister = getPersister(o);
+        if (persister == null) {
+            throw new NonPersistentTypeException("Object [" + o +
+                    "] cannot be persisted. It is not a known persistent type.");
+        }
+
+        final Serializable key = persister.insert(o);
         cacheObject(key, o);
         return key;
     }

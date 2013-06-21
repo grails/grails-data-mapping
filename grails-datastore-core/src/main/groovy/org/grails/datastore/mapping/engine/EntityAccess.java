@@ -67,7 +67,16 @@ public class EntityAccess {
     }
 
     public void setProperty(String name, Object value) {
-        beanWrapper.setPropertyValue(name, value);
+        if(value == null) {
+            Class type = getPropertyType(name);
+            if(!type.isPrimitive()) {
+                beanWrapper.setPropertyValue(name, value);
+            }
+        }
+        else {
+            beanWrapper.setPropertyValue(name, value);
+        }
+
     }
 
     public Object getIdentifier() {

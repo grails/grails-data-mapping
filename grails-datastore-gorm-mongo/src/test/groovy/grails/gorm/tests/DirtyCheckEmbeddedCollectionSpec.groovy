@@ -57,7 +57,7 @@ class DirtyCheckEmbeddedCollectionSpec extends GormDatastoreSpec {
     protected createBar() {
         Bar bar = new Bar(foo: 'foo')
         bar.strings.add("test")
-        bar.save()
+        bar.save(flush: true)
         //bar is correctly saved
         bar = Bar.get(bar.id)
         bar.strings.add("test2")

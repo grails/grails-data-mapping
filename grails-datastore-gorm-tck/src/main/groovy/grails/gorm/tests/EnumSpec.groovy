@@ -13,7 +13,7 @@ class EnumSpec extends GormDatastoreSpec {
             EnumThing t = new EnumThing(name: 'e1', en: TestEnum.V1)
 
         when:
-            t.save(failOnError: true)
+            t.save(failOnError: true, flush:true)
 
         then:
             t != null
