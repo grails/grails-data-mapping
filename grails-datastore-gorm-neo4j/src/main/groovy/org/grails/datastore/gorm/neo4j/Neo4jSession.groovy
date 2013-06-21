@@ -318,7 +318,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
             if (hasChanged && (!inserts.contains(obj))) {
                 def version = thisNode.getProperty(VERSION_PROPERTY) + 1
                 thisNode.setProperty(VERSION_PROPERTY, version)
-                if(entityAccess.hasProperty(VERSION_PROPERTY)) {
+                if(obj && obj.hasProperty(VERSION_PROPERTY)) {
                     entityAccess.setProperty(VERSION_PROPERTY, version)
                 }
             }
