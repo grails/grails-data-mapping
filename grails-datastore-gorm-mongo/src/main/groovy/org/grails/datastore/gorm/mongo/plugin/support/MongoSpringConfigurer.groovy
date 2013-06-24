@@ -68,10 +68,14 @@ class MongoSpringConfigurer extends SpringConfigurer {
             mongo(GMongoFactoryBean) {
                 mongoOptions = mongoOptions
                 def mongoHost = mongoConfig?.remove("host")
-                if (mongoHost) {
-                    host = mongoHost
-                    def mongoPort = mongoConfig?.remove("port")
-                    if (mongoPort) port = mongoPort
+
+                if (mongoConfig?.replicaSet) {
+                    def set = []
+                    for (server in mongoConfig.remove("replicaSet")) {
+                        set << new DBAddress(server.indexOf("/") > 0 ? server : "$server/$databaseName")
+                    }
+
+                    replicaSetSeeds = set
                 }
                 else if (mongoConfig?.replicaPair) {
                     def pair = []
@@ -80,13 +84,10 @@ class MongoSpringConfigurer extends SpringConfigurer {
                     }
                     replicaPair = pair
                 }
-                else if (mongoConfig?.replicaSet) {
-                    def set = []
-                    for (server in mongoConfig.remove("replicaSet")) {
-                        set << new DBAddress(server.indexOf("/") > 0 ? server : "$server/$databaseName")
-                    }
-
-                    replicaSetSeeds = set
+                else if (mongoHost) {
+                    host = mongoHost
+                    def mongoPort = mongoConfig?.remove("port")
+                    if (mongoPort) port = mongoPort
                 }
             }
             mongoBean(mongo: "getMongo")
