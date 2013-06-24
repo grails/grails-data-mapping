@@ -1,10 +1,4 @@
-If you plan to use Mongo as your primary datastore then you need to uninstall the Hibernate plugin:
-
-{code}
-grails uninstall-plugin hibernate
-{code}
-
-Or if it has been defined in the @grails-app/conf/BuildConfig.groovy@ file comment out the hibernate line in the plugins block 
+If you plan to use Mongo as your primary datastore then you need to remove the Hibernate plugin from the @grails-app/conf/BuildConfig.groovy@ file by commenting out the hibernate line in the plugins block 
 
 {code}
 compile ':hibernate:2.0.0'
