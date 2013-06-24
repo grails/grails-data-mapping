@@ -1,14 +1,8 @@
-To get started with GORM for Mongo you need to install the plugin into a Grails application:
-
-{code}
-grails install-plugin mongodb
-{code}
-
-Or configure it as a dependency in @BuildConfig.groovy@:
+To get started with GORM for Mongo you need configure it as a dependency in @BuildConfig.groovy@:
 
 {code}
 plugins {
-	compile ':mongodb:1.0.0.GA'
+	compile ':mongodb:1.2.0' // or whatever is the latest vesrion
 }
 {code}
 

@@ -60,6 +60,9 @@ public class MongoSession extends AbstractSession<DB> {
     MongoDatastore mongoDatastore;
     private WriteConcern writeConcern = null;
     private boolean errorOccured = false;
+    protected Map<PersistentEntity, MongoTemplate> mongoTemplates = new ConcurrentHashMap<PersistentEntity, MongoTemplate>();
+    protected Map<PersistentEntity, String> mongoCollections = new ConcurrentHashMap<PersistentEntity, String>();
+
 
     public MongoSession(MongoDatastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
         this(datastore, mappingContext, publisher, false);
@@ -221,12 +224,41 @@ public class MongoSession extends AbstractSession<DB> {
     }
 
     public MongoTemplate getMongoTemplate(PersistentEntity entity) {
-        return mongoDatastore.getMongoTemplate(entity);
+        MongoTemplate mongoTemplate = mongoTemplates.get(entity);
+        return mongoTemplate != null ? mongoTemplate : mongoDatastore.getMongoTemplate(entity);
     }
 
     public String getCollectionName(PersistentEntity entity) {
-        return mongoDatastore.getCollectionName(entity);
+        return mongoCollections.containsKey(entity) ? mongoCollections.get(entity) : mongoDatastore.getCollectionName(entity);
     }
+
+    /**
+     * Use the given collection for the given entity
+     *
+     * @param entity The entity
+     * @param collectionName The collection
+     * @return The previous collection that was used
+     */
+    public String useCollection(PersistentEntity entity, String collectionName) {
+        String current = mongoCollections.containsKey(entity) ? mongoCollections.get(entity) : mongoDatastore.getCollectionName(entity);
+        mongoCollections.put(entity, collectionName);
+        return current;
+    }
+
+    /**
+     * Use the given database name for the given entity
+     *
+     * @param entity The entity name
+     * @param databaseName The database name
+     * @return The name of the previous database
+     */
+    public String useDatabase(PersistentEntity entity, String databaseName) {
+        MongoTemplate currentTemplate = mongoTemplates.containsKey(entity) ? mongoTemplates.get(entity) : mongoDatastore.getMongoTemplate(entity);
+        String currentDatabase = currentTemplate.getDb().getName();
+        mongoTemplates.put(entity, new MongoTemplate(mongoDatastore.getMongo(), databaseName, mongoDatastore.getUserCrentials()));
+        return currentDatabase;
+    }
+
 
     @Override
     protected void cacheEntry(Serializable key, Object entry, Map<Serializable, Object> entryCache, boolean forDirtyCheck) {
