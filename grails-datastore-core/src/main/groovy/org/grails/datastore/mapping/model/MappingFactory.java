@@ -116,7 +116,8 @@ public abstract class MappingFactory<R extends Entity,T extends Property> {
             Clob.class.getName(),
             Serializable.class.getName(),
             URI.class.getName(),
-            URL.class.getName())));
+            URL.class.getName(),
+            "org.bson.types.ObjectId")));
     }
 
     private static Map<Class, CustomTypeMarshaller> typeConverterMap = new ConcurrentHashMap<Class, CustomTypeMarshaller>();
