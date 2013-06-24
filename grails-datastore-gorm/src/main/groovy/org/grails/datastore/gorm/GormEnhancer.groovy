@@ -61,12 +61,18 @@ class GormEnhancer {
     GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
         this.datastore = datastore
         this.transactionManager = transactionManager
-        initialiseFinders()
         registerConstraints(datastore)
     }
 
     protected void registerConstraints(Datastore datastore) {
         ConstrainedProperty.registerNewConstraint("unique", new UniqueConstraintFactory(datastore))
+    }
+
+    List<FinderMethod> getFinders() {
+        if (finders == null) {
+            finders = Collections.unmodifiableList(createDynamicFinders())
+        }
+        finders
     }
 
     /**
@@ -229,7 +235,7 @@ class GormEnhancer {
         new GormValidationApi(cls, datastore)
     }
 
-    protected List<FinderMethod> getAllDynamicFinders() {
+    protected List<FinderMethod> createDynamicFinders() {
         [new FindOrCreateByFinder(datastore),
          new FindOrSaveByFinder(datastore),
          new FindByFinder(datastore),
@@ -238,9 +244,5 @@ class GormEnhancer {
          new FindByBooleanFinder(datastore),
          new CountByFinder(datastore),
          new ListOrderByFinder(datastore)]
-    }
-
-    private List initialiseFinders() {
-        this.finders = Collections.unmodifiableList(getAllDynamicFinders())
     }
 }

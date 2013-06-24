@@ -49,6 +49,10 @@ public abstract class AbstractHibernateSession extends AbstractAttributeStoringS
         datastore = hibernateDatastore;
     }
 
+    public Serializable insert(Object o) {
+        return persist(o);
+    }
+
     @Override
     public boolean isConnected() {
         return connected;

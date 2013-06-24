@@ -18,13 +18,11 @@ import groovy.util.ConfigObject;
 
 import java.util.Map;
 
-import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
@@ -33,29 +31,14 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Graeme Rocher
  * @since 2.0
  */
-public class HibernateDatastore extends AbstractDatastore implements ApplicationContextAware {
-
-    private SessionFactory sessionFactory;
-    private ConfigObject config;
-    private EventTriggeringInterceptor eventTriggeringInterceptor;
+public class HibernateDatastore extends AbstractHibernateDatastore {
 
     public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, ConfigObject config) {
-        super(mappingContext);
-        this.sessionFactory = sessionFactory;
-        this.config = config;
-        initializeConverters(mappingContext);
+        super(mappingContext, sessionFactory, config);
     }
 
     public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, ConfigObject config, ApplicationContext applicationContext) {
-        this(mappingContext, sessionFactory, config);
-        setApplicationContext(applicationContext);
-    }
-
-    /**
-     * @return The Hibernate {@link SessionFactory} being used by this datastore instance
-     */
-    public SessionFactory getSessionFactory() {
-        return sessionFactory;
+        super(mappingContext, sessionFactory, config, applicationContext);
     }
 
     @Override
@@ -71,15 +54,5 @@ public class HibernateDatastore extends AbstractDatastore implements Application
             eventTriggeringInterceptor = new EventTriggeringInterceptor(this, config);
             ((ConfigurableApplicationContext)applicationContext).addApplicationListener(eventTriggeringInterceptor);
         }
-    }
-
-    @Override
-    protected boolean registerValidationListener() {
-        return false;
-    }
-
-    // for testing
-    public EventTriggeringInterceptor getEventTriggeringInterceptor() {
-        return eventTriggeringInterceptor;
     }
 }

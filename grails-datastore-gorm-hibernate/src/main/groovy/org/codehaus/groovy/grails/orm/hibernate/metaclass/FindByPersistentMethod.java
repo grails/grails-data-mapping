@@ -14,11 +14,11 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.metaclass;
 
+import java.util.regex.Pattern;
+
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore;
 import org.hibernate.SessionFactory;
-
-import java.util.regex.Pattern;
 
 /**
  * The "findBy*" static persistent method. This method allows querying for

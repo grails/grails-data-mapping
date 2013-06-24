@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,6 @@ import org.codehaus.groovy.grails.domain.GrailsDomainClassMappingContext
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.SavePersistentMethod
-import org.grails.datastore.gorm.GormInstanceApi
 import org.hibernate.FlushMode
 import org.hibernate.LockMode
 import org.hibernate.Session
@@ -32,6 +31,7 @@ import org.hibernate.engine.spi.EntityEntry
 import org.hibernate.engine.spi.SessionImplementor
 import org.hibernate.proxy.HibernateProxy
 import org.springframework.dao.DataAccessException
+import org.springframework.orm.hibernate3.HibernateTemplate
 
 /**
  * The implementation of the GORM instance API contract for Hibernate.
@@ -40,23 +40,14 @@ import org.springframework.dao.DataAccessException
  * @since 1.0
  */
 @CompileStatic
-class HibernateGormInstanceApi<D> extends GormInstanceApi<D> {
-    private static final EMPTY_ARRAY = [] as Object[]
+class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
 
-    private SavePersistentMethod saveMethod
-    private MergePersistentMethod mergeMethod
-    private GrailsHibernateTemplate hibernateTemplate
-    private SessionFactory sessionFactory
-    private ClassLoader classLoader
-    private boolean cacheQueriesByDefault = false
-
-    Map config = Collections.emptyMap()
+    protected SavePersistentMethod saveMethod
+    protected MergePersistentMethod mergeMethod
+    protected GrailsHibernateTemplate hibernateTemplate
 
     HibernateGormInstanceApi(Class<D> persistentClass, HibernateDatastore datastore, ClassLoader classLoader) {
-        super(persistentClass, datastore)
-
-        this.classLoader = classLoader
-        sessionFactory = datastore.getSessionFactory()
+        super(persistentClass, datastore, classLoader)
 
         def mappingContext = datastore.mappingContext
         if (mappingContext instanceof GrailsDomainClassMappingContext) {
@@ -68,7 +59,8 @@ class HibernateGormInstanceApi<D> extends GormInstanceApi<D> {
             mergeMethod = new MergePersistentMethod(sessionFactory, classLoader, grailsApplication, domainClass, datastore)
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication)
             cacheQueriesByDefault = GrailsHibernateUtil.isCacheQueriesByDefault(grailsApplication)
-        } else {
+        }
+        else {
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
         }
     }
@@ -153,25 +145,25 @@ class HibernateGormInstanceApi<D> extends GormInstanceApi<D> {
     }
 
     @Override
-    Object lock(instance) {
+    D lock(D instance) {
         hibernateTemplate.lock(instance, LockMode.PESSIMISTIC_WRITE)
     }
 
     @Override
-    Object refresh(instance) {
+    D refresh(D instance) {
         hibernateTemplate.refresh(instance)
         return instance
     }
 
     @Override
-    Object save(instance) {
+    D save(D instance) {
         if (saveMethod) {
             return saveMethod.invoke(instance, "save", EMPTY_ARRAY)
         }
         return super.save(instance)
     }
 
-    Object save(instance, boolean validate) {
+    D save(D instance, boolean validate) {
         if (saveMethod) {
             return saveMethod.invoke(instance, "save", [validate] as Object[])
         }
@@ -220,11 +212,12 @@ class HibernateGormInstanceApi<D> extends GormInstanceApi<D> {
     @Override
     void delete(D instance) {
         def obj = instance
+        boolean flush = shouldFlush()
         try {
             hibernateTemplate.execute new GrailsHibernateTemplate.HibernateCallback() {
                 def doInHibernate(Session session) {
                    session.delete obj
-                   if (shouldFlush()) {
+                   if (flush) {
                        session.flush()
                    }
                 }
@@ -262,7 +255,7 @@ class HibernateGormInstanceApi<D> extends GormInstanceApi<D> {
         hibernateTemplate.contains instance
     }
 
-    private EntityEntry findEntityEntry(D instance, SessionImplementor session, boolean forDirtyCheck = true) {
+    protected EntityEntry findEntityEntry(D instance, SessionImplementor session, boolean forDirtyCheck = true) {
         def entry = session.persistenceContext.getEntry(instance)
         if (!entry) {
             return null
@@ -277,7 +270,7 @@ class HibernateGormInstanceApi<D> extends GormInstanceApi<D> {
     /**
     * Session should no longer be flushed after a data access exception occurs (such a constriant violation)
     */
-   private void handleDataAccessException(GrailsHibernateTemplate template, DataAccessException e) {
+   protected void handleDataAccessException(GrailsHibernateTemplate template, DataAccessException e) {
        try {
            hibernateTemplate.execute new GrailsHibernateTemplate.HibernateCallback() {
                def doInHibernate(Session session) {

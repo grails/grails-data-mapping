@@ -27,7 +27,7 @@ import org.hibernate.mapping.PersistentClass;
 import org.hibernate.persister.entity.SingleTableEntityPersister;
 
 /**
- * A customized EntityPersisteer that creates proxies valid for use with Groovy.
+ * A customized EntityPersister that creates proxies valid for use with Groovy.
  *
  * @author Graeme Rocher
  * @since 1.1.1

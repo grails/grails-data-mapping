@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2004-2008 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,8 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.engine.spi.SessionImplementor;
@@ -39,6 +37,8 @@ import org.hibernate.type.AbstractStandardBasicType;
 import org.hibernate.type.TypeResolver;
 import org.hibernate.usertype.ParameterizedType;
 import org.hibernate.usertype.UserType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Hibernate Usertype that enum values by their ID.
@@ -50,7 +50,7 @@ public class IdentityEnumType implements UserType, ParameterizedType, Serializab
 
     private static final long serialVersionUID = -6625622185856547501L;
 
-    private static final Log LOG = LogFactory.getLog(IdentityEnumType.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IdentityEnumType.class);
 
     private static TypeResolver typeResolver = new TypeResolver();
     public static final String ENUM_ID_ACCESSOR = "getId";

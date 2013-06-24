@@ -18,27 +18,21 @@ package org.codehaus.groovy.grails.orm.hibernate;
 import groovy.lang.GroovySystem;
 import groovy.util.ConfigObject;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.codehaus.groovy.grails.commons.AnnotationDomainClassArtefactHandler;
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
-import org.codehaus.groovy.grails.orm.hibernate.cfg.Mapping;
 import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventListener;
 import org.codehaus.groovy.grails.orm.hibernate.support.SoftKey;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
-import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener;
 import org.grails.datastore.mapping.engine.event.ValidationEvent;
 import org.hibernate.HibernateException;
-import org.hibernate.SessionFactory;
 import org.hibernate.event.spi.PostDeleteEvent;
 import org.hibernate.event.spi.PostInsertEvent;
 import org.hibernate.event.spi.PostLoadEvent;
@@ -48,9 +42,6 @@ import org.hibernate.event.spi.PreInsertEvent;
 import org.hibernate.event.spi.PreLoadEvent;
 import org.hibernate.event.spi.PreUpdateEvent;
 import org.hibernate.event.spi.SaveOrUpdateEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 
 /**
@@ -61,16 +52,12 @@ import org.springframework.context.ApplicationEvent;
  * @author Burt Beckwith
  * @since 2.0
  */
-public class EventTriggeringInterceptor extends AbstractPersistenceEventListener {
+public class EventTriggeringInterceptor extends AbstractEventTriggeringInterceptor {
 
-    private transient ConcurrentMap<SoftKey<Class<?>>, ClosureEventListener> eventListeners =
+    protected transient ConcurrentMap<SoftKey<Class<?>>, ClosureEventListener> eventListeners =
             new ConcurrentHashMap<SoftKey<Class<?>>, ClosureEventListener>();
-    private transient ConcurrentMap<SoftKey<Class<?>>, Boolean> cachedShouldTrigger =
-            new ConcurrentHashMap<SoftKey<Class<?>>, Boolean>();
-    private boolean failOnError;
-    private List<?> failOnErrorPackages = Collections.emptyList();
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    protected final GrailsDomainBinder domainBinder = new GrailsDomainBinder();
 
     public EventTriggeringInterceptor(HibernateDatastore datastore, ConfigObject co) {
         super(datastore);
@@ -207,7 +194,7 @@ public class EventTriggeringInterceptor extends AbstractPersistenceEventListener
         }
     }
 
-    private ClosureEventListener findEventListener(Object entity) {
+    protected ClosureEventListener findEventListener(Object entity) {
         if (entity == null) return null;
         Class<?> clazz = entity.getClass();
 
@@ -224,7 +211,7 @@ public class EventTriggeringInterceptor extends AbstractPersistenceEventListener
                 if (eventListener == null) {
                     shouldTrigger = (GroovySystem.getMetaClassRegistry().getMetaClass(entity.getClass()) != null &&
                             (DomainClassArtefactHandler.isDomainClass(clazz) || AnnotationDomainClassArtefactHandler.isJPADomainClass(clazz)) &&
-                            isDefinedByCurrentDataStore(entity));
+                            isDefinedByCurrentDataStore(entity, domainBinder));
                     if (shouldTrigger) {
                         eventListener = new ClosureEventListener(clazz, failOnError, failOnErrorPackages);
                         ClosureEventListener previous = eventListeners.putIfAbsent(key, eventListener);
@@ -239,55 +226,15 @@ public class EventTriggeringInterceptor extends AbstractPersistenceEventListener
         return eventListener;
     }
 
-    protected boolean isDefinedByCurrentDataStore(Object entity) {
-        SessionFactory currentDataStoreSessionFactory = ((HibernateDatastore) datastore).getSessionFactory();
-        ApplicationContext applicationContext = datastore.getApplicationContext();
-
-        Mapping mapping = GrailsDomainBinder.getMapping(entity.getClass());
-        List<String> dataSourceNames = null;
-        if (mapping == null) {
-            GrailsApplication grailsApplication = applicationContext.getBean("grailsApplication", GrailsApplication.class);
-            GrailsDomainClass dc = (GrailsDomainClass) grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, entity.getClass().getName());
-            if (dc != null) {
-                dataSourceNames = GrailsHibernateUtil.getDatasourceNames(dc);
-            }
-        }
-        else {
-            dataSourceNames = mapping.getDatasources();
-        }
-
-        if (dataSourceNames == null) {
-            return false;
-        }
-
-        for (String dataSource : dataSourceNames) {
-            if (GrailsDomainClassProperty.ALL_DATA_SOURCES.equals(dataSource)) {
-                return true;
-            }
-            boolean isDefault = dataSource.equals(GrailsDomainClassProperty.DEFAULT_DATA_SOURCE);
-            String suffix = isDefault ? "" : "_" + dataSource;
-            String sessionFactoryBeanName = "sessionFactory" + suffix;
-
-            if (applicationContext.containsBean(sessionFactoryBeanName)) {
-                SessionFactory sessionFactory = applicationContext.getBean(sessionFactoryBeanName, SessionFactory.class);
-                if (currentDataStoreSessionFactory == sessionFactory) {
-                    return true;
-                }
-            }
-            else {
-                log.warn("Cannot resolve SessionFactory for dataSource {} and entity {}",
-                        new Object[] { dataSource, entity.getClass().getName()});
-            }
-        }
-        return false;
-    }
-
     /**
      * {@inheritDoc}
-     * @see org.springframework.context.event.SmartApplicationListener#supportsEventType(
-     *     java.lang.Class)
+     * @see org.springframework.context.event.SmartApplicationListener#supportsEventType(java.lang.Class)
      */
     public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
         return AbstractPersistenceEvent.class.isAssignableFrom(eventType);
+    }
+
+    protected List<String> getDatasourceNames(GrailsDomainClass dc) {
+        return GrailsHibernateUtil.getDatasourceNames(dc);
     }
 }

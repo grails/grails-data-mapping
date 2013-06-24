@@ -12,14 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.codehaus.groovy.grails.orm.hibernate
 
 import groovy.transform.CompileStatic
 
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.orm.hibernate.cfg.HibernateNamedQueriesBuilder
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.CountByPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindAllByBooleanPropertyPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindAllByPersistentMethod
@@ -28,7 +25,6 @@ import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindByPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindOrCreateByPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindOrSaveByPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ListOrderByPersistentMethod
-import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.GormValidationApi
@@ -45,37 +41,23 @@ import org.springframework.transaction.PlatformTransactionManager
  * @since 1.0
  */
 @CompileStatic
-class HibernateGormEnhancer extends GormEnhancer {
+class HibernateGormEnhancer extends AbstractHibernateGormEnhancer {
 
-    private ClassLoader classLoader
-    private GrailsApplication grailsApplication
-
-    HibernateGormEnhancer(HibernateDatastore datastore,
-            PlatformTransactionManager transactionManager,
-            GrailsApplication grailsApplication) {
-        super(datastore, transactionManager)
-        this.grailsApplication = grailsApplication
-        classLoader = grailsApplication.classLoader
-        finders = createPersistentMethods(grailsApplication, classLoader, datastore)
+    HibernateGormEnhancer(HibernateDatastore datastore, PlatformTransactionManager transactionManager, GrailsApplication grailsApplication) {
+        super(datastore, transactionManager, grailsApplication)
     }
 
-    @Override
-    protected void registerConstraints(Datastore datastore) {
-        // no-op
-    }
-
-    static List createPersistentMethods(GrailsApplication grailsApplication, ClassLoader classLoader, Datastore datastore) {
+    protected List<FinderMethod> createDynamicFinders() {
         HibernateDatastore hibernateDatastore = (HibernateDatastore)datastore
         def sessionFactory = hibernateDatastore.sessionFactory
-        Collections.unmodifiableList([
-            new FindAllByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
-            new FindAllByBooleanPropertyPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
-            new FindOrCreateByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
-            new FindOrSaveByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
-            new FindByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
-            new FindByBooleanPropertyPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
-            new CountByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
-            new ListOrderByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader) ])
+        [new FindAllByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
+         new FindAllByBooleanPropertyPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
+         new FindOrCreateByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
+         new FindOrSaveByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
+         new FindByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
+         new FindByBooleanPropertyPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
+         new CountByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader),
+         new ListOrderByPersistentMethod(hibernateDatastore, grailsApplication, sessionFactory, classLoader)]
     }
 
     protected <D> GormValidationApi<D> getValidationApi(Class<D> cls) {
@@ -90,17 +72,5 @@ class HibernateGormEnhancer extends GormEnhancer {
     @Override
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
         new HibernateGormInstanceApi<D>(cls, (HibernateDatastore)datastore, classLoader)
-    }
-
-    @Override
-    protected void registerNamedQueries(PersistentEntity entity, namedQueries) {
-        if (grailsApplication == null) {
-            return
-        }
-
-        def domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, entity.name)
-        if (domainClass) {
-            new HibernateNamedQueriesBuilder(domainClass, finders, entity.mappingContext.conversionService).evaluate((Closure)namedQueries)
-        }
     }
 }

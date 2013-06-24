@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2004-2005 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,8 +28,6 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
@@ -41,6 +39,8 @@ import org.hibernate.criterion.CriteriaQuery;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.spi.TypedValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.util.Assert;
@@ -51,7 +51,7 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractClausedStaticPersistentMethod extends AbstractStaticPersistentMethod {
 
-    private static final Log LOG = LogFactory.getLog(AbstractClausedStaticPersistentMethod.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractClausedStaticPersistentMethod.class);
 
     /**
      * @author Graeme Rocher

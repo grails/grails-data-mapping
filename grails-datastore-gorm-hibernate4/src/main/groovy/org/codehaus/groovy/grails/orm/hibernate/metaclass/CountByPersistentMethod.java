@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2004-2005 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,7 +49,7 @@ public class CountByPersistentMethod extends AbstractClausedStaticPersistentMeth
     private static final String OPERATOR_AND = "And";
 
     private static final Pattern METHOD_PATTERN = Pattern.compile("(countBy)(\\w+)");
-    private static final String[] OPERATORS = new String[]{ OPERATOR_AND, OPERATOR_OR };
+    private static final String[] OPERATORS = { OPERATOR_AND, OPERATOR_OR };
     private HibernateDatastore datastore;
 
     public CountByPersistentMethod(HibernateDatastore datastore, GrailsApplication application, SessionFactory sessionFactory, ClassLoader classLoader) {
@@ -75,7 +75,6 @@ public class CountByPersistentMethod extends AbstractClausedStaticPersistentMeth
             }
         });
     }
-
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void populateCriteriaWithExpressions(Criteria crit, String operator, List expressions) {

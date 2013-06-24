@@ -18,6 +18,9 @@ package org.codehaus.groovy.grails.orm.hibernate.metaclass;
 import grails.gorm.DetachedCriteria;
 import grails.orm.HibernateCriteriaBuilder;
 import groovy.lang.Closure;
+
+import java.util.regex.Pattern;
+
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.metaclass.AbstractStaticMethodInvocation;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
@@ -32,8 +35,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.util.Assert;
 
-import java.util.regex.Pattern;
-
 /**
  * Abstract base class for static persistent methods.
  *
@@ -45,6 +46,7 @@ public abstract class AbstractStaticPersistentMethod extends AbstractStaticMetho
 
     private ClassLoader classLoader;
     private GrailsHibernateTemplate hibernateTemplate;
+    private SessionFactory sessionFactory;
     protected final GrailsApplication application;
 
     protected AbstractStaticPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, Pattern pattern, GrailsApplication application) {
@@ -53,7 +55,12 @@ public abstract class AbstractStaticPersistentMethod extends AbstractStaticMetho
         this.application = application;
         setPattern(pattern);
         this.classLoader = classLoader;
+        this.sessionFactory = sessionFactory;
         hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, application);
+    }
+
+    protected SessionFactory getSessionFactory() {
+        return sessionFactory;
     }
 
     protected GrailsHibernateTemplate getHibernateTemplate() {

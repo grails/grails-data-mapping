@@ -23,8 +23,6 @@ import java.util.Map;
 
 import javax.naming.NameNotFoundException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.DefaultGrailsDomainConfiguration;
@@ -66,6 +64,8 @@ import org.hibernate.event.RefreshEventListener;
 import org.hibernate.event.ReplicateEventListener;
 import org.hibernate.event.SaveOrUpdateEventListener;
 import org.hibernate.metadata.ClassMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -82,7 +82,7 @@ import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 public class ConfigurableLocalSessionFactoryBean extends
         LocalSessionFactoryBean implements ApplicationContextAware {
 
-    protected static final Log LOG = LogFactory.getLog(ConfigurableLocalSessionFactoryBean.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(ConfigurableLocalSessionFactoryBean.class);
     protected ClassLoader classLoader;
     protected GrailsApplication grailsApplication;
     protected Class<?> configClass;
@@ -204,8 +204,8 @@ public class ConfigurableLocalSessionFactoryBean extends
         catch (HibernateException e) {
             Throwable cause = e.getCause();
             if (isCacheConfigurationError(cause)) {
-                LOG.fatal("There was an error configuring the Hibernate second level cache: " + getCauseMessage(e));
-                LOG.fatal("This is normally due to one of two reasons. Either you have incorrectly specified the cache provider class name in [DataSource.groovy] or you do not have the cache provider on your classpath (eg. runtime (\"net.sf.ehcache:ehcache:1.6.1\"))");
+                LOG.error("There was an error configuring the Hibernate second level cache: " + getCauseMessage(e));
+                LOG.error("This is normally due to one of two reasons. Either you have incorrectly specified the cache provider class name in [DataSource.groovy] or you do not have the cache provider on your classpath (eg. runtime (\"net.sf.ehcache:ehcache:1.6.1\"))");
                 if (grails.util.Environment.isDevelopmentMode()) {
                     System.exit(1);
                 }

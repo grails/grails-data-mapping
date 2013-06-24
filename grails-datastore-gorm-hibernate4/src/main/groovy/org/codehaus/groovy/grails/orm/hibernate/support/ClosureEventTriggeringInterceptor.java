@@ -22,12 +22,12 @@ import java.util.Map;
 
 import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore;
 import org.codehaus.groovy.grails.orm.hibernate.SessionFactoryProxy;
-import org.codehaus.groovy.grails.orm.hibernate.events.SaveOrUpdateEventListener;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.engine.internal.Nullability;
+import org.hibernate.event.internal.DefaultSaveOrUpdateEventListener;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.AbstractEvent;
 import org.hibernate.event.spi.EventType;
@@ -59,7 +59,7 @@ import org.springframework.context.ApplicationContextAware;
  * @author Burt Beckwith
  * @since 1.0
  */
-public class ClosureEventTriggeringInterceptor extends SaveOrUpdateEventListener
+public class ClosureEventTriggeringInterceptor extends DefaultSaveOrUpdateEventListener
        implements ApplicationContextAware,
                   PreLoadEventListener,
                   PostLoadEventListener,

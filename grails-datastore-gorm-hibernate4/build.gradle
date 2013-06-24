@@ -37,6 +37,7 @@ dependencies {
     compile(project(":grails-datastore-core")) {
         exclude group: 'org.grails', module:'grails-plugin-testing'
     }
+    compile(project(":grails-datastore-gorm-hibernate-core"))
 
     compile "org.springframework:spring-jdbc:$springVersion"
     compile "org.springframework:spring-orm:$springVersion"

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2004-2005 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -98,6 +98,8 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
     private HibernateEventListeners hibernateEventListeners;
     private Map<String, Object> eventListeners;
 
+    protected GrailsDomainBinder binder = new GrailsDomainBinder();
+
     /* (non-Javadoc)
      * @see org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainConfiguration#addDomainClass(org.codehaus.groovy.grails.commons.GrailsDomainClass)
      */
@@ -166,9 +168,9 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
 
                 log.debug("[GrailsAnnotationConfiguration] Binding persistent class [{}]", fullClassName);
 
-                Mapping m = GrailsDomainBinder.getMapping(domainClass);
+                Mapping m = binder.getMapping(domainClass);
                 mappings.setAutoImport(m == null || m.getAutoImport());
-                GrailsDomainBinder.bindClass(domainClass, mappings, sessionFactoryBeanName);
+                binder.bindClass(domainClass, mappings, sessionFactoryBeanName);
             }
         }
 

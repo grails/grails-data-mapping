@@ -187,7 +187,7 @@ public class HibernateCriteriaBuilder extends GroovyObjectSupport implements org
     }
 
     public void setConversionService(ConversionService conversionService) {
-        this.conversionService = conversionService; 
+        this.conversionService = conversionService;
     }
 
     /**

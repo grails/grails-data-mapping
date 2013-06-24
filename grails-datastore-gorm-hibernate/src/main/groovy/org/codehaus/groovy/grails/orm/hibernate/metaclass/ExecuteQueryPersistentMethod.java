@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,19 +53,15 @@ public class ExecuteQueryPersistentMethod extends AbstractStaticPersistentMethod
     private static final String METHOD_SIGNATURE = "executeQuery";
     private static final Pattern METHOD_PATTERN = Pattern.compile("^executeQuery$");
 
-    @SuppressWarnings("serial")
-    private static final List<String> QUERY_META_PARAMS = Collections.unmodifiableList(
-            new ArrayList<String>() {{
-                add(GrailsHibernateUtil.ARGUMENT_MAX);
-                add(GrailsHibernateUtil.ARGUMENT_OFFSET);
-                add(GrailsHibernateUtil.ARGUMENT_CACHE);
-                add(GrailsHibernateUtil.ARGUMENT_FLUSH_MODE);
-                add(GrailsHibernateUtil.ARGUMENT_TIMEOUT);
-                add(GrailsHibernateUtil.ARGUMENT_FETCH_SIZE);
-                add(GrailsHibernateUtil.ARGUMENT_READ_ONLY);
-            }}
-    );
-    
+    private static final List<String> QUERY_META_PARAMS = Arrays.asList(
+            GrailsHibernateUtil.ARGUMENT_MAX,
+            GrailsHibernateUtil.ARGUMENT_OFFSET,
+            GrailsHibernateUtil.ARGUMENT_CACHE,
+            GrailsHibernateUtil.ARGUMENT_FLUSH_MODE,
+            GrailsHibernateUtil.ARGUMENT_TIMEOUT,
+            GrailsHibernateUtil.ARGUMENT_FETCH_SIZE,
+            GrailsHibernateUtil.ARGUMENT_READ_ONLY);
+
     private final ConversionService conversionService;
 
     public ExecuteQueryPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application, ConversionService conversionService) {

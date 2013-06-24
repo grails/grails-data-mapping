@@ -39,11 +39,14 @@ import org.hibernate.cfg.Mappings;
 public class DefaultGrailsDomainConfiguration extends Configuration implements GrailsDomainConfiguration {
 
     private static final long serialVersionUID = -7115087342689305517L;
-    private GrailsApplication grailsApplication;
-    private Set<GrailsDomainClass> domainClasses = new HashSet<GrailsDomainClass>();
-    private boolean configLocked;
-    private String sessionFactoryBeanName = "sessionFactory";
-    private String dataSourceName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE;
+
+    protected GrailsApplication grailsApplication;
+    protected Set<GrailsDomainClass> domainClasses = new HashSet<GrailsDomainClass>();
+    protected boolean configLocked;
+    protected String sessionFactoryBeanName = "sessionFactory";
+    protected String dataSourceName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE;
+
+    protected static GrailsDomainBinder binder = new GrailsDomainBinder();
 
     /* (non-Javadoc)
      * @see org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainConfiguration#addDomainClass(org.codehaus.groovy.grails.commons.GrailsDomainClass)
@@ -65,8 +68,7 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
             return;
         }
 
-        GrailsClass[] existingDomainClasses = grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE);
-        for (GrailsClass existingDomainClass : existingDomainClasses) {
+        for (GrailsClass existingDomainClass : grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE)) {
             addDomainClass((GrailsDomainClass) existingDomainClass);
         }
     }
@@ -100,9 +102,9 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
                 continue;
             }
             final Mappings mappings = super.createMappings();
-            Mapping m = GrailsDomainBinder.getMapping(domainClass);
+            Mapping m = binder.getMapping(domainClass);
             mappings.setAutoImport(m == null || m.getAutoImport());
-            GrailsDomainBinder.bindClass(domainClass, mappings, sessionFactoryBeanName);
+            binder.bindClass(domainClass, mappings, sessionFactoryBeanName);
         }
 
         super.secondPassCompile();
@@ -114,10 +116,10 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
         // do Grails class configuration
         for (GrailsDomainClass domainClass : domainClasses) {
             if (defaultMapping instanceof Closure) {
-                GrailsDomainBinder.evaluateMapping(domainClass, (Closure<?>)defaultMapping);
+                binder.evaluateMapping(domainClass, (Closure<?>)defaultMapping);
             }
             else {
-                GrailsDomainBinder.evaluateMapping(domainClass);
+                binder.evaluateMapping(domainClass);
             }
         }
     }

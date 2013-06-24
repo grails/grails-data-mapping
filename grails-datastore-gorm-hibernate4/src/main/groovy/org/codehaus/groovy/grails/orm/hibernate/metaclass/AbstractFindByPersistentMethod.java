@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,7 +44,7 @@ import org.hibernate.internal.CriteriaImpl;
 public abstract class AbstractFindByPersistentMethod extends AbstractClausedStaticPersistentMethod {
     public static final String OPERATOR_OR = "Or";
     public static final String OPERATOR_AND = "And";
-    public static final String[] OPERATORS = new String[]{ OPERATOR_AND, OPERATOR_OR };
+    public static final String[] OPERATORS = { OPERATOR_AND, OPERATOR_OR };
     private HibernateDatastore datastore;
     private static final Map<String, Boolean> useLimitCache = new ConcurrentHashMap<String, Boolean>();
 

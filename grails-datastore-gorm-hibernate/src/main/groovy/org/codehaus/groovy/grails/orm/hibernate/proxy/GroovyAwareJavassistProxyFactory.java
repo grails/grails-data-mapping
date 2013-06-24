@@ -14,15 +14,15 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.proxy;
 
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.Set;
+
 import org.hibernate.HibernateException;
 import org.hibernate.engine.SessionImplementor;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.ProxyFactory;
 import org.hibernate.type.CompositeType;
-
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.Set;
 
 /**
  * Hibernate's default proxying mechanism proxies Groovy's getMetaClass() method. To avoid this
@@ -34,7 +34,7 @@ import java.util.Set;
 public class GroovyAwareJavassistProxyFactory implements ProxyFactory, Serializable {
 
     private static final long serialVersionUID = 8959336753472691947L;
-    protected static final Class<?>[] NO_CLASSES = new Class[0];
+    protected static final Class<?>[] NO_CLASSES = {};
     private Class<?> persistentClass;
     private String entityName;
     private Class<?>[] interfaces;
@@ -43,7 +43,7 @@ public class GroovyAwareJavassistProxyFactory implements ProxyFactory, Serializa
     private CompositeType componentIdType;
     private Class<?> factory;
 
-    @SuppressWarnings({"unchecked", "hiding", "rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void postInstantiate(
             final String entityName,
             final Class persistentClass,

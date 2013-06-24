@@ -1,15 +1,22 @@
+/*
+ * Copyright 2013 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.codehaus.groovy.grails.orm.hibernate.metaclass;
 
 import grails.gorm.DetachedCriteria;
 import groovy.lang.Closure;
-import org.codehaus.groovy.grails.commons.*;
-import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore;
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
-import org.hibernate.*;
-import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.impl.CriteriaImpl;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -17,10 +24,27 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
+import org.codehaus.groovy.grails.commons.GrailsApplication;
+import org.codehaus.groovy.grails.commons.GrailsClass;
+import org.codehaus.groovy.grails.commons.GrailsDomainClass;
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore;
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.NonUniqueResultException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.impl.CriteriaImpl;
+import org.springframework.orm.hibernate3.HibernateCallback;
+
 public abstract class AbstractFindByPersistentMethod extends AbstractClausedStaticPersistentMethod {
     public static final String OPERATOR_OR = "Or";
     public static final String OPERATOR_AND = "And";
-    public static final String[] OPERATORS = new String[]{ OPERATOR_AND, OPERATOR_OR };
+    public static final String[] OPERATORS = { OPERATOR_AND, OPERATOR_OR };
     private HibernateDatastore datastore;
     private static final Map<String, Boolean> useLimitCache = new ConcurrentHashMap<String, Boolean>();
 

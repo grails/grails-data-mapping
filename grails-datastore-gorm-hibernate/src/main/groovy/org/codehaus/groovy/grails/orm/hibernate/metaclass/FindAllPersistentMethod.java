@@ -97,7 +97,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
  */
 public class FindAllPersistentMethod extends AbstractStaticPersistentMethod {
     private final ConversionService conversionService;
-    
+
     public FindAllPersistentMethod(SessionFactory sessionFactory, ClassLoader classLoader, GrailsApplication application, ConversionService conversionService) {
         super(sessionFactory, classLoader, Pattern.compile("^findAll$"), application);
         this.conversionService = conversionService;

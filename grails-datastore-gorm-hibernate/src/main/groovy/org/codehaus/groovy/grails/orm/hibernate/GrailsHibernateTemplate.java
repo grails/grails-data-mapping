@@ -24,7 +24,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-public class GrailsHibernateTemplate extends HibernateTemplate {
+public class GrailsHibernateTemplate extends HibernateTemplate implements IHibernateTemplate {
     private boolean osivReadOnly;
 
     public GrailsHibernateTemplate() {

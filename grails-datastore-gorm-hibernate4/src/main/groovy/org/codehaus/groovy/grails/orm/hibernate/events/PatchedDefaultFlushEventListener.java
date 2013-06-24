@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2004-2005 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,11 +15,11 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.events;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.event.internal.DefaultFlushEventListener;
 import org.hibernate.event.spi.EventSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Patches Hibernate to prevent this issue
@@ -33,7 +33,7 @@ import org.hibernate.event.spi.EventSource;
 public class PatchedDefaultFlushEventListener extends DefaultFlushEventListener{
 
     private static final long serialVersionUID = -7413770767669684078L;
-    private static final Log LOG = LogFactory.getLog(PatchedDefaultFlushEventListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PatchedDefaultFlushEventListener.class);
 
     @Override
     protected void performExecutions(EventSource session) throws HibernateException {

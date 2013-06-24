@@ -1,5 +1,4 @@
-/* 
- * Copyright 2004-2005 the original author or authors.
+/* Copyright 2004-2005 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +44,8 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
     private boolean configLocked;
     private String sessionFactoryBeanName = "sessionFactory";
     private String dataSourceName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE;
+
+    protected static GrailsDomainBinder binder = new GrailsDomainBinder();
 
     /* (non-Javadoc)
      * @see org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainConfiguration#addDomainClass(org.codehaus.groovy.grails.commons.GrailsDomainClass)
@@ -101,9 +102,9 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
                 continue;
             }
             final Mappings mappings = super.createMappings();
-            Mapping m = GrailsDomainBinder.getMapping(domainClass);
+            Mapping m = binder.getMapping(domainClass);
             mappings.setAutoImport(m == null || m.getAutoImport());
-            GrailsDomainBinder.bindClass(domainClass, mappings, sessionFactoryBeanName);
+            binder.bindClass(domainClass, mappings, sessionFactoryBeanName);
         }
 
         super.secondPassCompile();
@@ -115,10 +116,10 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
         // do Grails class configuration
         for (GrailsDomainClass domainClass : domainClasses) {
             if (defaultMapping instanceof Closure) {
-                GrailsDomainBinder.evaluateMapping(domainClass, (Closure<?>)defaultMapping);
+                binder.evaluateMapping(domainClass, (Closure<?>)defaultMapping);
             }
             else {
-                GrailsDomainBinder.evaluateMapping(domainClass);
+                binder.evaluateMapping(domainClass);
             }
         }
     }

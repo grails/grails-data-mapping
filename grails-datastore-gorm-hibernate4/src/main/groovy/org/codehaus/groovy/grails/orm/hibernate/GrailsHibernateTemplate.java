@@ -21,12 +21,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.hibernate.Criteria;
@@ -41,6 +41,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.event.spi.EventSource;
 import org.hibernate.exception.GenericJDBCException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -51,9 +53,9 @@ import org.springframework.orm.hibernate4.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
-public class GrailsHibernateTemplate {
+public class GrailsHibernateTemplate implements IHibernateTemplate {
 
-    protected final Log logger = LogFactory.getLog(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private boolean osivReadOnly;
     protected boolean exposeNativeSession = true;
@@ -89,6 +91,10 @@ protected boolean checkWriteOperations = true;
         this.osivReadOnly = GrailsHibernateUtil.isOsivReadonly(application);
     }
 
+    public SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
+
     public void applySettings(Query query) {
         if (exposeNativeSession) {
             prepareQuery(query);
@@ -121,15 +127,14 @@ protected boolean checkWriteOperations = true;
     }
 
     protected boolean isCurrentTransactionReadOnly() {
-        if(TransactionSynchronizationManager.hasResource(sessionFactory)) {
-            if(TransactionSynchronizationManager.isActualTransactionActive()) {
-                return TransactionSynchronizationManager.isCurrentTransactionReadOnly();
-            } else {
-                return osivReadOnly;
-            }
-        } else {
+        if (!TransactionSynchronizationManager.hasResource(sessionFactory)) {
             return false;
         }
+
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
+            return TransactionSynchronizationManager.isCurrentTransactionReadOnly();
+        }
+        return osivReadOnly;
     }
 
     public boolean isOsivReadOnly() {
@@ -239,6 +244,10 @@ protected boolean checkWriteOperations = true;
                 return (T) session.get(entityClass, id);
             }
         }, true);
+    }
+
+    public <T> T get(final Class<T> entityClass, final Serializable id, final LockMode mode) {
+        return lock(entityClass, id, mode);
     }
 
     public void delete(final Object entity) throws DataAccessException {
@@ -594,5 +603,43 @@ protected boolean checkWriteOperations = true;
 
     protected DataAccessException convertJdbcAccessException(JDBCException ex, SQLExceptionTranslator translator) {
         return translator.translate("Hibernate operation: " + ex.getMessage(), ex.getSQL(), ex.getSQLException());
+    }
+
+    public Serializable save(Object o) {
+        return sessionFactory.getCurrentSession().save(o);
+    }
+
+    public void flush() {
+        sessionFactory.getCurrentSession().flush();
+    }
+
+    public void clear() {
+        sessionFactory.getCurrentSession().clear();
+    }
+
+    public void deleteAll(final Collection<?> objects) {
+        execute(new GrailsHibernateTemplate.HibernateCallback<Void>() {
+            public Void doInHibernate(Session session) throws HibernateException {
+               for (Object entity : getIterableAsCollection(objects)) {
+                  session.delete(entity);
+               }
+               return null;
+            }
+         });
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected Collection getIterableAsCollection(Iterable objects) {
+        Collection list;
+        if (objects instanceof Collection) {
+            list = (Collection)objects;
+        }
+        else {
+            list = new ArrayList();
+            for (Object object : objects) {
+                list.add(object);
+            }
+        }
+        return list;
     }
 }

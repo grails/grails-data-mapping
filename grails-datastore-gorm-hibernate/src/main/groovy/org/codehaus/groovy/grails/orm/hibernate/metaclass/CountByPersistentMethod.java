@@ -48,7 +48,7 @@ public class CountByPersistentMethod extends AbstractClausedStaticPersistentMeth
     private static final String OPERATOR_AND = "And";
 
     private static final Pattern METHOD_PATTERN = Pattern.compile("(countBy)(\\w+)");
-    private static final String[] OPERATORS = new String[]{ OPERATOR_AND, OPERATOR_OR };
+    private static final String[] OPERATORS = { OPERATOR_AND, OPERATOR_OR };
     private HibernateDatastore datastore;
 
     public CountByPersistentMethod(HibernateDatastore datastore, GrailsApplication application, SessionFactory sessionFactory, ClassLoader classLoader) {
@@ -58,11 +58,11 @@ public class CountByPersistentMethod extends AbstractClausedStaticPersistentMeth
 
     @SuppressWarnings("rawtypes")
     @Override
-    protected Object doInvokeInternalWithExpressions(final Class clazz, String methodName, final Object[] arguments,
+    protected Long doInvokeInternalWithExpressions(final Class clazz, final String methodName, final Object[] arguments,
             final List expressions, final String operatorInUse, final DetachedCriteria detachedCriteria, final Closure additionalCriteria) {
 
-        return getHibernateTemplate().execute(new HibernateCallback<Object>() {
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+        return getHibernateTemplate().execute(new HibernateCallback<Long>() {
+            public Long doInHibernate(Session session) throws HibernateException, SQLException {
                 final Criteria crit = getCriteria(datastore, application, session, detachedCriteria, additionalCriteria, clazz);
                 crit.setProjection(Projections.rowCount());
                 String operator = OPERATOR_OR.equals(operatorInUse) ? OPERATOR_OR : OPERATOR_AND;
@@ -70,7 +70,7 @@ public class CountByPersistentMethod extends AbstractClausedStaticPersistentMeth
                 GrailsHibernateUtil.populateArgumentsForCriteria(crit,  argsMap, conversionService);
 
                 populateCriteriaWithExpressions(crit, operator, expressions);
-                return crit.uniqueResult();
+                return (Long) crit.uniqueResult();
             }
         });
     }

@@ -1,5 +1,4 @@
-/*
- * Copyright (C) 2011 SpringSource
+/* Copyright (C) 2011 SpringSource
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +28,7 @@ import org.codehaus.groovy.grails.validation.DefaultConstraintEvaluator;
  * @author Graeme Rocher
  * @since 2.0
  */
-public class HibernateConstraintsEvaluator extends DefaultConstraintEvaluator{
+public class HibernateConstraintsEvaluator extends DefaultConstraintEvaluator {
 
     public HibernateConstraintsEvaluator(Map<String, Object> defaultConstraints) {
         super(defaultConstraints);
@@ -41,7 +40,7 @@ public class HibernateConstraintsEvaluator extends DefaultConstraintEvaluator{
 
     @Override
     protected void applyDefaultNullableConstraint(GrailsDomainClassProperty p, ConstrainedProperty cp) {
-        final PropertyConfig propertyConfig = GrailsDomainBinder.getPropertyConfig(p);
+        final PropertyConfig propertyConfig = new GrailsDomainBinder().getPropertyConfig(p);
         boolean insertable = propertyConfig != null ? propertyConfig.isInsertable() : true;
 
         if (!insertable) {

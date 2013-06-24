@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2004-2005 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,7 +50,7 @@ public class FindAllByPersistentMethod extends AbstractClausedStaticPersistentMe
     private static final String OPERATOR_OR = "Or";
     private static final String OPERATOR_AND = "And";
     private static final String METHOD_PATTERN = "(findAllBy)([A-Z]\\w*)";
-    private static final String[] OPERATORS = new String[]{ OPERATOR_AND, OPERATOR_OR };
+    private static final String[] OPERATORS = { OPERATOR_AND, OPERATOR_OR };
     private HibernateDatastore datastore;
 
     /**

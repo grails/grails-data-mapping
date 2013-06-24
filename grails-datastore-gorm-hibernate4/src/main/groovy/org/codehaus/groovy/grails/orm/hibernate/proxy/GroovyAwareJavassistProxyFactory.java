@@ -35,7 +35,7 @@ import org.hibernate.type.CompositeType;
 public class GroovyAwareJavassistProxyFactory implements ProxyFactory, Serializable {
 
     private static final long serialVersionUID = 8959336753472691947L;
-    protected static final Class<?>[] NO_CLASSES = new Class[0];
+    protected static final Class<?>[] NO_CLASSES = {};
     private Class<?> persistentClass;
     private String entityName;
     private Class<?>[] interfaces;
