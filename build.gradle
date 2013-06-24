@@ -46,14 +46,14 @@ allprojects {
 
 subprojects {
     ext {
-       releaseType = "RELEASE"
+        releaseType = "BUILD-SNAPSHOT"
        // releaseType = "BUILD-SNAPSHOT"
         //releaseType = "RC3"
         isCiBuild = project.hasProperty("isCiBuild")
         isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
     }
 
-    version = "1.1.8.${releaseType}"
+    version = "1.1.9.${releaseType}"
     group = "org.grails"
 
 
