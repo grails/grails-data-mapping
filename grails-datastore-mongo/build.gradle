@@ -3,5 +3,5 @@ dependencies {
     compile project(":grails-datastore-core")
 
     compile "org.mongodb:mongo-java-driver:2.11.1"
-    compile("org.springframework.data:spring-data-mongodb:1.2.0.RELEASE")
+    compile("org.springframework.data:spring-data-mongodb:1.2.1.RELEASE")
 }

@@ -9,9 +9,10 @@ grails.project.dependency.resolution = {
     log 'warn'
 
     repositories {
+        mavenCentral()        
         grailsCentral()
         mavenLocal()
-        mavenCentral()
+
     }
 
     dependencies {
@@ -26,13 +27,14 @@ grails.project.dependency.resolution = {
             transitive = false
         }
 
-        compile("org.mongodb:mongo-java-driver:2.10.1", excludes)
-        compile("org.springframework.data:spring-data-mongodb:1.1.0.RELEASE", excludes)
-        compile("org.springframework.data:spring-data-commons-core:1.4.0.RELEASE", excludes)
-        runtime("com.gmongo:gmongo:1.0", excludes)
+        compile("org.mongodb:mongo-java-driver:2.11.1", excludes)
+        compile("org.springframework.data:spring-data-mongodb:1.2.1.RELEASE", excludes)
+        compile("org.springframework.data:spring-data-commons-core:1.4.1.RELEASE", excludes)
+        runtime 'org.springframework.data:spring-data-commons:1.5.1.RELEASE'
+        runtime("com.gmongo:gmongo:1.2", excludes)
 
-        def datastoreVersion = "1.1.6.RELEASE"
-        def mongoDatastoreVersion = "1.2.0.RELEASE"
+        def datastoreVersion = "1.1.9.BUILD-SNAPSHOT"
+        def mongoDatastoreVersion = "1.3.0.BUILD-SNAPSHOT"
 
         compile ("org.grails:grails-datastore-mongo:$mongoDatastoreVersion",
                  "org.grails:grails-datastore-gorm-mongo:$mongoDatastoreVersion",excludes)
