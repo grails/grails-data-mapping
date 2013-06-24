@@ -17,7 +17,7 @@ b['pages'] = 400
 b['publisher'] = 'Manning'
 b['rating'] = 5
 b.save(flush:true)
-[code]
+{code}
 
 With a stateful entity the updates to the three properties can be batched up and executed in the save() call, when there is no state then 3 updates needs to be executed for each schemaless property (ouch!).
 
