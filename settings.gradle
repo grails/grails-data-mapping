@@ -44,6 +44,7 @@ include "grails-datastore-core",
         'grails-datastore-gorm-gemfire',
         'grails-datastore-gorm-simpledb',
         'grails-datastore-gorm-dynamodb',
+        'grails-datastore-gorm-hibernate-core',
         'grails-datastore-gorm-hibernate',
         'grails-datastore-gorm-hibernate4'
 /*
