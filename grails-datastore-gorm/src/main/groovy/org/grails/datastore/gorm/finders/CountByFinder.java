@@ -30,7 +30,7 @@ public class CountByFinder extends DynamicFinder implements QueryBuildingFinder 
     private static final String OPERATOR_AND = "And";
 
     private static final Pattern METHOD_PATTERN = Pattern.compile("(countBy)(\\w+)");
-    private static final String[] OPERATORS = new String[]{ OPERATOR_AND, OPERATOR_OR };
+    private static final String[] OPERATORS = { OPERATOR_AND, OPERATOR_OR };
 
     public CountByFinder(final Datastore datastore) {
         super(METHOD_PATTERN, OPERATORS, datastore);

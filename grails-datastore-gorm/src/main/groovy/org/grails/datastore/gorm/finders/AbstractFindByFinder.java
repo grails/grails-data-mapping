@@ -11,7 +11,7 @@ import org.grails.datastore.mapping.query.Query;
 public abstract class AbstractFindByFinder extends DynamicFinder {
     public static final String OPERATOR_OR = "Or";
     public static final String OPERATOR_AND = "And";
-    public static final String[] OPERATORS = new String[]{ OPERATOR_AND, OPERATOR_OR };
+    public static final String[] OPERATORS = { OPERATOR_AND, OPERATOR_OR };
 
     protected AbstractFindByFinder(Pattern pattern, Datastore datastore) {
         super(pattern, OPERATORS, datastore);

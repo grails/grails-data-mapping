@@ -75,10 +75,10 @@ public abstract class MethodExpression {
                         }
                     }
                     TypeDescriptor typeDescriptor = TypeDescriptor.valueOf(type);
-                    if((typeDescriptor.isArray() || typeDescriptor.isCollection()) && (typeDescriptor.getElementTypeDescriptor() == null || typeDescriptor.getElementTypeDescriptor().getType().isAssignableFrom(arg.getClass()))) {
+                    if ((typeDescriptor.isArray() || typeDescriptor.isCollection()) && (typeDescriptor.getElementTypeDescriptor() == null || typeDescriptor.getElementTypeDescriptor().getType().isAssignableFrom(arg.getClass()))) {
                         // skip converting argument to collection/array type if argument is correct instance of element type
                         break;
-                    } 
+                    }
                     arguments[i] = conversionService.convert(arg, type);
                 }
             }

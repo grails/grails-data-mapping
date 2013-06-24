@@ -76,7 +76,7 @@ public abstract class DynamicFinder extends AbstractFinder implements QueryBuild
     private String[] operators;
 
     private static Pattern methodExpressinPattern;
-    private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
+    private static final Object[] EMPTY_OBJECT_ARRAY = {};
 
     private static final String NOT = "Not";
     private static final Map<String, Constructor> methodExpressions = new LinkedHashMap<String, Constructor>();

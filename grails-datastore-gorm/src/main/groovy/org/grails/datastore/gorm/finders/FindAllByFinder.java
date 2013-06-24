@@ -29,7 +29,7 @@ public class FindAllByFinder extends DynamicFinder {
     private static final String OPERATOR_OR = "Or";
     private static final String OPERATOR_AND = "And";
     private static final String METHOD_PATTERN = "(findAllBy)([A-Z]\\w*)";
-    private static final String[] OPERATORS = new String[]{ OPERATOR_AND, OPERATOR_OR };
+    private static final String[] OPERATORS = { OPERATOR_AND, OPERATOR_OR };
 
     public FindAllByFinder(final Datastore datastore) {
         super(Pattern.compile(METHOD_PATTERN), OPERATORS, datastore);

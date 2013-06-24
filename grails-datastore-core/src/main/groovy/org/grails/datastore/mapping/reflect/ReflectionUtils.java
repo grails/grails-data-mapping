@@ -36,7 +36,7 @@ public class ReflectionUtils {
 
     public static final Map<Class<?>, Class<?>> PRIMITIVE_TYPE_COMPATIBLE_CLASSES = new HashMap<Class<?>, Class<?>>();
     @SuppressWarnings("rawtypes")
-    private static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
+    private static final Class[] EMPTY_CLASS_ARRAY = {};
 
     /**
      * Just add two entries to the class compatibility map
