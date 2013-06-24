@@ -2,7 +2,7 @@
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-    <title>2 Getting Started 1.3.0.GA</title>
+    <title>2 Getting Started 1.0.0.GA</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="../css/main.css" type="text/css" media="screen, print" title="Style" charset="utf-8"/>
     <link rel="stylesheet" href="../css/pdf.css" type="text/css" media="print" title="PDF" charset="utf-8"/>
@@ -80,7 +80,7 @@ function addJsClass() {
 
                     <p><strong>Authors:</strong> Graeme Rocher, Burt Beckwith</p>
 
-                    <p><strong>Version:</strong> 1.3.0.GA</p>
+                    <p><strong>Version:</strong> 1.0.0.GA</p>
 
                     
                 </div>
@@ -104,8 +104,8 @@ function addJsClass() {
                 
 
 <h1 id="2. Getting Started">2 Getting Started</h1>
-To get started with GORM for Mongo you need configure it as a dependency in <code>BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
-	compile ':mongodb:1.2.0' // or whatever is the latest vesrion
+To get started with GORM for Mongo you need to install the plugin into a Grails application:<p class="paragraph"/><div class="code"><pre>grails install&#45;plugin mongodb</pre></div><p class="paragraph"/>Or configure it as a dependency in <code>BuildConfig.groovy</code>:<p class="paragraph"/><div class="code"><pre>plugins &#123;
+	compile ':mongodb:1.0.0.GA'
 &#125;</pre></div><p class="paragraph"/>With that done you need to set up a running MongoDB server. Refer to the <a href="http://www.mongodb.org/display/DOCS/Quickstart" target="blank">MongoDB Quick Start guide</a> for an explanation on how to startup a Mongo instance. Once installed starting Mongo is typically a matter of executing the following command:<p class="paragraph"/><div class="code"><pre>MONGO_HOME/bin/mongod</pre></div><p class="paragraph"/>With the above commands executed in a terminal window you should see output like the following appear:<p class="paragraph"/><div class="code"><pre>Thu Nov 11 16:54:08 MongoDB starting : pid=4600 port=27017 dbpath=/data/db/ 64&#45;bit
 Thu Nov 11 16:54:08 db version v1.6.3, pdfile version 4.5
 Thu Nov 11 16:54:08 git version: 278bd2ac2f2efbee556f32c13c1b6803224d1c01
@@ -124,7 +124,7 @@ Thu Nov 11 16:54:08 &#91;websvr&#93; web admin <span class="java&#45;keyword">in
 
 
 <h2 id="2.1 Using Mongo Standalone">2.1 Using Mongo Standalone</h2>
-If you plan to use Mongo as your primary datastore then you need to remove the Hibernate plugin from the <code>grails-app/conf/BuildConfig.groovy</code> file by commenting out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile ':hibernate:2.0.0'</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via Mongo and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Mongo.
+If you plan to use Mongo as your primary datastore then you need to uninstall the Hibernate plugin:<p class="paragraph"/><div class="code"><pre>grails uninstall&#45;plugin hibernate</pre></div><p class="paragraph"/>Or if it has been defined in the <code>grails-app/conf/BuildConfig.groovy</code> file comment out the hibernate line in the plugins block<p class="paragraph"/><div class="code"><pre>compile ':hibernate:2.0.0'</pre></div><p class="paragraph"/>With this done all domain classes in grails-app/domain will be persisted via Mongo and not Hibernate. You can create a domain class by running the regular <code>create-domain-class</code> command:<p class="paragraph"/><div class="code"><pre>grails create&#45;domain&#45;class Person</pre></div><p class="paragraph"/>The <code>Person</code> domain class will automatically be a persistent entity that can be stored in Mongo.
 
 
 
@@ -133,7 +133,7 @@ If you have both the Hibernate and Mongo plugins installed then by default all c
 
 
 <h2 id="2.3 Advanced Configuration">2.3 Advanced Configuration</h2>
-<h4>Mongo Database Connection Configuration</h4><p class="paragraph"/>As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your <code>grails-app/conf/DataSource.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
+As mentioned the GORM for Mongo plugin will configure all the defaults for you, but if you wish to customize those defaults you can do so in the your <code>grails-app/conf/DataSource.groovy</code> file:<p class="paragraph"/><div class="code"><pre>grails &#123;
     mongo &#123;
         host = <span class="java&#45;quote">"localhost"</span>
         port = 27107
@@ -156,10 +156,7 @@ If you have both the Hibernate and Mongo plugins installed then by default all c
     mongo &#123;
         replicaSet = &#91; <span class="java&#45;quote">"localhost:27017"</span>, <span class="java&#45;quote">"localhost:27018"</span>&#93;
     &#125;
-&#125;</pre></div><p class="paragraph"/>The replica sets are defined using a list of strings that conform to the Mongo <a href="http://api.mongodb.org/java/current/com/mongodb/DBAddress.html" target="blank">DBAddress</a> specification.<p class="paragraph"/><h4>Global Mapping Configuration</h4><p class="paragraph"/>Using the <code>grails.mongo.default.mapping</code> setting in <code>Config.groovy</code> you can configure global mapping options across your domain classes. This is useful if, for example, you want to disable optimistic locking globally or you wish to use <code>DBRefs</code> in your association mappings. For example, the following configuration will disable optimistic locking globally and use <code>DBRefs</code> for all properties:<p class="paragraph"/><div class="code"><pre>grails.mongo.<span class="java&#45;keyword">default</span>.mapping = &#123;
-    version <span class="java&#45;keyword">false</span>
-    '&#42;'(reference:<span class="java&#45;keyword">true</span>)
-&#125;</pre></div><p class="paragraph"/>The <code>*</code> method is used to indicate that the setting applies to all properties.
+&#125;</pre></div><p class="paragraph"/>The replica sets are defined using a list of strings that conform to the Mongo <a href="http://api.mongodb.org/java/current/com/mongodb/DBAddress.html" target="blank">DBAddress</a> specification.
 
 
 
@@ -184,36 +181,6 @@ If you have both the Hibernate and Mongo plugins installed then by default all c
                         
                             
                             <div class="menu-item"><a href="../ref/Beans/mongo.html">mongo</a>
-                            </div>
-                            
-                            </div>
-                    </div>
-                    
-                    <div class="menu-block"><h1 class="menu-title" onclick="toggleRef(this.parentNode.childNodes[1])">Domain Classes</h1><div class="menu-sub">
-                        
-                            
-                            <div class="menu-item"><a href="../ref/Domain%20Classes/DB.html">DB</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Domain%20Classes/collection.html">collection</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Domain%20Classes/collectionName.html">collectionName</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Domain%20Classes/dbo.html">dbo</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Domain%20Classes/useCollection.html">useCollection</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Domain%20Classes/useDatabase.html">useDatabase</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Domain%20Classes/withCollection.html">withCollection</a>
-                            </div>
-                            
-                            <div class="menu-item"><a href="../ref/Domain%20Classes/withDatabase.html">withDatabase</a>
                             </div>
                             
                             </div>
