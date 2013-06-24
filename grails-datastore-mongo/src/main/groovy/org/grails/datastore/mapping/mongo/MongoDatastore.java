@@ -71,11 +71,12 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
     public static final String MONGO_HOST = "host";
     public static final String MONGO_STATELESS = "stateless";
 
-    private Mongo mongo;
-    private MongoOptions mongoOptions = new MongoOptions();
-    private Map<PersistentEntity, MongoTemplate> mongoTemplates = new ConcurrentHashMap<PersistentEntity, MongoTemplate>();
-    private Map<PersistentEntity, String> mongoCollections = new ConcurrentHashMap<PersistentEntity, String>();
-    private boolean stateless = false;
+    protected Mongo mongo;
+    protected MongoOptions mongoOptions = new MongoOptions();
+    protected Map<PersistentEntity, MongoTemplate> mongoTemplates = new ConcurrentHashMap<PersistentEntity, MongoTemplate>();
+    protected Map<PersistentEntity, String> mongoCollections = new ConcurrentHashMap<PersistentEntity, String>();
+    protected boolean stateless = false;
+    protected UserCredentials userCrentials;
 
     /**
      * Constructs a MongoDatastore using the default database name of "test" and defaults for the host and port.
@@ -181,6 +182,10 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         return mongoCollections.get(entity);
     }
 
+    public UserCredentials getUserCrentials() {
+        return userCrentials;
+    }
+
     @Override
     protected Session createSession(Map<String, String> connDetails) {
         if(stateless) {
@@ -241,8 +246,8 @@ public class MongoDatastore extends AbstractDatastore implements InitializingBea
         String password = read(String.class, PASSWORD, connectionDetails, null);
 
         if (username != null && password != null) {
-            UserCredentials uc = new UserCredentials(username, password);
-            dbf = new SimpleMongoDbFactory(mongoInstance, databaseName, uc);
+            this.userCrentials = new UserCredentials(username, password);
+            dbf = new SimpleMongoDbFactory(mongoInstance, databaseName, userCrentials);
         }
         else {
             dbf = new SimpleMongoDbFactory(mongoInstance, databaseName);

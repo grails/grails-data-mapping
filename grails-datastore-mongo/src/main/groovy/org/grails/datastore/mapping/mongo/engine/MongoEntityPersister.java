@@ -79,8 +79,6 @@ import com.mongodb.WriteResult;
 public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, Object> {
 
     private static final String NEXT_ID_SUFFIX = ".next_id";
-    private MongoTemplate mongoTemplate;
-    private String collectionName;
     private boolean hasNumericalIdentifier = false;
     private boolean hasStringIdentifier = false;
 
@@ -91,8 +89,6 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
              MongoSession mongoSession, ApplicationEventPublisher publisher) {
         super(mappingContext, entity, mongoSession, publisher);
         MongoDatastore datastore = (MongoDatastore) mongoSession.getDatastore();
-        mongoTemplate = datastore.getMongoTemplate(entity);
-        collectionName = datastore.getCollectionName(entity);
 
         if (!(entity instanceof EmbeddedPersistentEntity)) {
 
@@ -291,12 +287,12 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     @Override
     public String getEntityFamily() {
-        return collectionName;
+        return getMongoSession().getCollectionName(getPersistentEntity());
     }
 
     @Override
     protected void deleteEntry(String family, final Object key, final Object entry) {
-        mongoTemplate.execute(new DbCallback<Object>() {
+        getMongoTemplate().execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
                 DBCollection dbCollection = getCollection(con);
 
@@ -305,8 +301,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 WriteConcern writeConcern = mongoSession.getDeclaredWriteConcern(getPersistentEntity());
                 if (writeConcern != null) {
                     dbCollection.remove(dbo, writeConcern);
-                }
-                else {
+                } else {
                     dbCollection.remove(dbo);
                 }
                 return null;
@@ -318,9 +313,13 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         });
     }
 
+    protected MongoTemplate getMongoTemplate() {
+        return getMongoSession().getMongoTemplate(getPersistentEntity());
+    }
+
     @Override
     protected Object generateIdentifier(final PersistentEntity persistentEntity, final DBObject nativeEntry) {
-        return mongoTemplate.execute(new DbCallback<Object>() {
+        return getMongoTemplate().execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
                 
                 String collectionName = getCollectionName(persistentEntity, nativeEntry);
@@ -514,7 +513,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     @Override
     protected DBObject retrieveEntry(final PersistentEntity persistentEntity,
             String family, final Serializable key) {
-        return mongoTemplate.execute(new DbCallback<DBObject>() {
+        return getMongoTemplate().execute(new DbCallback<DBObject>() {
             public DBObject doInDB(DB con) throws MongoException, DataAccessException {
                 DBCollection dbCollection = con.getCollection(getCollectionName(persistentEntity));
                 return dbCollection.findOne(createDBObjectWithKey(key));
@@ -549,7 +548,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     @Override
     protected Object storeEntry(final PersistentEntity persistentEntity, final EntityAccess entityAccess,
                                 final Object storeId, final DBObject nativeEntry) {
-        return mongoTemplate.execute(new DbCallback<Object>() {
+        return getMongoTemplate().execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
                 removeNullEntries(nativeEntry);
                 nativeEntry.put(MONGO_ID_FIELD, storeId);
@@ -614,7 +613,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     @Override
     public void updateEntry(final PersistentEntity persistentEntity, final EntityAccess ea,
             final Object key, final DBObject entry) {
-        mongoTemplate.execute(new DbCallback<Object>() {
+        getMongoTemplate().execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
                 String collectionName = getCollectionName(persistentEntity, entry);
                 DBCollection dbCollection = con.getCollection(collectionName);
@@ -696,7 +695,7 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
     @Override
     protected void deleteEntries(String family, final List<Object> keys) {
-        mongoTemplate.execute(new DbCallback<Object>() {
+        getMongoTemplate().execute(new DbCallback<Object>() {
             public Object doInDB(DB con) throws MongoException, DataAccessException {
                 String collectionName = getCollectionName(getPersistentEntity());
                 DBCollection dbCollection = con.getCollection(collectionName);
@@ -756,6 +755,10 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
                 entity, (Serializable)entityAccess.getIdentifier(), true);
 
         return !dbo.equals(cached);
+    }
+
+    public MongoSession getMongoSession() {
+        return (MongoSession) getSession();
     }
 
     private class MongoAssociationIndexer implements AssociationIndexer {
