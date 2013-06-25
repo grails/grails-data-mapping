@@ -36,6 +36,9 @@ import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.TransientObjectException;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.metadata.ClassMetadata;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 
@@ -50,6 +53,7 @@ import org.springframework.validation.Errors;
 public class UniqueConstraint extends AbstractPersistentConstraint {
 
     private static final String DEFAULT_NOT_UNIQUE_MESSAGE_CODE = "default.not.unique.message";
+    private static final String TARGET_DOMAIN_CLASS_ALIAS = "domain_";
 
     public static final String UNIQUE_CONSTRAINT = "unique";
 
@@ -171,8 +175,27 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
                             }
                             constraintClass = domainClass != null ? domainClass.getClazz() : constraintClass;
                         }
-                        Criteria criteria = session.createCriteria(constraintClass)
-                            .add(Restrictions.eq(constraintPropertyName, propertyValue));
+                        Criteria criteria = null;
+
+                        if (domainClass.getPersistentProperty(constraintPropertyName).isOneToOne()) {
+                            criteria = session.createCriteria(constraintClass, TARGET_DOMAIN_CLASS_ALIAS);
+
+                            String constraintPropertyAlias = constraintPropertyName + "_";
+                            criteria.createAlias(TARGET_DOMAIN_CLASS_ALIAS + "." + constraintPropertyName, constraintPropertyAlias);
+
+                            GrailsDomainClassProperty property = domainClass.getPropertyByName(constraintPropertyName);
+                            ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(property.getType());
+                            String identifierPropertyName = classMetadata.getIdentifierPropertyName();
+
+                            BeanWrapper bean = new BeanWrapperImpl(propertyValue);
+                            Object identifierPropertyValue = bean.getPropertyValue(identifierPropertyName);
+
+                            criteria.add(Restrictions.eq(constraintPropertyAlias + "." + identifierPropertyName, identifierPropertyValue));
+                        } else {
+                            criteria = session.createCriteria(constraintClass)
+                                .add(Restrictions.eq(constraintPropertyName, propertyValue));
+                        }
+
                         if (uniquenessGroup != null) {
                             for (Object anUniquenessGroup : uniquenessGroup) {
                                 String uniquenessGroupPropertyName = (String) anUniquenessGroup;
