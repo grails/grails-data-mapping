@@ -19,6 +19,7 @@ import grails.orm.RlikeExpression;
 
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.List;
 
 import org.codehaus.groovy.grails.orm.hibernate.AbstractHibernateSession;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
@@ -28,8 +29,15 @@ import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.function.SQLFunction;
+import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.impl.CriteriaImpl;
+import org.hibernate.persister.entity.PropertyMapping;
+import org.hibernate.type.BasicType;
+import org.hibernate.type.TypeResolver;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 
@@ -61,6 +69,22 @@ public class HibernateQuery extends AbstractHibernateQuery {
     protected void setDetachedCriteriaValue(QueryableCriteria value, PropertyCriterion pc) {
         DetachedCriteria hibernateDetachedCriteria = HibernateCriteriaBuilder.getHibernateDetachedCriteria(value);
         pc.setValue(hibernateDetachedCriteria);
+    }
+
+    protected String render(BasicType basic, List<String> columns, SessionFactory sessionFactory, SQLFunction sqlFunction) {
+        return sqlFunction.render(basic, columns, (SessionFactoryImplementor) sessionFactory);
+    }
+
+    protected PropertyMapping getEntityPersister(String name, SessionFactory sessionFactory) {
+        return (PropertyMapping) ((SessionFactoryImplementor) sessionFactory).getEntityPersister(entity.getJavaClass().getName());
+    }
+
+    protected TypeResolver getTypeResolver(SessionFactory sessionFactory) {
+        return ((SessionFactoryImplementor) sessionFactory).getTypeResolver();
+    }
+
+    protected Dialect getDialect(SessionFactory sessionFactory) {
+        return ((SessionFactoryImplementor) sessionFactory).getDialect();
     }
 
     @Override

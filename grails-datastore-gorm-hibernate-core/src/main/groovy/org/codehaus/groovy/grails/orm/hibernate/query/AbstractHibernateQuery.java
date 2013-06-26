@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.persistence.FetchType;
 
 import org.codehaus.groovy.grails.orm.hibernate.AbstractHibernateSession;
+import org.codehaus.groovy.grails.orm.hibernate.IHibernateTemplate;
 import org.grails.datastore.gorm.query.criteria.DetachedAssociationCriteria;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
@@ -42,7 +43,6 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.function.SQLFunction;
-import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.persister.entity.PropertyMapping;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.TypeResolver;
@@ -50,7 +50,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -218,9 +217,8 @@ public abstract class AbstractHibernateQuery extends Query {
 
     org.hibernate.criterion.Criterion getRestrictionForFunctionCall(FunctionCallingCriterion criterion, PersistentEntity entity) {
         org.hibernate.criterion.Criterion sqlRestriction;
-        HibernateTemplate hibernateSession = (HibernateTemplate)session.getNativeInterface();
 
-        SessionFactory sessionFactory = hibernateSession.getSessionFactory();
+        SessionFactory sessionFactory = ((IHibernateTemplate)session.getNativeInterface()).getSessionFactory();
         String property = criterion.getProperty();
         Criterion datastoreCriterion = criterion.getPropertyCriterion();
         PersistentProperty pp = entity.getPropertyByName(property);
@@ -231,11 +229,10 @@ public abstract class AbstractHibernateQuery extends Query {
 
         String functionName = criterion.getFunctionName();
 
-        SessionFactoryImplementor impl = (SessionFactoryImplementor) sessionFactory;
-        Dialect dialect = impl.getDialect();
+        Dialect dialect = getDialect(sessionFactory);
         SQLFunction sqlFunction = dialect.getFunctions().get(functionName);
         if (sqlFunction != null) {
-            TypeResolver typeResolver = impl.getTypeResolver();
+            TypeResolver typeResolver = getTypeResolver(sessionFactory);
             BasicType basic = typeResolver.basic(pp.getType().getName());
             if (basic != null && datastoreCriterion instanceof PropertyCriterion) {
 
@@ -245,13 +242,15 @@ public abstract class AbstractHibernateQuery extends Query {
                 if (hibernateCriterion instanceof SimpleExpression) {
                     SimpleExpression expr = (SimpleExpression) hibernateCriterion;
                     Object op = ReflectionUtils.getField(opField, expr);
-                    PropertyMapping mapping = (PropertyMapping) impl.getEntityPersister(entity.getJavaClass().getName());
+                    PropertyMapping mapping = getEntityPersister(entity.getJavaClass().getName(), sessionFactory);
                     String[] columns;
-                    if (alias != null)
+                    if (alias != null) {
                         columns = mapping.toColumns(alias, property);
-                    else
+                    }
+                    else {
                         columns = mapping.toColumns(property);
-                    String root = sqlFunction.render(basic, Arrays.asList(columns), impl);
+                    }
+                    String root = render(basic, Arrays.asList(columns), sessionFactory, sqlFunction);
                     Object value = pc.getValue();
                     if (value != null) {
                         sqlRestriction = Restrictions.sqlRestriction(root + op + "?", value, typeResolver.basic(value.getClass().getName()));
@@ -273,6 +272,14 @@ public abstract class AbstractHibernateQuery extends Query {
         }
         return sqlRestriction;
     }
+
+    protected abstract String render(BasicType basic, List<String> asList, SessionFactory sessionFactory, SQLFunction sqlFunction);
+
+    protected abstract PropertyMapping getEntityPersister(String name, SessionFactory sessionFactory);
+
+    protected abstract TypeResolver getTypeResolver(SessionFactory sessionFactory);
+
+    protected abstract Dialect getDialect(SessionFactory sessionFactory);
 
     @Override
     public Junction disjunction() {
