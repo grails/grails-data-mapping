@@ -23,15 +23,12 @@ import org.codehaus.groovy.grails.domain.GrailsDomainClassMappingContext
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.SavePersistentMethod
-import org.hibernate.FlushMode
 import org.hibernate.LockMode
-import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.hibernate.engine.spi.EntityEntry
 import org.hibernate.engine.spi.SessionImplementor
 import org.hibernate.proxy.HibernateProxy
 import org.springframework.dao.DataAccessException
-import org.springframework.orm.hibernate3.HibernateTemplate
 
 /**
  * The implementation of the GORM instance API contract for Hibernate.
@@ -45,6 +42,7 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
     protected SavePersistentMethod saveMethod
     protected MergePersistentMethod mergeMethod
     protected GrailsHibernateTemplate hibernateTemplate
+    protected InstanceApiHelper instanceApiHelper
 
     HibernateGormInstanceApi(Class<D> persistentClass, HibernateDatastore datastore, ClassLoader classLoader) {
         super(persistentClass, datastore, classLoader)
@@ -63,6 +61,7 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
         else {
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
         }
+        instanceApiHelper = new InstanceApiHelper(hibernateTemplate)
     }
 
     /**
@@ -214,14 +213,7 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
         def obj = instance
         boolean flush = shouldFlush()
         try {
-            hibernateTemplate.execute new GrailsHibernateTemplate.HibernateCallback() {
-                def doInHibernate(Session session) {
-                   session.delete obj
-                   if (flush) {
-                       session.flush()
-                   }
-                }
-            }
+            instanceApiHelper.delete obj, flush
         }
         catch (DataAccessException e) {
             handleDataAccessException(hibernateTemplate, e)
@@ -267,26 +259,23 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
 
         entry
     }
-    /**
-    * Session should no longer be flushed after a data access exception occurs (such a constriant violation)
-    */
-   protected void handleDataAccessException(GrailsHibernateTemplate template, DataAccessException e) {
-       try {
-           hibernateTemplate.execute new GrailsHibernateTemplate.HibernateCallback() {
-               def doInHibernate(Session session) {
-                   session.setFlushMode(FlushMode.MANUAL)
-               }
-           }
-       }
-       finally {
-           throw e
-       }
-   }
 
-   boolean shouldFlush(Map map = [:]) {
-       if (map?.containsKey('flush')) {
-           return Boolean.TRUE == map.flush
-       }
-       return config?.autoFlush instanceof Boolean ? config.autoFlush : false
-   }
+    /**
+     * Session should no longer be flushed after a data access exception occurs (such a constriant violation)
+     */
+    protected void handleDataAccessException(GrailsHibernateTemplate template, DataAccessException e) {
+        try {
+            instanceApiHelper.setFlushModeManual()
+        }
+        finally {
+            throw e
+        }
+    }
+
+    boolean shouldFlush(Map map = [:]) {
+        if (map?.containsKey('flush')) {
+            return Boolean.TRUE == map.flush
+        }
+        return config?.autoFlush instanceof Boolean ? config.autoFlush : false
+    }
 }
