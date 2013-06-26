@@ -47,7 +47,7 @@ class GemfireGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class cls) {
-        return new GemfireStaticApi<D> (cls, datastore, finders)
+        return new GemfireStaticApi<D> (cls, datastore, getFinders())
     }
 }
 

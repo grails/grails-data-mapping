@@ -44,7 +44,7 @@ class SimpleDBGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new SimpleDBGormStaticApi<D>(cls, datastore, finders)
+        return new SimpleDBGormStaticApi<D>(cls, datastore, getFinders())
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {

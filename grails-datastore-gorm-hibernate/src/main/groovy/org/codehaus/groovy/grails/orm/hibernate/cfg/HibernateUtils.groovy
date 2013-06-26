@@ -276,7 +276,7 @@ class HibernateUtils {
 
         def classLoader = application.classLoader
 
-        def finders = new HibernateGormEnhancer(datastore, transactionManager, application).finders
+        def finders = new HibernateGormEnhancer(datastore, transactionManager, application).getFinders()
         def staticApi = new HibernateGormStaticApi(dc.clazz, datastore, finders, classLoader, transactionManager)
         ((GroovyObject)((GroovyObject)dc.metaClass).getProperty('static')).setProperty(getter, { -> staticApi })
 

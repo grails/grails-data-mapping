@@ -218,11 +218,11 @@ class GormEnhancer {
     }
 
     protected void registerNamedQueries(PersistentEntity entity, namedQueries) {
-        new NamedQueriesBuilder(entity, finders).evaluate namedQueries
+        new NamedQueriesBuilder(entity, getFinders()).evaluate namedQueries
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        new GormStaticApi<D>(cls, datastore, finders)
+        new GormStaticApi<D>(cls, datastore, getFinders())
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {

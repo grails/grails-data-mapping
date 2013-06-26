@@ -54,7 +54,7 @@ class MongoGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new MongoGormStaticApi<D>(cls, datastore, finders)
+        return new MongoGormStaticApi<D>(cls, datastore, getFinders())
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {

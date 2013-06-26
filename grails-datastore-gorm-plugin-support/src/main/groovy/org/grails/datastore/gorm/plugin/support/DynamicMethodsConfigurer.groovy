@@ -62,7 +62,7 @@ abstract class DynamicMethodsConfigurer {
                     enhancer.enhance(entity)
                 }
                 else {
-                    def staticApi = createGormStaticApi(cls, enhancer.finders)
+                    def staticApi = createGormStaticApi(cls, enhancer.getFinders())
                     def instanceApi = createGormInstanceApi(cls)
                     cls.metaClass.static."get$type" = {-> staticApi }
                     cls.metaClass."get$type" = {-> new InstanceProxy(instance:delegate, target:instanceApi) }

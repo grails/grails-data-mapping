@@ -55,7 +55,7 @@ abstract class AbstractHibernateGormEnhancer extends GormEnhancer {
 
         def domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, entity.name)
         if (domainClass) {
-            new HibernateNamedQueriesBuilder(domainClass, finders, entity.mappingContext.conversionService).evaluate((Closure)namedQueries)
+            new HibernateNamedQueriesBuilder(domainClass, getFinders(), entity.mappingContext.conversionService).evaluate((Closure)namedQueries)
         }
     }
 }

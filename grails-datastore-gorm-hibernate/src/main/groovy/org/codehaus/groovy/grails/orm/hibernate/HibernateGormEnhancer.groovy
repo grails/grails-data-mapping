@@ -66,7 +66,7 @@ class HibernateGormEnhancer extends AbstractHibernateGormEnhancer {
 
     @Override
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        new HibernateGormStaticApi<D>(cls, (HibernateDatastore)datastore, finders, classLoader, transactionManager)
+        new HibernateGormStaticApi<D>(cls, (HibernateDatastore)datastore, getFinders(), classLoader, transactionManager)
     }
 
     @Override

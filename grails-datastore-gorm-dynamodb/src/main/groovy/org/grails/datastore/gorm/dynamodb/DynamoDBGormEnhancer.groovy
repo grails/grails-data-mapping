@@ -43,7 +43,7 @@ class DynamoDBGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new DynamoDBGormStaticApi<D>(cls, datastore, finders)
+        return new DynamoDBGormStaticApi<D>(cls, datastore, getFinders())
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
