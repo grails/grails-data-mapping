@@ -59,21 +59,22 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  */
 @CompileStatic
 class HibernateGormStaticApi<D> extends GormStaticApi<D> {
-    private static final EMPTY_ARRAY = [] as Object[]
+    protected static final EMPTY_ARRAY = [] as Object[]
 
-    private GrailsHibernateTemplate hibernateTemplate
-    private SessionFactory sessionFactory
-    private ConversionService conversionService
-    private Class identityType
-    private ListPersistentMethod listMethod
-    private FindAllPersistentMethod findAllMethod
-    private FindPersistentMethod findMethod
-    private ExecuteQueryPersistentMethod executeQueryMethod
-    private ExecuteUpdatePersistentMethod executeUpdateMethod
-    private MergePersistentMethod mergeMethod
-    private ClassLoader classLoader
-    private GrailsApplication grailsApplication
-    private boolean cacheQueriesByDefault = false
+    protected GrailsHibernateTemplate hibernateTemplate
+    protected SessionFactory sessionFactory
+    protected ConversionService conversionService
+    protected Class identityType
+    protected ListPersistentMethod listMethod
+    protected FindAllPersistentMethod findAllMethod
+    protected FindPersistentMethod findMethod
+    protected ExecuteQueryPersistentMethod executeQueryMethod
+    protected ExecuteUpdatePersistentMethod executeUpdateMethod
+    protected MergePersistentMethod mergeMethod
+    protected ClassLoader classLoader
+    protected GrailsApplication grailsApplication
+    protected boolean cacheQueriesByDefault = false
+    protected GrailsDomainBinder grailsDomainBinder = new GrailsDomainBinder()
 
     HibernateGormStaticApi(Class<D> persistentClass, HibernateDatastore datastore, List<FinderMethod> finders,
                 ClassLoader classLoader, PlatformTransactionManager transactionManager) {
@@ -117,7 +118,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         }
     }
 
-    private Serializable convertIdentifier(Serializable id) {
+    protected Serializable convertIdentifier(Serializable id) {
         (Serializable)HibernateUtils.convertValueToType(id, identityType, conversionService)
     }
 
@@ -166,11 +167,12 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         getAllInternal(ids as List)
     }
 
-    private List getAllInternal(List ids) {
+    protected List getAllInternal(List ids) {
         if (!ids) return []
 
+        ids = ids.collect { convertIdentifier((Serializable)it) }
+
         (List)hibernateTemplate.execute({Session session ->
-            ids = ids.collect { convertIdentifier((Serializable)it) }
             def criteria = session.createCriteria(persistentClass)
             hibernateTemplate.applySettings(criteria)
             def identityName = persistentEntity.identity.name
@@ -251,7 +253,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     D first(Map m) {
-        def entityMapping = GrailsDomainBinder.getMapping(persistentEntity.javaClass)
+        def entityMapping = grailsDomainBinder.getMapping(persistentEntity.javaClass)
         if (entityMapping?.identity instanceof CompositeIdentity) {
             throw new UnsupportedOperationException('The first() method is not supported for domain classes that have composite keys.')
         }
@@ -259,7 +261,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
     }
 
     D last(Map m) {
-        def entityMapping = GrailsDomainBinder.getMapping(persistentEntity.javaClass)
+        def entityMapping = grailsDomainBinder.getMapping(persistentEntity.javaClass)
         if (entityMapping?.identity instanceof CompositeIdentity) {
             throw new UnsupportedOperationException('The last() method is not supported for domain classes that have composite keys.')
         }
@@ -420,7 +422,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         } as HibernateCallback)
     }
 
-    private Map filterQueryArgumentMap(Map query) {
+    protected Map filterQueryArgumentMap(Map query) {
         def queryArgs = [:]
         for (entry in query.entrySet()) {
             if (entry.value instanceof CharSequence) {
@@ -433,7 +435,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         return queryArgs
     }
 
-    private List<String> removeNullNames(Map query) {
+    protected List<String> removeNullNames(Map query) {
         List<String> nullNames = []
         Set<String> allNames = new HashSet(query.keySet())
         for (String name in allNames) {
