@@ -84,9 +84,8 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
         }
     }
 
-    @SuppressWarnings("deprecation")
     public void reconnect() {
-        getSession().reconnect();
+        getSession();
     }
 
     public void flush() {
