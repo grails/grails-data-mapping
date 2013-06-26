@@ -75,7 +75,7 @@ public class HibernateQuery extends AbstractHibernateQuery {
     }
 
     protected PropertyMapping getEntityPersister(String name, SessionFactory sessionFactory) {
-        return (PropertyMapping) ((SessionFactoryImplementor) sessionFactory).getEntityPersister(entity.getJavaClass().getName());
+        return (PropertyMapping) ((SessionFactoryImplementor) sessionFactory).getEntityPersister(name);
     }
 
     protected TypeResolver getTypeResolver(SessionFactory sessionFactory) {

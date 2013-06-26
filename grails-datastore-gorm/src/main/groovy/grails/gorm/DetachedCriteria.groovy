@@ -528,14 +528,12 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
     Criteria ltAll(String propertyName, QueryableCriteria propertyValue) {
         add new Query.LessThanAll(propertyName, propertyValue)
         return this
-
     }
 
     @Override
     Criteria geAll(String propertyName, QueryableCriteria propertyValue) {
         add new Query.GreaterThanEqualsAll(propertyName, propertyValue)
         return this
-
     }
 
     @Override
@@ -616,21 +614,20 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      */
     DetachedCriteria<T> where(Closure additionalQuery) {
         DetachedCriteria<T> newQuery = clone()
-
-        return newQuery.build( additionalQuery )
+        return newQuery.build(additionalQuery)
     }
 
     /**
      * Synonym for #get
      */
-    T find( Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
+    T find(Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
         get(args, additionalCriteria)
     }
 
     /**
      * Synonym for #get
      */
-    T find( Closure additionalCriteria) {
+    T find(Closure additionalCriteria) {
         get(Collections.emptyMap(), additionalCriteria)
     }
 
@@ -639,7 +636,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      *
      * @return A single entity
      */
-    T get( Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
+    T get(Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
         (T)withPopulatedQuery(args, additionalCriteria) { Query query ->
             query.singleResult()
         }
@@ -650,7 +647,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      *
      * @return A single entity
      */
-    T get( Closure additionalCriteria) {
+    T get(Closure additionalCriteria) {
         get(Collections.emptyMap(), additionalCriteria)
     }
 
@@ -659,7 +656,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      *
      * @return A list of matching instances
      */
-    List<T> list( Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
+    List<T> list(Map args = Collections.emptyMap(), Closure additionalCriteria = null) {
         (List)withPopulatedQuery(args, additionalCriteria) { Query query ->
             if (args?.max) {
                 return new PagedResultList(query)
@@ -673,7 +670,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      *
      * @return A list of matching instances
      */
-    List<T> list( Closure additionalCriteria) {
+    List<T> list(Closure additionalCriteria) {
         list(Collections.emptyMap(), additionalCriteria)
     }
 
@@ -696,7 +693,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
      * @param args The arguments
      * @return The count
      */
-    Number count(Closure additionalCriteria ) {
+    Number count(Closure additionalCriteria) {
         (Number)withPopulatedQuery(Collections.emptyMap(), additionalCriteria) { Query query ->
             query.projections().count()
             query.singleResult()
@@ -866,22 +863,21 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
         if (method != null) {
             return method.invoke(targetClass, methodName,this, args)
         }
-        if (args && args.size() == 1 && (args[-1] instanceof Closure)) {
-            final prop = persistentEntity.getPropertyByName(methodName)
-            if (prop instanceof Association) {
-                def associationCriteria = new DetachedAssociationCriteria(prop.associatedEntity.javaClass, prop)
-                add associationCriteria
-                final callable = args[-1]
-                callable.delegate = associationCriteria
-                callable.call()
-            }
-            else {
-                throw new MissingMethodException(methodName, DetachedCriteria, args)
-            }
-        }
-        else {
+
+        if (!args || args.size() != 1 || !(args[-1] instanceof Closure)) {
             throw new MissingMethodException(methodName, DetachedCriteria, args)
         }
+
+        final prop = persistentEntity.getPropertyByName(methodName)
+        if (!(prop instanceof Association)) {
+            throw new MissingMethodException(methodName, DetachedCriteria, args)
+        }
+
+        def associationCriteria = new DetachedAssociationCriteria(prop.associatedEntity.javaClass, prop)
+        add associationCriteria
+        final callable = args[-1]
+        callable.delegate = associationCriteria
+        callable.call()
     }
 
     @Override
@@ -926,7 +922,7 @@ class DetachedCriteria<T> implements QueryableCriteria<T>, Cloneable, Iterable<T
             DynamicFinder.applyDetachedCriteria(query, this)
 
             if (additionalCriteria != null) {
-                def additionalDetached = new DetachedCriteria(targetClass).build( additionalCriteria )
+                def additionalDetached = new DetachedCriteria(targetClass).build(additionalCriteria)
                 DynamicFinder.applyDetachedCriteria(query, additionalDetached)
             }
 

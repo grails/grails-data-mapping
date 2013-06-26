@@ -40,7 +40,6 @@ import org.hibernate.type.BasicType;
 import org.hibernate.type.TypeResolver;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
-
 /**
  * Bridges the Query API with the Hibernate Criteria API
  *
@@ -76,7 +75,7 @@ public class HibernateQuery extends AbstractHibernateQuery {
     }
 
     protected PropertyMapping getEntityPersister(String name, SessionFactory sessionFactory) {
-        return (PropertyMapping) ((SessionFactoryImplementor) sessionFactory).getEntityPersister(entity.getJavaClass().getName());
+        return (PropertyMapping) ((SessionFactoryImplementor) sessionFactory).getEntityPersister(name);
     }
 
     protected TypeResolver getTypeResolver(SessionFactory sessionFactory) {
