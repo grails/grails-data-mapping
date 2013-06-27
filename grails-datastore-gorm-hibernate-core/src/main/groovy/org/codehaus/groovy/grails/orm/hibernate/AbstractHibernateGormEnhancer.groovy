@@ -40,6 +40,7 @@ abstract class AbstractHibernateGormEnhancer extends GormEnhancer {
         super(datastore, transactionManager)
         this.grailsApplication = grailsApplication
         classLoader = grailsApplication.classLoader
+        getFinders()
     }
 
     @Override
