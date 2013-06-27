@@ -43,7 +43,13 @@ public abstract class AbstractHibernateCriterionAdapter {
     protected String alias;
     protected static boolean initialized;
 
-    public AbstractHibernateCriterionAdapter(PersistentEntity entity, Query.Criterion criterion, String alias) {
+    protected Query.Criterion criterion;
+
+    protected AbstractHibernateCriterionAdapter(Query.Criterion criterion) {
+        this(null, criterion, null);
+    }
+
+    protected AbstractHibernateCriterionAdapter(PersistentEntity entity, Query.Criterion criterion, String alias) {
         this.criterion = criterion;
         this.alias = alias;
         initialize();
@@ -159,18 +165,18 @@ public abstract class AbstractHibernateCriterionAdapter {
     /** utility methods to group and clean up the initialization of the Criterion Adapters**/
 
     //used for PropertyCriterions with a specified value ( which can be a subquery)
-    private void addPropertyCriterionAdaptor(final Class<?> clazz, final String constraintName) {
+    protected void addPropertyCriterionAdaptor(final Class<?> clazz, final String constraintName) {
         addCriterionAdaptor(clazz, constraintName, Object.class);
     }
 
     protected abstract Criterion createRlikeExpression(String propertyName, String pattern);
 
     //used for collection size PropertyCriterions
-    private void addPropertySizeCriterionAdaptor(final Class<?> clazz, final String constraintName) {
+    protected void addPropertySizeCriterionAdaptor(final Class<?> clazz, final String constraintName) {
         addCriterionAdaptor(clazz, constraintName, int.class);
     }
 
-    private void addCriterionAdaptor(final Class<?> clazz, final String constraintName, final Class<?> valueClass) {
+    protected void addCriterionAdaptor(final Class<?> clazz, final String constraintName, final Class<?> valueClass) {
         criterionAdaptors.put(clazz, new CriterionAdaptor() {
             @Override
             public org.hibernate.criterion.Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.Criterion criterion, String alias) {
@@ -189,7 +195,7 @@ public abstract class AbstractHibernateCriterionAdapter {
     }
 
     // use for criterions without a value
-    private void addPropertyNameCriterionAdaptor(final Class<?> clazz, final String constraintName) {
+    protected void addPropertyNameCriterionAdaptor(final Class<?> clazz, final String constraintName) {
         criterionAdaptors.put(clazz, new CriterionAdaptor() {
             @Override
             public org.hibernate.criterion.Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.Criterion criterion, String alias) {
@@ -199,7 +205,7 @@ public abstract class AbstractHibernateCriterionAdapter {
     }
 
     // use for criterions used to compare 2 properties
-    private void addPropertyComparisonCriterionAdaptor(final Class<?> clazz, final String constraintName) {
+    protected void addPropertyComparisonCriterionAdaptor(final Class<?> clazz, final String constraintName) {
         criterionAdaptors.put(clazz, new CriterionAdaptor() {
             @Override
             public org.hibernate.criterion.Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.Criterion criterion, String alias) {
@@ -209,7 +215,7 @@ public abstract class AbstractHibernateCriterionAdapter {
     }
 
     // use for regular expression criterions
-    private void addPropertyLikeCriterionAdaptor(final Class<?> clazz, final String constraintName) {
+    protected void addPropertyLikeCriterionAdaptor(final Class<?> clazz, final String constraintName) {
         criterionAdaptors.put(clazz, new CriterionAdaptor() {
             @Override
             public org.hibernate.criterion.Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.Criterion criterion, String alias) {
@@ -219,7 +225,7 @@ public abstract class AbstractHibernateCriterionAdapter {
     }
 
     // used for junctions
-    private void addJunctionCriterionAdaptor(final Class<?> clazz, final String constraintName) {
+    protected void addJunctionCriterionAdaptor(final Class<?> clazz, final String constraintName) {
         criterionAdaptors.put(clazz, new CriterionAdaptor() {
             @Override
             public org.hibernate.criterion.Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery, Query.Criterion criterion, String alias) {
@@ -235,24 +241,24 @@ public abstract class AbstractHibernateCriterionAdapter {
      *
      * @param constraintName - the criteria
      */
-    private Criterion callRestrictionsMethod(String constraintName, Class<?>[] paramTypes, Object[] params) {
+    protected Criterion callRestrictionsMethod(String constraintName, Class<?>[] paramTypes, Object[] params) {
         final Method restrictionsMethod = ReflectionUtils.findMethod(Restrictions.class, constraintName, paramTypes);
         Assert.notNull(restrictionsMethod, "Could not find method: " + constraintName + " in class Restrictions for parameters: " + ArrayUtils.toString(params) + " with types: " + ArrayUtils.toString(paramTypes));
         return (Criterion) ReflectionUtils.invokeMethod(restrictionsMethod, null, params);
     }
 
-    private String getPropertyName(Query.Criterion criterion, String alias) {
+    protected String getPropertyName(Query.Criterion criterion, String alias) {
         return calculatePropertyName(((Query.PropertyNameCriterion) criterion).getProperty(), alias);
     }
 
-    private String calculatePropertyName(String property, String alias) {
+    protected String calculatePropertyName(String property, String alias) {
         if (alias != null) {
             return alias + '.' + property;
         }
         return property;
     }
 
-    private void applySubCriteriaToJunction(PersistentEntity entity, AbstractHibernateQuery hibernateCriteria, List<Query.Criterion> existing,
+    protected void applySubCriteriaToJunction(PersistentEntity entity, AbstractHibernateQuery hibernateCriteria, List<Query.Criterion> existing,
             Junction conjunction, String alias) {
 
         for (Query.Criterion subCriterion : existing) {
@@ -281,13 +287,6 @@ public abstract class AbstractHibernateCriterionAdapter {
     }
 
     protected abstract Object getHibernateDetachedCriteria(QueryableCriteria<?> value);
-//    pc.setValue(builder.getHibernateDetachedCriteria((QueryableCriteria<?>) pc.getValue()));
-
-    private Query.Criterion criterion;
-
-    public AbstractHibernateCriterionAdapter(Query.Criterion criterion) {
-        this.criterion = criterion;
-    }
 
     public org.hibernate.criterion.Criterion toHibernateCriterion(AbstractHibernateQuery hibernateQuery) {
         final CriterionAdaptor criterionAdaptor = criterionAdaptors.get(criterion.getClass());
