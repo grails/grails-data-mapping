@@ -36,4 +36,16 @@ public interface DirtyCheckable {
      */
     void markDirty(String propertyName)
 
+    /**
+     * @return A list of the dirty property names
+     */
+    List<String> listDirtyProperties()
+
+    /**
+     * Returns the original value of the property prior to when {@link #trackChanges()} was called
+     *
+     * @param propertyName The property name
+     * @return The original value
+     */
+    Object getOriginalValue(String propertyName)
 }

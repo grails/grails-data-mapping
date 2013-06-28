@@ -32,13 +32,20 @@ class DirtyCheckTransformationSpec extends Specification {
         then:"The changes are tracked"
             b.hasChanged()
             b.hasChanged("title")
+            b.getOriginalValue('title') == "My Title"
+            b.listDirtyProperties() == ['title']
             !b.hasChanged("author")
 
         when:"A property with a getter and setter is changed"
+            b.title = "Some other value"
             b.author = "Some Bloke"
 
         then:"We track that change too"
+            b.hasChanged("title")
+            b.getOriginalValue('title') == "My Title"
+            b.listDirtyProperties() == ['title', 'author']
             b.hasChanged("author")
+
     }
 }
 
@@ -54,6 +61,8 @@ class Book {
     String getAuthor() {
         return this.author
     }
+
+
 
 }
 
