@@ -23,6 +23,7 @@ import java.beans.Introspector;
 public class NameUtils {
 
     private static final String PROPERTY_SET_PREFIX = "set";
+    private static final String PROPERTY_GET_PREFIX = "get";
 
     /**
      * Retrieves the name of a setter for the specified property name
@@ -30,7 +31,34 @@ public class NameUtils {
      * @return The setter equivalent
      */
     public static String getSetterName(String propertyName) {
-        return PROPERTY_SET_PREFIX+propertyName.substring(0,1).toUpperCase()+ propertyName.substring(1);
+        return PROPERTY_SET_PREFIX + propertyName.substring(0,1).toUpperCase()+ propertyName.substring(1);
+    }
+
+    /**
+     * Retrieves the name of a setter for the specified property name
+     * @param propertyName The property name
+     * @return The setter equivalent
+     */
+    public static String getGetterName(String propertyName) {
+        return PROPERTY_GET_PREFIX + propertyName.substring(0,1).toUpperCase()+ propertyName.substring(1);
+    }
+
+    /**
+     * Returns the property name for a getter or setter
+     * @param getterOrSetterName The getter or setter name
+     * @return The property name
+     */
+    public static String getPropertyNameForGetterOrSetter(String getterOrSetterName) {
+        String propertyName = getterOrSetterName.substring(3);
+        if(propertyName.length() == 1) return propertyName.toLowerCase();
+        else {
+            if(Character.isUpperCase(propertyName.charAt(0)) && Character.isUpperCase(propertyName.charAt(1))) {
+                return propertyName;
+            }
+            else {
+                return propertyName.substring(0,1).toLowerCase() + propertyName.substring(1);
+            }
+        }
     }
     /**
      * Converts class name to property name using JavaBean decaplization

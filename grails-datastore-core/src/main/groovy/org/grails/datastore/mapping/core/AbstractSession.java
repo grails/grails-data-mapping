@@ -28,6 +28,7 @@ import org.grails.datastore.mapping.core.impl.PendingInsert;
 import org.grails.datastore.mapping.core.impl.PendingOperation;
 import org.grails.datastore.mapping.core.impl.PendingOperationExecution;
 import org.grails.datastore.mapping.core.impl.PendingUpdate;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.EntityPersister;
 import org.grails.datastore.mapping.engine.NativeEntryEntityPersister;
 import org.grails.datastore.mapping.engine.NonPersistentTypeException;
@@ -275,6 +276,10 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
         if (instance == null) {
             return false;
+        }
+
+        if(instance instanceof DirtyCheckable) {
+            return ((DirtyCheckable)instance).hasChanged();
         }
 
         EntityPersister persister = (EntityPersister) getPersister(instance);
