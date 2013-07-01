@@ -18,9 +18,11 @@ import grails.validation.ValidationException
 import groovy.transform.CompileStatic
 
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckingSupport
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.proxy.EntityProxy
 
 /**
@@ -248,5 +250,59 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
                 session.flush()
             }
         } as SessionCallback)
+    }
+
+    /**
+     * Checks whether a field is dirty
+     *
+     * @param instance The instance
+     * @param fieldName The name of the field
+     *
+     * @return true if the field is dirty
+     */
+    boolean isDirty(D instance, String fieldName) {
+        if(instance instanceof DirtyCheckable) {
+            return ((DirtyCheckable)instance).hasChanged(fieldName)
+        }
+        return true
+    }
+
+    /**
+     * Checks whether an entity is dirty
+     *
+     * @param instance The instance
+     * @return true if it is dirty
+     */
+    boolean isDirty(D instance) {
+        if(instance instanceof DirtyCheckable) {
+            return ((DirtyCheckable)instance).hasChanged() || (datastore.hasCurrentSession() && DirtyCheckingSupport.areAssociationsDirty(datastore.currentSession, persistentEntity, instance))
+        }
+        return true
+    }
+
+    /**
+     * Obtains a list of property names that are dirty
+     *
+     * @param instance The instance
+     * @return A list of property names that are dirty
+     */
+    List getDirtyPropertyNames(D instance) {
+        if(instance instanceof DirtyCheckable) {
+            return ((DirtyCheckable)instance).listDirtyPropertyNames()
+        }
+        return []
+    }
+
+    /**
+     * Gets the original persisted value of a field.
+     *
+     * @param fieldName The field name
+     * @return The original persisted value
+     */
+    Object getPersistentValue(D instance, String fieldName) {
+        if(instance instanceof DirtyCheckable) {
+            return ((DirtyCheckable)instance).getOriginalValue(fieldName)
+        }
+        return null
     }
 }

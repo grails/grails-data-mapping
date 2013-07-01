@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.grails.datastore.mapping.core.Datastore;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.EntityAccess;
 import org.grails.datastore.mapping.engine.event.*;
 import org.grails.datastore.mapping.model.MappingContext;
@@ -178,7 +179,15 @@ public class DomainEventListener extends AbstractPersistenceEventListener
     }
 
     public void afterInsert(final PersistentEntity entity, final EntityAccess ea, PostInsertEvent event) {
+        activateDirtyChecking(ea);
         invokeEvent(EVENT_AFTER_INSERT, entity, ea, event);
+    }
+
+    private void activateDirtyChecking(EntityAccess ea) {
+        Object e = ea.getEntity();
+        if(e instanceof DirtyCheckable) {
+            ((DirtyCheckable) e).trackChanges();
+        }
     }
 
     public void afterUpdate(final PersistentEntity entity, final EntityAccess ea) {
@@ -194,6 +203,7 @@ public class DomainEventListener extends AbstractPersistenceEventListener
     }
 
     public void afterLoad(final PersistentEntity entity, final EntityAccess ea, PostLoadEvent event) {
+        activateDirtyChecking(ea);
         autowireBeanProperties(ea.getEntity());
         invokeEvent(EVENT_AFTER_LOAD, entity, ea, event);
     }

@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.grails.datastore.mapping.core.Session;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.model.PersistentEntity;
 
@@ -216,7 +217,22 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
     }
 
     public boolean isDirty() {
-        return dirty;
+        return dirty || checkCollectionElements();
+    }
+
+    protected boolean checkCollectionElements() {
+        if(isInitialized()) {
+            for(Object o : collection) {
+                if( o instanceof DirtyCheckable) {
+                    DirtyCheckable dirtyCheckable = (DirtyCheckable) o;
+                    if(dirtyCheckable.hasChanged()) {
+                        this.dirty = true;
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public void resetDirty() {

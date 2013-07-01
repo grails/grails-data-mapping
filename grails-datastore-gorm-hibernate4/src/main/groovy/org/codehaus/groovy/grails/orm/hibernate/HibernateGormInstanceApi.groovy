@@ -132,7 +132,7 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
      * @param fieldName The field name
      * @return The original persisted value
      */
-    D getPersistentValue(D instance, String fieldName) {
+    Object getPersistentValue(D instance, String fieldName) {
         SessionImplementor session = (SessionImplementor)sessionFactory.currentSession
         def entry = findEntityEntry(instance, session, false)
         if (!entry || !entry.loadedState) {

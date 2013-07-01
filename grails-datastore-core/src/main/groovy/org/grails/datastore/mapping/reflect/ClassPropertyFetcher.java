@@ -233,10 +233,25 @@ public class ClassPropertyFetcher {
         return getPropertyValueWithFetcher(name, fetcher);
     }
 
+    public Object getPropertyValue(final Object instance, String name) {
+        PropertyFetcher fetcher = resolveFetcher(name, true);
+        return getPropertyValueWithFetcher(name, fetcher,new ReferenceInstanceCallback() {
+            @Override
+            public Object getReferenceInstance() {
+                return instance;
+            }
+        });
+    }
+
     private Object getPropertyValueWithFetcher(String name, PropertyFetcher fetcher) {
+        ReferenceInstanceCallback thisCallback = callback;
+        return getPropertyValueWithFetcher(name, fetcher, thisCallback);
+    }
+
+    private Object getPropertyValueWithFetcher(String name, PropertyFetcher fetcher, ReferenceInstanceCallback thisCallback) {
         if (fetcher != null) {
             try {
-                return fetcher.get(callback);
+                return fetcher.get(thisCallback);
             } catch (Exception e) {
                 LOG.warn("Error fetching property's "
                         + name + " value from class " + clazz.getName(), e);

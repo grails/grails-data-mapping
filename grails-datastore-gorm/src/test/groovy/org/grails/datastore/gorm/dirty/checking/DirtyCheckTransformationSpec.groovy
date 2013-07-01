@@ -15,25 +15,31 @@ class DirtyCheckTransformationSpec extends Specification {
 
         then:"It implements the ChangeTrackable interface"
             b instanceof DirtyCheckable
-            !b.hasChanged()
-            !b.hasChanged("title")
+            b.hasChanged()
+            b.hasChanged("title")
 
         when:"The title is changed"
             b.title = "My Title"
 
-        then:"There are no changes because we haven't started tracking"
-            !b.hasChanged()
-            !b.hasChanged("title")
+        then:"No tracking started yet so return true by default"
+            b.hasChanged()
+            b.hasChanged("title")
 
         when:"We start tracking and change the title"
             b.trackChanges()
+
+        then:"If no changes a present then hasChanges returns false"
+            !b.hasChanged()
+            !b.hasChanged("title")
+
+        when:"The a property is changed"
             b.title = "Changed"
 
         then:"The changes are tracked"
             b.hasChanged()
             b.hasChanged("title")
             b.getOriginalValue('title') == "My Title"
-            b.listDirtyProperties() == ['title']
+            b.listDirtyPropertyNames() == ['title']
             !b.hasChanged("author")
 
         when:"A property with a getter and setter is changed"
@@ -43,7 +49,7 @@ class DirtyCheckTransformationSpec extends Specification {
         then:"We track that change too"
             b.hasChanged("title")
             b.getOriginalValue('title') == "My Title"
-            b.listDirtyProperties() == ['title', 'author']
+            b.listDirtyPropertyNames() == ['title', 'author']
             b.hasChanged("author")
 
     }

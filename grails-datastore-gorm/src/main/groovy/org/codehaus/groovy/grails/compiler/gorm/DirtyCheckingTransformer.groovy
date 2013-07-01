@@ -5,6 +5,7 @@ import groovy.transform.CompileStatic
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.FieldNode
+import org.codehaus.groovy.ast.GenericsType
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
 import org.codehaus.groovy.ast.PropertyNode
@@ -13,7 +14,6 @@ import org.codehaus.groovy.ast.expr.ArgumentListExpression
 import org.codehaus.groovy.ast.expr.BinaryExpression
 import org.codehaus.groovy.ast.expr.BooleanExpression
 import org.codehaus.groovy.ast.expr.ConstantExpression
-import org.codehaus.groovy.ast.expr.ListExpression
 import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.NotExpression
@@ -24,6 +24,7 @@ import org.codehaus.groovy.ast.stmt.EmptyStatement
 import org.codehaus.groovy.ast.stmt.ExpressionStatement
 import org.codehaus.groovy.ast.stmt.IfStatement
 import org.codehaus.groovy.ast.stmt.ReturnStatement
+import org.codehaus.groovy.ast.tools.GenericsUtils
 import org.codehaus.groovy.classgen.GeneratorContext
 import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
@@ -53,12 +54,16 @@ import static java.lang.reflect.Modifier.*
 @AstTransformer
 @CompileStatic
 class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtefactClassInjector {
+    private static final String VOID = "void";
     public static final String CHANGE_TRACKING_FIELD_NAME = '$changedProperties'
     private static final Class<?>[] EMPTY_JAVA_CLASS_ARRAY = [];
     private static final Class<?>[] OBJECT_CLASS_ARG = [Object.class];
     public static final String METHOD_NAME_TRACK_CHANGES = "trackChanges"
     public static final String METHOD_NAME_MARK_DIRTY = "markDirty"
-    public static final String METHOD_NAME_HAS_CHANGED = "hasChanged"
+    public static final String METHOD_NAME_IS_DIRTY = "hasChanged"
+    public static final ConstantExpression CONSTANT_NULL = new ConstantExpression(null)
+    public static final String METHOD_NAME_GET_DIRTY_PROPERTY_NAMES = "listDirtyPropertyNames"
+    public static final String METHOD_NAME_GET_PERSISTENT_VALUE = "getOriginalValue"
 
     @Override
     void performInjection(SourceUnit source, GeneratorContext context, ClassNode classNode) {
@@ -95,7 +100,9 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
 
         if (classNode.getSuperClass().equals(OBJECT_CLASS_NODE)) {
             FieldNode changingTrackingField = new FieldNode(CHANGE_TRACKING_FIELD_NAME, PROTECTED | TRANSIENT, mapClassNode, classNode, null);
-            classNode.addField(changingTrackingField)
+            if(!classNode.getField(CHANGE_TRACKING_FIELD_NAME)) {
+                classNode.addField(changingTrackingField)
+            }
 
             // we also need to make it implement the ChangeTrackable interface
 
@@ -115,18 +122,25 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
                 classNode.addMethod(METHOD_NAME_TRACK_CHANGES, PUBLIC, ClassHelper.VOID_TYPE, ZERO_PARAMETERS, null, startTrackingBody)
 
             // Implement the hasChanged method such that:
-            // boolean hasChanged() { $changedProperties }
-            if(!classNode.getMethod(METHOD_NAME_HAS_CHANGED, ZERO_PARAMETERS))
-                classNode.addMethod(METHOD_NAME_HAS_CHANGED, PUBLIC, ClassHelper.boolean_TYPE, ZERO_PARAMETERS, null, new ReturnStatement(changeTrackingVariable))
+            // boolean hasChanged() { $changedProperties == null || $changedProperties }
+            if(!classNode.getMethod(METHOD_NAME_IS_DIRTY, ZERO_PARAMETERS)) {
+                final leftExpression = new BinaryExpression(changeTrackingVariable, Token.newSymbol(Types.COMPARE_EQUAL, 0, 0), CONSTANT_NULL)
+                final rightExpression = changeTrackingVariable
+                final fullCondition = new BinaryExpression(leftExpression, Token.newSymbol(Types.LOGICAL_OR, 0, 0), rightExpression)
+                classNode.addMethod(METHOD_NAME_IS_DIRTY, PUBLIC, ClassHelper.boolean_TYPE, ZERO_PARAMETERS, null, new ReturnStatement(fullCondition))
+            }
 
             // Implement the hasChanged(String propertyName) method such that
-            // boolean hasChanged() { $changedProperties && $changedProperties.containsKey(propertyName) }
+            // boolean hasChanged() { $changedProperties == null ||  $changedProperties && $changedProperties.containsKey(propertyName) }
             final propertyNameParameter = new Parameter(ClassHelper.STRING_TYPE, "propertyName")
             final propertyNameParameterArray = [propertyNameParameter] as Parameter[]
-            if(!classNode.getMethod(METHOD_NAME_HAS_CHANGED, propertyNameParameterArray )) {
+            if(!classNode.getMethod(METHOD_NAME_IS_DIRTY, propertyNameParameterArray )) {
                 final containsMethodCallExpression = new MethodCallExpression(changeTrackingVariable, "contains", new VariableExpression(propertyNameParameter))
                 containsMethodCallExpression.methodTarget = containsKeyMethodNode
-                final newMethod = classNode.addMethod(METHOD_NAME_HAS_CHANGED, PUBLIC, ClassHelper.boolean_TYPE, propertyNameParameterArray, null, new ReturnStatement(new BinaryExpression(changeTrackingVariable, Token.newSymbol(Types.LOGICAL_AND, 0, 0), containsMethodCallExpression)))
+                final leftExpression = new BinaryExpression(changeTrackingVariable, Token.newSymbol(Types.COMPARE_EQUAL, 0, 0), CONSTANT_NULL)
+                final rightExpression = new BinaryExpression(changeTrackingVariable, Token.newSymbol(Types.LOGICAL_AND, 0, 0), containsMethodCallExpression)
+                final fullCondition = new BinaryExpression(leftExpression, Token.newSymbol(Types.LOGICAL_OR, 0, 0), rightExpression)
+                final newMethod = classNode.addMethod(METHOD_NAME_IS_DIRTY, PUBLIC, ClassHelper.boolean_TYPE, propertyNameParameterArray, null, new ReturnStatement(fullCondition))
                 final scope = new VariableScope()
                 scope.putReferencedClassVariable(propertyNameParameter)
                 newMethod.setVariableScope(scope)
@@ -138,7 +152,7 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
 
             final addMethodCall = new MethodCallExpression(changeTrackingVariable, putInMapMethodNode.name, new ArgumentListExpression(new ConstantExpression(classNode.name), new ConstantExpression('$DIRTY_MARKER')))
             addMethodCall.setMethodTarget(putInMapMethodNode)
-            final changeTrackingVariableNullCheck = new BooleanExpression(new BinaryExpression(changeTrackingVariable, Token.newSymbol(Types.COMPARE_NOT_EQUAL, 0, 0), new ConstantExpression(null)))
+            final changeTrackingVariableNullCheck = new BooleanExpression(new BinaryExpression(changeTrackingVariable, Token.newSymbol(Types.COMPARE_NOT_EQUAL, 0, 0), CONSTANT_NULL))
             def ifNotNullStatement = new IfStatement(changeTrackingVariableNullCheck, new ExpressionStatement(addMethodCall), new EmptyStatement())
             markDirtyBody.addStatement(ifNotNullStatement)
             if(!classNode.getMethod(METHOD_NAME_MARK_DIRTY, ZERO_PARAMETERS))
@@ -164,16 +178,16 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
 
             // Implement listDirtyProperties() such that
             // List<String> listDirtyProperties() { trackChanges(); $changeProperties.keySet().toList() }
-            if(!classNode.getMethod("listDirtyProperties", ZERO_PARAMETERS)) {
+            if(!classNode.getMethod(METHOD_NAME_GET_DIRTY_PROPERTY_NAMES, ZERO_PARAMETERS)) {
                 final methodBody = new BlockStatement()
                 methodBody.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPR, "trackChanges", ZERO_ARGS)))
                 methodBody.addStatement(new ReturnStatement( new MethodCallExpression(new MethodCallExpression(changeTrackingVariable, "keySet", ZERO_ARGS), "toList" , ZERO_ARGS )))
-                classNode.addMethod("listDirtyProperties", PUBLIC, ClassHelper.make(List).getPlainNodeReference(), ZERO_PARAMETERS, null, methodBody)
+                classNode.addMethod(METHOD_NAME_GET_DIRTY_PROPERTY_NAMES, PUBLIC, ClassHelper.make(List).getPlainNodeReference(), ZERO_PARAMETERS, null, methodBody)
             }
 
             // Implement getOriginalValue(String) such that
             // Object getOriginalValue(String propertyName) { $changedProperties.get(propertyName) }
-            if(!classNode.getMethod("getOriginalValue", propertyNameParameterArray)) {
+            if(!classNode.getMethod(METHOD_NAME_GET_PERSISTENT_VALUE, propertyNameParameterArray)) {
 
                 final methodBody = new BlockStatement()
                 final propertyNameVariable = new VariableExpression(propertyNameParameter)
@@ -182,7 +196,7 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
                 methodBody.addStatement(new IfStatement(new BooleanExpression(containsKeyMethodCall),
                                                             new ExpressionStatement( new MethodCallExpression(changeTrackingVariable, "get", propertyNameVariable) ),
                                                             new ReturnStatement(new MethodCallExpression(THIS_EXPR, "getProperty", propertyNameVariable))))
-                classNode.addMethod("getOriginalValue", PUBLIC, ClassHelper.OBJECT_TYPE, propertyNameParameterArray, null, methodBody)
+                classNode.addMethod(METHOD_NAME_GET_PERSISTENT_VALUE, PUBLIC, ClassHelper.OBJECT_TYPE, propertyNameParameterArray, null, methodBody)
             }
 
         }
@@ -221,13 +235,24 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
 
                     // first add the getter
                     final getterName = NameUtils.getGetterName(propertyName)
-                    final propertyType = pn.getType().getPlainNodeReference()
-                    classNode.addMethod(getterName, PUBLIC, propertyType, ZERO_PARAMETERS, null, new ReturnStatement(new VariableExpression(propertyField.getName())))
+                    ClassNode originalReturnType = pn.getType()
+                    ClassNode returnType;
+                    if(!originalReturnType.getNameWithoutPackage().equals(VOID)) {
+                        if(ClassHelper.isPrimitiveType(originalReturnType.redirect())) {
+                            returnType = originalReturnType.getPlainNodeReference()
+                        } else {
+                            returnType = alignReturnType(classNode, originalReturnType);
+                        }
+                    }
+                    else {
+                        returnType = originalReturnType
+                    }
+                    classNode.addMethod(getterName, PUBLIC, returnType, ZERO_PARAMETERS, null, new ReturnStatement(new VariableExpression(propertyField.getName())))
 
                     // now add the setter that tracks changes. Each setters becomes:
                     // void setFoo(String foo) { markDirty("foo"); this.foo = foo }
                     final setterName = NameUtils.getSetterName(propertyName)
-                    final setterParameter = new Parameter(propertyType, propertyName)
+                    final setterParameter = new Parameter(returnType, propertyName)
                     final setterBody = new BlockStatement()
                     MethodCallExpression markDirtyMethodCall = createMarkDirtyMethodCall(markDirtyMethodNode, propertyName)
                     setterBody.addStatement(new ExpressionStatement(markDirtyMethodCall))
@@ -259,6 +284,32 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
         }
     }
 
+
+    private static ClassNode alignReturnType(final ClassNode receiver, final ClassNode originalReturnType) {
+        ClassNode copiedReturnType = originalReturnType.getPlainNodeReference();
+
+        ClassNode actualReceiver = receiver;
+        List<GenericsType> redirectTypes = new ArrayList<GenericsType>();
+        if (actualReceiver.redirect().getGenericsTypes()!=null) {
+            Collections.addAll(redirectTypes,actualReceiver.redirect().getGenericsTypes());
+        }
+        if (!redirectTypes.isEmpty()) {
+            GenericsType[] redirectReceiverTypes = redirectTypes.toArray(new GenericsType[redirectTypes.size()]) as GenericsType[];
+
+            GenericsType[] receiverParameterizedTypes = actualReceiver.getGenericsTypes();
+            if (receiverParameterizedTypes==null) {
+                receiverParameterizedTypes = redirectReceiverTypes;
+            }
+
+            if (originalReturnType.isUsingGenerics()) {
+                GenericsType[] alignmentTypes = originalReturnType.getGenericsTypes();
+                GenericsType[] genericsTypes = GenericsUtils.alignGenericTypes(redirectReceiverTypes, receiverParameterizedTypes, alignmentTypes);
+                copiedReturnType.setGenericsTypes(genericsTypes);
+            }
+        }
+
+        return copiedReturnType;
+    }
     protected void weaveIntoExistingSetter(String propertyName, GetterAndSetter getterAndSetter, MethodNode markDirtyMethodNode) {
         final setterMethod = getterAndSetter.setter
         final currentBody = setterMethod.code

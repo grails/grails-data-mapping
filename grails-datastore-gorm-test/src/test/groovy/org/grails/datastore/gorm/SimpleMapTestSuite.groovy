@@ -10,7 +10,8 @@ import grails.gorm.tests.*
  */
 @RunWith(Suite)
 @SuiteClasses([
-    DomainEventsSpec
+//    DomainEventsSpec
+    OneToManySpec
 ])
 class SimpleMapTestSuite {
 }

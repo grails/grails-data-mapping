@@ -1,5 +1,6 @@
 package grails.gorm.tests
 
+import grails.gorm.dirty.checking.DirtyCheck
 import grails.persistence.Entity
 
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
@@ -91,6 +92,7 @@ class Pet implements Serializable {
     }
 }
 
+@DirtyCheck
 @Entity
 @ApplyDetachedCriteriaTransform
 class Person implements Serializable, Comparable<Person> {
@@ -161,4 +163,5 @@ class Child implements Serializable {
     Long id
     String name
 }
+
 

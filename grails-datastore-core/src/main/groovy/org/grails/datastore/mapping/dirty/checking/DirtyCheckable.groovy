@@ -39,7 +39,7 @@ public interface DirtyCheckable {
     /**
      * @return A list of the dirty property names
      */
-    List<String> listDirtyProperties()
+    List<String> listDirtyPropertyNames()
 
     /**
      * Returns the original value of the property prior to when {@link #trackChanges()} was called

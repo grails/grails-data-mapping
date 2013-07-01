@@ -49,6 +49,7 @@ import org.grails.datastore.mapping.core.impl.PendingOperationAdapter;
 import org.grails.datastore.mapping.core.impl.PendingOperationExecution;
 import org.grails.datastore.mapping.core.impl.PendingUpdate;
 import org.grails.datastore.mapping.core.impl.PendingUpdateAdapter;
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable;
 import org.grails.datastore.mapping.engine.event.PreDeleteEvent;
 import org.grails.datastore.mapping.engine.internal.MappingUtils;
 import org.grails.datastore.mapping.engine.types.CustomTypeMarshaller;
@@ -1625,6 +1626,15 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             return true;
         }
 
+        if(instance instanceof DirtyCheckable) {
+            return ((DirtyCheckable)instance).hasChanged();
+        }
+        else {
+            return doManualDirtyCheck(instance, entry);
+        }
+    }
+
+    protected boolean doManualDirtyCheck(Object instance, Object entry) {
         T nativeEntry;
         try {
             nativeEntry = (T)entry;
@@ -1641,7 +1651,7 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
 
             Object currentValue = entityAccess.getProperty(prop.getName());
             Object oldValue = getEntryValue(nativeEntry, key);
-            if (prop instanceof Simple || prop instanceof Basic || prop instanceof ToOne ) {
+            if (prop instanceof Simple || prop instanceof Basic || prop instanceof ToOne) {
                 if (!areEqual(oldValue, currentValue, key)) {
                     return true;
                 }
