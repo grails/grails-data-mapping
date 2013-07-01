@@ -334,4 +334,14 @@ public class JpaSession extends AbstractAttributeStoringSession {
         // TODO
         return false;
     }
+
+    @Override
+    public Serializable getObjectIdentifier(Object instance) {
+        if(instance == null) return null;
+        PersistentEntity entity = getPersistentEntity(instance.getClass());
+        if(entity != null) {
+            return (Serializable) new EntityAccess(entity, instance).getIdentifier();
+        }
+        return null;
+    }
 }
