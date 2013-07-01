@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.persistence.FlushModeType;
 
+import org.codehaus.groovy.grails.support.proxy.ProxyHandler;
 import org.grails.datastore.mapping.core.AbstractAttributeStoringSession;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.engine.Persister;
@@ -197,4 +198,6 @@ public abstract class AbstractHibernateSession extends AbstractAttributeStoringS
     public Object getNativeInterface() {
         return hibernateTemplate;
     }
+
+
 }

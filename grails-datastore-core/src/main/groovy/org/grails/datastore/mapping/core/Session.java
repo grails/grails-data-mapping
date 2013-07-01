@@ -298,5 +298,12 @@ public interface Session {
      */
     boolean isDirty(Object instance);
 
+    /**
+     * Obtains the identifier for the instance
+     * @param instance The instance
+     * @return The identifier or null if it cannot be established
+     */
+    Serializable getObjectIdentifier(Object instance);
+
 
 }

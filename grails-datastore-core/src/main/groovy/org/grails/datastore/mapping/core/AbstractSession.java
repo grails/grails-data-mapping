@@ -301,6 +301,15 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
         return instance != instance2 || ((NativeEntryEntityPersister) persister).isDirty(instance, entry);
     }
 
+    @Override
+    public Serializable getObjectIdentifier(Object instance) {
+        Persister persister = getPersister(instance);
+        if(persister != null) {
+            return persister.getObjectIdentifier(instance);
+        }
+        return null;
+    }
+
     private void handleDirtyCollections() {
         for (Map.Entry<CollectionKey, Collection> entry : firstLevelCollectionCache.entrySet()) {
             Collection collection = entry.getValue();

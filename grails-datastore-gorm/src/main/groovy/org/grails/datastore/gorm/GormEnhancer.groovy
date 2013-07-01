@@ -155,7 +155,7 @@ class GormEnhancer {
                             return proxyFactory.getIdentifier(associationInstance)
                         }
                         else {
-                            return ((EntityPersister)datastore.currentSession.getPersister(associationInstance)).getObjectIdentifier(associationInstance)
+                            return datastore.currentSession.getObjectIdentifier(associationInstance)
                         }
                     }
                 }

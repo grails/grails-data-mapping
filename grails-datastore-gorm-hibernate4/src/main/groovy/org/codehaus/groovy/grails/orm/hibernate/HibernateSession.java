@@ -14,23 +14,28 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.domain.GrailsDomainClassMappingContext;
+import org.codehaus.groovy.grails.orm.hibernate.proxy.HibernateProxyHandler;
 import org.codehaus.groovy.grails.orm.hibernate.query.HibernateQuery;
+import org.codehaus.groovy.grails.support.proxy.ProxyHandler;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.api.QueryableCriteria;
 import org.grails.datastore.mapping.query.jpa.JpaQueryBuilder;
 import org.grails.datastore.mapping.query.jpa.JpaQueryInfo;
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.proxy.HibernateProxy;
 
 /**
  * Session implementation that wraps a Hibernate {@link org.hibernate.Session}.
@@ -41,6 +46,7 @@ import org.hibernate.criterion.Restrictions;
 @SuppressWarnings("rawtypes")
 public class HibernateSession extends AbstractHibernateSession {
 
+    ProxyHandler proxyHandler = new HibernateProxyHandler();
     public HibernateSession(HibernateDatastore hibernateDatastore, SessionFactory sessionFactory) {
         super(hibernateDatastore, sessionFactory);
 
@@ -52,6 +58,21 @@ public class HibernateSession extends AbstractHibernateSession {
             GrailsApplication app = hibernateDatastore.getApplicationContext().getBean("grailsApplication", GrailsApplication.class);
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, app);
         }
+    }
+
+    @Override
+    public Serializable getObjectIdentifier(Object instance) {
+        if(instance == null) return null;
+        if(proxyHandler.isProxy(instance)) {
+            return ((HibernateProxy)instance).getHibernateLazyInitializer().getIdentifier();
+        }
+        Class<?> type = instance.getClass();
+        ClassPropertyFetcher cpf = ClassPropertyFetcher.forClass(type);
+        final PersistentEntity persistentEntity = getMappingContext().getPersistentEntity(type.getName());
+        if(persistentEntity != null) {
+            return (Serializable) cpf.getPropertyValue(instance, persistentEntity.getIdentity().getName());
+        }
+        return null;
     }
 
     /**

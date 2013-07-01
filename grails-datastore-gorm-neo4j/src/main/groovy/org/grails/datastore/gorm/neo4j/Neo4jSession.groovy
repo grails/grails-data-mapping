@@ -700,6 +700,15 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         throw new UnsupportedOperationException()
     }
 
+    @Override
+    Serializable getObjectIdentifier(Object instance) {
+        final entity = instance ? mappingContext.getPersistentEntity(instance.getClass().name) : null
+        if(entity) {
+            return (Serializable) new EntityAccess(entity, instance).getIdentifier();
+        }
+        return null
+    }
+
     private def addObjectToReverseSide(EntityAccess reverseEntityAccess, Association association, objectToSet) {
         def propertyValue = reverseEntityAccess.getProperty(association.referencedPropertyName)
         switch (association.inverseSide) {
