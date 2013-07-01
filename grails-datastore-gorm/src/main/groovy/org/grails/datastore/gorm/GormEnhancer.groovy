@@ -14,6 +14,10 @@
  */
 package org.grails.datastore.gorm
 
+import grails.util.GrailsNameUtils
+import org.grails.datastore.mapping.engine.EntityPersister
+import org.grails.datastore.mapping.model.types.ToOne
+
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
@@ -137,10 +141,26 @@ class GormEnhancer {
             }
         }
 
+        final proxyFactory = datastore.mappingContext.proxyFactory
         for (p in e.associations) {
             def prop = p
             def isBasic = prop instanceof Basic
-            if ((prop instanceof OneToMany) || (prop instanceof ManyToMany) || isBasic || (prop instanceof EmbeddedCollection)) {
+            if(prop instanceof ToOne) {
+                final propName = prop.name
+                final getterName = GrailsNameUtils.getGetterName(propName)
+                mc."${getterName}Id" = {->
+                    final associationInstance = delegate.getProperty(propName)
+                    if(associationInstance != null) {
+                        if(proxyFactory.isProxy(associationInstance)) {
+                            return proxyFactory.getIdentifier(associationInstance)
+                        }
+                        else {
+                            return ((EntityPersister)datastore.currentSession.getPersister(associationInstance)).getObjectIdentifier(associationInstance)
+                        }
+                    }
+                }
+            }
+            else if ((prop instanceof OneToMany) || (prop instanceof ManyToMany) || isBasic || (prop instanceof EmbeddedCollection)) {
                 def associatedEntity = prop.associatedEntity
                 def javaClass = associatedEntity?.javaClass
                 if(javaClass || isBasic) {

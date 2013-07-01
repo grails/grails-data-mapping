@@ -1,13 +1,19 @@
-package grails.gorm.tests
+package org.grails.datastore.gorm
 
-import grails.persistence.Entity
+import grails.gorm.tests.Face
+import grails.gorm.tests.GormDatastoreSpec
+import grails.gorm.tests.Nose
+import grails.gorm.tests.Pet
 import org.grails.datastore.mapping.proxy.EntityProxy
 
-class OneToOneSpec extends GormDatastoreSpec {
+/**
+ * @author Graeme Rocher
+ */
+class OneToOneWithProxiesSpec  extends GormDatastoreSpec {
 
     def "Test persist and retrieve unidirectional many-to-one"() {
         given:"A domain model with a many-to-one"
-            def person = new Person(firstName:"Fred", lastName: "Flintstone")
+            def person = new grails.gorm.tests.Person(firstName:"Fred", lastName: "Flintstone")
             def pet = new Pet(name:"Dino", owner:person)
             person.save()
             pet.save(flush:true)
@@ -19,8 +25,11 @@ class OneToOneSpec extends GormDatastoreSpec {
         then:"The domain model is valid"
             pet != null
             pet.name == "Dino"
+            pet.owner instanceof EntityProxy
             pet.ownerId == person.id
+            !pet.owner.isInitialized()
             pet.owner.firstName == "Fred"
+            pet.owner.isInitialized()
     }
 
     def "Test persist and retrieve one-to-one with inverse key"() {
@@ -50,33 +59,5 @@ class OneToOneSpec extends GormDatastoreSpec {
             nose.hasFreckles == true
             nose.face != null
             nose.face.name == "Joe"
-    }
-}
-
-@Entity
-class Face implements Serializable {
-    Long id
-    Long version
-    String name
-    Nose nose
-    Person person
-    static hasOne = [nose: Nose]
-    static belongsTo = [person:Person]
-
-    static constraints = {
-        person nullable:true
-    }
-}
-
-@Entity
-class Nose implements Serializable {
-    Long id
-    Long version
-    boolean hasFreckles
-    Face face
-    static belongsTo = [face: Face]
-
-    static mapping = {
-        face index:true
     }
 }
