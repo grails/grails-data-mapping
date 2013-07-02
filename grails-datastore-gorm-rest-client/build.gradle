@@ -1,0 +1,47 @@
+version = "1.0.0.BUILD-SNAPSHOT"
+configurations {
+    optional
+}
+dependencies {
+    optional 'javax.servlet:javax.servlet-api:3.0.1'
+    compile("org.grails:grails-plugin-codecs:$grailsVersion") {
+        exclude group:'org.grails', module:'grails-plugin-converters'
+        exclude group:'org.grails', module:'grails-web'
+    }
+    compile("org.grails:grails-plugin-converters:$grailsVersion") {
+        exclude group:'org.grails', module:'grails-plugin-datasource'
+        exclude group:'org.grails', module:'grails-plugin-controllers'
+        exclude group:'org.grails', module:'grails-plugin-domain-class'
+        exclude group:'org.grails', module:'grails-web'
+    }
+    compile("org.grails:grails-plugin-rest:$grailsVersion") {
+        exclude group:'org.grails', module:'grails-plugin-datasource'
+        exclude group:'org.grails', module:'grails-plugin-controllers'
+        exclude group:'org.grails', module:'grails-web'
+    }
+    compile("org.grails:grails-web:$grailsVersion") {
+        exclude group:'org.grails', module:'grails-databinding'
+        exclude group:'commons-fileupload', module:'commons-fileupload'
+        exclude group:'xpp3', module:'xpp3_min'
+        exclude group:'commons-el', module:'commons-el'
+        exclude group:'org.springframework', module:'spring-webmvc'
+        exclude group:'opensymphony', module:'sitemesh'
+        exclude group:'javax.servlet', module:'jstl'
+        exclude group:'taglibs', module:'standard'
+        exclude group:'org.objenesis', module:'objenesis'
+    }
+    compile("org.grails:grails-databinding:$grailsVersion") {
+        exclude group:'junit', module:'junit'
+    }
+    compile project(":grails-datastore-gorm"),
+            project(":grails-datastore-gorm-plugin-support"),
+            project(":grails-datastore-core")
+
+}
+sourceSets {
+    main {
+        compileClasspath += configurations.optional
+    }
+}
+
+
