@@ -166,11 +166,11 @@ public abstract class AbstractDatastore implements Datastore, DisposableBean {
     }
 
     public Errors getObjectErrors(final Object o) {
-        return getValidationErrorsMap().get(o);
+        return getValidationErrorsMap().get(System.identityHashCode(o));
     }
 
     public void setObjectErrors(Object object, Errors errors) {
-        getValidationErrorsMap().put(object, errors);
+        getValidationErrorsMap().put(System.identityHashCode(object), errors);
     }
 
     public void setSkipValidation(final Object o, final boolean skip) {
