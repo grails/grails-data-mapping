@@ -14,13 +14,30 @@ dependencies {
         exclude group:'org.grails', module:'grails-plugin-domain-class'
         exclude group:'org.grails', module:'grails-web'
     }
-    compile("org.grails:grails-plugin-rest:$grailsVersion") {
-        exclude group:'org.grails', module:'grails-plugin-datasource'
-        exclude group:'org.grails', module:'grails-plugin-controllers'
-        exclude group:'org.grails', module:'grails-web'
+//    compile("org.grails:grails-plugin-rest:$grailsVersion") {
+//        exclude group:'org.grails', module:'grails-plugin-datasource'
+//        exclude group:'org.grails', module:'grails-plugin-controllers'
+//        exclude group:'org.grails', module:'grails-web'
+//    }
+    compile("org.grails:grails-core:$grailsVersion") {
+        exclude group:'org.springframework', module:'spring-aspects'
+        exclude group:'org.springframework', module:'spring-aop'
+        exclude group:'org.springframework', module:'spring-tx'
+        exclude group:'org.springframework', module:'spring-expression'
+        exclude group:'org.grails', module:'grails-spring'
+        exclude group:'org.aspectj', module:'aspectjrt'
+        exclude group:'org.aspectj', module:'aspectweaver'
+        exclude group:'oro', module:'oro'
+        exclude group:'asm', module:'asm'
+        exclude group:'aopalliance', module:'aopalliance'
+        exclude group:'cglib', module:'cglib'
+        exclude group:'commons-validator', module:'commons-validator'
+        exclude group:'org.hibernate.javax.persistence', module:'hibernate-jpa-2.0-api'
     }
     compile("org.grails:grails-web:$grailsVersion") {
         exclude group:'org.grails', module:'grails-databinding'
+        exclude group:'org.grails', module:'grails-core'
+        exclude group:'org.grails', module:'grails-spring'
         exclude group:'commons-fileupload', module:'commons-fileupload'
         exclude group:'xpp3', module:'xpp3_min'
         exclude group:'commons-el', module:'commons-el'
@@ -28,14 +45,16 @@ dependencies {
         exclude group:'opensymphony', module:'sitemesh'
         exclude group:'javax.servlet', module:'jstl'
         exclude group:'taglibs', module:'standard'
+        exclude group:'junit', module:'junit'
+        exclude group:'commons-io', module:'commons-io'
         exclude group:'org.objenesis', module:'objenesis'
     }
-    compile("org.grails:grails-databinding:$grailsVersion") {
-        exclude group:'junit', module:'junit'
-    }
-    compile project(":grails-datastore-gorm"),
-            project(":grails-datastore-gorm-plugin-support"),
-            project(":grails-datastore-core")
+//    compile("org.grails:grails-databinding:$grailsVersion") {
+//        exclude group:'junit', module:'junit'
+//    }
+//    compile project(":grails-datastore-gorm"),
+//            project(":grails-datastore-gorm-plugin-support"),
+//            project(":grails-datastore-core")
 
 }
 sourceSets {
