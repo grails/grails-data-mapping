@@ -14,7 +14,12 @@
  */
 package grails.plugins.rest.client
 
+import grails.converters.JSON
 import groovy.transform.CompileStatic
+import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationHolder
+import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationInitializer
+import org.codehaus.groovy.grails.web.converters.configuration.DefaultConverterConfiguration
 import org.grails.datastore.gorm.rest.client.json.JsonHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.utils.GrailsConverterHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.utils.WritableHttpMessageConverter
@@ -51,6 +56,11 @@ class RestBuilder {
     }
 
     RestBuilder(Map settings) {
+
+        if(ConvertersConfigurationHolder.getConverterConfiguration(JSON) instanceof DefaultConverterConfiguration) {
+            // init manually
+            new ConvertersConfigurationInitializer().initialize(new DefaultGrailsApplication())
+        }
 
         def proxyHost = System.getProperty("http.proxyHost")
         def proxyPort = System.getProperty("http.proxyPort")

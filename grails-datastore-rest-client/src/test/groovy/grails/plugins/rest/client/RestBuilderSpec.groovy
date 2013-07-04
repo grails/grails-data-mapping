@@ -14,14 +14,6 @@ import spock.lang.Specification
 
 class RestBuilderSpec extends Specification {
 
-    void setup() {
-        def ga = new DefaultGrailsApplication()
-        new ConvertersConfigurationInitializer().initialize(ga)
-    }
-
-    void cleanup() {
-        ConvertersConfigurationHolder.clear()
-    }
 
     def "Test proxy configuration"() {
         when:"RestBuilder is configured with proxy settings"
