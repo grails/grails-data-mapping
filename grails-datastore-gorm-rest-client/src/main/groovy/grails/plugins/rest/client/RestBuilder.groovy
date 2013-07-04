@@ -257,13 +257,18 @@ class RestBuilder {
         }
 
         try {
-            def responseEntity = restTemplate.exchange(url, method, requestCustomizer.createEntity(),
-                    requestCustomizer.acceptType, requestCustomizer.getUrlVariables())
+            ResponseEntity responseEntity = invokeRestTemplate(url, method, requestCustomizer)
             handleResponse(responseEntity)
         }
         catch (HttpStatusCodeException e) {
             return new RestResponse(new ResponseEntity(e.getResponseBodyAsByteArray(), e.responseHeaders, e.statusCode))
         }
+    }
+
+    protected ResponseEntity invokeRestTemplate(String url, HttpMethod method, RequestCustomizer requestCustomizer) {
+        def responseEntity = restTemplate.exchange(url, method, requestCustomizer.createEntity(),
+                requestCustomizer.acceptType, requestCustomizer.getUrlVariables())
+        responseEntity
     }
 
     protected RestResponse handleResponse(ResponseEntity responseEntity) {
