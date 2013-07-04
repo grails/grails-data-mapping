@@ -249,7 +249,8 @@ class RestBuilder {
     protected RestResponse doRequestInternal(String url, Closure customizer, HttpMethod method, Map<String, Object> urlVariables = Collections.emptyMap()) {
 
         def requestCustomizer = new RequestCustomizer()
-        requestCustomizer.urlVariables.putAll(urlVariables)
+        if(urlVariables)
+            requestCustomizer.urlVariables.putAll(urlVariables)
         if (customizer != null) {
             customizer.delegate = requestCustomizer
             customizer.resolveStrategy = Closure.DELEGATE_FIRST
