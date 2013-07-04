@@ -17,8 +17,9 @@ package grails.plugins.rest.client
 import grails.converters.JSON
 import grails.converters.XML
 import groovy.transform.CompileStatic
+import groovy.transform.TypeCheckingMode
 import groovy.util.slurpersupport.GPathResult
-
+import groovy.xml.StreamingMarkupBuilder
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpStatusCodeException
@@ -34,6 +35,7 @@ import org.springframework.web.client.HttpStatusCodeException
 class RestResponse {
 
     @Delegate ResponseEntity responseEntity
+    String encoding = "UTF-8"
 
     RestResponse(ResponseEntity responseEntity) {
         this.responseEntity = responseEntity
@@ -41,27 +43,43 @@ class RestResponse {
 
     @Lazy JSONElement json = {
         def body = responseEntity.body
-        if (body) {
+        if(body instanceof JSONElement) {
+            return (JSONElement)body
+        }
+        else if (body) {
             return (JSONElement)JSON.parse(body.toString())
         }
     }()
 
     @Lazy GPathResult xml = {
         def body = responseEntity.body
-        if (body) {
+        if(body instanceof GPathResult) {
+            return (GPathResult)body
+        }
+        else if (body) {
             return (GPathResult)XML.parse(body.toString())
         }
     }()
 
     @Lazy String text = {
         def body = responseEntity.body
-        if (body) {
+        if( body instanceof GPathResult ) {
+            return convertGPathResultToString(body)
+        }
+        else if (body) {
             return body.toString()
         }
         else {
             return responseEntity.statusCode.reasonPhrase
         }
     }()
+
+    @CompileStatic(TypeCheckingMode.SKIP)
+    protected String convertGPathResultToString(body) {
+        return new StreamingMarkupBuilder().bind {
+            out << body
+        }.toString()
+    }
 
     int getStatus() {
         responseEntity?.statusCode?.value() ?: 200

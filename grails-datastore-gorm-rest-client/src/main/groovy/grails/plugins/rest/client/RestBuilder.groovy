@@ -15,6 +15,10 @@
 package grails.plugins.rest.client
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.rest.client.json.JsonHttpMessageConverter
+import org.grails.datastore.gorm.rest.client.utils.GrailsConverterHttpMessageConverter
+import org.grails.datastore.gorm.rest.client.utils.WritableHttpMessageConverter
+import org.grails.datastore.gorm.rest.client.xml.GPathXmlHttpMessageConverter
 import org.springframework.http.HttpMethod
 
 import static org.springframework.http.HttpMethod.*
@@ -35,7 +39,16 @@ class RestBuilder {
 
     RestTemplate restTemplate = new RestTemplate()
 
-    RestBuilder() {}
+    RestBuilder() {
+        this(Collections.emptyMap())
+    }
+
+    protected void registerMessageConverters(RestTemplate restTemplate) {
+        restTemplate.getMessageConverters().add(new JsonHttpMessageConverter())
+        restTemplate.getMessageConverters().add(new GPathXmlHttpMessageConverter())
+        restTemplate.getMessageConverters().add(new GrailsConverterHttpMessageConverter())
+        restTemplate.getMessageConverters().add(new WritableHttpMessageConverter())
+    }
 
     RestBuilder(Map settings) {
 
@@ -65,10 +78,12 @@ class RestBuilder {
             }
         }
         restTemplate.setRequestFactory(customRequestFactory)
+        registerMessageConverters(restTemplate)
     }
 
     RestBuilder(RestTemplate restTemplate) {
         this.restTemplate = restTemplate
+        registerMessageConverters(restTemplate)
     }
     /**
      * Issues a GET request and returns the response in the most appropriate type
@@ -82,7 +97,7 @@ class RestBuilder {
     /**
      * Issues a GET request and returns the response in the most appropriate type
      * @param url The URL
-     * @paral urlVariables The variables required by the URL pattern
+     * @paral urlVariables The urlVariables required by the URL pattern
      * @param url The closure customizer used to customize request attributes
      */
     RestResponse get(String url, Map<String, Object> urlVariables, @DelegatesTo(RequestCustomizer) Closure customizer = null) {
@@ -234,15 +249,16 @@ class RestBuilder {
     protected RestResponse doRequestInternal(String url, Closure customizer, HttpMethod method, Map<String, Object> urlVariables = Collections.emptyMap()) {
 
         def requestCustomizer = new RequestCustomizer()
-        requestCustomizer.variables.putAll(urlVariables)
+        requestCustomizer.urlVariables.putAll(urlVariables)
         if (customizer != null) {
             customizer.delegate = requestCustomizer
+            customizer.resolveStrategy = Closure.DELEGATE_FIRST
             customizer.call()
         }
 
         try {
             def responseEntity = restTemplate.exchange(url, method, requestCustomizer.createEntity(),
-                    String, requestCustomizer.getVariables())
+                    requestCustomizer.acceptType, requestCustomizer.getUrlVariables())
             handleResponse(responseEntity)
         }
         catch (HttpStatusCodeException e) {

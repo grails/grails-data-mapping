@@ -36,15 +36,32 @@ class RestBuilderSpec extends Specification {
 
     def "Test that a basic GET request returns a JSON result of the response type is JSON"(){
         given:"A rest client instance"
-            def rest = new RestBuilder()
+        def rest = new RestBuilder()
 
         when:"A get request is issued for a response that returns XML"
-            def resp = rest.get("http://grails.org/api/v1.0/plugin/acegi/")
+        def resp = rest.get("http://grails.org/api/v1.0/plugin/acegi/") {
+            accept "application/json"
+        }
 
         then:"The response is a gpath result"
-            resp != null
-            resp.json instanceof JSONObject
-            resp.json.name == 'acegi'
+        resp != null
+        resp.json instanceof JSONObject
+        resp.json.name == 'acegi'
+    }
+
+    def "Test that a basic GET request returns a JSON result of the response type is JSON and accept JSON is passed"(){
+        given:"A rest client instance"
+        def rest = new RestBuilder()
+
+        when:"A get request is issued for a response that returns XML"
+        def resp = rest.get("http://grails.org/api/v1.0/plugin/acegi/") {
+            accept JSON
+        }
+
+        then:"The response is a gpath result"
+        resp != null
+        resp.json instanceof JSONObject
+        resp.json.name == 'acegi'
     }
 
     def "Test that obtaining a 404 response doesn't throw an exception but instead returns the response object for inspection"() {
