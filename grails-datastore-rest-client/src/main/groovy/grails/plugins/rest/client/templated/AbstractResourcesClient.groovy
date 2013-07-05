@@ -167,15 +167,16 @@ abstract class AbstractResourcesClient<T> {
         }
     }
 
+
     /**
      * Issues a POST request for the given id
      *
      * @param requestBody The requestBody of the request
      * @return The result
      */
-    RestResponse post(T requestBody, String bodyContentType = getAcceptContentType()) {
+    RestResponse post(Object requestBody, String bodyContentType = getAcceptContentType()) {
         restBuilder.post(url) {
-            body requestBody
+            body convertBody(requestBody)
             contentType bodyContentType
             if(customizer) {
                 this.customizer.delegate = delegate
@@ -241,9 +242,9 @@ abstract class AbstractResourcesClient<T> {
      * @param requestBody The requestBody of the request
      * @return The result
      */
-    RestResponse put(Object id, T requestBody, String bodyContentType = getAcceptContentType()) {
+    RestResponse put(Object id, Object requestBody, String bodyContentType = getAcceptContentType()) {
         restBuilder.put(templatedUrl, [id:id]) {
-            body requestBody
+            body convertBody(requestBody)
             contentType bodyContentType
             if(customizer) {
                 this.customizer.delegate = delegate
@@ -259,9 +260,9 @@ abstract class AbstractResourcesClient<T> {
      * @param requestBody The requestBody of the request
      * @return The result
      */
-    RestResponse patch(Object id, T requestBody, String bodyContentType = getAcceptContentType()) {
+    RestResponse patch(Object id, Object requestBody, String bodyContentType = getAcceptContentType()) {
         restBuilder.patch(templatedUrl, [id:id]) {
-            body requestBody
+            body convertBody(requestBody)
             contentType bodyContentType
             if(customizer) {
                 this.customizer.delegate = delegate
@@ -283,5 +284,15 @@ abstract class AbstractResourcesClient<T> {
      * @return Subclasses should implement to provide the default content type used to exchange resources
      */
     abstract String getAcceptContentType()
+
+    /**
+     * Subclasses can optionally override to provide conversion
+     * @param requestBody The request body
+     * @return The converted body
+     */
+    protected Object convertBody(Object requestBody) {
+        requestBody
+    }
+
 
 }

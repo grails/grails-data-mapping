@@ -8,6 +8,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.client.MockRestServiceServer
 import spock.lang.Specification
 
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus
@@ -80,9 +81,32 @@ class JsonResourcesClientSpec extends Specification {
             def jsonResourceClient = new JsonResourcesClient("http://localhost:8080/books", restBuilder)
             final result = jsonResourceClient.head()
 
-            then:"The result is correct"
+       then:"The result is correct"
             result != null
             result.statusCode == HttpStatus.OK
 
     }
+
+    void "Test that the post method correctly sends JSON to the appropriate URL"() {
+        setup:
+            RestBuilder restBuilder = new RestBuilder()
+            final mockServer = MockRestServiceServer.createServer(restBuilder.restTemplate)
+            mockServer.expect(requestTo("http://localhost:8080/books"))
+                    .andExpect(method(HttpMethod.POST))
+                    .andExpect(content().string('{"title":"The Stand"}'))
+                    .andExpect(content().contentType("application/json"))
+                    .andRespond(withStatus(HttpStatus.CREATED))
+
+        when:"A new JsonResourceClient is constructed and the get method invoked"
+            def jsonResourceClient = new JsonResourcesClient("http://localhost:8080/books", restBuilder)
+            final result = jsonResourceClient.post(new Book(title:"The Stand"))
+
+        then:"The result is correct"
+            result != null
+            result.statusCode == HttpStatus.CREATED
+
+    }
+}
+class Book {
+    String title
 }

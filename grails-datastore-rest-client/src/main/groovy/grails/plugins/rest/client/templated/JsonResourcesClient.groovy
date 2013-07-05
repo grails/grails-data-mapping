@@ -16,8 +16,11 @@ package grails.plugins.rest.client.templated
 
 import grails.converters.JSON
 import grails.plugins.rest.client.RestBuilder
+import grails.plugins.rest.client.RestResponse
 import groovy.transform.CompileStatic
+import org.codehaus.groovy.grails.web.converters.ConverterUtil
 import org.codehaus.groovy.grails.web.json.JSONElement
+import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 
 /**
  * A simple client for interacting with a REST web service exposed by a Grails application
@@ -37,6 +40,18 @@ class JsonResourcesClient extends AbstractResourcesClient<JSONElement> {
 
     JsonResourcesClient(String url, RestBuilder restBuilder) {
         super(url, restBuilder)
+    }
+
+    @Override
+    protected Object convertBody(Object requestBody) {
+        if( (requestBody instanceof JSON) || (requestBody instanceof JSONElement) ) {
+            return requestBody
+        }
+        try {
+            return requestBody as JSON
+        } catch (GroovyCastException e) {
+            return ConverterUtil.createConverter(JSON, requestBody)
+        }
     }
 
     @Override

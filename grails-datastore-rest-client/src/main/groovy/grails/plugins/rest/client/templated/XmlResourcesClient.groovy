@@ -16,11 +16,10 @@ package grails.plugins.rest.client.templated
 
 import grails.converters.XML
 import grails.plugins.rest.client.RestBuilder
-import grails.plugins.rest.client.RestResponse
 import groovy.transform.CompileStatic
-import groovy.transform.TypeCheckingMode
 import groovy.util.slurpersupport.GPathResult
-import groovy.xml.StreamingMarkupBuilder
+import org.codehaus.groovy.grails.web.converters.ConverterUtil
+import org.codehaus.groovy.runtime.typehandling.GroovyCastException
 
 /**
  *
@@ -40,6 +39,18 @@ class XmlResourcesClient extends AbstractResourcesClient<GPathResult>{
 
     XmlResourcesClient(String url, RestBuilder restBuilder) {
         super(url, restBuilder)
+    }
+
+    @Override
+    protected Object convertBody(Object requestBody) {
+        if( (requestBody instanceof XML) || (requestBody instanceof GPathResult) ) {
+            return requestBody
+        }
+        try {
+            return requestBody as XML
+        } catch (GroovyCastException e) {
+            return ConverterUtil.createConverter(XML, requestBody)
+        }
     }
 
     @Override
