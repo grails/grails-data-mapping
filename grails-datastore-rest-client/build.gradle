@@ -58,6 +58,8 @@ dependencies {
         exclude group:'commons-io', module:'commons-io'
         exclude group:'org.objenesis', module:'objenesis'
     }
+
+    testCompile("org.springframework:spring-test:$springVersion")
 //    compile("org.grails:grails-databinding:$grailsVersion") {
 //        exclude group:'junit', module:'junit'
 //    }
