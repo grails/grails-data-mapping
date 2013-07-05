@@ -22,9 +22,12 @@ import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigu
 import org.codehaus.groovy.grails.web.converters.configuration.DefaultConverterConfiguration
 import org.grails.datastore.gorm.rest.client.json.JsonHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.utils.GrailsConverterHttpMessageConverter
+import org.grails.datastore.gorm.rest.client.utils.NullSafeStringHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.utils.WritableHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.xml.GPathXmlHttpMessageConverter
 import org.springframework.http.HttpMethod
+import org.springframework.http.converter.HttpMessageConverter
+import org.springframework.http.converter.StringHttpMessageConverter
 
 import static org.springframework.http.HttpMethod.*
 import org.springframework.http.ResponseEntity
@@ -270,10 +273,16 @@ class RestBuilder {
     }
 
     protected void registerMessageConverters(RestTemplate restTemplate) {
-        restTemplate.getMessageConverters().add(new JsonHttpMessageConverter())
-        restTemplate.getMessageConverters().add(new GPathXmlHttpMessageConverter())
-        restTemplate.getMessageConverters().add(new GrailsConverterHttpMessageConverter())
-        restTemplate.getMessageConverters().add(new WritableHttpMessageConverter())
+        final messageConverters = restTemplate.getMessageConverters()
+        final stringConverter = messageConverters.find { HttpMessageConverter httpMessageConverter -> httpMessageConverter instanceof StringHttpMessageConverter }
+        if(stringConverter) {
+            messageConverters.remove(stringConverter)
+        }
+        messageConverters.add(new NullSafeStringHttpMessageConverter())
+        messageConverters.add(new JsonHttpMessageConverter())
+        messageConverters.add(new GPathXmlHttpMessageConverter())
+        messageConverters.add(new GrailsConverterHttpMessageConverter())
+        messageConverters.add(new WritableHttpMessageConverter())
     }
 
 
