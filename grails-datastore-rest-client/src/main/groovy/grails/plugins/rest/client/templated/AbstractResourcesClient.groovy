@@ -54,6 +54,25 @@ abstract class AbstractResourcesClient<T> {
     }
 
     /**
+     * Issues a GET request to the configured URL
+     *
+     * @param acceptContentType The content type to pass in the ACCEPT header
+     *
+     * @return The result
+     */
+    T get(String acceptContentType = getAcceptContentType()) {
+        final response = restBuilder.get(url) {
+            accept getAcceptType(), acceptContentType
+            if(customizer) {
+                this.customizer.delegate = delegate
+                this.customizer.call()
+            }
+        }
+
+        return (T)response.body
+    }
+
+    /**
      * Issues a GET request for the given id
      *
      * @param id The id
@@ -251,24 +270,7 @@ abstract class AbstractResourcesClient<T> {
         }
     }
 
-    /**
-     * Issues a GET request to the configured URL
-     *
-     * @param acceptContentType The content type to pass in the ACCEPT header
-     *
-     * @return The result
-     */
-    T getAll(String acceptContentType = getAcceptContentType()) {
-        final response = restBuilder.get(url) {
-            accept getAcceptType(), acceptContentType
-            if(customizer) {
-                this.customizer.delegate = delegate
-                this.customizer.call()
-            }
-        }
 
-        return (T)response.body
-    }
 
     /**
      * Subclasses should implement to provide the conversion to the target representation (JSON, XML etc.)

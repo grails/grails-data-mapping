@@ -48,13 +48,6 @@ class RestBuilder {
         this(Collections.emptyMap())
     }
 
-    protected void registerMessageConverters(RestTemplate restTemplate) {
-        restTemplate.getMessageConverters().add(new JsonHttpMessageConverter())
-        restTemplate.getMessageConverters().add(new GPathXmlHttpMessageConverter())
-        restTemplate.getMessageConverters().add(new GrailsConverterHttpMessageConverter())
-        restTemplate.getMessageConverters().add(new WritableHttpMessageConverter())
-    }
-
     RestBuilder(Map settings) {
 
         if(ConvertersConfigurationHolder.getConverterConfiguration(JSON) instanceof DefaultConverterConfiguration) {
@@ -275,6 +268,14 @@ class RestBuilder {
             return new RestResponse(new ResponseEntity(e.getResponseBodyAsByteArray(), e.responseHeaders, e.statusCode))
         }
     }
+
+    protected void registerMessageConverters(RestTemplate restTemplate) {
+        restTemplate.getMessageConverters().add(new JsonHttpMessageConverter())
+        restTemplate.getMessageConverters().add(new GPathXmlHttpMessageConverter())
+        restTemplate.getMessageConverters().add(new GrailsConverterHttpMessageConverter())
+        restTemplate.getMessageConverters().add(new WritableHttpMessageConverter())
+    }
+
 
     protected ResponseEntity invokeRestTemplate(String url, HttpMethod method, RequestCustomizer requestCustomizer) {
         def responseEntity = restTemplate.exchange(url, method, requestCustomizer.createEntity(),

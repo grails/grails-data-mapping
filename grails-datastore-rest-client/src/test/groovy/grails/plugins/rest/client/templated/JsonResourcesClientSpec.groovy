@@ -46,6 +46,9 @@ class JsonResourcesClientSpec extends Specification {
             @Override
             protected ResponseEntity invokeRestTemplate(String url, HttpMethod method, RequestCustomizer requestCustomizer) {
                 assert url == "http://localhost:8080/books/{id}"
+                assert requestCustomizer.urlVariables
+                assert requestCustomizer.urlVariables.id == 1
+
                 assert method == HttpMethod.DELETE
                 return new ResponseEntity(HttpStatus.OK)
             }
@@ -58,6 +61,51 @@ class JsonResourcesClientSpec extends Specification {
         then:"The result is correct"
             result != null
             result.statusCode == HttpStatus.OK
+
+    }
+
+    void "Test that the head method with an id submits a HEAD request to the correct URL"() {
+        setup:
+        RestBuilder restBuilder = new RestBuilder() {
+            @Override
+            protected ResponseEntity invokeRestTemplate(String url, HttpMethod method, RequestCustomizer requestCustomizer) {
+                assert url == "http://localhost:8080/books/{id}"
+                assert requestCustomizer.urlVariables
+                assert requestCustomizer.urlVariables.id == 1
+
+                assert method == HttpMethod.HEAD
+                return new ResponseEntity(HttpStatus.OK)
+            }
+        }
+
+        when:"A new JsonResourceClient is constructed and the get method invoked"
+        def jsonResourceClient = new JsonResourcesClient("http://localhost:8080/books", restBuilder)
+        final result = jsonResourceClient.head(1)
+
+        then:"The result is correct"
+        result != null
+        result.statusCode == HttpStatus.OK
+
+    }
+
+    void "Test that the head method submits a HEAD request to the correct URL"() {
+        setup:
+        RestBuilder restBuilder = new RestBuilder() {
+            @Override
+            protected ResponseEntity invokeRestTemplate(String url, HttpMethod method, RequestCustomizer requestCustomizer) {
+                assert url == "http://localhost:8080/books"
+                assert method == HttpMethod.HEAD
+                return new ResponseEntity(HttpStatus.OK)
+            }
+        }
+
+        when:"A new JsonResourceClient is constructed and the get method invoked"
+        def jsonResourceClient = new JsonResourcesClient("http://localhost:8080/books", restBuilder)
+        final result = jsonResourceClient.head()
+
+        then:"The result is correct"
+        result != null
+        result.statusCode == HttpStatus.OK
 
     }
 }
