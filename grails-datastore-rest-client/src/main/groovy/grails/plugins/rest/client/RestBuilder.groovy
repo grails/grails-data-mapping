@@ -20,6 +20,7 @@ import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationHolder
 import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationInitializer
 import org.codehaus.groovy.grails.web.converters.configuration.DefaultConverterConfiguration
+import org.grails.datastore.gorm.rest.client.json.GsonHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.json.JsonHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.utils.GrailsConverterHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.utils.NullSafeStringHttpMessageConverter
@@ -28,6 +29,7 @@ import org.grails.datastore.gorm.rest.client.xml.GPathXmlHttpMessageConverter
 import org.springframework.http.HttpMethod
 import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.converter.StringHttpMessageConverter
+import org.springframework.util.ClassUtils
 
 import static org.springframework.http.HttpMethod.*
 import org.springframework.http.ResponseEntity
@@ -58,13 +60,9 @@ class RestBuilder {
             new ConvertersConfigurationInitializer().initialize(new DefaultGrailsApplication())
         }
 
-        def proxyHost = System.getProperty("http.proxyHost")
-        def proxyPort = System.getProperty("http.proxyPort")
-
-        if (proxyHost && proxyPort) {
-            if (settings.proxy == null) {
-                settings.proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort.toInteger()))
-            }
+        Proxy proxyFromSystemProperties = getProxyForSystemProperties()
+        if (proxyFromSystemProperties && settings.proxy == null) {
+            settings.proxy = proxyFromSystemProperties
         }
 
         if (settings.proxy instanceof Map) {
@@ -85,6 +83,17 @@ class RestBuilder {
         }
         restTemplate.setRequestFactory(customRequestFactory)
         registerMessageConverters(restTemplate)
+    }
+
+    static Proxy getProxyForSystemProperties() {
+        def proxyHost = System.getProperty("http.proxyHost")
+        def proxyPort = System.getProperty("http.proxyPort")
+
+        Proxy proxyFromSystemProperties = null
+        if (proxyHost && proxyPort) {
+            proxyFromSystemProperties = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort.toInteger()))
+        }
+        proxyFromSystemProperties
     }
 
     RestBuilder(RestTemplate restTemplate) {
@@ -277,6 +286,9 @@ class RestBuilder {
         final stringConverter = messageConverters.find { HttpMessageConverter httpMessageConverter -> httpMessageConverter instanceof StringHttpMessageConverter }
         if(stringConverter) {
             messageConverters.remove(stringConverter)
+        }
+        if(ClassUtils.isPresent("com.google.gson.Gson", getClass().getClassLoader())) {
+            messageConverters.add(new GsonHttpMessageConverter())
         }
         messageConverters.add(new NullSafeStringHttpMessageConverter())
         messageConverters.add(new JsonHttpMessageConverter())
