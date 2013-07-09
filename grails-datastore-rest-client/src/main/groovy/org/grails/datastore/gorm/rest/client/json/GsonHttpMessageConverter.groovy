@@ -14,58 +14,64 @@
  */
 package org.grails.datastore.gorm.rest.client.json
 
+import com.google.gson.JsonElement
+import com.google.gson.JsonParser
+import com.google.gson.internal.Streams
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonWriter
 import grails.converters.JSON
 import groovy.transform.CompileStatic
-import org.codehaus.groovy.grails.web.json.JSONElement
 import org.springframework.http.HttpInputMessage
 import org.springframework.http.HttpOutputMessage
 import org.springframework.http.MediaType
 import org.springframework.http.converter.AbstractHttpMessageConverter
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.http.converter.HttpMessageNotWritableException
-import org.springframework.util.StreamUtils
 
 import java.nio.charset.Charset
 
 /**
- * A message converter that supports JSON
+ * A message converter for Google's GSON
  *
  * @author Graeme Rocher
  * @since 1.0
  */
 @CompileStatic
-class JsonHttpMessageConverter extends AbstractHttpMessageConverter<JSONElement>{
+class GsonHttpMessageConverter extends AbstractHttpMessageConverter<JsonElement> {
 
-    JsonHttpMessageConverter() {
+    GsonHttpMessageConverter() {
         super(MediaType.APPLICATION_JSON)
     }
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return JSON.isAssignableFrom(clazz) || JSONElement.isAssignableFrom(clazz)
+        return JsonElement.isAssignableFrom(clazz)
     }
 
     @Override
-    boolean canWrite(Class<?> clazz, MediaType mediaType) {
-        return super.canWrite(clazz, mediaType) && !JSON.isAssignableFrom(clazz)
-    }
-
-    @Override
-    protected JSONElement readInternal(Class<? extends JSONElement> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    protected JsonElement readInternal(Class<? extends JsonElement> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
         final contentType = inputMessage.headers.getContentType()
-        final body = inputMessage.body
-        if(body) {
-            return JSON.parse(body, getCharSetForMediaType(contentType).toString())
+        final charSet = getCharSetForMediaType(contentType)
+
+        final inputStream = inputMessage.body
+        if(inputStream) {
+            return new JsonParser().parse(new JsonReader(new InputStreamReader(inputStream, charSet)))
         }
         return null
+    }
+
+    @Override
+    protected void writeInternal(JsonElement t, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+        final body = outputMessage.body
+        if(body) {
+            JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(body, getCharSetForMediaType(outputMessage.headers.getContentType())));
+            jsonWriter.setLenient(true);
+            Streams.write(t, jsonWriter);
+        }
     }
 
     protected Charset getCharSetForMediaType(MediaType contentType) {
         contentType ? (contentType.charSet ? contentType.charSet : Charset.forName("UTF-8")) : Charset.forName("UTF-8")
     }
 
-    @Override
-    protected void writeInternal(JSONElement t, HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
-        StreamUtils.copy(toString(), getCharSetForMediaType(outputMessage.headers.getContentType()), outputMessage.body)
-    }
 }

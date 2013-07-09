@@ -43,7 +43,13 @@ class GPathXmlHttpMessageConverter extends AbstractHttpMessageConverter<groovy.u
 
     @Override
     protected GPathResult readInternal(Class<? extends GPathResult> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-        return (GPathResult)XML.parse(inputMessage.body, getCharSetForMediaType(inputMessage.headers.getContentType()).toString())
+        final body = inputMessage.body
+        if(body) {
+            return (GPathResult)XML.parse(body, getCharSetForMediaType(inputMessage.headers.getContentType()).toString())
+        }
+        else {
+            return null
+        }
     }
 
     @Override
