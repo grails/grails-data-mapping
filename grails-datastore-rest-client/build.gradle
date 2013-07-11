@@ -1,9 +1,6 @@
 version = "1.0.0.BUILD-SNAPSHOT"
-configurations {
-    optional
-}
 dependencies {
-    optional 'javax.servlet:javax.servlet-api:3.0.1'
+    compile 'javax.servlet:javax.servlet-api:3.0.1'
 //    compile("org.grails:grails-plugin-codecs:$grailsVersion") {
 //        exclude group:'org.grails', module:'grails-plugin-converters'
 //        exclude group:'org.grails', module:'grails-web'
@@ -67,11 +64,6 @@ dependencies {
 //            project(":grails-datastore-gorm-plugin-support"),
 //            project(":grails-datastore-core")
 
-}
-sourceSets {
-    main {
-        compileClasspath += configurations.optional
-    }
 }
 
 
