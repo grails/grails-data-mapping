@@ -19,6 +19,7 @@ import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.rest.client.RestClientDatastore
 import org.springframework.transaction.PlatformTransactionManager
+import org.grails.datastore.gorm.GormInstanceApi
 
 /**
  * GORM enhancer for the GORM REST client
@@ -38,5 +39,10 @@ class RestClientGormEnhancer extends GormEnhancer {
     @Override
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
         new RestClientGormStaticApi<D>(cls, (RestClientDatastore)datastore, getFinders())
+    }
+
+    @Override
+    protected def <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
+        return new RestClientGormInstanceApi<D>(cls, datastore)
     }
 }
