@@ -1,6 +1,6 @@
 project.ext {
     springVersion = "3.2.3.RELEASE"
-    grailsVersion = "2.3.0.M2"
+    grailsVersion = "2.3.0.BUILD-SNAPSHOT"
     slf4jVersion = "1.7.2"
     groovyVersion = System.getProperty('groovyVersion') ?: '2.1.5'
 }
@@ -41,9 +41,9 @@ allprojects {
     configurations {
         all {
             resolutionStrategy {
-                def cacheHours = isCiBuild ? 1 : 24
-                cacheDynamicVersionsFor cacheHours, 'hours'
-                cacheChangingModulesFor cacheHours, 'hours'
+//                def cacheHours = isCiBuild ? 1 : 24
+//                cacheDynamicVersionsFor cacheHours, 'hours'
+//                cacheChangingModulesFor cacheHours, 'hours'
             }
         }
     }

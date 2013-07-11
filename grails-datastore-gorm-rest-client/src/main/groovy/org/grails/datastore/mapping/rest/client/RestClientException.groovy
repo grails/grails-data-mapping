@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 SpringSource
+/* Copyright (C) 2013 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,24 +12,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.mapping.core;
+package org.grails.datastore.mapping.rest.client
+
+import org.grails.datastore.mapping.core.DatastoreException
+import grails.plugins.rest.client.RestResponse
 
 /**
- * General exception for errors related to the configuration
- * of the Datastore
+ * Exception thrown from requests made by GORM for REST
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-public class DatastoreException extends RuntimeException {
+class RestClientException extends DatastoreException {
+    RestResponse response
 
-    private static final long serialVersionUID = 1;
-
-    public DatastoreException(String s) {
-        super(s);
+    RestClientException(String s, RestResponse response) {
+        super(s)
+        this.response = response
     }
 
-    public DatastoreException(String s, Throwable throwable) {
-        super(s, throwable);
+    RestClientException(String s, Throwable throwable, RestResponse response) {
+        super(s, throwable)
+        this.response = response
     }
 }

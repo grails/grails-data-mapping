@@ -55,7 +55,9 @@ public class DocumentMappingContext extends AbstractMappingContext {
     }
 
     protected MappingFactory createDocumentMappingFactory(Closure defaultMapping) {
-        return new GormDocumentMappingFactory();
+        GormDocumentMappingFactory gormDocumentMappingFactory = new GormDocumentMappingFactory();
+        gormDocumentMappingFactory.setDefaultMapping(defaultMapping);
+        return gormDocumentMappingFactory;
     }
 
     public String getDefaultDatabaseName() {

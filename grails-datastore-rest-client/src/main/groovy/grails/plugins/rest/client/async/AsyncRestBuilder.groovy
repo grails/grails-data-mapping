@@ -16,6 +16,7 @@ package grails.plugins.rest.client.async
 
 import grails.async.DelegateAsync
 import grails.plugins.rest.client.RestBuilder
+import org.springframework.web.client.RestTemplate
 
 /**
  * Asynchronous version of the {@link RestBuilder} class. Uses the {@DelegateAsync} annotation to provide the same API
@@ -36,5 +37,9 @@ class AsyncRestBuilder {
 
     AsyncRestBuilder(RestBuilder restBuilder) {
         this.restBuilder = restBuilder
+    }
+
+    RestTemplate getRestTemplate() {
+        return restBuilder.restTemplate
     }
 }

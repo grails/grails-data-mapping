@@ -277,7 +277,7 @@ class RestBuilder {
             handleResponse(responseEntity)
         }
         catch (HttpStatusCodeException e) {
-            return new RestResponse(new ResponseEntity(e.getResponseBodyAsByteArray(), e.responseHeaders, e.statusCode))
+            return new RestResponse(new ResponseEntity(e.getResponseBodyAsString(), e.responseHeaders, e.statusCode))
         }
     }
 
