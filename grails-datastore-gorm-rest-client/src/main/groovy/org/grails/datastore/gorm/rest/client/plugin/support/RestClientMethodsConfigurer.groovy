@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm.plugin.support
+package org.grails.datastore.gorm.rest.client.plugin.support
 
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormStaticApi
@@ -22,6 +22,7 @@ import org.grails.datastore.gorm.rest.client.RestClientGormStaticApi
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.rest.client.RestClientDatastore
 import org.springframework.transaction.PlatformTransactionManager
+import org.grails.datastore.gorm.plugin.support.DynamicMethodsConfigurer
 
 /**
  * Methods configurer for the GORM REST client

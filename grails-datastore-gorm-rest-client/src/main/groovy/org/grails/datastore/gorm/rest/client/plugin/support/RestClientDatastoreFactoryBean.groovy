@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.gorm.plugin.support
+package org.grails.datastore.gorm.rest.client.plugin.support
 
 import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository
