@@ -58,10 +58,20 @@ class PersistentEntityHttpConverter<T> extends AbstractHttpMessageConverter<T>{
     protected T readInternal(Class<? extends T> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
         final contentType = inputMessage.headers.getContentType() ?: MediaType.APPLICATION_JSON
 
-        final instance = clazz.newInstance()
-        final bindingSource = dataBindingSourceRegistry.createDataBindingSource(new MimeType(contentType.getType()), clazz, inputMessage.body)
-        DataBindingUtils.bindObjectToInstance(instance, bindingSource)
-        return instance
+        final bindingSource = dataBindingSourceRegistry.createDataBindingSource(new MimeType(contentType.toString()), clazz, inputMessage.body)
+        if(bindingSource) {
+            final instance = clazz.newInstance()
+            if(bindingSource.hasIdentifier()) {
+                final idValue = bindingSource.getIdentifierValue()
+                final entityIdentityProperty = entity.identity
+                instance[entityIdentityProperty.name] = entity.mappingContext.conversionService.convert(idValue, entityIdentityProperty.type)
+            }
+            DataBindingUtils.bindObjectToInstance(instance, bindingSource)
+            return instance
+        }
+        else {
+            return null
+        }
     }
 
     @Override

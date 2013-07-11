@@ -38,7 +38,6 @@ import org.springframework.http.HttpStatus
 import java.util.concurrent.TimeUnit
 import org.grails.datastore.mapping.core.impl.PendingUpdateAdapter
 import org.grails.datastore.mapping.engine.EntityAccess
-import org.grails.datastore.mapping.core.DatastoreException
 import org.grails.datastore.mapping.rest.client.config.RestClientMappingContext
 import org.grails.datastore.mapping.core.impl.PendingInsertAdapter
 import org.grails.datastore.mapping.rest.client.RestClientException
@@ -78,7 +77,7 @@ class RestClientEntityPersister extends EntityPersister {
                 count++
                 final url = establishUrl(datastore.baseUrl, endpoint, pe, objectId)
                 promiseList << asyncRestBuilder.get(url) {
-                    accept endpoint.acceptType, endpoint.accept
+                    accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
                 }
             }
 
@@ -94,7 +93,7 @@ class RestClientEntityPersister extends EntityPersister {
             for(objectId in keys) {
                 final url = establishUrl(datastore.baseUrl, endpoint, pe, objectId)
                 responseResults <<  builder.get(url) {
-                    accept endpoint.acceptType, endpoint.accept
+                    accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
                 }
             }
         }
@@ -138,7 +137,7 @@ class RestClientEntityPersister extends EntityPersister {
                             final url = establishUrl(datastore.baseUrl, endpoint, entity, identifier)
                             updateResponses << builder.put(url) {
                                 contentType endpoint.contentType
-                                accept endpoint.acceptType, endpoint.accept
+                                accept endpoint.acceptType ?: entity.javaClass, endpoint.accept
                                 body update
                             }
                         }
@@ -168,7 +167,7 @@ class RestClientEntityPersister extends EntityPersister {
                     final url = establishUrl(datastore.baseUrl, endpoint, entity)
                     insertResponses << restBuilder.post(url) {
                         contentType endpoint.contentType
-                        accept endpoint.acceptType, endpoint.accept
+                        accept endpoint.acceptType ?: entity.javaClass, endpoint.accept
                         body insert
                     }
                 }
@@ -218,7 +217,7 @@ class RestClientEntityPersister extends EntityPersister {
         if (endpoint.async) {
             AsyncRestBuilder builder = datastore.asyncRestClients.get(pe)
             Promise<RestResponse> promise = builder.get(url) {
-                accept endpoint.acceptType, endpoint.accept
+                accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
             }
             if (endpoint.readTimeout > -1) {
                 response = promise.get(endpoint.readTimeout, TimeUnit.SECONDS)
@@ -230,7 +229,7 @@ class RestClientEntityPersister extends EntityPersister {
         else {
             RestBuilder builder = datastore.syncRestClients.get(pe)
             response = builder.get(url) {
-                accept endpoint.acceptType, endpoint.accept
+                accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
             }
         }
         response
@@ -238,16 +237,24 @@ class RestClientEntityPersister extends EntityPersister {
 
     private Object bindResponseToNewEntity(RestResponse response, RestClientDatastore datastore, MimeType mimeType, PersistentEntity pe) {
         final body = response.body
-        final bindingSourceRegistry = datastore.bindingSourceRegistry
-        DataBindingSource bindingSource = body ? bindingSourceRegistry.createDataBindingSource(mimeType, pe.javaClass, body) : null
-        Object instance = null
-        if (bindingSource && bindingSource.hasIdentifier()) {
-            instance = pe.newInstance()
-            instance[pe.getIdentity().name] = mappingContext.getConversionService().convert(bindingSource.getIdentifierValue(), pe.getIdentity().getType())
+        if(body) {
+            if(pe.javaClass.isInstance(body)) {
+                return body
+            }
+            else {
+                final bindingSourceRegistry = datastore.bindingSourceRegistry
+                DataBindingSource bindingSource = body ? bindingSourceRegistry.createDataBindingSource(mimeType, pe.javaClass, body) : null
+                Object instance = null
+                if (bindingSource && bindingSource.hasIdentifier()) {
+                    instance = pe.newInstance()
+                    instance[pe.getIdentity().name] = mappingContext.getConversionService().convert(bindingSource.getIdentifierValue(), pe.getIdentity().getType())
 
-            DataBindingUtils.bindObjectToInstance(instance, bindingSource)
+                    DataBindingUtils.bindObjectToInstance(instance, bindingSource)
+                }
+                return instance
+            }
         }
-        instance
+        return null
     }
 
     @Override
@@ -269,7 +276,7 @@ class RestClientEntityPersister extends EntityPersister {
                         final url = establishUrl(datastore.baseUrl, endpoint, pe, identifier)
                         Promise<RestResponse> responsePromise = builder.put(url) {
                             contentType endpoint.contentType
-                            accept endpoint.acceptType, endpoint.accept
+                            accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
                             body obj
                         }
                         RestResponse response
@@ -289,7 +296,7 @@ class RestClientEntityPersister extends EntityPersister {
                 final url = establishUrl(datastore.baseUrl, endpoint, pe, identifier)
                 final RestResponse response = restBuilder.put(url) {
                     contentType endpoint.contentType
-                    accept endpoint.acceptType, endpoint.accept
+                    accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
                     body obj
                 }
                 if(response.statusCode.series() != HttpStatus.Series.SUCCESSFUL) {
@@ -336,7 +343,7 @@ class RestClientEntityPersister extends EntityPersister {
             AsyncRestBuilder builder = datastore.asyncRestClients.get(pe)
             Promise<RestResponse> result = builder.post(url) {
                 contentType endpoint.contentType
-                accept endpoint.acceptType, endpoint.accept
+                accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
                 body obj
             }
             if (endpoint.readTimeout > -1) {
@@ -349,7 +356,7 @@ class RestClientEntityPersister extends EntityPersister {
             RestBuilder builder = datastore.syncRestClients.get(pe)
             response = builder.post(url) {
                 contentType endpoint.contentType
-                accept endpoint.acceptType, endpoint.accept
+                accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
                 body obj
             }
         }
@@ -360,15 +367,28 @@ class RestClientEntityPersister extends EntityPersister {
     protected Serializable getObjectIdentifierFromResponseBody(RestClientDatastore datastore, RestResponse response, MimeType mimeType, PersistentEntity pe, obj) {
         final bindingSourceRegistry = datastore.bindingSourceRegistry
         final body = response.body
-        DataBindingSource bindingSource = body ? bindingSourceRegistry.createDataBindingSource(mimeType, pe.javaClass, body) : null
-        if (bindingSource) {
-            final objectId = (Serializable) bindingSource.getIdentifierValue()
-            if (objectId) {
-                Serializable convertedId = (Serializable)mappingContext.getConversionService().convert(objectId, pe.getIdentity().getType())
-                obj[pe.getIdentity().name] = convertedId
-                return convertedId
+        if(body) {
+            if(pe.isInstance(body)) {
+                final identifier = getObjectIdentifier(body)
+                obj[pe.getIdentity().name] = identifier
+                return identifier
             }
-            return objectId
+            else {
+                DataBindingSource bindingSource = body ? bindingSourceRegistry.createDataBindingSource(mimeType, pe.javaClass, body) : null
+                if (bindingSource) {
+                    final objectId = (Serializable) bindingSource.getIdentifierValue()
+                    if (objectId) {
+                        Serializable convertedId = (Serializable)mappingContext.getConversionService().convert(objectId, pe.getIdentity().getType())
+                        obj[pe.getIdentity().name] = convertedId
+                        return convertedId
+                    }
+                    return objectId
+                }
+                else {
+                    return getObjectIdentifier(obj)
+                }
+            }
+
         }
         else {
             return getObjectIdentifier(obj)
@@ -488,7 +508,7 @@ class RestClientEntityPersister extends EntityPersister {
         MimeType mimeType = new MimeType(endpoint.contentType)
         RestResponse response = executeGet(endpoint, datastore, entity, url)
 
-        if(response.statusCode == HttpStatus.OK) {
+        if(response.statusCode.series() == HttpStatus.Series.SUCCESSFUL) {
             final body = response.body
             final bindingSourceRegistry = datastore.bindingSourceRegistry
             DataBindingSource bindingSource = body ? bindingSourceRegistry.createDataBindingSource(mimeType, entity.javaClass, body) : null

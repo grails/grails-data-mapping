@@ -1,36 +1,29 @@
-package org.grails.datastore.gorm.rest.client
+package org.grails.datastore.gorm.rest.client.xml
 
 import grails.persistence.Entity
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationHolder
-import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationInitializer
 import org.codehaus.groovy.grails.web.servlet.HttpHeaders
+import org.grails.datastore.gorm.rest.client.RestClientDatastoreSpec
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.client.MockRestServiceServer
 import org.springframework.web.client.RestTemplate
 
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.header
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess
-import org.springframework.http.HttpStatus
 
 /**
- * @author Graeme Rocher
  */
-class CrudSpec extends RestClientDatastoreSpec{
-
+class CrudXmlSpec extends RestClientDatastoreSpec{
     void "Test the get method issues a GET request and binds the result to the entity"() {
         when:"An entity is retrieved with the get method"
             RestTemplate rt = Book.getRestBuilder().restTemplate
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book/1"))
-                      .andExpect(method(HttpMethod.GET))
-                      .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString()))
-                      .andRespond(withSuccess('{"id":1, "title":"The Stand", "pages":200}', MediaType.APPLICATION_JSON))
+                    .andExpect(method(HttpMethod.GET))
+                    .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML.toString()))
+                    .andRespond(withSuccess('<book id="1"><title>The Stand</title><pages>200</pages></book>', MediaType.APPLICATION_XML))
 
             Book b = Book.get(1)
 
@@ -49,8 +42,8 @@ class CrudSpec extends RestClientDatastoreSpec{
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book/1"))
                     .andExpect(method(HttpMethod.GET))
-                    .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString()))
-                    .andRespond(withSuccess('{"id":1, "title":"The Stand", "pages":200}', MediaType.APPLICATION_JSON))
+                    .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML.toString()))
+                    .andRespond(withSuccess('<book id="1"><title>The Stand</title><pages>200</pages></book>', MediaType.APPLICATION_XML))
 
             List<Book> books = Book.getAll([1])
 
@@ -70,17 +63,17 @@ class CrudSpec extends RestClientDatastoreSpec{
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book"))
                     .andExpect(method(HttpMethod.POST))
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(content().string('{"class":"org.grails.datastore.gorm.rest.client.Book","id":null,"pages":null,"title":"The Stand"}'))
-                    .andRespond(withSuccess('{"id":1, "title":"The Stand"}', MediaType.APPLICATION_JSON))
-
+                    .andExpect(content().contentType(MediaType.APPLICATION_XML))
+                    .andExpect(content().string('<?xml version="1.0" encoding="UTF-8"?><book><pages /><title>The Stand</title></book>'))
+                    .andRespond(withSuccess('<book id="1"><title>The Stand</title><pages>200</pages></book>', MediaType.APPLICATION_XML))
+    
             mockServer.expect(requestTo("http://localhost:8080/book/2"))
                     .andExpect(method(HttpMethod.PUT))
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(content().string('{"class":"org.grails.datastore.gorm.rest.client.Book","id":2,"pages":null,"title":"The Shining"}'))
-                    .andRespond(withSuccess('{"id":2, "title":"The Shining"}', MediaType.APPLICATION_JSON))
-
-
+                    .andExpect(content().contentType(MediaType.APPLICATION_XML))
+                    .andExpect(content().string('<?xml version="1.0" encoding="UTF-8"?><book id="2"><pages /><title>The Shining</title></book>'))
+                    .andRespond(withSuccess('<?xml version="1.0" encoding="UTF-8"?><book id="2"><pages /><title>The Shining</title></book>', MediaType.APPLICATION_XML))
+    
+    
             def b = new Book(title: "The Stand")
             def b2 = new Book(title: "The Shining")
             b2.id = 2L
@@ -104,9 +97,9 @@ class CrudSpec extends RestClientDatastoreSpec{
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book"))
                     .andExpect(method(HttpMethod.POST))
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(content().string('{"class":"org.grails.datastore.gorm.rest.client.Book","id":null,"pages":null,"title":"The Stand"}'))
-                    .andRespond(withSuccess('{"id":1, "title":"The Stand"}', MediaType.APPLICATION_JSON))
+                    .andExpect(content().contentType(MediaType.APPLICATION_XML))
+                    .andExpect(content().string('<?xml version="1.0" encoding="UTF-8"?><book><pages /><title>The Stand</title></book>'))
+                    .andRespond(withSuccess('<?xml version="1.0" encoding="UTF-8"?><book id="1"><pages /><title>The Stand</title></book>', MediaType.APPLICATION_XML))
 
             def b = new Book(title: "The Stand")
             b.save()
@@ -123,9 +116,9 @@ class CrudSpec extends RestClientDatastoreSpec{
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book"))
                     .andExpect(method(HttpMethod.POST))
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(content().string('{"class":"org.grails.datastore.gorm.rest.client.Book","id":1,"pages":null,"title":"The Stand"}'))
-                    .andRespond(withSuccess('{"id":1, "title":"The Stand"}', MediaType.APPLICATION_JSON))
+                    .andExpect(content().contentType(MediaType.APPLICATION_XML))
+                    .andExpect(content().string('<?xml version="1.0" encoding="UTF-8"?><book id="1"><pages /><title>The Stand</title></book>'))
+                    .andRespond(withSuccess('<?xml version="1.0" encoding="UTF-8"?><book id="1"><pages /><title>The Stand</title></book>', MediaType.APPLICATION_XML))
 
             def b = new Book(title: "The Stand")
             b.id = 1L
@@ -143,9 +136,9 @@ class CrudSpec extends RestClientDatastoreSpec{
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book/1"))
                     .andExpect(method(HttpMethod.PUT))
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(content().string('{"class":"org.grails.datastore.gorm.rest.client.Book","id":1,"pages":null,"title":"The Stand"}'))
-                    .andRespond(withSuccess('{"id":1, "title":"The Stand"}', MediaType.APPLICATION_JSON))
+                    .andExpect(content().contentType(MediaType.APPLICATION_XML))
+                    .andExpect(content().string('<?xml version="1.0" encoding="UTF-8"?><book id="1"><pages /><title>The Stand</title></book>'))
+                    .andRespond(withSuccess('<?xml version="1.0" encoding="UTF-8"?><book id="1"><pages /><title>The Stand</title></book>', MediaType.APPLICATION_XML))
 
             def b = new Book(title: "The Stand")
             b.id = 1L
@@ -199,7 +192,7 @@ class CrudSpec extends RestClientDatastoreSpec{
     }
     @Override
     List<Class> getDomainClasses() {
-        [Book]
+        return [Book]
     }
 }
 
@@ -211,6 +204,8 @@ class Book {
     Integer pages
 
     static mapping = {
+        contentType "application/xml"
+        accept "application/xml"
 //        async false
     }
 }

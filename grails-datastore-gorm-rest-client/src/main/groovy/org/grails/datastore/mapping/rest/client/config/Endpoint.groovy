@@ -47,9 +47,9 @@ class Endpoint extends Entity{
     /**
      * The accept type of the end point to pass to the Accept header when sending requests
      */
-    String accept = contentType
+    String accept
 
-    Class acceptType = JsonElement
+    Class acceptType
 
     /**
      * Any addiitonal headers to be sent as part of the request
@@ -108,16 +108,10 @@ class Endpoint extends Entity{
     }
 
     String getAccept() {
-        return accept
+        return accept ?: contentType
     }
 
     void setAccept(String accept) {
-        if(accept.endsWith('/json') || accept.endsWith("+json")) {
-            acceptType = JsonElement
-        }
-        else if(accept.endsWith('/json') || accept.endsWith("+json")) {
-            acceptType = GPathResult
-        }
         this.accept = accept
     }
 }
