@@ -1,4 +1,4 @@
-/* Copyright (C) 2010 SpringSource
+/* Copyright (C) 2013 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,24 +12,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.mapping.core;
+package org.grails.datastore.mapping.rest.client.config
+
+import groovy.transform.CompileStatic
+import org.grails.datastore.mapping.config.AbstractGormMappingFactory
+import org.grails.datastore.mapping.config.Property
 
 /**
- * General exception for errors related to the configuration
- * of the Datastore
+ * MappingFactory for the GORM REST client
  *
  * @author Graeme Rocher
  * @since 1.0
  */
-public class DatastoreException extends RuntimeException {
-
-    private static final long serialVersionUID = 1;
-
-    public DatastoreException(String s) {
-        super(s);
+@CompileStatic
+class RestClientMappingFactory extends AbstractGormMappingFactory<Endpoint, Property> {
+    @Override
+    protected Class<Property> getPropertyMappedFormType() {
+        Property
     }
 
-    public DatastoreException(String s, Throwable throwable) {
-        super(s, throwable);
+    @Override
+    protected Class<Endpoint> getEntityMappedFormType() {
+        Endpoint
     }
 }

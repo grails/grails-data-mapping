@@ -9,6 +9,7 @@ include "grails-datastore-core",
         "grails-datastore-web",
         "grails-datastore-simpledb",
         "grails-datastore-dynamodb",
+        'grails-datastore-rest-client',
 /*
         "grails-datastore-jcr",
         "grails-datastore-cassandra",
@@ -39,6 +40,8 @@ include "grails-datastore-core",
         'grails-datastore-gorm-jpa',
         'grails-datastore-gorm-neo4j',
         'grails-datastore-gorm-redis',
+        'grails-datastore-gorm-rest-client',
+        
 /*        'grails-datastore-gorm-riak',*/
         'grails-datastore-gorm-mongo',
         'grails-datastore-gorm-gemfire',

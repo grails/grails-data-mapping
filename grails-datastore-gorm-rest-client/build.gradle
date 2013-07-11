@@ -1,0 +1,19 @@
+version = "1.0.0.BUILD-SNAPSHOT"
+dependencies {
+    compile 'javax.servlet:javax.servlet-api:3.0.1'
+    runtime "org.springframework:spring-webmvc:$springVersion"
+    compile("org.grails:grails-plugin-rest:$grailsVersion") {
+        exclude group:'org.grails', module:'grails-plugin-datasource'
+        exclude group:'org.grails', module:'grails-plugin-controllers'
+        exclude group:'org.grails', module:'grails-web'
+    }
+    compile("org.grails:grails-databinding:$grailsVersion") {
+        exclude group:'junit', module:'junit'
+    }
+    compile project(":grails-datastore-gorm"),
+            project(":grails-datastore-rest-client"),
+            project(":grails-datastore-gorm-plugin-support"),
+            project(":grails-datastore-core")
+
+    testCompile("org.springframework:spring-test:$springVersion")
+}
