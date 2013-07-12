@@ -61,14 +61,12 @@ class Book {
     Date releaseDate
 
     private String author
+
     void setAuthor(String author) {
         this.author = author
     }
     String getAuthor() {
         return this.author
     }
-
-
-
 }
 

@@ -14,6 +14,7 @@ import org.codehaus.groovy.ast.expr.ArgumentListExpression
 import org.codehaus.groovy.ast.expr.BinaryExpression
 import org.codehaus.groovy.ast.expr.BooleanExpression
 import org.codehaus.groovy.ast.expr.ConstantExpression
+import org.codehaus.groovy.ast.expr.ListExpression
 import org.codehaus.groovy.ast.expr.MapExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.NotExpression
@@ -180,8 +181,8 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
             // List<String> listDirtyProperties() { trackChanges(); $changeProperties.keySet().toList() }
             if(!classNode.getMethod(METHOD_NAME_GET_DIRTY_PROPERTY_NAMES, ZERO_PARAMETERS)) {
                 final methodBody = new BlockStatement()
-                methodBody.addStatement(new ExpressionStatement(new MethodCallExpression(THIS_EXPR, "trackChanges", ZERO_ARGS)))
-                methodBody.addStatement(new ReturnStatement( new MethodCallExpression(new MethodCallExpression(changeTrackingVariable, "keySet", ZERO_ARGS), "toList" , ZERO_ARGS )))
+                final returnDirtyPropertyNames = new ReturnStatement(new MethodCallExpression(new MethodCallExpression(changeTrackingVariable, "keySet", ZERO_ARGS), "toList", ZERO_ARGS))
+                methodBody.addStatement(new IfStatement(new BooleanExpression(changeTrackingVariable), returnDirtyPropertyNames, new ReturnStatement(new ListExpression())))
                 classNode.addMethod(METHOD_NAME_GET_DIRTY_PROPERTY_NAMES, PUBLIC, ClassHelper.make(List).getPlainNodeReference(), ZERO_PARAMETERS, null, methodBody)
             }
 
