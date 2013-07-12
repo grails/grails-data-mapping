@@ -195,6 +195,7 @@ public class DomainEventListener extends AbstractPersistenceEventListener
     }
 
     public void afterUpdate(final PersistentEntity entity, final EntityAccess ea, PostUpdateEvent event) {
+        activateDirtyChecking(ea); // reset dirty checking
         invokeEvent(EVENT_AFTER_UPDATE, entity, ea, event);
     }
 

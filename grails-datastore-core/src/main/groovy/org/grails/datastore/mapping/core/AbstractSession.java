@@ -281,7 +281,7 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
 
 
         EntityPersister persister = (EntityPersister) getPersister(instance);
-        if (!(persister instanceof NativeEntryEntityPersister)) {
+        if(persister == null) {
             return false;
         }
 
@@ -289,6 +289,9 @@ public abstract class AbstractSession<N> extends AbstractAttributeStoringSession
             return ((DirtyCheckable)instance).hasChanged() || DirtyCheckingSupport.areAssociationsDirty(this, persister.getPersistentEntity(), instance);
         }
 
+        if (!(persister instanceof NativeEntryEntityPersister)) {
+            return false;
+        }
 
         Serializable id = persister.getObjectIdentifier(instance);
         if (id == null) {

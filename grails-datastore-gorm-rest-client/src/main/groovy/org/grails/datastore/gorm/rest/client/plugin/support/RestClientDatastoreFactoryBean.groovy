@@ -15,6 +15,8 @@
 package org.grails.datastore.gorm.rest.client.plugin.support
 
 import groovy.transform.CompileStatic
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
+import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.mapping.cache.TPCacheAdapterRepository
 import org.grails.datastore.mapping.rest.client.RestClientDatastore
 import org.grails.datastore.mapping.rest.client.config.RestClientMappingContext
@@ -32,18 +34,22 @@ import org.springframework.context.ConfigurableApplicationContext
  * @since 1.0
  */
 @CompileStatic
-class RestClientDatastoreFactoryBean implements FactoryBean<org.grails.datastore.mapping.rest.client.RestClientDatastore>, ApplicationContextAware, InitializingBean{
+class RestClientDatastoreFactoryBean implements FactoryBean<org.grails.datastore.mapping.rest.client.RestClientDatastore>, ApplicationContextAware{
     ApplicationContext applicationContext
     RestClientMappingContext mappingContext
     Map connectionDetails
     @Autowired(required = false)
     TPCacheAdapterRepository cacheAdapterRepository
 
-    private RestClientDatastore restClientDatastore
 
     @Override
     RestClientDatastore getObject() throws Exception {
-        restClientDatastore
+        final appCtx = (ConfigurableApplicationContext) applicationContext
+        final datastore = new RestClientDatastore(mappingContext, connectionDetails, appCtx, cacheAdapterRepository)
+        appCtx.addApplicationListener new DomainEventListener(datastore)
+        appCtx.addApplicationListener new AutoTimestampEventListener(datastore)
+
+        return datastore
     }
 
     @Override
@@ -52,8 +58,4 @@ class RestClientDatastoreFactoryBean implements FactoryBean<org.grails.datastore
     @Override
     boolean isSingleton() { true }
 
-    @Override
-    void afterPropertiesSet() throws Exception {
-        restClientDatastore = new RestClientDatastore(mappingContext, connectionDetails, (ConfigurableApplicationContext)applicationContext, cacheAdapterRepository)
-    }
 }

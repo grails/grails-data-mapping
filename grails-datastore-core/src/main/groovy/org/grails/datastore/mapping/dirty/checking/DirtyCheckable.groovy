@@ -10,7 +10,8 @@ package org.grails.datastore.mapping.dirty.checking
 public interface DirtyCheckable {
 
     /**
-     * Indicates that the instance should start tacking changes
+     * Indicates that the instance should start tacking changes. Note that if the instance is dirty this will clear any previously tracked
+     * changes
      */
     void trackChanges()
 

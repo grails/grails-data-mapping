@@ -60,6 +60,7 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
     private static final Class<?>[] OBJECT_CLASS_ARG = [Object.class];
     public static final String METHOD_NAME_TRACK_CHANGES = "trackChanges"
     public static final String METHOD_NAME_MARK_DIRTY = "markDirty"
+    public static final String METHOD_NAME_RESET_DIRTY = "resetDirty"
     public static final String METHOD_NAME_IS_DIRTY = "hasChanged"
     public static final ConstantExpression CONSTANT_NULL = new ConstantExpression(null)
     public static final String METHOD_NAME_GET_DIRTY_PROPERTY_NAMES = "listDirtyPropertyNames"
@@ -106,20 +107,19 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
 
             // we also need to make it implement the ChangeTrackable interface
 
-            // Implement the startTracking method such that:
-            // void startTracking() { $changedProperties = [] }
+            // Implement the trackChanges method such that:
+            // void trackChanges() { if( !$changedProperties ) $changedProperties = [:] }
             classNode.addInterface(changeTrackableClassNode)
-            final startTrackingBody = new BlockStatement()
-            startTrackingBody.asBoolean()
+            final trackChangesBody = new BlockStatement()
             final assignChangeTrackingFieldStatement = new ExpressionStatement(
                     new BinaryExpression(changeTrackingVariable,
                             Token.newSymbol(Types.EQUAL, 0, 0),
                             new MapExpression())
             )
 
-            startTrackingBody.addStatement(new IfStatement(new NotExpression(changeTrackingVariable), assignChangeTrackingFieldStatement,new EmptyStatement()))
+            trackChangesBody.addStatement(assignChangeTrackingFieldStatement)
             if(!classNode.getMethod(METHOD_NAME_TRACK_CHANGES, ZERO_PARAMETERS))
-                classNode.addMethod(METHOD_NAME_TRACK_CHANGES, PUBLIC, ClassHelper.VOID_TYPE, ZERO_PARAMETERS, null, startTrackingBody)
+                classNode.addMethod(METHOD_NAME_TRACK_CHANGES, PUBLIC, ClassHelper.VOID_TYPE, ZERO_PARAMETERS, null, trackChangesBody)
 
             // Implement the hasChanged method such that:
             // boolean hasChanged() { $changedProperties == null || $changedProperties }

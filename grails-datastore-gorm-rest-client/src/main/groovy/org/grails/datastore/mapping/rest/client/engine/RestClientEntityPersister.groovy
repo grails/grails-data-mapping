@@ -26,6 +26,7 @@ import org.codehaus.groovy.grails.web.mime.MimeType
 import org.grails.databinding.DataBindingSource
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionImplementor
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -136,6 +137,7 @@ class RestClientEntityPersister extends EntityPersister {
                         for(update in updates) {
                             final entityAccess = new EntityAccess(entity, update)
                             if( cancelUpdate(entity, entityAccess) ) continue
+                            if( !getSession().isDirty(update) ) continue
 
                             count++
                             def identifier = identifiers[objectList.indexOf(update)]
@@ -306,6 +308,8 @@ class RestClientEntityPersister extends EntityPersister {
             // do update
             final entityAccess = new EntityAccess(pe, obj)
             if( cancelUpdate(pe, entityAccess) ) return getObjectIdentifier(obj)
+            if( !getSession().isDirty(obj) ) return getObjectIdentifier(obj)
+
             SessionImplementor impl = (SessionImplementor)getSession()
             if(endpoint.async) {
                 impl.addPendingUpdate(new PendingUpdateAdapter<AsyncRestBuilder, Object>(pe, identifier, datastore.asyncRestClients.get(pe), new EntityAccess(pe, obj)) {
