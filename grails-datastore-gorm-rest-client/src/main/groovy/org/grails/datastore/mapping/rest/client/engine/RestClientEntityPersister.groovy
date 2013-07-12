@@ -137,7 +137,7 @@ class RestClientEntityPersister extends EntityPersister {
                         for(update in updates) {
                             final entityAccess = new EntityAccess(entity, update)
                             if( cancelUpdate(entity, entityAccess) ) continue
-                            if( !getSession().isDirty(update) ) continue
+                            if( (update instanceof DirtyCheckable) && !getSession().isDirty(update) ) continue
 
                             count++
                             def identifier = identifiers[objectList.indexOf(update)]
@@ -308,7 +308,9 @@ class RestClientEntityPersister extends EntityPersister {
             // do update
             final entityAccess = new EntityAccess(pe, obj)
             if( cancelUpdate(pe, entityAccess) ) return getObjectIdentifier(obj)
-            if( !getSession().isDirty(obj) ) return getObjectIdentifier(obj)
+            if( (obj instanceof DirtyCheckable) && !getSession().isDirty(obj) ) {
+                return getObjectIdentifier(obj)
+            }
 
             SessionImplementor impl = (SessionImplementor)getSession()
             if(endpoint.async) {
