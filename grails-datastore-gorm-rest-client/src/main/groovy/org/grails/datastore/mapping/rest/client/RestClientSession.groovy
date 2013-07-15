@@ -37,6 +37,9 @@ import org.springframework.context.ApplicationEventPublisher
 @CompileStatic
 class RestClientSession extends AbstractSession{
 
+    static final String ATTRIBUTE_URL = "url"
+    static final String ATTRIBUTE_REQUEST_CUSTOMIZER = "request-customizer"
+
     RestClientSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher publisher) {
         super(datastore, mappingContext, publisher)
     }

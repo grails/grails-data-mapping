@@ -19,6 +19,11 @@ import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.mapping.core.Datastore
 import org.codehaus.groovy.grails.plugins.converters.api.ConvertersApi
 import org.grails.datastore.mapping.rest.client.RestClientSession
+import groovy.transform.CompileStatic
+import grails.plugins.rest.client.RequestCustomizer
+import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.core.SessionCallback
+import groovy.transform.TypeCheckingMode
 
 /**
  * Extensions to the instance API for REST
@@ -26,6 +31,7 @@ import org.grails.datastore.mapping.rest.client.RestClientSession
  * @author Graeme Rocher
  * @since 1.0
  */
+@CompileStatic
 class RestClientGormInstanceApi<D> extends GormInstanceApi<D> {
 
     RestClientGormInstanceApi(Class<D> persistentClass, Datastore datastore) {
@@ -43,23 +49,48 @@ class RestClientGormInstanceApi<D> extends GormInstanceApi<D> {
         new ConvertersApi().asType(instance, clazz)
     }
 
+
+
+
+    /**
+     * Save the instance to the given URL
+     *
+     * @param instance The instance
+     * @param url The URL
+     * @return The instance if saved, null otherwise
+     */
+    public Object save(Object instance, @DelegatesTo(RequestCustomizer) Closure requestCustomizer) {
+        put(instance, requestCustomizer)
+    }
+
+    /**
+     * Deletes an instances for the given URL
+     *
+     * @param instance The instance
+     * @param url The URL to send the DELETE request to
+     */
+    @CompileStatic(TypeCheckingMode.SKIP) // TODO: Report JIRA, removal causes GroovyCastException
+    public void delete(Object instance,@DelegatesTo(RequestCustomizer) Closure requestCustomizer) {
+        execute({ Session session ->
+            withRequestCustomizer(session, instance, requestCustomizer) {
+                delete(instance)
+            }
+        } as SessionCallback)
+    }
+
     /**
      * Synonym for save()
      *
      * @param instance The instance
      * @return The instance if it was saved, null otherwise
      */
-    public Object put(Object instance, URL url = null) {
-        if (url) {
-            datastore.currentSession.setAttribute(instance, "url", url)
-        }
-        try {
-            return save(instance)
-        } finally {
-            if (url) {
-                datastore.currentSession.setAttribute(instance, "url", null)
+    @CompileStatic(TypeCheckingMode.SKIP) // TODO: Report JIRA, removal causes GroovyCastException
+    public Object put(Object instance, @DelegatesTo(RequestCustomizer)  Closure requestCustomizer ) {
+        execute({ Session session ->
+            withRequestCustomizer(session, instance, requestCustomizer) {
+                save(instance)
             }
-        }
+        } as SessionCallback)
     }
 
     /**
@@ -68,15 +99,163 @@ class RestClientGormInstanceApi<D> extends GormInstanceApi<D> {
      * @param instance The instance
      * @return The instance if it was saved, null otherwise
      */
-    public Object post(Object instance, URL url = null) {
+    @CompileStatic(TypeCheckingMode.SKIP) // TODO: Report JIRA, removal causes GroovyCastException
+    public Object post(Object instance, @DelegatesTo(RequestCustomizer)  Closure requestCustomizer) {
+        execute({ Session session ->
+            withRequestCustomizer(session, instance, requestCustomizer) {
+                insert(instance)
+            }
+        } as SessionCallback)
+    }
+
+
+    /**
+     * Save the instance to the given URL
+     *
+     * @param instance The instance
+     * @param url The URL
+     * @return The instance if saved, null otherwise
+     */
+    public Object save(Object instance, URL url,@DelegatesTo(RequestCustomizer) Closure requestCustomizer = null) {
+        put(instance, url, requestCustomizer)
+    }
+
+    /**
+     * Deletes an instances for the given URL
+     *
+     * @param instance The instance
+     * @param url The URL to send the DELETE request to
+     */
+    @CompileStatic(TypeCheckingMode.SKIP) // TODO: Report JIRA, removal causes GroovyCastException
+    public void delete(Object instance, URL url,@DelegatesTo(RequestCustomizer) Closure requestCustomizer = null) {
+        execute({ Session session ->
+            withCustomUrl(session,instance, url) {
+                withRequestCustomizer(session,instance, requestCustomizer) {
+                    delete(instance)
+                }
+            }
+        } as SessionCallback)
+    }
+
+    /**
+     * Synonym for save()
+     *
+     * @param instance The instance
+     * @return The instance if it was saved, null otherwise
+     */
+    @CompileStatic(TypeCheckingMode.SKIP) // TODO: Report JIRA, removal causes GroovyCastException
+    public Object put(Object instance, URL url = null, @DelegatesTo(RequestCustomizer) Closure requestCustomizer = null) {
+        execute({ Session session ->
+            withCustomUrl(session, instance, url) {
+                withRequestCustomizer(session, instance, requestCustomizer) {
+                    save(instance)
+                }
+            }
+        } as SessionCallback)
+    }
+
+    /**
+     * Synonym for insert()
+     *
+     * @param instance The instance
+     * @return The instance if it was saved, null otherwise
+     */
+    @CompileStatic(TypeCheckingMode.SKIP) // TODO: Report JIRA, removal causes GroovyCastException
+    public Object post(Object instance, URL url= null, @DelegatesTo(RequestCustomizer) Closure requestCustomizer = null) {
+        execute({ Session session ->
+            withCustomUrl(session, instance, url) {
+                withRequestCustomizer(session, instance, requestCustomizer) {
+                    insert(instance)
+                }
+            }
+        } as SessionCallback)
+    }
+
+
+    /**
+     * Save the instance to the given URL
+     *
+     * @param instance The instance
+     * @param url The URL
+     * @return The instance if saved, null otherwise
+     */
+    public Object save(Object instance, Map params, URL url, @DelegatesTo(RequestCustomizer) Closure requestCustomizer = null) {
+        put(instance, params,url, requestCustomizer)
+    }
+
+    /**
+     * Deletes an instances for the given URL
+     *
+     * @param instance The instance
+     * @param url The URL to send the DELETE request to
+     */
+    @CompileStatic(TypeCheckingMode.SKIP) // TODO: Report JIRA, removal causes GroovyCastException
+    public void delete(Object instance, Map params, URL url,@DelegatesTo(RequestCustomizer) Closure requestCustomizer = null) {
+        execute({ Session session ->
+            withCustomUrl(session,instance, url) {
+                withRequestCustomizer(session,instance, requestCustomizer) {
+                    delete(instance)
+                }
+            }
+        } as SessionCallback)
+    }
+
+    /**
+     * Synonym for save()
+     *
+     * @param instance The instance
+     * @return The instance if it was saved, null otherwise
+     */
+    @CompileStatic(TypeCheckingMode.SKIP) // TODO: Report JIRA, removal causes GroovyCastException
+    public Object put(Object instance, Map params, URL url,@DelegatesTo(RequestCustomizer) Closure requestCustomizer = null) {
+        execute({ Session session ->
+            withCustomUrl(session, instance, url) {
+                withRequestCustomizer(session, instance, requestCustomizer) {
+                    save(instance, params)
+                }
+            }
+        } as SessionCallback)
+    }
+
+    /**
+     * Synonym for insert()
+     *
+     * @param instance The instance
+     * @return The instance if it was saved, null otherwise
+     */
+    @CompileStatic(TypeCheckingMode.SKIP) // TODO: Report JIRA, removal causes GroovyCastException
+    public Object post(Object instance, Map params, URL url, @DelegatesTo(RequestCustomizer) Closure requestCustomizer = null) {
+        execute({ Session session ->
+            withCustomUrl(session, instance, url) {
+                withRequestCustomizer(session, instance, requestCustomizer) {
+                    insert(instance, params)
+                }
+            }
+        } as SessionCallback)
+    }
+
+    protected Object withCustomUrl(Session currentSession, Object instance, URL url, Closure callable) {
         if (url) {
-            datastore.currentSession.setAttribute(instance, "url", url)
+            currentSession.setAttribute(instance, RestClientSession.ATTRIBUTE_URL, url)
         }
         try {
-            return insert(instance)
+            return callable.call()
         } finally {
             if (url) {
-                datastore.currentSession.setAttribute(instance, "url", null)
+                currentSession.setAttribute(instance, RestClientSession.ATTRIBUTE_URL, null)
+            }
+        }
+    }
+
+    protected Object withRequestCustomizer(Session currentSession, Object instance, @DelegatesTo(RequestCustomizer) Closure customizer, Closure callable) {
+        if (customizer) {
+            currentSession.setAttribute(instance, RestClientSession.ATTRIBUTE_REQUEST_CUSTOMIZER, customizer)
+        }
+        try {
+            callable.call()
+        } finally {
+            if (customizer) {
+                currentSession.setAttribute(instance, RestClientSession.ATTRIBUTE_URL, null)
             }
         }
     }

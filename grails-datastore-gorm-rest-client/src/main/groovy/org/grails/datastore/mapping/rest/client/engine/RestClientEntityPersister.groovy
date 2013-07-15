@@ -42,6 +42,8 @@ import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.rest.client.config.RestClientMappingContext
 import org.grails.datastore.mapping.core.impl.PendingInsertAdapter
 import org.grails.datastore.mapping.rest.client.RestClientException
+import org.grails.datastore.mapping.rest.client.RestClientSession
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
 
 /**
  *
@@ -65,6 +67,9 @@ class RestClientEntityPersister extends EntityPersister {
     protected List<Object> retrieveAllEntities(PersistentEntity pe, Iterable<Serializable> keys) {
         Endpoint endpoint = (Endpoint)pe.mapping.mappedForm
         RestClientDatastore datastore = (RestClientDatastore)getSession().datastore
+        final sessionUrl = session.getAttribute(pe, RestClientSession.ATTRIBUTE_URL)
+        final sessionRequestCustomizer = session.getAttribute(pe, RestClientSession.ATTRIBUTE_REQUEST_CUSTOMIZER)
+
         List results = []
 
         MimeType mimeType = new MimeType(endpoint.contentType)
@@ -76,9 +81,18 @@ class RestClientEntityPersister extends EntityPersister {
             int count = 0
             for(objectId in keys) {
                 count++
-                final url = establishUrl(datastore.baseUrl, endpoint, pe, objectId)
-                promiseList << asyncRestBuilder.get(url) {
+                final url = sessionUrl ? sessionUrl.toString() : establishUrl(datastore.baseUrl, endpoint, pe, objectId)
+                Map<String, Object> args = [:]
+                args.put(GrailsDomainClassProperty.IDENTITY, objectId)
+
+                promiseList << asyncRestBuilder.get(url, args) {
                     accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
+                    if(sessionRequestCustomizer instanceof Closure) {
+                        Closure callable = (Closure)sessionRequestCustomizer
+                        callable.delegate = delegate
+                        callable.call()
+                    }
+
                 }
             }
 
@@ -92,9 +106,17 @@ class RestClientEntityPersister extends EntityPersister {
         else {
             RestBuilder builder = datastore.syncRestClients.get(pe)
             for(objectId in keys) {
-                final url = establishUrl(datastore.baseUrl, endpoint, pe, objectId)
-                responseResults <<  builder.get(url) {
+                final url = sessionUrl ? sessionUrl.toString() : establishUrl(datastore.baseUrl, endpoint, pe, objectId)
+                Map<String, Object> args = [:]
+                args.put(GrailsDomainClassProperty.IDENTITY, objectId)
+
+                responseResults <<  builder.get(url, args) {
                     accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
+                    if(sessionRequestCustomizer instanceof Closure) {
+                        Closure callable = (Closure)sessionRequestCustomizer
+                        callable.delegate = delegate
+                        callable.call()
+                    }
                 }
             }
         }
@@ -227,7 +249,7 @@ class RestClientEntityPersister extends EntityPersister {
 
         final url = establishUrl(datastore.baseUrl, endpoint, pe, key)
         MimeType mimeType = new MimeType(endpoint.contentType)
-        RestResponse response = executeGet(endpoint, datastore, pe, url)
+        RestResponse response = executeGet(endpoint, datastore, pe, url, key)
 
         if(response.statusCode == HttpStatus.OK) {
             return bindResponseToNewEntity(response, datastore, mimeType, pe)
@@ -235,12 +257,23 @@ class RestClientEntityPersister extends EntityPersister {
         return null
     }
 
-    private RestResponse executeGet(Endpoint endpoint, RestClientDatastore datastore, PersistentEntity pe, String url) {
+    private RestResponse executeGet(Endpoint endpoint, RestClientDatastore datastore, PersistentEntity pe, String url, Serializable identifier) {
+        final sessionUrl = session.getAttribute(pe, RestClientSession.ATTRIBUTE_URL)
+        final sessionRequestCustomizer = session.getAttribute(pe, RestClientSession.ATTRIBUTE_REQUEST_CUSTOMIZER)
+        url = sessionUrl ? sessionUrl.toString() : url
+        Map<String, Object> args = [:]
+        args.put(GrailsDomainClassProperty.IDENTITY, identifier)
+
         RestResponse response
         if (endpoint.async) {
             AsyncRestBuilder builder = datastore.asyncRestClients.get(pe)
-            Promise<RestResponse> promise = builder.get(url) {
+            Promise<RestResponse> promise = builder.get(url, args) {
                 accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
+                if(sessionRequestCustomizer instanceof Closure) {
+                    Closure callable = (Closure)sessionRequestCustomizer
+                    callable.delegate = delegate
+                    callable.call()
+                }
             }
             if (endpoint.readTimeout > -1) {
                 response = promise.get(endpoint.readTimeout, TimeUnit.SECONDS)
@@ -251,8 +284,13 @@ class RestClientEntityPersister extends EntityPersister {
         }
         else {
             RestBuilder builder = datastore.syncRestClients.get(pe)
-            response = builder.get(url) {
+            response = builder.get(url, args) {
                 accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
+                if(sessionRequestCustomizer instanceof Closure) {
+                    Closure callable = (Closure)sessionRequestCustomizer
+                    callable.delegate = delegate
+                    callable.call()
+                }
             }
         }
         response
@@ -301,28 +339,39 @@ class RestClientEntityPersister extends EntityPersister {
     protected Serializable persistEntity(PersistentEntity pe, Object obj) {
         Endpoint endpoint = (Endpoint)pe.mapping.mappedForm
 
-        RestClientDatastore datastore = (RestClientDatastore)getSession().datastore
+        final Session session = getSession()
+        RestClientDatastore datastore = (RestClientDatastore) session.datastore
 
         final identifier = getObjectIdentifier(obj)
         if(identifier) {
             // do update
             final entityAccess = new EntityAccess(pe, obj)
             if( cancelUpdate(pe, entityAccess) ) return getObjectIdentifier(obj)
-            if( (obj instanceof DirtyCheckable) && !getSession().isDirty(obj) ) {
+            if( (obj instanceof DirtyCheckable) && !session.isDirty(obj) ) {
                 return getObjectIdentifier(obj)
             }
 
-            SessionImplementor impl = (SessionImplementor)getSession()
+            SessionImplementor impl = (SessionImplementor) session
             if(endpoint.async) {
                 impl.addPendingUpdate(new PendingUpdateAdapter<AsyncRestBuilder, Object>(pe, identifier, datastore.asyncRestClients.get(pe), new EntityAccess(pe, obj)) {
                     @Override
                     void run() {
                         AsyncRestBuilder builder = getNativeEntry()
-                        final url = establishUrl(datastore.baseUrl, endpoint, pe, identifier)
-                        Promise<RestResponse> responsePromise = builder.put(url) {
+                        final sessionUrl = session.getAttribute(obj, RestClientSession.ATTRIBUTE_URL)
+                        final sessionRequestCustomizer = session.getAttribute(obj, RestClientSession.ATTRIBUTE_REQUEST_CUSTOMIZER)
+
+                        final url = sessionUrl ? sessionUrl.toString() : establishUrl(datastore.baseUrl, endpoint, pe, identifier)
+                        Map<String, Object> args = [:]
+                        args.put('id', identifier)
+                        Promise<RestResponse> responsePromise = builder.put(url, args) {
                             contentType endpoint.contentType
                             accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
                             body obj
+                            if(sessionRequestCustomizer instanceof Closure) {
+                                Closure callable = (Closure)sessionRequestCustomizer
+                                callable.delegate = delegate
+                                callable.call()
+                            }
                         }
                         RestResponse response
                         if(endpoint.readTimeout > -1)
@@ -340,12 +389,22 @@ class RestClientEntityPersister extends EntityPersister {
             }
             else {
                 RestBuilder restBuilder = datastore.syncRestClients.get(pe)
+                final sessionUrl = session.getAttribute(obj, RestClientSession.ATTRIBUTE_URL)
+                final sessionRequestCustomizer = session.getAttribute(obj, RestClientSession.ATTRIBUTE_REQUEST_CUSTOMIZER)
 
-                final url = establishUrl(datastore.baseUrl, endpoint, pe, identifier)
-                final RestResponse response = restBuilder.put(url) {
+                final url = sessionUrl ? sessionUrl.toString() : establishUrl(datastore.baseUrl, endpoint, pe, identifier)
+                Map<String, Object> args = [:]
+                args['id'] = identifier
+                final RestResponse response = restBuilder.put(url, args) {
                     contentType endpoint.contentType
                     accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
                     body obj
+                    if(sessionRequestCustomizer instanceof Closure) {
+                        Closure callable = (Closure)sessionRequestCustomizer
+                        callable.delegate = delegate
+                        callable.call()
+                    }
+
                 }
                 if(response.statusCode.series() != HttpStatus.Series.SUCCESSFUL) {
                     throw new RestClientException("Status code [${response.statusCode}] returned for PUT request to URL [$url]", response)
@@ -387,7 +446,11 @@ class RestClientEntityPersister extends EntityPersister {
     }
 
     public Serializable executeInsert(RestClientDatastore datastore, Endpoint endpoint, PersistentEntity pe, obj) {
-        final url = establishUrl(datastore.baseUrl, endpoint, pe)
+        final sessionUrl = session.getAttribute(obj, RestClientSession.ATTRIBUTE_URL)
+        final sessionRequestCustomizer = session.getAttribute(obj, RestClientSession.ATTRIBUTE_REQUEST_CUSTOMIZER)
+
+
+        final url = sessionUrl ? sessionUrl.toString() : establishUrl(datastore.baseUrl, endpoint, pe)
         RestResponse response
         MimeType mimeType = new MimeType(endpoint.contentType)
         final entityAccess = new EntityAccess(pe, obj)
@@ -398,6 +461,11 @@ class RestClientEntityPersister extends EntityPersister {
                 contentType endpoint.contentType
                 accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
                 body obj
+                if(sessionRequestCustomizer instanceof Closure) {
+                    Closure callable = (Closure)sessionRequestCustomizer
+                    callable.delegate = delegate
+                    callable.call()
+                }
             }.then { RestResponse r ->
                 if(r.statusCode.series() == HttpStatus.Series.SUCCESSFUL) {
                     firePostInsertEvent(pe, entityAccess)
@@ -416,6 +484,11 @@ class RestClientEntityPersister extends EntityPersister {
                 contentType endpoint.contentType
                 accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
                 body obj
+                if(sessionRequestCustomizer instanceof Closure) {
+                    Closure callable = (Closure)sessionRequestCustomizer
+                    callable.delegate = delegate
+                    callable.call()
+                }
             }
             if(response.statusCode.series() == HttpStatus.Series.SUCCESSFUL) {
                 firePostInsertEvent(pe, entityAccess)
@@ -484,13 +557,19 @@ class RestClientEntityPersister extends EntityPersister {
             if(id) {
                 Endpoint endpoint = (Endpoint)pe.mapping.mappedForm
                 RestClientDatastore datastore = (RestClientDatastore)getSession().datastore
-                final url = establishUrl(datastore.baseUrl, endpoint, pe, id)
+                final sessionUrl = session.getAttribute(object, RestClientSession.ATTRIBUTE_URL)
+                final sessionRequestCustomizer = session.getAttribute(object, RestClientSession.ATTRIBUTE_REQUEST_CUSTOMIZER)
+
+                final url = sessionUrl ? sessionUrl.toString() :  establishUrl(datastore.baseUrl, endpoint, pe, id)
                 if(endpoint.async) {
                     AsyncRestBuilder builder = datastore.asyncRestClients.get(pe)
-                    Promise<RestResponse> result = builder.delete(url).then { RestResponse response ->
+                    Map<String, Object> args = [:]
+                    args.put('id', id)
+                    Promise<RestResponse> result = builder.delete(url, args, (Closure)sessionRequestCustomizer).then { RestResponse response ->
                         if(response.statusCode.series() == HttpStatus.Series.SUCCESSFUL) {
                             firePostDeleteEvent(pe, entityAccess)
                         }
+
                         return response
                     }
                     RestResponse response
@@ -506,7 +585,9 @@ class RestClientEntityPersister extends EntityPersister {
 
                 } else {
                     RestBuilder builder = datastore.syncRestClients.get(pe)
-                    RestResponse response = builder.delete(url)
+                    Map<String, Object> args = [:]
+                    args.put('id', id)
+                    RestResponse response = builder.delete(url, args, (Closure)sessionRequestCustomizer)
                     if(response.statusCode.series() != HttpStatus.Series.SUCCESSFUL) {
                         throw new RestClientException("Invalid status code [${response.statusCode}] returned for DELETE request to URL [$url]", response)
                     }
@@ -585,7 +666,7 @@ class RestClientEntityPersister extends EntityPersister {
 
         final url = establishUrl(datastore.baseUrl, endpoint, entity, id)
         MimeType mimeType = new MimeType(endpoint.contentType)
-        RestResponse response = executeGet(endpoint, datastore, entity, url)
+        RestResponse response = executeGet(endpoint, datastore, entity, url, id)
 
         if(response.statusCode.series() == HttpStatus.Series.SUCCESSFUL) {
             final body = response.body

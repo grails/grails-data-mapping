@@ -19,6 +19,12 @@ import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.rest.client.RestClientDatastore
 import org.springframework.transaction.PlatformTransactionManager
+import org.grails.datastore.mapping.core.SessionCallback
+import org.grails.datastore.mapping.core.Session
+import grails.plugins.rest.client.RequestCustomizer
+import org.grails.datastore.mapping.rest.client.RestClientSession
+import groovy.transform.CompileStatic
+import groovy.transform.TypeCheckingMode
 
 /**
  * Extensions to the static API for REST
@@ -26,6 +32,7 @@ import org.springframework.transaction.PlatformTransactionManager
  * @author Graeme Rocher
  * @since 1.0
  */
+@CompileStatic
 class RestClientGormStaticApi<D> extends GormStaticApi<D> {
     RestClientGormStaticApi(Class<D> persistentClass, RestClientDatastore datastore, List<FinderMethod> finders) {
         super(persistentClass, datastore, finders)
@@ -40,5 +47,74 @@ class RestClientGormStaticApi<D> extends GormStaticApi<D> {
      */
     AsyncRestBuilder getRestBuilder() {
         ((RestClientDatastore)datastore).asyncRestClients.get(persistentEntity)
+    }
+
+    @CompileStatic(TypeCheckingMode.SKIP)
+    List<D> getAll(URL url, Serializable... ids) {
+        execute({ Session session ->
+            withCustomUrl(session, url) {
+                getAll(ids)
+            }
+        } as SessionCallback)
+    }
+
+    @CompileStatic(TypeCheckingMode.SKIP)
+    D get(URL url, Serializable id) {
+        execute({ Session session ->
+            withCustomUrl(session, url) {
+                get(id)
+            }
+        } as SessionCallback)
+
+    }
+
+    @CompileStatic(TypeCheckingMode.SKIP)
+    List<D> getAll(URL url, Iterable<Serializable> ids, @DelegatesTo(RequestCustomizer) Closure customizer) {
+        execute({ Session session ->
+            withRequestCustomizer(session, customizer) {
+                withCustomUrl(session, url) {
+                    getAll(ids.toList().toArray())
+                }
+            }
+        } as SessionCallback)
+    }
+
+    @CompileStatic(TypeCheckingMode.SKIP)
+    D get(URL url, Serializable id, @DelegatesTo(RequestCustomizer) Closure customizer) {
+        execute({ Session session ->
+            withRequestCustomizer(session, customizer) {
+                withCustomUrl(session, url) {
+                    get(id)
+                }
+            }
+        } as SessionCallback)
+
+    }
+
+
+    protected Object withCustomUrl(Session currentSession, URL url, Closure callable) {
+        if (url) {
+            currentSession.setAttribute(persistentEntity, RestClientSession.ATTRIBUTE_URL, url)
+        }
+        try {
+            return callable.call()
+        } finally {
+            if (url) {
+                currentSession.setAttribute(persistentEntity, RestClientSession.ATTRIBUTE_URL, null)
+            }
+        }
+    }
+
+    protected Object withRequestCustomizer(Session currentSession, @DelegatesTo(RequestCustomizer) Closure customizer, Closure callable) {
+        if (customizer) {
+            currentSession.setAttribute(persistentEntity, RestClientSession.ATTRIBUTE_REQUEST_CUSTOMIZER, customizer)
+        }
+        try {
+            callable.call()
+        } finally {
+            if (customizer) {
+                currentSession.setAttribute(persistentEntity, RestClientSession.ATTRIBUTE_URL, null)
+            }
+        }
     }
 }

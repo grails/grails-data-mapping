@@ -44,6 +44,29 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
 
     }
 
+    void "Test the get method issues a GET request and binds the result to the entity when using a custom URL"() {
+        when:"An entity is retrieved with the get method"
+        RestTemplate rt = Book.getRestBuilder().restTemplate
+        final mockServer = MockRestServiceServer.createServer(rt)
+        mockServer.expect(requestTo("http://localhost:8080/book-custom/1"))
+                .andExpect(header('Foo', 'Bar'))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString()))
+                .andRespond(withSuccess('{"id":1, "title":"The Stand", "pages":200}', MediaType.APPLICATION_JSON))
+
+        Book b = Book.get(new URL("http://localhost:8080/book-custom/{id}"), 1) {
+            headers['Foo'] = 'Bar'
+        }
+
+        then:"The number of books that exist is correct"
+            b != null
+            b.id == 1L
+            b.title == "The Stand"
+            b.pages == 200
+            mockServer.verify()
+
+    }
+
     void "Test the getAll method issues a GET request and binds the result to the entity"() {
         when:"An entity is retrieved with the get method"
             RestTemplate rt = Book.getRestBuilder().restTemplate
@@ -118,6 +141,29 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
 
     }
 
+    void "Test the save method issues a POST request with the correct data when passing a custom URL and headers"() {
+        when:"A new entity is saved"
+            RestTemplate rt = Book.getRestBuilder().restTemplate
+            final mockServer = MockRestServiceServer.createServer(rt)
+            mockServer.expect(requestTo("http://localhost:8080/other-books"))
+                    .andExpect(header('Foo', 'Bar'))
+                    .andExpect(method(HttpMethod.POST))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(content().string('{"class":"org.grails.datastore.gorm.rest.client.json.Book","id":null,"pages":null,"title":"The Stand"}'))
+                    .andRespond(withSuccess('{"id":1, "title":"The Stand"}', MediaType.APPLICATION_JSON))
+
+            def b = new Book(title: "The Stand")
+            b.save(new URL("http://localhost:8080/other-books")) {
+                headers['Foo'] = 'Bar'
+            }
+
+        then:"The number of books that exist is correct"
+            b.id == 1L
+            mockServer.verify()
+
+    }
+
+
     void "Test the insert method issues a POST request with the correct data"() {
         when:"A new entity is saved"
             RestTemplate rt = Book.getRestBuilder().restTemplate
@@ -157,6 +203,30 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
             mockServer.verify()
 
     }
+
+    void "Test the save method issues a PUT request for an update with the correct data when using a custom URL"() {
+        when:"A new entity is saved"
+            RestTemplate rt = Book.getRestBuilder().restTemplate
+            final mockServer = MockRestServiceServer.createServer(rt)
+            mockServer.expect(requestTo("http://localhost:8080/book-custom/1"))
+                    .andExpect(method(HttpMethod.PUT))
+                    .andExpect(header('Foo', 'Bar'))
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(content().string('{"class":"org.grails.datastore.gorm.rest.client.json.Book","id":1,"pages":null,"title":"The Stand"}'))
+                    .andRespond(withSuccess('{"id":1, "title":"The Stand"}', MediaType.APPLICATION_JSON))
+
+            def b = new Book(title: "The Stand")
+            b.id = 1L
+            b.save([flush:true], new URL("http://localhost:8080/book-custom/{id}")) {
+                headers['Foo'] = 'Bar'
+            }
+
+        then:"The number of books that exist is correct"
+            b.id == 1L
+            mockServer.verify()
+
+    }
+
 
     void "Test the delete method issues a DELETE request for an update with the correct data"() {
         when:"A new entity is saved"
@@ -212,6 +282,6 @@ class Book {
     Integer pages
 
     static mapping = {
-//        async false
+        async false
     }
 }
