@@ -42,6 +42,9 @@ public abstract class AbstractAttributeStoringSession implements Session {
         if (attributeName != null && value != null) {
             attrs.put(attributeName, value);
         }
+        if (attributeName != null && value == null) {
+            attrs.remove(attributeName);
+        }
     }
 
     public Object getAttribute(Object entity, String attributeName) {

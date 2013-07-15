@@ -202,11 +202,11 @@ public abstract class AbstractDatastore implements Datastore, StatelessDatastore
     }
 
     public void setSkipValidation(final Object o, final boolean skip) {
-        VALIDATE_MAP.get().put(o, skip);
+        VALIDATE_MAP.get().put(System.identityHashCode(o), skip);
     }
 
     public boolean skipValidation(final Object o) {
-        final Object skipValidation = VALIDATE_MAP.get().get(o);
+        final Object skipValidation = VALIDATE_MAP.get().get(System.identityHashCode(o));
         return skipValidation instanceof Boolean && (Boolean) skipValidation;
     }
 

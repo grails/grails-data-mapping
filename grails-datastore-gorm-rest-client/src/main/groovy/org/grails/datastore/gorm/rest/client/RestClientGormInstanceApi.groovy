@@ -18,6 +18,8 @@ package org.grails.datastore.gorm.rest.client
 import org.grails.datastore.gorm.GormInstanceApi
 import org.grails.datastore.mapping.core.Datastore
 import org.codehaus.groovy.grails.plugins.converters.api.ConvertersApi
+import org.grails.datastore.mapping.rest.client.RestClientSession
+
 /**
  * Extensions to the instance API for REST
  *
@@ -39,5 +41,43 @@ class RestClientGormInstanceApi<D> extends GormInstanceApi<D> {
      */
     public Object asType(Object instance, Class<?> clazz) {
         new ConvertersApi().asType(instance, clazz)
+    }
+
+    /**
+     * Synonym for save()
+     *
+     * @param instance The instance
+     * @return The instance if it was saved, null otherwise
+     */
+    public Object put(Object instance, URL url = null) {
+        if (url) {
+            datastore.currentSession.setAttribute(instance, "url", url)
+        }
+        try {
+            return save(instance)
+        } finally {
+            if (url) {
+                datastore.currentSession.setAttribute(instance, "url", null)
+            }
+        }
+    }
+
+    /**
+     * Synonym for insert()
+     *
+     * @param instance The instance
+     * @return The instance if it was saved, null otherwise
+     */
+    public Object post(Object instance, URL url = null) {
+        if (url) {
+            datastore.currentSession.setAttribute(instance, "url", url)
+        }
+        try {
+            return insert(instance)
+        } finally {
+            if (url) {
+                datastore.currentSession.setAttribute(instance, "url", null)
+            }
+        }
     }
 }
