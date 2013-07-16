@@ -43,6 +43,8 @@ import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import org.grails.datastore.mapping.reflect.NameUtils
 
 import static java.lang.reflect.Modifier.*
+import org.codehaus.groovy.ast.AnnotationNode
+import grails.persistence.PersistenceMethod
 
 /**
  *
@@ -106,6 +108,7 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
                 classNode.addField(changingTrackingField)
             }
 
+            final persistenceMethodAnnotation = new AnnotationNode(new ClassNode(PersistenceMethod.class).getPlainNodeReference())
             // we also need to make it implement the ChangeTrackable interface
 
             // Implement the trackChanges method such that:
@@ -119,8 +122,11 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
             )
 
             trackChangesBody.addStatement(assignChangeTrackingFieldStatement)
-            if(!classNode.getMethod(METHOD_NAME_TRACK_CHANGES, ZERO_PARAMETERS))
-                classNode.addMethod(METHOD_NAME_TRACK_CHANGES, PUBLIC, ClassHelper.VOID_TYPE, ZERO_PARAMETERS, null, trackChangesBody)
+            if(!classNode.getMethod(METHOD_NAME_TRACK_CHANGES, ZERO_PARAMETERS)) {
+
+                final method = classNode.addMethod(METHOD_NAME_TRACK_CHANGES, PUBLIC, ClassHelper.VOID_TYPE, ZERO_PARAMETERS, null, trackChangesBody)
+                method.addAnnotation(persistenceMethodAnnotation)
+            }
 
             // Implement the hasChanged method such that:
             // boolean hasChanged() { $changedProperties == null || $changedProperties }
@@ -156,8 +162,11 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
             final changeTrackingVariableNullCheck = new BooleanExpression(new BinaryExpression(changeTrackingVariable, Token.newSymbol(Types.COMPARE_NOT_EQUAL, 0, 0), CONSTANT_NULL))
             def ifNotNullStatement = new IfStatement(changeTrackingVariableNullCheck, new ExpressionStatement(addMethodCall), new EmptyStatement())
             markDirtyBody.addStatement(ifNotNullStatement)
-            if(!classNode.getMethod(METHOD_NAME_MARK_DIRTY, ZERO_PARAMETERS))
-                classNode.addMethod(METHOD_NAME_MARK_DIRTY, PUBLIC, ClassHelper.VOID_TYPE, ZERO_PARAMETERS, null, markDirtyBody)
+            if(!classNode.getMethod(METHOD_NAME_MARK_DIRTY, ZERO_PARAMETERS)) {
+
+                final method = classNode.addMethod(METHOD_NAME_MARK_DIRTY, PUBLIC, ClassHelper.VOID_TYPE, ZERO_PARAMETERS, null, markDirtyBody)
+                method.addAnnotation(persistenceMethodAnnotation)
+            }
 
             // Implement the markDirty(String propertyName) method such that
             // void markDirty(String propertyName) { if( $changeProperties != null)  $changeProperties.put propertyName, getProperty(propertyName) }
@@ -174,6 +183,7 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
                 final scope = new VariableScope()
                 scope.putReferencedClassVariable(propertyNameParameter)
                 newMethod.setVariableScope(scope)
+                newMethod.addAnnotation(persistenceMethodAnnotation)
 
             }
 
@@ -183,7 +193,8 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
                 final methodBody = new BlockStatement()
                 final returnDirtyPropertyNames = new ReturnStatement(new MethodCallExpression(new MethodCallExpression(changeTrackingVariable, "keySet", ZERO_ARGS), "toList", ZERO_ARGS))
                 methodBody.addStatement(new IfStatement(new BooleanExpression(changeTrackingVariable), returnDirtyPropertyNames, new ReturnStatement(new ListExpression())))
-                classNode.addMethod(METHOD_NAME_GET_DIRTY_PROPERTY_NAMES, PUBLIC, ClassHelper.make(List).getPlainNodeReference(), ZERO_PARAMETERS, null, methodBody)
+                final newMethod = classNode.addMethod(METHOD_NAME_GET_DIRTY_PROPERTY_NAMES, PUBLIC, ClassHelper.make(List).getPlainNodeReference(), ZERO_PARAMETERS, null, methodBody)
+                newMethod.addAnnotation(persistenceMethodAnnotation)
             }
 
             // Implement getOriginalValue(String) such that
@@ -197,7 +208,8 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
                 methodBody.addStatement(new IfStatement(new BooleanExpression(containsKeyMethodCall),
                                                             new ExpressionStatement( new MethodCallExpression(changeTrackingVariable, "get", propertyNameVariable) ),
                                                             new ReturnStatement(new MethodCallExpression(THIS_EXPR, "getProperty", propertyNameVariable))))
-                classNode.addMethod(METHOD_NAME_GET_PERSISTENT_VALUE, PUBLIC, ClassHelper.OBJECT_TYPE, propertyNameParameterArray, null, methodBody)
+                final newMethod = classNode.addMethod(METHOD_NAME_GET_PERSISTENT_VALUE, PUBLIC, ClassHelper.OBJECT_TYPE, propertyNameParameterArray, null, methodBody)
+                newMethod.addAnnotation(persistenceMethodAnnotation)
             }
 
         }

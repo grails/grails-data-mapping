@@ -21,6 +21,8 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
+import grails.persistence.PersistenceMethod;
+import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.expr.ClassExpression;
@@ -86,6 +88,11 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
     @Override
     protected boolean requiresStaticLookupMethod() {
         return true;
+    }
+
+    @Override
+    protected AnnotationNode getMarkerAnnotation() {
+        return new AnnotationNode(new ClassNode(PersistenceMethod.class).getPlainNodeReference());
     }
 
     protected MethodNode populateAutowiredApiLookupMethod(ClassNode classNode, ClassNode implementationNode, String apiInstanceProperty, String methodName, BlockStatement methodBody) {
