@@ -70,27 +70,6 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
     public static final String METHOD_NAME_GET_PERSISTENT_VALUE = "getOriginalValue"
 
     @Override
-    void performInjection(SourceUnit source, GeneratorContext context, ClassNode classNode) {
-        if (!classNode.getAnnotations(new ClassNode(Artefact.class)).isEmpty()) return;
-
-        performInjectionOnAnnotatedClass(source, classNode)
-    }
-
-    @Override
-    void performInjection(SourceUnit source, ClassNode classNode) {
-        performInjection(source, null, classNode)
-    }
-
-    public boolean shouldInject(URL url) {
-        return GrailsResourceUtils.isDomainClass(url);
-    }
-
-    @Override
-    void performInjectionOnAnnotatedEntity(ClassNode classNode) {
-        performInjectionOnAnnotatedClass(null, classNode)
-    }
-
-    @Override
     void performInjectionOnAnnotatedClass(SourceUnit source, ClassNode classNode) {
         // First add a local field that will store the change tracking state. The field is a simple list of property names that have changed
         // the field is only added to root clauses that extend from java.lang.Object
@@ -102,8 +81,9 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
         MethodNode containsKeyMethodNode = mapClassNode.getMethods("containsKey")[0]
         final markDirtyMethodNode = changeTrackableClassNode.getMethod(METHOD_NAME_MARK_DIRTY, new Parameter(ClassHelper.STRING_TYPE, "propertyName"))
 
-        if (classNode.getSuperClass().equals(OBJECT_CLASS_NODE)) {
-            FieldNode changingTrackingField = new FieldNode(CHANGE_TRACKING_FIELD_NAME, PROTECTED | TRANSIENT, mapClassNode, classNode, null);
+        final shouldWeave = classNode.getSuperClass().equals(OBJECT_CLASS_NODE)
+        if (shouldWeave) {
+            FieldNode changingTrackingField = new FieldNode(CHANGE_TRACKING_FIELD_NAME, (PROTECTED | TRANSIENT).intValue(), mapClassNode, classNode, null);
             if(!classNode.getField(CHANGE_TRACKING_FIELD_NAME)) {
                 classNode.addField(changingTrackingField)
             }
@@ -206,95 +186,114 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
                 final containsKeyMethodCall = new MethodCallExpression(changeTrackingVariable, containsKeyMethodNode.name, propertyNameVariable)
                 containsKeyMethodCall.methodTarget = containsKeyMethodNode
                 methodBody.addStatement(new IfStatement(new BooleanExpression(containsKeyMethodCall),
-                                                            new ExpressionStatement( new MethodCallExpression(changeTrackingVariable, "get", propertyNameVariable) ),
-                                                            new ReturnStatement(new MethodCallExpression(THIS_EXPR, "getProperty", propertyNameVariable))))
+                        new ExpressionStatement( new MethodCallExpression(changeTrackingVariable, "get", propertyNameVariable) ),
+                        new ReturnStatement(new MethodCallExpression(THIS_EXPR, "getProperty", propertyNameVariable))))
                 final newMethod = classNode.addMethod(METHOD_NAME_GET_PERSISTENT_VALUE, PUBLIC, ClassHelper.OBJECT_TYPE, propertyNameParameterArray, null, methodBody)
                 newMethod.addAnnotation(persistenceMethodAnnotation)
             }
+            // Now we go through all the properties, if the property is a persistent property and change tracking has been initiated then we add to the setter of the property
+            // code that will mark the property as dirty. Note that if the property has no getter we have to add one, since only adding the setter results in a read-only property
+            final propertyNodes = classNode.getProperties()
 
-        }
+            Map<String, GetterAndSetter> gettersAndSetters = [:]
 
-        // Now we go through all the properties, if the property is a persistent property and change tracking has been initiated then we add to the setter of the property
-        // code that will mark the property as dirty. Note that if the property has no getter we have to add one, since only adding the setter results in a read-only property
-        final propertyNodes = classNode.getProperties()
+            for (MethodNode mn in classNode.methods) {
+                final methodName = mn.name
+                if(!mn.isPublic() || mn.isStatic() || mn.isSynthetic()) continue
 
-        Map<String, GetterAndSetter> gettersAndSetters = [:]
-
-        for (MethodNode mn in classNode.methods) {
-            final methodName = mn.name
-            if(!mn.isPublic() || mn.isStatic() || mn.isSynthetic()) continue
-
-            if (isSetter(methodName, mn)) {
-                String propertyName = NameUtils.getPropertyNameForGetterOrSetter(methodName)
-                GetterAndSetter getterAndSetter = getGetterAndSetterForPropertyName(gettersAndSetters, propertyName)
-                getterAndSetter.setter = mn
-            } else if (isGetter(methodName, mn)) {
-                String propertyName = NameUtils.getPropertyNameForGetterOrSetter(methodName)
-                GetterAndSetter getterAndSetter = getGetterAndSetterForPropertyName(gettersAndSetters, propertyName)
-                getterAndSetter.getter = mn
+                if (isSetter(methodName, mn)) {
+                    String propertyName = NameUtils.getPropertyNameForGetterOrSetter(methodName)
+                    GetterAndSetter getterAndSetter = getGetterAndSetterForPropertyName(gettersAndSetters, propertyName)
+                    getterAndSetter.setter = mn
+                } else if (isGetter(methodName, mn)) {
+                    String propertyName = NameUtils.getPropertyNameForGetterOrSetter(methodName)
+                    GetterAndSetter getterAndSetter = getGetterAndSetterForPropertyName(gettersAndSetters, propertyName)
+                    getterAndSetter.getter = mn
+                }
             }
-        }
 
-        for (PropertyNode pn in propertyNodes) {
-            final propertyName = pn.name
-            if (!pn.isStatic() && pn.isPublic() && !GrailsDomainConfigurationUtil.isConfigurational(propertyName)) {
-                if(isTransient(pn.modifiers) || isFinal(pn.modifiers)) continue
+            for (PropertyNode pn in propertyNodes) {
+                final propertyName = pn.name
+                if (!pn.isStatic() && pn.isPublic() && !GrailsDomainConfigurationUtil.isConfigurational(propertyName)) {
+                    if(isTransient(pn.modifiers) || isFinal(pn.modifiers)) continue
 
-                final getterAndSetter = gettersAndSetters[propertyName]
+                    final getterAndSetter = gettersAndSetters[propertyName]
 
-                // if there is no explicit getter and setter then one will be generated by Groovy, so we must add these to track changes
-                if(getterAndSetter == null) {
-                    final propertyField = pn.getField()
+                    // if there is no explicit getter and setter then one will be generated by Groovy, so we must add these to track changes
+                    if(getterAndSetter == null) {
+                        final propertyField = pn.getField()
 
-                    // first add the getter
-                    final getterName = NameUtils.getGetterName(propertyName)
-                    ClassNode originalReturnType = pn.getType()
-                    ClassNode returnType;
-                    if(!originalReturnType.getNameWithoutPackage().equals(VOID)) {
-                        if(ClassHelper.isPrimitiveType(originalReturnType.redirect())) {
-                            returnType = originalReturnType.getPlainNodeReference()
-                        } else {
-                            returnType = alignReturnType(classNode, originalReturnType);
+                        // first add the getter
+                        final getterName = NameUtils.getGetterName(propertyName)
+                        ClassNode originalReturnType = pn.getType()
+                        ClassNode returnType;
+                        if(!originalReturnType.getNameWithoutPackage().equals(VOID)) {
+                            if(ClassHelper.isPrimitiveType(originalReturnType.redirect())) {
+                                returnType = originalReturnType.getPlainNodeReference()
+                            } else {
+                                returnType = alignReturnType(classNode, originalReturnType);
+                            }
                         }
+                        else {
+                            returnType = originalReturnType
+                        }
+                        classNode.addMethod(getterName, PUBLIC, returnType, ZERO_PARAMETERS, null, new ReturnStatement(new VariableExpression(propertyField.getName())))
+
+                        // now add the setter that tracks changes. Each setters becomes:
+                        // void setFoo(String foo) { markDirty("foo"); this.foo = foo }
+                        final setterName = NameUtils.getSetterName(propertyName)
+                        final setterParameter = new Parameter(returnType, propertyName)
+                        final setterBody = new BlockStatement()
+                        MethodCallExpression markDirtyMethodCall = createMarkDirtyMethodCall(markDirtyMethodNode, propertyName)
+                        setterBody.addStatement(new ExpressionStatement(markDirtyMethodCall))
+                        setterBody.addStatement(  new ExpressionStatement(
+                                new BinaryExpression(new PropertyExpression(THIS_EXPR, propertyField.name),
+                                        Token.newSymbol(Types.EQUAL, 0, 0),
+                                        new VariableExpression(setterParameter))
+                        )
+                        )
+
+                        classNode.addMethod(setterName, PUBLIC, ClassHelper.VOID_TYPE, [setterParameter] as Parameter[], null, setterBody)
+                    }
+                    else if(getterAndSetter.hasBoth()) {
+                        // if both a setter and getter are present, we get hold of the setter and weave the markDirty method call into it
+                        weaveIntoExistingSetter(propertyName, getterAndSetter, markDirtyMethodNode)
                     }
                     else {
-                        returnType = originalReturnType
+                        // there isn't both a getter and a setter then this is not a candidate for persistence, so we eliminate it from change tracking
+                        gettersAndSetters.remove(propertyName)
                     }
-                    classNode.addMethod(getterName, PUBLIC, returnType, ZERO_PARAMETERS, null, new ReturnStatement(new VariableExpression(propertyField.getName())))
-
-                    // now add the setter that tracks changes. Each setters becomes:
-                    // void setFoo(String foo) { markDirty("foo"); this.foo = foo }
-                    final setterName = NameUtils.getSetterName(propertyName)
-                    final setterParameter = new Parameter(returnType, propertyName)
-                    final setterBody = new BlockStatement()
-                    MethodCallExpression markDirtyMethodCall = createMarkDirtyMethodCall(markDirtyMethodNode, propertyName)
-                    setterBody.addStatement(new ExpressionStatement(markDirtyMethodCall))
-                    setterBody.addStatement(  new ExpressionStatement(
-                            new BinaryExpression(new PropertyExpression(THIS_EXPR, propertyField.name),
-                                    Token.newSymbol(Types.EQUAL, 0, 0),
-                                    new VariableExpression(setterParameter))
-                            )
-                    )
-
-                    classNode.addMethod(setterName, PUBLIC, ClassHelper.VOID_TYPE, [setterParameter] as Parameter[], null, setterBody)
                 }
-                else if(getterAndSetter.hasBoth()) {
-                    // if both a setter and getter are present, we get hold of the setter and weave the markDirty method call into it
+            }
+
+            // We also need to search properties that are represented as getters with setters. This requires going through all the methods and finding getter/setter pairs that are public
+            gettersAndSetters.each { String propertyName, GetterAndSetter getterAndSetter ->
+                if(getterAndSetter.hasBoth()) {
                     weaveIntoExistingSetter(propertyName, getterAndSetter, markDirtyMethodNode)
                 }
-                else {
-                    // there isn't both a getter and a setter then this is not a candidate for persistence, so we eliminate it from change tracking
-                    gettersAndSetters.remove(propertyName)
-                }
             }
         }
+    }
 
-        // We also need to search properties that are represented as getters with setters. This requires going through all the methods and finding getter/setter pairs that are public
-        gettersAndSetters.each { String propertyName, GetterAndSetter getterAndSetter ->
-            if(getterAndSetter.hasBoth()) {
-                weaveIntoExistingSetter(propertyName, getterAndSetter, markDirtyMethodNode)
-            }
-        }
+    @Override
+    void performInjection(SourceUnit source, GeneratorContext context, ClassNode classNode) {
+        if (!classNode.getAnnotations(new ClassNode(Artefact.class)).isEmpty()) return;
+
+        performInjectionOnAnnotatedClass(source, classNode)
+    }
+
+    @Override
+    void performInjection(SourceUnit source, ClassNode classNode) {
+        performInjection(source, null, classNode)
+    }
+
+    public boolean shouldInject(URL url) {
+        return GrailsResourceUtils.isDomainClass(url);
+    }
+
+    @Override
+    void performInjectionOnAnnotatedEntity(ClassNode classNode) {
+        performInjectionOnAnnotatedClass(null, classNode)
     }
 
 
@@ -325,6 +324,8 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
     }
     protected void weaveIntoExistingSetter(String propertyName, GetterAndSetter getterAndSetter, MethodNode markDirtyMethodNode) {
         final setterMethod = getterAndSetter.setter
+        if(setterMethod.getAnnotations(new ClassNode(PersistenceMethod))) return
+
         final currentBody = setterMethod.code
         final setterParameter = setterMethod.getParameters()[0]
         MethodCallExpression markDirtyMethodCall = createMarkDirtyMethodCall(markDirtyMethodNode, propertyName)
