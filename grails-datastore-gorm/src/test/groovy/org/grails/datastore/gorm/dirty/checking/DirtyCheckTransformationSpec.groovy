@@ -9,6 +9,25 @@ import spock.lang.Specification
  */
 class DirtyCheckTransformationSpec extends Specification {
 
+    void "Test dirty check with generic types"() {
+        when:"A Dirty checkable class with generic types is parsed"
+            def gcl = new GroovyClassLoader()
+            Class cls = gcl.parseClass('''
+package org.grails.datastore.gorm.dirty.checking
+
+import grails.gorm.dirty.checking.DirtyCheck
+
+@DirtyCheck
+class Author {
+    Set<Book> books
+}
+
+''')
+
+        then:"The generic types are retained"
+            cls.getMethod("getBooks").getReturnType().getGenericInterfaces()
+    }
+
     void "Test that the dirty checking transformations allows you to track changes to a class"() {
         when:"A new dirty checking instance is created"
             def b = new Book()

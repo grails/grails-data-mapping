@@ -68,6 +68,8 @@ import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.syntax.Token;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion;
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
+import org.grails.datastore.mapping.reflect.NameUtils;
 
 /**
  * ClassCodeVisitorSupport that transforms where methods into detached criteria queries
@@ -489,9 +491,18 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     private void populatePropertiesForClassNode(ClassNode classNode, Map<String, ClassNode> cachedProperties) {
         List<MethodNode> methods = classNode.getMethods();
         for (MethodNode method : methods) {
-            if (!method.isAbstract() && !method.isStatic() && isGetter(method.getName(), method)) {
-                String propertyName = GrailsClassUtils.getPropertyForGetter(method.getName());
-                cachedProperties.put(propertyName, method.getReturnType());
+            String methodName = method.getName();
+            if (!method.isAbstract() && isGetter(methodName, method)) {
+                String propertyName = NameUtils.getPropertyNameForGetterOrSetter(methodName);
+                if (GrailsDomainClassProperty.HAS_MANY.equals(propertyName) || GrailsDomainClassProperty.BELONGS_TO.equals(propertyName) || GrailsDomainClassProperty.HAS_ONE.equals(propertyName)) {
+                    FieldNode field = classNode.getField(propertyName);
+                    if(field != null) {
+                        populatePropertiesForInitialExpression(cachedProperties, field.getInitialExpression());
+                    }
+                }
+                else if(!method.isStatic()) {
+                    cachedProperties.put(propertyName, method.getReturnType());
+                }
             }
         }
         List<PropertyNode> properties = classNode.getProperties();
@@ -500,20 +511,47 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
             String propertyName = property.getName();
             if (GrailsDomainClassProperty.HAS_MANY.equals(propertyName) || GrailsDomainClassProperty.BELONGS_TO.equals(propertyName) || GrailsDomainClassProperty.HAS_ONE.equals(propertyName)) {
                 Expression initialExpression = property.getInitialExpression();
-                if (initialExpression instanceof MapExpression) {
-                    MapExpression me = (MapExpression) initialExpression;
-                    List<MapEntryExpression> mapEntryExpressions = me.getMapEntryExpressions();
-                    for (MapEntryExpression mapEntryExpression : mapEntryExpressions) {
-                        Expression keyExpression = mapEntryExpression.getKeyExpression();
-                        Expression valueExpression = mapEntryExpression.getValueExpression();
-                        if (valueExpression instanceof ClassExpression) {
-                            cachedProperties.put(keyExpression.getText(), valueExpression.getType());
-                        }
-                    }
-                }
+                populatePropertiesForInitialExpression(cachedProperties, initialExpression);
             }
             else {
                 cachedProperties.put(propertyName, property.getType());
+            }
+        }
+
+        if(classNode.isResolved()) {
+            ClassPropertyFetcher propertyFetcher = ClassPropertyFetcher.forClass(classNode.getTypeClass());
+            cachePropertiesForAssociationMetadata(cachedProperties, propertyFetcher, GrailsDomainClassProperty.HAS_MANY);
+            cachePropertiesForAssociationMetadata(cachedProperties, propertyFetcher, GrailsDomainClassProperty.BELONGS_TO);
+            cachePropertiesForAssociationMetadata(cachedProperties, propertyFetcher, GrailsDomainClassProperty.HAS_ONE);
+        }
+
+    }
+
+    private void cachePropertiesForAssociationMetadata(Map<String, ClassNode> cachedProperties, ClassPropertyFetcher propertyFetcher, String associationMetadataName) {
+        if(propertyFetcher.isReadableProperty(associationMetadataName)) {
+            Object propertyValue = propertyFetcher.getPropertyValue(associationMetadataName);
+            if(propertyValue instanceof Map) {
+                Map hasManyMap = (Map) propertyValue;
+                for (Object propertyName : hasManyMap.keySet()) {
+                    Object val = hasManyMap.get(propertyName);
+                    if(val instanceof Class) {
+                        cachedProperties.put(propertyName.toString(), ClassHelper.make((Class) val).getPlainNodeReference());
+                    }
+                }
+            }
+        }
+    }
+
+    private void populatePropertiesForInitialExpression(Map<String, ClassNode> cachedProperties, Expression initialExpression) {
+        if (initialExpression instanceof MapExpression) {
+            MapExpression me = (MapExpression) initialExpression;
+            List<MapEntryExpression> mapEntryExpressions = me.getMapEntryExpressions();
+            for (MapEntryExpression mapEntryExpression : mapEntryExpressions) {
+                Expression keyExpression = mapEntryExpression.getKeyExpression();
+                Expression valueExpression = mapEntryExpression.getValueExpression();
+                if (valueExpression instanceof ClassExpression) {
+                    cachedProperties.put(keyExpression.getText(), valueExpression.getType());
+                }
             }
         }
     }

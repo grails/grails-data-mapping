@@ -300,24 +300,18 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
     private static ClassNode alignReturnType(final ClassNode receiver, final ClassNode originalReturnType) {
         ClassNode copiedReturnType = originalReturnType.getPlainNodeReference();
 
-        ClassNode actualReceiver = receiver;
-        List<GenericsType> redirectTypes = new ArrayList<GenericsType>();
-        if (actualReceiver.redirect().getGenericsTypes()!=null) {
-            Collections.addAll(redirectTypes,actualReceiver.redirect().getGenericsTypes());
-        }
-        if (!redirectTypes.isEmpty()) {
-            GenericsType[] redirectReceiverTypes = redirectTypes.toArray(new GenericsType[redirectTypes.size()]) as GenericsType[];
+        final genericTypes = originalReturnType.getGenericsTypes()
+        if (genericTypes) {
+            List<GenericsType> newGenericTypes = []
 
-            GenericsType[] receiverParameterizedTypes = actualReceiver.getGenericsTypes();
-            if (receiverParameterizedTypes==null) {
-                receiverParameterizedTypes = redirectReceiverTypes;
+            for(GenericsType gt in genericTypes) {
+                ClassNode[] upperBounds = null
+                if (gt.upperBounds) {
+                    upperBounds = gt.upperBounds.collect { ClassNode cn -> cn.plainNodeReference } as ClassNode[]
+                }
+                newGenericTypes << new GenericsType(gt.type.plainNodeReference, upperBounds, gt.lowerBound?.plainNodeReference)
             }
-
-            if (originalReturnType.isUsingGenerics()) {
-                GenericsType[] alignmentTypes = originalReturnType.getGenericsTypes();
-                GenericsType[] genericsTypes = GenericsUtils.alignGenericTypes(redirectReceiverTypes, receiverParameterizedTypes, alignmentTypes);
-                copiedReturnType.setGenericsTypes(genericsTypes);
-            }
+            copiedReturnType.setGenericsTypes(newGenericTypes as GenericsType[])
         }
 
         return copiedReturnType;
