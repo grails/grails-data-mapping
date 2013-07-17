@@ -27,6 +27,8 @@ import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.springframework.transaction.PlatformTransactionManager
+import org.grails.datastore.mapping.proxy.ProxyFactory
+import org.grails.datastore.mapping.model.types.ToOne
 
 @CompileStatic
 abstract class AbstractHibernateGormEnhancer extends GormEnhancer {
@@ -58,5 +60,9 @@ abstract class AbstractHibernateGormEnhancer extends GormEnhancer {
         if (domainClass) {
             new HibernateNamedQueriesBuilder(domainClass, getFinders(), entity.mappingContext.conversionService).evaluate((Closure)namedQueries)
         }
+    }
+
+    protected void registerAssociationIdentifierGetter(ProxyFactory proxyFactory, MetaClass metaClass, ToOne association) {
+        // no-op
     }
 }

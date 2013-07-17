@@ -45,6 +45,7 @@ import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.model.types.OneToMany
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.transaction.PlatformTransactionManager
+import org.grails.datastore.mapping.proxy.ProxyFactory
 
 /**
  * Enhances a class with GORM behavior
@@ -146,19 +147,7 @@ class GormEnhancer {
             def prop = p
             def isBasic = prop instanceof Basic
             if(prop instanceof ToOne) {
-                final propName = prop.name
-                final getterName = GrailsNameUtils.getGetterName(propName)
-                mc."${getterName}Id" = {->
-                    final associationInstance = delegate.getProperty(propName)
-                    if(associationInstance != null) {
-                        if(proxyFactory.isProxy(associationInstance)) {
-                            return proxyFactory.getIdentifier(associationInstance)
-                        }
-                        else {
-                            return datastore.currentSession.getObjectIdentifier(associationInstance)
-                        }
-                    }
-                }
+                registerAssociationIdentifierGetter(proxyFactory, mc, prop)
             }
             else if ((prop instanceof OneToMany) || (prop instanceof ManyToMany) || isBasic || (prop instanceof EmbeddedCollection)) {
                 def associatedEntity = prop.associatedEntity
@@ -232,6 +221,22 @@ class GormEnhancer {
                 if (parameterTypes != null) {
                     def callable = new StaticMethodInvokingClosure(staticMethods, methodName, parameterTypes)
                     staticScope."$methodName" = callable
+                }
+            }
+        }
+    }
+
+    protected void registerAssociationIdentifierGetter(ProxyFactory proxyFactory, MetaClass metaClass, ToOne association) {
+        final propName = association.name
+        final getterName = GrailsNameUtils.getGetterName(propName)
+        metaClass."${getterName}Id" = {->
+            final associationInstance = delegate.getProperty(propName)
+            if (associationInstance != null) {
+                if (proxyFactory.isProxy(associationInstance)) {
+                    return proxyFactory.getIdentifier(associationInstance)
+                }
+                else {
+                    return datastore.currentSession.getObjectIdentifier(associationInstance)
                 }
             }
         }
