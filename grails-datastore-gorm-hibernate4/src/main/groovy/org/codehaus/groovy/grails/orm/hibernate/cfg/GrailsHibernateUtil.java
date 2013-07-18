@@ -154,6 +154,10 @@ public class GrailsHibernateUtil {
         }
     }
 
+    public static void populateArgumentsForCriteria(GrailsApplication grailsApplication, Class<?> targetClass, Criteria c, Map argMap, ConversionService conversionService) {
+        populateArgumentsForCriteria(grailsApplication, targetClass, c, argMap, conversionService, true);
+    }
+
     /**
      * Populates criteria arguments for the given target class and arguments map
      *
@@ -163,7 +167,7 @@ public class GrailsHibernateUtil {
      * @param argMap The arguments map
      */
     @SuppressWarnings("rawtypes")
-    public static void populateArgumentsForCriteria(GrailsApplication grailsApplication, Class<?> targetClass, Criteria c, Map argMap, ConversionService conversionService) {
+    public static void populateArgumentsForCriteria(GrailsApplication grailsApplication, Class<?> targetClass, Criteria c, Map argMap, ConversionService conversionService, boolean useDefaultMapping) {
         Integer maxParam = null;
         Integer offsetParam = null;
         if (argMap.containsKey(ARGUMENT_MAX)) {
@@ -223,7 +227,7 @@ public class GrailsHibernateUtil {
             }
             addOrderPossiblyNested(grailsApplication,c, targetClass, sort, order, ignoreCase);
         }
-        else {
+        else if(useDefaultMapping) {
             Mapping m = binder.getMapping(targetClass);
             if (m != null && !StringUtils.isBlank(m.getSort())) {
                 addOrderPossiblyNested(grailsApplication, c, targetClass, m.getSort(), m.getOrder(), true);

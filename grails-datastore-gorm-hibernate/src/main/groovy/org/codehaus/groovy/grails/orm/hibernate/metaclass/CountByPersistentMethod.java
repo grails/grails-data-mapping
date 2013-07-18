@@ -67,7 +67,7 @@ public class CountByPersistentMethod extends AbstractClausedStaticPersistentMeth
                 crit.setProjection(Projections.rowCount());
                 String operator = OPERATOR_OR.equals(operatorInUse) ? OPERATOR_OR : OPERATOR_AND;
                 Map argsMap = (arguments.length > 1 && (arguments[1] instanceof Map)) ? (Map) arguments[1] : Collections.EMPTY_MAP;
-                GrailsHibernateUtil.populateArgumentsForCriteria(crit,  argsMap, conversionService);
+                GrailsHibernateUtil.populateArgumentsForCriteria(application, clazz, crit,  argsMap, conversionService, false);
 
                 populateCriteriaWithExpressions(crit, operator, expressions);
                 return (Long) crit.uniqueResult();
