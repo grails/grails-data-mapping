@@ -306,6 +306,15 @@ class HibernateMappingBuilder {
     }
 
     /**
+     * If true the class and its subclasses will be mapped with table per subclass mapping
+     */
+    void tablePerConcreteClass(boolean isTablePerConcreteClass) {
+        mapping.tablePerHierarchy = false
+        mapping.tablePerConcreteClass = true
+    }
+
+
+    /**
      * <p>Configures the second-level cache with the default usage of 'read-write' and the default include of 'all' if
      *  the passed argument is true
      *

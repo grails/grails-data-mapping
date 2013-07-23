@@ -125,6 +125,7 @@ class OptLockVersioned implements Serializable {
 @Entity
 class OptLockNotVersioned implements Serializable {
     Long id
+    Long version
 
     String name
 

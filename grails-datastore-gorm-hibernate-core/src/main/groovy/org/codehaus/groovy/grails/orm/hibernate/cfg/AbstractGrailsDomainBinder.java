@@ -48,6 +48,8 @@ import org.codehaus.groovy.grails.exceptions.GrailsDomainException;
 import org.codehaus.groovy.grails.plugins.GrailsPlugin;
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager;
 import org.codehaus.groovy.grails.validation.ConstrainedProperty;
+import org.dom4j.Attribute;
+import org.dom4j.Element;
 import org.hibernate.FetchMode;
 import org.hibernate.MappingException;
 import org.hibernate.cfg.BinderHelper;
@@ -77,9 +79,11 @@ import org.hibernate.mapping.Selectable;
 import org.hibernate.mapping.SimpleValue;
 import org.hibernate.mapping.SingleTableSubclass;
 import org.hibernate.mapping.Subclass;
+import org.hibernate.mapping.UnionSubclass;
 import org.hibernate.mapping.Table;
 import org.hibernate.mapping.UniqueKey;
 import org.hibernate.mapping.Value;
+import org.hibernate.persister.entity.UnionSubclassEntityPersister;
 import org.hibernate.type.ForeignKeyDirection;
 import org.hibernate.type.IntegerType;
 import org.hibernate.type.LongType;
@@ -1497,10 +1501,15 @@ public abstract class AbstractGrailsDomainBinder {
         evaluateMapping(sub);
         Mapping m = getMapping(parent.getMappedClass());
         Subclass subClass;
-        boolean tablePerSubclass = m != null && !m.getTablePerHierarchy();
+        boolean tablePerSubclass = m != null && !m.getTablePerHierarchy() && !m.isTablePerConcreteClass();
+        boolean tablePerConcreteClass = m != null && m.isTablePerConcreteClass();
         if (tablePerSubclass) {
             subClass = new JoinedSubclass(parent);
-        } else {
+        }
+        else if(tablePerConcreteClass) {
+            subClass = new UnionSubclass(parent);
+        }
+        else {
             subClass = new SingleTableSubclass(parent);
             // set the descriminator value as the name of the class. This is the
             // value used by Hibernate to decide what the type of the class is
@@ -1521,6 +1530,9 @@ public abstract class AbstractGrailsDomainBinder {
         if (tablePerSubclass) {
             bindJoinedSubClass(sub, (JoinedSubclass) subClass, mappings, m, sessionFactoryBeanName);
         }
+        else if( tablePerConcreteClass) {
+            bindUnionSubclass(sub, (UnionSubclass) subClass, mappings, sessionFactoryBeanName);
+        }
         else {
             bindSubClass(sub, subClass, mappings, sessionFactoryBeanName);
         }
@@ -1531,6 +1543,44 @@ public abstract class AbstractGrailsDomainBinder {
         }
     }
 
+
+    public void bindUnionSubclass(GrailsDomainClass subClass, UnionSubclass unionSubclass,
+                                         Mappings mappings, String sessionFactoryBeanName) throws MappingException {
+
+
+        Mapping subMapping = getMapping(subClass.getClazz());
+
+        if ( unionSubclass.getEntityPersisterClass() == null ) {
+            unionSubclass.getRootClass().setEntityPersisterClass(
+                    UnionSubclassEntityPersister.class );
+        }
+
+        String schema = subMapping != null && subMapping.getTable().getSchema() != null ?
+                subMapping.getTable().getSchema() : null;
+
+        String catalog = subMapping != null && subMapping.getTable().getCatalog() != null ?
+                subMapping.getTable().getCatalog() : null;
+
+        Table denormalizedSuperTable = unionSubclass.getSuperclass().getTable();
+        Table mytable = mappings.addDenormalizedTable(
+                schema,
+                catalog,
+                getTableName(subClass, sessionFactoryBeanName),
+                unionSubclass.isAbstract() != null && unionSubclass.isAbstract(),
+                null,
+                denormalizedSuperTable
+        );
+        unionSubclass.setTable( mytable );
+        unionSubclass.setClassName(subClass.getFullName());
+
+        LOG.info(
+                "Mapping union-subclass: " + unionSubclass.getEntityName() +
+                        " -> " + unionSubclass.getTable().getName()
+        );
+
+        createClassProperties(subClass, unionSubclass, mappings, sessionFactoryBeanName);
+
+    }
     /**
      * Binds a joined sub-class mapping using table-per-subclass
      *
@@ -2384,6 +2434,9 @@ public abstract class AbstractGrailsDomainBinder {
     protected void bindSimpleId(GrailsDomainClassProperty identifier, RootClass entity,
             Mappings mappings, Identity mappedId, String sessionFactoryBeanName) {
 
+        Mapping mapping = getMapping(identifier.getDomainClass());
+        boolean useSequence = mapping != null && mapping.isTablePerConcreteClass();
+
         // create the id value
         SimpleValue id = new SimpleValue(mappings, entity.getTable());
         // set identifier on entity
@@ -2393,11 +2446,15 @@ public abstract class AbstractGrailsDomainBinder {
 
         if (mappedId == null) {
             // configure generator strategy
-            id.setIdentifierGeneratorStrategy("native");
+            id.setIdentifierGeneratorStrategy(useSequence ? "sequence" : "native");
         } else {
-            id.setIdentifierGeneratorStrategy(mappedId.getGenerator());
+            String generator = mappedId.getGenerator();
+            if("native".equals(generator) && useSequence) {
+                generator = "sequence";
+            }
+            id.setIdentifierGeneratorStrategy(generator);
             params.putAll(mappedId.getParams());
-            if ("assigned".equals(mappedId.getGenerator())) {
+            if ("assigned".equals(generator)) {
                 id.setNullValue("undefined");
             }
         }

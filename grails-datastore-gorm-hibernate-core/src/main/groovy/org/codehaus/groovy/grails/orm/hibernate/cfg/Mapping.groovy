@@ -68,6 +68,11 @@ class Mapping {
     boolean tablePerHierarchy = true
 
     /**
+     * Sets whether to use table-per-concrete-class or table-per-subclass mapping
+     */
+    boolean tablePerConcreteClass = false
+
+    /**
      * Sets whether automatic timestamping should occur for columns like last_updated and date_created
      */
     boolean autoTimestamp = true
@@ -149,4 +154,13 @@ class Mapping {
      * DDL comment.
      */
     String comment
+
+    boolean isTablePerConcreteClass() {
+        return tablePerConcreteClass
+    }
+
+    void setTablePerConcreteClass(boolean tablePerConcreteClass) {
+        this.tablePerHierarchy = !tablePerConcreteClass
+        this.tablePerConcreteClass = tablePerConcreteClass
+    }
 }
