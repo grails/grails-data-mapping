@@ -128,6 +128,11 @@ sourceSets {
     }
 }
 
+idea {
+    module {
+        scopes.PROVIDED.plus += configurations.provided
+    }
+}
 /*
 test {
 	jvmArgs '-Xmx1024m', '-Xdebug', '-Xnoagent', '-Dgrails.full.stacktrace=true', '-Djava.compiler=NONE',

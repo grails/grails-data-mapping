@@ -128,6 +128,11 @@ sourceSets {
         classpath = configurations.compile + configurations.provided
     }
 }
+idea {
+    module {
+        scopes.PROVIDED.plus += configurations.provided
+    }
+}
 
 /*
 test {
