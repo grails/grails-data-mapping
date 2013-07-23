@@ -35,6 +35,8 @@ class HttpOutputMessageRenderContext implements RenderContext{
     HttpOutputMessage httpOutputMessage
     Endpoint endpoint
     HttpMethod httpMethod
+    List<String> includes = null
+    List<String> excludes = []
 
     HttpOutputMessageRenderContext(HttpMethod httpMethod, HttpOutputMessage httpOutputMessage, Endpoint endpoint) {
         this.httpOutputMessage = httpOutputMessage
