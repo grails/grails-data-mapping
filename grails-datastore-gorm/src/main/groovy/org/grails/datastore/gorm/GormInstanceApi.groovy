@@ -44,9 +44,9 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
     /**
      * Proxy aware instanceOf implementation.
      */
-    boolean instanceOf(o, Class cls) {
+    boolean instanceOf(D o, Class cls) {
         if (o instanceof EntityProxy) {
-            o = o.getTarget()
+            o = (D)((EntityProxy)o).getTarget()
         }
         return o in cls
     }
@@ -55,7 +55,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * Upgrades an existing persistence instance to a write lock
      * @return The instance
      */
-    D lock(instance) {
+    D lock(D instance) {
         execute({ Session session ->
             session.lock(instance)
             return instance
@@ -68,7 +68,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param callable The closure
      * @return The result of the closure
      */
-    def mutex(instance, Closure callable) {
+    def mutex(D instance, Closure callable) {
         execute({ Session session ->
             try {
                 session.lock(instance)
@@ -85,7 +85,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param instance The instance
      * @return The instance
      */
-    D refresh(instance) {
+    D refresh(D instance) {
         execute({ Session session ->
             session.refresh instance
             return instance
@@ -97,7 +97,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param instance The instance
      * @return Returns the instance
      */
-    D save(instance) {
+    D save(D instance) {
         save(instance, Collections.emptyMap())
     }
 
@@ -106,7 +106,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param instance The instance
      * @return Returns the instance
      */
-    D insert(instance) {
+    D insert(D instance) {
         insert(instance, Collections.emptyMap())
     }
 
@@ -115,7 +115,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param instance The instance
      * @return Returns the instance
      */
-    D insert(instance, Map params) {
+    D insert(D instance, Map params) {
         execute({ Session session ->
             doSave instance, params, session, true
         } as SessionCallback)
@@ -126,7 +126,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param instance The instance
      * @return Returns the instance
      */
-    D merge(instance) {
+    D merge(D instance) {
         save(instance, Collections.emptyMap())
     }
 
@@ -135,7 +135,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param instance The instance
      * @return Returns the instance
      */
-    D merge(instance, Map params) {
+    D merge(D instance, Map params) {
         save(instance, params)
     }
 
@@ -147,7 +147,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      *
      * @return The instance or null if validation fails
      */
-    D save(instance, boolean validate) {
+    D save(D instance, boolean validate) {
         save(instance, [validate: validate])
     }
 
@@ -157,7 +157,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param params The parameters
      * @return The instance
      */
-    D save(instance, Map params) {
+    D save(D instance, Map params) {
         execute({ Session session ->
             doSave instance, params, session
         } as SessionCallback)
@@ -197,7 +197,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
     /**
      * Returns the objects identifier
      */
-    Serializable ident(instance) {
+    Serializable ident(D instance) {
         (Serializable)instance[persistentEntity.getIdentity().name]
     }
 
@@ -206,7 +206,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * @param instance The instance
      * @return
      */
-    D attach(instance) {
+    D attach(D instance) {
         execute({ Session session ->
             session.attach(instance)
             instance
@@ -216,7 +216,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
     /**
      * No concept of session-based model so defaults to true
      */
-    boolean isAttached(instance) {
+    boolean isAttached(D instance) {
         execute({ Session session ->
             session.contains(instance)
         } as SessionCallback)
@@ -225,7 +225,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
     /**
      * Discards any pending changes. Requires a session-based model.
      */
-    void discard(instance) {
+    void discard(D instance) {
         execute({ Session session ->
             session.clear(instance)
         } as SessionCallback)
@@ -235,7 +235,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * Deletes an instance from the datastore
      * @param instance The instance to delete
      */
-    void delete(instance) {
+    void delete(D instance) {
         delete(instance, Collections.emptyMap())
     }
 
@@ -243,7 +243,7 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
      * Deletes an instance from the datastore
      * @param instance The instance to delete
      */
-    void delete(instance, Map params) {
+    void delete(D instance, Map params) {
         execute({ Session session ->
             session.delete(instance)
             if (params?.flush) {
