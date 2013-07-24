@@ -44,6 +44,7 @@ import org.grails.datastore.mapping.core.impl.PendingInsertAdapter
 import org.grails.datastore.mapping.rest.client.RestClientException
 import org.grails.datastore.mapping.rest.client.RestClientSession
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty
+import org.grails.datastore.mapping.rest.client.query.RequestParameterRestClientQuery
 
 /**
  *
@@ -646,7 +647,7 @@ class RestClientEntityPersister extends EntityPersister {
 
     @Override
     Query createQuery() {
-        throw new UnsupportedOperationException("Querying not implemented")
+        return new RequestParameterRestClientQuery(getSession(), getPersistentEntity())
     }
 
     @Override

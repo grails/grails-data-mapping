@@ -24,6 +24,44 @@ import org.grails.datastore.gorm.rest.client.RestClientDatastoreSpec
  */
 class CrudJsonSpec extends RestClientDatastoreSpec{
 
+    void "Test the list method issues a GET request and binds the results to a list of entities"() {
+        when:"An entity is retrieved with the get method"
+            RestTemplate rt = Book.getRestBuilder().restTemplate
+            final mockServer = MockRestServiceServer.createServer(rt)
+            mockServer.expect(requestTo("http://localhost:8080/book"))
+                    .andExpect(method(HttpMethod.GET))
+                    .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString()))
+                    .andRespond(withSuccess('[{"id":1, "title":"The Stand", "pages":200}]', MediaType.APPLICATION_JSON))
+
+            List results = Book.list()
+
+        then:"The number of books that exist is correct"
+            results.size() == 1
+            results[0].title == "The Stand"
+            results[0].pages == 200
+            results[0].id == 1L
+
+    }
+
+    void "Test the list method with pagination arguments issues a GET request and binds the results to a list of entities"() {
+        when:"An entity is retrieved with the get method"
+            RestTemplate rt = Book.getRestBuilder().restTemplate
+            final mockServer = MockRestServiceServer.createServer(rt)
+            mockServer.expect(requestTo("http://localhost:8080/book?offset=5&max=10"))
+                    .andExpect(method(HttpMethod.GET))
+                    .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString()))
+                    .andRespond(withSuccess('[{"id":1, "title":"The Stand", "pages":200}]', MediaType.APPLICATION_JSON))
+
+            List results = Book.list(offset:5, max:10)
+
+        then:"The number of books that exist is correct"
+            results.size() == 1
+            results[0].title == "The Stand"
+            results[0].pages == 200
+            results[0].id == 1L
+
+    }
+
     void "Test the get method issues a GET request and binds the result to the entity"() {
         when:"An entity is retrieved with the get method"
             RestTemplate rt = Book.getRestBuilder().restTemplate
@@ -282,6 +320,6 @@ class Book {
     Integer pages
 
     static mapping = {
-        async false
+//        async false
     }
 }

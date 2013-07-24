@@ -33,6 +33,7 @@ import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.web.client.RestTemplate
 
 import java.util.concurrent.ConcurrentHashMap
+import org.grails.datastore.mapping.rest.client.http.converters.PersistentEntityListHttpConverter
 
 /**
  * Datastore implementation for REST clients, provides some base configuration shared by REST clients
@@ -60,7 +61,9 @@ class RestClientDatastore extends AbstractDatastore     {
 
     Map<PersistentEntity, RestBuilder> syncRestClients = new ConcurrentHashMap<>().withDefault { PersistentEntity entity ->
         final template = new RestTemplate(((Endpoint) entity.mapping.mappedForm).httpRequestFactory)
-        template.getMessageConverters().add(new PersistentEntityHttpConverter<Object>(entity, rendererRegistry, bindingSourceRegistry))
+        final converters = template.getMessageConverters()
+        converters.add(new PersistentEntityHttpConverter<Object>(entity, rendererRegistry, bindingSourceRegistry))
+        converters.add(new PersistentEntityListHttpConverter<Object>(entity, rendererRegistry, bindingSourceRegistry))
         new RestBuilder(template)
     }
 
