@@ -14,8 +14,11 @@
  */
 package grails.plugins.rest.client
 
+import java.net.Proxy
+
 import grails.converters.JSON
 import groovy.transform.CompileStatic
+
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationHolder
 import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationInitializer
@@ -32,6 +35,7 @@ import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.util.ClassUtils
 
 import static org.springframework.http.HttpMethod.*
+
 import org.springframework.http.ResponseEntity
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.web.client.HttpStatusCodeException

@@ -2,6 +2,7 @@ package grails.gorm.tests
 
 import grails.gorm.DetachedCriteria
 import grails.persistence.Entity
+import groovy.transform.CompileStatic;
 
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import org.grails.datastore.gorm.query.transform.ApplyDetachedCriteriaTransform
@@ -1436,6 +1437,43 @@ class Project {
 
         then:"The results are correct"
             results.size() == 1
+    }
+    
+    @Issue('GRAILS-9996')
+    void "test static where queries and CompileStatic"() {
+        given:"A bunch of people"
+            createPeople()
+        when:
+            Person person = findHomerWithStaticWhereAndCompileStatic()
+        then:
+            person.firstName == "Homer"
+    }
+    
+    @Issue('GRAILS-9996')
+    void "test where queries and CompileStatic"() {
+        given:"A bunch of people"
+            createPeople()
+        when:
+            Person person = DetachedCriteriaInnerClass.findHomerWithWhereAndCompileStatic()
+        then:
+            person.firstName == "Homer"
+            
+    }
+    
+    @CompileStatic
+    static Person findHomerWithStaticWhereAndCompileStatic() {
+        List<Person> results = Person.simpsons.list(max: 2)
+        results[0]
+    }
+    
+    // TODO: Issue GRAILS-9996 hasn't been solved yet, this breaks with @CompileStatic
+    //@CompileStatic
+    @ApplyDetachedCriteriaTransform
+    static class DetachedCriteriaInnerClass {
+        static Person findHomerWithWhereAndCompileStatic() {
+            List<Person> results = Person.where { lastName == 'Simpson' }.list(max: 2)
+            results[0]
+        }
     }
 
     protected createContinentWithCountries() {
