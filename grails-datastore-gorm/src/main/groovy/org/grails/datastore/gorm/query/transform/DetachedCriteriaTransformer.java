@@ -32,7 +32,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.codehaus.groovy.ast.*;
+import org.codehaus.groovy.ast.ASTNode;
+import org.codehaus.groovy.ast.AnnotationNode;
+import org.codehaus.groovy.ast.ClassCodeVisitorSupport;
+import org.codehaus.groovy.ast.ClassHelper;
+import org.codehaus.groovy.ast.ClassNode;
+import org.codehaus.groovy.ast.FieldNode;
+import org.codehaus.groovy.ast.GenericsType;
+import org.codehaus.groovy.ast.MethodNode;
+import org.codehaus.groovy.ast.Parameter;
+import org.codehaus.groovy.ast.PropertyNode;
+import org.codehaus.groovy.ast.Variable;
+import org.codehaus.groovy.ast.VariableScope;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.BinaryExpression;
 import org.codehaus.groovy.ast.expr.BitwiseNegationExpression;
@@ -65,6 +76,7 @@ import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.messages.LocatedMessage;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import org.codehaus.groovy.grails.compiler.injection.GrailsASTUtils;
 import org.codehaus.groovy.syntax.Token;
 import org.grails.datastore.mapping.query.Query;
 import org.grails.datastore.mapping.query.criteria.FunctionCallingCriterion;
@@ -85,7 +97,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
     private static final VariableExpression DELEGATE_EXPRESSION = new VariableExpression("delegate");
     public static final String AND_OPERATOR = "&";
     public static final String OR_OPERATOR = "|";
-    public static final ClassNode DETACHED_CRITERIA_CLASS_NODE = new ClassNode(DetachedCriteria.class);
+    public static final ClassNode DETACHED_CRITERIA_CLASS_NODE = ClassHelper.make(DetachedCriteria.class);
     public static final Set<String> CANDIDATE_METHODS_WHERE_ONLY = newSet("where");
     public static final ClassNode FUNCTION_CALL_CRITERION = new ClassNode(FunctionCallingCriterion.class);
     public static final String EQUALS_OPERATOR = "==";
@@ -197,9 +209,12 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                             transformClosureExpression(classNode, closureExpression);
 
                             String buildMethod = mce.getMethodAsString().equals("whereLazy") ? "buildLazy" : "build";
-                            MethodCallExpression newInitialExpression = new MethodCallExpression(new ConstructorCallExpression(DETACHED_CRITERIA_CLASS_NODE, new ArgumentListExpression(new ClassExpression(classNode))), buildMethod, new ArgumentListExpression(closureExpression));
+                            
+                            ClassNode detachedCriteriaClassNode = getParameterizedDetachedCriteriaClassNode(classNode);
+                            
+                            MethodCallExpression newInitialExpression = new MethodCallExpression(new ConstructorCallExpression(detachedCriteriaClassNode, new ArgumentListExpression(new ClassExpression(classNode))), buildMethod, new ArgumentListExpression(closureExpression));
                             node.setInitialValueExpression(newInitialExpression);
-                            node.setType(DETACHED_CRITERIA_CLASS_NODE);
+                            node.setType(detachedCriteriaClassNode);
                             staticDetachedCriteriaVariables.put(node.getName(), classNode);
                         }
                     }
@@ -220,6 +235,14 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
         }
 
         super.visitField(node);
+    }
+
+    protected ClassNode getParameterizedDetachedCriteriaClassNode(ClassNode classNode) {
+        ClassNode detachedCriteriaClassNode = DETACHED_CRITERIA_CLASS_NODE.getPlainNodeReference();
+        if(classNode != null) {
+            detachedCriteriaClassNode.setGenericsTypes(new GenericsType[]{new GenericsType(GrailsASTUtils.nonGeneric(classNode))});
+        }
+        return detachedCriteriaClassNode;
     }
 
     @Override
@@ -1099,7 +1122,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                         if (validProperty) {
                             BlockStatement bs = (BlockStatement) ce.getCode();
                             addProjectionToCurrentBody(bs, aggregateFunctionName, aggregatePropertyName, variableScope);
-                            rightExpression = new MethodCallExpression(new ConstructorCallExpression(DETACHED_CRITERIA_CLASS_NODE, new ArgumentListExpression(new ClassExpression(this.currentClassNode))), "build", new ArgumentListExpression(ce));
+                            rightExpression = new MethodCallExpression(new ConstructorCallExpression(getParameterizedDetachedCriteriaClassNode(null), new ArgumentListExpression(new ClassExpression(this.currentClassNode))), "build", new ArgumentListExpression(ce));
                         }
                     }
                 }
