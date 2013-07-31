@@ -17,7 +17,7 @@ package org.grails.datastore.mapping.mongo;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -141,8 +141,8 @@ public class MongoSession extends AbstractSession<DB> {
                     final DBCollection collection = db.getCollection(collectionNameToUse);
 
                     final Collection<PendingInsert> pendingInserts = inserts.get(entity);
-                    List<DBObject> dbObjects = new LinkedList<DBObject>();
-                    List<PendingOperation> postOperations = new LinkedList<PendingOperation>();
+                    List<DBObject> dbObjects = new ArrayList<DBObject>(pendingInserts.size());
+                    List<PendingOperation> postOperations = new ArrayList<PendingOperation>(pendingInserts.size());
 
                     for (PendingInsert pendingInsert : pendingInserts) {
 

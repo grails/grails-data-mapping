@@ -1052,6 +1052,8 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                         final AssociationIndexer associationIndexer = inversePersister.getAssociationIndexer(e, inverseCollection);
                         associationIndexer.index(primaryKey, updateId);
                     }
+
+                    cascadeAfterInsert(persistentEntity, entityAccess, updateId, e);
                 }
             };
             pendingOperation.addCascadeOperation(postOperation);
@@ -1079,6 +1081,19 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             si.addPendingUpdate((PendingUpdate) pendingOperation);
         }
         return (Serializable) k;
+    }
+
+    /**
+     * Override to provide additional operations that should occur at the end of an insert, after the indexing
+     * cascade.
+     * @param persistentEntity
+     * @param entityAccess
+     * @param id
+     * @param e
+     */
+    protected void cascadeAfterInsert(final PersistentEntity persistentEntity,
+                                      final NativeEntryModifyingEntityAccess entityAccess,
+                                      final K id, final T e){
     }
 
     private AbstractPersistentCollection getPersistentCollection(Collection associatedObjects, Class associationType) {

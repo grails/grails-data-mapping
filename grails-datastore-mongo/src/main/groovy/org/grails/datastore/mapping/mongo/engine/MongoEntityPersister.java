@@ -511,6 +511,33 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         return super.discriminatePersistentEntity(persistentEntity, nativeEntry);
     }
 
+    /**
+     * This override avoids firing the post insert event or setting the TP cache,
+     * since the insert doesn't actually happen until later.
+     */
+    @Override
+    protected Object executeInsert(PersistentEntity persistentEntity, NativeEntryModifyingEntityAccess entityAccess, Object id, DBObject e) {
+        if (cancelInsert(persistentEntity, entityAccess)) return null;
+        final Object newId = storeEntry(persistentEntity, entityAccess, id, e);
+        entityAccess.setIdentifier(newId);
+
+        return newId;
+    }
+
+    /**
+     * Update the TP cache and fire the post event now the entity is actually persisted.
+     * @param persistentEntity
+     * @param entityAccess
+     * @param id
+     * @param e
+     */
+    @Override
+    protected void cascadeAfterInsert(PersistentEntity persistentEntity, NativeEntryModifyingEntityAccess entityAccess,
+                                      Object id, DBObject e) {
+        updateTPCache(persistentEntity, e, (Serializable) id);
+        firePostInsertEvent(persistentEntity, entityAccess);
+    }
+
     @Override
     protected DBObject retrieveEntry(final PersistentEntity persistentEntity,
             String family, final Serializable key) {
@@ -546,6 +573,10 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
         return nativeEntry;
     }
 
+    /**
+     * N.B. The actual insert is done in {@link MongoSession#flushPendingInserts(java.util.Map)}, for efficiency (it
+     * batches multiple inserts into a single call).
+     */
     @Override
     protected Object storeEntry(final PersistentEntity persistentEntity, final EntityAccess entityAccess,
                                 final Object storeId, final DBObject nativeEntry) {
