@@ -4,10 +4,13 @@ import grails.persistence.Entity
 
 import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.grails.datastore.gorm.validation.constraints.UniqueConstraint
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
+
+import javax.persistence.FlushModeType
 
 /**
  * Tests the unique constraint
@@ -45,6 +48,21 @@ class UniqueConstraintSpec extends GormDatastoreSpec {
             two != null
             three.hasErrors()
             GroupWithin.count() == 2
+    }
+
+    void "withManualFlushMode should use flushmode commit"() {
+
+        setup:
+        def constraint = new UniqueConstraint(session.datastore)
+        constraint.owningClass = UniqueGroup
+
+        when: "check if session flushmode has really switched to COMMIT"
+        constraint.withManualFlushMode {
+            assert session.flushMode == FlushModeType.COMMIT
+        }
+
+        then:
+        session.flushMode == FlushModeType.AUTO
     }
 
     protected void setupValidator() {

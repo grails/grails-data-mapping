@@ -105,8 +105,8 @@ class UniqueConstraint extends AbstractConstraint {
             final flushMode = session.getFlushMode()
 
             try {
-                callable.call(session)
                 session.setFlushMode(javax.persistence.FlushModeType.COMMIT)
+                callable.call(session)
             } finally {
                 session.setFlushMode(flushMode)
             }
