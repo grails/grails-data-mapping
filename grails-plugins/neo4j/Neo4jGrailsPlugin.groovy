@@ -1,5 +1,4 @@
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
-import org.grails.datastore.gorm.neo4j.constraints.UniqueConstraint
 import org.grails.datastore.gorm.neo4j.plugin.support.Neo4jMethodsConfigurer
 import org.grails.datastore.gorm.neo4j.plugin.support.Neo4jOnChangeHandler
 import org.grails.datastore.gorm.neo4j.plugin.support.Neo4jSpringConfigurer
@@ -21,7 +20,7 @@ class Neo4jGrailsPlugin {
     def scm = [ url: "https://github.com/sarmbruster/grails-data-mapping" ]
 
     //def version = "1.0.1"
-    def version = "1.0.1.SNAPSHOT"
+    def version = "1.0.1-SNAPSHOT"
     def grailsVersion = "1.2 > *"
     def loadAfter = ['domainClass', 'hibernate', 'services', 'cloudFoundry', 'converters']
     def observe = ['services', 'domainClass']
@@ -116,7 +115,6 @@ class Neo4jGrailsPlugin {
     }
 
     def doWithApplicationContext = { applicationContext ->
-        //ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint.class );
     }
 
     def onChange = { event ->
