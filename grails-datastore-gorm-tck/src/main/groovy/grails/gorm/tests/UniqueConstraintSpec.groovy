@@ -50,6 +50,34 @@ class UniqueConstraintSpec extends GormDatastoreSpec {
             GroupWithin.count() == 2
     }
 
+    void "should update to a existing value fail"() {
+        given:"A validator that uses the unique constraint"
+            setupValidator()
+
+            new UniqueGroup(name:"foo").save()
+            def two = new UniqueGroup(name:"bar").save()
+
+            session.flush()
+            session.clear()
+
+        when:
+            two.name="foo"
+            two.save(flush:true)
+
+        then:
+            two.hasErrors()
+            UniqueGroup.count() == 2
+            UniqueGroup.get(two.id).name=="bar"
+
+        when:
+            session.clear()
+            two = UniqueGroup.get(two.id)
+
+        then:
+            two.name == "bar"
+
+    }
+
     void "withManualFlushMode should use flushmode commit"() {
 
         setup:
