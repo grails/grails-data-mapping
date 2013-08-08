@@ -111,6 +111,13 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
     protected dirtyObjects = Collections.synchronizedSet(new HashSet())
     protected nonMonitorableObjects = Collections.synchronizedSet(new HashSet())
 
+    Neo4jSession(Datastore datastore, MappingContext mappingContext, ApplicationEventPublisher applicationEventPublisher ) {
+        this.datastore = datastore
+        this.mappingContext = mappingContext
+        this.applicationEventPublisher = applicationEventPublisher
+        beginTransaction()
+    }
+
     @Override
     Transaction beginTransaction() {
         if ((!transaction) || (!transaction.active)) {
@@ -119,11 +126,11 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         transaction
     }
 
-    /*@Override
+    @Override
     void disconnect() {
         transaction?.commit()
         super.disconnect()
-    }*/
+    }
 
     @Override
     Serializable persist(Object o) {
@@ -244,7 +251,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
         while (!objects.empty) {
             def obj = objects.poll()
             def id = obj.id
-            if ((obj in alreadyPersisted) || isProxy(obj)) {
+            if ((obj in alreadyPersisted) || isProxy(obj) || obj.hasErrors()) {
                 continue
             }
             if (log.debugEnabled) { // TODO: add @Slf4j annotation when groovy 1.8 is used
@@ -315,7 +322,7 @@ class Neo4jSession extends AbstractAttributeStoringSession implements PropertyCh
                 }
             }
 
-            if (hasChanged && (!inserts.contains(obj))) {
+            if (hasChanged && (!inserts.contains(obj)) && entityAccess.getPropertyType(VERSION_PROPERTY) ) {
                 def version = thisNode.getProperty(VERSION_PROPERTY) + 1
                 thisNode.setProperty(VERSION_PROPERTY, version)
                 if(obj && obj.hasProperty(VERSION_PROPERTY)) {
