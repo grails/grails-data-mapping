@@ -23,6 +23,7 @@ import org.springframework.web.context.request.WebRequest
 /**
  * provide a transaction context for each request
  */
+@Deprecated
 class Neo4jOpenSessionInViewInterceptor extends OpenSessionInViewInterceptor {
 
     protected final Logger log = LoggerFactory.getLogger(getClass())
