@@ -1,4 +1,4 @@
-version = "1.0.1.SNAPSHOT"
+version = "1.0.1-SNAPSHOT"
 //version = "1.0.1"
 
 ext.neo4jVersion = "1.8.2"
@@ -19,19 +19,19 @@ dependencies {
 
     // during development (aka snapshot version), use project dependencies
     // during release, use 'regular' dependencies
-    if (version =~ /SNAPSHOT/) {
+/*    if (version =~ /SNAPSHOT/) {
         compile project(":grails-datastore-gorm"),
                 project(":grails-datastore-web"),
                 project(":grails-datastore-gorm-plugin-support")
         testCompile project(":grails-datastore-gorm-test"),
                 project(":grails-datastore-gorm-tck")
-    } else {
+    } else {*/
         compile "org.grails:grails-datastore-gorm:$gdmVersion",
                 "org.grails:grails-datastore-web:$gdmVersion",
                 "org.grails:grails-datastore-gorm-plugin-support:$gdmVersion"
         testCompile "org.grails:grails-datastore-gorm-test:$gdmVersion",
                 "org.grails:grails-datastore-gorm-tck:$gdmVersion"
-    }
+    //}
 
     testCompile 'org.codehaus.gpars:gpars:0.12',
             [group: "org.neo4j", name: "neo4j-kernel", version: neo4jVersion, classifier: 'tests'],
