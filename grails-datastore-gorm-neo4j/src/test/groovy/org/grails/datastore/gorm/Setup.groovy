@@ -2,13 +2,11 @@ package org.grails.datastore.gorm
 
 import grails.gorm.tests.Role
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
-import org.grails.datastore.gorm.neo4j.constraints.UniqueConstraint
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
@@ -74,8 +72,6 @@ class Setup {
                 log.warn "DONE $name"
             }
         }*/
-
-        //ConstrainedProperty.registerNewConstraint(UniqueConstraint.UNIQUE_CONSTRAINT, UniqueConstraint)
 
         for (cls in classes) {
             datastore.mappingContext.addPersistentEntity(cls)
