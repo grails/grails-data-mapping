@@ -803,11 +803,15 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
             // for a unidirectional one-to-many we use the embedded keys
             if (!association.isBidirectional()) {
                 final Object indexed = nativeEntry.get(association.getName());
-                if (indexed instanceof Collection) {
-                    if (indexed instanceof List) return (List) indexed;
-                    return new ArrayList((Collection)indexed);
+                if (!(indexed instanceof Collection)) {
+                    return Collections.emptyList();
                 }
-                return Collections.emptyList();
+                List indexedList = getIndexedAssociationsAsList(indexed);
+
+                if (associationsAreDbRefs(indexedList)) {
+                    return extractIdsFromDbRefs(indexedList);
+                }
+                return indexedList;
             }
             // for a bidirectional one-to-many we use the foreign key to query the inverse side of the association
             Association inverseSide = association.getInverseSide();
@@ -823,6 +827,22 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
 
         public void index(Object primaryKey, Object foreignKey) {
             // TODO: Implement indexing of individual entities
+        }
+
+        private List getIndexedAssociationsAsList(Object indexed) {
+            return (indexed instanceof List) ? (List) indexed : new ArrayList(((Collection) indexed));
+        }
+
+        private boolean associationsAreDbRefs(List indexedList) {
+            return !indexedList.isEmpty() && (indexedList.get(0) instanceof DBRef);
+        }
+
+        private List extractIdsFromDbRefs(List indexedList) {
+            List resolvedDbRefs = new ArrayList();
+            for (Object indexedAssociation : indexedList) {
+                resolvedDbRefs.add(((DBRef) indexedAssociation).getId());
+            }
+            return resolvedDbRefs;
         }
     }
 }
