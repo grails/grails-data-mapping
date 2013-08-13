@@ -55,14 +55,15 @@ class UniqueConstraintSpec extends GormDatastoreSpec {
         setup:
         def constraint = new UniqueConstraint(session.datastore)
         constraint.owningClass = UniqueGroup
+        def origFlushMode = session.flushMode
 
         when: "check if session flushmode has really switched to COMMIT"
-        constraint.withManualFlushMode {
-            assert session.flushMode == FlushModeType.COMMIT
+        constraint.withManualFlushMode { s->
+            assert s.flushMode == FlushModeType.COMMIT
         }
 
         then:
-        session.flushMode == FlushModeType.AUTO
+        session.flushMode == origFlushMode
     }
 
     protected void setupValidator() {
