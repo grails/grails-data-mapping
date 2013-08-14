@@ -37,7 +37,7 @@ class UniqueConstraintGroupSpec extends GormDatastoreSpec{
         when: "Now check the same when user1 has not null dateDeleted"
             user1.dateDeleted = user2.dateDeleted
         then:"The save succeeds"
-            user1.save()
+            user1.save(flush:true)
 
         when: "user1 and user 2 have same userid / dateDeleted"
             user2.validate()
