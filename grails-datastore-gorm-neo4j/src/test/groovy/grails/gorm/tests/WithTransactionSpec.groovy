@@ -25,7 +25,7 @@ class WithTransactionSpec extends GormDatastoreSpec {
             "Fred" == results[1].name
     }
 
-    @Ignore
+    @Ignore("neo4j has flat nested transaction, so this spec cannot succeed")
     void "Test rollback transaction"() {
         given:
             TestEntity.withNewTransaction { status ->
@@ -43,7 +43,7 @@ class WithTransactionSpec extends GormDatastoreSpec {
             results.size() == 0
     }
 
-    @Ignore
+    @Ignore("neo4j has flat nested transaction, so this spec cannot succeed")
     void "Test rollback transaction with Exception"() {
         given:
             def ex
