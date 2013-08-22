@@ -13,6 +13,7 @@ import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.transactions.DatastoreTransactionManager
 import org.neo4j.test.ImpermanentGraphDatabase
+import org.neo4j.test.TestGraphDatabaseFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.support.GenericApplicationContext
@@ -53,7 +54,7 @@ class Setup {
             server.start()
             graphDb = new RestGraphDatabase("http://localhost:7473/db/data/")
         } else {
-            graphDb = new ImpermanentGraphDatabase()
+            graphDb = new TestGraphDatabaseFactory().newImpermanentDatabase()
         }
 
         datastore = new Neo4jDatastore(graphDatabaseService: graphDb, applicationContext: ctx)
