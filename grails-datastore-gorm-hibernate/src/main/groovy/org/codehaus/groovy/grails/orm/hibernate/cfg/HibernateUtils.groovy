@@ -182,7 +182,7 @@ class HibernateUtils {
     // http://jira.codehaus.org/browse/GROOVY-6138 prevents using CompileStatic for this method
     @CompileStatic(TypeCheckingMode.SKIP)
     static void enhanceProxyClass(Class proxyClass) {
-        MetaMethod grailsEnhancedMetaMethod = proxyClass.metaClass.getStaticMetaMethod("grailsEnhanced", null)
+        MetaMethod grailsEnhancedMetaMethod = proxyClass.metaClass.getStaticMetaMethod("grailsEnhanced", (Class[])null)
         if (grailsEnhancedMetaMethod != null && grailsEnhancedMetaMethod.invoke(proxyClass, null) == proxyClass) {
             return
         }
