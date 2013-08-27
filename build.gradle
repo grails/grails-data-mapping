@@ -1,6 +1,6 @@
 project.ext {
     springVersion = "3.2.3.RELEASE"
-    grailsVersion = "2.3.0.BUILD-SNAPSHOT"
+    grailsVersion = "2.3.0.RC1"
     slf4jVersion = "1.7.2"
     groovyVersion = System.getProperty('groovyVersion') ?: '2.1.5'
 }
@@ -32,7 +32,7 @@ ext {
 allprojects {
     repositories {
         if(!isCiBuild) {
-            // mavenLocal()
+            mavenLocal()
         }
         mavenCentral()
         maven { url "http://repo.grails.org/grails/core" }
@@ -57,7 +57,7 @@ subprojects {
     ext {
 //        releaseType = "RELEASE"
 //       releaseType = "BUILD-SNAPSHOT"
-        releaseType = "RC1"
+        releaseType = "RC2"
         isCiBuild = project.hasProperty("isCiBuild")
         isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
     }
