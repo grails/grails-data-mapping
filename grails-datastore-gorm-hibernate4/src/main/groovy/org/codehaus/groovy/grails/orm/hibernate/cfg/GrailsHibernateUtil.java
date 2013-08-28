@@ -198,8 +198,6 @@ public class GrailsHibernateUtil {
             }
         }
 
-        final String sort = (String)argMap.get(ARGUMENT_SORT);
-        final String order = ORDER_DESC.equalsIgnoreCase(orderParam) ? ORDER_DESC : ORDER_ASC;
         final int max = maxParam == null ? -1 : maxParam;
         final int offset = offsetParam == null ? -1 : offsetParam;
         if (max > -1) {
@@ -219,13 +217,25 @@ public class GrailsHibernateUtil {
                 cacheCriteriaByMapping(targetClass, c);
             }
         }
-        if (sort != null) {
+
+        final Object sortObj = argMap.get(ARGUMENT_SORT);
+        if (sortObj != null) {
             boolean ignoreCase = true;
             Object caseArg = argMap.get(ARGUMENT_IGNORE_CASE);
             if (caseArg instanceof Boolean) {
                 ignoreCase = (Boolean) caseArg;
             }
-            addOrderPossiblyNested(grailsApplication,c, targetClass, sort, order, ignoreCase);
+            if (sortObj instanceof Map) {
+                Map sortMap = (Map) sortObj;
+                for (Object sort : sortMap.keySet()) {
+                    final String order = ORDER_DESC.equalsIgnoreCase((String) sortMap.get(sort)) ? ORDER_DESC : ORDER_ASC;
+                    addOrderPossiblyNested(grailsApplication, c, targetClass, (String) sort, order, ignoreCase);
+                }
+            } else {
+                final String sort = (String) sortObj;
+                final String order = ORDER_DESC.equalsIgnoreCase(orderParam) ? ORDER_DESC : ORDER_ASC;
+                addOrderPossiblyNested(grailsApplication, c, targetClass, sort, order, ignoreCase);
+            }
         }
         else if(useDefaultMapping) {
             Mapping m = binder.getMapping(targetClass);
