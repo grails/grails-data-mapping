@@ -34,9 +34,9 @@ class RestClientSpringConfigurer extends SpringConfigurer{
         return {
             def restClientConfig = application.config?.grails?.gorm?.restClient.clone()
             final defaultMapping = restClientConfig?.default?.mapping
-            restClientMappingContext(RestClientMappingContext, defaultMapping instanceof Closure ? defaultMapping : {})
-            restClientDataStore(RestClientDatastoreFactoryBean) {
-                mappingContext = ref("restClientMappingContext")
+            restclientMappingContext(RestClientMappingContext, defaultMapping instanceof Closure ? defaultMapping : {})
+            restclientDatastore(RestClientDatastoreFactoryBean) {
+                mappingContext = ref("restclientMappingContext")
                 connectionDetails = restClientConfig
             }
         }

@@ -57,8 +57,8 @@ A GORM implementation that can back onto a REST web service
     def doWithSpring = new RestClientSpringConfigurer().getConfiguration()
 
     def doWithDynamicMethods = { ctx ->
-      def datastore = ctx.mongoDatastore
-        def transactionManager = ctx.restClientTransactionManager
+        def datastore = ctx.getBean("restclientDatastore")
+        def transactionManager = ctx.getBean("restclientTransactionManager")
         def methodsConfigurer = new RestClientMethodsConfigurer(datastore, transactionManager)    
         methodsConfigurer.hasExistingDatastore = manager.hasGrailsPlugin("hibernate")        
         def foe = application?.config?.grails?.gorm?.failOnError
