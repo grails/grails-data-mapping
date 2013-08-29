@@ -20,9 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.FlushModeType;
-
-import org.codehaus.groovy.grails.support.proxy.ProxyHandler;
 import org.grails.datastore.mapping.core.AbstractAttributeStoringSession;
 import org.grails.datastore.mapping.core.Datastore;
 import org.grails.datastore.mapping.engine.Persister;
@@ -31,7 +28,6 @@ import org.grails.datastore.mapping.transactions.Transaction;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 /**
  * Session implementation that wraps a Hibernate {@link Session}.
@@ -98,28 +94,6 @@ public abstract class AbstractHibernateSession extends AbstractAttributeStoringS
 
     public boolean contains(Object o) {
         return hibernateTemplate.contains(o);
-    }
-
-    public void setFlushMode(FlushModeType flushMode) {
-        if (flushMode == FlushModeType.AUTO) {
-            hibernateTemplate.setFlushMode(HibernateTemplate.FLUSH_AUTO);
-        }
-        else if (flushMode == FlushModeType.COMMIT) {
-            hibernateTemplate.setFlushMode(HibernateTemplate.FLUSH_COMMIT);
-        }
-    }
-
-    public FlushModeType getFlushMode() {
-        switch (hibernateTemplate.getFlushMode()) {
-            case HibernateTemplate.FLUSH_AUTO:
-                return FlushModeType.AUTO;
-            case HibernateTemplate.FLUSH_COMMIT:
-                return FlushModeType.COMMIT;
-            case HibernateTemplate.FLUSH_ALWAYS:
-                return FlushModeType.AUTO;
-            default:
-                return FlushModeType.AUTO;
-        }
     }
 
     public void lock(Object o) {

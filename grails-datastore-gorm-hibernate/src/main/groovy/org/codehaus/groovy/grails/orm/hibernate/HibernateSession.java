@@ -19,6 +19,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.FlushModeType;
+
 import org.codehaus.groovy.grails.domain.GrailsDomainClassMappingContext;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.HibernateProxyHandler;
 import org.codehaus.groovy.grails.orm.hibernate.query.HibernateQuery;
@@ -36,6 +38,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 
 /**
  * Session implementation that wraps a Hibernate {@link Session}.
@@ -150,5 +153,23 @@ public class HibernateSession extends AbstractHibernateSession {
 
     protected GrailsHibernateTemplate getHibernateTemplate() {
         return (GrailsHibernateTemplate)getNativeInterface();
+    }
+
+    public void setFlushMode(FlushModeType flushMode) {
+        if (flushMode == FlushModeType.AUTO) {
+            hibernateTemplate.setFlushMode(HibernateTemplate.FLUSH_AUTO);
+        }
+        else if (flushMode == FlushModeType.COMMIT) {
+            hibernateTemplate.setFlushMode(HibernateTemplate.FLUSH_COMMIT);
+        }
+    }
+
+    public FlushModeType getFlushMode() {
+        switch (hibernateTemplate.getFlushMode()) {
+            case HibernateTemplate.FLUSH_AUTO:   return FlushModeType.AUTO;
+            case HibernateTemplate.FLUSH_COMMIT: return FlushModeType.COMMIT;
+            case HibernateTemplate.FLUSH_ALWAYS: return FlushModeType.AUTO;
+            default:                             return FlushModeType.AUTO;
+        }
     }
 }

@@ -19,6 +19,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.FlushModeType;
+
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.domain.GrailsDomainClassMappingContext;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.HibernateProxyHandler;
@@ -151,5 +153,23 @@ public class HibernateSession extends AbstractHibernateSession {
 
     protected GrailsHibernateTemplate getHibernateTemplate() {
         return (GrailsHibernateTemplate)getNativeInterface();
+    }
+
+    public void setFlushMode(FlushModeType flushMode) {
+        if (flushMode == FlushModeType.AUTO) {
+            hibernateTemplate.setFlushMode(GrailsHibernateTemplate.FLUSH_AUTO);
+        }
+        else if (flushMode == FlushModeType.COMMIT) {
+            hibernateTemplate.setFlushMode(GrailsHibernateTemplate.FLUSH_COMMIT);
+        }
+    }
+
+    public FlushModeType getFlushMode() {
+        switch (hibernateTemplate.getFlushMode()) {
+            case GrailsHibernateTemplate.FLUSH_AUTO:   return FlushModeType.AUTO;
+            case GrailsHibernateTemplate.FLUSH_COMMIT: return FlushModeType.COMMIT;
+            case GrailsHibernateTemplate.FLUSH_ALWAYS: return FlushModeType.AUTO;
+            default:                                   return FlushModeType.AUTO;
+        }
     }
 }
