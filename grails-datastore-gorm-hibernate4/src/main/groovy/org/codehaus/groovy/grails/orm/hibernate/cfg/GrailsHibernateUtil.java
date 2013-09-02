@@ -237,10 +237,12 @@ public class GrailsHibernateUtil {
                 addOrderPossiblyNested(grailsApplication, c, targetClass, sort, order, ignoreCase);
             }
         }
-        else if(useDefaultMapping) {
-            Mapping m = binder.getMapping(targetClass);
-            if (m != null && !StringUtils.isBlank(m.getSort())) {
-                addOrderPossiblyNested(grailsApplication, c, targetClass, m.getSort(), m.getOrder(), true);
+        Mapping m = binder.getMapping(targetClass);
+        if (m != null) {
+            Map sortMap = m.getSort().getNamesAndDirections();
+            for (Object sort : sortMap.keySet()) {
+                final String order = ORDER_DESC.equalsIgnoreCase((String) sortMap.get(sort)) ? ORDER_DESC : ORDER_ASC;
+                addOrderPossiblyNested(grailsApplication, c, targetClass, (String) sort, order, true);
             }
         }
     }

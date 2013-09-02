@@ -95,14 +95,9 @@ class Mapping {
     CacheConfig cache
 
     /**
-     * The name of the default property to sort by
+     * Used to hold the names and directions of the default property to sort by
      */
-    String sort
-
-    /**
-     * Default direction to sort by
-     */
-    String order
+    SortConfig sort = new SortConfig()
 
     /**
      * Value used to discriminate entities in table-per-hierarchy inheritance mapping
