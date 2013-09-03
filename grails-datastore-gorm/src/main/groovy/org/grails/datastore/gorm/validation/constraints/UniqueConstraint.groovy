@@ -64,45 +64,26 @@ class UniqueConstraint extends AbstractConstraint {
                     group.add(constraintParameter.toString())
                 }
 
-                List nullConstraintParameters = group.findAll{target[it] == null}
-                def existing = false
-                
-                if (nullConstraintParameters) {
-                   existing = constraintOwningClass.createCriteria().list {
-                        eq constraintPropertyName, propertyValue
-                        for(prop in group) {
-                            if (target[prop] != null) {
-                              eq prop, target[prop]
-                            }
-                        }
-                   }
-
-                   // see if there is a result where all the nullConstraintParameters are null
-                   existing = existing?.find {
-                       null == nullConstraintParameters.findResult {param -> it[param]}
-                   }
-                } else {
-                   existing = constraintOwningClass.createCriteria().get {
+                def notIncludeNull = group.every { target[it] != null }
+                if (notIncludeNull) {
+                    def existing = constraintOwningClass.createCriteria().get {
                         eq constraintPropertyName, propertyValue
                         for (prop in group) {
                             eq prop, target[prop]
                         }
-                   }
-                } 
-                if (existing) {
-                  def existingId = getIdentifier(existing, persister)
-                  if (id != existingId) {
-                    def args = [constraintPropertyName, constraintOwningClass, propertyValue] as Object[]
-                      rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"))
-                  }
+                    }
+                    if (existing) {
+                        def existingId = getIdentifier(existing, persister)
+                        if (id != existingId) {
+                            def args = [constraintPropertyName, constraintOwningClass, propertyValue] as Object[]
+                            rejectValue(target, errors, "unique", args, getDefaultMessage("default.not.unique.message"))
+                        }
+                    }
                 }
             }
         }
     }
 
-
-
-                 
     private Serializable getIdentifier(target, EntityPersister persister) {
         if (target == null) {
             return
