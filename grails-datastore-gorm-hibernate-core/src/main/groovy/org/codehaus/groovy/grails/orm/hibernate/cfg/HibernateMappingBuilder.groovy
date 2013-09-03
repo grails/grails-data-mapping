@@ -157,7 +157,7 @@ class HibernateMappingBuilder {
      */
     void sort(String name) {
         if (name) {
-            mapping.sort = name
+            mapping.sort.name = name
         }
     }
 
@@ -179,13 +179,11 @@ class HibernateMappingBuilder {
      * <p>Configures the default sort column. Example:
      * <code> { sort foo:'desc' }
      *
-     * @param name The name of the property to sort by
+     * @param namesAndDirections The names and directions of the property to sort by
      */
-    void sort(Map nameAndDirection) {
-        if (nameAndDirection) {
-            def entry = nameAndDirection.entrySet().iterator().next()
-            sort entry.key
-            order entry.value
+    void sort(Map namesAndDirections) {
+        if (namesAndDirections) {
+            mapping.sort.namesAndDirections = namesAndDirections
         }
     }
 
@@ -207,7 +205,7 @@ class HibernateMappingBuilder {
      */
     void order(String direction) {
         if ("desc".equalsIgnoreCase(direction) || "asc".equalsIgnoreCase(direction)) {
-            mapping.order = direction
+            mapping.sort.direction = direction
         }
     }
 
