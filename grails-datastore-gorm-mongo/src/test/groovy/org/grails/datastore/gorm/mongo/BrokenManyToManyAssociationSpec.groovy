@@ -10,8 +10,8 @@ import grails.persistence.Entity
  */
 class BrokenManyToManyAssociationSpec extends GormDatastoreSpec {
 
-    def 'test'() {
-        given:
+    def 'Perform a cascading delete on a broken many-to-many relationship'() {
+        given:'An owning entity with 2 owned entities'
         ReferencingEntity referencing = new ReferencingEntity()
         referencing = referencing.save(flush: true)
         referencing.addToReferencedEntities(new ReferencedEntity().save())
@@ -20,21 +20,21 @@ class BrokenManyToManyAssociationSpec extends GormDatastoreSpec {
         referencing.save(flush: true)
         session.clear()
 
-        when:
+        when:'Low-level deleting 1 owned entity to simulate a broken relationship'
         ((DBCollection) ReferencedEntity.collection).remove(new BasicDBObject('_id', ReferencedEntity.find{}.id))
         session.clear()
         referencing = ReferencingEntity.find{}
 
-        then:
+        then:'Expect to still find 2 owned entities, but 1 of them is null (because the reference is broken)'
         referencing.referencedEntities.size() == 2
         referencing.referencedEntities.any { it == null }
 
         and:
-        when:
+        when:'Deleting the owning entity, thus invoking a cascading delete'
         referencing.delete(flush: true)
         session.clear()
 
-        then:
+        then:'Expect all the entities to be removed with no error'
         ReferencedEntity.count == 0
         ReferencingEntity.count == 0
     }
