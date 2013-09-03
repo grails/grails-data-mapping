@@ -144,7 +144,12 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
         firePostDeleteEvent(persistentEntity, entityAccess);
     }
 
-    protected void cascadeDeleteCollection(Collection collection) {
+    protected void cascadeDeleteCollection(EntityAccess entityAccess, Association association) {
+        Object propValue = entityAccess.getProperty(association.getName());
+        if (!(propValue instanceof Collection)) {
+            return;
+        }
+        Collection collection = ((Collection) propValue);
         for (Iterator iter = collection.iterator(); iter.hasNext(); ) {
             Object child = iter.next();
             deleteEntity(getMappingContext().getPersistentEntity(child.getClass().getName()), child);
@@ -188,9 +193,8 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             if (prop instanceof OneToMany) {
                 OneToMany oneToMany = (OneToMany)prop;
                 if (oneToMany.isOwningSide() && oneToMany.doesCascade(CascadeType.REMOVE)) {
-                    Object propValue = entityAccess.getProperty(oneToMany.getName());
-                    if (propValue instanceof Collection) {
-                        cascadeDeleteCollection((Collection) propValue);
+                    if (Collection.class.isAssignableFrom(oneToMany.getType())) {
+                        cascadeDeleteCollection(entityAccess, oneToMany);
                     }
                 }
             }
@@ -198,8 +202,8 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
                 ManyToMany manyToMany = (ManyToMany)prop;
                 if (manyToMany.isOwningSide() && manyToMany.doesCascade(CascadeType.REMOVE)) {
                     Object propValue = entityAccess.getProperty(manyToMany.getName());
-                    if (propValue instanceof Collection) {
-                        cascadeDeleteCollection((Collection) propValue);
+                    if (Collection.class.isAssignableFrom(manyToMany.getType())) {
+                        cascadeDeleteCollection(entityAccess, manyToMany);
                     }
                 }
             }
@@ -221,9 +225,8 @@ public abstract class NativeEntryEntityPersister<T, K> extends LockableEntityPer
             else if (prop instanceof OneToMany) {
                 OneToMany oneToMany = (OneToMany)prop;
                 if (oneToMany.isOwningSide() && oneToMany.doesCascade(CascadeType.REMOVE)) {
-                    Object propValue = entityAccess.getProperty(oneToMany.getName());
-                    if (propValue instanceof Collection) {
-                        cascadeDeleteCollection((Collection) propValue);
+                    if (Collection.class.isAssignableFrom(oneToMany.getType())) {
+                        cascadeDeleteCollection(entityAccess, oneToMany);
                     }
                 }
             }
