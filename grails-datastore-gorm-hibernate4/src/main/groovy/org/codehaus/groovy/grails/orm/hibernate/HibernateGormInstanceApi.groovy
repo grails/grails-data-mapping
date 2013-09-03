@@ -210,10 +210,9 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
 
     @Override
     void delete(D instance) {
-        def obj = instance
         boolean flush = shouldFlush()
         try {
-            instanceApiHelper.delete obj, flush
+            instanceApiHelper.delete instance, flush
         }
         catch (DataAccessException e) {
             handleDataAccessException(hibernateTemplate, e)
@@ -222,15 +221,12 @@ class HibernateGormInstanceApi<D> extends AbstractHibernateGormInstanceApi<D> {
 
     @Override
     void delete(D instance, Map params) {
-        def obj = instance
-        hibernateTemplate.delete obj
-        if (shouldFlush(params)) {
-            try {
-                hibernateTemplate.flush(instance)
-            }
-            catch (DataAccessException e) {
-                handleDataAccessException(hibernateTemplate, e)
-            }
+        boolean flush = shouldFlush(params)
+        try {
+            instanceApiHelper.delete instance, flush
+        }
+        catch (DataAccessException e) {
+            handleDataAccessException(hibernateTemplate, e)
         }
     }
 
