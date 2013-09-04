@@ -51,6 +51,8 @@ import org.grails.datastore.mapping.mongo.config.MongoAttribute;
 import org.grails.datastore.mapping.mongo.config.MongoMappingContext;
 import org.grails.datastore.mapping.mongo.query.MongoQuery;
 import org.grails.datastore.mapping.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
@@ -78,6 +80,8 @@ import com.mongodb.WriteResult;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, Object> {
+
+    static Logger log = LoggerFactory.getLogger(MongoEntityPersister.class);
 
     private static final String NEXT_ID_SUFFIX = ".next_id";
     private boolean hasNumericalIdentifier = false;
@@ -714,10 +718,20 @@ public class MongoEntityPersister extends NativeEntryEntityPersister<DBObject, O
     }
 
     @Override
-    protected void cascadeDeleteCollection(Collection collection) {
+    protected void cascadeDeleteCollection(EntityAccess entityAccess, Association association) {
+        Object propValue = entityAccess.getProperty(association.getName());
+        if (!(propValue instanceof Collection)) {
+            return;
+        }
+        Collection collection = ((Collection) propValue);
         Persister persister = null;
         for (Iterator iter = collection.iterator(); iter.hasNext(); ) {
             Object child = iter.next();
+            if (child == null) {
+                log.warn("Encountered a null associated reference while cascade-deleting '{}' as part of {} (ID {})",
+                        association.getReferencedPropertyName(), entityAccess.getEntity().getClass().getName(), entityAccess.getIdentifier());
+                continue;
+            }
             if(persister == null) {
                 persister = session.getPersister(child);
             }
