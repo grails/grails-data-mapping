@@ -186,7 +186,7 @@ class HibernateUtils {
             return
         }
 
-        GroovyObject mc = (GroovyObject)InvokerHelper.getMetaClass(proxyClass)
+        MetaClass mc = (MetaClass)InvokerHelper.getMetaClass(proxyClass)
         MetaClass superMc = InvokerHelper.getMetaClass(proxyClass.getSuperclass())
 
         // hasProperty
@@ -252,11 +252,13 @@ class HibernateUtils {
             }
         })
 
-        ((GroovyObject)mc.getProperty('static')).setProperty("grailsEnhanced", { -> proxyClass })
+        mc.static.grailsEnhanced = {->proxyClass}
     }
 
+
+    @CompileStatic(TypeCheckingMode.SKIP)
     private static final registerMetaMethod(MetaClass mc, String name, Closure c) {
-        ((GroovyObject)mc).setProperty(name, c)
+        mc."$name" = c
     }
 
     static void enhanceProxy(HibernateProxy proxy) {
