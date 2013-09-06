@@ -1,0 +1,14 @@
+To get started with GORM REST Client configure it as a dependency in @BuildConfig.groovy@:
+
+{code}
+plugins {
+    compile ':gorm-rest-client:1.0.0.M1' // or whatever is the latest vesrion
+}
+{code}
+
+Note that the above assumes you do not have Hibernate installed. If you do have Hibernate installed then domain classes will be by default mapped with Hibernate. If you want to a domain class to be a REST entity. Then you are required to add the following mapping:
+
+{code}
+static mapWith = "restclient"
+{code}
+
