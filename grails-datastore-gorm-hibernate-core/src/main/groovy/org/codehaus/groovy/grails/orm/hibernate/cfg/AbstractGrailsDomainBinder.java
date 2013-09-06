@@ -1873,7 +1873,14 @@ public abstract class AbstractGrailsDomainBinder {
 
             Class<?> userType = getUserType(currentGrailsProp);
 
-            if (collectionType != null) {
+            if (userType != null) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("[GrailsDomainBinder] Binding property [" + currentGrailsProp.getName() + "] as SimpleValue");
+                }
+                value = new SimpleValue(mappings, table);
+                bindSimpleValue(currentGrailsProp, null, (SimpleValue) value, EMPTY_PATH, mappings, sessionFactoryBeanName);
+            }
+            else if (collectionType != null) {
                 String typeName = getTypeName(currentGrailsProp, getPropertyConfig(currentGrailsProp),gormMapping);
                 if ("serializable".equals(typeName)) {
                     value = new SimpleValue(mappings, table);
