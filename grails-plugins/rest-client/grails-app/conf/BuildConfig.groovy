@@ -48,7 +48,7 @@ grails.project.dependency.resolution = {
 
 
         def restClientDatastoreVersion = "1.0.0.M1"
-        def datastoreVersion = "2.0.0.RC2"
+        def datastoreVersion = "2.0.1.RELEASE"
 
         compile ("org.grails:grails-datastore-rest-client:$restClientDatastoreVersion",
                  "org.grails:grails-datastore-gorm-rest-client:$restClientDatastoreVersion",excludes)
