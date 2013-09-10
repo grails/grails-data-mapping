@@ -9,6 +9,7 @@ org.grails.datastore.mapping.config.groovy
 org.grails.datastore.mapping.config.utils
 org.grails.datastore.mapping.core
 org.grails.datastore.mapping.core.impl
+org.grails.datastore.mapping.dirty.checking
 org.grails.datastore.mapping.document
 org.grails.datastore.mapping.document.config
 org.grails.datastore.mapping.engine
@@ -27,6 +28,7 @@ org.grails.datastore.mapping.proxy
 org.grails.datastore.mapping.query
 org.grails.datastore.mapping.query.api
 org.grails.datastore.mapping.query.criteria
+org.grails.datastore.mapping.query.event
 org.grails.datastore.mapping.query.jpa
 org.grails.datastore.mapping.query.order
 org.grails.datastore.mapping.query.projections
