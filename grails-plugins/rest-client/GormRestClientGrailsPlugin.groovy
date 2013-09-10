@@ -35,7 +35,7 @@ A GORM implementation that can back onto a REST web service
 '''
 
     // URL to the plugin's documentation
-    def documentation = "http://grails.org/plugin/gorm-rest-client"
+    def documentation = "http://projects.spring.io/grails-data-mapping/rest-client/manual/index.html"
 
     // Extra (optional) plugin metadata
 
