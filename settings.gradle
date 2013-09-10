@@ -23,6 +23,7 @@ include "grails-datastore-core",
         'grails-documentation-neo4j',
         'grails-documentation-simpledb',
         'grails-documentation-dynamodb',
+        'grails-documentation-rest-client',
 
         // Core GORM Implementation projects
         'grails-datastore-gorm',

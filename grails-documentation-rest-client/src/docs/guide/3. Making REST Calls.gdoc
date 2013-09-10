@@ -1,1 +1,38 @@
-GORM REST client is designed to work in seamlessly with Grails 2.3's [new REST support|http://grails.org/doc/2.3.x/guide/webServices.html#REST]. 
+Currently GORM for REST supports only basic CRUD operations. 
+
+The following will issue a POST request to create a resource:
+
+{code}
+def book = new Book(title:"The Stand", author:"Stephen King", pages:1200)
+book.save(flush:true)
+{code}
+
+The issue a GET request to retrieve the resource you can use the @get(id)@ method:
+
+{code}
+def book = Book.get(1)
+{code}
+
+To issue a GET request for all resources you can use the @list()@ method:
+
+{code}
+Book.list()
+Book.list(offset:10, max:20) // with pagination
+{code}
+
+If you pass pagination argument as per the above then the @offset@ and @max@ parameters are sent as part of the request.
+
+To update a resource with a PUT request you can use the @save()@ method on an existing resource:
+
+{code}
+def book = Book.get(1)
+book.title = "The Shining"
+book.save()
+{code}
+
+Finally, to issue DELETE request to delete a resource simply call the @delete()@ method:
+
+{code}
+def book = Book.get(1)
+book.delete()
+{code}

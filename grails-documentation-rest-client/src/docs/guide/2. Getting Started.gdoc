@@ -1,14 +1,121 @@
-To get started with GORM REST Client configure it as a dependency in @BuildConfig.groovy@:
+To quickly get started with GORM for REST first you need a REST server. This is pretty simple with Grails 2.3.0. Simply follow these steps on the command line:
 
 {code}
-plugins {
-    compile ':gorm-rest-client:1.0.0.M1' // or whatever is the latest vesrion
+$ grails create-app amazon
+$ cd amazon
+$ grails create-domain-class Book
+$ vi grails-app/domain/amazon/Book.groovy
+{code}
+
+Modify the @Book@ domain class to look like:
+
+{code}
+import grails.rest.*
+
+@Resource(uri="/books")
+class Book {
+
+	String title
+	String author
+	int pages
+
+    static constraints = {
+    	title blank:false
+    	author blank:false
+    }
 }
 {code}
 
-Note that the above assumes you do not have Hibernate installed. If you do have Hibernate installed then domain classes will be by default mapped with Hibernate. If you want to a domain class to be a REST entity. Then you are required to add the following mapping:
+This will automatically expose the domain class as a REST service. You can start the application with:
 
 {code}
-static mapWith = "restclient"
+$ grails run-app
 {code}
 
+To verify that is running try the following (Assumes a Unix system):
+
+{code}
+$ curl -i http://localhost:8080/amazon/books
+{code}
+
+You should get an XML response:
+
+{code}
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: text/xml;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Tue, 10 Sep 2013 13:14:52 GMT
+
+<?xml version="1.0" encoding="UTF-8"?><list />
+{code}
+
+You can obtain a JSON response with:
+
+{code}
+$ curl -H "Accept:application/json" -i http://localhost:8080/amazon/books
+{code}
+
+Now to create the client create a separate Grails application:
+
+
+{code}
+$ grails create-app amazon-client
+$ cd amazon-client
+$ grails create-domain-class Book
+{code}
+
+
+And configure GORM for REST as a dependency in @grails-app/conf/BuildConfig.groovy@:
+
+{code}
+plugins {
+	// or whatever is the latest version
+    compile ':gorm-rest-client:1.0.0.M1' 
+}
+{code}
+
+{note}
+Note if you plan to remove the Hibernate plugin, then in 2.3.0 of Grails you also need to remove the 'database-migration' plugin
+{note}
+
+Then open up the @grails-app/domain/amazon/client/Book.groovy@ domain class and modify it as follows:
+
+{code}
+package amazon.client
+
+class Book {
+	String title
+	String author
+	int pages
+
+    static constraints = {
+    	title blank:false
+    	author blank:false
+    }
+    static mappedWith = "restclient"
+    static mapping = {
+    	url "http://localhost:8080/amazon/books"
+    }
+}
+{code}
+
+Now fire up the Grails console:
+
+{code}
+$ grails console
+{code}
+
+And try the following:
+
+{code}
+def book = new Book(title:"The Stand", author:"Stephen King", pages:1200)
+book.save(flush:true)
+
+Book.list().each { b ->
+  println b.title
+  println b.author
+}
+{code}
+
+Essentially GORM for REST will transparently issue the appropriate POST request to create a REST resource and the the appropriate GET request to retrieve REST resources.

@@ -1,0 +1,12 @@
+GORM for REST uses Spring's RestTemplate under the covers, so testing can be done with Spring's [MockRestServiceServer|http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/test/web/client/MockRestServiceServer.html] API. Example:
+
+{code}
+    RestTemplate rt = Book.getRestBuilder().restTemplate
+    final mockServer = MockRestServiceServer.createServer(rt)
+    mockServer.expect(requestTo("http://localhost:8080/book"))
+            .andExpect(method(HttpMethod.GET))
+            .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString()))
+            .andRespond(withSuccess('[{"id":1, "title":"The Stand", "pages":200}]', MediaType.APPLICATION_JSON))
+
+    List results = Book.list()
+{code}
