@@ -1,6 +1,7 @@
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
+grails.project.work.dir="target/work"
 
 grails.project.fork = [
     // configure settings for compilation JVM, note that if you alter the Groovy version forked compilation is required
@@ -47,11 +48,10 @@ grails.project.dependency.resolution = {
         }
 
 
-        def restClientDatastoreVersion = "1.0.0.M1"
         def datastoreVersion = "2.0.1.RELEASE"
 
-        compile ("org.grails:grails-datastore-rest-client:$restClientDatastoreVersion",
-                 "org.grails:grails-datastore-gorm-rest-client:$restClientDatastoreVersion",excludes)
+        compile ("org.grails:grails-datastore-rest-client:1.0.0.M2",
+                 "org.grails:grails-datastore-gorm-rest-client:1.0.0.M1",excludes)
         compile("org.grails:grails-datastore-gorm-plugin-support:$datastoreVersion",
                 "org.grails:grails-datastore-gorm:$datastoreVersion",
                 "org.grails:grails-datastore-core:$datastoreVersion",                

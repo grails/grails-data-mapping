@@ -382,6 +382,11 @@ class RequestCustomizer {
         else if (value instanceof InputStream) {
             value = new InputStreamResource(value)
         }
-        mvm[name].add value
+        if( mvm[name] ) {
+            mvm[name].add value    
+        }
+        else {
+            mvm.put(name, [value])
+        }        
     }
 }
