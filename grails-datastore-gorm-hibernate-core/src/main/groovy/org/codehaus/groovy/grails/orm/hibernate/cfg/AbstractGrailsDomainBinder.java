@@ -1747,10 +1747,11 @@ public abstract class AbstractGrailsDomainBinder {
             catalog = m.getTable().getCatalog();
         }
 
+        final boolean isAbstract = m != null && !m.getTablePerHierarchy() && m.isTablePerConcreteClass() && root.isAbstract();
         // create the table
         Table table = mappings.addTable(schema, catalog,
                 getTableName(domainClass, sessionFactoryBeanName),
-                null, false);
+                null, isAbstract);
         root.setTable(table);
 
         if (LOG.isDebugEnabled()) {
