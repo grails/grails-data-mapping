@@ -3,6 +3,8 @@ package grails.gorm.tests
 import grails.persistence.Entity
 import org.hibernate.Session
 import java.sql.Connection
+import java.sql.PreparedStatement
+import java.sql.ResultSet
 
 /**
  */
@@ -15,6 +17,24 @@ class TablePerConcreteClassSpec extends GormDatastoreSpec{
                 Connection conn = session.connection()
 
                 conn.prepareStatement("select id, version, amount from payment").execute()
+                conn.prepareStatement("select id, version, amount, credit_card_type from credit_card_payment").execute()
+                conn.prepareStatement("select id, version, amount, currency from cash_payment").execute()
+            }
+    }
+
+    void "Test that table per concrete class produces correct tables which parent is an abstract class"() {
+        expect: "The table structure is correct"
+            Payment.withSession { Session session ->
+
+                Connection conn = session.connection()
+
+                PreparedStatement stmt = conn.prepareStatement("select count(*) from INFORMATION_SCHEMA.tables where TABLE_NAME = ?")
+                stmt.setString(1, "ABSTRACT_PAYMENT")
+                ResultSet resultSet = stmt.executeQuery()
+
+                assert resultSet.next()
+                assert !resultSet.getInt(1)
+
                 conn.prepareStatement("select id, version, amount, credit_card_type from credit_card_payment").execute()
                 conn.prepareStatement("select id, version, amount, currency from cash_payment").execute()
             }
@@ -51,9 +71,37 @@ class TablePerConcreteClassSpec extends GormDatastoreSpec{
 
     }
 
+    void "Test that polymorphic queries work correctly with table per concrete class which parent is an abstract class"() {
+        given: "Some test data with subclasses"
+            new DebitCardPayment(bank: "FooBank", amount: 23).save()
+            new DebitCardPayment(bank: "BarBank", amount: 102).save()
+            new OnlinePayment(service: "paypal", amount: 50).save(flush: true)
+            session.clear()
+
+        expect: "The correct results from queries"
+            AbstractPayment.count() == 3
+            DebitCardPayment.count() == 2
+            OnlinePayment.count() == 1
+
+        when: "The subclasses are loaded"
+            List<DebitCardPayment> debitCardPayments = DebitCardPayment.list()
+            List<OnlinePayment> onlinePayments = OnlinePayment.list()
+            List<AbstractPayment> allPayments = AbstractPayment.list()
+
+        then: "The results are correct"
+            debitCardPayments.size() == 2
+            debitCardPayments[0].bank == "FooBank"
+            debitCardPayments[0].amount == 23
+            debitCardPayments[1].bank == "BarBank"
+            debitCardPayments[1].amount == 102
+            onlinePayments.size() == 1
+            onlinePayments[0].service == "paypal"
+            allPayments.size() == 3
+    }
+
     @Override
     List getDomainClasses() {
-        [Payment, CreditCardPayment, CashPayment]
+        [Payment, CreditCardPayment, CashPayment, AbstractPayment, DebitCardPayment, OnlinePayment]
     }
 }
 
@@ -72,4 +120,21 @@ class CreditCardPayment extends Payment {
 }
 class CashPayment extends Payment {
     Currency currency
+}
+
+@Entity
+abstract class AbstractPayment {
+    Long id
+    Long version
+    Double amount
+
+    static mapping = {
+        tablePerConcreteClass true
+    }
+}
+class DebitCardPayment extends AbstractPayment {
+    String bank
+}
+class OnlinePayment extends AbstractPayment {
+    String service
 }
