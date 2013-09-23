@@ -224,7 +224,6 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
                         final propertyField = pn.getField()
 
                         // first add the getter
-                        final getterName = NameUtils.getGetterName(propertyName)
                         ClassNode originalReturnType = pn.getType()
                         ClassNode returnType;
                         if(!originalReturnType.getNameWithoutPackage().equals(VOID)) {
@@ -237,6 +236,7 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
                         else {
                             returnType = originalReturnType
                         }
+                        final getterName = NameUtils.getGetterName(propertyName, boolean.class.getName().equals(returnType.getName()))
                         classNode.addMethod(getterName, PUBLIC, returnType, ZERO_PARAMETERS, null, new ReturnStatement(new VariableExpression(propertyField.getName())))
 
                         // now add the setter that tracks changes. Each setters becomes:
