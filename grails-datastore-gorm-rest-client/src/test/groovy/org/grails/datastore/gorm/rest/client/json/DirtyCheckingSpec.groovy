@@ -48,7 +48,7 @@ class DirtyCheckingSpec extends RestClientDatastoreSpec{
             author.name = "James Patterson"
             mockServer.expect(requestTo("http://localhost:8080/author/1"))
                     .andExpect(method(HttpMethod.PUT))
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                     .andExpect(content().string('{"class":"org.grails.datastore.gorm.rest.client.json.Author","id":1,"name":"James Patterson"}'))
                     .andRespond(withSuccess('{"id":1, "name":"James Patterson"}', MediaType.APPLICATION_JSON))
             author.save(flush: true)
