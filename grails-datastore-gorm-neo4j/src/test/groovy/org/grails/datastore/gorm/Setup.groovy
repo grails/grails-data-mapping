@@ -6,6 +6,7 @@ import org.codehaus.groovy.grails.validation.GrailsDomainClassValidator
 import org.grails.datastore.gorm.events.AutoTimestampEventListener
 import org.grails.datastore.gorm.events.DomainEventListener
 import org.grails.datastore.gorm.neo4j.Neo4jDatastore
+import org.grails.datastore.gorm.neo4j.Neo4jDatastoreTransactionManager
 import org.grails.datastore.gorm.neo4j.Neo4jGormEnhancer
 import org.grails.datastore.gorm.proxy.GroovyProxyFactory
 import org.grails.datastore.mapping.core.Session
@@ -103,7 +104,7 @@ class Setup {
             datastore.mappingContext.addEntityValidator(entity, validator)
         }
 
-        def enhancer = new Neo4jGormEnhancer(datastore, new DatastoreTransactionManager(datastore: datastore))
+        def enhancer = new Neo4jGormEnhancer(datastore, new Neo4jDatastoreTransactionManager(datastore: datastore))
         enhancer.enhance()
 
         datastore.afterPropertiesSet()

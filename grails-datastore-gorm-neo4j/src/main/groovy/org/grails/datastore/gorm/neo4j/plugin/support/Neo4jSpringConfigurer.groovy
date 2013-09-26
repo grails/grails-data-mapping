@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm.neo4j.plugin.support
 
+import org.grails.datastore.gorm.neo4j.Neo4jDatastoreTransactionManager
 import org.grails.datastore.gorm.plugin.support.SpringConfigurer
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jMappingContextFactoryBean
 import org.grails.datastore.gorm.neo4j.bean.factory.Neo4jDatastoreFactoryBean
@@ -105,7 +106,11 @@ class Neo4jSpringConfigurer extends SpringConfigurer {
 
             }
 
-        if (manager?.hasGrailsPlugin("controllers")) {
+            neo4jTransactionManager(Neo4jDatastoreTransactionManager) {
+                datastore = ref("neo4jDatastore")
+            }
+
+            if (manager?.hasGrailsPlugin("controllers")) {
 /*
             neo4jOpenSessionInViewInterceptor(Neo4jOpenSessionInViewInterceptor) {
                 datastore = ref("neo4jDatastore")
