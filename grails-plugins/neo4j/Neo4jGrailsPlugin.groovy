@@ -1,4 +1,4 @@
-import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.grails.datastore.gorm.neo4j.UniqueConstraintPatcher
 import org.grails.datastore.gorm.neo4j.plugin.support.Neo4jMethodsConfigurer
 import org.grails.datastore.gorm.neo4j.plugin.support.Neo4jOnChangeHandler
 import org.grails.datastore.gorm.neo4j.plugin.support.Neo4jSpringConfigurer
@@ -54,6 +54,8 @@ class Neo4jGrailsPlugin {
         setupGetOrSet()
 
         setupJsonMarshallers(ctx)
+
+        new UniqueConstraintPatcher().patch()
     }
 
     private void setupJsonMarshallers(ApplicationContext ctx) {
