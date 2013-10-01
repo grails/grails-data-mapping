@@ -268,7 +268,7 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
 
             // We also need to search properties that are represented as getters with setters. This requires going through all the methods and finding getter/setter pairs that are public
             gettersAndSetters.each { String propertyName, GetterAndSetter getterAndSetter ->
-                if(getterAndSetter.hasBoth()) {
+                if(!GrailsDomainConfigurationUtil.isConfigurational(propertyName) && getterAndSetter.hasBoth()) {
                     weaveIntoExistingSetter(propertyName, getterAndSetter, markDirtyMethodNode)
                 }
             }
