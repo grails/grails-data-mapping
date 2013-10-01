@@ -127,17 +127,19 @@ class GormEnhancer {
 
                 if (parameterTypes) {
                     parameterTypes = parameterTypes.length == 1 ? [] : parameterTypes[1..-1]
-
-                    // use fake object just so we have the right method signature
-
-                    final tooCall = new InstanceMethodInvokingClosure(apiProvider, methodName, parameterTypes)
-                    def pt = parameterTypes
-                    // Hack to workaround http://jira.codehaus.org/browse/GROOVY-4720
-                    final closureMethod = new ClosureStaticMetaMethod(methodName, cls, tooCall, pt) {
-                        @Override
-                        int getModifiers() { Modifier.PUBLIC }
+                    
+                    if(!mc.hasMetaMethod(methodName, parameterTypes)) {
+                        // use fake object just so we have the right method signature
+    
+                        final tooCall = new InstanceMethodInvokingClosure(apiProvider, methodName, parameterTypes)
+                        def pt = parameterTypes
+                        // Hack to workaround http://jira.codehaus.org/browse/GROOVY-4720
+                        final closureMethod = new ClosureStaticMetaMethod(methodName, cls, tooCall, pt) {
+                            @Override
+                            int getModifiers() { Modifier.PUBLIC }
+                        }
+                        mc.registerInstanceMethod(closureMethod)
                     }
-                    mc.registerInstanceMethod(closureMethod)
                 }
             }
         }
