@@ -47,6 +47,12 @@ class FundProduct {
 
         then:"The generic types are retained"
             cls.getMethod("getgSeriesOptionCode")
+
+        when:"An invalid getter is used"
+            cls.getMethod('getGSeriesOptionCode')
+
+        then:"an error is thrown"
+            thrown(NoSuchMethodException)
     }
 
     void "Test that the dirty checking transformations allows you to track changes to a class"() {
