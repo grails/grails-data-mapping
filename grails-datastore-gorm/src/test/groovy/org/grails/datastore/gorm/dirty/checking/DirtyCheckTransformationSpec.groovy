@@ -3,6 +3,7 @@ package org.grails.datastore.gorm.dirty.checking
 import grails.gorm.dirty.checking.DirtyCheck
 import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 import spock.lang.Specification
+import spock.lang.Issue
 
 /**
  * @author Graeme Rocher
@@ -26,6 +27,26 @@ class Author {
 
         then:"The generic types are retained"
             cls.getMethod("getBooks").getReturnType().getGenericInterfaces()
+    }
+
+    @Issue('GRAILS-10433')
+    void "Test that properties with single character getters generate the correct getter and setter combo"() {
+        when:"A Dirty checkable class with generic types is parsed"
+            def gcl = new GroovyClassLoader()
+            Class cls = gcl.parseClass('''
+class FundProduct {
+
+   String gSeriesOptionCode
+
+   static mapping = {
+      gSeriesOptionCode column: 'XXX'
+   }
+}
+
+    ''')
+
+        then:"The generic types are retained"
+            cls.getMethod("getgSeriesOptionCode")
     }
 
     void "Test that the dirty checking transformations allows you to track changes to a class"() {

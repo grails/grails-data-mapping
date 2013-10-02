@@ -15,6 +15,8 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.events;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.event.internal.DefaultFlushEventListener;
 import org.hibernate.event.spi.EventSource;
@@ -33,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class PatchedDefaultFlushEventListener extends DefaultFlushEventListener{
 
     private static final long serialVersionUID = -7413770767669684078L;
-    private static final Logger LOG = LoggerFactory.getLogger(PatchedDefaultFlushEventListener.class);
+    private static final Log LOG = LogFactory.getLog(PatchedDefaultFlushEventListener.class);
 
     @Override
     protected void performExecutions(EventSource session) throws HibernateException {

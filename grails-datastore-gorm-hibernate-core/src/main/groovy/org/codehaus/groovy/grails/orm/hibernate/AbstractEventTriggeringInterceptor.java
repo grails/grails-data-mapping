@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsDomainClass;
@@ -50,7 +52,7 @@ public abstract class AbstractEventTriggeringInterceptor extends AbstractPersist
             new ConcurrentHashMap<SoftKey<Class<?>>, Boolean>();
     protected boolean failOnError;
     protected List<?> failOnErrorPackages = Collections.emptyList();
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    protected Log log = LogFactory.getLog(getClass());
 
     protected AbstractEventTriggeringInterceptor(Datastore datastore) {
         super(datastore);
@@ -92,8 +94,7 @@ public abstract class AbstractEventTriggeringInterceptor extends AbstractPersist
                 }
             }
             else {
-                log.warn("Cannot resolve SessionFactory for dataSource {} and entity {}",
-                        new Object[] { dataSource, entity.getClass().getName()});
+                log.warn("Cannot resolve SessionFactory for dataSource ["+dataSource+"] and entity ["+entity.getClass().getName()+"]");
             }
         }
         return false;

@@ -29,6 +29,8 @@ import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.HibernateUtils;
 import org.grails.datastore.mapping.proxy.GroovyObjectMethodHandler;
 import org.hibernate.HibernateException;
@@ -46,6 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer implements MethodHandler {
 
+    protected static final Log LOG = LogFactory.getLog(BasicLazyInitializer.class);
     private static final String WRITE_CLASSES_DIRECTORY = System.getProperty("javassist.writeDirectory");
 
     private static final Set<String> GROOVY_METHODS = CollectionUtils.newSet("$getStaticMetaClass");
@@ -145,7 +148,7 @@ public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer im
             return proxyClass;
         }
         catch (Throwable t) {
-            LoggerFactory.getLogger(BasicLazyInitializer.class).error(
+            LOG.error(
                     "Javassist Enhancement failed: " + persistentClass.getName(), t);
             throw new HibernateException("Javassist Enhancement failed: " + persistentClass.getName(), t);
         }

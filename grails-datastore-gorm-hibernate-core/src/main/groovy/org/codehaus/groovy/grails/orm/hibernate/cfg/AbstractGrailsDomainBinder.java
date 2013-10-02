@@ -16,6 +16,26 @@ package org.codehaus.groovy.grails.orm.hibernate.cfg;
 
 import grails.util.GrailsNameUtils;
 import groovy.lang.Closure;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.codehaus.groovy.grails.commons.*;
+import org.codehaus.groovy.grails.exceptions.GrailsDomainException;
+import org.codehaus.groovy.grails.plugins.GrailsPlugin;
+import org.codehaus.groovy.grails.plugins.GrailsPluginManager;
+import org.codehaus.groovy.grails.validation.ConstrainedProperty;
+import org.hibernate.FetchMode;
+import org.hibernate.MappingException;
+import org.hibernate.cfg.*;
+import org.hibernate.id.PersistentIdentifierGenerator;
+import org.hibernate.mapping.*;
+import org.hibernate.mapping.Collection;
+import org.hibernate.mapping.Table;
+import org.hibernate.persister.entity.UnionSubclassEntityPersister;
+import org.hibernate.type.*;
+import org.springframework.context.ApplicationContext;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Modifier;
@@ -23,76 +43,10 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.StringTokenizer;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClassProperty;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
-import org.codehaus.groovy.grails.exceptions.GrailsDomainException;
-import org.codehaus.groovy.grails.plugins.GrailsPlugin;
-import org.codehaus.groovy.grails.plugins.GrailsPluginManager;
-import org.codehaus.groovy.grails.validation.ConstrainedProperty;
-import org.dom4j.Attribute;
-import org.dom4j.Element;
-import org.hibernate.FetchMode;
-import org.hibernate.MappingException;
-import org.hibernate.cfg.BinderHelper;
-import org.hibernate.cfg.ImprovedNamingStrategy;
-import org.hibernate.cfg.Mappings;
-import org.hibernate.cfg.NamingStrategy;
-import org.hibernate.cfg.SecondPass;
-import org.hibernate.id.PersistentIdentifierGenerator;
-import org.hibernate.mapping.Backref;
-import org.hibernate.mapping.Bag;
-import org.hibernate.mapping.Collection;
-import org.hibernate.mapping.Column;
-import org.hibernate.mapping.Component;
-import org.hibernate.mapping.DependantValue;
-import org.hibernate.mapping.Formula;
-import org.hibernate.mapping.IndexBackref;
-import org.hibernate.mapping.IndexedCollection;
-import org.hibernate.mapping.JoinedSubclass;
-import org.hibernate.mapping.KeyValue;
-import org.hibernate.mapping.ManyToOne;
-import org.hibernate.mapping.OneToMany;
-import org.hibernate.mapping.OneToOne;
-import org.hibernate.mapping.PersistentClass;
-import org.hibernate.mapping.Property;
-import org.hibernate.mapping.RootClass;
-import org.hibernate.mapping.Selectable;
-import org.hibernate.mapping.SimpleValue;
-import org.hibernate.mapping.SingleTableSubclass;
-import org.hibernate.mapping.Subclass;
-import org.hibernate.mapping.UnionSubclass;
-import org.hibernate.mapping.Table;
-import org.hibernate.mapping.UniqueKey;
-import org.hibernate.mapping.Value;
-import org.hibernate.persister.entity.UnionSubclassEntityPersister;
-import org.hibernate.type.ForeignKeyDirection;
-import org.hibernate.type.IntegerType;
-import org.hibernate.type.LongType;
-import org.hibernate.type.StandardBasicTypes;
-import org.hibernate.type.TimestampType;
-import org.hibernate.type.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 
 /**
  * Handles the binding Grails domain classes and properties to the Hibernate runtime meta model.
@@ -119,7 +73,7 @@ public abstract class AbstractGrailsDomainBinder {
     protected static final String ENUM_TYPE_PROP = "type";
     protected static final String DEFAULT_ENUM_TYPE = "default";
 
-    protected final Logger LOG = LoggerFactory.getLogger(getClass());
+    protected Log LOG = LogFactory.getLog(getClass());
 
     protected final CollectionType CT = new CollectionType(null, this) {
         public Collection create(GrailsDomainClassProperty property, PersistentClass owner, String path, Mappings mappings, String sessionFactoryBeanName) {

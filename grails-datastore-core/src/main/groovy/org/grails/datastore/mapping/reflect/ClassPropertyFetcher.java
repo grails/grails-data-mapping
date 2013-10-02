@@ -23,8 +23,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Reads the properties of a class in an optimized manner avoiding exceptions.
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @SuppressWarnings("rawtypes")
 public class ClassPropertyFetcher {
-    private static final Logger LOG = LoggerFactory.getLogger(ClassPropertyFetcher.class);
+    private static final Log LOG = LogFactory.getLog(ClassPropertyFetcher.class);
 
     private final Class clazz;
     // static fetchers for this class, but also for all super classes with the property.

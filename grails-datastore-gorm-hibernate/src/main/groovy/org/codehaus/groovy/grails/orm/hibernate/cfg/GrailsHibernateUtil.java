@@ -19,35 +19,15 @@ import grails.util.GrailsWebUtil;
 import groovy.lang.GroovyObject;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
-
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass;
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.commons.GrailsClass;
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.codehaus.groovy.grails.commons.*;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateDomainClass;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTemplate;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.GroovyAwareJavassistProxyFactory;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.HibernateProxyHandler;
 import org.codehaus.groovy.grails.web.context.GrailsConfigUtils;
-import org.hibernate.Criteria;
-import org.hibernate.EntityMode;
-import org.hibernate.FetchMode;
-import org.hibernate.FlushMode;
-import org.hibernate.Hibernate;
-import org.hibernate.HibernateException;
-import org.hibernate.LockMode;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.criterion.Order;
 import org.hibernate.engine.EntityEntry;
 import org.hibernate.engine.SessionImplementor;
@@ -60,12 +40,16 @@ import org.hibernate.property.Setter;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.type.CompositeType;
 import org.hibernate.util.StringHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.orm.hibernate3.HibernateCallback;
+
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Utility methods for configuring Hibernate inside Grails.
@@ -74,7 +58,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
  * @since 0.4
  */
 public class GrailsHibernateUtil {
-    private static final Logger LOG = LoggerFactory.getLogger(GrailsHibernateUtil.class);
+    protected static final Log LOG = LogFactory.getLog(GrailsHibernateUtil.class);
 
     private static final String DYNAMIC_FILTER_ENABLER = "dynamicFilterEnabler";
 

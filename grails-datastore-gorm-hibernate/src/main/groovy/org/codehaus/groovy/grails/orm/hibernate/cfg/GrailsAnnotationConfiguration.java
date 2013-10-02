@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.AnnotationDomainClassArtefactHandler;
 import org.codehaus.groovy.grails.commons.ArtefactHandler;
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
@@ -33,8 +35,6 @@ import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.cfg.Mappings;
 import org.hibernate.cfg.NamingStrategy;
 import org.hibernate.engine.FilterDefinition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Allows configuring Grails' hibernate support to work in conjuntion with Hibernate's annotation
@@ -47,7 +47,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
 
     private static final long serialVersionUID = -7115087342689305517L;
 
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    protected static final Log LOG = LogFactory.getLog(GrailsAnnotationConfiguration.class);
 
     protected GrailsApplication grailsApplication;
     protected Set<GrailsDomainClass> domainClasses = new HashSet<GrailsDomainClass>();
@@ -123,8 +123,8 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
     public SessionFactory buildSessionFactory() throws HibernateException {
         // set the class loader to load Groovy classes
         if (grailsApplication != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("[GrailsAnnotationConfiguration] Setting context class loader to Grails GroovyClassLoader");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("[GrailsAnnotationConfiguration] Setting context class loader to Grails GroovyClassLoader");
             }
             Thread.currentThread().setContextClassLoader(grailsApplication.getClassLoader());
         }
@@ -150,8 +150,8 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         final Thread currentThread = Thread.currentThread();
         final ClassLoader originalContextLoader = currentThread.getContextClassLoader();
         if (!configLocked) {
-            if (log.isDebugEnabled()) {
-                log.debug("[GrailsAnnotationConfiguration] [" + domainClasses.size() +
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("[GrailsAnnotationConfiguration] [" + domainClasses.size() +
                           "] Grails domain classes to bind to persistence runtime");
             }
 
@@ -172,8 +172,8 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
                     continue;
                 }
 
-                if (log.isDebugEnabled()) {
-                    log.debug("[GrailsAnnotationConfiguration] Binding persistent class [" + fullClassName + "]");
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("[GrailsAnnotationConfiguration] Binding persistent class [" + fullClassName + "]");
                 }
 
                 Mapping m = binder.getMapping(domainClass);

@@ -15,34 +15,14 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate;
 
-import java.io.Serializable;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.sql.DataSource;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
-import org.hibernate.Criteria;
-import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
-import org.hibernate.JDBCException;
-import org.hibernate.LockMode;
-import org.hibernate.LockOptions;
-import org.hibernate.Query;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.hibernate.*;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.event.spi.EventSource;
 import org.hibernate.exception.GenericJDBCException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -53,9 +33,20 @@ import org.springframework.orm.hibernate4.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.Assert;
 
+import javax.sql.DataSource;
+import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public class GrailsHibernateTemplate implements IHibernateTemplate {
 
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Log LOG = LogFactory.getLog(GrailsHibernateTemplate.class);
 
     private boolean osivReadOnly;
     protected boolean exposeNativeSession = true;
@@ -160,7 +151,7 @@ protected boolean checkWriteOperations = true;
         Session session = getSession();
         boolean existingTransaction = isSessionTransactional(session);
         if (existingTransaction) {
-            logger.debug("Found thread-bound Session for HibernateTemplate");
+            LOG.debug("Found thread-bound Session for HibernateTemplate");
         }
 
         FlushMode previousFlushMode = null;
@@ -186,7 +177,7 @@ protected boolean checkWriteOperations = true;
         }
         finally {
             if (existingTransaction) {
-                logger.debug("Not closing pre-bound Hibernate Session after HibernateTemplate");
+                LOG.debug("Not closing pre-bound Hibernate Session after HibernateTemplate");
                 if (previousFlushMode != null) {
                     session.setFlushMode(previousFlushMode);
                 }
@@ -354,7 +345,6 @@ protected boolean checkWriteOperations = true;
      * transaction timeout.
      *
      * @param query the Query object to prepare
-     * @see SessionFactoryUtils#applyTransactionTimeout
      */
     protected void prepareQuery(Query query) {
         if (cacheQueries) {
@@ -374,7 +364,6 @@ protected boolean checkWriteOperations = true;
      * transaction timeout.
      *
      * @param criteria the Criteria object to prepare
-     * @see SessionFactoryUtils#applyTransactionTimeout
      */
     protected void prepareCriteria(Criteria criteria) {
         if (cacheQueries) {
@@ -509,7 +498,6 @@ protected boolean checkWriteOperations = true;
      * Set the flush behavior to one of the constants in this class. Default is
      * FLUSH_AUTO.
      *
-     * @see #setFlushModeName
      * @see #FLUSH_AUTO
      */
     public void setFlushMode(int flushMode) {
@@ -586,7 +574,7 @@ protected boolean checkWriteOperations = true;
 
     protected void flushIfNecessary(Session session, boolean existingTransaction) throws HibernateException {
         if (getFlushMode() == FLUSH_EAGER || (!existingTransaction && getFlushMode() != FLUSH_NEVER)) {
-            logger.debug("Eagerly flushing Hibernate session");
+            LOG.debug("Eagerly flushing Hibernate session");
             session.flush();
         }
     }

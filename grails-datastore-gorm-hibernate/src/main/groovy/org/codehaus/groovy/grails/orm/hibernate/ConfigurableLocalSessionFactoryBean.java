@@ -23,6 +23,8 @@ import java.util.Map;
 
 import javax.naming.NameNotFoundException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.DefaultGrailsDomainConfiguration;
@@ -64,8 +66,6 @@ import org.hibernate.event.RefreshEventListener;
 import org.hibernate.event.ReplicateEventListener;
 import org.hibernate.event.SaveOrUpdateEventListener;
 import org.hibernate.metadata.ClassMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -82,7 +82,7 @@ import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 public class ConfigurableLocalSessionFactoryBean extends
         LocalSessionFactoryBean implements ApplicationContextAware {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(ConfigurableLocalSessionFactoryBean.class);
+    protected static final Log LOG = LogFactory.getLog(ConfigurableLocalSessionFactoryBean.class);
     protected ClassLoader classLoader;
     protected GrailsApplication grailsApplication;
     protected Class<?> configClass;

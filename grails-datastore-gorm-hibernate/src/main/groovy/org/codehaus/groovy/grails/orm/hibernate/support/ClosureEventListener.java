@@ -16,20 +16,10 @@
 package org.codehaus.groovy.grails.orm.hibernate.support;
 
 import grails.validation.ValidationException;
-import groovy.lang.Closure;
-import groovy.lang.GroovySystem;
-import groovy.lang.MetaClass;
-import groovy.lang.MetaMethod;
-import groovy.lang.MetaProperty;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import groovy.lang.*;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder;
@@ -45,29 +35,17 @@ import org.hibernate.EntityMode;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.event.AbstractEvent;
-import org.hibernate.event.PostDeleteEvent;
-import org.hibernate.event.PostDeleteEventListener;
-import org.hibernate.event.PostInsertEvent;
-import org.hibernate.event.PostInsertEventListener;
-import org.hibernate.event.PostLoadEvent;
-import org.hibernate.event.PostLoadEventListener;
-import org.hibernate.event.PostUpdateEvent;
-import org.hibernate.event.PostUpdateEventListener;
-import org.hibernate.event.PreDeleteEvent;
-import org.hibernate.event.PreDeleteEventListener;
-import org.hibernate.event.PreInsertEvent;
-import org.hibernate.event.PreLoadEvent;
-import org.hibernate.event.PreLoadEventListener;
-import org.hibernate.event.PreUpdateEvent;
-import org.hibernate.event.PreUpdateEventListener;
-import org.hibernate.event.SaveOrUpdateEvent;
-import org.hibernate.event.SaveOrUpdateEventListener;
+import org.hibernate.event.*;
 import org.hibernate.persister.entity.EntityPersister;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.Errors;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>Invokes closure events on domain entities such as beforeInsert, beforeUpdate and beforeDelete.
@@ -88,7 +66,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                                              PreUpdateEventListener {
 
     private static final long serialVersionUID = 1;
-    private static final Logger log = LoggerFactory.getLogger(ClosureEventListener.class);
+    protected static final Log LOG = LogFactory.getLog(ClosureEventListener.class);
     private static final Object[] EMPTY_OBJECT_ARRAY = {};
 
     EventTriggerCaller saveOrUpdateCaller;
@@ -440,7 +418,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
             if (fieldval instanceof Closure) {
                 return resolveReturnValue(callClosure(entity, (Closure) fieldval));
             }
-            log.error("Field " + field + " is not Closure or method.");
+            LOG.error("Field " + field + " is not Closure or method.");
             return false;
         }
     }
@@ -461,7 +439,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
             if (fieldval instanceof Closure) {
                 return resolveReturnValue(callClosure(entity, (Closure) fieldval));
             }
-            log.error("Field " + metaProperty + " is not Closure.");
+            LOG.error("Field " + metaProperty + " is not Closure.");
             return false;
         }
     }

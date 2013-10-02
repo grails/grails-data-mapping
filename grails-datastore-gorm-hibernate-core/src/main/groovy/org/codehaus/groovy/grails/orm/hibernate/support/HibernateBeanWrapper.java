@@ -15,21 +15,21 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.support;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Hibernate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
+
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 
 /**
  * BeanWrapper implementaion that will not lazy initialize entity properties.
  */
 public class HibernateBeanWrapper extends BeanWrapperImpl {
 
-    private static final Logger log = LoggerFactory.getLogger(HibernateBeanWrapper.class);
+    private static final Log LOG = LogFactory.getLog(HibernateBeanWrapper.class);
 
     public HibernateBeanWrapper() {
         // default
@@ -69,7 +69,7 @@ public class HibernateBeanWrapper extends BeanWrapperImpl {
             }
         }
         catch (Exception e) {
-            log.error("Error checking Hibernate initialization on method " +
+            LOG.error("Error checking Hibernate initialization on method " +
                     method.getName() + " for class " + owner.getClass().getName(), e);
         }
         return null;

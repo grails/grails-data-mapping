@@ -15,23 +15,9 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.MappedSuperclass;
-
-import org.codehaus.groovy.grails.commons.AnnotationDomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.ArtefactHandler;
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.commons.GrailsClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.codehaus.groovy.grails.commons.*;
 import org.codehaus.groovy.grails.orm.hibernate.EventListenerIntegrator;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsSessionContext;
 import org.codehaus.groovy.grails.orm.hibernate.HibernateEventListeners;
@@ -39,12 +25,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.SessionFactory;
 import org.hibernate.SessionFactoryObserver;
-import org.hibernate.cfg.AvailableSettings;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
-import org.hibernate.cfg.ImprovedNamingStrategy;
-import org.hibernate.cfg.Mappings;
-import org.hibernate.cfg.NamingStrategy;
+import org.hibernate.cfg.*;
 import org.hibernate.engine.spi.FilterDefinition;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.internal.util.config.ConfigurationHelper;
@@ -54,8 +35,6 @@ import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.hibernate.type.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -66,6 +45,15 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.TypeFilter;
 import org.springframework.util.ClassUtils;
+
+import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.MappedSuperclass;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Allows configuring Grails' hibernate support to work in conjuntion with Hibernate's annotation
@@ -78,7 +66,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
 
     private static final long serialVersionUID = -7115087342689305517L;
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private static final Log LOG = LogFactory.getLog(GrailsAnnotationConfiguration.class);
 
     private GrailsApplication grailsApplication;
     private Set<GrailsDomainClass> domainClasses = new HashSet<GrailsDomainClass>();
@@ -147,7 +135,8 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         final Thread currentThread = Thread.currentThread();
         final ClassLoader originalContextLoader = currentThread.getContextClassLoader();
         if (!configLocked) {
-            log.debug("[GrailsAnnotationConfiguration] [{}] Grails domain classes to bind to persistence runtime", domainClasses.size());
+            if(LOG.isDebugEnabled())
+                LOG.debug("[GrailsAnnotationConfiguration] ["+domainClasses.size()+"] Grails domain classes to bind to persistence runtime");
 
             // do Grails class configuration
             DefaultGrailsDomainConfiguration.configureDomainBinder(grailsApplication, domainClasses);
@@ -166,7 +155,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
                     continue;
                 }
 
-                log.debug("[GrailsAnnotationConfiguration] Binding persistent class [{}]", fullClassName);
+                LOG.debug("[GrailsAnnotationConfiguration] Binding persistent class ["+fullClassName+"]");
 
                 Mapping m = binder.getMapping(domainClass);
                 mappings.setAutoImport(m == null || m.getAutoImport());
@@ -308,7 +297,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
 
         // set the class loader to load Groovy classes
         if (grailsApplication != null) {
-            log.debug("[GrailsAnnotationConfiguration] Setting context class loader to Grails GroovyClassLoader");
+            LOG.debug("[GrailsAnnotationConfiguration] Setting context class loader to Grails GroovyClassLoader");
             Thread.currentThread().setContextClassLoader(grailsApplication.getClassLoader());
         }
 

@@ -17,15 +17,8 @@ package org.codehaus.groovy.grails.orm.hibernate;
 
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClassRegistry;
-
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.naming.NameNotFoundException;
-import javax.sql.DataSource;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration;
@@ -37,8 +30,6 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.cfg.NamingStrategy;
 import org.hibernate.metadata.ClassMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
@@ -56,6 +47,13 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
 import org.springframework.util.Assert;
+
+import javax.naming.NameNotFoundException;
+import javax.sql.DataSource;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * A SessionFactory bean that allows the configuration class to
@@ -85,7 +83,7 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
     private GrailsAnnotationConfiguration configuration;
     private SessionFactory sessionFactory;
 
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private static final Log LOG = LogFactory.getLog(ConfigurableLocalSessionFactoryBean.class);
     protected GrailsApplication grailsApplication;
     protected ClassLoader classLoader;
     protected Class<?> configClass;
@@ -370,7 +368,6 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
      * and associated listener interfaces.
      * @param eventListeners Map with listener type Strings as keys and
      * listener objects as values
-     * @see org.hibernate.cfg.Configuration#setListener(String, Object)
      */
     public void setEventListeners(Map<String, Object> eventListeners) {
         this.eventListeners = eventListeners;
@@ -500,8 +497,8 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
         catch (HibernateException e) {
             Throwable cause = e.getCause();
             if (isCacheConfigurationError(cause)) {
-                log.error("There was an error configuring the Hibernate second level cache: " + getCauseMessage(e));
-                log.error("This is normally due to one of two reasons. Either you have incorrectly specified the cache " +
+                LOG.error("There was an error configuring the Hibernate second level cache: " + getCauseMessage(e));
+                LOG.error("This is normally due to one of two reasons. Either you have incorrectly specified the cache " +
                      "provider class name in [DataSource.groovy] or you do not have the cache provider on your classpath " +
                      "(eg. runtime (\"net.sf.ehcache:ehcache:1.6.1\"))");
                 if (grails.util.Environment.isDevelopmentMode()) {
@@ -548,7 +545,7 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
         }
         catch (HibernateException e) {
             if (e.getCause() instanceof NameNotFoundException) {
-                log.debug(e.getCause().getMessage(), e);
+                LOG.debug(e.getCause().getMessage(), e);
             }
             else {
                 throw e;

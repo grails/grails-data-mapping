@@ -17,19 +17,11 @@ package org.codehaus.groovy.grails.orm.hibernate.proxy;
 
 import grails.util.CollectionUtils;
 import groovy.lang.GroovyObject;
-
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
-
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.HibernateUtils;
 import org.grails.datastore.mapping.proxy.GroovyObjectMethodHandler;
 import org.hibernate.HibernateException;
@@ -39,7 +31,13 @@ import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.proxy.pojo.BasicLazyInitializer;
 import org.hibernate.proxy.pojo.javassist.SerializableProxy;
 import org.hibernate.type.CompositeType;
-import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Graeme Rocher
@@ -142,7 +140,7 @@ public class GroovyAwareJavassistLazyInitializer extends BasicLazyInitializer im
             return proxyClass;
         }
         catch (Throwable t) {
-            LoggerFactory.getLogger(BasicLazyInitializer.class).error(
+            LogFactory.getLog(BasicLazyInitializer.class).error(
                     "Javassist Enhancement failed: " + persistentClass.getName(), t);
             throw new HibernateException("Javassist Enhancement failed: " + persistentClass.getName(), t);
         }

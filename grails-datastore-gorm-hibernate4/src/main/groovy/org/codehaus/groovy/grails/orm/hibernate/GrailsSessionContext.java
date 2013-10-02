@@ -15,13 +15,8 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
-import javax.transaction.Status;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -31,8 +26,6 @@ import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.internal.util.ReflectHelper;
 import org.hibernate.service.jta.platform.spi.JtaPlatform;
 import org.hibernate.service.spi.ServiceBinding;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.orm.hibernate4.SessionHolder;
 import org.springframework.orm.hibernate4.SpringJtaSessionContext;
@@ -40,6 +33,12 @@ import org.springframework.transaction.jta.SpringJtaSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.ReflectionUtils;
+
+import javax.transaction.Status;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Based on org.springframework.orm.hibernate4.SpringSessionContext.
@@ -51,7 +50,7 @@ public class GrailsSessionContext implements CurrentSessionContext {
 
     private static final long serialVersionUID = 1;
 
-    protected final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Log LOG = LogFactory.getLog(GrailsSessionContext.class);
 
     protected final SessionFactoryImplementor sessionFactory;
     protected CurrentSessionContext jtaSessionContext;
@@ -119,7 +118,7 @@ public class GrailsSessionContext implements CurrentSessionContext {
     }
 
     private Session createSession(Object resource) {
-        log.debug("Opening Hibernate Session");
+        LOG.debug("Opening Hibernate Session");
 
         SessionHolder sessionHolder = (SessionHolder) resource;
 
@@ -129,7 +128,7 @@ public class GrailsSessionContext implements CurrentSessionContext {
         // Thread object will get removed by synchronization at transaction completion.
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
            // We're within a Spring-managed transaction, possibly from JtaTransactionManager.
-           log.debug("Registering Spring transaction synchronization for new Hibernate Session");
+           LOG.debug("Registering Spring transaction synchronization for new Hibernate Session");
            SessionHolder holderToUse = sessionHolder;
            if (holderToUse == null) {
               holderToUse = new SessionHolder(session);
@@ -183,7 +182,7 @@ public class GrailsSessionContext implements CurrentSessionContext {
                 return;
             }
 
-            log.debug("Registering JTA transaction synchronization for new Hibernate Session");
+            LOG.debug("Registering JTA transaction synchronization for new Hibernate Session");
             SessionHolder holderToUse = sessionHolder;
             // Register JTA Transaction with existing SessionHolder.
             // Create a new SessionHolder if none existed before.

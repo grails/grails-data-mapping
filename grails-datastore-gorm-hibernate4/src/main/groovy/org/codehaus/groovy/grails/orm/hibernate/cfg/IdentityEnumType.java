@@ -16,6 +16,15 @@
 package org.codehaus.groovy.grails.orm.hibernate.cfg;
 
 import grails.util.GrailsWebUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.HibernateException;
+import org.hibernate.MappingException;
+import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.type.AbstractStandardBasicType;
+import org.hibernate.type.TypeResolver;
+import org.hibernate.usertype.ParameterizedType;
+import org.hibernate.usertype.UserType;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -24,21 +33,7 @@ import java.lang.reflect.Modifier;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import org.hibernate.HibernateException;
-import org.hibernate.MappingException;
-import org.hibernate.engine.spi.SessionImplementor;
-import org.hibernate.type.AbstractStandardBasicType;
-import org.hibernate.type.TypeResolver;
-import org.hibernate.usertype.ParameterizedType;
-import org.hibernate.usertype.UserType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.*;
 
 /**
  * Hibernate Usertype that enum values by their ID.
@@ -50,7 +45,7 @@ public class IdentityEnumType implements UserType, ParameterizedType, Serializab
 
     private static final long serialVersionUID = -6625622185856547501L;
 
-    private static final Logger LOG = LoggerFactory.getLogger(IdentityEnumType.class);
+    private static final Log LOG = LogFactory.getLog(IdentityEnumType.class);
 
     private static TypeResolver typeResolver = new TypeResolver();
     public static final String ENUM_ID_ACCESSOR = "getId";

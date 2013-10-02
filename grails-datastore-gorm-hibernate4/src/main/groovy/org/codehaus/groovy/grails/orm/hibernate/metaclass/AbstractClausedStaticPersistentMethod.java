@@ -20,6 +20,18 @@ import grails.orm.RlikeExpression;
 import groovy.lang.Closure;
 import groovy.lang.MissingMethodException;
 import groovy.lang.Range;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.codehaus.groovy.grails.commons.*;
+import org.hibernate.Criteria;
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.CriteriaQuery;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.engine.spi.TypedValue;
+import org.springframework.beans.TypeMismatchException;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,30 +40,13 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
-import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
-import org.hibernate.criterion.CriteriaQuery;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.engine.spi.TypedValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.TypeMismatchException;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.util.Assert;
-
 /**
  * @author Graeme Rocher
  * @since 31-Aug-2005
  */
 public abstract class AbstractClausedStaticPersistentMethod extends AbstractStaticPersistentMethod {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractClausedStaticPersistentMethod.class);
+    private static final Log LOG = LogFactory.getLog(AbstractClausedStaticPersistentMethod.class);
 
     /**
      * @author Graeme Rocher

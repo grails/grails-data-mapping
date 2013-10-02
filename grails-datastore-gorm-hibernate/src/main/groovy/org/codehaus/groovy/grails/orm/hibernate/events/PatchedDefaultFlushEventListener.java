@@ -14,11 +14,11 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.events;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.event.EventSource;
 import org.hibernate.event.def.DefaultFlushEventListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Patches Hibernate to prevent this issue
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public class PatchedDefaultFlushEventListener extends DefaultFlushEventListener{
 
     private static final long serialVersionUID = -7413770767669684078L;
-    private static final Logger LOG = LoggerFactory.getLogger(PatchedDefaultFlushEventListener.class);
+    protected static final Log LOG = LogFactory.getLog(PatchedDefaultFlushEventListener.class);
 
     @Override
     protected void performExecutions(EventSource session) throws HibernateException {

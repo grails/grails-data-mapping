@@ -16,12 +16,8 @@
 package org.codehaus.groovy.grails.orm.hibernate.support;
 
 import grails.util.CollectionUtils;
-
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.Map;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore;
 import org.codehaus.groovy.grails.orm.hibernate.SessionFactoryProxy;
 import org.codehaus.groovy.grails.orm.hibernate.events.SaveOrUpdateEventListener;
@@ -32,21 +28,20 @@ import org.hibernate.LockMode;
 import org.hibernate.SessionFactory;
 import org.hibernate.action.EntityIdentityInsertAction;
 import org.hibernate.action.EntityInsertAction;
-import org.hibernate.engine.EntityKey;
-import org.hibernate.engine.ForeignKeys;
-import org.hibernate.engine.Nullability;
-import org.hibernate.engine.Status;
-import org.hibernate.engine.Versioning;
+import org.hibernate.engine.*;
 import org.hibernate.event.*;
 import org.hibernate.event.def.AbstractSaveEventListener;
 import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.type.Type;
 import org.hibernate.type.TypeHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.ReflectionUtils;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Listens for Hibernate events and publishes corresponding Datastore events.
@@ -67,7 +62,7 @@ public class ClosureEventTriggeringInterceptor extends SaveOrUpdateEventListener
                   PreUpdateEventListener,
                   PreInsertEventListener {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    protected static final Log LOG = LogFactory.getLog(ClosureEventTriggeringInterceptor.class);
     private static final long serialVersionUID = 1;
 
     public static final Collection<String> IGNORED = CollectionUtils.newSet("version", "id");
@@ -216,7 +211,7 @@ public class ClosureEventTriggeringInterceptor extends SaveOrUpdateEventListener
         cascadeBeforeSave(source, persister, entity, anything);
 
         if (useIdentityColumn && !shouldDelayIdentityInserts) {
-            log.trace("executing insertions");
+            LOG.trace("executing insertions");
             source.getActionQueue().executeInserts();
         }
 
@@ -247,7 +242,7 @@ public class ClosureEventTriggeringInterceptor extends SaveOrUpdateEventListener
             EntityIdentityInsertAction insert = new EntityIdentityInsertAction(
                     values, entity, persister, source, shouldDelayIdentityInserts);
             if (!shouldDelayIdentityInserts) {
-                log.debug("executing identity-insert immediately");
+                LOG.debug("executing identity-insert immediately");
                 source.getActionQueue().execute(insert);
                 id = insert.getGeneratedId();
                 if (id != null) {
@@ -257,7 +252,7 @@ public class ClosureEventTriggeringInterceptor extends SaveOrUpdateEventListener
                 }
             }
             else {
-                log.debug("delaying identity-insert due to no transaction in progress");
+                LOG.debug("delaying identity-insert due to no transaction in progress");
                 source.getActionQueue().addAction(insert);
                 key = insert.getDelayedEntityKey();
             }
