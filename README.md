@@ -10,7 +10,7 @@ Getting Started
 ---
 
 For further information on the project see the comprehensive [developer guide][Developer Guide].
-[Developer Guide]: http://springsource.github.com/grails-data-mapping/
+[Developer Guide]: http://projects.spring.io/grails-data-mapping/manual/index.html
 	
 License
 ---
