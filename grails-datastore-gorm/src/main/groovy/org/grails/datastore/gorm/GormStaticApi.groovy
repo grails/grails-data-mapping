@@ -20,6 +20,7 @@ import grails.gorm.PagedResultList
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 
+import org.codehaus.groovy.grails.orm.support.GrailsTransactionTemplate
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.datastore.gorm.async.GormAsyncStaticApi
 import org.grails.datastore.gorm.finders.DynamicFinder
@@ -40,8 +41,6 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory
 import org.springframework.transaction.PlatformTransactionManager
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.transaction.support.DefaultTransactionDefinition
-import org.springframework.transaction.support.TransactionCallback
-import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.util.Assert
 import org.springframework.validation.Errors
 
@@ -684,7 +683,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
             return
         }
 
-        new TransactionTemplate(transactionManager).execute(callable as TransactionCallback)
+        new GrailsTransactionTemplate(transactionManager).execute(callable)
     }
 
     /**
@@ -700,9 +699,9 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
             return
         }
 
-        def transactionTemplate = new TransactionTemplate(transactionManager,
+        def transactionTemplate = new GrailsTransactionTemplate(transactionManager,
                 new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW))
-        transactionTemplate.execute(callable as TransactionCallback)
+        transactionTemplate.execute(callable)
     }
 
     /**
@@ -718,7 +717,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
             return
         }
 
-        new TransactionTemplate(transactionManager, definition).execute(callable as TransactionCallback)
+        new GrailsTransactionTemplate(transactionManager, definition).execute(callable)
     }
 
     /**
