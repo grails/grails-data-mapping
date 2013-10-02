@@ -15,8 +15,6 @@
 package org.grails.datastore.gorm
 
 import grails.util.GrailsNameUtils
-import org.grails.datastore.mapping.engine.EntityPersister
-import org.grails.datastore.mapping.model.types.ToOne
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -24,6 +22,7 @@ import java.lang.reflect.Modifier
 import org.codehaus.groovy.grails.commons.GrailsMetaClassUtils
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.codehaus.groovy.runtime.metaclass.ClosureStaticMetaMethod
+import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import org.grails.datastore.gorm.finders.CountByFinder
 import org.grails.datastore.gorm.finders.FindAllByBooleanFinder
 import org.grails.datastore.gorm.finders.FindAllByFinder
@@ -43,9 +42,10 @@ import org.grails.datastore.mapping.model.types.Basic
 import org.grails.datastore.mapping.model.types.EmbeddedCollection
 import org.grails.datastore.mapping.model.types.ManyToMany
 import org.grails.datastore.mapping.model.types.OneToMany
+import org.grails.datastore.mapping.model.types.ToOne
+import org.grails.datastore.mapping.proxy.ProxyFactory
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.transaction.PlatformTransactionManager
-import org.grails.datastore.mapping.proxy.ProxyFactory
 
 /**
  * Enhances a class with GORM behavior
@@ -126,18 +126,27 @@ class GormEnhancer {
                 Class[] parameterTypes = method.parameterTypes
 
                 if (parameterTypes) {
-                    parameterTypes = parameterTypes.length == 1 ? [] : parameterTypes[1..-1]
-                    
-                    if(!mc.hasMetaMethod(methodName, parameterTypes)) {
+                    parameterTypes = parameterTypes.length == 1 ? []: parameterTypes[1..-1]
+
+                    boolean methodExists = true
+                    try {
+                        if(!mc.hasMetaMethod(methodName, parameterTypes)) {
+                            methodExists = false
+                        }
+                    } catch (MethodSelectionException mse) {
+                        // ignore, the metamethod already exists with multiple signatures
+                    }
+
+                    if(!methodExists) {
                         // use fake object just so we have the right method signature
-    
+
                         final tooCall = new InstanceMethodInvokingClosure(apiProvider, methodName, parameterTypes)
                         def pt = parameterTypes
                         // Hack to workaround http://jira.codehaus.org/browse/GROOVY-4720
                         final closureMethod = new ClosureStaticMetaMethod(methodName, cls, tooCall, pt) {
-                            @Override
-                            int getModifiers() { Modifier.PUBLIC }
-                        }
+                                    @Override
+                                    int getModifiers() { Modifier.PUBLIC }
+                                }
                         mc.registerInstanceMethod(closureMethod)
                     }
                 }
