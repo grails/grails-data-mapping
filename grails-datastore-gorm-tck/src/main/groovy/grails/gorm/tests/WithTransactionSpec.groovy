@@ -1,5 +1,7 @@
 package grails.gorm.tests
 
+import groovy.transform.InheritConstructors
+
 /**
  * Transaction tests.
  */
@@ -40,14 +42,13 @@ class WithTransactionSpec extends GormDatastoreSpec {
             results.size() == 0
     }
 
-    void "Test rollback transaction with Exception"() {
+    void "Test rollback transaction with Runtime Exception"() {
         given:
             def ex
             try {
                 TestEntity.withNewTransaction { status ->
                     new TestEntity(name:"Bob", age:50, child:new ChildEntity(name:"Bob Child")).save()
                     throw new RuntimeException("bad")
-                    new TestEntity(name:"Fred", age:45, child:new ChildEntity(name:"Fred Child")).save()
                 }
             }
             catch (e) {
@@ -64,4 +65,31 @@ class WithTransactionSpec extends GormDatastoreSpec {
             ex instanceof RuntimeException
             ex.message == 'bad'
     }
+
+    void "Test rollback transaction with Exception"() {
+        given:
+            def ex
+            try {
+                TestEntity.withNewTransaction { status ->
+                    new TestEntity(name:"Bob", age:50, child:new ChildEntity(name:"Bob Child")).save()
+                    throw new TestCheckedException("bad")
+                }
+            }
+            catch (e) {
+                ex = e
+            }
+
+        when:
+            int count = TestEntity.count()
+            def results = TestEntity.list()
+
+        then:
+            count == 1
+            results.size() == 1
+            ex instanceof TestCheckedException
+            ex.message == 'bad'
+    }
 }
+
+@InheritConstructors
+class TestCheckedException extends Exception {}
