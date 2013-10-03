@@ -166,10 +166,10 @@ class GormInstanceApi<D> extends AbstractGormApi<D> {
     protected D doSave(D instance, Map params, Session session, boolean isInsert = false) {
         boolean hasErrors = false
         boolean validate = params?.containsKey("validate") ? params.validate : true
-        List<MetaMethod> validateMethods = instance.respondsTo('validate')
-        if (validateMethods && validate) {
+        MetaMethod validateMethod = instance.respondsTo('validate', InvokerHelper.EMPTY_ARGS).find { MetaMethod mm -> mm.parameterTypes.length == 0 && !mm.vargsMethod}
+        if (validateMethod && validate) {
             session.datastore.setSkipValidation(instance, false)
-            hasErrors = !validateMethods.get(0).invoke(instance, InvokerHelper.EMPTY_ARGS)
+            hasErrors = !validateMethod.invoke(instance, InvokerHelper.EMPTY_ARGS)
         }
         else {
             session.datastore.setSkipValidation(instance, true)
