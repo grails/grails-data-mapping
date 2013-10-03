@@ -75,17 +75,18 @@ class Neo4jEntityPersister extends EntityPersister {
         } finally {
             iterator.close()
         }
-
     }
 
     @Override
     protected void deleteEntity(PersistentEntity pe, Object obj) {
-        throw new UnsupportedOperationException()
+        executionEngine.execute("start n=node({id}) match n-[r?]-m delete r,n", [id: obj["id"]])
     }
 
     @Override
     protected void deleteEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objects) {
-        throw new UnsupportedOperationException()
+        for (obj in objects) {
+            deleteEntity(pe, obj)
+        }
     }
 
     @Override

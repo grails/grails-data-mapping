@@ -78,15 +78,6 @@ RETURN $returnColumns"""
                     row[it]
                 }
             }.flatten() as List
-            /*for (Map<String, Object> row in executionResult) {
-
-            }
-            ResourceIterator<Map<String, Object>> iterator = executionResult.iterator()
-            Map firstRow = (Map) (iterator.next())
-            assert !iterator.hasNext()
-            executionResult.columns().collect {
-                firstRow[it]
-            }*/
         }
     }
 
