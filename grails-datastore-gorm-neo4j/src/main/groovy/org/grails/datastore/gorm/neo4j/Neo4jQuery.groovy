@@ -19,6 +19,7 @@ import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.Query
+import static org.grails.datastore.mapping.query.Query.*
 import org.neo4j.cypher.javacompat.ExecutionEngine
 
 /**
@@ -35,13 +36,36 @@ class Neo4jQuery extends Query {
     }
 
     @Override
-    protected List executeQuery(PersistentEntity entity, Query.Junction criteria) {
+    protected List executeQuery(PersistentEntity entity, Junction criteria) {
 
         def returnColumns = Neo4jUtils.cypherReturnColumnsForType(entity)
-        executionEngine.execute("""MATCH (n:$entity.discriminator)
+        def params = [:] as Map<String,Object>
+        def conditions = buildConditions(criteria, params)
+        def cypher = """MATCH (n:$entity.discriminator) ${conditions ? "WHERE " + conditions : " "}
 RETURN $returnColumns
-""").collect { Map map ->
+"""
+        log.debug "running cypher : $cypher"
+        executionEngine.execute(cypher, params).collect { Map map ->
             Neo4jUtils.unmarshall(map, entity)
+        }
+    }
+
+    def buildConditions(Criterion criterion, Map params) {
+        switch (criterion) {
+            case Equals:
+                def pnc = ((PropertyCriterion)criterion)
+                params[pnc.property] = Neo4jUtils.mapToAllowedNeo4jType(pnc.value, entity.mappingContext)
+
+//                    entity.mappingContext.conversionService.convert(pnc.value, entity.getPropertyByName(pnc.property).type)
+                return "n.$pnc.property={$pnc.property}"
+                break
+            case Conjunction:
+                def inner = ((Junction)criterion).criteria.collect { Criterion it -> buildConditions(it, params)}.join( " AND ")
+                return inner ? "( $inner )" : inner
+                break
+
+            default:
+                throw new UnsupportedOperationException()
         }
     }
 

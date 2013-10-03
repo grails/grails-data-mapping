@@ -61,7 +61,8 @@ class Neo4jEntityPersister extends EntityPersister {
         def simpleProperties = pe.persistentProperties
                 .findAll { it instanceof Simple && obj[it.name] != null }
                 .collectEntries { PersistentProperty it ->
-                    [(it.name): obj[it.name]]
+
+                    [(it.name): Neo4jUtils.mapToAllowedNeo4jType(obj[it.name], mappingContext)]
                 }
 
         assert obj["id"] == null

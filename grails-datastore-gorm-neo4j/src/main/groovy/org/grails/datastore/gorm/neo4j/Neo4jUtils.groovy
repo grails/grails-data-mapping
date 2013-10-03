@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.neo4j
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.*
@@ -76,10 +77,9 @@ abstract class Neo4jUtils {
     static def unmarshall(Map<String, Object> map, PersistentEntity entity) {
         def domainObject = entity.javaClass.newInstance()
         for (PersistentProperty property in entity.persistentProperties) {
-
             switch (property) {
                 case Simple:
-                    domainObject[property.name] = map[property.name]
+                    domainObject[property.name] = entity.mappingContext.conversionService.convert(map[property.name], property.type)
                     break
 
                 case OneToOne:
@@ -99,6 +99,20 @@ abstract class Neo4jUtils {
             }
         }
         domainObject
+    }
+
+    static def mapToAllowedNeo4jType(Object value, MappingContext mappingContext) {
+        switch (value.class) {
+            case String:
+            case Number:
+            case Boolean:
+                //pass
+                break
+            default:
+                log.info "non special type ${value.class}"
+                value = mappingContext.conversionService.convert(value, String)
+        }
+        value
     }
 
 
