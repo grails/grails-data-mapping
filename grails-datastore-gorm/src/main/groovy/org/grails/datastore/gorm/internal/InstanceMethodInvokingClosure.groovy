@@ -14,29 +14,39 @@
  */
 package org.grails.datastore.gorm.internal
 
+import groovy.transform.CompileStatic
+
+import org.apache.commons.lang.ArrayUtils
+
 /**
  * Not public API. Used by GormEnhancer
  */
 @SuppressWarnings("rawtypes")
+@CompileStatic
 class InstanceMethodInvokingClosure extends Closure {
     private String methodName
     private apiDelegate
     private Class[] parameterTypes
-
-    InstanceMethodInvokingClosure(apiDelegate, String methodName, Class[] parameterTypes) {
+    private MetaMethod metaMethod
+    
+    InstanceMethodInvokingClosure(apiDelegate, Class<?> persistentClass, String methodName, Class[] parameterTypes) {
         super(apiDelegate, apiDelegate)
         this.apiDelegate = apiDelegate
         this.methodName = methodName
         this.parameterTypes = parameterTypes
+        Class[] metaMethodParams = ([persistentClass] + (parameterTypes as List)) as Class[]
+        this.metaMethod = apiDelegate.getMetaClass().respondsTo(apiDelegate, methodName, metaMethodParams).find{it}
     }
 
     @Override
     Object call(Object[] args) {
-        apiDelegate."$methodName"(delegate, *args)
+        def delegateArg = Collections.singletonList(delegate).toArray()
+        def arguments = args ? ArrayUtils.addAll(delegateArg, args) : delegateArg
+        metaMethod.invoke(apiDelegate, arguments)
     }
 
     Object doCall(Object[] args) {
-        apiDelegate."$methodName"(delegate, *args)
+        call(args)
     }
 
     @Override

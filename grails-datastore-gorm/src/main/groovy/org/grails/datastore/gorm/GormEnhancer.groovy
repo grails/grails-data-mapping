@@ -142,7 +142,7 @@ class GormEnhancer {
                     if(!methodExists) {
                         // use fake object just so we have the right method signature
 
-                        final tooCall = new InstanceMethodInvokingClosure(apiProvider, methodName, parameterTypes)
+                        final tooCall = new InstanceMethodInvokingClosure(apiProvider, cls, methodName, parameterTypes)
                         def pt = parameterTypes
                         // Hack to workaround http://jira.codehaus.org/browse/GROOVY-4720
                         final closureMethod = new ClosureStaticMetaMethod(methodName, cls, tooCall, pt) {
