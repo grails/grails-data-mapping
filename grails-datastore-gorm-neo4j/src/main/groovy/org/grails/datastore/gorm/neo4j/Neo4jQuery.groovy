@@ -19,6 +19,10 @@ import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.Query
+import org.neo4j.cypher.javacompat.ExecutionResult
+import org.neo4j.graphdb.ResourceIterator
+import org.neo4j.helpers.collection.IteratorUtil
+
 import static org.grails.datastore.mapping.query.Query.*
 import org.neo4j.cypher.javacompat.ExecutionEngine
 
@@ -38,29 +42,130 @@ class Neo4jQuery extends Query {
     @Override
     protected List executeQuery(PersistentEntity entity, Junction criteria) {
 
-        def returnColumns = Neo4jUtils.cypherReturnColumnsForType(entity)
+        def returnColumns = buildReturnColumns(entity)
         def params = [:] as Map<String,Object>
         def conditions = buildConditions(criteria, params)
         def cypher = """MATCH (n:$entity.discriminator) ${conditions ? "WHERE " + conditions : " "}
-RETURN $returnColumns
-"""
-        log.debug "running cypher : $cypher"
-        executionEngine.execute(cypher, params).collect { Map map ->
-            Neo4jUtils.unmarshall(map, entity)
+RETURN $returnColumns"""
+
+        if (!orderBy.empty) {
+            cypher += " ORDER BY "
+            cypher += orderBy.collect { Order order -> "n.${order.property} $order.direction" }.join(", ")
+        }
+
+        if (offset!=0) {
+            cypher += " SKIP {__skip__}"
+            params["__skip__"] = offset
+        }
+
+        if (max!=-1) {
+            cypher += " LIMIT {__limit__}"
+            params["__limit__"] = max
+        }
+
+        log.info "running cypher : $cypher"
+        log.info "   with params : $params"
+
+        ExecutionResult executionResult = executionEngine.execute(cypher, params)
+        if (projections.projectionList.empty) {
+            return executionResult.collect { Map map ->
+                Neo4jUtils.unmarshall(map, entity)
+            }
+        } else {
+
+            executionResult.collect { Map<String, Object> row ->
+                executionResult.columns().collect {
+                    row[it]
+                }
+            }.flatten() as List
+            /*for (Map<String, Object> row in executionResult) {
+
+            }
+            ResourceIterator<Map<String, Object>> iterator = executionResult.iterator()
+            Map firstRow = (Map) (iterator.next())
+            assert !iterator.hasNext()
+            executionResult.columns().collect {
+                firstRow[it]
+            }*/
+        }
+    }
+
+    def buildReturnColumns(PersistentEntity entity) {
+        if (projections.projectionList.empty) {
+            Neo4jUtils.cypherReturnColumnsForType(entity)
+        } else {
+            projections.projectionList
+                    .collect { Projection projection -> buildProjection(projection) }
+                    .join(", ")
+        }
+    }
+
+    def buildProjection(Projection projection) {
+        switch (projection) {
+            case CountProjection:
+                return "count(*)"
+                break
+            case CountDistinctProjection:
+                def propertyName =  ((PropertyProjection)projection).propertyName
+                return "count( distinct n.${propertyName})"
+                break
+            case MinProjection:
+                def propertyName =  ((PropertyProjection)projection).propertyName
+                return "min(n.${propertyName})"
+                break
+            case MaxProjection:
+                def propertyName = ((PropertyProjection) projection).propertyName
+                return "max(n.${propertyName})"
+                break
+            case PropertyProjection:
+                def propertyName = ((PropertyProjection) projection).propertyName
+                return "n.${propertyName}"
+                break
+
+            default:
+                throw new UnsupportedOperationException("projection ${projection.class}")
         }
     }
 
     def buildConditions(Criterion criterion, Map params) {
+
         switch (criterion) {
-            case Equals:
+
+            case PropertyCriterion:
                 def pnc = ((PropertyCriterion)criterion)
                 params[pnc.property] = Neo4jUtils.mapToAllowedNeo4jType(pnc.value, entity.mappingContext)
+                def rhs
+                def lhs
+                def operator
 
-//                    entity.mappingContext.conversionService.convert(pnc.value, entity.getPropertyByName(pnc.property).type)
-                return "n.$pnc.property={$pnc.property}"
+                switch (pnc) {
+                    case Equals:
+                        lhs = "n.$pnc.property"
+                        operator = "="
+                        rhs = "{$pnc.property}"
+                        break
+                    case IdEquals:
+                        lhs = "id(n)"
+                        operator = "="
+                        rhs = "{$pnc.property}"
+                        break
+                    case Like:
+                        lhs = "n.$pnc.property"
+                        operator = "=~"
+                        rhs = "{$pnc.property}"
+                        params[pnc.property] = pnc.value.toString().replaceAll("%", ".*")
+                        break
+                    default:
+                        throw new UnsupportedOperationException()
+                }
+
+                return "$lhs$operator$rhs"
                 break
             case Conjunction:
-                def inner = ((Junction)criterion).criteria.collect { Criterion it -> buildConditions(it, params)}.join( " AND ")
+            case Disjunction:
+                def inner = ((Junction)criterion).criteria
+                        .collect { Criterion it -> buildConditions(it, params)}
+                        .join( criterion instanceof Conjunction ? ' AND ' : ' OR ')
                 return inner ? "( $inner )" : inner
                 break
 

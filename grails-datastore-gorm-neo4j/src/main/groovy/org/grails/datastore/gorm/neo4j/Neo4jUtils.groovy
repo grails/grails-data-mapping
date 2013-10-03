@@ -106,11 +106,26 @@ abstract class Neo4jUtils {
             case String:
             case Long:
             case Float:
+            case Integer:
             case Double:
             case Short:
             case Byte:
             case Boolean:
+            case byte:
+            case short:
+            case int:
+            case long:
+            case float:
+            case double:
+            case boolean :
             case byte[]:
+            case int[]:
+            case short[]:
+            case long[]:
+            case float[]:
+            case double[]:
+            case boolean[]:
+            case String[]:
                 //pass
                 break
 
