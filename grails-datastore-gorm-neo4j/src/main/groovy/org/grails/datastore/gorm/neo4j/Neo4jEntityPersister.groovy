@@ -1,6 +1,7 @@
 package org.grails.datastore.gorm.neo4j
 
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.model.MappingContext
@@ -18,6 +19,7 @@ import org.springframework.context.ApplicationEventPublisher
  */
 @CompileStatic
 @SuppressWarnings("unchecked")
+@Slf4j
 class Neo4jEntityPersister extends EntityPersister {
 
     Neo4jEntityPersister(MappingContext mappingContext, PersistentEntity entity, Session session, ApplicationEventPublisher publisher) {
@@ -42,10 +44,10 @@ class Neo4jEntityPersister extends EntityPersister {
     @Override
     protected Object retrieveEntity(PersistentEntity pe, Serializable key) {
 
-        ResourceIterator<Map<String,Object>> iterator = executionEngine.execute("start n=node({key}) return n", [key: key] as Map<String,Object>).iterator()
+        ResourceIterator<Map<String,Object>> iterator = executionEngine.execute("start n=node({key}) return ${Neo4jUtils.cypherReturnColumnsForType(pe)}", [key: key] as Map<String,Object>).iterator()
         try {
             assert iterator.hasNext()
-            throw new UnsupportedOperationException()
+            Neo4jUtils.unmarshall(iterator.next() as Map<String,Object>, pe)
         } catch (EntityNotFoundException e) {
             return null
         } finally {
@@ -62,6 +64,7 @@ class Neo4jEntityPersister extends EntityPersister {
                     [(it.name): obj[it.name]]
                 }
 
+        assert obj["id"] == null
         ResourceIterator<Map<String,Object>> iterator = executionEngine.execute("create (n:$pe.discriminator {props}) return id(n) as id",
                 Collections.singletonMap("props", simpleProperties) as Map<String, Object>).iterator()
         try {

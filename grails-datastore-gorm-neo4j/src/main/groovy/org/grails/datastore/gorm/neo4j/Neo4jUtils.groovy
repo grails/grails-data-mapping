@@ -1,17 +1,20 @@
 package org.grails.datastore.gorm.neo4j
 
+import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.types.*
 import org.neo4j.graphdb.Direction
-import org.neo4j.graphdb.Node
-import org.grails.datastore.mapping.model.types.ManyToMany
 import org.neo4j.graphdb.DynamicRelationshipType
-import org.grails.datastore.mapping.model.types.Association
-import org.slf4j.LoggerFactory
-import org.grails.datastore.mapping.model.types.ManyToOne
-import org.springframework.util.ClassUtils
+import org.neo4j.graphdb.Node
+import org.neo4j.graphdb.Relationship
 
 /**
  * Collection of static util methods regarding Neo4j
  */
+@Slf4j
+@CompileStatic
 abstract class Neo4jUtils {
 
     /**
@@ -42,13 +45,12 @@ abstract class Neo4jUtils {
      * @param logger
      */
     static void dumpNode(Node node, logger = null) {
-        logger = logger ?: LoggerFactory.getLogger(Neo4jDatastore.class)
-        logger.warn "Node $node.id: $node"
-        node.propertyKeys.each {
-            logger.warn "Node $node.id property $it -> ${node.getProperty(it,null)}"
+        log.warn "Node $node.id: $node"
+        node.propertyKeys.each { String it ->
+            log.warn "Node $node.id property $it -> ${node.getProperty(it,null)}"
         }
-        node.relationships.each {
-            logger.warn "Node $node.id relationship $it.startNode -> $it.endNode : ${it.type.name()}"
+        node.relationships.each { Relationship it ->
+            log.warn "Node $node.id relationship $it.startNode -> $it.endNode : ${it.type.name()}"
         }
     }
 
@@ -58,12 +60,46 @@ abstract class Neo4jUtils {
      * @param persistentProperty
      * @return
      */
-    static boolean doesNodeMatchType(Node node, Class clazz) {
+    /*static boolean doesNodeMatchType(Node node, Class clazz) {
         try {
             def nodeClass = ClassUtils.forName(node.getProperty(Neo4jSession.TYPE_PROPERTY_NAME, null))
             clazz.isAssignableFrom(nodeClass)
         } catch (ClassNotFoundException e) {
             false
         }
+    }*/
+
+    static def cypherReturnColumnsForType(PersistentEntity entity) {
+        "id(n) as id,${entity.persistentPropertyNames.collect { "n.$it as $it" }.join(",")}"
     }
+
+    static def unmarshall(Map<String, Object> map, PersistentEntity entity) {
+        def domainObject = entity.javaClass.newInstance()
+        for (PersistentProperty property in entity.persistentProperties) {
+
+            switch (property) {
+                case Simple:
+                    domainObject[property.name] = map[property.name]
+                    break
+
+                case OneToOne:
+                    log.error "property $property.name is of type ${property.class.superclass}"
+                    break
+
+                case ManyToOne:
+                    log.error "property $property.name is of type ${property.class.superclass}"
+                    break
+
+                case OneToMany:
+                    log.error "property $property.name is of type ${property.class.superclass}"
+                    break
+
+                default:
+                    throw new IllegalArgumentException("property $property.name is of type ${property.class.superclass}")
+            }
+        }
+        domainObject
+    }
+
+
 }

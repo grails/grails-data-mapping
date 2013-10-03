@@ -18,9 +18,6 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.model.PersistentProperty
-import org.grails.datastore.mapping.model.types.OneToOne
-import org.grails.datastore.mapping.model.types.Simple
 import org.grails.datastore.mapping.query.Query
 import org.neo4j.cypher.javacompat.ExecutionEngine
 
@@ -39,31 +36,13 @@ class Neo4jQuery extends Query {
 
     @Override
     protected List executeQuery(PersistentEntity entity, Query.Junction criteria) {
+
+        def returnColumns = Neo4jUtils.cypherReturnColumnsForType(entity)
         executionEngine.execute("""MATCH (n:$entity.discriminator)
-RETURN id(n),${entity.persistentPropertyNames.collect { "n.$it as $it"}.join(",")}
+RETURN $returnColumns
 """).collect { Map map ->
-            def domainObject = entity.javaClass.newInstance()
-            for (PersistentProperty property  in entity.persistentProperties) {
-
-                switch (property) {
-                    case Simple:
-                        domainObject[property.name] = map[property.name]
-                        log.error "simple property $property.name"
-                        break
-
-                    case OneToOne:
-                        log.error "property $property.name is of type ${property.class.superclass}"
-                        break
-
-                    default:
-                        throw new IllegalArgumentException("property $property.name is of type ${property.class.superclass}")
-
-                }
-            }
-
-            domainObject
+            Neo4jUtils.unmarshall(map, entity)
         }
-
     }
 
     ExecutionEngine getExecutionEngine() {
