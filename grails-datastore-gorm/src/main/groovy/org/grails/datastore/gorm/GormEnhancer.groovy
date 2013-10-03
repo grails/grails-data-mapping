@@ -128,13 +128,15 @@ class GormEnhancer {
                 if (parameterTypes) {
                     parameterTypes = parameterTypes.length == 1 ? []: parameterTypes[1..-1]
 
-                    boolean methodExists = true
+                    boolean methodExists = false
                     try {
-                        if(!mc.hasMetaMethod(methodName, parameterTypes)) {
-                            methodExists = false
+                        List<MetaMethod> existingMethods = mc.respondsTo(methodName, parameterTypes)
+                        if(existingMethods && (parameterTypes || existingMethods.find { MetaMethod mm -> mm.parameterTypes.length == 0 && !mm.vargsMethod })) {
+                            methodExists = true
                         }
                     } catch (MethodSelectionException mse) {
                         // ignore, the metamethod already exists with multiple signatures
+                        methodExists = true
                     }
 
                     if(!methodExists) {
