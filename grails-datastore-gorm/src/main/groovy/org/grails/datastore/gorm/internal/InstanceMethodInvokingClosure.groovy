@@ -41,4 +41,9 @@ class InstanceMethodInvokingClosure extends Closure {
 
     @Override
     Class[] getParameterTypes() { parameterTypes }
+
+    @Override
+    int getMaximumNumberOfParameters() {
+        parameterTypes.length
+    }
 }
