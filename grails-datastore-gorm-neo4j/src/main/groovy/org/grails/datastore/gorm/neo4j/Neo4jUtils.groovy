@@ -104,13 +104,30 @@ abstract class Neo4jUtils {
     static def mapToAllowedNeo4jType(Object value, MappingContext mappingContext) {
         switch (value.class) {
             case String:
-            case Number:
+            case Long:
+            case Float:
+            case Double:
+            case Short:
+            case Byte:
             case Boolean:
+            case byte[]:
                 //pass
                 break
+
             default:
                 log.info "non special type ${value.class}"
-                value = mappingContext.conversionService.convert(value, String)
+
+                def conversionService = mappingContext.conversionService
+                if (conversionService.canConvert(value.class, long)) {
+                    value = conversionService.convert(value, long)
+                } else if (conversionService.canConvert(value.class, double)) {
+                    value = conversionService.convert(value, double)
+                } else if (conversionService.canConvert(value.class, String)) {
+                    value = conversionService.convert(value, String)
+                } else {
+                    value = value.toString()
+                    //throw new IllegalArgumentException("cannot convert ${value.class} to long or String")
+                }
         }
         value
     }
