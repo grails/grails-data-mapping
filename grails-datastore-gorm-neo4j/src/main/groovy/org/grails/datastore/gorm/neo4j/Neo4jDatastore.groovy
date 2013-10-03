@@ -14,8 +14,10 @@
  */
 package org.grails.datastore.gorm.neo4j
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.core.AbstractDatastore
 import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Simple
@@ -25,6 +27,7 @@ import org.neo4j.graphdb.index.AutoIndexer
 import org.neo4j.graphdb.index.IndexManager
 import org.neo4j.kernel.EmbeddedGraphDatabase
 import org.springframework.beans.factory.InitializingBean
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.util.Assert
 /**
@@ -32,117 +35,26 @@ import org.springframework.util.Assert
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  * TODO: refactor constructors to be groovier
  */
+@CompileStatic
 class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
 
-    public static final NUMBER_OF_SUBSUBREFERENCE_NODES = 2 ** 7
+    MappingContext mappingContext
+    ApplicationEventPublisher publisher
+    ExecutionEngine executionEngine
 
-    GraphDatabaseService graphDatabaseService
-    @Lazy ExecutionEngine executionEngine = new ExecutionEngine(graphDatabaseService)
-    Map<Class, Node> subReferenceNodes
-    Map<Node, Map<Integer, Node>> subSubReferenceNodes
-    String storeDir
-    @Lazy IndexManager indexManager = graphDatabaseService.index()
-    Map<PersistentEntity, Collection<PersistentEntity>> domainSubclasses = [:].withDefault { [] }
-
-    /**
-     * only to be called during testing
-     * @return
-     */
-    Neo4jDatastore() {
-        this(new Neo4jMappingContext(), null, null)
-    }
-
-    Neo4jDatastore(Neo4jMappingContext mappingContext, ConfigurableApplicationContext ctx, GraphDatabaseService graphDatabaseService) {
-        super(mappingContext, Collections.<String,String>emptyMap(), ctx)
-        this.graphDatabaseService = graphDatabaseService
-
-/*        mappingContext.getConverterRegistry().addConverter(new Converter<String, ObjectId>() {
-            ObjectId convert(String source) {
-                return new ObjectId(source)
-            }
-        })
-
-        mappingContext.getConverterRegistry().addConverter(new Converter<ObjectId, String>() {
-            String convert(ObjectId source) {
-                return source.toString()
-            }
-        })*/
-
-    }
-
-    Neo4jDatastore(Neo4jMappingContext mappingContext, GraphDatabaseService graphDatabaseService) {
-        this(mappingContext, null, graphDatabaseService)
+    public Neo4jDatastore(MappingContext mappingContext, ApplicationEventPublisher publisher, ExecutionEngine executionEngine) {
+        this.mappingContext = mappingContext
+        this.publisher = publisher
+        this.executionEngine = executionEngine
     }
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
-        new Neo4jSession(this, mappingContext, applicationEventPublisher )
+        new Neo4jSession(this, mappingContext, publisher, false, executionEngine)
     }
 
-    void afterPropertiesSet() {
-        if (!graphDatabaseService) {
-            Assert.notNull storeDir
-            graphDatabaseService = new EmbeddedGraphDatabase(storeDir)
-        }
-        initializeConverters(mappingContext)
-        findOrCreateSubReferenceNodes()
-        setupIndexing()
+    @Override
+    void afterPropertiesSet() throws Exception {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
-
-    protected void setupIndexing() {
-        AutoIndexer<Node> nodeAutoIndex = indexManager.nodeAutoIndexer
-        nodeAutoIndex.enabled = true
-        nodeAutoIndex.startAutoIndexingProperty(Neo4jSession.TYPE_PROPERTY_NAME)
-        for (PersistentEntity pe in mappingContext.persistentEntities) {
-
-            for (PersistentEntity parent in collectSuperclassChain(pe)) {
-                domainSubclasses[parent] << pe
-            }
-
-            for (PersistentProperty pp in pe.persistentProperties) {
-                if ((pp instanceof Simple) && (pp.mapping.mappedForm.index)) {
-                    nodeAutoIndex.startAutoIndexingProperty(pp.name)
-                }
-            }
-        }
-    }
-
-    protected List collectSuperclassChain(PersistentEntity pe, def list=[]) {
-        if (pe) {
-            list << pe
-            return collectSuperclassChain(pe.parentEntity, list)
-        }
-        list
-    }
-
-    protected void findOrCreateSubReferenceNodes() {
-        Transaction tx = graphDatabaseService.beginTx()
-        try {
-            subReferenceNodes = [:]
-            Node referenceNode = graphDatabaseService.referenceNode
-
-            for (Relationship rel in referenceNode.getRelationships(GrailsRelationshipTypes.SUBREFERENCE, Direction.OUTGOING).iterator()) {
-                Node endNode = rel.endNode
-                String clazzName = endNode.getProperty(Neo4jSession.SUBREFERENCE_PROPERTY_NAME)
-                subReferenceNodes[clazzName] = endNode
-            }
-
-            for (PersistentEntity pe in mappingContext.persistentEntities) {
-                if (!subReferenceNodes.containsKey(pe.name)) {
-                    subReferenceNodes[pe.name] = createSubReferenceNode(pe.name)
-                }
-            }
-            tx.success()
-        } finally {
-            tx.finish()
-        }
-    }
-
-    protected Node createSubReferenceNode(name) {
-            Node subReferenceNode = graphDatabaseService.createNode()
-            subReferenceNode.setProperty(Neo4jSession.SUBREFERENCE_PROPERTY_NAME, name)
-            graphDatabaseService.referenceNode.createRelationshipTo(subReferenceNode, GrailsRelationshipTypes.SUBREFERENCE)
-            return subReferenceNode
-    }
-
 }

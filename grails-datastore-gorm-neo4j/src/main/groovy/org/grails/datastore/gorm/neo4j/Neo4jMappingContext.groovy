@@ -14,6 +14,7 @@
  */
 package org.grails.datastore.gorm.neo4j
 
+import groovy.transform.CompileStatic
 import org.grails.datastore.gorm.neo4j.converters.*
 import org.grails.datastore.mapping.document.config.Attribute
 import org.grails.datastore.mapping.model.AbstractMappingContext
@@ -24,28 +25,25 @@ import org.grails.datastore.mapping.model.config.GormMappingConfigurationStrateg
 /**
  * @author Stefan Armbruster <stefan@armbruster-it.de>
  */
-class Neo4jMappingContext extends AbstractMappingContext {
+@CompileStatic
+class Neo4jMappingContext extends AbstractMappingContext  {
 
-    MappingFactory<Collection, Attribute> mappingFactory
-    MappingConfigurationStrategy syntaxStrategy
+    MappingFactory<Collection, Attribute> mappingFactory = new GraphGormMappingFactory()
+    MappingConfigurationStrategy mappingSyntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory)
 
-    Neo4jMappingContext() {
-        mappingFactory = new GraphGormMappingFactory()
-        syntaxStrategy = new GormMappingConfigurationStrategy(mappingFactory)
-    }
+//    Neo4jMappingContext() {
+//        mappingFactory = new GraphGormMappingFactory()
+//        syntaxStrategy =
+//    }
 
     @Override
     protected PersistentEntity createPersistentEntity(Class javaClass) {
-        GraphPersistentEntity persistentEntity = new GraphPersistentEntity(javaClass, this)
-        mappingFactory.createMappedForm(persistentEntity) // populates mappingFactory.entityToPropertyMap as a side effect
+         PersistentEntity persistentEntity = new GraphPersistentEntity(javaClass, this)
+//        mappingFactory.createMappedForm(persistentEntity) // populates mappingFactory.entityToPropertyMap as a side effect
         persistentEntity
     }
 
-    MappingConfigurationStrategy getMappingSyntaxStrategy() {
-        syntaxStrategy
-    }
-
-    MappingFactory getMappingFactory() {
-        mappingFactory
-    }
+//    MappingFactory getMappingFactory() {
+//        mappingFactory
+//    }
 }
