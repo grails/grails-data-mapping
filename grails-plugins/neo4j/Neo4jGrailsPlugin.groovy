@@ -31,7 +31,7 @@ class Neo4jGrailsPlugin {
     def title = "Neo4j GORM"    
     def description = 'A plugin that integrates the Neo4j graph database into Grails, providing a GORM API onto it'
 
-    def documentation = "http://grails.org/plugin/neo4j"
+    def documentation = "http://projects.spring.io/grails-data-mapping/neo4j/manual/index.html"
 
     def dependsOn = [:]
     // resources that are excluded from plugin packaging

@@ -52,7 +52,7 @@ A GORM implementation that can back onto a REST web service
     def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GRAILS" ]
 
     // Online location of the plugin's browseable source code.
-    def scm = [ url: "https://github.com/SpringSource/grails-data-mapping" ]
+    def scm = [ url: "https://github.com/grails/grails-data-mapping" ]
 
     def doWithSpring = new RestClientSpringConfigurer().getConfiguration()
 

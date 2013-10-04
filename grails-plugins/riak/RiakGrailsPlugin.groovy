@@ -34,7 +34,7 @@ A plugin that integrates the Riak document/data store into Grails.
 
     def observe = ['controllers', 'services', 'domainClass']
 
-    def documentation = "http://grails.org/plugin/riak"
+    def documentation = "http://projects.spring.io/grails-data-mapping/riak/manual/index.html"
 
     def doWithSpring = new RiakSpringConfigurer().getConfiguration()
 

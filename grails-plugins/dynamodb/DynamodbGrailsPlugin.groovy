@@ -14,7 +14,7 @@ import org.grails.datastore.gorm.dynamodb.plugin.support.DynamoDBApplicationCont
 
 class DynamodbGrailsPlugin {
     def license = "Apache 2.0 License"
-    def scm = [ url: "https://github.com/SpringSource/grails-data-mapping" ]
+    def scm = [ url: "https://github.com/grails/grails-data-mapping" ]
     def developers = [
         [ name: "Roman Stepanenko", email: "rs.opensource@gmail.com" ] ]
     def version = "0.1.1"
@@ -32,7 +32,7 @@ class DynamodbGrailsPlugin {
     def description = 'A plugin that integrates the AWS DynamoDB datastore into Grails, providing a GORM API onto it'
 
     // URL to the plugin's documentation
-    def documentation = "http://grails.org/plugin/dynamodb"
+    def documentation = "http://projects.spring.io/grails-data-mapping/dynamodb/manual/index.html"
     def issueManagement = [system: "JIRA", url: "http://jira.grails.org/browse/GPDYNAMODB"]
 
     def doWithSpring = new DynamoDBSpringConfigurer().getConfiguration()

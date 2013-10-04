@@ -37,7 +37,7 @@ Implementation of GORM for JPA
     def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPGORMJPA" ]
 
     // Online location of the plugin's browseable source code.
-    def scm = [ url: "https://github.com/SpringSource/grails-data-mapping/tree/master/grails-plugins" ]
+    def scm = [ url: "https://github.com/grails/grails-data-mapping/tree/master/grails-plugins" ]
 
     def observe = ['services', 'domainClass']
     

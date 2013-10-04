@@ -9,7 +9,7 @@ class MongodbGrailsPlugin {
     def developers = [
         [name: "Graeme Rocher", email: "grocher@vmware.com"]]
     def issueManagement = [system: "JIRA", url: "http://jira.grails.org/browse/GPMONGODB"]
-    def scm = [url: "https://github.com/SpringSource/grails-data-mapping"]
+    def scm = [url: "https://github.com/grails/grails-data-mapping"]
 
     def version = "1.3.0.BUILD-SNAPSHOT"
     def grailsVersion = "2.1.4 > *"
