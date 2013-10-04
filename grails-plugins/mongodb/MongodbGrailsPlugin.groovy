@@ -20,7 +20,7 @@ class MongodbGrailsPlugin {
     def title = "MongoDB GORM"
     def description = 'A plugin that integrates the Mongo document datastore into Grails, providing a GORM API onto it'
 
-    def documentation = "http://grails.org/plugin/mongodb"
+    def documentation = "http://projects.spring.io/grails-data-mapping/mongo/manual/index.html"
 
     def doWithSpring = new MongoSpringConfigurer().getConfiguration()
 
