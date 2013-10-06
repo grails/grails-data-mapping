@@ -151,10 +151,41 @@ RETURN $returnColumns"""
                         params[pnc.property] = pnc.value.toString().replaceAll("%", ".*")
                         break
                     case In:
-                        lhs = pnc.property=="id" ? "ID(n)" : "n.{$pnc.property}"
+                        lhs = pnc.property=="id" ? "ID(n)" : "n.$pnc.property"
                         operator = " IN "
                         rhs = "{$pnc.property}"
                         params[pnc.property] = ((In)pnc).values
+                        break
+                    case GreaterThan:
+                        lhs = "n.$pnc.property"
+                        operator = ">"
+                        rhs = "{$pnc.property}"
+                        break
+                    case GreaterThanEquals:
+                        lhs = "n.$pnc.property"
+                        operator = ">="
+                        rhs = "{$pnc.property}"
+                        break
+                    case LessThan:
+                        lhs = "n.$pnc.property"
+                        operator = "<"
+                        rhs = "{$pnc.property}"
+                        break
+                    case LessThanEquals:
+                        lhs = "n.$pnc.property"
+                        operator = "<="
+                        rhs = "{$pnc.property}"
+                        break
+                    case NotEquals:
+                        lhs = "n.$pnc.property"
+                        operator = "<>"
+                        rhs = "{$pnc.property}"
+                        break
+                    case Between:
+                        Between b = (Between)pnc
+                        params["${pnc.property}_from"] = Neo4jUtils.mapToAllowedNeo4jType(b.from, entity.mappingContext)
+                        params["${pnc.property}_to"] = Neo4jUtils.mapToAllowedNeo4jType(b.to, entity.mappingContext)
+                        return "{${pnc.property}_from}<n.$pnc.property and n.$pnc.property<{${pnc.property}_to}"
                         break
                     default:
                         throw new UnsupportedOperationException("propertycriterion ${pnc.class}")
