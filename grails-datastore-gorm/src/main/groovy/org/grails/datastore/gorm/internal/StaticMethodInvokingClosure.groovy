@@ -33,7 +33,7 @@ class StaticMethodInvokingClosure extends Closure {
         this.apiDelegate = apiDelegate
         this.methodName = methodName
         this.parameterTypes = parameterTypes
-        this.metaMethod = InstanceMethodInvokingClosure.pickMetaMethod(apiDelegate.getMetaClass(), methodName, parameterTypes, false)
+        this.metaMethod = InstanceMethodInvokingClosure.pickMetaMethod(apiDelegate.getMetaClass(), methodName, parameterTypes, true)
     }
     
     @Override
