@@ -15,6 +15,8 @@
 
 package org.grails.datastore.gorm.query
 
+import grails.gorm.CriteriaBuilder;
+
 import java.lang.reflect.Modifier
 
 import org.grails.datastore.gorm.finders.DynamicFinder
@@ -93,7 +95,7 @@ class NamedCriteriaProxy {
             if (paramsMap?.offset) {
                 firstResult conversionService.convert(paramsMap.offset, Integer)
             }
-            if (paramsMap) {
+            if (paramsMap && queryBuilder instanceof CriteriaBuilder) {
                 DynamicFinder.populateArgumentsForCriteria(entity.javaClass, queryBuilder.query, paramsMap)
             }
         }
