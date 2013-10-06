@@ -3,15 +3,20 @@ package org.grails.datastore.gorm.neo4j
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.engine.EntityPersister
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.types.ManyToOne
+import org.grails.datastore.mapping.model.types.OneToMany
+import org.grails.datastore.mapping.model.types.OneToOne
 import org.grails.datastore.mapping.model.types.Simple
 import org.grails.datastore.mapping.query.Query
 import org.neo4j.cypher.EntityNotFoundException
 import org.neo4j.cypher.javacompat.ExecutionEngine
 import org.neo4j.graphdb.ResourceIterator
+import org.neo4j.helpers.collection.IteratorUtil
 import org.springframework.context.ApplicationEventPublisher
 
 /**
@@ -44,10 +49,18 @@ class Neo4jEntityPersister extends EntityPersister {
     @Override
     protected Object retrieveEntity(PersistentEntity pe, Serializable key) {
 
+        def obj = pe.newInstance()
+        EntityAccess entityAccess = createEntityAccess(pe, obj)
+        entityAccess.conversionService = mappingContext.conversionService
+        if (cancelLoad(pe, entityAccess)) {
+            return null
+        }
+
         ResourceIterator<Map<String,Object>> iterator = executionEngine.execute("start n=node({key}) return ${Neo4jUtils.cypherReturnColumnsForType(pe)}", [key: key] as Map<String,Object>).iterator()
         try {
             assert iterator.hasNext()
-            Neo4jUtils.unmarshall(iterator.next() as Map<String,Object>, pe)
+            unmarshall(iterator.next() as Map<String,Object>, entityAccess)
+            entityAccess.entity
         } catch (EntityNotFoundException e) {
             return null
         } finally {
@@ -55,31 +68,74 @@ class Neo4jEntityPersister extends EntityPersister {
         }
     }
 
+    def unmarshall(Map<String, Object> map, EntityAccess entityAccess) {
+        entityAccess.setProperty("version", (map as Map<String, Object>)["version"])
+        entityAccess.setProperty("id", (map as Map<String, Object>)["id"])
+        for (PersistentProperty property in entityAccess.persistentEntity.persistentProperties) {
+            switch (property) {
+                case Simple:
+                    entityAccess.setProperty(property.name, (map as Map<String, Object>)[property.name])
+                    //entity.mappingContext.conversionService.convert(map[property.name], property.type)
+                    break
+                case OneToOne:
+                    log.error "property $property.name is of type ${property.class.superclass}"
+                    break
+                case ManyToOne:
+                    log.error "property $property.name is of type ${property.class.superclass}"
+                    break
+                case OneToMany:
+                    log.error "property $property.name is of type ${property.class.superclass}"
+                    break
+                default:
+                    throw new IllegalArgumentException("property $property.name is of type ${property.class.superclass}")
+            }
+        }
+        firePostLoadEvent(entityAccess.persistentEntity, entityAccess)
+    }
+
     @Override
     protected Serializable persistEntity(PersistentEntity pe, Object obj) {
+
+        EntityAccess entityAccess =  createEntityAccess(pe, obj)
+        String cypher
+        if (entityAccess.getProperty("id")) {
+            if (cancelUpdate(pe, entityAccess)) {
+                return null
+            }
+            cypher = "start n=node({id}) set n={props} return id(n) as id"
+        } else {
+            if (cancelInsert(pe, entityAccess)) {
+                return null
+            }
+            cypher = "create (n:$pe.discriminator {props}) return id(n) as id"
+        }
 
         def simpleProperties = pe.persistentProperties
                 .findAll { it instanceof Simple && obj[it.name] != null }
                 .collectEntries { PersistentProperty it ->
-
-                    [(it.name): Neo4jUtils.mapToAllowedNeo4jType(obj[it.name], mappingContext)]
+                    [(it.name): Neo4jUtils.mapToAllowedNeo4jType(obj[it.name], mappingContext)] //TODO: use entityaccess
                 }
 
-        assert obj["id"] == null
-        ResourceIterator<Map<String,Object>> iterator = executionEngine.execute("create (n:$pe.discriminator {props}) return id(n) as id",
-                Collections.singletonMap("props", simpleProperties) as Map<String, Object>).iterator()
-        try {
-            Long id = ((Map<String, Object>) (iterator.next())).get("id") as Long
-            obj["id"] = id
-            return id
-        } finally {
-            iterator.close()
+        Map<String, Object> firstRow = IteratorUtil.first(executionEngine.execute(cypher,
+                        ["props": simpleProperties, "id": obj["id"]] as Map<String, Object>))
+
+        if (entityAccess.getProperty("id")) {
+            firePostUpdateEvent(pe, entityAccess)
+        } else {
+            firePostInsertEvent(pe, entityAccess)
+            entityAccess.setProperty("id", firstRow["id"])
         }
+        return entityAccess.getProperty("id") as Long
     }
 
     @Override
     protected void deleteEntity(PersistentEntity pe, Object obj) {
+        EntityAccess entityAccess = createEntityAccess(pe, obj)
+        if (cancelDelete(pe, entityAccess)) {
+            return
+        }
         executionEngine.execute("start n=node({id}) match n-[r?]-m delete r,n", [id: obj["id"]])
+        firePostDeleteEvent(pe, entityAccess)
     }
 
     @Override
@@ -91,7 +147,7 @@ class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     Query createQuery() {
-        return new Neo4jQuery(session, persistentEntity )
+        return new Neo4jQuery(session, persistentEntity, this )
     }
 
     @Override

@@ -18,18 +18,9 @@ import groovy.transform.CompileStatic
 import org.grails.datastore.mapping.core.AbstractDatastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
-import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.model.PersistentProperty
-import org.grails.datastore.mapping.model.types.Simple
 import org.neo4j.cypher.javacompat.ExecutionEngine
-import org.neo4j.graphdb.*
-import org.neo4j.graphdb.index.AutoIndexer
-import org.neo4j.graphdb.index.IndexManager
-import org.neo4j.kernel.EmbeddedGraphDatabase
 import org.springframework.beans.factory.InitializingBean
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.context.ConfigurableApplicationContext
-import org.springframework.util.Assert
 /**
  * Datastore implementation for Neo4j backend
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -39,18 +30,17 @@ import org.springframework.util.Assert
 class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
 
     MappingContext mappingContext
-    ApplicationEventPublisher publisher
     ExecutionEngine executionEngine
 
-    public Neo4jDatastore(MappingContext mappingContext, ApplicationEventPublisher publisher, ExecutionEngine executionEngine) {
+    public Neo4jDatastore(MappingContext mappingContext, ConfigurableApplicationContext applicationContext, ExecutionEngine executionEngine) {
         this.mappingContext = mappingContext
-        this.publisher = publisher
         this.executionEngine = executionEngine
+        this.applicationContext = applicationContext
     }
 
     @Override
     protected Session createSession(Map<String, String> connectionDetails) {
-        new Neo4jSession(this, mappingContext, publisher, false, executionEngine)
+        new Neo4jSession(this, mappingContext, applicationContext, false, executionEngine)
     }
 
     @Override

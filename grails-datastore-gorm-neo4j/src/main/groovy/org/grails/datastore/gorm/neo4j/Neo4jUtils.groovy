@@ -4,7 +4,6 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.*
 import org.neo4j.graphdb.Direction
 import org.neo4j.graphdb.DynamicRelationshipType
@@ -74,32 +73,6 @@ abstract class Neo4jUtils {
         "id(n) as id,${entity.persistentPropertyNames.collect { "n.$it as $it" }.join(",")}"
     }
 
-    static def unmarshall(Map<String, Object> map, PersistentEntity entity) {
-        def domainObject = entity.javaClass.newInstance()
-        for (PersistentProperty property in entity.persistentProperties) {
-            switch (property) {
-                case Simple:
-                    domainObject[property.name] = entity.mappingContext.conversionService.convert(map[property.name], property.type)
-                    break
-
-                case OneToOne:
-                    log.error "property $property.name is of type ${property.class.superclass}"
-                    break
-
-                case ManyToOne:
-                    log.error "property $property.name is of type ${property.class.superclass}"
-                    break
-
-                case OneToMany:
-                    log.error "property $property.name is of type ${property.class.superclass}"
-                    break
-
-                default:
-                    throw new IllegalArgumentException("property $property.name is of type ${property.class.superclass}")
-            }
-        }
-        domainObject
-    }
 
     static def mapToAllowedNeo4jType(Object value, MappingContext mappingContext) {
         switch (value.class) {

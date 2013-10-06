@@ -17,14 +17,12 @@ package org.grails.datastore.gorm.neo4j
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.core.Session
+import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.Query
 import org.neo4j.cypher.javacompat.ExecutionResult
-import org.neo4j.graphdb.ResourceIterator
-import org.neo4j.helpers.collection.IteratorUtil
-
-import static org.grails.datastore.mapping.query.Query.*
 import org.neo4j.cypher.javacompat.ExecutionEngine
+import static org.grails.datastore.mapping.query.Query.*
 
 /**
  * perform criteria queries on a Neo4j backend
@@ -35,17 +33,20 @@ import org.neo4j.cypher.javacompat.ExecutionEngine
 @Slf4j
 class Neo4jQuery extends Query {
 
-    protected Neo4jQuery(Session session, PersistentEntity entity) {
+    final Neo4jEntityPersister neo4jEntityPersister
+
+    protected Neo4jQuery(Session session, PersistentEntity entity, Neo4jEntityPersister neo4jEntityPersister) {
         super(session, entity)
+        this.neo4jEntityPersister = neo4jEntityPersister
     }
 
     @Override
-    protected List executeQuery(PersistentEntity entity, Junction criteria) {
+    protected List executeQuery(PersistentEntity persistentEntity, Junction criteria) {
 
-        def returnColumns = buildReturnColumns(entity)
+        def returnColumns = buildReturnColumns(persistentEntity)
         def params = [:] as Map<String,Object>
         def conditions = buildConditions(criteria, params)
-        def cypher = """MATCH (n:$entity.discriminator) ${conditions ? "WHERE " + conditions : " "}
+        def cypher = """MATCH (n:$persistentEntity.discriminator) ${conditions ? "WHERE " + conditions : " "}
 RETURN $returnColumns"""
 
         if (!orderBy.empty) {
@@ -68,8 +69,11 @@ RETURN $returnColumns"""
 
         ExecutionResult executionResult = executionEngine.execute(cypher, params)
         if (projections.projectionList.empty) {
-            return executionResult.collect { Map map ->
-                Neo4jUtils.unmarshall(map, entity)
+            return executionResult.collect { Map<String,Object> map ->
+                EntityAccess entityAccess = new EntityAccess(persistentEntity, persistentEntity.newInstance())
+                entityAccess.conversionService = persistentEntity.mappingContext.conversionService
+                neo4jEntityPersister.unmarshall(map, entityAccess)
+                entityAccess.entity
             }
         } else {
 
@@ -146,8 +150,14 @@ RETURN $returnColumns"""
                         rhs = "{$pnc.property}"
                         params[pnc.property] = pnc.value.toString().replaceAll("%", ".*")
                         break
+                    case In:
+                        lhs = pnc.property=="id" ? "ID(n)" : "n.{$pnc.property}"
+                        operator = " IN "
+                        rhs = "{$pnc.property}"
+                        params[pnc.property] = ((In)pnc).values
+                        break
                     default:
-                        throw new UnsupportedOperationException()
+                        throw new UnsupportedOperationException("propertycriterion ${pnc.class}")
                 }
 
                 return "$lhs$operator$rhs"
