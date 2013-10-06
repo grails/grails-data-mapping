@@ -21,6 +21,7 @@ import java.lang.reflect.Modifier
 
 import org.codehaus.groovy.grails.commons.GrailsMetaClassUtils
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.codehaus.groovy.reflection.CachedMethod
 import org.codehaus.groovy.runtime.metaclass.ClosureStaticMetaMethod
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import org.grails.datastore.gorm.finders.CountByFinder
@@ -90,7 +91,7 @@ class GormEnhancer {
             enhance e, onlyExtendedMethods
         }
     }
-
+    
     /**
      * Enhance and individual entity
      *
@@ -98,69 +99,47 @@ class GormEnhancer {
      * @param onlyExtendedMethods If only to add additional methods provides by subclasses of the GORM APIs
      */
     void enhance(PersistentEntity e, boolean onlyExtendedMethods = false) {
+        addNamedQueryMethods(e)
+
+        addInstanceMethods(e, onlyExtendedMethods)
+
+        addAssociationMethods(e)
+
+        addStaticMethods(e, onlyExtendedMethods)
+    }
+    
+    protected void addStaticMethods(PersistentEntity e, boolean onlyExtendedMethods) {
         def cls = e.javaClass
-        def cpf = ClassPropertyFetcher.forClass(cls)
+        ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
         def staticMethods = getStaticApi(cls)
         staticMethods.transactionManager = transactionManager
-        def instanceMethods = [getInstanceApi(cls), getValidationApi(cls)]
-        def tm = transactionManager
-
-        List<Closure> namedQueries = cpf.getStaticPropertyValuesFromInheritanceHierarchy('namedQueries', Closure)
-        for (int i = namedQueries.size(); i > 0; i--) {
-            Closure closure = namedQueries.get(i - 1)
-            registerNamedQueries(e, closure)
-        }
-
-        ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
-        for (currentInstanceMethods in instanceMethods) {
-            def apiProvider = currentInstanceMethods
-            if (GormInstanceApi.isInstance(apiProvider)) {
-                mc.static.currentGormInstanceApi = {-> apiProvider }
-            }
-            else {
-                mc.static.currentGormValidationApi = {-> apiProvider }
-            }
-
-            for (Method method in (onlyExtendedMethods ? apiProvider.extendedMethods : apiProvider.methods)) {
+        def staticScope = mc.static
+        staticScope.currentGormStaticApi = {-> staticMethods }
+        for (Method m in (onlyExtendedMethods ? staticMethods.extendedMethods : staticMethods.methods)) {
+            def method = m
+            if (method != null) {
                 def methodName = method.name
-                Class[] parameterTypes = method.parameterTypes
-
-                if (parameterTypes) {
-                    parameterTypes = parameterTypes.length == 1 ? []: parameterTypes[1..-1]
-
-                    boolean methodExists = false
-                    try {
-                        List<MetaMethod> existingMethods = mc.respondsTo(methodName, parameterTypes)
-                        if(existingMethods && (parameterTypes || existingMethods.find { MetaMethod mm -> mm.parameterTypes.length == 0 && !mm.vargsMethod })) {
-                            methodExists = true
-                        }
-                    } catch (MethodSelectionException mse) {
-                        // ignore, the metamethod already exists with multiple signatures
-                        methodExists = true
-                    }
-
-                    if(!methodExists) {
-                        // use fake object just so we have the right method signature
-
-                        final tooCall = new InstanceMethodInvokingClosure(apiProvider, cls, methodName, parameterTypes)
-                        def pt = parameterTypes
-                        // Hack to workaround http://jira.codehaus.org/browse/GROOVY-4720
-                        final closureMethod = new ClosureStaticMetaMethod(methodName, cls, tooCall, pt) {
-                                    @Override
-                                    int getModifiers() { Modifier.PUBLIC }
-                                }
-                        mc.registerInstanceMethod(closureMethod)
+                def parameterTypes = method.parameterTypes
+                if (parameterTypes != null) {
+                    boolean realMethodExists = doesRealMethodExist(mc, methodName, parameterTypes, true)
+                    if(!realMethodExists) {
+                        def callable = new StaticMethodInvokingClosure(staticMethods, methodName, parameterTypes)
+                        staticScope."$methodName" = callable
                     }
                 }
             }
         }
-
+    }
+    
+    protected void addAssociationMethods(PersistentEntity e) {
+        Class cls = e.javaClass
+        ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
         final proxyFactory = datastore.mappingContext.proxyFactory
         for (p in e.associations) {
             def prop = p
             def isBasic = prop instanceof Basic
             if(prop instanceof ToOne) {
-                registerAssociationIdentifierGetter(proxyFactory, mc, prop)
+                registerAssociationIdentifierGetter(proxyFactory, mc, (ToOne)prop)
             }
             else if ((prop instanceof OneToMany) || (prop instanceof ManyToMany) || isBasic || (prop instanceof EmbeddedCollection)) {
                 def associatedEntity = prop.associatedEntity
@@ -184,7 +163,7 @@ class GormEnhancer {
                             delegate[prop.name].add(obj)
                         }
                         else {
-                            throw new MissingMethodException("addTo${prop.capitilizedName}", e.javaClass, [arg] as Object[])
+                            throw new MissingMethodException("addTo${prop.capitilizedName}", cls, [arg] as Object[])
                         }
                         if (prop.bidirectional && prop.inverseSide) {
                             def otherSide = prop.inverseSide
@@ -216,27 +195,85 @@ class GormEnhancer {
                             }
                         }
                         else {
-                            throw new MissingMethodException("removeFrom${prop.capitilizedName}", e.javaClass, [arg] as Object[])
+                            throw new MissingMethodException("removeFrom${prop.capitilizedName}", cls, [arg] as Object[])
                         }
                         delegate
                     }
                 }
             }
         }
+    }
 
-        def staticScope = mc.static
-        staticScope.currentGormStaticApi = {-> staticMethods }
-        for (Method m in (onlyExtendedMethods ? staticMethods.extendedMethods : staticMethods.methods)) {
-            def method = m
-            if (method != null) {
+    protected void addNamedQueryMethods(PersistentEntity e) {
+        def cpf = ClassPropertyFetcher.forClass(e.javaClass)
+        List<Closure> namedQueries = cpf.getStaticPropertyValuesFromInheritanceHierarchy('namedQueries', Closure)
+        for (int i = namedQueries.size(); i > 0; i--) {
+            Closure closure = namedQueries.get(i - 1)
+            registerNamedQueries(e, closure)
+        }
+    }
+
+    protected <D> List<AbstractGormApi<D>> getInstanceMethodApiProviders(Class cls) {
+        [getInstanceApi(cls), getValidationApi(cls)]
+    }
+    
+    protected void addInstanceMethods(PersistentEntity e, boolean onlyExtendedMethods) {
+        Class cls = e.javaClass
+        ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
+        for (AbstractGormApi apiProvider in getInstanceMethodApiProviders(cls)) {
+            if (GormInstanceApi.isInstance(apiProvider)) {
+                mc.static.currentGormInstanceApi = {-> apiProvider }
+            }
+            else if (GormValidationApi.isInstance(apiProvider)) {
+                mc.static.currentGormValidationApi = {-> apiProvider }
+            }
+
+            for (Method method in (onlyExtendedMethods ? apiProvider.extendedMethods : apiProvider.methods)) {
                 def methodName = method.name
-                def parameterTypes = method.parameterTypes
-                if (parameterTypes != null) {
-                    def callable = new StaticMethodInvokingClosure(staticMethods, methodName, parameterTypes)
-                    staticScope."$methodName" = callable
+                Class[] parameterTypes = method.parameterTypes
+
+                if (parameterTypes) {
+                    parameterTypes = parameterTypes.length == 1 ? []: parameterTypes[1..-1]
+
+                    boolean realMethodExists = doesRealMethodExist(mc, methodName, parameterTypes, false)
+
+                    if(!realMethodExists) {
+                        registerInstanceMethod(cls, mc, apiProvider, methodName, parameterTypes)
+                    }
                 }
             }
         }
+    }
+
+    protected registerInstanceMethod(Class cls, ExpandoMetaClass mc, AbstractGormApi apiProvider, String methodName, Class[] parameterTypes) {
+        // use fake object just so we have the right method signature
+        final tooCall = new InstanceMethodInvokingClosure(apiProvider, cls, methodName, parameterTypes)
+        def pt = parameterTypes
+        // Hack to workaround http://jira.codehaus.org/browse/GROOVY-4720
+        final closureMethod = new ClosureStaticMetaMethod(methodName, cls, tooCall, pt) {
+                    @Override
+                    int getModifiers() { Modifier.PUBLIC }
+                }
+        mc.registerInstanceMethod(closureMethod)
+    }
+    
+    protected static boolean doesRealMethodExist(final MetaClass mc, final String methodName, final Class[] parameterTypes, boolean staticScope) {
+        boolean realMethodExists = false
+        try {
+            MetaMethod existingMethod = mc.pickMethod(methodName, parameterTypes)
+            if(existingMethod && existingMethod.isStatic()==staticScope && isRealMethod(existingMethod) && parameterTypes.length==existingMethod.parameterTypes.length)  {
+                realMethodExists = true
+            }
+        } catch (MethodSelectionException mse) {
+            // the metamethod already exists with multiple signatures, must check if the exact method exists
+            realMethodExists = mc.methods.contains { MetaMethod existingMethod ->
+                existingMethod.name == methodName && existingMethod.isStatic()==staticScope && isRealMethod(existingMethod) && ((!parameterTypes && !existingMethod.parameterTypes) || parameterTypes==existingMethod.parameterTypes)
+            }
+        }
+    }
+        
+    protected static boolean isRealMethod(MetaMethod existingMethod) {
+        existingMethod instanceof CachedMethod
     }
 
     protected void registerAssociationIdentifierGetter(ProxyFactory proxyFactory, MetaClass metaClass, ToOne association) {
@@ -255,8 +292,8 @@ class GormEnhancer {
         }
     }
 
-    protected void registerNamedQueries(PersistentEntity entity, namedQueries) {
-        new NamedQueriesBuilder(entity, getFinders()).evaluate namedQueries
+    protected void registerNamedQueries(PersistentEntity entity, Closure namedQueries) {
+        new NamedQueriesBuilder(entity, getFinders()).evaluate(namedQueries)
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
