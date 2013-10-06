@@ -221,12 +221,7 @@ class GormEnhancer {
         Class cls = e.javaClass
         ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
         for (AbstractGormApi apiProvider in getInstanceMethodApiProviders(cls)) {
-            if (GormInstanceApi.isInstance(apiProvider)) {
-                mc.static.currentGormInstanceApi = {-> apiProvider }
-            }
-            else if (GormValidationApi.isInstance(apiProvider)) {
-                mc.static.currentGormValidationApi = {-> apiProvider }
-            }
+            registerApiInstanceLookupMethods(mc, apiProvider)
 
             for (Method method in (onlyExtendedMethods ? apiProvider.extendedMethods : apiProvider.methods)) {
                 def methodName = method.name
@@ -242,6 +237,15 @@ class GormEnhancer {
                     }
                 }
             }
+        }
+    }
+    
+    protected void registerApiInstanceLookupMethods (ExpandoMetaClass mc, AbstractGormApi apiProvider) {
+        if (GormInstanceApi.isInstance(apiProvider)) {
+            mc.static.currentGormInstanceApi = {-> apiProvider }
+        }
+        else if (GormValidationApi.isInstance(apiProvider)) {
+            mc.static.currentGormValidationApi = {-> apiProvider }
         }
     }
 
