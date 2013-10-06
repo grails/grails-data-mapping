@@ -17,6 +17,7 @@ package org.grails.datastore.gorm.internal
 import groovy.transform.CompileStatic
 
 import org.apache.commons.lang.ArrayUtils
+import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 
 /**
  * Not public API. Used by GormEnhancer
@@ -35,9 +36,20 @@ class InstanceMethodInvokingClosure extends Closure {
         this.methodName = methodName
         this.parameterTypes = parameterTypes
         Class[] metaMethodParams = ([persistentClass] + (parameterTypes as List)) as Class[]
-        this.metaMethod = apiDelegate.getMetaClass().respondsTo(apiDelegate, methodName, metaMethodParams).find{it}
+        this.metaMethod = pickMetaMethod(apiDelegate.getMetaClass(), methodName, metaMethodParams, false)
     }
 
+    protected static MetaMethod pickMetaMethod(final MetaClass mc, final String methodName, final Class[] parameterTypes, boolean staticScope) {
+        try {
+            return mc.pickMethod(methodName, parameterTypes)
+        } catch (MethodSelectionException mse) {
+            // the metamethod already exists with multiple signatures, pick the most specific
+            return mc.methods.find { MetaMethod existingMethod ->
+                existingMethod.name == methodName && existingMethod.isStatic()==staticScope && ((!parameterTypes && !existingMethod.parameterTypes) || parameterTypes==existingMethod.parameterTypes)
+            }
+        }
+    }
+    
     @Override
     Object call(Object[] args) {
         def delegateArg = Collections.singletonList(delegate).toArray()
