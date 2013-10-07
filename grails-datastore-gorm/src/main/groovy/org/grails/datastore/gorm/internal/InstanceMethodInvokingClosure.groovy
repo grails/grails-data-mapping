@@ -17,55 +17,23 @@ package org.grails.datastore.gorm.internal
 import groovy.transform.CompileStatic
 
 import org.apache.commons.lang.ArrayUtils
-import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 
 /**
  * Not public API. Used by GormEnhancer
  */
 @SuppressWarnings("rawtypes")
 @CompileStatic
-class InstanceMethodInvokingClosure extends Closure {
-    private String methodName
-    private apiDelegate
-    private Class[] parameterTypes
-    private MetaMethod metaMethod
-    
+class InstanceMethodInvokingClosure extends MethodInvokingClosure {
     InstanceMethodInvokingClosure(apiDelegate, Class<?> persistentClass, String methodName, Class[] parameterTypes) {
-        super(apiDelegate, apiDelegate)
-        this.apiDelegate = apiDelegate
-        this.methodName = methodName
-        this.parameterTypes = parameterTypes
+        super(apiDelegate, methodName, parameterTypes)
         Class[] metaMethodParams = ([persistentClass] + (parameterTypes as List)) as Class[]
-        this.metaMethod = pickMetaMethod(apiDelegate.getMetaClass(), methodName, metaMethodParams, false)
+        super.metaMethod = pickMetaMethod(apiDelegate.getMetaClass(), methodName, metaMethodParams, false)
     }
 
-    protected static MetaMethod pickMetaMethod(final MetaClass mc, final String methodName, final Class[] parameterTypes, boolean staticScope) {
-        try {
-            return mc.pickMethod(methodName, parameterTypes)
-        } catch (MethodSelectionException mse) {
-            // the metamethod already exists with multiple signatures, pick the most specific
-            return mc.methods.find { MetaMethod existingMethod ->
-                existingMethod.name == methodName && existingMethod.isStatic()==staticScope && ((!parameterTypes && !existingMethod.parameterTypes) || parameterTypes==existingMethod.parameterTypes)
-            }
-        }
-    }
-    
     @Override
     Object call(Object[] args) {
         def delegateArg = Collections.singletonList(delegate).toArray()
         def arguments = args ? ArrayUtils.addAll(delegateArg, args) : delegateArg
         metaMethod.invoke(apiDelegate, arguments)
-    }
-
-    Object doCall(Object[] args) {
-        call(args)
-    }
-
-    @Override
-    Class[] getParameterTypes() { parameterTypes }
-
-    @Override
-    int getMaximumNumberOfParameters() {
-        parameterTypes.length
     }
 }

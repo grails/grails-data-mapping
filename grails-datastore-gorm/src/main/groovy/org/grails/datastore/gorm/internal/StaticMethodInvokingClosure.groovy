@@ -21,35 +21,14 @@ import groovy.transform.CompileStatic
  */
 @SuppressWarnings("rawtypes")
 @CompileStatic
-class StaticMethodInvokingClosure extends Closure {
-
-    private String methodName
-    private Object apiDelegate
-    private Class[] parameterTypes
-    private MetaMethod metaMethod
-
+class StaticMethodInvokingClosure extends MethodInvokingClosure {
     StaticMethodInvokingClosure(apiDelegate, String methodName, Class[] parameterTypes) {
-        super(apiDelegate, apiDelegate)
-        this.apiDelegate = apiDelegate
-        this.methodName = methodName
-        this.parameterTypes = parameterTypes
-        this.metaMethod = InstanceMethodInvokingClosure.pickMetaMethod(apiDelegate.getMetaClass(), methodName, parameterTypes, true)
+        super(apiDelegate, methodName, parameterTypes)
+        super.metaMethod = pickMetaMethod(apiDelegate.getMetaClass(), methodName, parameterTypes, true)
     }
     
     @Override
     Object call(Object[] args) {
         metaMethod.invoke(apiDelegate, args)
-    }
-
-    Object doCall(Object[] args) {
-        call(args)
-    }
-
-    @Override
-    Class[] getParameterTypes() { parameterTypes }
-
-    @Override
-    int getMaximumNumberOfParameters() {
-        parameterTypes.length
     }
 }
