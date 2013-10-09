@@ -111,11 +111,10 @@ class GormEnhancer {
     protected void addStaticMethods(PersistentEntity e, boolean onlyExtendedMethods) {
         def cls = e.javaClass
         ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
-        def staticMethods = getStaticApi(cls)
-        staticMethods.transactionManager = transactionManager
-        def staticScope = mc.static
-        staticScope.currentGormStaticApi = {-> staticMethods }
-        for (Method m in (onlyExtendedMethods ? staticMethods.extendedMethods : staticMethods.methods)) {
+        def staticApiProvider = getStaticApi(cls)
+        staticApiProvider.transactionManager = transactionManager
+        registerApiInstance(cls, staticApiProvider, true)
+        for (Method m in (onlyExtendedMethods ? staticApiProvider.extendedMethods : staticApiProvider.methods)) {
             def method = m
             if (method != null) {
                 def methodName = method.name
@@ -123,8 +122,8 @@ class GormEnhancer {
                 if (parameterTypes != null) {
                     boolean realMethodExists = doesRealMethodExist(mc, methodName, parameterTypes, true)
                     if(!realMethodExists) {
-                        def callable = new StaticMethodInvokingClosure(staticMethods, methodName, parameterTypes)
-                        staticScope."$methodName" = callable
+                        def callable = new StaticMethodInvokingClosure(staticApiProvider, methodName, parameterTypes)
+                        mc.static."$methodName" = callable
                     }
                 }
             }
@@ -221,7 +220,7 @@ class GormEnhancer {
         Class cls = e.javaClass
         ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
         for (AbstractGormApi apiProvider in getInstanceMethodApiProviders(cls)) {
-            registerApiInstanceLookupMethods(mc, apiProvider)
+            registerApiInstance(cls, apiProvider, false)
 
             for (Method method in (onlyExtendedMethods ? apiProvider.extendedMethods : apiProvider.methods)) {
                 def methodName = method.name
@@ -240,12 +239,19 @@ class GormEnhancer {
         }
     }
     
-    protected void registerApiInstanceLookupMethods (ExpandoMetaClass mc, AbstractGormApi apiProvider) {
-        if (GormInstanceApi.isInstance(apiProvider)) {
-            mc.static.currentGormInstanceApi = {-> apiProvider }
+    protected void registerApiInstance (Class cls, AbstractGormApi apiProvider, boolean staticApi) {
+        Class apiProviderBaseClass = apiProvider.getClass()
+        while(apiProviderBaseClass.getSuperclass() != AbstractGormApi) {
+            apiProviderBaseClass = apiProviderBaseClass.getSuperclass()
         }
-        else if (GormValidationApi.isInstance(apiProvider)) {
-            mc.static.currentGormValidationApi = {-> apiProvider }
+        String lookupMethodName = "current" + apiProviderBaseClass.getSimpleName()
+        String setterName = "set" + (staticApi ? "Static" : "Instance") + apiProviderBaseClass.getSimpleName()
+        ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
+        MetaMethod setterMethod = mc.pickMethod(setterName, [apiProvider.getClass()] as Class[])
+        if(mc.pickMethod(lookupMethodName, [] as Class[]) && setterMethod && setterMethod.isStatic()) {
+            setterMethod.invoke(cls, [apiProvider] as Object[])
+        } else {
+            mc.static."$lookupMethodName" = {-> apiProvider }
         }
     }
 

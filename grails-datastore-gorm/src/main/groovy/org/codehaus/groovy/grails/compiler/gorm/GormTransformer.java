@@ -95,10 +95,6 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
         return new AnnotationNode(new ClassNode(PersistenceMethod.class).getPlainNodeReference());
     }
 
-    protected MethodNode populateAutowiredApiLookupMethod(ClassNode classNode, ClassNode implementationNode, String apiInstanceProperty, String methodName, BlockStatement methodBody) {
-        return new MethodNode(methodName, PUBLIC_STATIC_MODIFIER, implementationNode,ZERO_PARAMETERS,null,methodBody);
-    }
-
     @Override
     protected void performInjectionInternal(String apiInstanceProperty, SourceUnit source, ClassNode classNode) {
         classNode.setUsingGenerics(true);
