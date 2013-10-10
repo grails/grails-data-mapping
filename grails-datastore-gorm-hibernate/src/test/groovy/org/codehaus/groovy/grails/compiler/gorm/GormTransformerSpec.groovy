@@ -6,6 +6,7 @@ import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.codehaus.groovy.grails.compiler.injection.ClassInjector
 import org.codehaus.groovy.grails.compiler.injection.DefaultGrailsDomainClassInjector
 import org.codehaus.groovy.grails.compiler.injection.GrailsAwareClassLoader
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.GormValidationApi
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
@@ -37,8 +38,8 @@ class TestEntity {
   ''')
             cls.load(1)
         then:
-            def e = thrown(MissingMethodException)
-            e.message.contains '''No signature of method: TestEntity.load() is applicable for argument types'''
+            def e = thrown(IllegalStateException)
+            e.message.contains '''Method on class [TestEntity] was used outside of a Grails application.'''
     }
 
     void "Test that generic information is added to hasMany collections"() {
@@ -115,20 +116,20 @@ class TestEntity {
             cls.count()
 
         then:
-            thrown MissingMethodException
+            thrown IllegalStateException
 
         when:
-            cls.metaClass.static.currentGormStaticApi = {-> null}
+            registerApiInstance(cls, GormStaticApi, null, true)
             cls.count()
 
         then:
-            thrown MissingMethodException
+            thrown IllegalStateException
 
         when:
             def ds = new SimpleMapDatastore(new BeanBuilder().createApplicationContext() as ConfigurableApplicationContext)
             ds.mappingContext.addPersistentEntity(cls)
 
-            cls.metaClass.static.currentGormStaticApi = {-> new GormStaticApi(cls, ds, [])}
+            registerApiInstance(cls, GormStaticApi, new GormStaticApi(cls, ds, []), true)
 
         then:
             cls.count() == 0
@@ -164,7 +165,7 @@ class TestEntity {
         when:
             def ds = new SimpleMapDatastore()
 
-            cls.metaClass.static.currentGormValidationApi = {-> new GormValidationApi(cls, ds)}
+            registerApiInstance(cls, GormValidationApi, new GormValidationApi(cls, ds), false)
             obj.clearErrors()
 
         then:
@@ -177,5 +178,9 @@ class TestEntity {
 
         then:
             obj.hasErrors() == true
+    }
+    
+    private void registerApiInstance(cls, apiInstanceType, apiInstance, staticApi) {
+        new GormEnhancer(null).registerApiInstance(cls, apiInstanceType, apiInstance, staticApi)
     }
 }

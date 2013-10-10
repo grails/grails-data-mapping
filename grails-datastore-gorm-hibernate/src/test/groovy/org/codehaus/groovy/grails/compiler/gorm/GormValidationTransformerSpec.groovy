@@ -2,6 +2,7 @@ package org.codehaus.groovy.grails.compiler.gorm
 
 import org.codehaus.groovy.grails.compiler.injection.ClassInjector
 import org.codehaus.groovy.grails.compiler.injection.GrailsAwareClassLoader
+import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormValidationApi
 import org.grails.datastore.mapping.simple.SimpleMapDatastore
 
@@ -35,7 +36,7 @@ class TestEntity {
 
              def ds = new SimpleMapDatastore()
              ds.mappingContext.addPersistentEntity(cls)
-             cls.metaClass.static.currentGormValidationApi = {-> new GormValidationApi(cls, ds)}
+             new GormEnhancer(null).registerApiInstance(cls, GormValidationApi, new GormValidationApi(cls, ds), false)
 
           then:
              obj.validate() == true
