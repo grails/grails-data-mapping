@@ -16,11 +16,15 @@
 package org.codehaus.groovy.grails.orm.hibernate.cfg
 
 import grails.util.GrailsNameUtils
+import groovy.lang.Closure;
 
 import java.lang.reflect.Modifier
+import java.util.List;
 
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.grails.datastore.gorm.finders.FinderMethod
+import org.grails.datastore.gorm.query.NamedQueriesBuilder
+import org.grails.datastore.mapping.model.PersistentEntity;
 import org.hibernate.criterion.CriteriaSpecification
 import org.springframework.core.convert.ConversionService
 
@@ -29,54 +33,31 @@ import org.springframework.core.convert.ConversionService
  *
  * @author Jeff Brown
  */
-class HibernateNamedQueriesBuilder {
-
+class HibernateNamedQueriesBuilder extends NamedQueriesBuilder {
     protected final domainClass
-    protected final dynamicMethods
-    protected boolean initialized = false
     protected final ConversionService conversionService
 
     /**
      * @param domainClass the GrailsDomainClass defining the named queries
      * @param finders dynamic finders
      */
-    HibernateNamedQueriesBuilder(domainClass, List<FinderMethod> finders, ConversionService conversionService) {
+    HibernateNamedQueriesBuilder(domainClass, PersistentEntity entity, List<FinderMethod> finders) {
+        super(entity, finders)
         this.domainClass = domainClass
-        this.conversionService = conversionService
-        dynamicMethods = finders
+        this.conversionService = entity.mappingContext.conversionService
     }
 
-    def evaluate(Closure namedQueriesClosure) {
-        def closure = namedQueriesClosure.clone()
-        closure.resolveStrategy = Closure.DELEGATE_ONLY
-        closure.delegate = this
-        closure.call()
-        initialized = true
-    }
-
-    protected handleMethodMissing = {String name, args ->
+    protected List<Class<?>> getClassesToAugment() {
         def classesToAugment = [domainClass]
-
         def subClasses = domainClass.subClasses
         if (subClasses) {
             classesToAugment += subClasses
         }
-
-        def getterName = GrailsNameUtils.getGetterName(name)
-        classesToAugment.each { clz ->
-            clz.metaClass.static."${getterName}" = {->
-                // creating a new proxy each time because the proxy class has
-                // some state that cannot be shared across requests (namedCriteriaParams)
-                new NamedCriteriaProxy(criteriaClosure: args[0], domainClass: clz, dynamicMethods: dynamicMethods, conversionService: conversionService)
-            }
-        }
+        classesToAugment
     }
 
-    def methodMissing(String name, args) {
-        if (args && args[0] instanceof Closure && !initialized) {
-            return handleMethodMissing(name, args)
-        }
-        throw new MissingMethodException(name, HibernateNamedQueriesBuilder, args)
+    protected def createNamedCriteriaProxy(Closure criteriaClosure) {
+        new NamedCriteriaProxy(criteriaClosure: criteriaClosure, domainClass: domainClass, dynamicMethods: finders, conversionService: conversionService)
     }
 }
 
