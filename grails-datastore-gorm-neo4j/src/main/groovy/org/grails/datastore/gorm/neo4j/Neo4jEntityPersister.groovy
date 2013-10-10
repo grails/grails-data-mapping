@@ -2,7 +2,6 @@ package org.grails.datastore.gorm.neo4j
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
-import org.grails.datastore.gorm.neo4j.Neo4jUtils
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.engine.EntityPersister
@@ -38,7 +37,15 @@ class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     protected List<Object> retrieveAllEntities(PersistentEntity pe, Iterable<Serializable> keys) {
-        throw new UnsupportedOperationException()
+        executionEngine.execute("match (n:${pe.discriminator}) where id(n) in {keys} return ${Neo4jUtils.cypherReturnColumnsForType(pe)}", [keys: keys] as Map<String,Object>).collect { Map<String,Object> map ->
+            def obj = pe.newInstance()
+            EntityAccess entityAccess = createEntityAccess(pe, obj)
+            entityAccess.conversionService = mappingContext.conversionService
+            if (cancelLoad(pe, entityAccess)) {
+                throw new IllegalStateException()
+            }
+            unmarshall(map, entityAccess)
+        }
     }
 
     @Override

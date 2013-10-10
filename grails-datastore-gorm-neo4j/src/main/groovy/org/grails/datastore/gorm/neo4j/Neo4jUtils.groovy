@@ -90,7 +90,7 @@ abstract class Neo4jUtils {
             case long:
             case float:
             case double:
-            case boolean :
+            case boolean:
             case byte[]:
             case int[]:
             case short[]:
@@ -100,6 +100,8 @@ abstract class Neo4jUtils {
             case boolean[]:
             case String[]:
                 //pass
+                break
+            case Collection:
                 break
 
             default:
