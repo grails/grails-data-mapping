@@ -198,9 +198,13 @@ RETURN $returnColumns"""
                         .join( criterion instanceof Conjunction ? ' AND ' : ' OR ')
                 return inner ? "( $inner )" : inner
                 break
+            case Negation:
+                List<Criterion> criteria = ((Negation) criterion).criteria
+                return "NOT (${buildConditions(new Conjunction(criteria), params)})"
+                break
 
             default:
-                throw new UnsupportedOperationException()
+                throw new UnsupportedOperationException("${criterion}")
         }
     }
 
