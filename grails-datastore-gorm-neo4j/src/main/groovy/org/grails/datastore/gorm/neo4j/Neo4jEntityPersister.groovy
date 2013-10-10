@@ -2,6 +2,7 @@ package org.grails.datastore.gorm.neo4j
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.grails.datastore.gorm.neo4j.Neo4jUtils
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.engine.EntityAccess
 import org.grails.datastore.mapping.engine.EntityPersister
@@ -15,7 +16,6 @@ import org.grails.datastore.mapping.model.types.Simple
 import org.grails.datastore.mapping.query.Query
 import org.neo4j.cypher.EntityNotFoundException
 import org.neo4j.cypher.javacompat.ExecutionEngine
-import org.neo4j.graphdb.ResourceIterator
 import org.neo4j.helpers.collection.IteratorUtil
 import org.springframework.context.ApplicationEventPublisher
 
@@ -56,16 +56,27 @@ class Neo4jEntityPersister extends EntityPersister {
             return null
         }
 
-        ResourceIterator<Map<String,Object>> iterator = executionEngine.execute("start n=node({key}) return ${Neo4jUtils.cypherReturnColumnsForType(pe)}", [key: key] as Map<String,Object>).iterator()
         try {
-            assert iterator.hasNext()
-            unmarshall(iterator.next() as Map<String,Object>, entityAccess)
-            entityAccess.entity
+            Map<String,Object> map = IteratorUtil.firstOrNull(executionEngine.execute("match (n:${pe.discriminator}) where id(n)={key} return ${Neo4jUtils.cypherReturnColumnsForType(pe)}", [key: key] as Map<String,Object>))
+//            Map<String,Object> map = IteratorUtil.firstOrNull(executionEngine.execute("start n=node({key}) return ${Neo4jUtils.cypherReturnColumnsForType(pe)}", [key: key] as Map<String,Object>))
+            map ? unmarshall(map, entityAccess) : null
+        } catch (EntityNotFoundException e ) {
+            null
+        }
+
+/*        ResourceIterator<Map<String,Object>> iterator = executionEngine.execute("start n=node({key}) return ${Neo4jUtils.cypherReturnColumnsForType(pe)}", [key: key] as Map<String,Object>).iterator()
+        try {
+            if (iterator.hasNext()) {
+                unmarshall(iterator.next() as Map<String,Object>, entityAccess)
+                return entityAccess.entity
+            } else {
+                return null
+            }
         } catch (EntityNotFoundException e) {
             return null
         } finally {
             iterator.close()
-        }
+        }*/
     }
 
     def unmarshall(Map<String, Object> map, EntityAccess entityAccess) {
@@ -91,6 +102,7 @@ class Neo4jEntityPersister extends EntityPersister {
             }
         }
         firePostLoadEvent(entityAccess.persistentEntity, entityAccess)
+        return entityAccess.entity
     }
 
     @Override
@@ -102,7 +114,8 @@ class Neo4jEntityPersister extends EntityPersister {
             if (cancelUpdate(pe, entityAccess)) {
                 return null
             }
-            cypher = "start n=node({id}) set n={props} return id(n) as id"
+            cypher = "match (n:${pe.discriminator}) where id(n)={id} set n={props} return id(n) as id"
+//            cypher = "start n=node({id}) set n={props} return id(n) as id"
         } else {
             if (cancelInsert(pe, entityAccess)) {
                 return null
@@ -116,16 +129,22 @@ class Neo4jEntityPersister extends EntityPersister {
                     [(it.name): Neo4jUtils.mapToAllowedNeo4jType(obj[it.name], mappingContext)] //TODO: use entityaccess
                 }
 
-        Map<String, Object> firstRow = IteratorUtil.first(executionEngine.execute(cypher,
-                        ["props": simpleProperties, "id": obj["id"]] as Map<String, Object>))
+        try {
 
-        if (entityAccess.getProperty("id")) {
-            firePostUpdateEvent(pe, entityAccess)
-        } else {
-            firePostInsertEvent(pe, entityAccess)
-            entityAccess.setProperty("id", firstRow["id"])
+            Map<String, Object> firstRow = IteratorUtil.first(executionEngine.execute(cypher,
+                    ["props": simpleProperties, "id": obj["id"]] as Map<String, Object>))
+
+            if (entityAccess.getProperty("id")) {
+                firePostUpdateEvent(pe, entityAccess)
+            } else {
+                firePostInsertEvent(pe, entityAccess)
+                entityAccess.setProperty("id", firstRow["id"])
+            }
+            return entityAccess.getProperty("id") as Long
+        } catch (Exception e) {
+            throw e
+//            null
         }
-        return entityAccess.getProperty("id") as Long
     }
 
     @Override
@@ -134,7 +153,7 @@ class Neo4jEntityPersister extends EntityPersister {
         if (cancelDelete(pe, entityAccess)) {
             return
         }
-        executionEngine.execute("start n=node({id}) match n-[r?]-m delete r,n", [id: obj["id"]])
+        executionEngine.execute("match (n:${pe.discriminator}) match n-[r?]-m where id(n)={id} delete r,n", [id: obj["id"]])
         firePostDeleteEvent(pe, entityAccess)
     }
 
