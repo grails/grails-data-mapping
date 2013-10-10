@@ -67,7 +67,9 @@ class GormEnhancer {
     GormEnhancer(Datastore datastore, PlatformTransactionManager transactionManager) {
         this.datastore = datastore
         this.transactionManager = transactionManager
-        registerConstraints(datastore)
+        if(datastore != null) {
+            registerConstraints(datastore)
+        }
     }
 
     protected void registerConstraints(Datastore datastore) {
@@ -113,7 +115,7 @@ class GormEnhancer {
         ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
         def staticApiProvider = getStaticApi(cls)
         staticApiProvider.transactionManager = transactionManager
-        registerApiInstance(cls, staticApiProvider, true)
+        registerApiInstance(cls, staticApiProvider.getClass(), staticApiProvider, true)
         for (Method m in (onlyExtendedMethods ? staticApiProvider.extendedMethods : staticApiProvider.methods)) {
             def method = m
             if (method != null) {
@@ -220,7 +222,7 @@ class GormEnhancer {
         Class cls = e.javaClass
         ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
         for (AbstractGormApi apiProvider in getInstanceMethodApiProviders(cls)) {
-            registerApiInstance(cls, apiProvider, false)
+            registerApiInstance(cls, apiProvider.getClass(), apiProvider, false)
 
             for (Method method in (onlyExtendedMethods ? apiProvider.extendedMethods : apiProvider.methods)) {
                 def methodName = method.name
@@ -239,15 +241,15 @@ class GormEnhancer {
         }
     }
     
-    protected void registerApiInstance (Class cls, AbstractGormApi apiProvider, boolean staticApi) {
-        Class apiProviderBaseClass = apiProvider.getClass()
+    void registerApiInstance (Class cls, Class apiProviderType, AbstractGormApi apiProvider, boolean staticApi) {
+        Class apiProviderBaseClass = apiProviderType
         while(apiProviderBaseClass.getSuperclass() != AbstractGormApi) {
             apiProviderBaseClass = apiProviderBaseClass.getSuperclass()
         }
         String lookupMethodName = "current" + apiProviderBaseClass.getSimpleName()
         String setterName = "set" + (staticApi ? "Static" : "Instance") + apiProviderBaseClass.getSimpleName()
         ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
-        MetaMethod setterMethod = mc.pickMethod(setterName, [apiProvider.getClass()] as Class[])
+        MetaMethod setterMethod = mc.pickMethod(setterName, [apiProviderType] as Class[])
         if(mc.pickMethod(lookupMethodName, [] as Class[]) && setterMethod && setterMethod.isStatic()) {
             setterMethod.invoke(cls, [apiProvider] as Object[])
         } else {
