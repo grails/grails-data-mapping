@@ -116,14 +116,16 @@ class TestEntity {
             cls.count()
 
         then:
-            thrown IllegalStateException
+            Exception e = thrown()
+            assert e instanceof IllegalStateException || e instanceof MissingMethodException
 
         when:
             registerApiInstance(cls, GormStaticApi, null, true)
             cls.count()
 
         then:
-            thrown IllegalStateException
+            Exception e2 = thrown()
+            assert e2 instanceof IllegalStateException || e2 instanceof MissingMethodException
 
         when:
             def ds = new SimpleMapDatastore(new BeanBuilder().createApplicationContext() as ConfigurableApplicationContext)
