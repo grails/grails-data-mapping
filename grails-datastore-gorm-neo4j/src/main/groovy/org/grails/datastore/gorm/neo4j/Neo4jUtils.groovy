@@ -54,25 +54,9 @@ abstract class Neo4jUtils {
         }
     }
 
-    /**
-     * check if a given node is valid for a given class
-     * @param node
-     * @param persistentProperty
-     * @return
-     */
-    /*static boolean doesNodeMatchType(Node node, Class clazz) {
-        try {
-            def nodeClass = ClassUtils.forName(node.getProperty(Neo4jSession.TYPE_PROPERTY_NAME, null))
-            clazz.isAssignableFrom(nodeClass)
-        } catch (ClassNotFoundException e) {
-            false
-        }
-    }*/
-
     static def cypherReturnColumnsForType(PersistentEntity entity) {
-        "id(n) as id,${entity.persistentPropertyNames.collect { "n.$it as $it" }.join(",")}"
+        "n"
     }
-
 
     static def mapToAllowedNeo4jType(Object value, MappingContext mappingContext) {
         switch (value.class) {
@@ -102,6 +86,9 @@ abstract class Neo4jUtils {
                 //pass
                 break
             case Collection:
+                break
+            case BigDecimal:
+                value = ((BigDecimal)value).doubleValue()
                 break
 
             default:

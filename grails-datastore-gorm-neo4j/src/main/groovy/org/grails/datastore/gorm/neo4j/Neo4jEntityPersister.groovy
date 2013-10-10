@@ -15,7 +15,9 @@ import org.grails.datastore.mapping.model.types.Simple
 import org.grails.datastore.mapping.query.Query
 import org.neo4j.cypher.EntityNotFoundException
 import org.neo4j.cypher.javacompat.ExecutionEngine
+import org.neo4j.graphdb.Label
 import org.neo4j.helpers.collection.IteratorUtil
+import org.neo4j.graphdb.Node
 import org.springframework.context.ApplicationEventPublisher
 
 /**
@@ -38,13 +40,7 @@ class Neo4jEntityPersister extends EntityPersister {
     @Override
     protected List<Object> retrieveAllEntities(PersistentEntity pe, Iterable<Serializable> keys) {
         executionEngine.execute("match (n:${pe.discriminator}) where id(n) in {keys} return ${Neo4jUtils.cypherReturnColumnsForType(pe)}", [keys: keys] as Map<String,Object>).collect { Map<String,Object> map ->
-            def obj = pe.newInstance()
-            EntityAccess entityAccess = createEntityAccess(pe, obj)
-            entityAccess.conversionService = mappingContext.conversionService
-            if (cancelLoad(pe, entityAccess)) {
-                throw new IllegalStateException()
-            }
-            unmarshall(map, entityAccess)
+            retrieveEntityAccess(pe, map["n"] as Node).entity
         }
     }
 
@@ -56,43 +52,66 @@ class Neo4jEntityPersister extends EntityPersister {
     @Override
     protected Object retrieveEntity(PersistentEntity pe, Serializable key) {
 
-        def obj = pe.newInstance()
-        EntityAccess entityAccess = createEntityAccess(pe, obj)
-        entityAccess.conversionService = mappingContext.conversionService
-        if (cancelLoad(pe, entityAccess)) {
-            return null
-        }
-
         try {
-            Map<String,Object> map = IteratorUtil.firstOrNull(executionEngine.execute("match (n:${pe.discriminator}) where id(n)={key} return ${Neo4jUtils.cypherReturnColumnsForType(pe)}", [key: key] as Map<String,Object>))
-//            Map<String,Object> map = IteratorUtil.firstOrNull(executionEngine.execute("start n=node({key}) return ${Neo4jUtils.cypherReturnColumnsForType(pe)}", [key: key] as Map<String,Object>))
-            map ? unmarshall(map, entityAccess) : null
-        } catch (EntityNotFoundException e ) {
-            null
-        }
+            Map<String,Object> map = IteratorUtil.first(executionEngine.execute("match (n:${pe.discriminator}) where id(n)={key} return ${Neo4jUtils.cypherReturnColumnsForType(pe)}", [key: key] as Map<String,Object>))
 
-/*        ResourceIterator<Map<String,Object>> iterator = executionEngine.execute("start n=node({key}) return ${Neo4jUtils.cypherReturnColumnsForType(pe)}", [key: key] as Map<String,Object>).iterator()
-        try {
-            if (iterator.hasNext()) {
-                unmarshall(iterator.next() as Map<String,Object>, entityAccess)
-                return entityAccess.entity
-            } else {
+            EntityAccess entityAccess = retrieveEntityAccess(pe, map["n"] as org.neo4j.graphdb.Node)
+            if (cancelLoad(pe, entityAccess)) {
                 return null
             }
-        } catch (EntityNotFoundException e) {
-            return null
-        } finally {
-            iterator.close()
-        }*/
+            entityAccess.entity
+
+        } catch (EntityNotFoundException  | NoSuchElementException e) {
+            null
+        }
     }
 
-    def unmarshall(Map<String, Object> map, EntityAccess entityAccess) {
-        entityAccess.setProperty("version", (map as Map<String, Object>)["version"])
-        entityAccess.setProperty("id", (map as Map<String, Object>)["id"])
+    public EntityAccess retrieveEntityAccess(PersistentEntity defaultPersistentEntity, Node node) {
+        PersistentEntity p = mostSpecificPersistentEntity(defaultPersistentEntity,
+                node.labels.collect { Label l -> l.name() })
+        EntityAccess entityAccess = new EntityAccess(p, p.newInstance())
+        entityAccess.conversionService = p.mappingContext.conversionService
+        unmarshall(node, entityAccess)
+        entityAccess
+    }
+
+    private PersistentEntity mostSpecificPersistentEntity(PersistentEntity pe, Collection<String> labels) {
+        if (labels.size()==1) {
+            return pe
+        }
+        PersistentEntity result
+        int longestInheritenceChain = -1
+
+        for (String l in labels)  {
+            PersistentEntity persistentEntity = mappingContext.persistentEntities.find { PersistentEntity p ->
+                p.discriminator == l
+            }
+
+            int inheritenceChain = calcInheritenceChain(persistentEntity)
+            if (inheritenceChain > longestInheritenceChain) {
+                longestInheritenceChain = inheritenceChain
+                result = persistentEntity
+            }
+
+        }
+        return result
+    }
+
+    int calcInheritenceChain(PersistentEntity pe) {
+        if (pe==null) {
+            0
+        } else {
+            calcInheritenceChain(pe.parentEntity) + 1
+        }
+    }
+
+    def unmarshall(Node node, EntityAccess entityAccess) {
+        entityAccess.setProperty("version", node.getProperty("version"))
+        entityAccess.setProperty("id", node.getId())
         for (PersistentProperty property in entityAccess.persistentEntity.persistentProperties) {
             switch (property) {
                 case Simple:
-                    entityAccess.setProperty(property.name, (map as Map<String, Object>)[property.name])
+                    entityAccess.setProperty(property.name, node.getProperty(property.name, null))
                     //entity.mappingContext.conversionService.convert(map[property.name], property.type)
                     break
                 case OneToOne:
@@ -115,7 +134,7 @@ class Neo4jEntityPersister extends EntityPersister {
     @Override
     protected Serializable persistEntity(PersistentEntity pe, Object obj) {
 
-        EntityAccess entityAccess =  createEntityAccess(pe, obj)
+        EntityAccess entityAccess = createEntityAccess(pe, obj)
         String cypher
         if (entityAccess.getProperty("id")) {
             if (cancelUpdate(pe, entityAccess)) {
@@ -127,7 +146,8 @@ class Neo4jEntityPersister extends EntityPersister {
             if (cancelInsert(pe, entityAccess)) {
                 return null
             }
-            cypher = "create (n:$pe.discriminator {props}) return id(n) as id"
+            def labels = buildAllLabelsWithInheritence(pe)
+            cypher = "create (n$labels {props}) return id(n) as id"
         }
 
         def simpleProperties = pe.persistentProperties
@@ -135,11 +155,12 @@ class Neo4jEntityPersister extends EntityPersister {
                 .collectEntries { PersistentProperty it ->
                     [(it.name): Neo4jUtils.mapToAllowedNeo4jType(obj[it.name], mappingContext)] //TODO: use entityaccess
                 }
-
         try {
-
+            Map<String, Object> params = ["props": simpleProperties, "id": obj["id"]] as Map<String, Object>
+            log.info "running cypher $cypher"
+            log.info "   with params $params"
             Map<String, Object> firstRow = IteratorUtil.first(executionEngine.execute(cypher,
-                    ["props": simpleProperties, "id": obj["id"]] as Map<String, Object>))
+                    params))
 
             if (entityAccess.getProperty("id")) {
                 firePostUpdateEvent(pe, entityAccess)
@@ -151,6 +172,14 @@ class Neo4jEntityPersister extends EntityPersister {
         } catch (Exception e) {
             throw e
 //            null
+        }
+    }
+
+    def buildAllLabelsWithInheritence(PersistentEntity persistentEntity) {
+        if (persistentEntity==null) {
+            return ""
+        } else {
+            ":${persistentEntity.discriminator}${buildAllLabelsWithInheritence(persistentEntity.parentEntity)}"
         }
     }
 

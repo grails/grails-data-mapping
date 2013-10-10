@@ -70,10 +70,7 @@ RETURN $returnColumns"""
         ExecutionResult executionResult = executionEngine.execute(cypher, params)
         if (projections.projectionList.empty) {
             return executionResult.collect { Map<String,Object> map ->
-                EntityAccess entityAccess = new EntityAccess(persistentEntity, persistentEntity.newInstance())
-                entityAccess.conversionService = persistentEntity.mappingContext.conversionService
-                neo4jEntityPersister.unmarshall(map, entityAccess)
-                entityAccess.entity
+                neo4jEntityPersister.retrieveEntityAccess(persistentEntity, map["n"] as org.neo4j.graphdb.Node).entity
             }
         } else {
 
