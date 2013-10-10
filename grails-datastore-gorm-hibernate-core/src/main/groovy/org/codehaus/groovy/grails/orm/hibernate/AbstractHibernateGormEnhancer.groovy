@@ -51,13 +51,13 @@ abstract class AbstractHibernateGormEnhancer extends GormEnhancer {
     }
 
     @Override
-    protected void registerNamedQueries(PersistentEntity entity, namedQueries) {
+    protected void registerNamedQueries(PersistentEntity entity, Closure namedQueries) {
         if (grailsApplication == null) {
             return
         }
         def domainClass = grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, entity.name)
         if (domainClass) {
-            new HibernateNamedQueriesBuilder(domainClass, entity, getFinders()).evaluate((Closure)namedQueries)
+            new HibernateNamedQueriesBuilder(domainClass, entity, getFinders()).evaluate(namedQueries)
         }
     }
 
