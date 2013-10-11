@@ -124,72 +124,7 @@ RETURN $returnColumns"""
         switch (criterion) {
 
             case PropertyCriterion:
-                def pnc = ((PropertyCriterion)criterion)
-                def paramName = "param_${params.size()}" as String
-                params[paramName] = Neo4jUtils.mapToAllowedNeo4jType(pnc.value, entity.mappingContext)
-                def rhs
-                def lhs
-                def operator
-
-                switch (pnc) {
-                    case Equals:
-                        lhs = "n.$pnc.property"
-                        operator = "="
-                        rhs = "{$paramName}"
-                        break
-                    case IdEquals:
-                        lhs = "id(n)"
-                        operator = "="
-                        rhs = "{$paramName}"
-                        break
-                    case Like:
-                        lhs = "n.$pnc.property"
-                        operator = "=~"
-                        rhs = "{$paramName}"
-                        params[paramName] = pnc.value.toString().replaceAll("%", ".*")
-                        break
-                    case In:
-                        lhs = pnc.property=="id" ? "ID(n)" : "n.$pnc.property"
-                        operator = " IN "
-                        rhs = "{$paramName}"
-                        params[paramName] = ((In)pnc).values
-                        break
-                    case GreaterThan:
-                        lhs = "n.$pnc.property"
-                        operator = ">"
-                        rhs = "{$paramName}"
-                        break
-                    case GreaterThanEquals:
-                        lhs = "n.$pnc.property"
-                        operator = ">="
-                        rhs = "{$paramName}"
-                        break
-                    case LessThan:
-                        lhs = "n.$pnc.property"
-                        operator = "<"
-                        rhs = "{$paramName}"
-                        break
-                    case LessThanEquals:
-                        lhs = "n.$pnc.property"
-                        operator = "<="
-                        rhs = "{$paramName}"
-                        break
-                    case NotEquals:
-                        lhs = "n.$pnc.property"
-                        operator = "<>"
-                        rhs = "{$paramName}"
-                        break
-                    case Between:
-                        Between b = (Between)pnc
-                        params["${paramName}_from"] = Neo4jUtils.mapToAllowedNeo4jType(b.from, entity.mappingContext)
-                        params["${paramName}_to"] = Neo4jUtils.mapToAllowedNeo4jType(b.to, entity.mappingContext)
-                        return "{${paramName}_from}<n.$pnc.property and n.$pnc.property<{${paramName}_to}"
-                        break
-                    default:
-                        throw new UnsupportedOperationException("propertycriterion ${pnc.class}")
-                }
-
-                return "$lhs$operator$rhs"
+                return buildConditionsPropertyCriterion(params, (PropertyCriterion)criterion)
                 break
             case Conjunction:
             case Disjunction:
@@ -202,38 +137,9 @@ RETURN $returnColumns"""
                 List<Criterion> criteria = ((Negation) criterion).criteria
                 return "NOT (${buildConditions(new Conjunction(criteria), params)})"
                 break
-
             case PropertyComparisonCriterion:
-
-                PropertyComparisonCriterion pcc = criterion as PropertyComparisonCriterion
-                def operator = ""
-                switch (pcc) {
-                    case GreaterThanEqualsProperty:
-                        operator = ">="
-                        break
-                    case EqualsProperty:
-                        operator = "="
-                        break
-                    case NotEqualsProperty:
-                        operator = "<>"
-                        break
-                    case LessThanEqualsProperty:
-                        operator = "<="
-                        break
-                    case LessThanProperty:
-                        operator = "<"
-                        break
-                    case GreaterThanProperty:
-                        operator = ">"
-                        break
-
-
-                    default:
-                        throw new UnsupportedOperationException("${criterion}")
-                }
-                return "n.${pcc.property}${operator}n.${pcc.otherProperty}"
+                return buildConditionsPropertyComparisonCriterion(criterion as PropertyComparisonCriterion)
                 break
-
             case PropertyNameCriterion:
                 PropertyNameCriterion pnc = criterion as PropertyNameCriterion
                 switch (pnc) {
@@ -247,6 +153,101 @@ RETURN $returnColumns"""
             default:
                 throw new UnsupportedOperationException("${criterion}")
         }
+    }
+
+    def buildConditionsPropertyComparisonCriterion(PropertyComparisonCriterion pcc) {
+        def operator = ""
+        switch (pcc) {
+            case GreaterThanEqualsProperty:
+                operator = ">="
+                break
+            case EqualsProperty:
+                operator = "="
+                break
+            case NotEqualsProperty:
+                operator = "<>"
+                break
+            case LessThanEqualsProperty:
+                operator = "<="
+                break
+            case LessThanProperty:
+                operator = "<"
+                break
+            case GreaterThanProperty:
+                operator = ">"
+                break
+            default:
+                throw new UnsupportedOperationException("${pcc}")
+        }
+        return "n.${pcc.property}${operator}n.${pcc.otherProperty}"
+    }
+
+    def buildConditionsPropertyCriterion(Map params, PropertyCriterion pnc) {
+        def paramName = "param_${params.size()}" as String
+        params[paramName] = Neo4jUtils.mapToAllowedNeo4jType(pnc.value, entity.mappingContext)
+        def rhs
+        def lhs
+        def operator
+
+        switch (pnc) {
+            case Equals:
+                lhs = "n.$pnc.property"
+                operator = "="
+                rhs = "{$paramName}"
+                break
+            case IdEquals:
+                lhs = "id(n)"
+                operator = "="
+                rhs = "{$paramName}"
+                break
+            case Like:
+                lhs = "n.$pnc.property"
+                operator = "=~"
+                rhs = "{$paramName}"
+                params[paramName] = pnc.value.toString().replaceAll("%", ".*")
+                break
+            case In:
+                lhs = pnc.property == "id" ? "ID(n)" : "n.$pnc.property"
+                operator = " IN "
+                rhs = "{$paramName}"
+                params[paramName] = ((In) pnc).values
+                break
+            case GreaterThan:
+                lhs = "n.$pnc.property"
+                operator = ">"
+                rhs = "{$paramName}"
+                break
+            case GreaterThanEquals:
+                lhs = "n.$pnc.property"
+                operator = ">="
+                rhs = "{$paramName}"
+                break
+            case LessThan:
+                lhs = "n.$pnc.property"
+                operator = "<"
+                rhs = "{$paramName}"
+                break
+            case LessThanEquals:
+                lhs = "n.$pnc.property"
+                operator = "<="
+                rhs = "{$paramName}"
+                break
+            case NotEquals:
+                lhs = "n.$pnc.property"
+                operator = "<>"
+                rhs = "{$paramName}"
+                break
+            case Between:
+                Between b = (Between) pnc
+                params["${paramName}_from".toString()] = Neo4jUtils.mapToAllowedNeo4jType(b.from, entity.mappingContext)
+                params["${paramName}_to".toString()] = Neo4jUtils.mapToAllowedNeo4jType(b.to, entity.mappingContext)
+                return "{${paramName}_from}<=n.$pnc.property and n.$pnc.property<={${paramName}_to}"
+                break
+            default:
+                throw new UnsupportedOperationException("propertycriterion ${pnc.class}")
+        }
+
+        return "$lhs$operator$rhs"
     }
 
     ExecutionEngine getExecutionEngine() {
