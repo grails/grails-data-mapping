@@ -46,7 +46,9 @@ class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     protected List<Serializable> persistEntities(PersistentEntity pe, @SuppressWarnings("rawtypes") Iterable objs) {
-        throw new UnsupportedOperationException()
+        objs.collect {
+             persistEntity(pe, it)
+        }
     }
 
     @Override
