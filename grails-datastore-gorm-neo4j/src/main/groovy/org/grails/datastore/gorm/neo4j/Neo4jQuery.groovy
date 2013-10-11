@@ -203,6 +203,39 @@ RETURN $returnColumns"""
                 return "NOT (${buildConditions(new Conjunction(criteria), params)})"
                 break
 
+            case PropertyComparisonCriterion:
+
+                PropertyComparisonCriterion pcc = criterion as PropertyComparisonCriterion
+                def operator = ""
+                switch (pcc) {
+                    case GreaterThanEqualsProperty:
+                        operator = ">="
+                        break
+                    case EqualsProperty:
+                        operator = "="
+                        break
+                    case NotEqualsProperty:
+                        operator = "<>"
+                        break
+                    case LessThanEqualsProperty:
+                        operator = "<="
+                        break
+                    case LessThanProperty:
+                        operator = "<"
+                        break
+                    case GreaterThanProperty:
+                        operator = ">"
+                        break
+
+
+                    default:
+                        throw new UnsupportedOperationException("${criterion}")
+                }
+                return "n.${pcc.property}${operator}n.${pcc.otherProperty}"
+
+
+                break
+
             default:
                 throw new UnsupportedOperationException("${criterion}")
         }
