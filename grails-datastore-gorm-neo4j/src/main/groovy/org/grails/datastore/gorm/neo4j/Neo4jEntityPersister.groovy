@@ -106,7 +106,9 @@ class Neo4jEntityPersister extends EntityPersister {
     }
 
     def unmarshall(Node node, EntityAccess entityAccess) {
-        entityAccess.setProperty("version", node.getProperty("version"))
+        if (entityAccess.entity.hasProperty("version")) {
+            entityAccess.setProperty("version", node.getProperty("version", 0))
+        }
         entityAccess.setProperty("id", node.getId())
         for (PersistentProperty property in entityAccess.persistentEntity.persistentProperties) {
             switch (property) {
@@ -139,6 +141,9 @@ class Neo4jEntityPersister extends EntityPersister {
         if (entityAccess.getProperty("id")) {
             if (cancelUpdate(pe, entityAccess)) {
                 return null
+            }
+            if (pe.hasProperty("version", Long)) {
+                obj["version"] = ((Number)obj["version"]) + 1
             }
             cypher = "match (n:${pe.discriminator}) where id(n)={id} set n={props} return id(n) as id"
 //            cypher = "start n=node({id}) set n={props} return id(n) as id"
