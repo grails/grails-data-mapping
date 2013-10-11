@@ -232,9 +232,17 @@ RETURN $returnColumns"""
                         throw new UnsupportedOperationException("${criterion}")
                 }
                 return "n.${pcc.property}${operator}n.${pcc.otherProperty}"
-
-
                 break
+
+            case PropertyNameCriterion:
+                PropertyNameCriterion pnc = criterion as PropertyNameCriterion
+                switch (pnc) {
+                    case IsNull:
+                        return "has(n.${pnc.property})"
+                        break
+                    default:
+                        throw new UnsupportedOperationException("${criterion}")
+                }
 
             default:
                 throw new UnsupportedOperationException("${criterion}")
