@@ -36,7 +36,6 @@ class Setup {
     static Transaction transaction
     static LocalTestServer server
     static GraphDatabaseService graphDb
-    static ExecutionEngine executionEngine
 
     static destroy() {
         transaction.failure()
@@ -53,7 +52,7 @@ class Setup {
         initializeGraphDatabaseSerivce()
 
         MappingContext mappingContext = new Neo4jMappingContext()
-        datastore = new Neo4jDatastore(mappingContext, ctx, executionEngine) //graphDatabaseService: graphDb, applicationContext: ctx)
+        datastore = new Neo4jDatastore(mappingContext, ctx, graphDb)
 //        datastore.mappingContext.proxyFactory = new GroovyProxyFactory()
 
         for (Class cls in classes) {
@@ -86,8 +85,8 @@ class Setup {
             datastore.mappingContext.addEntityValidator(entity, validator)
         }
 
-//        def enhancer = new Neo4jGormEnhancer(datastore, new DatastoreTransactionManager(datastore: datastore))
-        def enhancer = new GormEnhancer(datastore, new DatastoreTransactionManager(datastore: datastore))
+        def enhancer = new Neo4jGormEnhancer(datastore, new DatastoreTransactionManager(datastore: datastore))
+//        def enhancer = new GormEnhancer(datastore, new DatastoreTransactionManager(datastore: datastore))
         enhancer.enhance()
 
         datastore.afterPropertiesSet()
@@ -114,6 +113,5 @@ class Setup {
         } else {
             graphDb = new TestGraphDatabaseFactory().newImpermanentDatabase()
         }
-        executionEngine = new ExecutionEngine(graphDb)
     }
 }

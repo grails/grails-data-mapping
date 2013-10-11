@@ -19,8 +19,11 @@ import org.grails.datastore.mapping.core.AbstractDatastore
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
 import org.neo4j.cypher.javacompat.ExecutionEngine
+import org.neo4j.graphdb.GraphDatabaseService
 import org.springframework.beans.factory.InitializingBean
+import org.springframework.context.ApplicationContext
 import org.springframework.context.ConfigurableApplicationContext
+
 /**
  * Datastore implementation for Neo4j backend
  * @author Stefan Armbruster <stefan@armbruster-it.de>
@@ -31,11 +34,13 @@ class Neo4jDatastore extends AbstractDatastore implements InitializingBean {
 
     MappingContext mappingContext
     ExecutionEngine executionEngine
+    GraphDatabaseService graphDatabaseService
 
-    public Neo4jDatastore(MappingContext mappingContext, ConfigurableApplicationContext applicationContext, ExecutionEngine executionEngine) {
+    public Neo4jDatastore(MappingContext mappingContext, ApplicationContext applicationContext, GraphDatabaseService graphDatabaseService) {
         this.mappingContext = mappingContext
-        this.executionEngine = executionEngine
-        this.applicationContext = applicationContext
+        this.applicationContext = applicationContext as ConfigurableApplicationContext
+        this.graphDatabaseService = graphDatabaseService
+        this.executionEngine = new ExecutionEngine(graphDatabaseService)
     }
 
     @Override

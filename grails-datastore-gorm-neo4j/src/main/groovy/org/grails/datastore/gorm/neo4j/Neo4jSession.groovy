@@ -28,7 +28,7 @@ class Neo4jSession extends AbstractSession<ExecutionEngine> {
 
     @Override
     protected Transaction beginTransactionInternal() {
-        throw new UnsupportedOperationException()
+        new Neo4jTransaction(((Neo4jDatastore)datastore).graphDatabaseService)
     }
 
     @Override
