@@ -225,7 +225,7 @@ public class GrailsHibernateUtil {
                 addOrderPossiblyNested(grailsApplication, c, targetClass, sort, order, ignoreCase);
             }
         }
-        else if(useDefaultMapping) {
+        else if (useDefaultMapping) {
             Mapping m = binder.getMapping(targetClass);
             if (m != null) {
                 Map sortMap = m.getSort().getNamesAndDirections();
@@ -258,7 +258,7 @@ public class GrailsHibernateUtil {
     }
 
     private static FlushMode convertFlushMode(Object object) {
-        if(object == null) {
+        if (object == null) {
             return null;
         }
         if (object instanceof FlushMode) {
@@ -553,7 +553,7 @@ public class GrailsHibernateUtil {
     public static List<String> getDatasourceNames(GrailsDomainClass domainClass) {
         // Mappings won't have been built yet when this is called from
         // HibernatePluginSupport.doWithSpring  so do a temporary evaluation but don't cache it
-        Mapping mapping = isMappedWithHibernate(domainClass) ? binder .evaluateMapping(domainClass, null, false) : null;
+        Mapping mapping = isMappedWithHibernate(domainClass) ? binder.evaluateMapping(domainClass, null, false) : null;
         if (mapping == null) {
             mapping = new Mapping();
         }
