@@ -12,10 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.grails.datastore.mapping.rest.client
+package org.grails.datastore.mapping.rest.client;
 
-import org.grails.datastore.mapping.core.DatastoreException
-import grails.plugins.rest.client.RestResponse
+import org.grails.datastore.mapping.core.DatastoreException;
+import grails.plugins.rest.client.RestResponse;
 
 /**
  * Exception thrown from requests made by GORM for REST
@@ -23,16 +23,20 @@ import grails.plugins.rest.client.RestResponse
  * @author Graeme Rocher
  * @since 1.0
  */
-class RestClientException extends DatastoreException {
-    RestResponse response
+public class RestClientException extends DatastoreException {
+    private RestResponse response;
 
-    RestClientException(String s, RestResponse response) {
-        super(s)
-        this.response = response
+    public RestClientException(String s, RestResponse response) {
+        super(s);
+        this.response = response;
     }
 
-    RestClientException(String s, Throwable throwable, RestResponse response) {
-        super(s, throwable)
-        this.response = response
+    public RestClientException(String s, Throwable throwable, RestResponse response) {
+        super(s, throwable);
+        this.response = response;
+    }
+    
+    public RestResponse getResponse() { 
+        return this.response;
     }
 }
