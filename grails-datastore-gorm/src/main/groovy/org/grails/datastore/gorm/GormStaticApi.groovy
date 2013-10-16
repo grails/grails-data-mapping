@@ -73,6 +73,10 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     PersistentEntity getGormPersistentEntity() {
         persistentEntity
     }
+    
+    List<FinderMethod> getGormDynamicFinders() {
+        gormDynamicFinders
+    }
 
     /**
      * Method missing handler that deals with the invocation of dynamic finders
