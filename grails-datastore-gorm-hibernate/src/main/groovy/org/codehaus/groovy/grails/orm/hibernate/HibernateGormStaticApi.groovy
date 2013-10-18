@@ -78,9 +78,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     HibernateGormStaticApi(Class<D> persistentClass, HibernateDatastore datastore, List<FinderMethod> finders,
                 ClassLoader classLoader, PlatformTransactionManager transactionManager) {
-        super(persistentClass, datastore, finders)
-
-        super.transactionManager = transactionManager
+        super(persistentClass, datastore, finders, transactionManager)
         this.classLoader = classLoader
         sessionFactory = datastore.getSessionFactory()
         conversionService = datastore.mappingContext.conversionService
