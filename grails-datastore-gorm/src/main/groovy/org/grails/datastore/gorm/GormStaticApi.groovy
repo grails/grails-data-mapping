@@ -307,8 +307,7 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
                 builderBean.setPropertyValue(propertyName, entry.value)
             }
         }
-
-        return criteriaBuilder.list(callable)
+        return InvokerHelper.invokeMethod(criteriaBuilder, 'list', callable)
     }
 
     /**
