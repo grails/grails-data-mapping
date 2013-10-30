@@ -236,8 +236,11 @@ class DirtyCheckingTransformer implements GrailsDomainClassInjector, GrailsArtef
                         else {
                             returnType = originalReturnType
                         }
-                        final getterName = NameUtils.getGetterName(propertyName, ClassHelper.boolean_TYPE.getName().equals(returnType.getName()))
-                        classNode.addMethod(getterName, PUBLIC, returnType, ZERO_PARAMETERS, null, new ReturnStatement(new VariableExpression(propertyField.getName())))
+                        boolean booleanProperty = ClassHelper.boolean_TYPE.getName().equals(returnType.getName())
+                        classNode.addMethod(NameUtils.getGetterName(propertyName, false), PUBLIC, returnType, ZERO_PARAMETERS, null, new ReturnStatement(new VariableExpression(propertyField.getName())))
+                        if(booleanProperty) {
+                            classNode.addMethod(NameUtils.getGetterName(propertyName, true), PUBLIC, returnType, ZERO_PARAMETERS, null, new ReturnStatement(new VariableExpression(propertyField.getName())))
+                        }
 
                         // now add the setter that tracks changes. Each setters becomes:
                         // void setFoo(String foo) { markDirty("foo"); this.foo = foo }

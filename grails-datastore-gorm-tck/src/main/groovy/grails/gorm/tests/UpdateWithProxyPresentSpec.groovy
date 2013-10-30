@@ -95,6 +95,7 @@ class Pet implements Serializable {
 @DirtyCheck
 @Entity
 @ApplyDetachedCriteriaTransform
+@groovy.transform.EqualsAndHashCode
 class Person implements Serializable, Comparable<Person> {
     static simpsons = where {
          lastName == "Simpson"
@@ -108,6 +109,7 @@ class Person implements Serializable, Comparable<Person> {
     Set<Pet> pets = [] as Set
     static hasMany = [pets:Pet]
     Face face
+    boolean myBooleanProperty
 
 //    static peopleWithOlderPets = where {
 //        pets {
