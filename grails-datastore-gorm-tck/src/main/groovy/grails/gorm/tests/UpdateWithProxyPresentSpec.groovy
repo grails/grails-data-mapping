@@ -95,7 +95,7 @@ class Pet implements Serializable {
 @DirtyCheck
 @Entity
 @ApplyDetachedCriteriaTransform
-@groovy.transform.EqualsAndHashCode
+//@groovy.transform.EqualsAndHashCode - breaks gorm-neo4j: TODO: http://jira.grails.org/browse/GPNEO4J-10 
 class Person implements Serializable, Comparable<Person> {
     static simpsons = where {
          lastName == "Simpson"
