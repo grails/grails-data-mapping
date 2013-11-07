@@ -23,7 +23,6 @@ import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.PropertyNode;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.compiler.injection.ASTErrorsHelper;
 import org.codehaus.groovy.grails.compiler.injection.ASTValidationErrorsHelper;
@@ -46,25 +45,13 @@ public class GormValidationTransformer extends AbstractGrailsArtefactTransformer
        "setErrors", "getErrors", HAS_ERRORS_METHOD,
        "getBeforeValidateHelper", "setBeforeValidateHelper",
        "getValidator", "setValidator");
-    private static final Class<?>[] EMPTY_JAVA_CLASS_ARRAY = {};
-    private static final Class<?>[] OBJECT_CLASS_ARG = { Object.class };
 
     @Override
     protected boolean isStaticCandidateMethod(ClassNode classNode, MethodNode declaredMethod) {
         String methodName = declaredMethod.getName();
-        return !EXCLUDES.contains(methodName) &&
-                !isGetter(methodName, declaredMethod) &&
-                !isSetter(methodName, declaredMethod) &&
-                super.isStaticCandidateMethod(classNode, declaredMethod);
+        return !EXCLUDES.contains(methodName) && super.isStaticCandidateMethod(classNode, declaredMethod);
     }
 
-    private boolean isSetter(String methodName, MethodNode declaredMethod) {
-        return declaredMethod.getParameters().length ==1 && GrailsClassUtils.isSetter(methodName, OBJECT_CLASS_ARG);
-    }
-
-    private boolean isGetter(String methodName, MethodNode declaredMethod) {
-        return declaredMethod.getParameters().length == 0 && GrailsClassUtils.isGetter(methodName, EMPTY_JAVA_CLASS_ARRAY);
-    }
     @Override
     protected boolean requiresStaticLookupMethod() {
         return true;
