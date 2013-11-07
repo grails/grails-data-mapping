@@ -1,5 +1,5 @@
 // Datastore Project
-include "grails-datastore-core",
+include ("grails-datastore-core",
         "grails-datastore-gemfire",
         "grails-datastore-mongo",
         "grails-datastore-jpa",
@@ -55,3 +55,4 @@ include "grails-datastore-core",
         'grails-datastore-gorm-jcr',
         'grails-datastore-gorm-simpledb'
 */
+)
