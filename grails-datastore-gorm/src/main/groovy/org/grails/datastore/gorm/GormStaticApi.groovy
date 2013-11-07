@@ -255,6 +255,15 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
     D proxy(Serializable id) {
         load(id)
     }
+    
+    /**
+     * Retrieve all the objects for the given identifiers
+     * @param ids The identifiers to operate against
+     * @return A list of identifiers
+     */
+    List<D> getAll(Iterable<Serializable> ids) {
+        return getAll(ids as Serializable[])
+    }
 
     /**
      * Retrieve all the objects for the given identifiers
