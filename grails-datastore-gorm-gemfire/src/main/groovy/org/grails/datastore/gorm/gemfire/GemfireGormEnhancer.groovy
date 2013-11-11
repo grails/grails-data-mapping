@@ -24,6 +24,7 @@ import org.grails.datastore.mapping.query.order.ManualEntityOrdering
 import org.springframework.data.gemfire.GemfireCallback
 import org.springframework.data.gemfire.GemfireTemplate
 import org.springframework.util.ReflectionUtils
+import org.springframework.transaction.PlatformTransactionManager
 
 import com.gemstone.gemfire.cache.Region
 import com.gemstone.gemfire.cache.execute.FunctionAdapter
