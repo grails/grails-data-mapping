@@ -114,7 +114,6 @@ class GormEnhancer {
         def cls = e.javaClass
         ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
         def staticApiProvider = getStaticApi(cls)
-        staticApiProvider.transactionManager = transactionManager
         registerApiInstance(cls, staticApiProvider.getClass(), staticApiProvider, true)
         for (Method m in (onlyExtendedMethods ? staticApiProvider.extendedMethods : staticApiProvider.methods)) {
             def method = m
@@ -309,7 +308,7 @@ class GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        new GormStaticApi<D>(cls, datastore, getFinders())
+        new GormStaticApi<D>(cls, datastore, getFinders(), transactionManager)
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {

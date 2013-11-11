@@ -43,7 +43,7 @@ class DynamoDBGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new DynamoDBGormStaticApi<D>(cls, datastore, getFinders())
+        return new DynamoDBGormStaticApi<D>(cls, datastore, getFinders(), transactionManager)
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
@@ -118,7 +118,11 @@ class DynamoDBGormInstanceApi<D> extends GormInstanceApi<D> {
 
 class DynamoDBGormStaticApi<D> extends GormStaticApi<D> {
     DynamoDBGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
-        super(persistentClass, datastore, finders)
+        this(persistentClass, datastore, finders, null)
+    }
+
+    DynamoDBGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
+        super(persistentClass, datastore, finders, transactionManager)
     }
 
     @Override

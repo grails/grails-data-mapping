@@ -47,7 +47,7 @@ class GemfireGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class cls) {
-        return new GemfireStaticApi<D> (cls, datastore, getFinders())
+        return new GemfireStaticApi<D> (cls, datastore, getFinders(), transactionManager)
     }
 }
 
@@ -127,9 +127,13 @@ class GemfireStaticApi<D> extends GormStaticApi<D> {
 
     ContinuousQueryApi cqApi
     List<FinderMethod> finders
-
+    
     GemfireStaticApi(Class<D> persistentClass, GemfireDatastore datastore, List<FinderMethod> finders) {
-        super(persistentClass, datastore, finders)
+        this(persistentClass, datastore, finders, null)
+    }
+
+    GemfireStaticApi(Class<D> persistentClass, GemfireDatastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
+        super(persistentClass, datastore, finders, transactionManager)
         cqApi = new ContinuousQueryApi(persistentEntity, datastore, finders)
     }
 

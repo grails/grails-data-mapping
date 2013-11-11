@@ -44,7 +44,7 @@ class SimpleDBGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new SimpleDBGormStaticApi<D>(cls, datastore, getFinders())
+        return new SimpleDBGormStaticApi<D>(cls, datastore, getFinders(), transactionManager)
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
@@ -119,7 +119,11 @@ class SimpleDBGormInstanceApi<D> extends GormInstanceApi<D> {
 
 class SimpleDBGormStaticApi<D> extends GormStaticApi<D> {
     SimpleDBGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
-        super(persistentClass, datastore, finders)
+        this(persistentClass, datastore, finders, null)
+    }
+
+    SimpleDBGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
+        super(persistentClass, datastore, finders, transactionManager)
     }
 
     @Override

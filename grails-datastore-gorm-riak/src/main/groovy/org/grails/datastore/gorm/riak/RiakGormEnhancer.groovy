@@ -30,6 +30,7 @@ import org.springframework.data.keyvalue.riak.core.RiakQosParameters
 import org.springframework.data.keyvalue.riak.core.RiakTemplate
 import org.springframework.data.keyvalue.riak.core.SimpleBucketKeyPair
 import org.springframework.data.keyvalue.riak.mapreduce.*
+import org.springframework.transaction.PlatformTransactionManager
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.core.SessionCallback
 import org.grails.datastore.mapping.riak.RiakDatastore
@@ -48,7 +49,7 @@ class RiakGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new RiakGormStaticApi<D>(cls, datastore, finders)
+        return new RiakGormStaticApi<D>(cls, datastore, finders, transactionManager)
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
@@ -91,7 +92,11 @@ class RiakGormStaticApi<D> extends GormStaticApi<D> {
     MapReduceApi mapReduceApi
 
     RiakGormStaticApi(D persistentClass, datastore, List<FinderMethod> finders) {
-        super(persistentClass, datastore, finders)
+        this(persistentClass, datastore, finders, null)
+    }
+    
+    RiakGormStaticApi(D persistentClass, datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
+        super(persistentClass, datastore, finders, transactionManager)
         mapReduceApi = new MapReduceApi<D>(persistentClass, datastore)
     }
 
