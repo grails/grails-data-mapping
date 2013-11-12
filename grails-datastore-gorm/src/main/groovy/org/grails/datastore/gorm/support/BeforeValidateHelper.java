@@ -14,42 +14,45 @@
  */
 package org.grails.datastore.gorm.support;
 
-import java.lang.reflect.Method;
-import java.util.List;
+import groovy.lang.MetaClass;
 
-import org.springframework.util.ReflectionUtils;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BeforeValidateHelper {
     public static final String BEFORE_VALIDATE = "beforeValidate";
-
-    public void invokeBeforeValidate(final Object target, final List<?> validatedFieldsList) {
-        Class<?> domainClass = target.getClass();
-        Method method = null;
-        if (validatedFieldsList == null) {
-            // prefer the no-arg version of beforeValidate() if validatedFieldsList
-            // is null...
-            method = ReflectionUtils.findMethod(domainClass, BEFORE_VALIDATE);
-            if (method == null) {
-                method = ReflectionUtils.findMethod(domainClass, BEFORE_VALIDATE, List.class);
-            }
+    private Map<Class<?>, BeforeValidateEventTriggerCaller> eventTriggerCallerCache = new ConcurrentHashMap<Class<?>, BeforeValidateEventTriggerCaller>();
+    
+    public static final class BeforeValidateEventTriggerCaller {
+        EventTriggerCaller eventTriggerCaller;
+        EventTriggerCaller eventTriggerCallerNoArgs;
+        
+        public BeforeValidateEventTriggerCaller(Class<?> domainClass, MetaClass metaClass) {
+            eventTriggerCaller = build(domainClass, metaClass, new Class<?>[]{List.class});
+            eventTriggerCallerNoArgs = build(domainClass, metaClass, new Class<?>[]{});
         }
-        else {
-            // prefer the list-arg version of beforeValidate() if
-            // validatedFieldsList is not null...
-            method = ReflectionUtils.findMethod(domainClass, BEFORE_VALIDATE, List.class);
-            if (method == null) {
-                method = ReflectionUtils.findMethod(domainClass, BEFORE_VALIDATE);
-            }
+        
+        protected EventTriggerCaller build(Class<?> domainClass, MetaClass metaClass, Class<?>[] argumentTypes) {
+            return EventTriggerCaller.buildCaller(BEFORE_VALIDATE, domainClass, metaClass, argumentTypes);
         }
-        if (method != null) {
-            ReflectionUtils.makeAccessible(method);
-            Class<?>[] parameterTypes = method.getParameterTypes();
-            if (parameterTypes.length == 1) {
-                ReflectionUtils.invokeMethod(method, target, validatedFieldsList);
-            }
-            else {
-                ReflectionUtils.invokeMethod(method, target);
+        
+        public void call(final Object target, final List<?> validatedFieldsList) {
+            if(validatedFieldsList != null && eventTriggerCaller != null) {
+                eventTriggerCaller.call(target, new Object[]{validatedFieldsList});
+            } else if (eventTriggerCallerNoArgs != null) {
+                eventTriggerCallerNoArgs.call(target);
             }
         }
     }
+    
+    public void invokeBeforeValidate(final Object target, final List<?> validatedFieldsList) {
+        Class<?> domainClass = target.getClass();
+        BeforeValidateEventTriggerCaller eventTriggerCaller = eventTriggerCallerCache.get(domainClass);
+        if(eventTriggerCaller==null) {
+            eventTriggerCaller = new BeforeValidateEventTriggerCaller(domainClass, null);
+            eventTriggerCallerCache.put(domainClass, eventTriggerCaller);
+        }
+        eventTriggerCaller.call(target, validatedFieldsList);
+   }
 }
