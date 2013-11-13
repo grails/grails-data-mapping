@@ -39,18 +39,11 @@ import org.grails.datastore.gorm.GormValidationApi;
  */
 @AstTransformer
 public class GormValidationTransformer extends AbstractGrailsArtefactTransformer{
-
     public static final String HAS_ERRORS_METHOD = "hasErrors";
     private static final java.util.List<String> EXCLUDES = Arrays.asList(
        "setErrors", "getErrors", HAS_ERRORS_METHOD,
        "getBeforeValidateHelper", "setBeforeValidateHelper",
        "getValidator", "setValidator");
-
-    @Override
-    protected boolean isStaticCandidateMethod(ClassNode classNode, MethodNode declaredMethod) {
-        String methodName = declaredMethod.getName();
-        return !EXCLUDES.contains(methodName) && super.isStaticCandidateMethod(classNode, declaredMethod);
-    }
 
     @Override
     protected boolean requiresStaticLookupMethod() {

@@ -38,7 +38,7 @@ class RestClientGormEnhancer extends GormEnhancer {
 
     @Override
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        new RestClientGormStaticApi<D>(cls, (RestClientDatastore)datastore, getFinders())
+        new RestClientGormStaticApi<D>(cls, (RestClientDatastore)datastore, getFinders(), transactionManager)
     }
 
     @Override

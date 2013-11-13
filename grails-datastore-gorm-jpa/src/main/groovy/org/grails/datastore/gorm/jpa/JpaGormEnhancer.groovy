@@ -57,7 +57,7 @@ class JpaGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new JpaStaticApi<D>(cls, datastore, finders)
+        return new JpaStaticApi<D>(cls, datastore, finders, transactionManager)
     }
 }
 
@@ -131,9 +131,12 @@ class JpaInstanceApi<D> extends GormInstanceApi<D> {
 }
 
 class JpaStaticApi<D> extends GormStaticApi<D> {
-
     JpaStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
-        super(persistentClass, datastore, finders)
+        this(persistentClass, datastore, finders, null)        
+    }
+    
+    JpaStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
+        super(persistentClass, datastore, finders, transactionManager)
     }
 
     def withEntityManager(Closure callable) {

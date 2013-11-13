@@ -20,7 +20,8 @@ import grails.persistence.PersistenceMethod;
 
 import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
@@ -50,12 +51,17 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
 
     public static final String NEW_INSTANCE_METHOD = "newInstance";
 
-    private static final List<String> EXCLUDES = Arrays.asList("create", "setTransactionManager");
+    private static final Set<String> EXCLUDES = new HashSet<String>(Arrays.asList("create", "setTransactionManager"));
+    private static final Set<String> INCLUDES = new HashSet<String>(Arrays.asList("getAll", "getCount", "getValidationSkipMap", "getValidationErrorsMap", "getAsync"));
 
     @Override
-    protected boolean isStaticCandidateMethod(ClassNode classNode, MethodNode declaredMethod) {
-        String methodName = declaredMethod.getName();
-        return !EXCLUDES.contains(methodName) && super.isStaticCandidateMethod(classNode, declaredMethod);
+    protected boolean isStaticMethodExcluded(ClassNode classNode, MethodNode declaredMethod) {
+        return EXCLUDES.contains(declaredMethod.getName());
+    }
+
+    @Override
+    protected boolean isStaticMethodIncluded(ClassNode classNode, MethodNode declaredMethod) {
+        return INCLUDES.contains(declaredMethod.getName());
     }
     
     @Override
@@ -98,4 +104,5 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
     public boolean shouldInject(URL url) {
         return GrailsResourceUtils.isDomainClass(url);
     }
+
 }

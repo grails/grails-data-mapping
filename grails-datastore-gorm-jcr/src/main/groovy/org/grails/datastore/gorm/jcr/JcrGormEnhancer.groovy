@@ -39,7 +39,7 @@ class JcrGormEnhancer extends GormEnhancer{
     }
 
     protected GormStaticApi getStaticApi(Class cls) {
-        return new JcrGormStaticApi(cls, datastore, finders)
+        return new JcrGormStaticApi(cls, datastore, finders, transactionManager)
     }
 
     protected GormInstanceApi getInstanceApi(Class cls) {
@@ -61,7 +61,11 @@ class JcrGormInstanceApi extends GormInstanceApi {
 
 class JcrGormStaticApi extends GormStaticApi {
     JcrGormStaticApi(Class persistentClass, Datastore datastore, List<FinderMethod> finders) {
-        super(persistentClass, datastore, finders);
+        this(persistentClass, datastore, finders, null)
+    }
+    
+    JcrGormStaticApi(Class persistentClass, Datastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
+        super(persistentClass, datastore, finders, transactionManager)
     }
 
     /**
