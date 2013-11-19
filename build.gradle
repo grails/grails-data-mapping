@@ -31,11 +31,9 @@ ext {
 }
 allprojects {
     repositories {
+        mavenLocal()
         mavenCentral()
         maven { url "http://repo.grails.org/grails/core" }
-        //if(!isCiBuild) {
-            mavenLocal()
-        //}
     }
 
     configurations {
