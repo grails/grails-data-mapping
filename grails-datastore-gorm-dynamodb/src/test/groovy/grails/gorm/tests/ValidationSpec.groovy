@@ -162,7 +162,6 @@ class ValidationSpec extends GormDatastoreSpec {
             t.save() == null
             t.hasErrors() == true
             1 == t.errors.allErrors.size()
-            TestEntity.getValidationErrorsMap().get(System.identityHashCode(t)).is(t.errors)
             0 == TestEntity.count()
 
         when:
