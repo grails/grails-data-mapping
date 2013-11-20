@@ -10,7 +10,7 @@ dependencies {
     }
 
     //testRuntime "org.grails:grails-web:$grailsVersion"
-    testRuntime 'javax.servlet:javax.servlet-api:3.0.1'
+    testCompile 'javax.servlet:javax.servlet-api:3.0.1'
 
     testCompile project(":grails-datastore-gorm-test")
 }
