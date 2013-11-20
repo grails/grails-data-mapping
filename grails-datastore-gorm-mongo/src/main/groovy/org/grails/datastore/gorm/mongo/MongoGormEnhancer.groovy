@@ -32,6 +32,7 @@ import org.grails.datastore.mapping.mongo.MongoSession
 import org.grails.datastore.mapping.mongo.engine.MongoEntityPersister
 import org.grails.datastore.mapping.mongo.MongoDatastore
 import org.springframework.transaction.PlatformTransactionManager
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
 
 /**
  * GORM enhancer for Mongo.
@@ -119,6 +120,9 @@ class MongoGormInstanceApi<D> extends GormInstanceApi<D> {
                     else {
                         final dbo = getDbo(instance)
                         dbo?.put name, value
+                        if (instance instanceof DirtyCheckable) {
+                            ((DirtyCheckable)instance).markDirty()
+                        }
                         return dbo
                     }
                 }
