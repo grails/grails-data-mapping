@@ -8,18 +8,12 @@ grails.project.dependency.resolution = {
         excludes 'xml-apis', 'netty'//, 'xercesImpl'
     }
     log "warn"
-
     repositories {
-        inherits true
-
-        grailsPlugins()
-        grailsHome()
-        mavenLocal()   // for picking up self-built snapshots before fetching from grailsCentral
         grailsCentral()
+        mavenLocal()   // for picking up self-built snapshots before fetching from grailsCentral
         mavenCentral()
-
         //mavenRepo 'http://m2.neo4j.org/releases'
-        mavenRepo "http://repo.grails.org/grails/repo"
+        //mavenRepo "http://repo.grails.org/grails/repo"
     }
 
     dependencies {
@@ -36,9 +30,9 @@ grails.project.dependency.resolution = {
         }
 
         //def datastoreVersion = "1.1.4.BUILD-SNAPSHOT"
-        def datastoreVersion = "1.1.7.RELEASE"
-        def neo4jDatastoreVersion = "1.0.2-SNAPSHOT"
-//        def neo4jDatastoreVersion = "1.0.1"
+        def datastoreVersion = "2.0.2.RELEASE"
+        //def neo4jDatastoreVersion = "1.1.1-SNAPSHOT"
+        def neo4jDatastoreVersion = "1.1.0"
         def seleniumVersion = "2.31.0"
 
         compile("org.grails:grails-datastore-gorm-neo4j:$neo4jDatastoreVersion",
@@ -52,6 +46,7 @@ grails.project.dependency.resolution = {
 
         compile('org.neo4j:neo4j-community:1.8.3')
 
+        test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
         test "org.gebish:geb-spock:0.9.0"
         test "org.seleniumhq.selenium:selenium-support:$seleniumVersion"
         test( "com.github.detro.ghostdriver:phantomjsdriver:1.0.3" ) {
@@ -67,15 +62,15 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        runtime(":jquery:1.7.1", ":resources:1.1.6", ":tomcat:$grailsVersion") {
+        runtime(":jquery:1.10.2", ":resources:1.2.1", ":tomcat:7.0.42") {
             export = false
         }
-        build ":release:2.2.1", {
+        build(":release:3.0.1",  ":rest-client-builder:1.0.3") {
             export = false
         }
-        //runtime ":svn:1.0.2"
-        test(":spock:0.7", ":geb:0.9.0") {
+        test(":spock:0.7", ":geb:0.9.2") {
             export = false
+            exclude "spock-grails-support"
         }
     }
 

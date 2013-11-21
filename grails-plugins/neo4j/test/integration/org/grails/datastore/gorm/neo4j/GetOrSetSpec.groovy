@@ -1,7 +1,7 @@
 package org.grails.datastore.gorm.neo4j
 
 import grails.converters.JSON
-import grails.plugin.spock.IntegrationSpec
+import grails.test.spock.IntegrationSpec
 import org.codehaus.groovy.grails.web.json.JSONElement
 import org.neo4j.graphdb.DynamicRelationshipType
 import org.neo4j.graphdb.GraphDatabaseService
