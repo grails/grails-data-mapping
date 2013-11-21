@@ -5,6 +5,8 @@ import org.hibernate.Session
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
+import org.codehaus.groovy.grails.orm.hibernate.HibernateGormStaticApi
+import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore
 
 /**
  */
@@ -115,9 +117,11 @@ class Payment {
         tablePerConcreteClass true
     }
 }
+@Entity
 class CreditCardPayment extends Payment {
     String creditCardType
 }
+@Entity
 class CashPayment extends Payment {
     Currency currency
 }
@@ -132,9 +136,11 @@ abstract class AbstractPayment {
         tablePerConcreteClass true
     }
 }
+@Entity
 class DebitCardPayment extends AbstractPayment {
     String bank
 }
+@Entity
 class OnlinePayment extends AbstractPayment {
     String service
 }

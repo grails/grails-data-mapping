@@ -17,6 +17,11 @@ package org.codehaus.groovy.grails.orm.hibernate.support;
 
 import grails.validation.ValidationException;
 import groovy.lang.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,7 +34,8 @@ import org.codehaus.groovy.grails.orm.hibernate.metaclass.AbstractSavePersistent
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.ValidatePersistentMethod;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
-import org.grails.datastore.gorm.support.BeforeValidateHelper;
+import org.grails.datastore.gorm.support.BeforeValidateHelper.BeforeValidateEventTriggerCaller;
+import org.grails.datastore.gorm.support.EventTriggerCaller;
 import org.grails.datastore.mapping.engine.event.ValidationEvent;
 import org.hibernate.EntityMode;
 import org.hibernate.FlushMode;
@@ -37,15 +43,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.event.*;
 import org.hibernate.persister.entity.EntityPersister;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.Errors;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * <p>Invokes closure events on domain entities such as beforeInsert, beforeUpdate and beforeDelete.
@@ -67,7 +65,6 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
 
     private static final long serialVersionUID = 1;
     protected static final Log LOG = LogFactory.getLog(ClosureEventListener.class);
-    private static final Object[] EMPTY_OBJECT_ARRAY = {};
 
     EventTriggerCaller saveOrUpdateCaller;
     EventTriggerCaller beforeInsertCaller;
@@ -78,7 +75,7 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
     EventTriggerCaller postDeleteEventListener;
     EventTriggerCaller preDeleteEventListener;
     EventTriggerCaller preUpdateEventListener;
-    private BeforeValidateHelper beforeValidateHelper = new BeforeValidateHelper();
+    BeforeValidateEventTriggerCaller beforeValidateEventListener;
     boolean shouldTimestamp = false;
     MetaProperty dateCreatedProperty;
     MetaProperty lastUpdatedProperty;
@@ -97,18 +94,20 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
             shouldTimestamp = m == null || m.isAutoTimestamp();
         }
 
-        saveOrUpdateCaller = buildCaller(domainClazz, ClosureEventTriggeringInterceptor.ONLOAD_SAVE);
-        beforeInsertCaller = buildCaller(domainClazz, ClosureEventTriggeringInterceptor.BEFORE_INSERT_EVENT);
-        preLoadEventCaller = buildCaller(domainClazz, ClosureEventTriggeringInterceptor.ONLOAD_EVENT);
+        saveOrUpdateCaller = buildCaller(ClosureEventTriggeringInterceptor.ONLOAD_SAVE, domainClazz);
+        beforeInsertCaller = buildCaller(ClosureEventTriggeringInterceptor.BEFORE_INSERT_EVENT, domainClazz);
+        preLoadEventCaller = buildCaller(ClosureEventTriggeringInterceptor.ONLOAD_EVENT, domainClazz);
         if (preLoadEventCaller == null) {
-            preLoadEventCaller = buildCaller(domainClazz, ClosureEventTriggeringInterceptor.BEFORE_LOAD_EVENT);
+            preLoadEventCaller = buildCaller(ClosureEventTriggeringInterceptor.BEFORE_LOAD_EVENT, domainClazz);
         }
-        postLoadEventListener = buildCaller(domainClazz, ClosureEventTriggeringInterceptor.AFTER_LOAD_EVENT);
-        postInsertEventListener = buildCaller(domainClazz, ClosureEventTriggeringInterceptor.AFTER_INSERT_EVENT);
-        postUpdateEventListener = buildCaller(domainClazz, ClosureEventTriggeringInterceptor.AFTER_UPDATE_EVENT);
-        postDeleteEventListener = buildCaller(domainClazz, ClosureEventTriggeringInterceptor.AFTER_DELETE_EVENT);
-        preDeleteEventListener = buildCaller(domainClazz, ClosureEventTriggeringInterceptor.BEFORE_DELETE_EVENT);
-        preUpdateEventListener = buildCaller(domainClazz, ClosureEventTriggeringInterceptor.BEFORE_UPDATE_EVENT);
+        postLoadEventListener = buildCaller(ClosureEventTriggeringInterceptor.AFTER_LOAD_EVENT, domainClazz);
+        postInsertEventListener = buildCaller(ClosureEventTriggeringInterceptor.AFTER_INSERT_EVENT, domainClazz);
+        postUpdateEventListener = buildCaller(ClosureEventTriggeringInterceptor.AFTER_UPDATE_EVENT, domainClazz);
+        postDeleteEventListener = buildCaller(ClosureEventTriggeringInterceptor.AFTER_DELETE_EVENT, domainClazz);
+        preDeleteEventListener = buildCaller(ClosureEventTriggeringInterceptor.BEFORE_DELETE_EVENT, domainClazz);
+        preUpdateEventListener = buildCaller(ClosureEventTriggeringInterceptor.BEFORE_UPDATE_EVENT, domainClazz);
+        
+        beforeValidateEventListener = new BeforeValidateEventTriggerCaller(domainClazz, domainMetaClass);
 
         if (failOnErrorPackages.size() > 0) {
             failOnErrorEnabled = GrailsClassUtils.isClassBelowPackage(domainClazz, failOnErrorPackages);
@@ -124,31 +123,9 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
         validateMethod = domainMetaClass.getMetaMethod(ValidatePersistentMethod.METHOD_SIGNATURE,
                 new Object[] { Map.class });
     }
-
-    private EventTriggerCaller buildCaller(Class<?> domainClazz, String event) {
-        Method method = ReflectionUtils.findMethod(domainClazz, event);
-        if (method != null) {
-            ReflectionUtils.makeAccessible(method);
-            return new MethodCaller(method);
-        }
-
-        Field field = ReflectionUtils.findField(domainClazz, event);
-        if (field != null) {
-            ReflectionUtils.makeAccessible(field);
-            return new FieldClosureCaller(field);
-        }
-
-        MetaMethod metaMethod = domainMetaClass.getMetaMethod(event, EMPTY_OBJECT_ARRAY);
-        if (metaMethod != null) {
-            return new MetaMethodCaller(metaMethod);
-        }
-
-        MetaProperty metaProperty = domainMetaClass.getMetaProperty(event);
-        if (metaProperty != null) {
-            return new MetaPropertyClosureCaller(metaProperty);
-        }
-
-        return null;
+    
+    private EventTriggerCaller buildCaller(String eventName, Class<?> domainClazz) {
+        return EventTriggerCaller.buildCaller(eventName, domainClazz, domainMetaClass, null);
     }
 
     public void onSaveOrUpdate(SaveOrUpdateEvent event) throws HibernateException {
@@ -345,102 +322,6 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
     }
 
     public void onValidate(ValidationEvent event) {
-        beforeValidateHelper.invokeBeforeValidate(
-                event.getEntityObject(), event.getValidatedFields());
-    }
-
-    private static abstract class EventTriggerCaller {
-
-        public abstract boolean call(Object entity);
-
-        boolean resolveReturnValue(Object retval) {
-            if (retval instanceof Boolean) {
-                return !(Boolean)retval;
-            }
-            return false;
-        }
-    }
-
-    private static class MethodCaller extends EventTriggerCaller {
-        Method method;
-
-        MethodCaller(Method method) {
-            this.method = method;
-        }
-
-        @Override
-        public boolean call(Object entity) {
-            Object retval = ReflectionUtils.invokeMethod(method, entity);
-            return resolveReturnValue(retval);
-        }
-    }
-
-    private static class MetaMethodCaller extends EventTriggerCaller {
-        MetaMethod method;
-
-        MetaMethodCaller(MetaMethod method) {
-            this.method = method;
-        }
-
-        @Override
-        public boolean call(Object entity) {
-            Object retval = method.invoke(entity, EMPTY_OBJECT_ARRAY);
-            return resolveReturnValue(retval);
-        }
-    }
-
-    private static abstract class ClosureCaller extends EventTriggerCaller {
-        boolean cloneFirst = false;
-
-        Object callClosure(Object entity, Closure callable) {
-            if (cloneFirst) {
-                callable = (Closure)callable.clone();
-            }
-            callable.setResolveStrategy(Closure.DELEGATE_FIRST);
-            callable.setDelegate(entity);
-            return callable.call();
-        }
-    }
-
-    private static class FieldClosureCaller extends ClosureCaller {
-        Field field;
-
-        FieldClosureCaller(Field field) {
-            this.field = field;
-            if (Modifier.isStatic(field.getModifiers())) {
-                cloneFirst = true;
-            }
-        }
-
-        @Override
-        public boolean call(Object entity) {
-            Object fieldval = ReflectionUtils.getField(field, entity);
-            if (fieldval instanceof Closure) {
-                return resolveReturnValue(callClosure(entity, (Closure) fieldval));
-            }
-            LOG.error("Field " + field + " is not Closure or method.");
-            return false;
-        }
-    }
-
-    private static class MetaPropertyClosureCaller extends ClosureCaller {
-        MetaProperty metaProperty;
-
-        MetaPropertyClosureCaller(MetaProperty metaProperty) {
-            this.metaProperty = metaProperty;
-            if (Modifier.isStatic(metaProperty.getModifiers())) {
-                cloneFirst = true;
-            }
-        }
-
-        @Override
-        public boolean call(Object entity) {
-            Object fieldval = metaProperty.getProperty(entity);
-            if (fieldval instanceof Closure) {
-                return resolveReturnValue(callClosure(entity, (Closure) fieldval));
-            }
-            LOG.error("Field " + metaProperty + " is not Closure.");
-            return false;
-        }
+        beforeValidateEventListener.call(event.getEntityObject(), event.getValidatedFields());
     }
 }

@@ -1,6 +1,7 @@
 grails.project.work.dir = 'target'
 grails.project.source.level = 1.6
 
+grails.project.dependency.resolver="maven"
 grails.project.dependency.resolution = {
 
     inherits( "global" ) {
@@ -27,14 +28,14 @@ grails.project.dependency.resolution = {
             transitive = false
         }
 
-        compile("org.mongodb:mongo-java-driver:2.11.1", excludes)
+        compile("org.mongodb:mongo-java-driver:2.11.3", excludes)
         compile("org.springframework.data:spring-data-mongodb:1.2.1.RELEASE", excludes)
         compile("org.springframework.data:spring-data-commons-core:1.4.1.RELEASE", excludes)
         runtime 'org.springframework.data:spring-data-commons:1.5.1.RELEASE'
         runtime("com.gmongo:gmongo:1.2", excludes)
 
-        def datastoreVersion = "1.1.9.BUILD-SNAPSHOT"
-        def mongoDatastoreVersion = "1.3.0.BUILD-SNAPSHOT"
+        def datastoreVersion = "2.0.3.RELEASE"
+        def mongoDatastoreVersion = "1.3.0.RELEASE"
 
         compile ("org.grails:grails-datastore-mongo:$mongoDatastoreVersion",
                  "org.grails:grails-datastore-gorm-mongo:$mongoDatastoreVersion",excludes)
@@ -50,7 +51,7 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        build(':release:2.2.0', ':rest-client-builder:1.0.3') {
+        build(':release:3.0.1', ':rest-client-builder:2.0.0') {
             export = false
         }
     }

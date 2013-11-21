@@ -1,7 +1,7 @@
 project.ext {
-    springVersion = "3.2.4.RELEASE"
-    grailsVersion = "2.3.2.BUILD-SNAPSHOT"
-    slf4jVersion = "1.7.2"
+    springVersion = "3.2.5.RELEASE"
+    grailsVersion = "2.3.3.BUILD-SNAPSHOT"
+    slf4jVersion = "1.7.5"
     groovyVersion = System.getProperty('groovyVersion') ?: '2.1.9'
 }
 
@@ -31,11 +31,9 @@ ext {
 }
 allprojects {
     repositories {
+        mavenLocal()
         mavenCentral()
         maven { url "http://repo.grails.org/grails/core" }
-        //if(!isCiBuild) {
-            mavenLocal()
-        //}
     }
 
     configurations {
@@ -50,7 +48,7 @@ allprojects {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.5'
+    gradleVersion = '1.9'
 }
 
 subprojects {
@@ -62,7 +60,7 @@ subprojects {
         isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
     }
 
-    version = "2.0.3.${releaseType}"
+    version = "2.0.4.${releaseType}"
     group = "org.grails"
 
 

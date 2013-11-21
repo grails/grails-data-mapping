@@ -16,12 +16,13 @@
 package org.codehaus.groovy.grails.compiler.gorm;
 
 import grails.persistence.Entity;
+import grails.persistence.PersistenceMethod;
 
 import java.net.URL;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import grails.persistence.PersistenceMethod;
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
@@ -31,7 +32,6 @@ import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.GrailsClassUtils;
 import org.codehaus.groovy.grails.commons.metaclass.CreateDynamicMethod;
 import org.codehaus.groovy.grails.compiler.injection.AbstractGrailsArtefactTransformer;
 import org.codehaus.groovy.grails.compiler.injection.AstTransformer;
@@ -51,27 +51,19 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
 
     public static final String NEW_INSTANCE_METHOD = "newInstance";
 
-    private static final List<String> EXCLUDES = Arrays.asList("create", "setTransactionManager");
-    private static final Class<?>[] EMPTY_JAVA_CLASS_ARRAY = {};
-    private static final Class<?>[] OBJECT_CLASS_ARG = { Object.class };
+    private static final Set<String> EXCLUDES = new HashSet<String>(Arrays.asList("create", "setTransactionManager"));
+    private static final Set<String> INCLUDES = new HashSet<String>(Arrays.asList("getAll", "getCount", "getValidationSkipMap", "getValidationErrorsMap", "getAsync"));
 
     @Override
-    protected boolean isStaticCandidateMethod(ClassNode classNode, MethodNode declaredMethod) {
-        String methodName = declaredMethod.getName();
-        return !EXCLUDES.contains(methodName) &&
-                !isGetter(methodName, declaredMethod) &&
-                !isSetter(methodName, declaredMethod) &&
-                super.isStaticCandidateMethod(classNode, declaredMethod);
+    protected boolean isStaticMethodExcluded(ClassNode classNode, MethodNode declaredMethod) {
+        return EXCLUDES.contains(declaredMethod.getName());
     }
 
-    private boolean isSetter(String methodName, MethodNode declaredMethod) {
-        return declaredMethod.getParameters().length ==2 && GrailsClassUtils.isSetter(methodName, OBJECT_CLASS_ARG);
+    @Override
+    protected boolean isStaticMethodIncluded(ClassNode classNode, MethodNode declaredMethod) {
+        return INCLUDES.contains(declaredMethod.getName());
     }
-
-    private boolean isGetter(String methodName, MethodNode declaredMethod) {
-        return declaredMethod.getParameters().length == 1 && GrailsClassUtils.isGetter(methodName, EMPTY_JAVA_CLASS_ARRAY);
-    }
-
+    
     @Override
     public String getArtefactType() {
         return DomainClassArtefactHandler.TYPE;
@@ -112,4 +104,5 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
     public boolean shouldInject(URL url) {
         return GrailsResourceUtils.isDomainClass(url);
     }
+
 }

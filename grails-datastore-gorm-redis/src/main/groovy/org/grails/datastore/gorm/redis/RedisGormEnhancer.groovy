@@ -38,7 +38,7 @@ class RedisGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new RedisGormStaticApi<D>(cls, datastore, getFinders())
+        return new RedisGormStaticApi<D>(cls, datastore, getFinders(), transactionManager)
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
@@ -64,9 +64,12 @@ class RedisGormInstanceApi<D> extends GormInstanceApi<D> {
 }
 
 class RedisGormStaticApi<D> extends GormStaticApi<D> {
-
     RedisGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
-        super(persistentClass, datastore, finders)
+        this(persistentClass, datastore, finders, null)
+    }
+    
+    RedisGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
+        super(persistentClass, datastore, finders, transactionManager)
     }
 
     /**

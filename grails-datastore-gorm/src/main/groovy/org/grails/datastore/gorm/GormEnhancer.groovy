@@ -47,6 +47,8 @@ import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.proxy.ProxyFactory
 import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.springframework.transaction.PlatformTransactionManager
+import org.grails.datastore.mapping.dirty.checking.DirtyCheckable
+import org.grails.datastore.mapping.model.types.Association
 
 /**
  * Enhances a class with GORM behavior
@@ -114,7 +116,6 @@ class GormEnhancer {
         def cls = e.javaClass
         ExpandoMetaClass mc = GrailsMetaClassUtils.getExpandoMetaClass(cls)
         def staticApiProvider = getStaticApi(cls)
-        staticApiProvider.transactionManager = transactionManager
         registerApiInstance(cls, staticApiProvider.getClass(), staticApiProvider, true)
         for (Method m in (onlyExtendedMethods ? staticApiProvider.extendedMethods : staticApiProvider.methods)) {
             def method = m
@@ -148,20 +149,21 @@ class GormEnhancer {
                 if(javaClass || isBasic) {
                     mc."addTo${prop.capitilizedName}" = { arg ->
                         def obj
-                        if (delegate[prop.name] == null) {
-                            delegate[prop.name] = [].asType(prop.type)
+                        final targetObject = delegate
+                        if (targetObject[prop.name] == null) {
+                            targetObject[prop.name] = [].asType(prop.type)
                         }
                         if (arg instanceof Map) {
                             obj = javaClass.newInstance(arg)
-                            delegate[prop.name].add(obj)
+                            addObjectToCollection(prop, targetObject, obj)
                         }
                         else if (isBasic) {
-                            delegate[prop.name].add(arg)
-                            return delegate
+                            addObjectToCollection(prop, targetObject, arg)
+                            return targetObject
                         }
                         else if (javaClass.isInstance(arg)) {
                             obj = arg
-                            delegate[prop.name].add(obj)
+                            addObjectToCollection(prop, targetObject, obj)
                         }
                         else {
                             throw new MissingMethodException("addTo${prop.capitilizedName}", cls, [arg] as Object[])
@@ -173,22 +175,26 @@ class GormEnhancer {
                                 if (obj[name] == null) {
                                     obj[name] = [].asType(otherSide.type)
                                 }
-                                obj[name].add(delegate)
+                                addObjectToCollection(otherSide, obj, targetObject)
                             }
                             else {
-                                obj[name] = delegate
+                                obj[name] = targetObject
                             }
                         }
-                        delegate
+                        targetObject
                     }
                     mc."removeFrom${prop.capitilizedName}" = { arg ->
                         if (javaClass.isInstance(arg)) {
-                            delegate[prop.name]?.remove(arg)
+                            final targetObject = delegate
+                            targetObject[prop.name]?.remove(arg)
+                            if (targetObject instanceof DirtyCheckable) {
+                                ((DirtyCheckable)targetObject).markDirty(prop.name)
+                            }
                             if (prop.bidirectional) {
                                 def otherSide = prop.inverseSide
                                 if (otherSide instanceof ManyToMany) {
                                     String name = otherSide.name
-                                    arg[name]?.remove(delegate)
+                                    arg[name]?.remove(targetObject)
                                 }
                                 else {
                                     arg[otherSide.name] = null
@@ -202,6 +208,13 @@ class GormEnhancer {
                     }
                 }
             }
+        }
+    }
+
+    protected void addObjectToCollection(Association prop, targetObject, obj) {
+        targetObject[prop.name].add(obj)
+        if (targetObject instanceof DirtyCheckable) {
+            targetObject.markDirty(prop.name)
         }
     }
 
@@ -309,7 +322,7 @@ class GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        new GormStaticApi<D>(cls, datastore, getFinders())
+        new GormStaticApi<D>(cls, datastore, getFinders(), transactionManager)
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
