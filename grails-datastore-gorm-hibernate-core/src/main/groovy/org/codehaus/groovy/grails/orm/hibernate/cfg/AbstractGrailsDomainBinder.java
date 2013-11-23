@@ -2408,11 +2408,11 @@ public abstract class AbstractGrailsDomainBinder {
 
         if (mappedId == null) {
             // configure generator strategy
-            id.setIdentifierGeneratorStrategy(useSequence ? "sequence" : "native");
+            id.setIdentifierGeneratorStrategy(useSequence ? "sequence-identity" : "native");
         } else {
             String generator = mappedId.getGenerator();
             if("native".equals(generator) && useSequence) {
-                generator = "sequence";
+                generator = "sequence-identity";
             }
             id.setIdentifierGeneratorStrategy(generator);
             params.putAll(mappedId.getParams());
