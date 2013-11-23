@@ -143,6 +143,16 @@ idea {
 eclipse {
     classpath {
         plusConfigurations += configurations.provided
+        file {
+            whenMerged { classpath ->
+                 // move grails-datastore-gorm-hibernate-core reference to end
+                 def hibernateCoreReference = classpath.entries.find { entry -> entry.kind == 'src' && entry.path == "/grails-datastore-gorm-hibernate-core" }
+                 if (hibernateCoreReference) {
+                     classpath.entries.remove hibernateCoreReference
+                     classpath.entries << hibernateCoreReference
+                 }
+            }
+        }
     }
 }
 /*
