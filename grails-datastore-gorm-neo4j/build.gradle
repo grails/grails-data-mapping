@@ -1,8 +1,8 @@
-version = "1.1.1-SNAPSHOT"
-//version = "1.1.0"
+//version = "1.1.2-SNAPSHOT"
+version = "1.1.1"
 
 ext.neo4jVersion = "1.8.2"
-ext.gdmVersion = "2.0.2.RELEASE"
+ext.gdmVersion = "2.0.4.RELEASE"
 
 repositories {
     //mavenLocal()
