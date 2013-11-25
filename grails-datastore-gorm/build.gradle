@@ -27,3 +27,17 @@ jar.doLast {
         ant.delete file:astTransformPath
     }
 }
+
+eclipse {
+    classpath {
+        file {
+            whenMerged { classpath ->
+                 def testSrc = classpath.entries.find { entry -> entry.kind == 'src' && entry.path == "src/test/groovy" }
+                 if (testSrc) {
+                     // greclipse cannot use ASTs that are in the same project, so exclude this from compilation
+                     testSrc.excludes = ["**/DirtyCheckTransformationSpec.groovy"]
+                 }
+            }
+        }
+    }
+}

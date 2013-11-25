@@ -60,7 +60,7 @@ subprojects {
         isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
     }
 
-    version = "2.0.4.${releaseType}"
+    version = "2.0.5.${releaseType}"
     group = "org.grails"
 
 

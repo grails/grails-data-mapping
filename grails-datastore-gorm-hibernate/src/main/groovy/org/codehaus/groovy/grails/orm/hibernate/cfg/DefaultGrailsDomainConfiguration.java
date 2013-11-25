@@ -123,4 +123,15 @@ public class DefaultGrailsDomainConfiguration extends Configuration implements G
             }
         }
     }
+    
+    @Override
+    protected void reset() {
+        super.reset();
+        try {
+            GrailsIdentifierGeneratorFactory.applyNewInstance(this);
+        }
+        catch (Exception e) {
+            // ignore exception
+        }
+    }
 }

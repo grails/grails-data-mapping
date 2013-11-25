@@ -387,4 +387,15 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
             }
         }
     }
+
+    @Override
+    protected void reset() {
+        super.reset();
+        try {
+            GrailsIdentifierGeneratorFactory.applyNewInstance(this);
+        }
+        catch (Exception e) {
+            // ignore exception
+        }
+    }
 }

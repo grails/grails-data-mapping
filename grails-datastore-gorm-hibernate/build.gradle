@@ -134,9 +134,17 @@ idea {
     }
 }
 
+eclipse {
+    classpath {
+        plusConfigurations += configurations.provided
+    }
+}
+
 /*
 test {
 	jvmArgs '-Xmx1024m', '-Xdebug', '-Xnoagent', '-Dgrails.full.stacktrace=true', '-Djava.compiler=NONE',
 	        '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005'
 }
 */
+
+

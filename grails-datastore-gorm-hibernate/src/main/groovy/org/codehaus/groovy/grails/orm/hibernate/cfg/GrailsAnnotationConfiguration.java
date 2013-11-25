@@ -227,4 +227,15 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
 
         setNamingStrategy(strategy);
     }
+
+    @Override
+    protected void reset() {
+        super.reset();
+        try {
+            GrailsIdentifierGeneratorFactory.applyNewInstance(this);
+        }
+        catch (Exception e) {
+            // ignore exception
+        }
+    }
 }
