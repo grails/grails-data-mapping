@@ -27,7 +27,7 @@ grails.project.dependency.resolution = {
             transitive = false
         }
 
-        compile("org.mongodb:mongo-java-driver:2.11.1", excludes)
+        compile("org.mongodb:mongo-java-driver:2.11.3", excludes)
         compile("org.springframework.data:spring-data-mongodb:1.2.1.RELEASE", excludes)
         compile("org.springframework.data:spring-data-commons-core:1.4.1.RELEASE", excludes)
         runtime 'org.springframework.data:spring-data-commons:1.5.1.RELEASE'
