@@ -294,10 +294,16 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                     evict = preUpdateEventListener.call(entity);
                     synchronizePersisterState(event, event.getState());
                 }
-                if (lastUpdatedProperty != null && shouldTimestamp) {
-                    Object now = DefaultGroovyMethods.newInstance(lastUpdatedProperty.getType(), new Object[] { System.currentTimeMillis() });
-                    event.getState()[ArrayUtils.indexOf(event.getPersister().getPropertyNames(), GrailsDomainClassProperty.LAST_UPDATED)] = now;
-                    lastUpdatedProperty.setProperty(entity, now);
+                if (shouldTimestamp) {
+                    long time = System.currentTimeMillis();
+                    if (dateCreatedProperty != null && dateCreatedProperty.getProperty(entity)==null) {
+                        Object now = applyTimestamp(entity, dateCreatedProperty,  time);
+                        event.getState()[ArrayUtils.indexOf(event.getPersister().getPropertyNames(), GrailsDomainClassProperty.DATE_CREATED)] = now;
+                    }
+                    if (lastUpdatedProperty != null) {
+                        Object now = applyTimestamp(entity, lastUpdatedProperty,  time);
+                        event.getState()[ArrayUtils.indexOf(event.getPersister().getPropertyNames(), GrailsDomainClassProperty.LAST_UPDATED)] = now;
+                    }
                 }
                 if (!AbstractSavePersistentMethod.isAutoValidationDisabled(entity)
                         && !DefaultTypeTransformation.castToBoolean(validateMethod.invoke(entity, new Object[] { validateParams }))) {
@@ -339,13 +345,11 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                 if (shouldTimestamp) {
                     long time = System.currentTimeMillis();
                     if (dateCreatedProperty != null) {
-                        Object now = DefaultGroovyMethods.newInstance(dateCreatedProperty.getType(), new Object[] { time });
-                        dateCreatedProperty.setProperty(entity, now);
+                        applyTimestamp(entity, dateCreatedProperty,  time);
                         synchronizeState = true;
                     }
                     if (lastUpdatedProperty != null) {
-                        Object now = DefaultGroovyMethods.newInstance(lastUpdatedProperty.getType(), new Object[] { time });
-                        lastUpdatedProperty.setProperty(entity, now);
+                        applyTimestamp(entity, lastUpdatedProperty,  time);
                         synchronizeState = true;
                     }
                 }
@@ -367,7 +371,14 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                 }
                 return evict;
             }
+
         });
+    }
+
+    protected Object applyTimestamp(Object entity, MetaProperty property, long time) {
+        Object now = DefaultGroovyMethods.newInstance(property.getType(), new Object[] { time });
+        property.setProperty(entity, now);
+        return now;
     }
 
     public void onValidate(ValidationEvent event) {
