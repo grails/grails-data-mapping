@@ -34,7 +34,7 @@ grails.project.dependency.resolution = {
         runtime("com.gmongo:gmongo:1.2", excludes)
 
         def datastoreVersion = "1.1.9.RELEASE"
-        def mongoDatastoreVersion = "1.3.0.RELEASE"
+        def mongoDatastoreVersion = "1.3.1.RELEASE"
 
         compile ("org.grails:grails-datastore-mongo:$mongoDatastoreVersion",
                  "org.grails:grails-datastore-gorm-mongo:$mongoDatastoreVersion",excludes)
