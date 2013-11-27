@@ -54,6 +54,7 @@ import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
 import org.codehaus.groovy.ast.expr.DeclarationExpression;
 import org.codehaus.groovy.ast.expr.Expression;
+import org.codehaus.groovy.ast.expr.GStringExpression;
 import org.codehaus.groovy.ast.expr.MapEntryExpression;
 import org.codehaus.groovy.ast.expr.MapExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
@@ -364,7 +365,7 @@ public class DetachedCriteriaTransformer extends ClassCodeVisitorSupport {
                     }
                 }
             }
-            else if (objectExpression instanceof PropertyExpression) {
+            else if (objectExpression instanceof PropertyExpression && !(((PropertyExpression)objectExpression).getProperty() instanceof GStringExpression)) {
                 PropertyExpression pe = (PropertyExpression) objectExpression;
                 String propName = pe.getPropertyAsString();
                 ClassNode classNode = pe.getObjectExpression().getType();
