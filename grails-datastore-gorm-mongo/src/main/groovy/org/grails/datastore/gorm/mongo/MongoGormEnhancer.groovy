@@ -53,7 +53,7 @@ class MongoGormEnhancer extends GormEnhancer {
     }
 
     protected <D> GormStaticApi<D> getStaticApi(Class<D> cls) {
-        return new MongoGormStaticApi<D>(cls, datastore, finders)
+        return new MongoGormStaticApi<D>(cls, datastore, finders, transactionManager)
     }
 
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
@@ -181,6 +181,10 @@ class MongoGormStaticApi<D> extends GormStaticApi<D> {
 
     MongoGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders) {
         super(persistentClass, datastore, finders)
+    }
+
+    MongoGormStaticApi(Class<D> persistentClass, Datastore datastore, List<FinderMethod> finders, PlatformTransactionManager transactionManager) {
+        super(persistentClass, datastore, finders, transactionManager)
     }
 
     @Override
