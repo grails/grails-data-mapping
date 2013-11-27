@@ -18,6 +18,7 @@ package org.codehaus.groovy.grails.orm.hibernate.support;
 import grails.validation.ValidationException;
 import groovy.lang.*;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +41,11 @@ import org.grails.datastore.mapping.engine.event.ValidationEvent;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.action.internal.EntityUpdateAction;
+import org.hibernate.engine.spi.ActionQueue;
 import org.hibernate.event.spi.*;
 import org.hibernate.persister.entity.EntityPersister;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.Errors;
 
 /**
@@ -121,6 +125,15 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
 
         validateMethod = domainMetaClass.getMetaMethod(ValidatePersistentMethod.METHOD_SIGNATURE,
                 new Object[] { Map.class });
+        
+        try {
+            actionQueueUpdatesField=ReflectionUtils.findField(ActionQueue.class, "updates");
+            actionQueueUpdatesField.setAccessible(true);
+            entityUpdateActionStateField=ReflectionUtils.findField(EntityUpdateAction.class, "state");
+            entityUpdateActionStateField.setAccessible(true);
+        } catch (Exception e) {
+            // ignore
+        }
     }
     
     private EventTriggerCaller buildCaller(String eventName, Class<?> domainClazz) {
@@ -131,8 +144,15 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
         // no-op, merely a hook for plugins to override
     }
 
-    private void synchronizePersisterState(Object entity, EntityPersister persister, Object[] state) {
+    private Field actionQueueUpdatesField;
+    private Field entityUpdateActionStateField;
+    
+    private void synchronizePersisterState(AbstractPreDatabaseOperationEvent event, Object[] state) {
+        Object entity = event.getEntity();
+        EntityPersister persister = event.getPersister();
+        
         String[] propertyNames = persister.getPropertyNames();
+        HashMap<Integer, Object> changedState=new HashMap<Integer, Object>();
         for (int i = 0; i < propertyNames.length; i++) {
             String p = propertyNames[i];
             MetaProperty metaProperty = domainMetaClass.getMetaProperty(p);
@@ -140,10 +160,39 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                 continue;
             }
             Object value = metaProperty.getProperty(entity);
+            if(state[i] != value) {
+                changedState.put(i, value);
+            }
             state[i] = value;
             persister.setPropertyValue(entity, i, value);
         }
+        
+        synchronizeEntityUpdateActionState(event, entity, changedState);
     }
+
+    protected void synchronizeEntityUpdateActionState(AbstractPreDatabaseOperationEvent event, Object entity,
+            HashMap<Integer, Object> changedState) {
+        if(actionQueueUpdatesField != null && event instanceof PreInsertEvent && changedState.size() > 0) {
+            try {
+                List<EntityUpdateAction> updates = (List<EntityUpdateAction>)actionQueueUpdatesField.get(event.getSource().getActionQueue());
+                if(updates != null) {
+                    for (EntityUpdateAction updateAction : updates) {
+                        if(updateAction.getInstance() == entity) {
+                            Object[] updateState = (Object[])entityUpdateActionStateField.get(updateAction);
+                            if (updateState != null) {
+                                for(Map.Entry<Integer, Object> entry : changedState.entrySet()) {
+                                    updateState[entry.getKey()] = entry.getValue();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e) {
+                LOG.warn("Exception in synchronizeEntityUpdateActionState", e);
+            }
+        }
+     }
 
     public void onPreLoad(final PreLoadEvent event) {
         if (preLoadEventCaller == null) {
@@ -242,12 +291,18 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                 boolean evict = false;
                 if (preUpdateEventListener != null) {
                     evict = preUpdateEventListener.call(entity);
-                    synchronizePersisterState(entity, event.getPersister(), event.getState());
+                    synchronizePersisterState(event, event.getState());
                 }
-                if (lastUpdatedProperty != null && shouldTimestamp) {
-                    Object now = DefaultGroovyMethods.newInstance(lastUpdatedProperty.getType(), new Object[] { System.currentTimeMillis() });
-                    event.getState()[ArrayUtils.indexOf(event.getPersister().getPropertyNames(), GrailsDomainClassProperty.LAST_UPDATED)] = now;
-                    lastUpdatedProperty.setProperty(entity, now);
+                if (shouldTimestamp) {
+                    long time = System.currentTimeMillis();
+                    if (dateCreatedProperty != null && dateCreatedProperty.getProperty(entity)==null) {
+                        Object now = applyTimestamp(entity, dateCreatedProperty,  time);
+                        event.getState()[ArrayUtils.indexOf(event.getPersister().getPropertyNames(), GrailsDomainClassProperty.DATE_CREATED)] = now;
+                    }
+                    if (lastUpdatedProperty != null) {
+                        Object now = applyTimestamp(entity, lastUpdatedProperty,  time);
+                        event.getState()[ArrayUtils.indexOf(event.getPersister().getPropertyNames(), GrailsDomainClassProperty.LAST_UPDATED)] = now;
+                    }
                 }
                 if (!AbstractSavePersistentMethod.isAutoValidationDisabled(entity)
                         && !DefaultTypeTransformation.castToBoolean(validateMethod.invoke(entity, new Object[] { validateParams }))) {
@@ -289,19 +344,17 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                 if (shouldTimestamp) {
                     long time = System.currentTimeMillis();
                     if (dateCreatedProperty != null) {
-                        Object now = DefaultGroovyMethods.newInstance(dateCreatedProperty.getType(), new Object[] { time });
-                        dateCreatedProperty.setProperty(entity, now);
+                        applyTimestamp(entity, dateCreatedProperty,  time);
                         synchronizeState = true;
                     }
                     if (lastUpdatedProperty != null) {
-                        Object now = DefaultGroovyMethods.newInstance(lastUpdatedProperty.getType(), new Object[] { time });
-                        lastUpdatedProperty.setProperty(entity, now);
+                        applyTimestamp(entity, lastUpdatedProperty,  time);
                         synchronizeState = true;
                     }
                 }
 
                 if (synchronizeState) {
-                    synchronizePersisterState(entity, event.getPersister(), event.getState());
+                    synchronizePersisterState(event, event.getState());
                 }
 
                 boolean evict = false;
@@ -317,7 +370,14 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                 }
                 return evict;
             }
+
         });
+    }
+
+    protected Object applyTimestamp(Object entity, MetaProperty property, long time) {
+        Object now = DefaultGroovyMethods.newInstance(property.getType(), new Object[] { time });
+        property.setProperty(entity, now);
+        return now;
     }
 
     public void onValidate(ValidationEvent event) {
