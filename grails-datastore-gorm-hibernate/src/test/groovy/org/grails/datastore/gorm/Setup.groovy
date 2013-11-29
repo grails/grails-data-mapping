@@ -35,12 +35,14 @@ import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.support.DefaultTransactionDefinition
 import org.springframework.validation.Errors
 import org.springframework.validation.Validator
+import org.springframework.util.Log4jConfigurer
 
 class Setup {
     static HibernateDatastore hibernateDatastore
     static hibernateSession
     static GrailsHibernateTransactionManager transactionManager
     static TransactionStatus transactionStatus
+    static GrailsAnnotationConfiguration hibernateConfig
 
     static destroy() {
         if (hibernateSession != null) {
@@ -50,9 +52,13 @@ class Setup {
             transactionManager.rollback(transactionStatus)
             transactionStatus = null
         }
+        if(hibernateConfig != null) {
+            hibernateConfig = null
+        }
     }
 
     static Session setup(List<Class> classes) {
+        Log4jConfigurer.initLogging("classpath:log4j.properties")
 
         def grailsApplication = new DefaultGrailsApplication(classes as Class[], Setup.getClassLoader())
         def ctx = new GenericApplicationContext()
@@ -75,7 +81,7 @@ class Setup {
         def config = new Properties()
         config.setProperty Environment.DIALECT, H2Dialect.name
         config.setProperty Environment.DRIVER, Driver.name
-        config.setProperty Environment.URL, "jdbc:h2:mem:devDB;MVCC=true"
+        config.setProperty Environment.URL, "jdbc:h2:mem:devDB;MVCC=true;INIT=CREATE SCHEMA IF NOT EXISTS WWW;"
         config.setProperty Environment.USER, "sa"
         config.setProperty Environment.PASS, ""
         config.setProperty Environment.HBM2DDL_AUTO, "create-drop"
@@ -83,7 +89,7 @@ class Setup {
         config.setProperty Environment.FORMAT_SQL, "true"
         config.setProperty Environment.CURRENT_SESSION_CONTEXT_CLASS, SpringSessionContext.name
 
-        GrailsAnnotationConfiguration hibernateConfig = new GrailsAnnotationConfiguration()
+        hibernateConfig = new GrailsAnnotationConfiguration()
         hibernateConfig.setProperties config
 
         def eventTriggeringInterceptor = new ClosureEventTriggeringInterceptor(applicationContext: ctx)

@@ -1070,12 +1070,12 @@ public abstract class AbstractGrailsDomainBinder {
     protected void bindCollectionTable(GrailsDomainClassProperty property, Mappings mappings,
             Collection collection, Table ownerTable, String sessionFactoryBeanName) {
 
-        String prefix = ownerTable.getSchema();
+        String owningTableSchema = ownerTable.getSchema();
         PropertyConfig config = getPropertyConfig(property);
         JoinTable jt = config != null ? config.getJoinTable() : null;
 
         NamingStrategy namingStrategy = getNamingStrategy(sessionFactoryBeanName);
-        String tableName = (prefix == null ? "" : prefix + '.') + (jt != null && jt.getName() != null ? jt.getName() : namingStrategy.tableName(calculateTableForMany(property, sessionFactoryBeanName)));
+        String tableName = (owningTableSchema == null ? "" : owningTableSchema + '.') + (jt != null && jt.getName() != null ? jt.getName() : namingStrategy.tableName(calculateTableForMany(property, sessionFactoryBeanName)));
         String schemaName = mappings.getSchemaName();
         String catalogName = mappings.getCatalogName();
         if(jt != null) {
@@ -1085,6 +1085,10 @@ public abstract class AbstractGrailsDomainBinder {
             if(jt.getCatalog() != null) {
                 catalogName = jt.getCatalog();
             }
+        }
+
+        if(schemaName == null && owningTableSchema != null) {
+            schemaName = owningTableSchema;
         }
 
         collection.setCollectionTable(mappings.addTable(
