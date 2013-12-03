@@ -152,7 +152,7 @@ public abstract class AbstractGrailsHibernateDomainClass extends AbstractGrailsC
      * Evaluates the constraints closure to build the list of constraints.
      */
     protected void evaluateConstraints() {
-        Map existing = (Map) getPropertyOrStaticPropertyOrFieldValue(GrailsDomainClassProperty.CONSTRAINTS, Map.class);
+        Map existing = getPropertyOrStaticPropertyOrFieldValue(GrailsDomainClassProperty.CONSTRAINTS, Map.class);
         if (existing == null) {
             constraints = getConstraintsEvaluator().evaluate(getClazz(), getProperties());
         }

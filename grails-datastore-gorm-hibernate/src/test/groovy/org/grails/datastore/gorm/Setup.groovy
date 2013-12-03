@@ -58,7 +58,7 @@ class Setup {
     }
 
     static Session setup(List<Class> classes) {
-        Log4jConfigurer.initLogging("classpath:log4j.properties")
+//        Log4jConfigurer.initLogging("classpath:log4j.properties")
 
         def grailsApplication = new DefaultGrailsApplication(classes as Class[], Setup.getClassLoader())
         def ctx = new GenericApplicationContext()

@@ -2647,7 +2647,7 @@ public abstract class AbstractGrailsDomainBinder {
                 }
 
                 column.setValue(simpleValue);
-                bindColumn(grailsProp, parentProperty, column, cc, path, table, sessionFactoryBeanName);
+
 
                 if (cc != null) {
                     if (cc.getLength() != -1) {
@@ -2661,6 +2661,8 @@ public abstract class AbstractGrailsDomainBinder {
                     }
                     column.setUnique(cc.isUnique());
                 }
+
+                bindColumn(grailsProp, parentProperty, column, cc, path, table, sessionFactoryBeanName);
 
                 if (table != null) {
                     table.addColumn(column);
