@@ -1075,7 +1075,7 @@ public abstract class AbstractGrailsDomainBinder {
         JoinTable jt = config != null ? config.getJoinTable() : null;
 
         NamingStrategy namingStrategy = getNamingStrategy(sessionFactoryBeanName);
-        String tableName = (owningTableSchema == null ? "" : owningTableSchema + '.') + (jt != null && jt.getName() != null ? jt.getName() : namingStrategy.tableName(calculateTableForMany(property, sessionFactoryBeanName)));
+        String tableName = (jt != null && jt.getName() != null ? jt.getName() : namingStrategy.tableName(calculateTableForMany(property, sessionFactoryBeanName)));
         String schemaName = mappings.getSchemaName();
         String catalogName = mappings.getCatalogName();
         if(jt != null) {
