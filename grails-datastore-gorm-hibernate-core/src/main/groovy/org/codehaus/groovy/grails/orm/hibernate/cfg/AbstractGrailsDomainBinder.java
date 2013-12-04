@@ -2765,7 +2765,7 @@ public abstract class AbstractGrailsDomainBinder {
                 }
 
                 if (Number.class.isAssignableFrom(property.getType())) {
-                    bindNumericColumnConstraints(column, constrainedProperty);
+                    bindNumericColumnConstraints(column, constrainedProperty, cc);
                 }
             }
         }
@@ -3002,6 +3002,10 @@ public abstract class AbstractGrailsDomainBinder {
         }
     }
 
+    protected void bindNumericColumnConstraints(Column column, ConstrainedProperty constrainedProperty) {
+        bindNumericColumnConstraints(column, constrainedProperty, null);
+    }
+
     /**
      * Interrogates the specified constraints looking for any constraints that would limit the
      * precision and/or scale of the property's value.  If such constraints exist, this method adjusts
@@ -3009,42 +3013,53 @@ public abstract class AbstractGrailsDomainBinder {
      *
      * @param column              the column that corresponds to the property
      * @param constrainedProperty the property's constraints
+     * @param cc the column configuration
      */
-    protected void bindNumericColumnConstraints(Column column, ConstrainedProperty constrainedProperty) {
+    protected void bindNumericColumnConstraints(Column column, ConstrainedProperty constrainedProperty, ColumnConfig cc) {
         int scale = Column.DEFAULT_SCALE;
         int precision = Column.DEFAULT_PRECISION;
 
-        if (constrainedProperty.getScale() != null) {
+
+        if(  cc != null && cc.getScale() > - 1) {
+            column.setScale(cc.getScale());
+        } else if (constrainedProperty.getScale() != null) {
             scale = constrainedProperty.getScale().intValue();
             column.setScale(scale);
         }
 
-        Comparable<?> minConstraintValue = constrainedProperty.getMin();
-        Comparable<?> maxConstraintValue = constrainedProperty.getMax();
 
-        int minConstraintValueLength = 0;
-        if ((minConstraintValue != null) && (minConstraintValue instanceof Number)) {
-            minConstraintValueLength = Math.max(
-                    countDigits((Number) minConstraintValue),
-                    countDigits(((Number) minConstraintValue).longValue()) + scale);
+        if( cc != null && cc.getPrecision() > -1) {
+            column.setPrecision(cc.getPrecision());
         }
-        int maxConstraintValueLength = 0;
-        if ((maxConstraintValue != null) && (maxConstraintValue instanceof Number)) {
-            maxConstraintValueLength = Math.max(
-                    countDigits((Number) maxConstraintValue),
-                    countDigits(((Number) maxConstraintValue).longValue()) + scale);
-        }
+        else {
 
-        if (minConstraintValueLength > 0 && maxConstraintValueLength > 0) {
-            // If both of min and max constraints are setted we could use
-            // maximum digits number in it as precision
-            precision = NumberUtils.max(new int[]{minConstraintValueLength, maxConstraintValueLength});
-        } else {
-            // Overwise we should also use default precision
-            precision = NumberUtils.max(new int[]{precision, minConstraintValueLength, maxConstraintValueLength});
-        }
+            Comparable<?> minConstraintValue = constrainedProperty.getMin();
+            Comparable<?> maxConstraintValue = constrainedProperty.getMax();
 
-        column.setPrecision(precision);
+            int minConstraintValueLength = 0;
+            if ((minConstraintValue != null) && (minConstraintValue instanceof Number)) {
+                minConstraintValueLength = Math.max(
+                        countDigits((Number) minConstraintValue),
+                        countDigits(((Number) minConstraintValue).longValue()) + scale);
+            }
+            int maxConstraintValueLength = 0;
+            if ((maxConstraintValue != null) && (maxConstraintValue instanceof Number)) {
+                maxConstraintValueLength = Math.max(
+                        countDigits((Number) maxConstraintValue),
+                        countDigits(((Number) maxConstraintValue).longValue()) + scale);
+            }
+
+            if (minConstraintValueLength > 0 && maxConstraintValueLength > 0) {
+                // If both of min and max constraints are setted we could use
+                // maximum digits number in it as precision
+                precision = NumberUtils.max(new int[]{minConstraintValueLength, maxConstraintValueLength});
+            } else {
+                // Overwise we should also use default precision
+                precision = NumberUtils.max(new int[]{precision, minConstraintValueLength, maxConstraintValueLength});
+            }
+
+            column.setPrecision(precision);
+        }
     }
 
     /**
