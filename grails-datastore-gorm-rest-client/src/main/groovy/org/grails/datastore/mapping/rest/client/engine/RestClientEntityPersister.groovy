@@ -88,6 +88,9 @@ class RestClientEntityPersister extends EntityPersister {
 
                 promiseList << asyncRestBuilder.get(url, args) {
                     accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
+                    for (entry in endpoint.headers.entrySet()) {
+                        header entry.key, entry.value
+                    }
                     if(sessionRequestCustomizer instanceof Closure) {
                         Closure callable = (Closure)sessionRequestCustomizer
                         callable.delegate = delegate
@@ -113,6 +116,9 @@ class RestClientEntityPersister extends EntityPersister {
 
                 responseResults <<  builder.get(url, args) {
                     accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
+                    for (entry in endpoint.headers.entrySet()) {
+                        header entry.key, entry.value
+                    }
                     if(sessionRequestCustomizer instanceof Closure) {
                         Closure callable = (Closure)sessionRequestCustomizer
                         callable.delegate = delegate
@@ -168,6 +174,9 @@ class RestClientEntityPersister extends EntityPersister {
                             Promise<RestResponse> updatePromise = builder.put(url) {
                                 contentType endpoint.contentType
                                 accept endpoint.acceptType ?: entity.javaClass, endpoint.accept
+                                for (entry in endpoint.headers.entrySet()) {
+                                    header entry.key, entry.value
+                                }
                                 body update
                             }.then { RestResponse response ->
                                 if(response.statusCode.series() == HttpStatus.Series.SUCCESSFUL) {
@@ -206,6 +215,9 @@ class RestClientEntityPersister extends EntityPersister {
                     Promise<RestResponse> insertPromise = restBuilder.post(url) {
                         contentType endpoint.contentType
                         accept endpoint.acceptType ?: entity.javaClass, endpoint.accept
+                        for (entry in endpoint.headers.entrySet()) {
+                            header entry.key, entry.value
+                        }
                         body insert
                     }.then { RestResponse response ->
                         if(response.statusCode.series() == HttpStatus.Series.SUCCESSFUL) {
@@ -270,6 +282,9 @@ class RestClientEntityPersister extends EntityPersister {
             AsyncRestBuilder builder = datastore.asyncRestClients.get(pe)
             Promise<RestResponse> promise = builder.get(url, args) {
                 accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
+                for (entry in endpoint.headers.entrySet()) {
+                    header entry.key, entry.value
+                }
                 if(sessionRequestCustomizer instanceof Closure) {
                     Closure callable = (Closure)sessionRequestCustomizer
                     callable.delegate = delegate
@@ -287,6 +302,9 @@ class RestClientEntityPersister extends EntityPersister {
             RestBuilder builder = datastore.syncRestClients.get(pe)
             response = builder.get(url, args) {
                 accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
+                for (entry in endpoint.headers.entrySet()) {
+                    header entry.key, entry.value
+                }
                 if(sessionRequestCustomizer instanceof Closure) {
                     Closure callable = (Closure)sessionRequestCustomizer
                     callable.delegate = delegate
@@ -367,6 +385,9 @@ class RestClientEntityPersister extends EntityPersister {
                         Promise<RestResponse> responsePromise = builder.put(url, args) {
                             contentType endpoint.contentType
                             accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
+                            for (entry in endpoint.headers.entrySet()) {
+                                header entry.key, entry.value
+                            }
                             body obj
                             if(sessionRequestCustomizer instanceof Closure) {
                                 Closure callable = (Closure)sessionRequestCustomizer
@@ -399,6 +420,9 @@ class RestClientEntityPersister extends EntityPersister {
                 final RestResponse response = restBuilder.put(url, args) {
                     contentType endpoint.contentType
                     accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
+                    for (entry in endpoint.headers.entrySet()) {
+                        header entry.key, entry.value
+                    }
                     body obj
                     if(sessionRequestCustomizer instanceof Closure) {
                         Closure callable = (Closure)sessionRequestCustomizer
@@ -461,6 +485,9 @@ class RestClientEntityPersister extends EntityPersister {
             Promise<RestResponse> result = builder.post(url) {
                 contentType endpoint.contentType
                 accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
+                for (entry in endpoint.headers.entrySet()) {
+                    header entry.key, entry.value
+                }
                 body obj
                 if(sessionRequestCustomizer instanceof Closure) {
                     Closure callable = (Closure)sessionRequestCustomizer
@@ -484,6 +511,9 @@ class RestClientEntityPersister extends EntityPersister {
             response = builder.post(url) {
                 contentType endpoint.contentType
                 accept endpoint.acceptType ?: pe.javaClass, endpoint.accept
+                for (entry in endpoint.headers.entrySet()) {
+                    header entry.key, entry.value
+                }
                 body obj
                 if(sessionRequestCustomizer instanceof Closure) {
                     Closure callable = (Closure)sessionRequestCustomizer
@@ -566,7 +596,16 @@ class RestClientEntityPersister extends EntityPersister {
                     AsyncRestBuilder builder = datastore.asyncRestClients.get(pe)
                     Map<String, Object> args = [:]
                     args.put('id', id)
-                    Promise<RestResponse> result = builder.delete(url, args, (Closure)sessionRequestCustomizer).then { RestResponse response ->
+                    Promise<RestResponse> result = builder.delete(url, args) {
+                        for (entry in endpoint.headers.entrySet()) {
+                            header entry.key, entry.value
+                        }
+                        if(sessionRequestCustomizer instanceof Closure) {
+                            Closure callable = (Closure)sessionRequestCustomizer
+                            callable.delegate = delegate
+                            callable.call()
+                        }
+                    }.then { RestResponse response ->
                         if(response.statusCode.series() == HttpStatus.Series.SUCCESSFUL) {
                             firePostDeleteEvent(pe, entityAccess)
                         }
@@ -588,7 +627,16 @@ class RestClientEntityPersister extends EntityPersister {
                     RestBuilder builder = datastore.syncRestClients.get(pe)
                     Map<String, Object> args = [:]
                     args.put('id', id)
-                    RestResponse response = builder.delete(url, args, (Closure)sessionRequestCustomizer)
+                    RestResponse response = builder.delete(url, args) {
+                        for (entry in endpoint.headers.entrySet()) {
+                            header entry.key, entry.value
+                        }
+                        if(sessionRequestCustomizer instanceof Closure) {
+                            Closure callable = (Closure)sessionRequestCustomizer
+                            callable.delegate = delegate
+                            callable.call()
+                        }
+                    }
                     if(response.statusCode.series() != HttpStatus.Series.SUCCESSFUL) {
                         throw new RestClientException("Invalid status code [${response.statusCode}] returned for DELETE request to URL [$url]", response)
                     }
@@ -616,7 +664,11 @@ class RestClientEntityPersister extends EntityPersister {
                 final id = getObjectIdentifier(obj)
                 if(id) {
                     final url = establishUrl(datastore.baseUrl, endpoint, pe, id)
-                    Promise<RestResponse> deletePromise = restBuilder.delete(url)
+                    Promise<RestResponse> deletePromise = restBuilder.delete(url) {
+                        for (entry in endpoint.headers.entrySet()) {
+                            header entry.key, entry.value
+                        }
+                    }
                     deletePromise.then { RestResponse response ->
                         if(response && response.statusCode.series() == HttpStatus.Series.SUCCESSFUL)
                             firePostDeleteEvent(pe, new EntityAccess(pe, obj))

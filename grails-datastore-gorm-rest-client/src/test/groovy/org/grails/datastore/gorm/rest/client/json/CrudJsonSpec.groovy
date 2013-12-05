@@ -29,6 +29,8 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
             RestTemplate rt = Book.getRestBuilder().restTemplate
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book"))
+                    .andExpect(header("user", "apiUser"))
+                    .andExpect(header("pass", "apiPass"))
                     .andExpect(method(HttpMethod.GET))
                     .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString()))
                     .andRespond(withSuccess('[{"id":1, "title":"The Stand", "pages":200}]', MediaType.APPLICATION_JSON))
@@ -48,6 +50,8 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
             RestTemplate rt = Book.getRestBuilder().restTemplate
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book?offset=5&max=10"))
+                    .andExpect(header("user", "apiUser"))
+                    .andExpect(header("pass", "apiPass"))
                     .andExpect(method(HttpMethod.GET))
                     .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString()))
                     .andRespond(withSuccess('[{"id":1, "title":"The Stand", "pages":200}]', MediaType.APPLICATION_JSON))
@@ -67,6 +71,8 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
             RestTemplate rt = Book.getRestBuilder().restTemplate
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book/1"))
+                    .andExpect(header("user", "apiUser"))
+                    .andExpect(header("pass", "apiPass"))
                       .andExpect(method(HttpMethod.GET))
                       .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString()))
                       .andRespond(withSuccess('{"id":1, "title":"The Stand", "pages":200}', MediaType.APPLICATION_JSON))
@@ -87,6 +93,8 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
         RestTemplate rt = Book.getRestBuilder().restTemplate
         final mockServer = MockRestServiceServer.createServer(rt)
         mockServer.expect(requestTo("http://localhost:8080/book-custom/1"))
+                .andExpect(header("user", "apiUser"))
+                .andExpect(header("pass", "apiPass"))
                 .andExpect(header('Foo', 'Bar'))
                 .andExpect(method(HttpMethod.GET))
                 .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString()))
@@ -110,6 +118,8 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
             RestTemplate rt = Book.getRestBuilder().restTemplate
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book/1"))
+                    .andExpect(header("user", "apiUser"))
+                    .andExpect(header("pass", "apiPass"))
                     .andExpect(method(HttpMethod.GET))
                     .andExpect(header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString()))
                     .andRespond(withSuccess('{"id":1, "title":"The Stand", "pages":200}', MediaType.APPLICATION_JSON))
@@ -131,12 +141,16 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
             RestTemplate rt = Book.getRestBuilder().restTemplate
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book"))
+                    .andExpect(header("user", "apiUser"))
+                    .andExpect(header("pass", "apiPass"))
                     .andExpect(method(HttpMethod.POST))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                     .andExpect(content().string('{"class":"org.grails.datastore.gorm.rest.client.json.Book","id":null,"pages":null,"title":"The Stand"}'))
                     .andRespond(withSuccess('{"id":1, "title":"The Stand"}', MediaType.APPLICATION_JSON))
 
             mockServer.expect(requestTo("http://localhost:8080/book/2"))
+                    .andExpect(header("user", "apiUser"))
+                    .andExpect(header("pass", "apiPass"))
                     .andExpect(method(HttpMethod.PUT))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                     .andExpect(content().string('{"class":"org.grails.datastore.gorm.rest.client.json.Book","id":2,"pages":null,"title":"The Shining"}'))
@@ -165,6 +179,8 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
             RestTemplate rt = Book.getRestBuilder().restTemplate
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book"))
+                    .andExpect(header("user", "apiUser"))
+                    .andExpect(header("pass", "apiPass"))
                     .andExpect(method(HttpMethod.POST))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                     .andExpect(content().string('{"class":"org.grails.datastore.gorm.rest.client.json.Book","id":null,"pages":null,"title":"The Stand"}'))
@@ -184,6 +200,8 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
             RestTemplate rt = Book.getRestBuilder().restTemplate
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/other-books"))
+                    .andExpect(header("user", "apiUser"))
+                    .andExpect(header("pass", "apiPass"))
                     .andExpect(header('Foo', 'Bar'))
                     .andExpect(method(HttpMethod.POST))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -207,6 +225,8 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
             RestTemplate rt = Book.getRestBuilder().restTemplate
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book"))
+                    .andExpect(header("user", "apiUser"))
+                    .andExpect(header("pass", "apiPass"))
                     .andExpect(method(HttpMethod.POST))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                     .andExpect(content().string('{"class":"org.grails.datastore.gorm.rest.client.json.Book","id":1,"pages":null,"title":"The Stand"}'))
@@ -227,6 +247,8 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
             RestTemplate rt = Book.getRestBuilder().restTemplate
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book/1"))
+                    .andExpect(header("user", "apiUser"))
+                    .andExpect(header("pass", "apiPass"))
                     .andExpect(method(HttpMethod.PUT))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                     .andExpect(content().string('{"class":"org.grails.datastore.gorm.rest.client.json.Book","id":1,"pages":null,"title":"The Stand"}'))
@@ -247,6 +269,8 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
             RestTemplate rt = Book.getRestBuilder().restTemplate
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book-custom/1"))
+                    .andExpect(header("user", "apiUser"))
+                    .andExpect(header("pass", "apiPass"))
                     .andExpect(method(HttpMethod.PUT))
                     .andExpect(header('Foo', 'Bar'))
                     .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -271,6 +295,8 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
             RestTemplate rt = Book.getRestBuilder().restTemplate
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book/1"))
+                    .andExpect(header("user", "apiUser"))
+                    .andExpect(header("pass", "apiPass"))
                     .andExpect(method(HttpMethod.DELETE))
                     .andRespond(withStatus(HttpStatus.NO_CONTENT))
 
@@ -289,6 +315,8 @@ class CrudJsonSpec extends RestClientDatastoreSpec{
             RestTemplate rt = Book.getRestBuilder().restTemplate
             final mockServer = MockRestServiceServer.createServer(rt)
             mockServer.expect(requestTo("http://localhost:8080/book/1"))
+                    .andExpect(header("user", "apiUser"))
+                    .andExpect(header("pass", "apiPass"))
                     .andExpect(method(HttpMethod.DELETE))
                     .andRespond(withStatus(HttpStatus.NO_CONTENT))
 
@@ -321,5 +349,6 @@ class Book {
 
     static mapping = {
 //        async false
+        headers user: "apiUser", pass: "apiPass"
     }
 }
