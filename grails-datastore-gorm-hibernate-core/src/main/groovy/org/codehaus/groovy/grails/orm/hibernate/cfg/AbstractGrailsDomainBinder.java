@@ -2806,7 +2806,7 @@ public abstract class AbstractGrailsDomainBinder {
 
     protected void createUniqueKeyForColumns(Table table, String columnName, List<Column> keyList) {
         Collections.reverse(keyList);
-        UniqueKey key = table.getOrCreateUniqueKey("unique-" + columnName);
+        UniqueKey key = table.getOrCreateUniqueKey("unique_" + columnName);
         List<?> columns = key.getColumns();
         if (columns.isEmpty()) {
             LOG.debug("create unique key for " + table.getName() + " columns = " + keyList);
