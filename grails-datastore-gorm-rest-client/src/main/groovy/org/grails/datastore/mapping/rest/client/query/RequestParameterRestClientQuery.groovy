@@ -79,6 +79,9 @@ class RequestParameterRestClientQuery extends Query {
                 AsyncRestBuilder builder = datastore.asyncRestClients.get(entity)
                 Promise<RestResponse> promise = builder.get(urlBuilder.toString()) {
                     accept List, endpoint.accept
+                    for (entry in endpoint.headers.entrySet()) {
+                        header entry.key, entry.value
+                    }
                 }
                 if (endpoint.readTimeout > -1) {
                     response = promise.get(endpoint.readTimeout, TimeUnit.SECONDS)
@@ -91,6 +94,9 @@ class RequestParameterRestClientQuery extends Query {
                 RestBuilder builder = datastore.syncRestClients.get(entity)
                 response = builder.get(urlBuilder.toString()) {
                     accept List, endpoint.accept
+                    for (entry in endpoint.headers.entrySet()) {
+                        header entry.key, entry.value
+                    }
                 }
             }
 
