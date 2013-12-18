@@ -15,26 +15,16 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.support;
 
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
-import org.hibernate.SessionFactory;
-
 /**
+ * Concrete implementation of the {@link org.codehaus.groovy.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor} class for Hibernate 3
+ *
+ * @author Graeme Rocher
  * @author Burt Beckwith
  */
-public class AggregatePersistenceContextInterceptor extends AbstractAggregatePersistenceContextInterceptor {
+public class AggregatePersistenceContextInterceptor extends AbstractMultipleDataSourceAggregatePersistenceContextInterceptor {
 
-    public void afterPropertiesSet() {
-        // need to lazily create these instead of registering as beans since GrailsPageFilter
-        // looks for instances of PersistenceContextInterceptor and picks one assuming
-        // there's only one, so this one has to be the only one
-        for (String name : dataSourceNames) {
-            String suffix = name == GrailsDomainClassProperty.DEFAULT_DATA_SOURCE ? "" : "_" + name;
-            HibernatePersistenceContextInterceptor interceptor = new HibernatePersistenceContextInterceptor();
-            String beanName = "sessionFactory" + suffix;
-            if (applicationContext.containsBean(beanName)) {
-                interceptor.setSessionFactory((SessionFactory)applicationContext.getBean(beanName));
-            }
-            interceptors.add(interceptor);
-        }
+    @Override
+    protected SessionFactoryAwarePersistenceContextInterceptor createPersistenceContextInterceptor(String dataSourceName) {
+        return new HibernatePersistenceContextInterceptor(dataSourceName);
     }
 }

@@ -18,6 +18,7 @@ package org.codehaus.groovy.grails.orm.hibernate.support;
 import grails.validation.DeferredBindingActions;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.lifecycle.ShutdownOperations;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.AbstractSavePersistentMethod;
@@ -29,25 +30,52 @@ import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Graeme Rocher
  * @since 0.4
  */
-public class HibernatePersistenceContextInterceptor implements PersistenceContextInterceptor {
+public class HibernatePersistenceContextInterceptor implements PersistenceContextInterceptor, SessionFactoryAwarePersistenceContextInterceptor {
 
-    protected static final Log LOG = LogFactory.getLog(HibernatePersistenceContextInterceptor.class);
-    private SessionFactory sessionFactory;
+    private static final Log LOG = LogFactory.getLog(HibernatePersistenceContextInterceptor.class);
 
-    private ThreadLocal<Boolean> participate = new ThreadLocal<Boolean>();
-    private ThreadLocal<Integer> nestingCount = new ThreadLocal<Integer>();
+    private static ThreadLocal<Map<String, Boolean>> participate = new ThreadLocal<Map<String, Boolean>>() {
+        @Override
+        protected Map<String, Boolean> initialValue() {
+            return new HashMap<String, Boolean>();
+        }
+    };
 
-    public HibernatePersistenceContextInterceptor() {
+    private static ThreadLocal<Map<String, Integer>> nestingCount = new ThreadLocal<Map<String, Integer>>() {
+        @Override
+        protected Map<String, Integer> initialValue() {
+            return new HashMap<String, Integer>();
+        }
+    };
+
+    static {
         ShutdownOperations.addOperation(new Runnable() {
             public void run() {
                 participate.remove();
                 nestingCount.remove();
             }
         });
+    }
+
+    private SessionFactory sessionFactory;
+    private String dataSourceName;
+
+    public HibernatePersistenceContextInterceptor() {
+        this.dataSourceName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE;
+    }
+
+    /**
+     * @param dataSourceName a name of dataSource
+     */
+    public HibernatePersistenceContextInterceptor(String dataSourceName) {
+        this.dataSourceName = dataSourceName;
     }
 
     /* (non-Javadoc)
@@ -60,13 +88,13 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
         }
 
         try {
-// single session mode
-            SessionHolder holder = (SessionHolder)TransactionSynchronizationManager.unbindResource(getSessionFactory());
+            // single session mode
+            SessionHolder holder = (SessionHolder) TransactionSynchronizationManager.unbindResource(getSessionFactory());
             LOG.debug("Closing single Hibernate session in GrailsDispatcherServlet");
             try {
-                SessionFactoryUtils.closeSession(holder.getSession());
-            }
-            catch (RuntimeException ex) {
+                Session session = holder.getSession();
+                SessionFactoryUtils.closeSession(session);
+            } catch (RuntimeException ex) {
                 LOG.error("Unexpected exception on closing Hibernate Session", ex);
             }
         } finally {
@@ -77,14 +105,14 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
     public void disconnect() {
         try {
             getSession(false).disconnect();
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             // no session ignore
         }
     }
 
+    @SuppressWarnings("deprecation")
     public void reconnect() {
-        getSession();
+        getSession().reconnect();
     }
 
     public void flush() {
@@ -106,8 +134,7 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
     public boolean isOpen() {
         try {
             return getSession(false).isOpen();
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             return false;
         }
     }
@@ -123,8 +150,7 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
         if (TransactionSynchronizationManager.hasResource(sf)) {
             // Do not modify the Session: just set the participate flag.
             setParticipate(true);
-        }
-        else {
+        } else {
             setParticipate(false);
             LOG.debug("Opening single Hibernate session in HibernatePersistenceContextInterceptor");
             Session session = getSession();
@@ -157,28 +183,32 @@ public class HibernatePersistenceContextInterceptor implements PersistenceContex
     }
 
     private int incNestingCount() {
-        Integer current = nestingCount.get();
+        Map<String, Integer> map = nestingCount.get();
+        Integer current = map.get(dataSourceName);
         int value = (current != null) ? current + 1 : 1;
-        nestingCount.set(value);
+        map.put(dataSourceName, value);
         return value;
     }
 
     private int decNestingCount() {
-        Integer current = nestingCount.get();
-        int value = current == null ? 0 : current - 1;
+        Map<String, Integer> map = nestingCount.get();
+        Integer current = map.get(dataSourceName);
+        int value = (current != null) ? current - 1 : 0;
         if (value < 0) {
             value = 0;
         }
-        nestingCount.set(value);
+        map.put(dataSourceName, value);
         return value;
     }
 
     private void setParticipate(boolean flag) {
-        participate.set(flag);
+        Map<String, Boolean> map = participate.get();
+        map.put(dataSourceName, flag);
     }
 
     private boolean getParticipate() {
-        Boolean ret = participate.get();
-        return ret == null ? false : ret;
+        Map<String, Boolean> map = participate.get();
+        Boolean ret = map.get(dataSourceName);
+        return (ret != null) ? ret : false;
     }
 }

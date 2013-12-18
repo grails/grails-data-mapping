@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 SpringSource.
+ * Copyright 2013 SpringSource.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,16 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.support;
 
+import org.codehaus.groovy.grails.support.PersistenceContextInterceptor;
+import org.hibernate.SessionFactory;
 
 /**
- * Concrete implementation of the {@link org.codehaus.groovy.grails.orm.hibernate.support.AbstractMultipleDataSourceAggregatePersistenceContextInterceptor} class for Hibernate 4
+ * Interface for {@link org.codehaus.groovy.grails.support.PersistenceContextInterceptor} instances that are aware of the {@link org.hibernate.SessionFactory}
  *
  * @author Graeme Rocher
- * @author Burt Beckwith
+ * @since 2.0.7
  */
-public class AggregatePersistenceContextInterceptor extends AbstractMultipleDataSourceAggregatePersistenceContextInterceptor {
+public interface SessionFactoryAwarePersistenceContextInterceptor extends PersistenceContextInterceptor{
 
-
-    @Override
-    protected SessionFactoryAwarePersistenceContextInterceptor createPersistenceContextInterceptor(String dataSourceName) {
-        return new HibernatePersistenceContextInterceptor(dataSourceName);
-    }
+    void setSessionFactory(SessionFactory sessionFactory);
 }
