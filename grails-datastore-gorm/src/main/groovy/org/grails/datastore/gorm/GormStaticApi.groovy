@@ -301,7 +301,9 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
      * Creates a criteria builder instance
      */
     def withCriteria(Closure callable) {
-        return InvokerHelper.invokeMethod(createCriteria(), 'call', callable)
+        execute({ Session session ->
+            InvokerHelper.invokeMethod(createCriteria(), 'call', callable)
+        } as SessionCallback )
     }
 
     /**
@@ -316,7 +318,19 @@ class GormStaticApi<D> extends AbstractGormApi<D> {
                 builderBean.setPropertyValue(propertyName, entry.value)
             }
         }
-        return InvokerHelper.invokeMethod(criteriaBuilder, 'list', callable)
+
+        if(builderArgs?.uniqueResult) {
+            execute({ Session session ->
+                InvokerHelper.invokeMethod(criteriaBuilder, 'get', callable)
+            } as SessionCallback )
+
+        }
+        else {
+            execute({ Session session ->
+                InvokerHelper.invokeMethod(criteriaBuilder, 'list', callable)
+            } as SessionCallback )
+        }
+
     }
 
     /**
