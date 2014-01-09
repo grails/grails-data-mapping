@@ -38,7 +38,7 @@ import org.springframework.util.ReflectionUtils;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class EntityAccess {
 
-    private static final Set EXCLUDED_PROPERTIES = new HashSet(Arrays.asList("class", "metaClass"));
+    private static final Set EXCLUDED_PROPERTIES = new HashSet(Arrays.asList("class", "metaClass", "properties"));
 
     protected Object entity;
     protected BeanWrapper beanWrapper;
