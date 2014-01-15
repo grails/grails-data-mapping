@@ -193,7 +193,7 @@ class NamedCriteriaProxy<T> {
             queryBuilder = delegate
             invokeCriteriaClosure()
             params.each {key, val ->
-                eq key, val
+                eq key.toString(), val
             }
             if (uniq) {
                 maxResults 1
