@@ -52,7 +52,7 @@ class DirtyCheckingSupport {
                 if(a instanceof ToOne) {
                     final value = cpf.getPropertyValue(instance, a.name)
                     if(proxyFactory.isInitialized(value)) {
-                        if(value instanceof DirtyCheckingSupport) {
+                        if(value instanceof DirtyCheckable) {
                             DirtyCheckable dirtyCheckable = (DirtyCheckable) value
                             if(dirtyCheckable.hasChanged()) {
                                 return true
