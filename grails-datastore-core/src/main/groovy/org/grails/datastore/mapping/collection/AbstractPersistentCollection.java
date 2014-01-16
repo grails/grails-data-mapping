@@ -217,29 +217,12 @@ public abstract class AbstractPersistentCollection implements PersistentCollecti
     }
 
     public boolean isDirty() {
-        return dirty || checkCollectionElements();
-    }
-
-    protected boolean checkCollectionElements() {
-        if(isInitialized()) {
-            for(Object o : collection) {
-                if( o instanceof DirtyCheckable) {
-                    DirtyCheckable dirtyCheckable = (DirtyCheckable) o;
-                    if(dirtyCheckable.hasChanged()) {
-                        this.dirty = true;
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return dirty;
     }
 
     public void resetDirty() {
         dirty = false;
     }
-
-    /* misc methods */
 
     public void markDirty() {
         dirty = true;
