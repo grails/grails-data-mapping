@@ -18,9 +18,12 @@ package org.codehaus.groovy.grails.compiler.gorm;
 import grails.persistence.Entity;
 import grails.persistence.PersistenceMethod;
 
+import groovy.transform.Canonical;
+
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.codehaus.groovy.ast.AnnotationNode;
@@ -63,7 +66,7 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
     protected boolean isStaticMethodIncluded(ClassNode classNode, MethodNode declaredMethod) {
         return INCLUDES.contains(declaredMethod.getName());
     }
-    
+
     @Override
     public String getArtefactType() {
         return DomainClassArtefactHandler.TYPE;
@@ -89,6 +92,11 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
 
     @Override
     protected void performInjectionInternal(String apiInstanceProperty, SourceUnit source, ClassNode classNode) {
+        List<AnnotationNode> canonicalAnnotations = classNode.getAnnotations(new ClassNode(Canonical.class));
+        if(canonicalAnnotations != null && canonicalAnnotations.size() > 0) {
+            GrailsASTUtils.error(source, classNode, "Class [" + classNode.getName() + "] is marked with @groovy.transform.Canonical which is not supported for GORM entities.", true);
+        }
+
         classNode.setUsingGenerics(true);
         GrailsASTUtils.addAnnotationIfNecessary(classNode, Entity.class);
 

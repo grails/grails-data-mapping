@@ -6,6 +6,7 @@ import org.codehaus.groovy.grails.commons.DefaultGrailsDomainClass
 import org.codehaus.groovy.grails.compiler.injection.ClassInjector
 import org.codehaus.groovy.grails.compiler.injection.DefaultGrailsDomainClassInjector
 import org.codehaus.groovy.grails.compiler.injection.GrailsAwareClassLoader
+import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import org.grails.datastore.gorm.GormEnhancer
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.GormValidationApi
@@ -39,6 +40,27 @@ class TestEntity {
         then:
             def e = thrown(IllegalStateException)
             e.message.contains '''Method on class [TestEntity] was used outside of a Grails application.'''
+    }
+
+    void 'Test that the compiler will not allow an entity to be marked with @Canonical'() {
+        given:
+            gcl.classInjectors = [alwaysInjectGormTransformer] as ClassInjector[]
+
+        when:
+            def cls = gcl.parseClass('''
+package com.demo
+
+@grails.persistence.Entity
+@groovy.transform.Canonical
+class TestEntity {
+    Long id
+}
+  ''')
+
+        then:
+            def e = thrown(MultipleCompilationErrorsException)
+            e.message.contains 'Class [com.demo.TestEntity] is marked with @groovy.transform.Canonical which is not supported for GORM entities.'
+
     }
 
     void "Test that generic information is added to hasMany collections"() {
@@ -180,7 +202,7 @@ class TestEntity {
         then:
             obj.hasErrors() == true
     }
-    
+
     private void registerApiInstance(cls, apiInstanceType, apiInstance, staticApi) {
         new GormEnhancer(null).registerApiInstance(cls, apiInstanceType, apiInstance, staticApi)
     }
