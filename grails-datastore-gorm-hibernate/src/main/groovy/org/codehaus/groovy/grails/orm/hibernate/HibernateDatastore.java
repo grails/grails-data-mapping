@@ -18,6 +18,8 @@ import groovy.util.ConfigObject;
 
 import java.util.Map;
 
+import org.codehaus.groovy.grails.commons.GrailsApplication;
+import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware;
 import org.grails.datastore.mapping.core.Session;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.hibernate.SessionFactory;
@@ -31,8 +33,9 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Graeme Rocher
  * @since 2.0
  */
-public class HibernateDatastore extends AbstractHibernateDatastore {
+public class HibernateDatastore extends AbstractHibernateDatastore implements GrailsApplicationAware {
 
+    private GrailsApplication grailsApplication;
     public HibernateDatastore(MappingContext mappingContext, SessionFactory sessionFactory, ConfigObject config) {
         super(mappingContext, sessionFactory, config);
     }
@@ -54,5 +57,20 @@ public class HibernateDatastore extends AbstractHibernateDatastore {
             eventTriggeringInterceptor = new EventTriggeringInterceptor(this, config);
             ((ConfigurableApplicationContext)applicationContext).addApplicationListener(eventTriggeringInterceptor);
         }
+    }
+
+    public GrailsApplication getGrailsApplication() {
+        if(grailsApplication == null) {
+            Map<String, GrailsApplication> grailsApplicationBeans = getApplicationContext().getBeansOfType(GrailsApplication.class);
+            if(!grailsApplicationBeans.isEmpty()) {
+                grailsApplication = grailsApplicationBeans.values().iterator().next();
+            }
+        }
+        return grailsApplication;
+    }
+
+    @Override
+    public void setGrailsApplication(GrailsApplication grailsApplication) {
+        this.grailsApplication = grailsApplication;
     }
 }

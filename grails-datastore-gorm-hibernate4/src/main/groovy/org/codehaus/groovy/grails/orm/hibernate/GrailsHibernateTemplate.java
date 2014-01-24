@@ -23,6 +23,9 @@ import org.hibernate.*;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.event.spi.EventSource;
 import org.hibernate.exception.GenericJDBCException;
+import org.hibernate.internal.SessionFactoryImpl;
+import org.hibernate.service.jdbc.connections.internal.DatasourceConnectionProviderImpl;
+import org.hibernate.service.jdbc.connections.spi.ConnectionProvider;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -52,32 +55,31 @@ public class GrailsHibernateTemplate implements IHibernateTemplate {
     protected boolean exposeNativeSession = true;
     protected boolean cacheQueries = false;
 
-protected boolean allowCreate = true;
-protected boolean checkWriteOperations = true;
+    protected boolean allowCreate = true;
+    protected boolean checkWriteOperations = true;
 
     protected SessionFactory sessionFactory;
     protected SQLExceptionTranslator jdbcExceptionTranslator;
     protected int flushMode = FLUSH_AUTO;
 
     public static interface HibernateCallback<T> {
-       T doInHibernate(Session session) throws HibernateException, SQLException;
+        T doInHibernate(Session session) throws HibernateException, SQLException;
     }
 
     protected GrailsHibernateTemplate() {
         // for testing
     }
-
     public GrailsHibernateTemplate(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
-    public GrailsHibernateTemplate(SessionFactory sessionFactory, GrailsApplication application) {
         Assert.notNull(sessionFactory, "Property 'sessionFactory' is required");
         this.sessionFactory = sessionFactory;
 
-        DataSource ds = application.getMainContext().getBean("dataSource", DataSource.class);
-        jdbcExceptionTranslator = new SQLErrorCodeSQLExceptionTranslator(ds);
-
+        ConnectionProvider connectionProvider = ((SessionFactoryImpl) sessionFactory).getServiceRegistry().getService(ConnectionProvider.class);
+        if(connectionProvider instanceof DatasourceConnectionProviderImpl) {
+            jdbcExceptionTranslator = new SQLErrorCodeSQLExceptionTranslator(((DatasourceConnectionProviderImpl) connectionProvider).getDataSource());
+        }
+    }
+    public GrailsHibernateTemplate(SessionFactory sessionFactory, GrailsApplication application) {
+        this(sessionFactory);
         cacheQueries = GrailsHibernateUtil.isCacheQueriesByDefault(application);
         this.osivReadOnly = GrailsHibernateUtil.isOsivReadonly(application);
     }
@@ -101,6 +103,7 @@ protected boolean checkWriteOperations = true;
     public void setCacheQueries(boolean cacheQueries) {
         this.cacheQueries = cacheQueries;
     }
+
     public boolean isCacheQueries() {
         return cacheQueries;
     }
@@ -114,7 +117,7 @@ protected boolean checkWriteOperations = true;
         if (result != null && !(result instanceof List)) {
             throw new InvalidDataAccessApiUsageException("Result object returned from HibernateCallback isn't a List: [" + result + "]");
         }
-        return (List<?>)result;
+        return (List<?>) result;
     }
 
     protected boolean isCurrentTransactionReadOnly() {
@@ -139,7 +142,7 @@ protected boolean checkWriteOperations = true;
     /**
      * Execute the action specified by the given action object within a Session.
      *
-     * @param action callback object that specifies the Hibernate action
+     * @param action               callback object that specifies the Hibernate action
      * @param enforceNativeSession whether to enforce exposure of the native Hibernate Session to callback code
      * @return a result object returned by the action, or <code>null</code>
      * @throws org.springframework.dao.DataAccessException in case of Hibernate errors
@@ -157,32 +160,27 @@ protected boolean checkWriteOperations = true;
         FlushMode previousFlushMode = null;
         try {
             previousFlushMode = applyFlushMode(session, existingTransaction);
-			if(isCurrentTransactionReadOnly()) {
-            	session.setDefaultReadOnly(true);
-	        }
+            if (isCurrentTransactionReadOnly()) {
+                session.setDefaultReadOnly(true);
+            }
             Session sessionToExpose = (enforceNativeSession || exposeNativeSession ? session : createSessionProxy(session));
             T result = action.doInHibernate(sessionToExpose);
             flushIfNecessary(session, existingTransaction);
             return result;
-        }
-        catch (HibernateException ex) {
+        } catch (HibernateException ex) {
             throw convertHibernateAccessException(ex);
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             throw jdbcExceptionTranslator.translate("Hibernate-related JDBC operation", null, ex);
-        }
-        catch (RuntimeException ex) {
+        } catch (RuntimeException ex) {
             // Callback code threw application exception...
             throw ex;
-        }
-        finally {
+        } finally {
             if (existingTransaction) {
                 LOG.debug("Not closing pre-bound Hibernate Session after HibernateTemplate");
                 if (previousFlushMode != null) {
                     session.setFlushMode(previousFlushMode);
                 }
-            }
-            else {
+            } else {
                 SessionFactoryUtils.closeSession(session);
             }
         }
@@ -196,8 +194,7 @@ protected boolean checkWriteOperations = true;
     protected Session getSession() {
         try {
             return sessionFactory.getCurrentSession();
-        }
-        catch (HibernateException ex) {
+        } catch (HibernateException ex) {
             throw new DataAccessResourceFailureException("Could not obtain current Hibernate Session", ex);
         }
     }
@@ -216,13 +213,11 @@ protected boolean checkWriteOperations = true;
         Class<?>[] sessionIfcs = null;
         Class<?> mainIfc = Session.class;
         if (session instanceof EventSource) {
-            sessionIfcs = new Class[] { mainIfc, EventSource.class };
-        }
-        else if (session instanceof SessionImplementor) {
-            sessionIfcs = new Class[] { mainIfc, SessionImplementor.class };
-        }
-        else {
-            sessionIfcs = new Class[] { mainIfc };
+            sessionIfcs = new Class[]{mainIfc, EventSource.class};
+        } else if (session instanceof SessionImplementor) {
+            sessionIfcs = new Class[]{mainIfc, SessionImplementor.class};
+        } else {
+            sessionIfcs = new Class[]{mainIfc};
         }
         return (Session) Proxy.newProxyInstance(session.getClass().getClassLoader(), sessionIfcs,
                 new CloseSuppressingInvocationHandler(session));
@@ -324,8 +319,7 @@ protected boolean checkWriteOperations = true;
             public Object doInHibernate(Session session) throws HibernateException {
                 if (lockMode == null) {
                     session.refresh(entity);
-                }
-                else {
+                } else {
                     session.refresh(entity, new LockOptions(lockMode));
                 }
                 return null;
@@ -336,6 +330,7 @@ protected boolean checkWriteOperations = true;
     public void setExposeNativeSession(boolean exposeNativeSession) {
         this.exposeNativeSession = exposeNativeSession;
     }
+
     public boolean isExposeNativeSession() {
         return exposeNativeSession;
     }
@@ -350,7 +345,7 @@ protected boolean checkWriteOperations = true;
         if (cacheQueries) {
             query.setCacheable(true);
         }
-        if(isCurrentTransactionReadOnly()) {
+        if (isCurrentTransactionReadOnly()) {
             query.setReadOnly(true);
         }
         SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(sessionFactory);
@@ -369,7 +364,7 @@ protected boolean checkWriteOperations = true;
         if (cacheQueries) {
             criteria.setCacheable(true);
         }
-        if(isCurrentTransactionReadOnly()) {
+        if (isCurrentTransactionReadOnly()) {
             criteria.setReadOnly(true);
         }
         SessionHolder sessionHolder = (SessionHolder) TransactionSynchronizationManager.getResource(sessionFactory);
@@ -422,8 +417,7 @@ protected boolean checkWriteOperations = true;
                 }
 
                 return retVal;
-            }
-            catch (InvocationTargetException ex) {
+            } catch (InvocationTargetException ex) {
                 throw ex.getTargetException();
             }
         }
@@ -436,6 +430,7 @@ protected boolean checkWriteOperations = true;
      * <p>In case of an existing Session, FLUSH_NEVER will turn the flush mode
      * to NEVER for the scope of the current operation, resetting the previous
      * flush mode afterwards.
+     *
      * @see #setFlushMode
      */
     public static final int FLUSH_NEVER = 0;
@@ -449,6 +444,7 @@ protected boolean checkWriteOperations = true;
      * existing flush mode, not modifying it for the current operation.
      * This in particular means that this setting will not modify an existing
      * flush mode NEVER, in contrast to FLUSH_EAGER.
+     *
      * @see #setFlushMode
      */
     public static final int FLUSH_AUTO = 1;
@@ -468,6 +464,7 @@ protected boolean checkWriteOperations = true;
      * <p>In case of an existing Session, FLUSH_EAGER will turn the flush mode
      * to AUTO for the scope of the current operation and issue a flush at the
      * end, resetting the previous flush mode afterwards.
+     *
      * @see #setFlushMode
      */
     public static final int FLUSH_EAGER = 2;
@@ -480,6 +477,7 @@ protected boolean checkWriteOperations = true;
      * to COMMIT for the scope of the current operation, resetting the previous
      * flush mode afterwards. The only exception is an existing flush mode
      * NEVER, which will not be modified through this setting.
+     *
      * @see #setFlushMode
      */
     public static final int FLUSH_COMMIT = 3;
@@ -490,6 +488,7 @@ protected boolean checkWriteOperations = true;
      * <p>In case of an existing Session, FLUSH_ALWAYS will turn the flush mode
      * to ALWAYS for the scope of the current operation, resetting the previous
      * flush mode afterwards.
+     *
      * @see #setFlushMode
      */
     public static final int FLUSH_ALWAYS = 4;
@@ -514,7 +513,7 @@ protected boolean checkWriteOperations = true;
     /**
      * Apply the flush mode that's been specified for this accessor to the given Session.
      *
-     * @param session the current Hibernate Session
+     * @param session             the current Hibernate Session
      * @param existingTransaction if executing within an existing transaction
      * @return the previous flush mode to restore after the operation, or <code>null</code> if none
      * @see #setFlushMode
@@ -528,44 +527,37 @@ protected boolean checkWriteOperations = true;
                     session.setFlushMode(FlushMode.MANUAL);
                     return previousFlushMode;
                 }
-            }
-            else {
+            } else {
                 session.setFlushMode(FlushMode.MANUAL);
             }
-        }
-        else if (getFlushMode() == FLUSH_EAGER) {
+        } else if (getFlushMode() == FLUSH_EAGER) {
             if (existingTransaction) {
                 FlushMode previousFlushMode = session.getFlushMode();
                 if (!previousFlushMode.equals(FlushMode.AUTO)) {
                     session.setFlushMode(FlushMode.AUTO);
                     return previousFlushMode;
                 }
-            }
-            else {
+            } else {
                 // rely on default FlushMode.AUTO
             }
-        }
-        else if (getFlushMode() == FLUSH_COMMIT) {
+        } else if (getFlushMode() == FLUSH_COMMIT) {
             if (existingTransaction) {
                 FlushMode previousFlushMode = session.getFlushMode();
                 if (previousFlushMode.equals(FlushMode.AUTO) || previousFlushMode.equals(FlushMode.ALWAYS)) {
                     session.setFlushMode(FlushMode.COMMIT);
                     return previousFlushMode;
                 }
-            }
-            else {
+            } else {
                 session.setFlushMode(FlushMode.COMMIT);
             }
-        }
-        else if (getFlushMode() == FLUSH_ALWAYS) {
+        } else if (getFlushMode() == FLUSH_ALWAYS) {
             if (existingTransaction) {
                 FlushMode previousFlushMode = session.getFlushMode();
                 if (!previousFlushMode.equals(FlushMode.ALWAYS)) {
                     session.setFlushMode(FlushMode.ALWAYS);
                     return previousFlushMode;
                 }
-            }
-            else {
+            } else {
                 session.setFlushMode(FlushMode.ALWAYS);
             }
         }
@@ -608,21 +600,20 @@ protected boolean checkWriteOperations = true;
     public void deleteAll(final Collection<?> objects) {
         execute(new GrailsHibernateTemplate.HibernateCallback<Void>() {
             public Void doInHibernate(Session session) throws HibernateException {
-               for (Object entity : getIterableAsCollection(objects)) {
-                  session.delete(entity);
-               }
-               return null;
+                for (Object entity : getIterableAsCollection(objects)) {
+                    session.delete(entity);
+                }
+                return null;
             }
-         });
+        });
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected Collection getIterableAsCollection(Iterable objects) {
         Collection list;
         if (objects instanceof Collection) {
-            list = (Collection)objects;
-        }
-        else {
+            list = (Collection) objects;
+        } else {
             list = new ArrayList();
             for (Object object : objects) {
                 list.add(object);

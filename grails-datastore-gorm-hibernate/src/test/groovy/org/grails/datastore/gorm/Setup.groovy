@@ -13,7 +13,7 @@ import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringIn
 import org.codehaus.groovy.grails.orm.hibernate.validation.HibernateConstraintsEvaluator
 import org.codehaus.groovy.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.codehaus.groovy.grails.orm.hibernate.validation.UniqueConstraint
-import org.codehaus.groovy.grails.plugins.web.api.ControllersDomainBindingApi
+//import org.codehaus.groovy.grails.plugins.web.api.ControllersDomainBindingApi
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
@@ -122,7 +122,7 @@ class Setup {
         ctx.beanFactory.registerSingleton 'eventTriggeringInterceptor', eventTriggeringInterceptor
 
         def metaClassEnhancer = new MetaClassEnhancer()
-        metaClassEnhancer.addApi new ControllersDomainBindingApi()
+//        metaClassEnhancer.addApi new ControllersDomainBindingApi()
 
         HibernateConstraintsEvaluator evaluator = new HibernateConstraintsEvaluator()
         grailsApplication.domainClasses.each { GrailsDomainClass dc ->

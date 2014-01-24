@@ -15,12 +15,13 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg
 
-import org.apache.commons.beanutils.BeanUtils
 import org.hibernate.FetchMode
 import org.hibernate.InvalidMappingException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.MutablePropertyValues
 import org.springframework.context.ApplicationContext
+import org.springframework.validation.DataBinder
 
 /**
  * Implements the ORM mapping DSL constructing a model that can be evaluated by the
@@ -123,7 +124,8 @@ class HibernateMappingBuilder {
         }
         else if (args.column instanceof Map) {
             ColumnConfig config = new ColumnConfig()
-            BeanUtils.populate config, args.column
+            DataBinder dataBinder = new DataBinder(config)
+            dataBinder.bind(new MutablePropertyValues((Map)args.column))
             mapping.discriminatorColumn = config
         }
         mapping.discriminatorMap.type = args?.remove('type')

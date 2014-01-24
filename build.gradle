@@ -53,14 +53,14 @@ task wrapper(type: Wrapper) {
 
 subprojects {
     ext {
-        releaseType = "RELEASE"
+//        releaseType = "RELEASE"
         // releaseType = "BUILD-SNAPSHOT"
         // releaseType = "RC2"
         isCiBuild = project.hasProperty("isCiBuild")
         isBuildSnapshot = releaseType == "BUILD-SNAPSHOT"
     }
 
-    version = "2.0.7.${releaseType}"
+    version = "3.0.0.${releaseType}"
     group = "org.grails"
 
 

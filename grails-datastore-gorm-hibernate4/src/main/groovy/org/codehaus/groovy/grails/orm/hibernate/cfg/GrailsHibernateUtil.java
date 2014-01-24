@@ -16,7 +16,7 @@
 package org.codehaus.groovy.grails.orm.hibernate.cfg;
 
 import grails.util.CollectionUtils;
-import grails.util.GrailsWebUtil;
+import grails.util.Holders;
 import groovy.lang.GroovyObject;
 import groovy.lang.GroovySystem;
 import groovy.lang.MetaClass;
@@ -26,7 +26,7 @@ import org.codehaus.groovy.grails.commons.*;
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateDomainClass;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.GroovyAwareJavassistProxyFactory;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.HibernateProxyHandler;
-import org.codehaus.groovy.grails.web.context.GrailsConfigUtils;
+import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
 import org.hibernate.*;
 import org.hibernate.criterion.Order;
 import org.hibernate.engine.spi.EntityEntry;
@@ -463,15 +463,27 @@ public class GrailsHibernateUtil {
     }
 
     public static boolean isCacheQueriesByDefault() {
-        return isCacheQueriesByDefault(GrailsWebUtil.currentApplication());
+        return isCacheQueriesByDefault(Holders.getGrailsApplication());
     }
 
     public static boolean isCacheQueriesByDefault(GrailsApplication grailsApplication) {
-        return GrailsConfigUtils.isConfigTrue(grailsApplication, CONFIG_PROPERTY_CACHE_QUERIES);
+        return isConfigTrue(grailsApplication, CONFIG_PROPERTY_CACHE_QUERIES);
     }
 
     public static boolean isOsivReadonly(GrailsApplication grailsApplication) {
-        return GrailsConfigUtils.isConfigTrue(grailsApplication, CONFIG_PROPERTY_OSIV_READONLY);
+        return isConfigTrue(grailsApplication, CONFIG_PROPERTY_OSIV_READONLY);
+    }
+
+    /**
+     * Checks if a Config parameter is true or a System property with the same name is true
+     *
+     * @param application
+     * @param propertyName
+     * @return true if the Config parameter is true or the System property with the same name is true
+     */
+    public static boolean isConfigTrue(GrailsApplication application, String propertyName) {
+        return ((application != null && application.getFlatConfig() != null && DefaultTypeTransformation.castToBoolean(application.getFlatConfig().get(propertyName))) ||
+                Boolean.getBoolean(propertyName));
     }
 
     public static GroovyAwareJavassistProxyFactory buildProxyFactory(PersistentClass persistentClass) {

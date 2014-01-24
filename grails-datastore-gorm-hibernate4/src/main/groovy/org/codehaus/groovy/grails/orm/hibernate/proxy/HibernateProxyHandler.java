@@ -17,9 +17,9 @@ package org.codehaus.groovy.grails.orm.hibernate.proxy;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil;
 import org.codehaus.groovy.grails.support.proxy.EntityProxyHandler;
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher;
 import org.hibernate.Hibernate;
 import org.hibernate.collection.internal.AbstractPersistentCollection;
 import org.hibernate.collection.spi.PersistentCollection;
@@ -49,16 +49,10 @@ public class HibernateProxyHandler implements EntityProxyHandler {
 
     public boolean isInitialized(Object obj, String associationName) {
         try {
-            Object proxy = PropertyUtils.getProperty(obj, associationName);
+            Object proxy = ClassPropertyFetcher.forClass(obj.getClass()).getPropertyValue(associationName, true);
             return Hibernate.isInitialized(proxy);
         }
-        catch (IllegalAccessException e) {
-            return false;
-        }
-        catch (InvocationTargetException e) {
-            return false;
-        }
-        catch (NoSuchMethodException e) {
+        catch (RuntimeException e) {
             return false;
         }
     }
@@ -91,19 +85,13 @@ public class HibernateProxyHandler implements EntityProxyHandler {
 
     public HibernateProxy getAssociationProxy(Object obj, String associationName) {
         try {
-            Object proxy = PropertyUtils.getProperty(obj, associationName);
+            Object proxy = ClassPropertyFetcher.forClass(obj.getClass()).getPropertyValue(associationName, true);
             if (proxy instanceof HibernateProxy) {
                 return (HibernateProxy) proxy;
             }
             return null;
         }
-        catch (IllegalAccessException e) {
-            return null;
-        }
-        catch (InvocationTargetException e) {
-            return null;
-        }
-        catch (NoSuchMethodException e) {
+        catch (RuntimeException e) {
             return null;
         }
     }

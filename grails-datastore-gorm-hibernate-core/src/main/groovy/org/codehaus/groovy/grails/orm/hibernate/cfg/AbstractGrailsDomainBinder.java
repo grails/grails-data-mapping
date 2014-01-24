@@ -16,9 +16,6 @@ package org.codehaus.groovy.grails.orm.hibernate.cfg;
 
 import grails.util.GrailsNameUtils;
 import groovy.lang.Closure;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.*;
@@ -26,6 +23,8 @@ import org.codehaus.groovy.grails.exceptions.GrailsDomainException;
 import org.codehaus.groovy.grails.plugins.GrailsPlugin;
 import org.codehaus.groovy.grails.plugins.GrailsPluginManager;
 import org.codehaus.groovy.grails.validation.ConstrainedProperty;
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
+import org.codehaus.groovy.runtime.StringGroovyMethods;
 import org.hibernate.FetchMode;
 import org.hibernate.MappingException;
 import org.hibernate.cfg.*;
@@ -36,6 +35,7 @@ import org.hibernate.mapping.Table;
 import org.hibernate.persister.entity.UnionSubclassEntityPersister;
 import org.hibernate.type.*;
 import org.springframework.context.ApplicationContext;
+import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Modifier;
@@ -382,7 +382,7 @@ public abstract class AbstractGrailsDomainBinder {
 
         PropertyConfig propConfig = getPropertyConfig(property);
 
-        if (propConfig != null && !StringUtils.isBlank(propConfig.getSort())) {
+        if (propConfig != null && StringUtils.hasText(propConfig.getSort())) {
             if (!property.isBidirectional() && property.isOneToMany()) {
                 throw new GrailsDomainException("Default sort for associations ["+property.getDomainClass().getName()+"->" + property.getName() +
                         "] are not supported with unidirectional one to many relationships.");
@@ -423,7 +423,7 @@ public abstract class AbstractGrailsDomainBinder {
                 }
                 //NOTE: this will build the set for the in clause if it has sublcasses
                 Set<String> discSet = buildDiscriminatorSet(referenced);
-                String inclause = StringUtils.join(discSet, ',');
+                String inclause = DefaultGroovyMethods.join(discSet, ",");
 
                 collection.setWhere(discriminatorColumnName + " in (" + inclause + ")");
             }
@@ -2087,8 +2087,10 @@ public abstract class AbstractGrailsDomainBinder {
         if (gormMapping != null && gormMapping.getIdentity() != null) {
             Object id = gormMapping.getIdentity();
             if (id instanceof CompositeIdentity) {
-                if (ArrayUtils.contains(((CompositeIdentity)id).getPropertyNames(), currentGrailsProp.getName())) {
-                    return true;
+                String[] propertyNames = ((CompositeIdentity) id).getPropertyNames();
+                String property = currentGrailsProp.getName();
+                for (String currentName : propertyNames) {
+                    if(currentName != null && currentName.equals(property)) return true;
                 }
             }
         }
@@ -3052,10 +3054,10 @@ public abstract class AbstractGrailsDomainBinder {
             if (minConstraintValueLength > 0 && maxConstraintValueLength > 0) {
                 // If both of min and max constraints are setted we could use
                 // maximum digits number in it as precision
-                precision = NumberUtils.max(new int[]{minConstraintValueLength, maxConstraintValueLength});
+                precision = Math.max(minConstraintValueLength, maxConstraintValueLength);
             } else {
                 // Overwise we should also use default precision
-                precision = NumberUtils.max(new int[]{precision, minConstraintValueLength, maxConstraintValueLength});
+                precision = DefaultGroovyMethods.max(new Integer[]{precision, minConstraintValueLength, maxConstraintValueLength});
             }
 
             column.setPrecision(precision);

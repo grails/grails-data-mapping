@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.grails.datastore.gorm.query.criteria.DetachedAssociationCriteria;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.query.AssociationQuery;
@@ -243,7 +243,7 @@ public abstract class AbstractHibernateCriterionAdapter {
      */
     protected Criterion callRestrictionsMethod(String constraintName, Class<?>[] paramTypes, Object[] params) {
         final Method restrictionsMethod = ReflectionUtils.findMethod(Restrictions.class, constraintName, paramTypes);
-        Assert.notNull(restrictionsMethod, "Could not find method: " + constraintName + " in class Restrictions for parameters: " + ArrayUtils.toString(params) + " with types: " + ArrayUtils.toString(paramTypes));
+        Assert.notNull(restrictionsMethod, "Could not find method: " + constraintName + " in class Restrictions for parameters: " + DefaultGroovyMethods.inspect(params) + " with types: " + DefaultGroovyMethods.inspect(paramTypes));
         return (Criterion) ReflectionUtils.invokeMethod(restrictionsMethod, null, params);
     }
 

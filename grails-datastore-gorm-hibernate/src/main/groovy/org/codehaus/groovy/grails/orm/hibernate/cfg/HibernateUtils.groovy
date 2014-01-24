@@ -32,7 +32,6 @@ import org.codehaus.groovy.grails.orm.hibernate.HibernateGormInstanceApi
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormStaticApi
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormValidationApi
 import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
-import org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.codehaus.groovy.runtime.StringGroovyMethods
 import org.grails.datastore.mapping.core.Datastore
@@ -129,7 +128,7 @@ class HibernateUtils {
                     enhancer.enhance entity, true
                 }
 
-                DomainClassGrailsPlugin.addRelationshipManagementMethods(dc, ctx)
+                HibernateGormEnhancer.addRelationshipManagementMethods(dc, ctx)
             }
         }
 

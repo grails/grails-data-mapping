@@ -22,7 +22,6 @@ import groovy.transform.TypeCheckingMode
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.domain.GrailsDomainClassMappingContext
 import org.codehaus.groovy.grails.orm.hibernate.cfg.CompositeIdentity
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -35,7 +34,6 @@ import org.codehaus.groovy.grails.orm.hibernate.metaclass.ListPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.MergePersistentMethod
 import org.grails.datastore.gorm.GormStaticApi
 import org.grails.datastore.gorm.finders.FinderMethod
-import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.query.api.Criteria as GrailsCriteria
 import org.hibernate.Criteria
 import org.hibernate.LockMode
@@ -85,16 +83,14 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         identityType = persistentEntity.identity?.type
 
         def mappingContext = datastore.mappingContext
-        if (mappingContext instanceof GrailsDomainClassMappingContext) {
-            GrailsDomainClassMappingContext domainClassMappingContext = (GrailsDomainClassMappingContext)mappingContext
-            grailsApplication = domainClassMappingContext.getGrailsApplication()
-
+        def grailsApplication = datastore.grailsApplication
+        if (grailsApplication) {
             GrailsDomainClass domainClass = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, persistentClass.name)
             identityType = domainClass.identifier?.type
 
             mergeMethod = new MergePersistentMethod(sessionFactory, classLoader, grailsApplication, domainClass, datastore)
             listMethod = new ListPersistentMethod(grailsApplication, sessionFactory, classLoader, mappingContext.conversionService)
-            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication)
+            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
             hibernateTemplate.setCacheQueries(cacheQueriesByDefault)
         } else {
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory)
@@ -466,7 +462,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
 
     @Override
     Object withSession(Closure callable) {
-        GrailsHibernateTemplate template = new GrailsHibernateTemplate(sessionFactory, grailsApplication)
+        GrailsHibernateTemplate template = new GrailsHibernateTemplate(sessionFactory)
         template.setExposeNativeSession(false)
         hibernateTemplate.execute new GrailsHibernateTemplate.HibernateCallback() {
             def doInHibernate(Session session) {

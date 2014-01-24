@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.persistence.FlushModeType;
 
 import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.domain.GrailsDomainClassMappingContext;
 import org.codehaus.groovy.grails.orm.hibernate.proxy.HibernateProxyHandler;
 import org.codehaus.groovy.grails.orm.hibernate.query.HibernateQuery;
 import org.codehaus.groovy.grails.support.proxy.ProxyHandler;
@@ -52,12 +51,14 @@ public class HibernateSession extends AbstractHibernateSession {
     public HibernateSession(HibernateDatastore hibernateDatastore, SessionFactory sessionFactory) {
         super(hibernateDatastore, sessionFactory);
 
-        if (datastore.getMappingContext() instanceof GrailsDomainClassMappingContext) {
-            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory,
-                    ((GrailsDomainClassMappingContext)datastore.getMappingContext()).getGrailsApplication());
+        hibernateTemplate = new GrailsHibernateTemplate(sessionFactory);
+        GrailsApplication grailsApplication = hibernateDatastore.getGrailsApplication();
+
+        if (grailsApplication != null) {
+            hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, grailsApplication);
         }
         else {
-            GrailsApplication app = hibernateDatastore.getApplicationContext().getBean("grailsApplication", GrailsApplication.class);
+            GrailsApplication app = hibernateDatastore.getApplicationContext().getBean(GrailsApplication.APPLICATION_ID, GrailsApplication.class);
             hibernateTemplate = new GrailsHibernateTemplate(sessionFactory, app);
         }
     }

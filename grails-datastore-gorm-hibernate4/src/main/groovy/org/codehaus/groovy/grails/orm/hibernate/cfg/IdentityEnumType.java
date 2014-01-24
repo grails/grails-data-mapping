@@ -15,7 +15,7 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg;
 
-import grails.util.GrailsWebUtil;
+import grails.util.Holders;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
@@ -75,7 +75,7 @@ public class IdentityEnumType implements UserType, ParameterizedType, Serializab
     }
 
     public static boolean isEnabled() {
-        Object disableConfigOption = GrailsWebUtil.currentFlatConfiguration().get("grails.orm.enum.id.mapping");
+        Object disableConfigOption = Holders.getFlatConfig().get("grails.orm.enum.id.mapping");
         return disableConfigOption == null || !(Boolean.FALSE.equals(disableConfigOption));
     }
 

@@ -19,11 +19,11 @@ import grails.validation.ValidationException;
 import groovy.lang.*;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.groovy.grails.commons.GrailsClassUtils;
@@ -297,11 +297,14 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
                     long time = System.currentTimeMillis();
                     if (dateCreatedProperty != null && dateCreatedProperty.getProperty(entity)==null) {
                         Object now = applyTimestamp(entity, dateCreatedProperty,  time);
-                        event.getState()[ArrayUtils.indexOf(event.getPersister().getPropertyNames(), GrailsDomainClassProperty.DATE_CREATED)] = now;
+                        String[] propertyNames = event.getPersister().getPropertyNames();
+                        event.getState()[ Arrays.asList(propertyNames).indexOf(GrailsDomainClassProperty.DATE_CREATED) ] = now;
+
                     }
                     if (lastUpdatedProperty != null) {
                         Object now = applyTimestamp(entity, lastUpdatedProperty,  time);
-                        event.getState()[ArrayUtils.indexOf(event.getPersister().getPropertyNames(), GrailsDomainClassProperty.LAST_UPDATED)] = now;
+                        String[] propertyNames = event.getPersister().getPropertyNames();
+                        event.getState()[ Arrays.asList(propertyNames).indexOf( GrailsDomainClassProperty.LAST_UPDATED) ] = now;
                     }
                 }
                 if (!AbstractSavePersistentMethod.isAutoValidationDisabled(entity)

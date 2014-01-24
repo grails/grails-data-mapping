@@ -14,9 +14,13 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate
 
+import grails.util.GrailsNameUtils
 import groovy.transform.CompileStatic
-
+import groovy.transform.TypeCheckingMode
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.GrailsClassUtils
+import org.codehaus.groovy.grails.commons.GrailsDomainClass
+import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.CountByPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindAllByBooleanPropertyPersistentMethod
 import org.codehaus.groovy.grails.orm.hibernate.metaclass.FindAllByPersistentMethod
@@ -31,6 +35,8 @@ import org.grails.datastore.gorm.GormValidationApi
 import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.springframework.beans.BeanUtils
+import org.springframework.context.ApplicationContext
 import org.springframework.transaction.PlatformTransactionManager
 
 /**
@@ -73,4 +79,6 @@ class HibernateGormEnhancer extends AbstractHibernateGormEnhancer {
     protected <D> GormInstanceApi<D> getInstanceApi(Class<D> cls) {
         new HibernateGormInstanceApi<D>(cls, (HibernateDatastore)datastore, classLoader)
     }
+
+
 }

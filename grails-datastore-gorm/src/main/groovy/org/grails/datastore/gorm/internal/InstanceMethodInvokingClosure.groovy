@@ -16,7 +16,6 @@ package org.grails.datastore.gorm.internal
 
 import groovy.transform.CompileStatic
 
-import org.apache.commons.lang.ArrayUtils
 
 /**
  * Not public API. Used by GormEnhancer
@@ -33,7 +32,16 @@ class InstanceMethodInvokingClosure extends MethodInvokingClosure {
     @Override
     Object call(Object[] args) {
         def delegateArg = Collections.singletonList(delegate).toArray()
-        def arguments = args ? ArrayUtils.addAll(delegateArg, args) : delegateArg
+        def arguments
+        if(args) {
+            def argList = []
+            argList.add(delegateArg)
+            argList.addAll(Arrays.asList(args))
+            arguments = argList.toArray()
+        }
+        else {
+            arguments = delegateArg
+        }
         metaMethod.invoke(apiDelegate, arguments)
     }
 }
