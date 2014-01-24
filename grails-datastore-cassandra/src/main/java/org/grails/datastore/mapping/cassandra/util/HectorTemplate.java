@@ -14,9 +14,6 @@
  */
 package org.grails.datastore.mapping.cassandra.util;
 
-import me.prettyprint.cassandra.model.HectorException;
-import me.prettyprint.cassandra.service.CassandraClient;
-import me.prettyprint.cassandra.service.Keyspace;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -30,28 +27,28 @@ import org.springframework.dao.DataAccessResourceFailureException;
  */
 public class HectorTemplate {
 
-    CassandraClient cassandraClient;
+//    CassandraClient cassandraClient;
 
-    public HectorTemplate(CassandraClient cassandraClient) {
-        this.cassandraClient = cassandraClient;
-    }
-
-    public Object execute(String keyspace, HectorCallback callable) throws DataAccessException {
-        final Keyspace ks;
-        try {
-            ks = cassandraClient.getKeyspace(keyspace);
-        }
-        catch (HectorException e) {
-            throw new DataAccessResourceFailureException(
-                    "Exception occurred invoking Cassandra: " + e.getMessage(), e);
-        }
-
-        try {
-            return callable.doInHector(ks);
-        }
-        catch (HectorException e) {
-            throw new DataAccessResourceFailureException(
-                    "Exception occurred invoking Cassandra: " + e.getMessage(), e);
-        }
-    }
+//    public HectorTemplate(CassandraClient cassandraClient) {
+//        this.cassandraClient = cassandraClient;
+//    }
+//
+//    public Object execute(String keyspace, HectorCallback callable) throws DataAccessException {
+//        final Keyspace ks;
+//        try {
+//            ks = cassandraClient.getKeyspace(keyspace);
+//        }
+//        catch (HectorException e) {
+//            throw new DataAccessResourceFailureException(
+//                    "Exception occurred invoking Cassandra: " + e.getMessage(), e);
+//        }
+//
+//        try {
+//            return callable.doInHector(ks);
+//        }
+//        catch (HectorException e) {
+//            throw new DataAccessResourceFailureException(
+//                    "Exception occurred invoking Cassandra: " + e.getMessage(), e);
+//        }
+//    }
 }

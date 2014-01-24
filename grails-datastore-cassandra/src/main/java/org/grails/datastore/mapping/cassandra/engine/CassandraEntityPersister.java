@@ -14,215 +14,184 @@
  */
 package org.grails.datastore.mapping.cassandra.engine;
 
-import static me.prettyprint.cassandra.utils.StringUtils.bytes;
-import static me.prettyprint.cassandra.utils.StringUtils.string;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import me.prettyprint.cassandra.model.HectorException;
-import me.prettyprint.cassandra.service.CassandraClient;
-import me.prettyprint.cassandra.service.Keyspace;
-
-import org.apache.cassandra.thrift.Column;
-import org.apache.cassandra.thrift.ColumnParent;
-import org.apache.cassandra.thrift.SlicePredicate;
-import org.apache.cassandra.thrift.SliceRange;
-import org.apache.cassandra.thrift.SuperColumn;
-import org.springframework.dao.DataAccessResourceFailureException;
+import com.datastax.driver.core.*;
+import com.datastax.driver.core.querybuilder.Insert;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.driver.core.querybuilder.Update;
+import org.grails.datastore.mapping.engine.EntityAccess;
+import org.grails.datastore.mapping.keyvalue.engine.AbstractKeyValueEntityPersister;
+import org.grails.datastore.mapping.keyvalue.mapping.config.Family;
+import org.grails.datastore.mapping.model.types.Association;
+import org.grails.datastore.mapping.query.Query;
+import org.springframework.context.ApplicationEventPublisher;
 import org.grails.datastore.mapping.cassandra.CassandraDatastore;
 import org.grails.datastore.mapping.cassandra.CassandraSession;
 import org.grails.datastore.mapping.cassandra.uuid.UUIDUtil;
 import org.grails.datastore.mapping.engine.AssociationIndexer;
 import org.grails.datastore.mapping.engine.PropertyValueIndexer;
-import org.grails.datastore.mapping.keyvalue.engine.AbstractKeyValueEntityPesister;
 import org.grails.datastore.mapping.keyvalue.engine.KeyValueEntry;
 import org.grails.datastore.mapping.model.ClassMapping;
 import org.grails.datastore.mapping.model.MappingContext;
 import org.grails.datastore.mapping.model.PersistentEntity;
 import org.grails.datastore.mapping.model.PersistentProperty;
-import org.grails.datastore.mapping.model.types.Association;
-import org.grails.datastore.mapping.query.Query;
+
+import javax.persistence.Column;
 
 /**
  * @author Graeme Rocher
  * @since 1.0
  */
-public class CassandraEntityPersister extends AbstractKeyValueEntityPesister<KeyValueEntry, Object> {
+public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<KeyValueEntry, Object> {
 
-    private CassandraClient cassandraClient;
-    private static final byte[] ZERO_LENGTH_BYTE_ARRAY = new byte[0];
+	private Session session;
+	private static final byte[] ZERO_LENGTH_BYTE_ARRAY = new byte[0];
 
-    public CassandraEntityPersister(MappingContext context, PersistentEntity entity,
-            CassandraSession conn, CassandraClient cassandraClient) {
-        super(context, entity, conn);
-        this.cassandraClient = cassandraClient;
-    }
+	public CassandraEntityPersister(MappingContext context, PersistentEntity entity, CassandraSession conn, Session session, ApplicationEventPublisher applicationEventPublisher) {
+		super(context, entity, conn, applicationEventPublisher);
+		this.session = session;
+	}
 
-    @Override
-    protected void deleteEntry(String family, Object key) {
-        // TODO: Implement deletion of entities
-    }
+	@Override
+	public AssociationIndexer getAssociationIndexer(KeyValueEntry nativeEntry, Association association) {
+		//        return new CassandraAssociationIndexer(cassandraClient, association, getKeyspaceName());
+		return null;
+	}
 
-    @Override
-    public AssociationIndexer getAssociationIndexer(KeyValueEntry nativeEntry, Association association) {
-        return new CassandraAssociationIndexer(cassandraClient, association, getKeyspaceName());
-    }
+	@Override
+	public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
+		return null;
+	}
 
-    @Override
-    public PropertyValueIndexer getPropertyIndexer(PersistentProperty property) {
-        return null; // TODO: Support querying in cassandra
-    }
+	@Override
+	protected KeyValueEntry createNewEntry(String family) {
+		return new KeyValueEntry(family);
+	}
 
-    @Override
-    protected KeyValueEntry createNewEntry(String family) {
-        return new KeyValueEntry(family);
-    }
+	@Override
+	protected Object getEntryValue(KeyValueEntry nativeEntry, String property) {
+		return nativeEntry.get(property);
+	}
 
-    @Override
-    protected Object getEntryValue(KeyValueEntry nativeEntry, String property) {
-        return nativeEntry.get(property);
-    }
+	@Override
+	protected void setEntryValue(KeyValueEntry nativeEntry, String key, Object value) {
+		if (value != null) {
+			nativeEntry.put(key, value.toString());
+		}
+	}
 
-    @Override
-    protected void setEntryValue(KeyValueEntry nativeEntry, String key, Object value) {
-        if (value != null) {
-            nativeEntry.put(key, bytes(value.toString()));
-        }
-    }
+	@Override
+	protected KeyValueEntry retrieveEntry(PersistentEntity persistentEntity, String family, Serializable nativeKey) {
+		System.out.println(family);
+		final ClassMapping cm = getPersistentEntity().getMapping();
+		final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
 
-    @Override
-    protected KeyValueEntry retrieveEntry(PersistentEntity persistentEntity, String family, Serializable nativeKey) {
-        final ClassMapping cm = getPersistentEntity().getMapping();
-        final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
+		System.out.println("Keyspace: "+keyspaceName);
+		//TODO review Native Key string conversion
+		Statement stmt = QueryBuilder.select().all().from(keyspaceName, family).where(QueryBuilder.eq("id", UUID.fromString(nativeKey.toString())));
+		ResultSet rs = session.execute(stmt);
 
-        final Keyspace keyspace;
-        try {
-            keyspace = cassandraClient.getKeyspace(keyspaceName);
-        }
-        catch (HectorException e) {
-            throw new DataAccessResourceFailureException(
-                    "Exception occurred invoking Cassandra: " + e.getMessage(), e);
-        }
+		KeyValueEntry entry = new KeyValueEntry(family);
+		if (rs.getAvailableWithoutFetching() == 1) {
+			Row row = rs.one();
+			ColumnDefinitions columns = row.getColumnDefinitions();
+			for (ColumnDefinitions.Definition definition : columns) {
+				String columnName = definition.getName();
+				//				DataType dt = definition.getType(); //TODO do something with type here? Or change what we return?
+				entry.put(columnName, row.getString(columnName));
+			}
+		}
 
-        SuperColumn sc = getSuperColumn(keyspace, family, nativeKey);
-        KeyValueEntry entry = new KeyValueEntry(family);
-        if (sc != null) {
-            for (Column column : sc.getColumns()) {
-                entry.put(string(column.getName()), string(column.getValue()));
-            }
-        }
+		if (entry.isEmpty()) {
+			return null;
+		}
 
-        if (entry.isEmpty()) {
-            return null;
-        }
+		return entry;
+	}
 
-        return entry;
-    }
+	@Override
+	protected Object storeEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object storeId, KeyValueEntry entry) {
+		System.out.println("StoreEntry");
+		UUID uuid = (UUID)storeId;
+		final ClassMapping cm = getPersistentEntity().getMapping();
+		final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
+		String family = getFamily(persistentEntity, getPersistentEntity().getMapping());
+		System.out.println(family);
+		Insert insert = QueryBuilder.insertInto(keyspaceName, family);
 
-    private SuperColumn getSuperColumn(Keyspace keyspace, String family, Serializable id) {
-        ColumnParent parent = new ColumnParent();
-        parent.setColumn_family(family);
+		//Include id
+		insert = insert.value("id", uuid);
 
-        final List<SuperColumn> result;
-        try {
-            SlicePredicate predicate = new SlicePredicate();
-            predicate.setSlice_range(new SliceRange(ZERO_LENGTH_BYTE_ARRAY, ZERO_LENGTH_BYTE_ARRAY, false, 1));
-            result = keyspace.getSuperSlice(id.toString(), parent, predicate);
-        }
-        catch (HectorException e) {
-            throw new DataAccessResourceFailureException("Exception occurred invoking Cassandra: " + e.getMessage(), e);
-        }
+		for (String prop : entry.keySet()) {
+			insert = insert.value(prop, entry.get(prop));
+		}
 
-        return !result.isEmpty() ? result.get(0) : null;
-    }
+		System.out.println("After session execute insert "+insert.toString());
 
-    @Override
-    protected void updateEntry(PersistentEntity persistentEntity, Object id, KeyValueEntry entry) {
-        Keyspace keyspace = getKeyspace();
-        final String family = getFamily(persistentEntity, persistentEntity.getMapping());
-        SuperColumn sc = getSuperColumn(keyspace, family, (Serializable)id);
-        if (sc != null) {
-            updateSuperColumn(sc, entry);
+		ResultSet rs = session.execute(insert);
 
-            Map<String, List<SuperColumn>> insertMap = createInsertMap(family, sc);
 
-            performInsertion(keyspace, id.toString(), insertMap, entry);
-        }
-    }
+		System.out.println(rs.getExecutionInfo());
+		return uuid;
+	}
 
-    @Override
-    protected void deleteEntries(String family, List<Object> keys) {
-    }
+	@Override
+	protected void updateEntry(PersistentEntity persistentEntity, EntityAccess entityAccess, Object id, KeyValueEntry entry) {
+		final ClassMapping cm = getPersistentEntity().getMapping();
+		final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
+		final String family = getFamily(persistentEntity, persistentEntity.getMapping());
 
-    @Override
-    protected Object storeEntry(PersistentEntity persistentEntity, Object storeId, KeyValueEntry nativeEntry) {
-        UUID uuid = (UUID)storeId;
-        final Keyspace keyspace = getKeyspace();
-        String family = getFamily(persistentEntity, getPersistentEntity().getMapping());
-        SuperColumn sc = new SuperColumn();
-        sc.setName(UUIDUtil.asByteArray(uuid));
-        updateSuperColumn(sc, nativeEntry);
-        Map<String, List<SuperColumn>> insertMap = createInsertMap(family, sc);
-        performInsertion(keyspace, uuid.toString(), insertMap, nativeEntry);
-        return uuid;
-    }
+		UUID uuid = (UUID)id;
 
-    @Override
-    protected Object generateIdentifier(PersistentEntity persistentEntity, KeyValueEntry id) {
-        return UUIDUtil.getTimeUUID();
-    }
+		Update.Assignments updateAssignments = QueryBuilder.update(keyspaceName, family).with();
+		for (String prop : entry.keySet()) {
+			updateAssignments = updateAssignments.and(QueryBuilder.set(prop, entry.get(prop)));
+		}
 
-    private void performInsertion(Keyspace keyspace, String key, Map<String, List<SuperColumn>> insertMap,
-            @SuppressWarnings("unused") KeyValueEntry nativeEntry) {
-        try {
-            keyspace.batchInsert(key, null, insertMap);
-        }
-        catch (HectorException e) {
-            throw new DataAccessResourceFailureException(
-                    "Exception occurred invoking Cassandra: " + e.getMessage(), e);
-        }
-    }
+		Statement update = updateAssignments.where(QueryBuilder.eq("id", UUID.fromString(uuid.toString())));
 
-    private Map<String, List<SuperColumn>> createInsertMap(String family, SuperColumn sc) {
-        Map<String, List<SuperColumn>> insertMap = new HashMap<String, List<SuperColumn>>();
-        List<SuperColumn> superColumns = new ArrayList<SuperColumn>();
-        superColumns.add(sc);
-        insertMap.put(family, superColumns);
-        return insertMap;
-    }
+		session.execute(update);
+	}
 
-    private void updateSuperColumn(SuperColumn sc, KeyValueEntry nativeEntry) {
-        final long time = System.currentTimeMillis() * 1000;
-        for (String prop : nativeEntry.keySet()) {
-            Column c = new Column();
-            c.setName(bytes(prop));
-            c.setValue((byte[])nativeEntry.get(prop));
-            c.setTimestamp(time);
-            sc.addToColumns(c);
-        }
-    }
+	@Override
+	protected void deleteEntries(String family, List<Object> keys) {
+		//TODO implement me deleteEntries
+	}
 
-    private Keyspace getKeyspace() {
-        final String keyspaceName = getKeyspaceName();
-        try {
-            return cassandraClient.getKeyspace(keyspaceName);
-        }
-        catch (HectorException e) {
-            throw new DataAccessResourceFailureException(
-                    "Exception occurred invoking Cassandra: " + e.getMessage(), e);
-        }
-    }
+	@Override
+	protected void deleteEntry(String family, Object key, Object entry) {
+		//TODO implement me deleteEntry
+	}
 
-    private String getKeyspaceName() {
-        return getKeyspace(getPersistentEntity().getMapping(), CassandraDatastore.DEFAULT_KEYSPACE);
-    }
+	@Override
+	protected Object generateIdentifier(PersistentEntity persistentEntity, KeyValueEntry id) {
+		return UUID.randomUUID(); //TODO review if this is the correct UUID type we want.
+	}
 
-    public Query createQuery() {
-        return null; // TODO: Implement querying for Cassandra
-    }
+	private String getKeyspaceName() {
+		return getKeyspace(getPersistentEntity().getMapping(), CassandraDatastore.DEFAULT_KEYSPACE);
+	}
+
+	@Override
+	public Query createQuery() {
+		return null; //TODO implement createQuery
+	}
+
+
+	protected String getFamily(PersistentEntity persistentEntity, ClassMapping<Family> cm) {
+		//TODO make this something good
+		String table = null;
+		if (cm.getMappedForm() != null) {
+			table = cm.getMappedForm().getFamily();
+		}
+		System.out.println(table);
+		//if (table == null)
+		table = persistentEntity.getJavaClass().getSimpleName();
+		System.out.println("in getFamily: "+table);
+		return table;
+	}
 }

@@ -16,14 +16,15 @@ package org.grails.datastore.mapping.cassandra;
 
 import java.util.Map;
 
-import me.prettyprint.cassandra.service.CassandraClient;
-import me.prettyprint.cassandra.service.CassandraClientPool;
-import me.prettyprint.cassandra.service.CassandraClientPoolFactory;
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.SocketOptions;
+import com.datastax.driver.core.policies.ConstantReconnectionPolicy;
+import com.datastax.driver.core.policies.DowngradingConsistencyRetryPolicy;
 
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.grails.datastore.mapping.core.AbstractDatastore;
 import org.grails.datastore.mapping.core.Session;
-import org.grails.datastore.mapping.keyvalue.mapping.KeyValueMappingContext;
+import org.grails.datastore.mapping.keyvalue.mapping.config.KeyValueMappingContext;
 import org.grails.datastore.mapping.model.MappingContext;
 
 /**
@@ -31,26 +32,31 @@ import org.grails.datastore.mapping.model.MappingContext;
  * @since 1.0
  */
 public class CassandraDatastore extends AbstractDatastore {
-    public static final String DEFAULT_KEYSPACE = "Keyspace1";
-    private CassandraClientPool connectionPool;
+	public static final String DEFAULT_KEYSPACE = "CassandraKeySpace"; //TODO make onse keyspace for each session somehow, maybe just do a different datastore instance?
+	private Cluster cluster;
 
-    public CassandraDatastore(MappingContext mappingContext) {
-        super(mappingContext);
-        this.connectionPool = CassandraClientPoolFactory.INSTANCE.get();
-    }
+	public CassandraDatastore(MappingContext mappingContext) {
+		super(mappingContext);
 
-    public CassandraDatastore() {
-        this(new KeyValueMappingContext(DEFAULT_KEYSPACE));
-    }
+		this.cluster = Cluster.builder()
+			.addContactPoints("127.0.0.1")
+			.withRetryPolicy(DowngradingConsistencyRetryPolicy.INSTANCE)
+			.withReconnectionPolicy(new ConstantReconnectionPolicy(100L))
+			.withSocketOptions(new SocketOptions().setKeepAlive(true))
+			.build();
+	}
 
-    @Override
-    protected Session createSession(@SuppressWarnings("hiding") Map<String, String> connectionDetails) {
-        final CassandraClient client;
-        try {
-            client = connectionPool.borrowClient("localhost", 9160);
-            return new CassandraSession(this, getMappingContext(), connectionPool, client);
-        } catch (Exception e) {
-            throw new DataAccessResourceFailureException("Failed to obtain Cassandra client session: " + e.getMessage(), e);
-        }
-    }
+	public CassandraDatastore() {
+		this(new KeyValueMappingContext(DEFAULT_KEYSPACE));
+	}
+
+	@Override
+	protected Session createSession(Map<String, String> connectionDetails) {
+
+		try {
+			return new CassandraSession(this, getMappingContext(), cluster, getApplicationEventPublisher(), false);
+		} catch (Exception e) {
+			throw new DataAccessResourceFailureException("Failed to obtain Cassandra client session: " + e.getMessage(), e);
+		}
+	}
 }

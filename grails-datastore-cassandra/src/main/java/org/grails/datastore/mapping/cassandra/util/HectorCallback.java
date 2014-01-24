@@ -14,9 +14,6 @@
  */
 package org.grails.datastore.mapping.cassandra.util;
 
-import me.prettyprint.cassandra.model.HectorException;
-import me.prettyprint.cassandra.service.Keyspace;
-
 /**
  * Wraps interaction with Hector
  *
@@ -24,5 +21,5 @@ import me.prettyprint.cassandra.service.Keyspace;
  * @since 1.0
  */
 public interface HectorCallback {
-    Object doInHector(Keyspace keyspace) throws HectorException;
+//    Object doInHector(Keyspace keyspace) throws HectorException;
 }

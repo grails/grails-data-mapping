@@ -10,9 +10,9 @@ include ("grails-datastore-core",
         "grails-datastore-dynamodb",
         'grails-datastore-rest-client',
 /*
-        "grails-datastore-jcr",
+        "grails-datastore-jcr",*/
         "grails-datastore-cassandra",
-*/
+
 
         // Documentation
         'grails-documentation-core',

@@ -14,9 +14,9 @@
  */
 package org.grails.datastore.mapping.cassandra;
 
-import me.prettyprint.cassandra.service.CassandraClient;
-import me.prettyprint.cassandra.service.CassandraClientPool;
-
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Session;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.grails.datastore.mapping.cassandra.engine.CassandraEntityPersister;
 import org.grails.datastore.mapping.core.AbstractSession;
@@ -31,50 +31,47 @@ import org.springframework.transaction.TransactionSystemException;
  * @author Graeme Rocher
  * @since 1.0
  */
-public class CassandraSession extends AbstractSession<CassandraClient> {
-    private CassandraClient cassandraClient;
-    private CassandraClientPool connectionPool;
+public class CassandraSession extends AbstractSession<Session> {
 
-    public CassandraSession(Datastore ds, MappingContext context, CassandraClientPool connectionPool,
-            CassandraClient client) {
-        super(ds, context);
-        this.connectionPool = connectionPool;
-        this.cassandraClient = client;
-    }
+	private Cluster cluster;
+	private Session session;
+	private ApplicationEventPublisher applicationEventPublisher;
 
-    @Override
-    protected Persister createPersister(Class cls, MappingContext mappingContext) {
-        PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
-        if (entity != null) {
-            return new CassandraEntityPersister(mappingContext, entity, this, cassandraClient);
-        }
-        return null;
-    }
+	public CassandraSession(Datastore ds, MappingContext context, Cluster cluster, ApplicationEventPublisher applicationEventPublisher, boolean stateless) {
+		super(ds, context, applicationEventPublisher, stateless);
 
-    public boolean isConnected() {
-        return !cassandraClient.isReleased();
-    }
+		this.cluster = cluster;
+		this.applicationEventPublisher = applicationEventPublisher;
+		this.session = cluster.connect(); //TODO review need of session
+	}
 
-    @Override
-    public void disconnect() {
-        try {
-            connectionPool.releaseClient(cassandraClient);
-        }
-        catch (Exception e) {
-            throw new DataAccessResourceFailureException(
-                    "Failed to release Cassandra client session: " + e.getMessage(), e);
-        }
-        finally {
-            super.disconnect();
-        }
-    }
+	@Override
+	protected Persister createPersister(Class cls, MappingContext mappingContext) {
+		PersistentEntity entity = mappingContext.getPersistentEntity(cls.getName());
+		if (entity != null) {
+			return new CassandraEntityPersister(mappingContext, entity, this, session,applicationEventPublisher);
+		}
+		return null;
+	}
 
-    @Override
-    protected Transaction beginTransactionInternal() {
-        throw new TransactionSystemException("Transactions are not supported by Cassandra");
-    }
+	@Override
+	public void disconnect() {
+		try {
+			session.shutdown();
+		} catch (Exception e) {
+			throw new DataAccessResourceFailureException(
+				"Failed to release Cassandra client session: " + e.getMessage(), e);
+		} finally {
+			super.disconnect();
+		}
+	}
 
-    public CassandraClient getNativeInterface() {
-        return cassandraClient;
-    }
+	@Override
+	protected Transaction beginTransactionInternal() {
+		throw new TransactionSystemException("Transactions are not supported by Cassandra");
+	}
+
+	public Cluster getNativeInterface() {
+		return cluster;
+	}
 }
