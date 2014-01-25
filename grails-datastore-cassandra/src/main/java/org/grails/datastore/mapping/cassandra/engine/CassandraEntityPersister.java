@@ -80,17 +80,16 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 	@Override
 	protected void setEntryValue(KeyValueEntry nativeEntry, String key, Object value) {
 		if (value != null) {
-			nativeEntry.put(key, value.toString());
+			nativeEntry.put(key, value);
 		}
 	}
 
 	@Override
 	protected KeyValueEntry retrieveEntry(PersistentEntity persistentEntity, String family, Serializable nativeKey) {
-		System.out.println(family);
+		System.out.println("retrieveEntry");
 		final ClassMapping cm = getPersistentEntity().getMapping();
 		final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
 
-		System.out.println("Keyspace: "+keyspaceName);
 		//TODO review Native Key string conversion
 		Statement stmt = QueryBuilder.select().all().from(keyspaceName, family).where(QueryBuilder.eq("id", UUID.fromString(nativeKey.toString())));
 		ResultSet rs = session.execute(stmt);
@@ -101,8 +100,8 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 			ColumnDefinitions columns = row.getColumnDefinitions();
 			for (ColumnDefinitions.Definition definition : columns) {
 				String columnName = definition.getName();
-				//				DataType dt = definition.getType(); //TODO do something with type here? Or change what we return?
-				entry.put(columnName, row.getString(columnName));
+				DataType dt = definition.getType();
+				entry.put(columnName, dt.deserialize(row.getBytesUnsafe(columnName)));
 			}
 		}
 

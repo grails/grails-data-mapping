@@ -50,10 +50,18 @@ class CassandraEntityPersisterTest extends AbstractCassandraTest {
 
 		t.age = 55
 		conn.persist(t)
-
+		conn.flush()
 		t = conn.retrieve(TestEntity, t.id)
 
 		assert 55 == t.age
+
+		def uuid =  t.id
+		conn.delete(t)
+		conn.flush()
+
+		def deletedEntity = conn.retrieve(TestEntity, uuid)
+		assert deletedEntity == null
+
 	}
 }
 
