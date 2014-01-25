@@ -129,10 +129,9 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 			insert = insert.value(prop, entry.get(prop));
 		}
 
-		System.out.println("After session execute insert "+insert.toString());
+		System.out.println("After session execute insert " + insert.toString());
 
 		ResultSet rs = session.execute(insert);
-
 
 		System.out.println(rs.getExecutionInfo());
 		return uuid;
@@ -158,12 +157,19 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 
 	@Override
 	protected void deleteEntries(String family, List<Object> keys) {
-		//TODO implement me deleteEntries
+		//TODO make this a batch or single call but I'm sleepy so not now.
+		for(Object key : keys){
+			deleteEntry(family,key,null);
+		}
 	}
 
 	@Override
 	protected void deleteEntry(String family, Object key, Object entry) {
-		//TODO implement me deleteEntry
+		final ClassMapping cm = getPersistentEntity().getMapping();
+		final String keyspaceName = getKeyspace(cm, CassandraDatastore.DEFAULT_KEYSPACE);
+
+		Statement stmt = QueryBuilder.delete().all().from(keyspaceName,family).where(QueryBuilder.eq("id",key));
+		session.execute(stmt);
 	}
 
 	@Override
@@ -180,7 +186,6 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 		return null; //TODO implement createQuery
 	}
 
-
 	protected String getFamily(PersistentEntity persistentEntity, ClassMapping<Family> cm) {
 		//TODO make this something good
 		String table = null;
@@ -190,7 +195,7 @@ public class CassandraEntityPersister extends AbstractKeyValueEntityPersister<Ke
 		System.out.println(table);
 		//if (table == null)
 		table = persistentEntity.getJavaClass().getSimpleName();
-		System.out.println("in getFamily: "+table);
+		System.out.println("in getFamily: " + table);
 		return table;
 	}
 }
