@@ -1,9 +1,34 @@
 version = "0.1.BUILD-SNAPSHOT"
 
+configurations {
+	grails
+}
+
 
 dependencies {
+
+	grails("org.grails:grails-core:$grailsVersion")
+	grails("org.grails:grails-bootstrap:$grailsVersion") {
+		transitive = false
+	}
+
 	compile project(":grails-datastore-core")
 
-	compile "com.datastax.cassandra:cassandra-driver-core:2.0.0-rc2"
+	compile project(':grails-datastore-gorm'),
+		project(':grails-datastore-web'),
+		project(':grails-datastore-gorm-plugin-support')
 
+	testCompile project(':grails-datastore-gorm-test'),
+		project(':grails-datastore-gorm-tck')
+
+    testRuntime "javax.servlet:servlet-api:2.5"
+    testRuntime "org.grails:grails-web:$grailsVersion"
+
+	compile "com.datastax.cassandra:cassandra-driver-core:2.0.0-rc2"
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.grails
+    }
 }
