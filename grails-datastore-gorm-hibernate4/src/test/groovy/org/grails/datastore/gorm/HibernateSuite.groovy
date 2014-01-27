@@ -19,6 +19,7 @@ import grails.gorm.tests.ProxyLoadingSpec
 import grails.gorm.tests.QueryAfterPropertyChangeSpec
 import grails.gorm.tests.RangeQuerySpec
 import grails.gorm.tests.SaveAllSpec
+import grails.gorm.tests.UniqueConstraintSpec
 import grails.gorm.tests.UpdateWithProxyPresentSpec
 import grails.gorm.tests.ValidationSpec
 import grails.gorm.tests.WithTransactionSpec
@@ -32,7 +33,8 @@ import org.junit.runners.Suite.SuiteClasses
 @SuiteClasses([
 //  ValidationSpec,
 //  GroovyProxySpec,
-//  CommonTypesPersistenceSpec,
+//  CommonTypesPersistenceSpec
+    UniqueConstraintSpec
 //  OneToManySpec,
 //  SaveAllSpec,
 //  GormEnhancerSpec,

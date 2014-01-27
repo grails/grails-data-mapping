@@ -238,6 +238,11 @@ public class ClosureEventListener implements SaveOrUpdateEventListener,
         });
     }
 
+    @Override
+    public boolean requiresPostCommitHanding(EntityPersister persister) {
+        return false;
+    }
+
     public void onPostUpdate(PostUpdateEvent event) {
         final Object entity = event.getEntity();
         AbstractSavePersistentMethod.clearDisabledValidations(entity);

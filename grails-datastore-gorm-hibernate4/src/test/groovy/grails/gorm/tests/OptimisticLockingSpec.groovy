@@ -47,30 +47,27 @@ class OptimisticLockingSpec extends GormDatastoreSpec {
         when:
             o = OptLockVersioned.get(o.id)
 
-            OptLockVersioned.withNewSession { s ->
-                def reloaded = OptLockVersioned.get(o.id)
-                assert reloaded
-                reloaded.name += ' in new session'
-                reloaded.save(flush: true)
-            }
+            Thread.start {
+                OptLockVersioned.withTransaction { s ->
+                    def reloaded = OptLockVersioned.get(o.id)
+                    assert reloaded
+                    assert reloaded != o
+                    reloaded.name += ' in new session'
+                    reloaded.save(flush: true)
+                    assert reloaded.version == 1
+                    assert o.version == 0
+                }
+
+            }.join()
 
             o.name += ' in main session'
-            def ex
-            try {
-                o.save(flush: true)
-            }
-            catch (e) {
-                ex = e
-                e.printStackTrace()
-            }
+            assert o.save(flush: true)
 
             session.clear()
             o = OptLockVersioned.get(o.id)
 
         then:
-            ex instanceof HibernateOptimisticLockingFailureException
-            o.version == 1
-            o.name == 'locked in new session'
+            thrown HibernateOptimisticLockingFailureException
     }
 
     void "Test optimistic locking disabled with 'version false'"() {

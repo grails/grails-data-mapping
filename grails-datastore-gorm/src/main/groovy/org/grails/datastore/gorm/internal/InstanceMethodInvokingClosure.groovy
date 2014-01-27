@@ -32,10 +32,10 @@ class InstanceMethodInvokingClosure extends MethodInvokingClosure {
     @Override
     Object call(Object[] args) {
         def delegateArg = Collections.singletonList(delegate).toArray()
-        def arguments
+        Object[] arguments
         if(args) {
             def argList = []
-            argList.add(delegateArg)
+            argList.add(delegate)
             argList.addAll(Arrays.asList(args))
             arguments = argList.toArray()
         }

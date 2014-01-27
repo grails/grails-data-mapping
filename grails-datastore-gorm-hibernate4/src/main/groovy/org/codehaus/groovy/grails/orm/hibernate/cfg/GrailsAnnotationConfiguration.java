@@ -25,14 +25,14 @@ import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.SessionFactory;
 import org.hibernate.SessionFactoryObserver;
+import org.hibernate.boot.registry.BootstrapServiceRegistry;
+import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.*;
 import org.hibernate.engine.spi.FilterDefinition;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.internal.util.config.ConfigurationHelper;
-import org.hibernate.service.BootstrapServiceRegistry;
-import org.hibernate.service.BootstrapServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.hibernate.type.Type;
 import org.springframework.beans.factory.InitializingBean;
@@ -329,7 +329,8 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
                 }
             });
 
-            sessionFactory = super.buildSessionFactory(new ServiceRegistryBuilder(bootstrapServiceRegistry).applySettings(getProperties()).buildServiceRegistry());
+            StandardServiceRegistryBuilder standardServiceRegistryBuilder = new StandardServiceRegistryBuilder(bootstrapServiceRegistry).applySettings(getProperties());
+            sessionFactory = super.buildSessionFactory(standardServiceRegistryBuilder.build());
             serviceRegistry = ((SessionFactoryImplementor)sessionFactory).getServiceRegistry();
         }
         finally {
@@ -358,7 +359,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         String dsName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE.equals(dataSourceName) ? "dataSource" : "dataSource_" + dataSourceName;
         getProperties().put(Environment.DATASOURCE, grailsApplication.getMainContext().getBean(dsName));
         getProperties().put(Environment.CURRENT_SESSION_CONTEXT_CLASS, GrailsSessionContext.class.getName());
-        getProperties().put(AvailableSettings.APP_CLASSLOADER, grailsApplication.getClassLoader());
+        getProperties().put(AvailableSettings.CLASSLOADERS, grailsApplication.getClassLoader());
         resourcePatternResolver = ResourcePatternUtils.getResourcePatternResolver(grailsApplication.getMainContext());
 
         configureNamingStrategy();

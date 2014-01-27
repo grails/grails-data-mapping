@@ -68,6 +68,7 @@ class Driver implements Serializable {
     Long id
     Long version
     static hasOne = [license: License]
+    License license
     static constraints = {
         license unique: true
     }

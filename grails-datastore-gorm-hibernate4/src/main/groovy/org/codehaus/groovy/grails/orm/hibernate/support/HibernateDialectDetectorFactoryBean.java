@@ -18,6 +18,7 @@ package org.codehaus.groovy.grails.orm.hibernate.support;
 import groovy.util.ConfigObject;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -26,11 +27,17 @@ import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.orm.hibernate.exceptions.CouldNotDetermineHibernateDialectException;
 import org.codehaus.groovy.grails.plugins.support.aware.GrailsApplicationAware;
 import org.hibernate.HibernateException;
+import org.hibernate.boot.registry.classloading.internal.ClassLoaderServiceImpl;
+import org.hibernate.boot.registry.selector.internal.StrategySelectorImpl;
+import org.hibernate.boot.registry.selector.spi.StrategySelector;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.service.classloading.internal.ClassLoaderServiceImpl;
-import org.hibernate.service.jdbc.dialect.internal.DialectFactoryImpl;
-import org.hibernate.service.jdbc.dialect.internal.StandardDialectResolver;
-import org.hibernate.service.jdbc.dialect.spi.DialectFactory;
+import org.hibernate.engine.jdbc.dialect.internal.DialectFactoryImpl;
+import org.hibernate.engine.jdbc.dialect.internal.StandardDialectResolver;
+import org.hibernate.engine.jdbc.dialect.spi.*;
+import org.hibernate.service.Service;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.service.spi.ServiceBinding;
+import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -41,6 +48,8 @@ import org.springframework.util.StringUtils;
 
 /**
  * @author Steven Devijver
+ * @author Graeme Rocher
+ * @author Burt Beckwith
  */
 public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>, InitializingBean, GrailsApplicationAware {
 
@@ -85,7 +94,19 @@ public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>,
                 ConfigObject config = grailsApplication == null ? null : grailsApplication.getConfig();
                 Properties properties = config == null ? new Properties() : config.toProperties();
                 final DialectFactory dialectFactory = createDialectFactory();
-                hibernateDialect = dialectFactory.buildDialect(properties, connection);
+                final Connection finalConnection = connection;
+                DialectResolutionInfoSource infoSource = new DialectResolutionInfoSource() {
+                    @Override
+                    public DialectResolutionInfo getDialectResolutionInfo() {
+                        try {
+                            return new DatabaseMetaDataDialectResolutionInfoAdapter(finalConnection.getMetaData());
+                        } catch (SQLException e) {
+                            throw new CouldNotDetermineHibernateDialectException(
+                                    "Could not determine Hibernate dialect", e);
+                        }
+                    }
+                };
+                hibernateDialect = dialectFactory.buildDialect(properties, infoSource);
                 hibernateDialectClassName = hibernateDialect.getClass().getName();
             } catch (HibernateException e) {
                 hibernateDialectClassName = vendorNameDialectMappings.getProperty(dbName);
@@ -103,8 +124,33 @@ public class HibernateDialectDetectorFactoryBean implements FactoryBean<String>,
     // should be using the ServiceRegistry, but getting it from the SessionFactory at startup fails in Spring
     protected DialectFactory createDialectFactory() {
         DialectFactoryImpl factory = new DialectFactoryImpl();
-        factory.setDialectResolver(new StandardDialectResolver());
-        factory.setClassLoaderService(new ClassLoaderServiceImpl(Thread.currentThread().getContextClassLoader()));
+        factory.injectServices(new ServiceRegistryImplementor() {
+
+            @Override
+            public <R extends Service> R getService(Class<R> serviceRole) {
+                if (serviceRole == DialectResolver.class) {
+                    return (R) new StandardDialectResolver();
+                } else if (serviceRole == StrategySelector.class) {
+                    return (R) new StrategySelectorImpl(new ClassLoaderServiceImpl(Thread.currentThread().getContextClassLoader()));
+                }
+                return null;
+            }
+
+            @Override
+            public <R extends Service> ServiceBinding<R> locateServiceBinding(Class<R> serviceRole) {
+                return null;
+            }
+
+            @Override
+            public void destroy() {
+
+            }
+
+            @Override
+            public ServiceRegistry getParentServiceRegistry() {
+                return null;
+            }
+        });
         return factory;
     }
 

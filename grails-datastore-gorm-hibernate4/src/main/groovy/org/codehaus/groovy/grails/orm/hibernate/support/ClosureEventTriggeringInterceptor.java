@@ -48,6 +48,7 @@ import org.hibernate.event.spi.PreLoadEventListener;
 import org.hibernate.event.spi.PreUpdateEvent;
 import org.hibernate.event.spi.PreUpdateEventListener;
 import org.hibernate.event.spi.SaveOrUpdateEvent;
+import org.hibernate.persister.entity.EntityPersister;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -132,6 +133,11 @@ public class ClosureEventTriggeringInterceptor extends DefaultSaveOrUpdateEventL
     public void onPostInsert(PostInsertEvent hibernateEvent) {
         publishEvent(hibernateEvent, new org.grails.datastore.mapping.engine.event.PostInsertEvent(
                 findDatastore(hibernateEvent), hibernateEvent.getEntity()));
+    }
+
+    @Override
+    public boolean requiresPostCommitHanding(EntityPersister persister) {
+        return false;
     }
 
     public boolean onPreUpdate(PreUpdateEvent hibernateEvent) {

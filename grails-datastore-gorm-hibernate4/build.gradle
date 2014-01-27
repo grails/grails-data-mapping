@@ -16,7 +16,7 @@ dependencies {
     optional 'javax.servlet:servlet-api:2.5'
     optional(project(":grails-datastore-web"))
 
-    String hibernateVersion = '4.1.11.Final'
+    String hibernateVersion = '4.3.1.Final'
 
     compile("org.hibernate:hibernate-core:$hibernateVersion") {
         exclude group: 'antlr', module: 'antlr'
@@ -29,14 +29,18 @@ dependencies {
         exclude group:'org.slf4j', module:'slf4j-log4j12'
         exclude group:'xml-apis', module:'xml-apis'
     }
-    compile('org.hibernate.common:hibernate-commons-annotations:4.0.1.Final'){
+    compile('org.hibernate.common:hibernate-commons-annotations:4.0.4.Final'){
         exclude group: 'org.slf4j', module:'slf4j-api'
         exclude group: 'commons-logging', module:'commons-logging'
     }
-    compile('org.hibernate:hibernate-validator:4.1.0.Final') {
+    compile('org.hibernate:hibernate-validator:5.0.1.Final') {
         exclude group:'commons-logging', module:'commons-logging'
         exclude group:'commons-collections', module:'commons-collections'
         exclude group:'org.slf4j', module:'slf4j-api'
+    }
+
+    runtime('dom4j:dom4j:1.6.1') {
+        exclude group: 'xml-apis', module:'xml-apis'
     }
 
     optional ("net.sf.ehcache:ehcache-core:2.4.6") {

@@ -2395,6 +2395,7 @@ public abstract class AbstractGrailsDomainBinder {
         bindProperty(version, prop, mappings);
         val.setNullValue("undefined");
         entity.setVersion(prop);
+        entity.setOptimisticLockMode(0); // 0 is to use version column
         entity.addProperty(prop);
     }
 

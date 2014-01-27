@@ -30,17 +30,7 @@ import javax.naming.NamingException;
 import javax.naming.Reference;
 
 import org.codehaus.groovy.runtime.InvokerHelper;
-import org.hibernate.Cache;
-import org.hibernate.CustomEntityDirtinessStrategy;
-import org.hibernate.HibernateException;
-import org.hibernate.Interceptor;
-import org.hibernate.MappingException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.SessionFactoryObserver;
-import org.hibernate.StatelessSession;
-import org.hibernate.StatelessSessionBuilder;
-import org.hibernate.TypeHelper;
+import org.hibernate.*;
 import org.hibernate.cache.spi.QueryCache;
 import org.hibernate.cache.spi.Region;
 import org.hibernate.cache.spi.UpdateTimestampsCache;
@@ -50,6 +40,7 @@ import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.function.SQLFunctionRegistry;
 import org.hibernate.engine.ResultSetMappingDefinition;
+import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 import org.hibernate.engine.jdbc.spi.JdbcServices;
 import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.hibernate.engine.profile.FetchProfile;
@@ -62,12 +53,12 @@ import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.exception.spi.SQLExceptionConverter;
 import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.id.factory.IdentifierGeneratorFactory;
+import org.hibernate.internal.NamedQueryRepository;
 import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.metadata.CollectionMetadata;
 import org.hibernate.persister.collection.CollectionPersister;
 import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.proxy.EntityNotFoundDelegate;
-import org.hibernate.service.jdbc.connections.spi.ConnectionProvider;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.hibernate.stat.Statistics;
 import org.hibernate.stat.spi.StatisticsImplementor;
@@ -334,8 +325,18 @@ public class SessionFactoryProxy extends GroovyObjectSupport implements SessionF
         return getCurrentSessionFactoryImplementor().getNamedQuery(queryName);
     }
 
+    @Override
+    public void registerNamedQueryDefinition(String name, NamedQueryDefinition definition) {
+        getCurrentSessionFactoryImplementor().registerNamedQueryDefinition(name,definition);
+    }
+
     public NamedSQLQueryDefinition getNamedSQLQuery(String queryName) {
         return getCurrentSessionFactoryImplementor().getNamedSQLQuery(queryName);
+    }
+
+    @Override
+    public void registerNamedSQLQueryDefinition(String name, NamedSQLQueryDefinition definition) {
+        getCurrentSessionFactoryImplementor().registerNamedSQLQueryDefinition(name, definition);
     }
 
     public ResultSetMappingDefinition getResultSetMapping(String name) {
@@ -492,5 +493,15 @@ public class SessionFactoryProxy extends GroovyObjectSupport implements SessionF
 
     public CurrentTenantIdentifierResolver getCurrentTenantIdentifierResolver() {
         return getCurrentSessionFactoryImplementor().getCurrentTenantIdentifierResolver();
+    }
+
+    @Override
+    public NamedQueryRepository getNamedQueryRepository() {
+        return getCurrentSessionFactoryImplementor().getNamedQueryRepository();
+    }
+
+    @Override
+    public Iterable<EntityNameResolver> iterateEntityNameResolvers() {
+        return getCurrentSessionFactoryImplementor().iterateEntityNameResolvers();
     }
 }
