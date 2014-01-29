@@ -155,6 +155,15 @@ class NamedCriteriaProxy {
         entity.javaClass.createCriteria().get(getClosure)
     }
 
+	def get() {
+		def getClosure = {
+			queryBuilder = delegate
+			invokeCriteriaClosure()
+			uniqueResult = true
+		}
+		entity.javaClass.createCriteria().get(getClosure)
+	}
+
     def count(Closure additionalCriteriaClosure = null) {
         def countClosure = {
             queryBuilder = delegate
