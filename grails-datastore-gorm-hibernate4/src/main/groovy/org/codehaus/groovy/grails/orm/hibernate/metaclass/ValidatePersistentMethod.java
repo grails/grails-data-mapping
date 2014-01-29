@@ -152,7 +152,7 @@ public class ValidatePersistentMethod extends AbstractDynamicPersistentMethod {
     private void fireEvent(Object target, List<?> validatedFieldsList) {
         ValidationEvent event = new ValidationEvent(datastore, target);
         event.setValidatedFields(validatedFieldsList);
-        application.getMainContext().publishEvent(event);
+        datastore.getApplicationContext().publishEvent(event);
     }
 
     @SuppressWarnings("rawtypes")

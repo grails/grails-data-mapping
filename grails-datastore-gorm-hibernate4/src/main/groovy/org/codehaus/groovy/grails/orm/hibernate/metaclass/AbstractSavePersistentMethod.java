@@ -156,7 +156,7 @@ public abstract class AbstractSavePersistentMethod extends AbstractDynamicPersis
             Errors errors = setupErrorsProperty(target);
 
             if (validator != null) {
-                application.getMainContext().publishEvent(new ValidationEvent(datastore, target));
+                datastore.getApplicationContext().publishEvent(new ValidationEvent(datastore, target));
 
                 boolean deepValidate = true;
                 Map argsMap = null;

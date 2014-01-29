@@ -36,6 +36,7 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ResourceLoaderAware;
@@ -101,6 +102,7 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
      * <p>If this is set, the Hibernate settings should not define
      * a connection provider to avoid meaningless double configuration.
      */
+    @Autowired
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
@@ -558,6 +560,7 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
             configClass = GrailsAnnotationConfiguration.class;
         }
         GrailsAnnotationConfiguration config = (GrailsAnnotationConfiguration) BeanUtils.instantiateClass(configClass);
+        config.setApplicationContext(applicationContext);
         config.setGrailsApplication(grailsApplication);
         config.setSessionFactoryBeanName(sessionFactoryBeanName);
         config.setDataSourceName(dataSourceName);

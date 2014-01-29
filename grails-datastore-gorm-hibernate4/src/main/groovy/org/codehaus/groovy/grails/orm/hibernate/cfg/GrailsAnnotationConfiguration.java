@@ -35,7 +35,10 @@ import org.hibernate.internal.util.config.ConfigurationHelper;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.hibernate.type.Type;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternUtils;
@@ -62,7 +65,7 @@ import java.util.Set;
  * @author Graeme Rocher
  * @since 18-Feb-2006
  */
-public class GrailsAnnotationConfiguration extends Configuration implements GrailsDomainConfiguration, InitializingBean {
+public class GrailsAnnotationConfiguration extends Configuration implements GrailsDomainConfiguration, InitializingBean, ApplicationContextAware {
 
     private static final long serialVersionUID = -7115087342689305517L;
 
@@ -87,6 +90,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
     private Map<String, Object> eventListeners;
 
     protected GrailsDomainBinder binder = new GrailsDomainBinder();
+    protected ApplicationContext applicationContext;
 
     /* (non-Javadoc)
      * @see org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainConfiguration#addDomainClass(org.codehaus.groovy.grails.commons.GrailsDomainClass)
@@ -357,10 +361,10 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         }
 
         String dsName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE.equals(dataSourceName) ? "dataSource" : "dataSource_" + dataSourceName;
-        getProperties().put(Environment.DATASOURCE, grailsApplication.getMainContext().getBean(dsName));
+        getProperties().put(Environment.DATASOURCE, applicationContext.getBean(dsName));
         getProperties().put(Environment.CURRENT_SESSION_CONTEXT_CLASS, GrailsSessionContext.class.getName());
         getProperties().put(AvailableSettings.CLASSLOADERS, grailsApplication.getClassLoader());
-        resourcePatternResolver = ResourcePatternUtils.getResourcePatternResolver(grailsApplication.getMainContext());
+        resourcePatternResolver = ResourcePatternUtils.getResourcePatternResolver(applicationContext);
 
         configureNamingStrategy();
         GrailsClass[] existingDomainClasses = grailsApplication.getArtefacts(DomainClassArtefactHandler.TYPE);
@@ -398,5 +402,10 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         catch (Exception e) {
             // ignore exception
         }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

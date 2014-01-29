@@ -18,6 +18,7 @@ package org.codehaus.groovy.grails.orm.hibernate.support;
 import grails.util.CollectionUtils;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore;

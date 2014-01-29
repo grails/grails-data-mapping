@@ -27,6 +27,7 @@ import org.hibernate.classic.Session;
 import org.hibernate.collection.PersistentCollection;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceAware;
 import org.springframework.validation.Errors;
 
 /**
@@ -36,7 +37,7 @@ import org.springframework.validation.Errors;
  * @author Graeme Rocher
  * @since 0.5
  */
-public class HibernateDomainClassValidator extends GrailsDomainClassValidator {
+public class HibernateDomainClassValidator extends GrailsDomainClassValidator implements MessageSourceAware{
 
     private SessionFactory sessionFactory;
     private ProxyHandler proxyHandler = new HibernateProxyHandler();
