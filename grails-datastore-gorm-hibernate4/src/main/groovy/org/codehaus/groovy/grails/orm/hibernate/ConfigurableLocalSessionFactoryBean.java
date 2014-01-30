@@ -102,7 +102,6 @@ public class ConfigurableLocalSessionFactoryBean extends HibernateExceptionTrans
      * <p>If this is set, the Hibernate settings should not define
      * a connection provider to avoid meaningless double configuration.
      */
-    @Autowired
     public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }

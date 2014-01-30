@@ -12,17 +12,56 @@ import spock.lang.Specification
  */
 class HibernateDatastoreSpringInitializerSpec extends Specification{
 
-    void "Test that GORM is initialized correctly"() {
-       given:"An initializer instance"
+    void "Test that GORM is initialized correctly for an existing BeanDefinitionRegistry"() {
+        given:"An initializer instance"
 
             def datastoreInitializer = new HibernateDatastoreSpringInitializer(Person)
             def applicationContext = new GenericApplicationContext()
             def dataSource = new DriverManagerDataSource(Driver.name, "jdbc:h2:prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE", 'sa', '')
             applicationContext.beanFactory.registerSingleton("dataSource", dataSource)
 
+
         when:"The application context is configured"
-            datastoreInitializer.configure(applicationContext)
+            datastoreInitializer.configureForBeanDefinitionRegistry(applicationContext)
             applicationContext.refresh()
+            def conn = dataSource.getConnection()
+
+        then:"The database tables are created correctly"
+            conn.prepareStatement("SELECT * FROM PERSON").execute()
+
+        when:"A GORM method is invoked"
+            def total = Person.count()
+
+        then:"The correct results are returned"
+            total == 0
+
+        when:"A new domain instance is created"
+            def p = new Person()
+
+        then:"it is initially invalid"
+            !p.validate()
+
+        when:"it is made valid"
+            p.name = "Bob"
+
+        then:"It can be saved"
+            p.save(flush:true)
+            Person.count() == 1
+
+
+        cleanup:
+            applicationContext.stop()
+
+    }
+
+    void "Test that GORM is initialized correctly for a DataSource"() {
+        given:"An initializer instance"
+
+        def datastoreInitializer = new HibernateDatastoreSpringInitializer(Person)
+        def dataSource = new DriverManagerDataSource(Driver.name, "jdbc:h2:prodDb2;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE", 'sa', '')
+
+        when:"The application context is configured"
+            datastoreInitializer.configureForDataSource(dataSource)
             def conn = dataSource.getConnection()
 
         then:"The database tables are created correctly"

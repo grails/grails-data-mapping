@@ -19,7 +19,10 @@ import org.springframework.beans.factory.config.PropertiesFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
+import org.springframework.context.support.GenericApplicationContext
 import org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor
+
+import javax.sql.DataSource
 
 /**
  * Class that handles the details of initializing GORM for Hibernate
@@ -27,13 +30,13 @@ import org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtracto
  * @author Graeme Rocher
  * @since 3.0
  */
-class HibernateDatastoreSpringInitializer
-{
-
+class HibernateDatastoreSpringInitializer {
     public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory"
-    public static final String DATA_SOURCE_BEAN_NAME = "dataSource"
     Properties hibernateProperties = new Properties()
     Collection<Class> persistentClasses
+
+    private String dataSourceBeanName = "dataSource"
+    private String sessionFactoryBeanName = "sessionFactory"
 
     HibernateDatastoreSpringInitializer(Collection<Class> persistentClasses) {
         this.persistentClasses = persistentClasses
@@ -52,7 +55,23 @@ class HibernateDatastoreSpringInitializer
         this(hibernateProperties, persistentClasses.toList())
     }
 
-    void configure(BeanDefinitionRegistry beanDefinitionRegistry) {
+    private setDataSourceBeanName(String dataSourceBeanName) {
+        this.dataSourceBeanName = dataSourceBeanName
+    }
+
+    @CompileStatic
+    ApplicationContext configureForDataSource(DataSource dataSource) {
+        ExpandoMetaClass.enableGlobally()
+        GenericApplicationContext applicationContext = new GenericApplicationContext()
+        applicationContext.beanFactory.registerSingleton(dataSourceBeanName, dataSource)
+        configureForBeanDefinitionRegistry(applicationContext)
+        applicationContext.refresh()
+        return applicationContext
+    }
+
+    @CompileStatic
+    void configureForBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {
+        ExpandoMetaClass.enableGlobally()
         def beanBuilder = new BeanBuilder()
         Closure beanDefinitions = getBeanDefinitions(beanDefinitionRegistry)
         beanBuilder.beans beanDefinitions
@@ -61,9 +80,12 @@ class HibernateDatastoreSpringInitializer
 
     public Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
         Closure beanDefinitions = {
+            xmlns context: "http://www.springframework.org/schema/context"
+            context.'annotation-config'()
+
             Object vendorToDialect = getVenderToDialectMappings()
             "dialectDetector"(HibernateDialectDetectorFactoryBean) {
-                dataSource = ref("dataSource")
+                dataSource = ref(dataSourceBeanName)
                 vendorNameDialectMappings = vendorToDialect
             }
 
@@ -84,6 +106,8 @@ class HibernateDatastoreSpringInitializer
                 grailsApplication(DefaultGrailsApplication, persistentClasses as Class[], Thread.currentThread().contextClassLoader) { bean ->
                     bean.initMethod = 'initialise'
                 }
+            } else {
+                // TODO: add bean to register for pre-existing GrailsApplication
             }
 
             for (Class dc in persistentClasses) {
@@ -100,7 +124,7 @@ class HibernateDatastoreSpringInitializer
                 "${dc.name}Validator"(HibernateDomainClassValidator) {
                     domainClass = ref("${dc.name}DomainClass")
                     grailsApplication = ref(GrailsApplication.APPLICATION_ID)
-                    sessionFactory = ref(SESSION_FACTORY_BEAN_NAME)
+                    sessionFactory = ref(sessionFactoryBeanName)
                 }
             }
             eventTriggeringInterceptor(ClosureEventTriggeringInterceptor)
@@ -109,7 +133,7 @@ class HibernateDatastoreSpringInitializer
             entityInterceptor(EmptyInterceptor)
             sessionFactory(ConfigurableLocalSessionFactoryBean) { bean ->
                 bean.autowire = "byType"
-                dataSource = ref(DATA_SOURCE_BEAN_NAME)
+                dataSource = ref(dataSourceBeanName)
                 delegate.hibernateProperties = ref('hibernateProperties')
                 grailsApplication = ref(GrailsApplication.APPLICATION_ID)
                 eventListeners = [
@@ -132,20 +156,21 @@ class HibernateDatastoreSpringInitializer
                 targetMethod = "getConfig"
             }
             grailsDomainClassMappingContext(GrailsDomainClassMappingContext, ref(GrailsApplication.APPLICATION_ID))
-            hibernateDatastore(HibernateDatastore, ref('grailsDomainClassMappingContext'), ref(SESSION_FACTORY_BEAN_NAME), ref('grailsHibernateConfig'))
+            hibernateDatastore(HibernateDatastore, ref('grailsDomainClassMappingContext'), ref(sessionFactoryBeanName), ref('grailsHibernateConfig'))
 
             if (!beanDefinitionRegistry.containsBeanDefinition("transactionManager")) {
-                transactionManager(GrailsHibernateTransactionManager) {
-                    sessionFactory = ref(SESSION_FACTORY_BEAN_NAME)
-                    dataSource = ref(DATA_SOURCE_BEAN_NAME)
+                transactionManager(GrailsHibernateTransactionManager) { bean ->
+                    bean.autowire = "byName"
+                    sessionFactory = ref(sessionFactoryBeanName)
+                    dataSource = ref(dataSourceBeanName)
                 }
             }
 
-            hibernateGormEnhancer(HibernateGormEnhancer, ref("hibernateDatastore"), ref("transactionManager"), ref("grailsApplication")) { bean ->
+            "org.grails.gorm.hibernate.internal.GORM_ENHANCER_BEAN-${dataSourceBeanName}"(HibernateGormEnhancer, ref("hibernateDatastore"), ref("transactionManager"), ref("grailsApplication")) { bean ->
                 bean.initMethod = 'enhance'
             }
 
-            "org.grails.gorm.hibernate.internal.POST_INIT_BEAN"(PostInializationHandling) {
+            "org.grails.gorm.hibernate.internal.POST_INIT_BEAN-${dataSourceBeanName}"(PostInializationHandling) {
                 grailsApplication = ref(GrailsApplication.APPLICATION_ID)
             }
         }
