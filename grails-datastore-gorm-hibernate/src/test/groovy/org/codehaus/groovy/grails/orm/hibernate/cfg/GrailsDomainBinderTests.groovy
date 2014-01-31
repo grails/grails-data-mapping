@@ -408,46 +408,45 @@ class Widget {
         assertColumnNullable("table_per_subclass_superclass", "optional_string_property", config)
         assertColumnNullable("table_per_subclass_superclass", "some_optional_product_status", config)
     }
-
-    @Ignore
-    void testUniqueConstraintGeneration() {
-        DefaultGrailsDomainConfiguration config = getDomainConfig(UNIQUE_PROPERTIES)
-        assertEquals("Tables created", 1, getTableCount(config))
-        List expectedKeyColumns1 = [new Column("camel_cased"), new Column("group"), new Column("login")]
-        List expectedKeyColumns2 = [new Column("camel_cased"), new Column("group")]
-        Table mapping = config.tableMappings.next()
-        int cnt = 0
-        boolean found1 = false, found2 = false
-        for (UniqueKey key in mapping.uniqueKeyIterator) {
-            List keyColumns = key.columns
-            if (keyColumns.equals(expectedKeyColumns1)) {
-                found1 = true
-            }
-            if (keyColumns.equals(expectedKeyColumns2)) {
-                found2 = true
-            }
-            cnt++
-        }
-        assertEquals(2, cnt)
-        assertTrue mapping.getColumn(new Column("employeeID")).isUnique()
-        assertTrue found1
-        assertTrue found2
-    }
-
-    void testInsertableHibernateMapping() {
-        GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
-                cl.parseClass('''
-class TestInsertableDomain {
-    Long id
-    Long version
-    String testString1
-    String testString2
-
-    static mapping = {
-       testString1 insertable:false
-       testString2 insertable:true
-    }
-}'''))
+//
+//    void testUniqueConstraintGeneration() {
+//        DefaultGrailsDomainConfiguration config = getDomainConfig(UNIQUE_PROPERTIES)
+//        assertEquals("Tables created", 1, getTableCount(config))
+//        List expectedKeyColumns1 = [new Column("camel_cased"), new Column("group"), new Column("login")]
+//        List expectedKeyColumns2 = [new Column("camel_cased"), new Column("group")]
+//        Table mapping = config.tableMappings.next()
+//        int cnt = 0
+//        boolean found1 = false, found2 = false
+//        for (UniqueKey key in mapping.uniqueKeyIterator) {
+//            List keyColumns = key.columns
+//            if (keyColumns.equals(expectedKeyColumns1)) {
+//                found1 = true
+//            }
+//            if (keyColumns.equals(expectedKeyColumns2)) {
+//                found2 = true
+//            }
+//            cnt++
+//        }
+//        assertEquals(2, cnt)
+//        assertTrue mapping.getColumn(new Column("employeeID")).isUnique()
+//        assertTrue found1
+//        assertTrue found2
+//    }
+//
+//    void testInsertableHibernateMapping() {
+//        GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
+//                cl.parseClass('''
+//class TestInsertableDomain {
+//    Long id
+//    Long version
+//    String testString1
+//    String testString2
+//
+//    static mapping = {
+//       testString1 insertable:false
+//       testString2 insertable:true
+//    }
+//}'''))
 
         DefaultGrailsDomainConfiguration config = getDomainConfig(cl, [domainClass.clazz])
         Field privateDomainClasses = DefaultGrailsDomainConfiguration.getDeclaredField("domainClasses")
