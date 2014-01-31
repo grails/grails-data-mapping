@@ -46,7 +46,8 @@ class InheritanceWithValidationSpec extends GormDatastoreSpec{
 
 @Entity
 class Document {
-
+    Long id
+    Long version
     AbstractContent title
 
     static mapping = {
@@ -55,6 +56,8 @@ class Document {
 }
 @Entity
 class AbstractContent {
+    Long id
+    Long version
 }
 @Entity
 class ContentText extends AbstractContent {

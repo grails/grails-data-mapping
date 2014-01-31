@@ -43,6 +43,8 @@ class MultipleProjectionSpec extends GormDatastoreSpec{
 
 @Entity
 class User {
+    Long id
+    Long version
     String name
     Date createTime
 }

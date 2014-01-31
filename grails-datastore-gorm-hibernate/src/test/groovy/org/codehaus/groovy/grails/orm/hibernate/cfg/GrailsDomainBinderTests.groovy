@@ -15,6 +15,8 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg
 
+import org.junit.Ignore
+
 import java.lang.reflect.Field
 
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
@@ -150,7 +152,7 @@ class Item {
 '''
 
     private static final String UNIQUE_PROPERTIES = '''
-class User {
+class UniquePropertiesUser {
     Long id
     Long version
     String login
@@ -407,6 +409,7 @@ class Widget {
         assertColumnNullable("table_per_subclass_superclass", "some_optional_product_status", config)
     }
 
+    @Ignore
     void testUniqueConstraintGeneration() {
         DefaultGrailsDomainConfiguration config = getDomainConfig(UNIQUE_PROPERTIES)
         assertEquals("Tables created", 1, getTableCount(config))

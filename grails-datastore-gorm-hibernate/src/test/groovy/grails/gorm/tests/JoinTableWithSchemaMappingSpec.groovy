@@ -47,7 +47,10 @@ class JoinTableWithSchemaMappingSpec extends GormDatastoreSpec{
 
 @Entity
 class JoinTableSchemaBook {
+    Long id
+    Long version
     String name
+    Set authors
     static hasMany = [authors:JoinTableSchemaAuthor]
     static belongsTo = JoinTableSchemaAuthor
 
@@ -62,7 +65,10 @@ class JoinTableSchemaBook {
 }
 @Entity
 class JoinTableSchemaAuthor {
+    Long id
+    Long version
     String name
+    Set books
     static hasMany = [books:JoinTableSchemaBook]
 
     static constraints = {

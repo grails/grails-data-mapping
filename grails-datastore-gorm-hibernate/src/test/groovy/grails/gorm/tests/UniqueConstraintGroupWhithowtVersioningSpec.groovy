@@ -34,7 +34,9 @@ class UniqueConstraintGroupWithoutVersioningSpec extends GormDatastoreSpec{
 @Entity
 class UniqueConstraintTestParentEntity {
     Long id
+    Long version
     String prop
+    Set bs
     static hasMany = [bs: UniqueConstraintTestChildEntity]
     static mapping = {
         version false
@@ -44,7 +46,11 @@ class UniqueConstraintTestParentEntity {
 
 @Entity
 class UniqueConstraintTestChildEntity {
+    Long id
+    Long version
+
     String prop
+    UniqueConstraintTestParentEntity a
     static belongsTo = [a: UniqueConstraintTestParentEntity]
 
     static constraints = {

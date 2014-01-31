@@ -66,6 +66,8 @@ class UniqueConstraintSpec extends GormDatastoreSpec {
 @Entity
 class Driver implements Serializable {
     Long id
+    Long version
+    License license
     static hasOne = [license: License]
     static constraints = {
         license unique: true
@@ -75,5 +77,6 @@ class Driver implements Serializable {
 @Entity
 class License implements Serializable {
     Long id
+    Long version
     Driver driver
 }

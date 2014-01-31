@@ -17,24 +17,18 @@ package org.codehaus.groovy.grails.orm.hibernate
 import grails.util.GrailsNameUtils
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import org.codehaus.groovy.grails.commons.GrailsClassUtils
-import org.codehaus.groovy.grails.commons.GrailsDomainClass
-import org.codehaus.groovy.grails.commons.GrailsDomainConfigurationUtil
+import org.codehaus.groovy.grails.commons.*
 import org.codehaus.groovy.grails.orm.hibernate.cfg.HibernateNamedQueriesBuilder
 import org.grails.datastore.gorm.GormEnhancer
-import org.grails.datastore.gorm.GormInstanceApi
-import org.grails.datastore.gorm.GormStaticApi
-import org.grails.datastore.gorm.GormValidationApi
-import org.grails.datastore.gorm.finders.FinderMethod
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.types.ToOne
+import org.grails.datastore.mapping.proxy.ProxyFactory
 import org.springframework.beans.BeanUtils
+import org.springframework.beans.MutablePropertyValues
 import org.springframework.context.ApplicationContext
 import org.springframework.transaction.PlatformTransactionManager
-import org.grails.datastore.mapping.proxy.ProxyFactory
-import org.grails.datastore.mapping.model.types.ToOne
+import org.springframework.validation.DataBinder
 
 @CompileStatic
 abstract class AbstractHibernateGormEnhancer extends GormEnhancer {
@@ -130,7 +124,13 @@ abstract class AbstractHibernateGormEnhancer extends GormEnhancer {
                         }
                         if (arg instanceof Map) {
                             obj = getDomainInstance(otherDomainClass, ctx)
-                            obj.properties = arg
+                            try {
+                                obj.properties = arg
+                            } catch (ReadOnlyPropertyException e) {
+                                // should only be the case of method called with Map outside Grails environment, very unlikely
+                                DataBinder db = new DataBinder(obj)
+                                db.bind(new MutablePropertyValues((Map)arg))
+                            }
                             delegate[prop.name].add(obj)
                         }
                         else if (otherDomainClass.clazz.isInstance(arg)) {

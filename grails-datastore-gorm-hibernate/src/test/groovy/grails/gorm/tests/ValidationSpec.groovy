@@ -1,6 +1,7 @@
 package grails.gorm.tests
 
 import org.springframework.transaction.support.TransactionSynchronizationManager
+import spock.lang.Ignore
 
 /**
  * Tests validation semantics.
@@ -30,6 +31,7 @@ class ValidationSpec extends GormDatastoreSpec {
             !t.hasErrors()
     }
 
+    @Ignore// This test is not possible within the TCK because the data binding APIs are not present
     void 'Test that the binding rejected value is retained after validation'() {
         when:
             def t = new TestEntity()
