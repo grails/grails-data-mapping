@@ -447,16 +447,16 @@ class Widget {
 //       testString2 insertable:true
 //    }
 //}'''))
-
-        DefaultGrailsDomainConfiguration config = getDomainConfig(cl, [domainClass.clazz])
-        Field privateDomainClasses = DefaultGrailsDomainConfiguration.getDeclaredField("domainClasses")
-        privateDomainClasses.setAccessible(true)
-
-        PersistentClass persistentClass = config.getClassMapping("TestInsertableDomain")
-
-        assertFalse persistentClass.getProperty("testString1").isInsertable()
-        assertTrue persistentClass.getProperty("testString2").isInsertable()
-    }
+//
+//        DefaultGrailsDomainConfiguration config = getDomainConfig(cl, [domainClass.clazz])
+//        Field privateDomainClasses = DefaultGrailsDomainConfiguration.getDeclaredField("domainClasses")
+//        privateDomainClasses.setAccessible(true)
+//
+//        PersistentClass persistentClass = config.getClassMapping("TestInsertableDomain")
+//
+//        assertFalse persistentClass.getProperty("testString1").isInsertable()
+//        assertTrue persistentClass.getProperty("testString2").isInsertable()
+//    }
 
     void testUpdateableHibernateMapping() {
         GrailsDomainClass domainClass = new DefaultGrailsDomainClass(
