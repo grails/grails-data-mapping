@@ -18,6 +18,8 @@ dependencies {
         exclude group:'asm',module:'asm'
         exclude group:'cglib',module:'cglib'
         exclude group:'xalan',module:'serializer'
+        exclude group:'org.springframework',module:'spring-core'
+        exclude group:'org.springframework',module:'spring-tx'
         exclude group:'org.springframework',module:'spring-aspects'
         exclude group:'org.springframework',module:'spring-beans'
         exclude group:'org.springframework',module:'spring-context'
@@ -55,6 +57,7 @@ dependencies {
     compile(project(":grails-datastore-gorm-plugin-support")) {
         exclude group: 'org.grails', module:'grails-bootstrap'
         exclude group: 'org.grails', module:'grails-core'
+        exclude group: 'org.grails', module:'grails-spring'
         exclude group: 'org.grails', module:'grails-plugin-testing'
         exclude group: 'org.grails', module:'grails-datastore-web'
     }
@@ -63,10 +66,18 @@ dependencies {
     }
 
 
-
-    compile "org.springframework:spring-jdbc:$springVersion"
-    compile "org.springframework:spring-orm:$springVersion"
-    compile "org.springframework:spring-tx:$springVersion"
+    compile "org.springframework:spring-core:$springVersion", {
+        exclude group: 'commons-logging', module:'commons-logging'
+    }
+    compile "org.springframework:spring-jdbc:$springVersion", {
+        exclude group: 'commons-logging', module:'commons-logging'
+    }
+    compile "org.springframework:spring-orm:$springVersion", {
+        exclude group: 'commons-logging', module:'commons-logging'
+    }
+    compile "org.springframework:spring-tx:$springVersion", {
+        exclude group: 'commons-logging', module:'commons-logging'
+    }
 
     compile 'javax.transaction:jta:1.1'
     compile 'org.javassist:javassist:3.17.1-GA'
