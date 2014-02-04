@@ -50,7 +50,9 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
 
 
         cleanup:
-            applicationContext.stop()
+            if(applicationContext.isRunning()) {
+                applicationContext.stop()
+            }
 
     }
 
@@ -92,6 +94,8 @@ class HibernateDatastoreSpringInitializerSpec extends Specification{
 }
 @Entity
 class Person {
+    Long id
+    Long version
     String name
 
     static constraints = {
