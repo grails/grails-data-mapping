@@ -21,9 +21,7 @@ import grails.persistence.PersistenceMethod;
 import groovy.transform.Canonical;
 
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.codehaus.groovy.ast.AnnotationNode;
 import org.codehaus.groovy.ast.ClassNode;
@@ -55,6 +53,7 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
 
     private static final Set<String> EXCLUDES = new HashSet<String>(Arrays.asList("create", "setTransactionManager"));
     private static final Set<String> INCLUDES = new HashSet<String>(Arrays.asList("getAll", "getCount", "getValidationSkipMap", "getValidationErrorsMap", "getAsync"));
+    private static final Set<String> TRANSFORMED_CLASSES = new HashSet<String>();
 
     @Override
     protected boolean isStaticMethodExcluded(ClassNode classNode, MethodNode declaredMethod) {
@@ -97,6 +96,8 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
         classNode.setUsingGenerics(true);
         GrailsASTUtils.addAnnotationIfNecessary(classNode, Entity.class);
 
+        TRANSFORMED_CLASSES.add(classNode.getName());
+
         final BlockStatement methodBody = new BlockStatement();
         methodBody.addStatement(new ExpressionStatement(new MethodCallExpression(new ClassExpression(classNode), NEW_INSTANCE_METHOD,ZERO_ARGS)));
         MethodNode methodNode = classNode.getDeclaredMethod(CreateDynamicMethod.METHOD_NAME, ZERO_PARAMETERS);
@@ -110,4 +111,7 @@ public class GormTransformer extends AbstractGrailsArtefactTransformer {
         return GrailsResourceUtils.isDomainClass(url);
     }
 
+    public static Collection<String> getKnownEntityNames() {
+        return Collections.unmodifiableCollection( TRANSFORMED_CLASSES );
+    }
 }
