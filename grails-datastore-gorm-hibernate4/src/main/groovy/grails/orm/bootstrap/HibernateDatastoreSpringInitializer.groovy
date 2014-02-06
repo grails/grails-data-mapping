@@ -72,10 +72,16 @@ class HibernateDatastoreSpringInitializer {
     @CompileStatic
     void configureForBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {
         ExpandoMetaClass.enableGlobally()
-        def beanBuilder = new BeanBuilder()
-        Closure beanDefinitions = getBeanDefinitions(beanDefinitionRegistry)
-        beanBuilder.beans beanDefinitions
-        beanBuilder.registerBeans(beanDefinitionRegistry)
+
+        if( GroovyBeanReaderInit.isAvailable() ) {
+            GroovyBeanReaderInit.registerBeans(beanDefinitionRegistry, getBeanDefinitions(beanDefinitionRegistry))
+        }
+        else if (GrailsBeanBuilderInit.isAvailable() ) {
+            GrailsBeanBuilderInit.registerBeans(beanDefinitionRegistry, getBeanDefinitions(beanDefinitionRegistry))
+        }
+        else {
+            throw new IllegalStateException("Neither Spring 4.0 nor grails-spring dependency found on classpath to enable GORM configuration. If you are using an earlier version of Spring please add the grails-spring dependency to your classpath.")
+        }
     }
 
     public Closure getBeanDefinitions(BeanDefinitionRegistry beanDefinitionRegistry) {
@@ -168,10 +174,12 @@ class HibernateDatastoreSpringInitializer {
 
             "org.grails.gorm.hibernate.internal.GORM_ENHANCER_BEAN-${dataSourceBeanName}"(HibernateGormEnhancer, ref("hibernateDatastore"), ref("transactionManager"), ref("grailsApplication")) { bean ->
                 bean.initMethod = 'enhance'
+                bean.lazyInit = false
             }
 
-            "org.grails.gorm.hibernate.internal.POST_INIT_BEAN-${dataSourceBeanName}"(PostInializationHandling) {
+            "org.grails.gorm.hibernate.internal.POST_INIT_BEAN-${dataSourceBeanName}"(PostInializationHandling) { bean ->
                 grailsApplication = ref(GrailsApplication.APPLICATION_ID)
+                bean.lazyInit = false
             }
         }
         beanDefinitions
@@ -211,6 +219,39 @@ class HibernateDatastoreSpringInitializer {
                 datastoreMap[hibernateDatastore.sessionFactory] = hibernateDatastore
             }
             applicationContext.getBean(ClosureEventTriggeringInterceptor).datastores = datastoreMap
+        }
+    }
+
+    static class GroovyBeanReaderInit {
+        static boolean isAvailable() {
+            try {
+                Thread.currentThread().contextClassLoader.loadClass('org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader')
+                return true
+            } catch (e) {
+                return false
+            }
+        }
+        static void registerBeans(BeanDefinitionRegistry registry, Closure beanDefinitions) {
+            def classLoader = Thread.currentThread().contextClassLoader
+            def beanReader = classLoader.loadClass('org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader').newInstance(registry)
+            beanReader.beans beanDefinitions
+        }
+    }
+    static class GrailsBeanBuilderInit {
+        static boolean isAvailable() {
+            try {
+                Thread.currentThread().contextClassLoader.loadClass('grails.spring.BeanBuilder')
+                return true
+            } catch (e) {
+                return false
+            }
+        }
+
+        static void registerBeans(BeanDefinitionRegistry registry, Closure beanDefinitions) {
+            def classLoader = Thread.currentThread().contextClassLoader
+            def beanBuilder = classLoader.loadClass('grails.spring.BeanBuilder').newInstance()
+            beanBuilder.beans beanDefinitions
+            beanBuilder.registerBeans registry
         }
     }
 }
