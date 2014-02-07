@@ -3,7 +3,6 @@ package org.grails.datastore.gorm
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.commons.metaclass.MetaClassEnhancer
-import org.codehaus.groovy.grails.domain.GrailsDomainClassMappingContext
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTransactionManager
 import org.codehaus.groovy.grails.orm.hibernate.GrailsSessionContext
 import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore
@@ -14,8 +13,8 @@ import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringIn
 import org.codehaus.groovy.grails.orm.hibernate.validation.HibernateConstraintsEvaluator
 import org.codehaus.groovy.grails.orm.hibernate.validation.PersistentConstraintFactory
 import org.codehaus.groovy.grails.orm.hibernate.validation.UniqueConstraint
-import org.codehaus.groovy.grails.plugins.web.api.ControllersDomainBindingApi
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
 import org.h2.Driver
@@ -128,16 +127,12 @@ class Setup {
         eventTriggeringInterceptor.datastores = [(sessionFactory): hibernateDatastore]
         ctx.beanFactory.registerSingleton 'eventTriggeringInterceptor', eventTriggeringInterceptor
 
-        def metaClassEnhancer = new MetaClassEnhancer()
-        metaClassEnhancer.addApi new ControllersDomainBindingApi()
 
         HibernateConstraintsEvaluator evaluator = new HibernateConstraintsEvaluator()
         grailsApplication.domainClasses.each { GrailsDomainClass dc ->
             if (dc.abstract) {
                 return
             }
-
-            metaClassEnhancer.enhance dc.metaClass
 
             def validator = [supports: { Class c -> true}, validate: { target, Errors errors ->
                 for (ConstrainedProperty cp in evaluator.evaluate(dc.clazz).values()) {

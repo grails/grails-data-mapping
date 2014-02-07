@@ -30,28 +30,6 @@ class ValidationSpec extends GormDatastoreSpec {
             !t.hasErrors()
     }
 
-    void 'Test that the binding rejected value is retained after validation'() {
-        when:
-            def t = new TestEntity()
-            t.age = null
-            t.properties = [age: 'bad value']
-
-        then:
-            t.errors.errorCount == 1
-
-        when:
-            def ageError = t.errors.getFieldError('age')
-
-        then:
-            'bad value' == ageError.rejectedValue
-
-        when:
-            t.validate()
-            ageError = t.errors.getFieldError('age')
-
-        then:
-            'bad value' == ageError.rejectedValue
-    }
 
     void "Test that validate is called on save()"() {
 
