@@ -14,19 +14,8 @@
  */
 package org.codehaus.groovy.grails.orm.hibernate.cfg;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.groovy.grails.commons.AnnotationDomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.ArtefactHandler;
-import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler;
-import org.codehaus.groovy.grails.commons.GrailsApplication;
-import org.codehaus.groovy.grails.commons.GrailsClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClass;
-import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.SessionFactory;
@@ -35,9 +24,17 @@ import org.hibernate.cfg.ImprovedNamingStrategy;
 import org.hibernate.cfg.Mappings;
 import org.hibernate.cfg.NamingStrategy;
 import org.hibernate.engine.FilterDefinition;
+import org.hibernate.mapping.JoinedSubclass;
+import org.hibernate.mapping.PersistentClass;
+import org.hibernate.mapping.RootClass;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
- * Allows configuring Grails' hibernate support to work in conjuntion with Hibernate's annotation
+ * Allows configuring Grails' hibernate support to work in conjunction with Hibernate's annotation
  * support.
  *
  * @author Graeme Rocher
@@ -56,6 +53,8 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
     protected String dataSourceName = GrailsDomainClassProperty.DEFAULT_DATA_SOURCE;
     protected GrailsDomainBinder binder = new GrailsDomainBinder();
 
+    private boolean subclassForeignKeysCreated = false;
+
     /* (non-Javadoc)
      * @see org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsDomainConfiguration#addDomainClass(org.codehaus.groovy.grails.commons.GrailsDomainClass)
      */
@@ -69,7 +68,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
 
     protected boolean shouldMapWithGorm(GrailsDomainClass domainClass) {
         return !AnnotationDomainClassArtefactHandler.isJPADomainClass(domainClass.getClazz()) &&
-               domainClass.getMappingStrategy().equalsIgnoreCase(GrailsDomainClass.GORM);
+                domainClass.getMappingStrategy().equalsIgnoreCase(GrailsDomainClass.GORM);
     }
 
     /* (non-Javadoc)
@@ -152,7 +151,7 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         if (!configLocked) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("[GrailsAnnotationConfiguration] [" + domainClasses.size() +
-                          "] Grails domain classes to bind to persistence runtime");
+                        "] Grails domain classes to bind to persistence runtime");
             }
 
             // do Grails class configuration
@@ -185,11 +184,47 @@ public class GrailsAnnotationConfiguration extends Configuration implements Grai
         try {
             currentThread.setContextClassLoader(grailsApplication.getClassLoader());
             super.secondPassCompile();
+            createSubclassForeignKeys();
+
         } finally {
             currentThread.setContextClassLoader(originalContextLoader);
         }
 
         configLocked = true;
+    }
+
+    /**
+     * Creates foreign keys for subclass tables that are mapped using table per subclass. Further information is
+     * available in the <a href="http://jira.grails.org/browse/GRAILS-7729">JIRA ticket</a>
+     */
+    private void createSubclassForeignKeys() {
+        if (subclassForeignKeysCreated) {
+            return;
+        }
+
+        for (PersistentClass persistentClass : classes.values()) {
+            if (persistentClass instanceof RootClass) {
+                RootClass rootClass = (RootClass) persistentClass;
+
+                if (rootClass.hasSubclasses()) {
+                    Iterator subclasses = rootClass.getSubclassIterator();
+
+                    while (subclasses.hasNext()) {
+
+                        Object subclass = subclasses.next();
+
+                        // This test ensures that foreign keys will only be created for subclasses that are
+                        // mapped using "table per subclass"
+                        if (subclass instanceof JoinedSubclass) {
+                            JoinedSubclass joinedSubclass = (JoinedSubclass) subclass;
+                            joinedSubclass.createForeignKey();
+                        }
+                    }
+                }
+            }
+        }
+
+        subclassForeignKeysCreated = true;
     }
 
     /**
