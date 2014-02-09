@@ -12,6 +12,7 @@ import org.grails.datastore.mapping.model.types.ManyToOne
 import org.grails.datastore.mapping.model.types.OneToMany
 import org.grails.datastore.mapping.model.types.OneToOne
 import org.grails.datastore.mapping.model.types.Simple
+import org.grails.datastore.mapping.model.types.ToOne
 import org.grails.datastore.mapping.query.Query
 import org.neo4j.cypher.EntityNotFoundException
 import org.neo4j.cypher.javacompat.ExecutionEngine
@@ -137,6 +138,9 @@ class Neo4jEntityPersister extends EntityPersister {
 
     @Override
     protected Serializable persistEntity(PersistentEntity pe, Object obj) {
+        if (obj==null) {
+            return null
+        }
 
         EntityAccess entityAccess = createEntityAccess(pe, obj)
         String cypher
@@ -157,11 +161,30 @@ class Neo4jEntityPersister extends EntityPersister {
             cypher = "create (n$labels {props}) return id(n) as id"
         }
 
-        def simpleProperties = pe.persistentProperties
-                .findAll { it instanceof Simple && obj[it.name] != null }
-                .collectEntries { PersistentProperty it ->
-                    [(it.name): Neo4jUtils.mapToAllowedNeo4jType(obj[it.name], mappingContext)] //TODO: use entityaccess
-                }
+        def simpleProperties = [:]
+        for (PersistentProperty pp in pe.persistentProperties) {
+            def propertyValue = entityAccess.getProperty(pp.name)
+            switch (pp) {
+                case Simple:
+                    if (obj[pp.name]!= null) {
+                            simpleProperties[pp.name] = Neo4jUtils.mapToAllowedNeo4jType(propertyValue, mappingContext) //TODO: use entityaccess
+                        }
+                    break
+                case OneToMany:
+                    def otm = pp as OneToMany
+                    persistEntities(otm.associatedEntity, propertyValue as Iterable)
+//                    def ids = propertyValue.collect { persistEntity(otm.associatedEntity, it )}
+                    break
+                case ToOne:
+                    def to = pp as ToOne
+                    persistEntity(to.associatedEntity, propertyValue)
+                    break
+
+                default:
+                    throw new IllegalArgumentException("wtf don't know how to handle $pp (${pp.getClass()}")
+            }
+        }
+
         try {
             Map<String, Object> params = ["props": simpleProperties, "id": obj["id"]] as Map<String, Object>
             log.info "running cypher $cypher"
