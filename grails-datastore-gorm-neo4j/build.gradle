@@ -1,7 +1,7 @@
 version = "1.1.3-SNAPSHOT"
 //version = "1.1.2"
 
-ext.neo4jVersion = "2.0.0-M06"
+ext.neo4jVersion = "2.0.1"
 ext.gdmVersion = "2.0.1.RELEASE"
 
 repositories {
@@ -37,8 +37,8 @@ dependencies {
             [group: "org.neo4j", name: "neo4j-kernel", version: neo4jVersion, classifier: 'tests'],
             [group: "org.neo4j.app", name: "neo4j-server", version: neo4jVersion, classifier: 'tests'],
             [group: "org.neo4j.app", name: "neo4j-server", version: neo4jVersion],
-            [group: "org.neo4j", name: "neo4j-rest-graphdb", version: '1.8'],
-            [group: "org.neo4j", name: "neo4j-rest-graphdb", version: '1.8', classifier: 'tests'],
+            [group: "org.neo4j", name: "neo4j-rest-graphdb", version: '2.0.0'],
+            [group: "org.neo4j", name: "neo4j-rest-graphdb", version: '2.0.0', classifier: 'tests'],
             "org.neo4j:neo4j-graphviz:$neo4jVersion"
     testRuntime "javax.servlet:servlet-api:2.5",
             'com.sun.jersey:jersey-server:1.9',
