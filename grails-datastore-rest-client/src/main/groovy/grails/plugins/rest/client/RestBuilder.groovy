@@ -14,11 +14,8 @@
  */
 package grails.plugins.rest.client
 
-import java.net.Proxy
-
 import grails.converters.JSON
 import groovy.transform.CompileStatic
-
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationHolder
 import org.codehaus.groovy.grails.web.converters.configuration.ConvertersConfigurationInitializer
@@ -30,17 +27,16 @@ import org.grails.datastore.gorm.rest.client.utils.NullSafeStringHttpMessageConv
 import org.grails.datastore.gorm.rest.client.utils.WritableHttpMessageConverter
 import org.grails.datastore.gorm.rest.client.xml.GPathXmlHttpMessageConverter
 import org.springframework.http.HttpMethod
-import org.springframework.http.converter.HttpMessageConverter
-import org.springframework.http.converter.StringHttpMessageConverter
-import org.springframework.util.ClassUtils
-
-import static org.springframework.http.HttpMethod.*
-
 import org.springframework.http.ResponseEntity
 import org.springframework.http.client.SimpleClientHttpRequestFactory
+import org.springframework.http.converter.HttpMessageConverter
+import org.springframework.http.converter.StringHttpMessageConverter
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+import org.springframework.util.ClassUtils
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestTemplate
 
+import static org.springframework.http.HttpMethod.*
 
 /**
  * Main API entry to the synchronous version of the REST low-level client API
