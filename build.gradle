@@ -275,9 +275,9 @@ subprojects {
                     }
 
                     scm {
-                        delegate.url 'scm:git@github.com:SpringSource/grails-data-mapping.git'
-                        connection 'scm:git@github.com:SpringSource/grails-data-mapping.git'
-                        developerConnection 'scm:git@github.com:SpringSource/grails-data-mapping.git'
+                        delegate.url 'scm:git@github.com:grails/grails-data-mapping.git'
+                        connection 'scm:git@github.com:grails/grails-data-mapping.git'
+                        developerConnection 'scm:git@github.com:grails/grails-data-mapping.git'
                     }
 
                     licenses {
