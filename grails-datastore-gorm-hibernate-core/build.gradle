@@ -3,7 +3,7 @@ configurations {
 }
 
 dependencies {
-
+    compile("org.grails:grails-async:$grailsVersion")
     compile("org.grails:grails-core:$grailsVersion") {
         exclude group:'aopalliance',module:'aopalliance'
         exclude group:'commons-logging',module:'commons-logging'
@@ -91,7 +91,7 @@ dependencies {
         exclude group:'antlr', module: 'antlr'
     }
 
-    runtime('dom4j:dom4j:1.6.1') {
+    compile('dom4j:dom4j:1.6.1') {
         exclude group: 'xml-apis', module:'xml-apis'
     }
 
