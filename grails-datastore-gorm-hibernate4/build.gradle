@@ -15,6 +15,9 @@ dependencies {
     optional("org.grails:grails-web:$grailsVersion") {
         transitive = false
     }
+    optional("org.springframework:spring-webmvc:$springVersion") {
+        transitive = false
+    }
 
     optional 'javax.servlet:servlet-api:2.5'
     optional(project(":grails-datastore-web"))
