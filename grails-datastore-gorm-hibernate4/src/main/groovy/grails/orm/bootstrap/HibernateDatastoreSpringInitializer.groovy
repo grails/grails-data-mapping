@@ -60,9 +60,12 @@ class HibernateDatastoreSpringInitializer implements ResourceLoaderAware {
     HibernateDatastoreSpringInitializer() {
     }
 
-    HibernateDatastoreSpringInitializer(Collection<String> packages, ClassLoader classLoader = Thread.currentThread().contextClassLoader) {
-        this.packages = packages
+    HibernateDatastoreSpringInitializer(ClassLoader classLoader, String... packages) {
+        this(packages)
         this.classLoader = classLoader
+    }
+    HibernateDatastoreSpringInitializer(String... packages) {
+        this.packages = packages
     }
 
     HibernateDatastoreSpringInitializer(Collection<Class> persistentClasses) {
