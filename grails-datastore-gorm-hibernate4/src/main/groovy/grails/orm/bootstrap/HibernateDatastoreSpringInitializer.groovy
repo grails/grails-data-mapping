@@ -5,6 +5,7 @@ import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.compiler.gorm.GormTransformer
 import org.codehaus.groovy.grails.orm.hibernate.*
 import org.codehaus.groovy.grails.orm.hibernate.support.ClosureEventTriggeringInterceptor
 import org.codehaus.groovy.grails.orm.hibernate.support.HibernateDialectDetectorFactoryBean
@@ -14,13 +15,21 @@ import org.hibernate.EmptyInterceptor
 import org.hibernate.SessionFactory
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean
 import org.springframework.beans.factory.config.PropertiesFactoryBean
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
+import org.springframework.context.ResourceLoaderAware
 import org.springframework.context.support.GenericApplicationContext
+import org.springframework.core.io.Resource
+import org.springframework.core.io.ResourceLoader
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver
+import org.springframework.core.io.support.ResourcePatternResolver
+import org.springframework.core.type.classreading.CachingMetadataReaderFactory
 import org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor
+import org.springframework.util.ClassUtils
 
 import javax.sql.DataSource
 
@@ -30,13 +39,31 @@ import javax.sql.DataSource
  * @author Graeme Rocher
  * @since 3.0
  */
-class HibernateDatastoreSpringInitializer {
+class HibernateDatastoreSpringInitializer implements ResourceLoaderAware {
+    private static final String ENTITY_CLASS_RESOURCE_PATTERN = "/**/*.class"
     public static final String SESSION_FACTORY_BEAN_NAME = "sessionFactory"
-    Properties hibernateProperties = new Properties()
-    Collection<Class> persistentClasses
 
+    Properties hibernateProperties = new Properties()
+    Collection<Class> persistentClasses = []
+    Collection<String> packages = []
+
+    private ClassLoader classLoader = Thread.currentThread().contextClassLoader
     private String dataSourceBeanName = "dataSource"
     private String sessionFactoryBeanName = "sessionFactory"
+    ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver()
+
+    @Override
+    void setResourceLoader(ResourceLoader resourceLoader) {
+        resourcePatternResolver = new PathMatchingResourcePatternResolver(resourceLoader)
+    }
+
+    HibernateDatastoreSpringInitializer() {
+    }
+
+    HibernateDatastoreSpringInitializer(Collection<String> packages, ClassLoader classLoader = Thread.currentThread().contextClassLoader) {
+        this.packages = packages
+        this.classLoader = classLoader
+    }
 
     HibernateDatastoreSpringInitializer(Collection<Class> persistentClasses) {
         this.persistentClasses = persistentClasses
@@ -55,7 +82,7 @@ class HibernateDatastoreSpringInitializer {
         this(hibernateProperties, persistentClasses.toList())
     }
 
-    private setDataSourceBeanName(String dataSourceBeanName) {
+    public setDataSourceBeanName(String dataSourceBeanName) {
         this.dataSourceBeanName = dataSourceBeanName
     }
 
@@ -71,6 +98,30 @@ class HibernateDatastoreSpringInitializer {
 
     @CompileStatic
     void configureForBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) {
+        for(pkg in packages) {
+            String pattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
+                    ClassUtils.convertClassNameToResourcePath(pkg) + ENTITY_CLASS_RESOURCE_PATTERN;
+
+            def readerFactory = new CachingMetadataReaderFactory(resourcePatternResolver)
+            def resources = this.resourcePatternResolver.getResources(pattern)
+            for(Resource res in resources) {
+                def reader = readerFactory.getMetadataReader(res)
+                if( reader.annotationMetadata.hasAnnotation( "grails.persistence.Entity" ) ) {
+                    persistentClasses << classLoader.loadClass( reader.classMetadata.className )
+                }
+            }
+
+            def entityNames = GormTransformer.getKnownEntityNames()
+            for(entityName in entityNames) {
+                try {
+                    persistentClasses << classLoader.loadClass( entityName )
+                } catch (ClassNotFoundException e) {
+                    // ignore
+                }
+            }
+
+        }
+
         ExpandoMetaClass.enableGlobally()
 
         if( GroovyBeanReaderInit.isAvailable() ) {
