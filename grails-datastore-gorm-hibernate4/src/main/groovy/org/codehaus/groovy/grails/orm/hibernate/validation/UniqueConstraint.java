@@ -184,7 +184,7 @@ public class UniqueConstraint extends AbstractPersistentConstraint {
                             criteria.createAlias(TARGET_DOMAIN_CLASS_ALIAS + "." + constraintPropertyName, constraintPropertyAlias);
 
                             GrailsDomainClassProperty property = domainClass.getPropertyByName(constraintPropertyName);
-                            ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(property.getType());
+                            ClassMetadata classMetadata = session.getSessionFactory().getClassMetadata(property.getReferencedPropertyType());
                             String identifierPropertyName = classMetadata.getIdentifierPropertyName();
 
                             BeanWrapper bean = new BeanWrapperImpl(propertyValue);
