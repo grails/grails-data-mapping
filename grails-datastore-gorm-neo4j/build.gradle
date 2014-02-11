@@ -41,10 +41,12 @@ dependencies {
             [group: "org.neo4j", name: "neo4j-rest-graphdb", version: '1.8', classifier: 'tests'],
             "org.neo4j:neo4j-graphviz:$neo4jVersion"
     testRuntime "javax.servlet:servlet-api:2.5",
-            "org.grails:grails-web:$grailsVersion",
             'com.sun.jersey:jersey-server:1.9',
             'com.sun.jersey:jersey-core:1.9',
             'com.sun.jersey:jersey-client:1.9'
+    testRuntime "org.grails:grails-web:$grailsVersion", {
+        transitive = false
+    }
     testRuntime("org.grails:grails-plugin-domain-class:$grailsVersion") {
         exclude group: 'org.grails', module:'grails-plugin-testing'
         exclude group: 'org.grails', module:'grails-datastore-core'

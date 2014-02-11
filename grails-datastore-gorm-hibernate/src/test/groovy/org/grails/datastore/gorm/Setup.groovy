@@ -3,7 +3,6 @@ package org.grails.datastore.gorm
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsDomainClass
 import org.codehaus.groovy.grails.commons.metaclass.MetaClassEnhancer
-import org.codehaus.groovy.grails.domain.GrailsDomainClassMappingContext
 import org.codehaus.groovy.grails.orm.hibernate.GrailsHibernateTransactionManager
 import org.codehaus.groovy.grails.orm.hibernate.HibernateDatastore
 import org.codehaus.groovy.grails.orm.hibernate.HibernateGormEnhancer
@@ -15,6 +14,7 @@ import org.codehaus.groovy.grails.orm.hibernate.validation.PersistentConstraintF
 import org.codehaus.groovy.grails.orm.hibernate.validation.UniqueConstraint
 //import org.codehaus.groovy.grails.plugins.web.api.ControllersDomainBindingApi
 import org.codehaus.groovy.grails.validation.ConstrainedProperty
+import org.grails.datastore.gorm.config.GrailsDomainClassMappingContext
 import org.grails.datastore.mapping.core.Session
 import org.grails.datastore.mapping.model.MappingContext
 import org.h2.Driver

@@ -31,7 +31,7 @@ ext {
 }
 allprojects {
     repositories {
-        mavenLocal()
+        //mavenLocal()
         mavenCentral()
         maven { url "http://repo.grails.org/grails/core" }
     }

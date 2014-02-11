@@ -20,7 +20,6 @@ import grails.util.GrailsNameUtils
 import groovy.transform.CompileStatic
 import groovy.transform.TypeCheckingMode
 
-import org.apache.commons.beanutils.PropertyUtils
 import org.codehaus.groovy.grails.commons.DomainClassArtefactHandler
 import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.codehaus.groovy.grails.commons.GrailsClassUtils
@@ -38,12 +37,14 @@ import org.codehaus.groovy.runtime.StringGroovyMethods
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.model.MappingContext
 import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.reflect.ClassPropertyFetcher
 import org.hibernate.FlushMode
 import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.hibernate.proxy.HibernateProxy
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.PropertyAccessorFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.core.convert.ConversionService
 import org.springframework.dao.DataAccessException
@@ -64,14 +65,19 @@ class HibernateUtils {
 
         GroovyObject mc = (GroovyObject)domainClass.metaClass
 
+        def propertyFetcher = ClassPropertyFetcher.forClass(domainClass.getClazz())
+
         mc.setProperty(getterName, {->
-            def propertyValue = PropertyUtils.getProperty(getDelegate(), propertyName)
+            def propertyValue = propertyFetcher.getPropertyValue(getDelegate(), propertyName)
             if (propertyValue instanceof HibernateProxy) {
                 propertyValue = GrailsHibernateUtil.unwrapProxy(propertyValue)
             }
             return propertyValue
         })
-        mc.setProperty(setterName, { PropertyUtils.setProperty(getDelegate(), propertyName, it) })
+        mc.setProperty(setterName, {
+            PropertyAccessorFactory.forBeanPropertyAccess(getDelegate()).setPropertyValue(propertyName, it)
+        })
+
 
         for (GrailsDomainClass sub in domainClass.subClasses) {
             handleLazyProxy(sub, sub.getPropertyByName(property.name))

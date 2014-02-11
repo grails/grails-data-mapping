@@ -12,7 +12,10 @@ dependencies {
     }
 
     // Web dependencies optional
-    optional("org.grails:grails-web:$grailsVersion")
+    optional("org.grails:grails-web:$grailsVersion") {
+        transitive = false
+    }
+
     optional 'javax.servlet:servlet-api:2.5'
     optional(project(":grails-datastore-web"))
 
@@ -96,6 +99,11 @@ eclipse {
             }
         }
     }
+}
+
+test {
+    forkEvery = 30
+    maxParallelForks = 4
 }
 /*
 test {
