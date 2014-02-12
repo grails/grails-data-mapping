@@ -22,7 +22,7 @@ dependencies {
         exclude group:'org.springframework', module:'spring-beans'
         exclude group:'org.springframework', module:'spring-asm'
     }
-    compile 'org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final'
+    compile 'org.hibernate.javax.persistence:hibernate-jpa-2.1-api:1.0.0.Final'
     compile 'org.javassist:javassist:3.17.1-GA'
     compile 'javax.transaction:jta:1.1'
 
