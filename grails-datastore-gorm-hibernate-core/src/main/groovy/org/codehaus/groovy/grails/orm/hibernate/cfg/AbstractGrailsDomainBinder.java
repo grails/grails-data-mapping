@@ -2322,6 +2322,7 @@ public abstract class AbstractGrailsDomainBinder {
         PropertyConfig config = getPropertyConfig(property);
         final GrailsDomainClassProperty otherSide = property.getOtherSide();
 
+
         oneToOne.setConstrained(otherSide.isHasOne());
         oneToOne.setForeignKeyType(oneToOne.isConstrained() ?
                                    ForeignKeyDirection.FOREIGN_KEY_FROM_PARENT :
@@ -2338,13 +2339,24 @@ public abstract class AbstractGrailsDomainBinder {
         oneToOne.setReferencedEntityName(otherSide.getDomainClass().getFullName());
         oneToOne.setPropertyName(property.getName());
 
-        if (otherSide.isHasOne()) {
-            PropertyConfig pc = getPropertyConfig(property);
-            bindSimpleValue(property, oneToOne, path, pc, sessionFactoryBeanName);
+        GrailsDomainClass refDomainClass = property.isManyToMany() ? property.getDomainClass() : property.getReferencedDomainClass();
+        Mapping mapping = getMapping(refDomainClass);
+        boolean isComposite = hasCompositeIdentifier(mapping);
+        if (isComposite) {
+            CompositeIdentity ci = (CompositeIdentity) mapping.getIdentity();
+            bindCompositeIdentifierToManyToOne(property, oneToOne, ci, refDomainClass, path, sessionFactoryBeanName);
         }
         else {
-            oneToOne.setReferencedPropertyName(otherSide.getName());
+            if (otherSide.isHasOne()) {
+                PropertyConfig pc = getPropertyConfig(property);
+                bindSimpleValue(property, oneToOne, path, pc, sessionFactoryBeanName);
+            }
+            else {
+                oneToOne.setReferencedPropertyName(otherSide.getName());
+            }
         }
+
+
     }
 
     /**
