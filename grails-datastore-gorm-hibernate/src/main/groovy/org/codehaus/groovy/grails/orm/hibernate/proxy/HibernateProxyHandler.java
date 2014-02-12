@@ -48,7 +48,7 @@ public class HibernateProxyHandler implements EntityProxyHandler {
 
     public boolean isInitialized(Object obj, String associationName) {
         try {
-            Object proxy = ClassPropertyFetcher.forClass(obj.getClass()).getPropertyValue(associationName, true);
+            Object proxy = ClassPropertyFetcher.forClass(obj.getClass()).getPropertyValue(obj, associationName);
             return Hibernate.isInitialized(proxy);
         }
         catch (RuntimeException e) {
@@ -84,7 +84,7 @@ public class HibernateProxyHandler implements EntityProxyHandler {
 
     public HibernateProxy getAssociationProxy(Object obj, String associationName) {
         try {
-            Object proxy = ClassPropertyFetcher.forClass(obj.getClass()).getPropertyValue(associationName, true);
+            Object proxy = ClassPropertyFetcher.forClass(obj.getClass()).getPropertyValue(obj, associationName);
             if (proxy instanceof HibernateProxy) {
                 return (HibernateProxy) proxy;
             }
