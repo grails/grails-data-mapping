@@ -111,6 +111,7 @@ class Setup {
         ctx.beanFactory.registerSingleton 'transactionManager', transactionManager
 
         hibernateDatastore = new HibernateDatastore(context, sessionFactory, grailsApplication.config, ctx)
+        hibernateDatastore.grailsApplication = grailsApplication
         ctx.beanFactory.registerSingleton 'hibernateDatastore', hibernateDatastore
 
         ctx.beanFactory.registerSingleton 'dataSource', new DriverManagerDataSource(Driver.name, dbUrl, 'sa', '')

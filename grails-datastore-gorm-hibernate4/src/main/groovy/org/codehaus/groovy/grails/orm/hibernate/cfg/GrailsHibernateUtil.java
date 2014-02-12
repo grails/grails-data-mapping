@@ -275,14 +275,17 @@ public class GrailsHibernateUtil {
             String sortHead = sort.substring(0,firstDotPos);
             String sortTail = sort.substring(firstDotPos+1);
             GrailsDomainClassProperty property = getGrailsDomainClassProperty(grailsApplication, targetClass, sortHead);
-            if (property.isEmbedded()) {
-                // embedded objects cannot reference entities (at time of writing), so no more recursion needed
-                addOrder(c, sort, order, ignoreCase);
-            } else {
-                Criteria subCriteria = c.createCriteria(sortHead);
-                Class<?> propertyTargetClass = property.getReferencedDomainClass().getClazz();
-                GrailsHibernateUtil.cacheCriteriaByMapping(grailsApplication, propertyTargetClass, subCriteria);
-                addOrderPossiblyNested(grailsApplication, subCriteria, propertyTargetClass, sortTail, order, ignoreCase); // Recurse on nested sort
+            if(property != null) {
+                if (property.isEmbedded()) {
+                    // embedded objects cannot reference entities (at time of writing), so no more recursion needed
+                    addOrder(c, sort, order, ignoreCase);
+                } else {
+                    Criteria subCriteria = c.createCriteria(sortHead);
+                    Class<?> propertyTargetClass = property.getReferencedDomainClass().getClazz();
+                    GrailsHibernateUtil.cacheCriteriaByMapping(grailsApplication, propertyTargetClass, subCriteria);
+                    addOrderPossiblyNested(grailsApplication, subCriteria, propertyTargetClass, sortTail, order, ignoreCase); // Recurse on nested sort
+                }
+
             }
         }
     }

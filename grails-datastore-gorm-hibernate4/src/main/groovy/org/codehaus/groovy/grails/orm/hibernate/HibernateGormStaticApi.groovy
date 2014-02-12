@@ -83,7 +83,7 @@ class HibernateGormStaticApi<D> extends GormStaticApi<D> {
         identityType = persistentEntity.identity?.type
 
         def mappingContext = datastore.mappingContext
-        def grailsApplication = datastore.grailsApplication
+        grailsApplication = datastore.grailsApplication
         if (grailsApplication) {
             GrailsDomainClass domainClass = (GrailsDomainClass)grailsApplication.getArtefact(DomainClassArtefactHandler.TYPE, persistentClass.name)
             identityType = domainClass.identifier?.type
